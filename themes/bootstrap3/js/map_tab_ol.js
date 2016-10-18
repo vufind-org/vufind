@@ -27,6 +27,11 @@ function loadMapTab(mapData, popupTitle) {
     })
   });
 
+  // close map popups if not on the Map tab
+  $('.record-tabs .map').on('hide.bs.tab', function closePopups() {
+    $('#popup').popover('destroy');
+  });
+
   $('#map-canvas').show();
   init = function drawMap() {
     var featureCount = mapData.length;

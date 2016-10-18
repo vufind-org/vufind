@@ -109,7 +109,10 @@ function registerAjaxCommentRecord() {
       dataType: 'json'
     })
     .done(function addCommentDone(/*response, textStatus*/) {
-      var $tab = $(form).closest('.tab-pane');
+      var $tab = $(form).closest('.list-tab-content');
+      if (!$tab.length) {
+        $tab = $(form).closest('.tab-pane');
+      }
       refreshCommentList($tab, id, recordSource);
       $(form).find('textarea[name="comment"]').val('');
       $(form).find('input[type="submit"]').button('loading');
@@ -161,7 +164,7 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     urlroot = '/' + chunks[3] + '/' + chunks[4];
   } else {
     // standard case -- VuFind has its own path under site:
-    var pathInUrl = urlWithoutFragment.indexOf(path);
+    var pathInUrl = urlWithoutFragment.indexOf(path, urlWithoutFragment.indexOf('//') + 2);
     var parts = urlWithoutFragment.substring(pathInUrl + path.length + 1).split('/');
     urlroot = '/' + parts[0] + '/' + parts[1];
   }
@@ -180,6 +183,8 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     }
     if (typeof setHash == 'undefined' || setHash) {
       window.location.hash = tabid;
+    } else {
+      removeHashFromLocation();
     }
   });
   return false;
@@ -261,6 +266,15 @@ function applyRecordTabHash() {
   }
 }
 
+function removeHashFromLocation() {
+  if (window.history.replaceState) {
+    var href = window.location.href.split('#');
+    window.history.replaceState({}, document.title, href[0]);  
+  } else {
+    window.location.hash = '#';  
+  }
+}
+
 $(window).on('hashchange', applyRecordTabHash);
 
 function recordDocReady() {
@@ -290,7 +304,11 @@ function recordDocReady() {
     $(this).tab('show');
     if ($top.find('.' + tabid + '-tab').length > 0) {
       $top.find('.' + tabid + '-tab').addClass('active');
-      window.location.hash = tabid;
+      if ($(this).parent().hasClass('initiallyActive')) {
+        removeHashFromLocation();
+      } else {
+        window.location.hash = tabid;
+      }
       return false;
     } else {
       var newTab = getNewRecordTab(tabid).addClass('active');

@@ -17,7 +17,7 @@
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
 ?>
 
-<?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+<?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
 
 <?=($offlineMode == "ils-offline") ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message']) : ''?>
 <? if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings)) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
@@ -28,7 +28,7 @@
       </div>
     <? elseif (!$user->cat_username): ?>
       <div class="alert alert-info">
-        <?=$this->translate("hold_profile_html", array('%%url%%' => $this->recordLink()->getTabUrl($this->driver, 'Holdings') . '?catalogLogin=true'))?>
+        <?=$this->translate("hold_profile_html", ['%%url%%' => $this->recordLink()->getTabUrl($this->driver, 'Holdings') . '?catalogLogin=true'])?>
       </div>
     <? endif; ?>
   <? endif; ?>
@@ -47,7 +47,7 @@
 <? endif; ?>
 <? foreach ($holdings as $holding): ?>
 <h3>
-  <? $locationText = $this->transEsc('location_' . $holding['location'], array(), $holding['location']); ?>
+  <? $locationText = $this->transEsc('location_' . $holding['location'], [], $holding['location']); ?>
   <? if (isset($holding['locationhref']) && $holding['locationhref']): ?>
     <a href="<?=$holding['locationhref']?>" target="_blank"><?=$locationText?></a>
   <? else: ?>

@@ -10,12 +10,12 @@
     <?
       // Set up OpenSearch link:
       $this->headLink(
-        array(
+        [
           'href' => $this->url('search-opensearch') . '?method=describe',
           'type' => 'application/opensearchdescription+xml',
           'title' => $this->transEsc('Library Catalog Search'),
           'rel' => 'search'
-        )
+        ]
       );
     ?>
     <!-- RTL styling -->
@@ -28,7 +28,7 @@
       if (!isset($this->renderingError)) {
         // Add translation strings
         $this->jsTranslations()->addStrings(
-          array(
+          [
             'add_tag_success' => 'add_tag_success',
             'bulk_email_success' => 'bulk_email_success',
             'bulk_noitems_advice' => 'bulk_noitems_advice',
@@ -50,11 +50,11 @@
                 'number_thousands_separator', null, ','
             ],
             'sms_success' => 'sms_success'
-          )
+          ]
         );
         // Add libphonenumber.js strings
         $this->jsTranslations()->addStrings(
-          array(
+          [
             "Phone number invalid" => 'libphonenumber_invalid',
             "Invalid country calling code" => 'libphonenumber_invalidcountry',
             "Invalid region code" => 'libphonenumber_invalidregion',
@@ -62,7 +62,7 @@
             "The string supplied is too long to be a phone number" => 'libphonenumber_toolong',
             "The string supplied is too short to be a phone number" => 'libphonenumber_tooshort',
             "Phone number too short after IDD" => 'libphonenumber_tooshortidd'
-          )
+          ]
         );
         // Deal with cart stuff:
         $cart = $this->cart();
@@ -76,7 +76,7 @@
             );
           }
           $this->jsTranslations()->addStrings(
-            array(
+            [
               'addBookBag' => 'Add to Book Bag',
               'bookbagFull' => 'bookbag_full_msg',
               'bookbagMax' => $cart->getMaxSize(),
@@ -87,7 +87,7 @@
               'itemsInBag' => 'items_already_in_bookbag',
               'removeBookBag' => 'Remove from Book Bag',
               'viewBookBag' => 'View Book Bag'
-            )
+            ]
           );
         }
         $this->headScript()->appendScript(
@@ -145,16 +145,16 @@ JS;
           <ul class="breadcrumb hidden-print">
             <? if(is_array($this->layout()->breadcrumbs)): ?>
               <? if(count($this->layout()->breadcrumbs) > 1): ?>
-                <?=$this->render('breadcrumbs/multi.phtml', array(
+                <?=$this->render('breadcrumbs/multi.phtml', [
                     'parents' => $this->layout()->breadcrumbs,
                     'title'   => $this->layout()->title,
                     'from'    => $this->layout()->from
-                  )) ?>
+                  ]) ?>
               <? else: ?>
-                <?=$this->render('breadcrumbs/default.phtml', array(
+                <?=$this->render('breadcrumbs/default.phtml', [
                     'parents' => $this->layout()->breadcrumbs,
                     'title'   => $this->layout()->title
-                  )) ?>
+                  ]) ?>
               <? endif; ?>
             <? else: ?>
               <?=$this->layout()->breadcrumbs ?>

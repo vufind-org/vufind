@@ -218,7 +218,7 @@
     </tr>
   <? endif; ?>
 
-  <? $authorNotes = empty($isbn) ? array() : $this->authorNotes($isbn); if (!empty($authorNotes)): ?>
+  <? $authorNotes = empty($isbn) ? [] : $this->authorNotes($isbn); if (!empty($authorNotes)): ?>
     <? $contentDisplayed = true; ?>
     <tr>
       <th><?=$this->transEsc('Author Notes')?>: </th>

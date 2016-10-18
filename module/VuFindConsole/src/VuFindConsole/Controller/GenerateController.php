@@ -194,14 +194,14 @@ class GenerateController extends AbstractBase
         $mainConfig = $this->getServiceLocator()->get('Config');
         foreach ($mainConfig['router']['routes'] as $key => $val) {
             if (isset($val['options']['route'])
-                && substr($val['options']['route'], -12) == '[:id[/:tab]]'
+                && substr($val['options']['route'], -14) == '[:id[/[:tab]]]'
             ) {
                 $newRoute = $key . '-' . strtolower($action);
                 if (isset($mainConfig['router']['routes'][$newRoute])) {
                     Console::writeLine($newRoute . ' already exists; skipping.');
                 } else {
                     $val['options']['route'] = str_replace(
-                        '[:id[/:tab]]', "[:id]/$action", $val['options']['route']
+                        '[:id[/[:tab]]]', "[:id]/$action", $val['options']['route']
                     );
                     $val['options']['defaults']['action'] = $action;
                     $config['router']['routes'][$newRoute] = $val;

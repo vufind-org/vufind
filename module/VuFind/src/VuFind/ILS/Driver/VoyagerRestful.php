@@ -253,10 +253,10 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         }
         $this->holdCheckLimit
             = isset($this->config['Holds']['holdCheckLimit'])
-            ? $this->config['Holds']['holdCheckLimit'] : "15";
+            ? $this->config['Holds']['holdCheckLimit'] : '15';
         $this->callSlipCheckLimit
             = isset($this->config['StorageRetrievalRequests']['checkLimit'])
-            ? $this->config['StorageRetrievalRequests']['checkLimit'] : "15";
+            ? $this->config['StorageRetrievalRequests']['checkLimit'] : '15';
 
         $this->recallsEnabled
             = isset($this->config['Holds']['enableRecalls'])
@@ -354,7 +354,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
         if (isset($this->config['Holds']['valid_hold_statuses'])) {
             $valid_hold_statuses_array
-                = explode(":", $this->config['Holds']['valid_hold_statuses']);
+                = explode(':', $this->config['Holds']['valid_hold_statuses']);
 
             if (count($valid_hold_statuses_array > 0)) {
                 foreach ($statusArray as $status) {
@@ -452,8 +452,8 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     protected function getHoldingItemsSQL($id)
     {
         $sqlArray = parent::getHoldingItemsSQL($id);
-        $sqlArray['expressions'][] = "ITEM.ITEM_TYPE_ID";
-        $sqlArray['expressions'][] = "ITEM.TEMP_ITEM_TYPE_ID";
+        $sqlArray['expressions'][] = 'ITEM.ITEM_TYPE_ID';
+        $sqlArray['expressions'][] = 'ITEM.TEMP_ITEM_TYPE_ID';
 
         return $sqlArray;
     }
@@ -510,26 +510,26 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             if ($is_holdable) {
                 // Hold Type - If we have patron data, we can use it to determine if
                 // a hold link should be shown
-                if ($patron && $this->holdsMode == "driver") {
+                if ($patron && $this->holdsMode == 'driver') {
                     // This limit is set as the api is slow to return results
-                    if ($i < $this->holdCheckLimit && $this->holdCheckLimit != "0") {
+                    if ($i < $this->holdCheckLimit && $this->holdCheckLimit != '0') {
                         $holdType = $this->determineHoldType(
                             $patron['id'], $row['id'], $row['item_id']
                         );
                         $addLink = $holdType ? $holdType : false;
                     } else {
-                        $holdType = "auto";
-                        $addLink = "check";
+                        $holdType = 'auto';
+                        $addLink = 'check';
                     }
                 } else {
-                    $holdType = "auto";
+                    $holdType = 'auto';
                 }
             }
 
             if ($isStorageRetrievalRequestAllowed) {
                 if ($patron) {
                     if ($i < $this->callSlipCheckLimit
-                        && $this->callSlipCheckLimit != "0"
+                        && $this->callSlipCheckLimit != '0'
                     ) {
                         $storageRetrieval = $this->checkItemRequests(
                             $patron['id'],
@@ -541,11 +541,11 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                             ? true
                             : false;
                     } else {
-                        $storageRetrieval = "auto";
-                        $addStorageRetrievalLink = "check";
+                        $storageRetrieval = 'auto';
+                        $addStorageRetrievalLink = 'check';
                     }
                 } else {
-                    $storageRetrieval = "auto";
+                    $storageRetrieval = 'auto';
                 }
             }
 
@@ -560,7 +560,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 'is_holdable' => $is_holdable,
                 'holdtype' => $holdType,
                 'addLink' => $addLink,
-                'level' => "copy",
+                'level' => 'copy',
                 'storageRetrievalRequest' => $storageRetrieval,
                 'addStorageRetrievalRequestLink' => $addStorageRetrievalLink,
                 'ILLRequest' => $ILLRequest,
@@ -584,10 +584,10 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
-        $holdType = isset($data['holdtype']) ? $data['holdtype'] : "auto";
-        $level = isset($data['level']) ? $data['level'] : "copy";
-        $mode = ("title" == $level) ? $this->titleHoldsMode : $this->holdsMode;
-        if ("driver" == $mode && "auto" == $holdType) {
+        $holdType = isset($data['holdtype']) ? $data['holdtype'] : 'auto';
+        $level = isset($data['level']) ? $data['level'] : 'copy';
+        $mode = ('title' == $level) ? $this->titleHoldsMode : $this->holdsMode;
+        if ('driver' == $mode && 'auto' == $holdType) {
             $itemID = isset($data['item_id']) ? $data['item_id'] : false;
             $result = $this->determineHoldType($patron['id'], $id, $itemID);
             if (!$result || $result == 'block') {
@@ -624,7 +624,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             return false;
         }
 
-        $level = isset($data['level']) ? $data['level'] : "copy";
+        $level = isset($data['level']) ? $data['level'] : 'copy';
         $itemID = ($level != 'title' && isset($data['item_id']))
             ? $data['item_id']
             : false;
@@ -733,8 +733,8 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             // Read results
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $pickResponse[] = [
-                    "locationID" => $row['LOCATION_ID'],
-                    "locationDisplay" => utf8_encode($row['LOCATION_NAME'])
+                    'locationID' => $row['LOCATION_ID'],
+                    'locationDisplay' => utf8_encode($row['LOCATION_NAME'])
                 ];
             }
         }
@@ -869,12 +869,12 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
             // Add Required Params
             $params = [
-                "patron" => $patron['id'],
-                "patron_homedb" => $this->ws_patronHomeUbId,
-                "view" => "full"
+                'patron' => $patron['id'],
+                'patron_homedb' => $this->ws_patronHomeUbId,
+                'view' => 'full'
             ];
 
-            $results = $this->makeRequest($hierarchy, $params, "GET", false);
+            $results = $this->makeRequest($hierarchy, $params, 'GET', false);
 
             if ($results === false) {
                 throw new ILSException('Could not fetch hold information');
@@ -1040,7 +1040,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @throws ILSException
      * @return obj  A Simple XML Object loaded with the xml data returned by the API
      */
-    protected function makeRequest($hierarchy, $params = false, $mode = "GET",
+    protected function makeRequest($hierarchy, $params = false, $mode = 'GET',
         $xml = false
     ) {
         // Build Url Base
@@ -1049,20 +1049,20 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         // Add Hierarchy
         foreach ($hierarchy as $key => $value) {
             $hierarchyString[] = ($value !== false)
-                ? urlencode($key) . "/" . urlencode($value) : urlencode($key);
+                ? urlencode($key) . '/' . urlencode($value) : urlencode($key);
         }
 
         // Add Params
         $queryString = [];
         foreach ($params as $key => $param) {
-            $queryString[] = urlencode($key) . "=" . urlencode($param);
+            $queryString[] = urlencode($key) . '=' . urlencode($param);
         }
 
         // Build Hierarchy
-        $urlParams .= "/" . implode("/", $hierarchyString);
+        $urlParams .= '/' . implode('/', $hierarchyString);
 
         // Build Params
-        $urlParams .= "?" . implode("&", $queryString);
+        $urlParams .= '?' . implode('&', $queryString);
 
         // Create Proxy Request
         $client = $this->httpService->createClient($urlParams);
@@ -1128,7 +1128,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function encodeXML($string)
     {
-        return htmlspecialchars($string, ENT_COMPAT, "UTF-8");
+        return htmlspecialchars($string, ENT_COMPAT, 'UTF-8');
     }
 
     /**
@@ -1142,22 +1142,22 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function buildBasicXML($xml)
     {
-        $xmlString = "";
+        $xmlString = '';
 
         foreach ($xml as $root => $nodes) {
-            $xmlString .= "<" . $root . ">";
+            $xmlString .= '<' . $root . '>';
 
             foreach ($nodes as $nodeName => $nodeValue) {
-                $xmlString .= "<" . $nodeName . ">";
+                $xmlString .= '<' . $nodeName . '>';
                 $xmlString .= $this->encodeXML($nodeValue);
                 // Split out any attributes
                 $nodeName = strtok($nodeName, ' ');
-                $xmlString .= "</" . $nodeName . ">";
+                $xmlString .= '</' . $nodeName . '>';
             }
 
             // Split out any attributes
             $root = strtok($root, ' ');
-            $xmlString .= "</" . $root . ">";
+            $xmlString .= '</' . $root . '>';
         }
 
         $xmlComplete = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" . $xmlString;
@@ -1205,19 +1205,19 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         if (null === $blockReason) {
             // Build Hierarchy
             $hierarchy = [
-                "patron" =>  $patronId,
-                "patronStatus" => "blocks"
+                'patron' =>  $patronId,
+                'patronStatus' => 'blocks'
             ];
 
             // Add Required Params
             $params = [
-                "patron_homedb" => $this->ws_patronHomeUbId,
-                "view" => "full"
+                'patron_homedb' => $this->ws_patronHomeUbId,
+                'view' => 'full'
             ];
 
             $blocks = $this->makeRequest($hierarchy, $params);
             if ($blocks
-                && (string)$blocks->{'reply-text'} == "ok"
+                && (string)$blocks->{'reply-text'} == 'ok'
                 && isset($blocks->blocks->institution->borrowingBlock)
             ) {
                 $blockReason = $this->extractBlockReasons(
@@ -1372,7 +1372,7 @@ EOT;
                     $dueDate = (string)$chargedItem->dueDate;
                     try {
                         $newDate = $this->dateFormat->convertToDisplayDate(
-                            "Y-m-d H:i", $dueDate
+                            'Y-m-d H:i', $dueDate
                         );
                         $response['new_date'] = $newDate;
                     } catch (DateException $e) {
@@ -1381,7 +1381,7 @@ EOT;
                     }
                     try {
                         $newTime = $this->dateFormat->convertToDisplayTime(
-                            "Y-m-d H:i", $dueDate
+                            'Y-m-d H:i', $dueDate
                         );
                         $response['new_time'] = $newTime;
                     } catch (DateException $e) {
@@ -1429,24 +1429,24 @@ EOT;
 
             // Add Required Params
             $params = [
-                "patron" => $patronId,
-                "patron_homedb" => $this->ws_patronHomeUbId,
-                "view" => "full"
+                'patron' => $patronId,
+                'patron_homedb' => $this->ws_patronHomeUbId,
+                'view' => 'full'
             ];
 
-            $check = $this->makeRequest($hierarchy, $params, "GET", false);
+            $check = $this->makeRequest($hierarchy, $params, 'GET', false);
 
             if ($check) {
                 // Process
                 $check = $check->children();
-                $node = "reply-text";
+                $node = 'reply-text';
                 $reply = (string)$check->$node;
 
                 // Valid Response
-                if ($reply == "ok") {
+                if ($reply == 'ok') {
                     if ($check->$request) {
                         $requestAttributes = $check->$request->attributes();
-                        if ($requestAttributes['allowed'] == "Y") {
+                        if ($requestAttributes['allowed'] == 'Y') {
                             return true;
                         }
                     }
@@ -1473,7 +1473,7 @@ EOT;
         if (empty($patron) || empty($requestData) || empty($requestData['bibId'])
             || empty($type)
         ) {
-            return ['success' => false, 'status' => "hold_error_fail"];
+            return ['success' => false, 'status' => 'hold_error_fail'];
         }
 
         // Build request
@@ -1576,20 +1576,20 @@ EOT;
 
         // Check for account Blocks
         if ($this->checkAccountBlocks($patronId)) {
-            return "block";
+            return 'block';
         }
 
         // Check Recalls First
         if ($this->recallsEnabled) {
-            $recall = $this->checkItemRequests($patronId, "recall", $bibId, $itemId);
+            $recall = $this->checkItemRequests($patronId, 'recall', $bibId, $itemId);
             if ($recall) {
-                return "recall";
+                return 'recall';
             }
         }
         // Check Holds
-        $hold = $this->checkItemRequests($patronId, "hold", $bibId, $itemId);
+        $hold = $this->checkItemRequests($patronId, 'hold', $bibId, $itemId);
         if ($hold) {
-            return "hold";
+            return 'hold';
         }
         return false;
     }
@@ -1606,8 +1606,8 @@ EOT;
     protected function holdError($msg)
     {
         return [
-                    "success" => false,
-                    "sysMessage" => $msg
+            'success' => false,
+            'sysMessage' => $msg
         ];
     }
 
@@ -1919,9 +1919,9 @@ EOT;
     {
         $patron = $holdDetails['patron'];
         $type = isset($holdDetails['holdtype']) && !empty($holdDetails['holdtype'])
-            ? $holdDetails['holdtype'] : "auto";
+            ? $holdDetails['holdtype'] : 'auto';
         $level = isset($holdDetails['level']) && !empty($holdDetails['level'])
-            ? $holdDetails['level'] : "copy";
+            ? $holdDetails['level'] : 'copy';
         $pickUpLocation = !empty($holdDetails['pickUpLocation'])
             ? $holdDetails['pickUpLocation'] : $this->defaultPickUpLocation;
         $itemId = isset($holdDetails['item_id']) ? $holdDetails['item_id'] : false;
@@ -1930,26 +1930,26 @@ EOT;
 
         // Request was initiated before patron was logged in -
         // Let's determine Hold Type now
-        if ($type == "auto") {
+        if ($type == 'auto') {
             $type = $this->determineHoldType($patron['id'], $bibId, $itemId);
-            if (!$type || $type == "block") {
-                return $this->holdError("hold_error_blocked");
+            if (!$type || $type == 'block') {
+                return $this->holdError('hold_error_blocked');
             }
         }
 
         // Convert last interest date from Display Format to Voyager required format
         try {
             $lastInterestDate = $this->dateFormat->convertFromDisplayDate(
-                "Y-m-d", $holdDetails['requiredBy']
+                'Y-m-d', $holdDetails['requiredBy']
             );
         } catch (DateException $e) {
             // Hold Date is invalid
-            return $this->holdError("hold_date_invalid");
+            return $this->holdError('hold_date_invalid');
         }
 
         try {
             $checkTime =  $this->dateFormat->convertFromDisplayDate(
-                "U", $holdDetails['requiredBy']
+                'U', $holdDetails['requiredBy']
             );
             if (!is_numeric($checkTime)) {
                 throw new DateException('Result should be numeric');
@@ -1960,12 +1960,12 @@ EOT;
 
         if (time() > $checkTime) {
             // Hold Date is in the past
-            return $this->holdError("hold_date_past");
+            return $this->holdError('hold_date_past');
         }
 
         // Make Sure Pick Up Library is Valid
         if (!$this->pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)) {
-            return $this->holdError("hold_invalid_pickup");
+            return $this->holdError('hold_invalid_pickup');
         }
 
         if ($this->requestGroupsEnabled && !$itemId
@@ -2033,7 +2033,7 @@ EOT;
             return $result;
         }
 
-        return $this->holdError("hold_error_blocked");
+        return $this->holdError('hold_error_blocked');
     }
 
     /**
@@ -2055,44 +2055,44 @@ EOT;
         $response = [];
 
         foreach ($details as $cancelDetails) {
-            list($itemId, $cancelCode) = explode("|", $cancelDetails);
+            list($itemId, $cancelCode) = explode('|', $cancelDetails);
 
              // Create Rest API Cancel Key
-            $cancelID = $this->ws_dbKey . "|" . $cancelCode;
+            $cancelID = $this->ws_dbKey . '|' . $cancelCode;
 
             // Build Hierarchy
             $hierarchy = [
-                "patron" => $patron['id'],
-                 "circulationActions" => "requests",
-                 "holds" => $cancelID
+                'patron' => $patron['id'],
+                 'circulationActions' => 'requests',
+                 'holds' => $cancelID
             ];
 
             // Add Required Params
             $params = [
-                "patron_homedb" => $this->ws_patronHomeUbId,
-                "view" => "full"
+                'patron_homedb' => $this->ws_patronHomeUbId,
+                'view' => 'full'
             ];
 
             // Get Data
-            $cancel = $this->makeRequest($hierarchy, $params, "DELETE");
+            $cancel = $this->makeRequest($hierarchy, $params, 'DELETE');
 
             if ($cancel) {
                 // Process Cancel
                 $cancel = $cancel->children();
-                $node = "reply-text";
+                $node = 'reply-text';
                 $reply = (string)$cancel->$node;
-                $count = ($reply == "ok") ? $count + 1 : $count;
+                $count = ($reply == 'ok') ? $count + 1 : $count;
 
                 $response[$itemId] = [
-                    'success' => ($reply == "ok") ? true : false,
-                    'status' => ($reply == "ok")
-                        ? "hold_cancel_success" : "hold_cancel_fail",
-                    'sysMessage' => ($reply == "ok") ? false : $reply,
+                    'success' => ($reply == 'ok') ? true : false,
+                    'status' => ($reply == 'ok')
+                        ? 'hold_cancel_success' : 'hold_cancel_fail',
+                    'sysMessage' => ($reply == 'ok') ? false : $reply,
                 ];
 
             } else {
                 $response[$itemId] = [
-                    'success' => false, 'status' => "hold_cancel_fail"
+                    'success' => false, 'status' => 'hold_cancel_fail'
                 ];
             }
         }
@@ -2168,8 +2168,8 @@ EOT;
 
         // Add Required Params
         $params = [
-            "patron_homedb" => $this->ws_patronHomeUbId,
-            "view" => "full"
+            'patron_homedb' => $this->ws_patronHomeUbId,
+            'view' => 'full'
         ];
 
         $results = $this->makeRequest($hierarchy, $params);
@@ -2274,8 +2274,8 @@ EOT;
 
         // Add Required Params
         $params = [
-            "patron_homedb" => $this->ws_patronHomeUbId,
-            "view" => "full"
+            'patron_homedb' => $this->ws_patronHomeUbId,
+            'view' => 'full'
         ];
 
         $results = $this->makeRequest($hierarchy, $params);
@@ -2358,8 +2358,8 @@ EOT;
 
         // Add Required Params
         $params = [
-            "patron_homedb" => $this->ws_patronHomeUbId,
-            "view" => "full"
+            'patron_homedb' => $this->ws_patronHomeUbId,
+            'view' => 'full'
         ];
 
         $results = $this->makeRequest($hierarchy, $params);
@@ -2449,7 +2449,7 @@ EOT;
                 $details['pickUpLocation'], $patron, $details
             )
         ) {
-            return $this->holdError("hold_invalid_pickup");
+            return $this->holdError('hold_invalid_pickup');
         }
 
         // Attempt Request
@@ -2546,10 +2546,10 @@ EOT;
         $response = [];
 
         foreach ($details as $cancelDetails) {
-            list($dbKey, $itemId, $cancelCode) = explode("|", $cancelDetails);
+            list($dbKey, $itemId, $cancelCode) = explode('|', $cancelDetails);
 
              // Create Rest API Cancel Key
-            $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . "|" . $cancelCode;
+            $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . '|' . $cancelCode;
 
             // Build Hierarchy
             $hierarchy = [
@@ -2793,7 +2793,7 @@ EOT;
             case 'notNeededAfter':
                 $node = current($field->xpath('./req:text'));
                 $requiredByDate = $this->dateFormat->convertToDisplayDate(
-                    "Y-m-d H:i", (string)$node
+                    'Y-m-d H:i', (string)$node
                 );
                 break;
             }
@@ -2826,7 +2826,7 @@ EOT;
             return false;
         }
 
-        $level = isset($data['level']) ? $data['level'] : "copy";
+        $level = isset($data['level']) ? $data['level'] : 'copy';
         $itemID = ($level != 'title' && isset($data['item_id']))
             ? $data['item_id']
             : false;
@@ -3004,11 +3004,11 @@ EOT;
         // Convert last interest date from Display Format to Voyager required format
         try {
             $lastInterestDate = $this->dateFormat->convertFromDisplayDate(
-                "Y-m-d", $details['requiredBy']
+                'Y-m-d', $details['requiredBy']
             );
         } catch (DateException $e) {
             // Date is invalid
-            return $this->holdError("ill_request_date_invalid");
+            return $this->holdError('ill_request_date_invalid');
         }
 
         // Verify pickup library and location
@@ -3145,15 +3145,15 @@ EOT;
         $response = [];
 
         foreach ($details as $cancelDetails) {
-            list($dbKey, $itemId, $type, $cancelCode) = explode("|", $cancelDetails);
+            list($dbKey, $itemId, $type, $cancelCode) = explode('|', $cancelDetails);
 
              // Create Rest API Cancel Key
-            $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . "|" . $cancelCode;
+            $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . '|' . $cancelCode;
 
             // Build Hierarchy
             $hierarchy = [
-                "patron" => $patron['id'],
-                 "circulationActions" => 'requests'
+                'patron' => $patron['id'],
+                 'circulationActions' => 'requests'
             ];
             // An UB request is
             if ($type == 'C') {
@@ -3164,32 +3164,32 @@ EOT;
 
             // Add Required Params
             $params = [
-                "patron_homedb" => $this->ws_patronHomeUbId,
-                "view" => "full"
+                'patron_homedb' => $this->ws_patronHomeUbId,
+                'view' => 'full'
             ];
 
             // Get Data
-            $cancel = $this->makeRequest($hierarchy, $params, "DELETE");
+            $cancel = $this->makeRequest($hierarchy, $params, 'DELETE');
 
             if ($cancel) {
 
                 // Process Cancel
                 $cancel = $cancel->children();
-                $node = "reply-text";
+                $node = 'reply-text';
                 $reply = (string)$cancel->$node;
-                $count = ($reply == "ok") ? $count + 1 : $count;
+                $count = ($reply == 'ok') ? $count + 1 : $count;
 
                 $response[$itemId] = [
-                    'success' => ($reply == "ok") ? true : false,
-                    'status' => ($reply == "ok")
-                        ? "ill_request_cancel_success" : "ill_request_cancel_fail",
-                    'sysMessage' => ($reply == "ok") ? false : $reply,
+                    'success' => ($reply == 'ok') ? true : false,
+                    'status' => ($reply == 'ok')
+                        ? 'ill_request_cancel_success' : 'ill_request_cancel_fail',
+                    'sysMessage' => ($reply == 'ok') ? false : $reply,
                 ];
 
             } else {
                 $response[$itemId] = [
                     'success' => false,
-                    'status' => "ill_request_cancel_fail"
+                    'status' => 'ill_request_cancel_fail'
                 ];
             }
         }
