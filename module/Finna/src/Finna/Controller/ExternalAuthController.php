@@ -38,73 +38,10 @@ namespace Finna\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class ExternalAuthController extends \VuFind\Controller\AbstractBase
+class ExternalAuthController extends \VuFind\Controller\ExternalAuthController
 {
-    /**
-     * Provides an EZproxy session to an authorized user
-     *
-     * @return mixed
-     *
-     * @throws \Exception
-     */
-    public function ezproxyLoginAction()
+    public function __construct()
     {
-        $config = $this->getConfig();
-        if (empty($config->EZproxy->host)) {
-            throw new \Exception('EZproxy host not defined in configuration');
-        }
-
-        $user = $this->getUser();
-        if ($user) {
-            // Logged in, check for authorization
-            $authService = $this->getServiceLocator()
-                ->get('ZfcRbac\Service\AuthorizationService');
-            if (!$authService->isGranted('finna.authorized')) {
-                $view = $this->createViewModel();
-                $view->unauthorized = true;
-                $this->flashMessenger()->addErrorMessage(
-                    'external_auth_unauthorized'
-                );
-                return $view;
-            }
-            $username = end(explode(':', $user->username, 2));
-            $url = $this->params()->fromPost(
-                'url', $this->params()->fromQuery('url')
-            );
-            return $this->redirect()->toUrl(
-                $this->createEzproxyTicketUrl($username, $url)
-            );
-        }
-        return $this->forceLogin('external_auth_login_message');
-    }
-
-    /**
-     * Create a ticket login URL for EZproxy
-     *
-     * @param string $user User name to pass on to EZproxy
-     * @param string $url  The original URL
-     *
-     * @return string EZproxy URL
-     *
-     * @throws \Exception
-     */
-    protected function createEzproxyTicketUrl($user, $url)
-    {
-        $config = $this->getConfig();
-        if (empty($config->EZproxy->secret)) {
-            throw new \Exception('EZproxy secret not defined in configuration');
-        }
-
-        $packet = '$u' . time() . '$e';
-        $hash = new \Zend\Crypt\Hash();
-        $algorithm = !empty($config->EZproxy->secret_hash_method)
-            ? $config->EZproxy->secret_hash_method : 'SHA512';
-        $ticket = $config->EZproxy->secret . $user . $packet;
-        $ticket = $hash->compute($algorithm, $ticket);
-        $ticket .= $packet;
-        $params = http_build_query(
-            ['user' => $user, 'ticket' => $ticket, 'url' => $url]
-        );
-        return $config->EZproxy->host . "/login?$params";
+        $this->ezproxyRequiredPermission = 'finna.authorized';
     }
 }
