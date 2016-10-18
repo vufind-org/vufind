@@ -18,7 +18,7 @@ function bindChannelAddMenu(scope) {
 }
 
 function setupChannelSlider(i, op) {
-  if (VuFind.slider(op)) {
+  if (ChannelSlider(op)) {
     $(op).find('.thumb').each(function thumbnailBackgrounds(index, thumb) {
       var img = $(thumb).find('img');
       $(thumb).css('background-image', 'url(' + img.attr('src') + ')');
