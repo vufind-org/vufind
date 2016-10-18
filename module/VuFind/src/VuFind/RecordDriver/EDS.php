@@ -72,10 +72,12 @@ class EDS extends SolrDefault
             
         ],
         'ISSNs' => [
-            ['RecordInfo','BibRecord','BibRelationships','IsPartOfRelationships',0,'BibEntity','Identifiers'],
+            ['RecordInfo','BibRecord','BibRelationships',
+             'IsPartOfRelationships',0,'BibEntity','Identifiers'],
         ],
         'ISBNs' => [
-            ['RecordInfo','BibRecord','BibRelationships','IsPartOfRelationships',0,'BibEntity','Identifiers'],
+            ['RecordInfo','BibRecord','BibRelationships','IsPartOfRelationships'
+             ,0,'BibEntity','Identifiers'],
         ],
     ];
 
