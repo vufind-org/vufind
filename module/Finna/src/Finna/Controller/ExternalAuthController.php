@@ -40,6 +40,9 @@ namespace Finna\Controller;
  */
 class ExternalAuthController extends \VuFind\Controller\ExternalAuthController
 {
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         $this->ezproxyRequiredPermission = 'finna.authorized';
