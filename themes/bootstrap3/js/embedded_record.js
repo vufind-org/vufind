@@ -87,6 +87,8 @@ VuFind.register('embedded', function embedded() {
   function toggleDataView(_link, tabid) {
     var $link = $(_link);
     var viewType = $link.attr('data-view');
+    var openTab = $link.attr('data-open');
+    if (typeof openTab === 'undefined' || typeof openTab === false) openTab = null;
     // If full, return true
     if (viewType === 'full') {
       return true;
@@ -129,7 +131,8 @@ VuFind.register('embedded', function embedded() {
             method: 'getRecordDetails',
             id: divID,
             type: viewType,
-            source: result.find('.hiddenSource')[0].value
+            source: result.find('.hiddenSource')[0].value,
+            open: openTab
           }),
           success: function getRecordDetailsSuccess(response) {
             if (response.status === 'OK') {

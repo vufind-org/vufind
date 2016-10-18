@@ -1,5 +1,10 @@
 <?
-  $this->defaultTab = strtolower($this->defaultTab);
+<? 
+  if ($this->openTab!=null) {
+     $this->defaultTab=$this->openTab;
+  } else {
+     $this->defaultTab = strtolower($this->defaultTab);
+  }
   $idSuffix = $this->escapeHtmlAttr(md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier()));
 ?>
 

@@ -782,6 +782,7 @@ class AjaxController extends AbstractBase
             '/\W/', '',
             trim(strtolower($this->params()->fromQuery('type')))
         );
+        $opentab = $this->params()->fromQuery('open');
         $request = $this->getRequest();
         $config = $this->getServiceLocator()->get('Config');
         $sconfig = $this->getServiceLocator()->get('VuFind\Config')->get('searches');
@@ -806,7 +807,8 @@ class AjaxController extends AbstractBase
                     'tabs' => $details['tabs'],
                     'backgroundTabs' => $rtpm->getBackgroundTabNames(
                         $driver, $this->getRecordTabConfig()
-                    )
+                    ),
+                    'openTab' => $opentab
                 ]
             );
         return $this->output($html, self::STATUS_OK);
