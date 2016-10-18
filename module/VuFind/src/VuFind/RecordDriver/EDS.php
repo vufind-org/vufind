@@ -48,8 +48,33 @@ class EDS extends SolrDefault
     protected $prioritizedFields  = [
         'Languages' => [
             ['RecordInfo', 'BibRecord', 'BibEntity', 'Languages', 0, 'Text'],
-            ['Items', 1, 'Languages', 'Data']
-        ]
+            ['Items', 'Languages'],
+        ],
+        'ContainerPages' => [
+            ['RecordInfo','BibRecord','BibEntity','PhysicalDescription',
+                'Pagination']
+        ],
+        'ContainerYear' => [
+            ['RecordInfo','BibRecord','BibRelationships',
+             'IsPartOfRelationships',0,'BibEntity','Dates','0','Y']
+        ],
+        'ContainerVolume' => [
+            ['RecordInfo','BibRecord','BibRelationships',
+             'IsPartOfRelationships',0,'BibEntity','Numbering']
+        ],
+        'ContainerIssue' => [
+            ['RecordInfo','BibRecord','BibRelationships',
+             'IsPartOfRelationships',0,'BibEntity','Numbering']
+        ],
+        'ContainerTitle' => [
+            ['RecordInfo','BibRecord','BibRelationships',
+             'IsPartOfRelationships',0,'BibEntity','Titles',0,'TitleFull']
+            
+        ],
+        'ISSNs' => [
+            ['RecordInfo','BibRecord','BibRelationships','IsPartOfRelationships',0,'BibEntity','Identifiers'],
+            ['Items', 'ISSN']
+        ],
     ];
 
     /**
@@ -197,20 +222,26 @@ class EDS extends SolrDefault
 
     /**
      * Get the items of the record.
-     *
+     * 
+     * @param string $label Filter items by label     
      * @return array
      */
-    public function getItems()
+    public function getItems($label = null)
     {
         $items = [];
         if (isset($this->fields['Items']) && !empty($this->fields['Items'])) {
             foreach ($this->fields['Items'] as $item) {
-                $items[] = [
+                $tmp = [
                     'Label' => isset($item['Label']) ? $item['Label'] : '',
                     'Group' => isset($item['Group']) ? $item['Group'] : '',
                     'Data'  => isset($item['Data'])
                         ? $this->toHTML($item['Data'], $item['Group']) : ''
                 ];
+                if (is_null($label)) {
+                    $items[] = $tmp;
+                } elseif ($item['Label'] == $label) {
+                    $items[] = $tmp;
+                }
             }
         }
         return $items;
@@ -592,10 +623,21 @@ class EDS extends SolrDefault
      */
     protected function getFieldRecursive($arrayKeys, $level = 0, $fields = null)
     {
+        // special case: we have to iterate through items array
+        if ($arrayKeys[0] == 'Items' && isset($arrayKeys[1])) {
+            $items = $this->getItems($arrayKeys[1]);
+            $output = [];
+            foreach ($items as $item) {
+                $output[] = $item['Data'];
+            }
+            return implode('; ', $output);
+
+        }
 
         if (!$fields) {
             $fields = $this->fields;
         }
+        
         if (isset($fields[$arrayKeys[$level]])) {
             $newFields = $fields[$arrayKeys[$level]];
             $level++;
@@ -638,19 +680,7 @@ class EDS extends SolrDefault
      */
     public function getContainerTitle()
     {
-        $arrayKeys = [
-            'RecordInfo',
-            'BibRecord',
-            'BibRelationships',
-            'IsPartOfRelationships',
-            0,
-            'BibEntity',
-            'Titles',
-            0,
-            'TitleFull'
-        ];
-        return $this->getFieldRecursive($arrayKeys);
-
+        return $this->prioritizedFields('ContainerTitle');
     }
     /**
      * Get issue of containing record
@@ -659,17 +689,7 @@ class EDS extends SolrDefault
      */
     public function getContainerIssue()
     {
-        $arrayKeys = [
-            'RecordInfo',
-            'BibRecord',
-            'BibRelationships',
-            'IsPartOfRelationships',
-            0,
-            'BibEntity',
-            'Numbering',
-        ];
-        
-        $numbering = $this->getFieldRecursive($arrayKeys);
+        $numbering = $this->prioritizedFields('ContainerIssue');
         if (is_array($numbering)) {
             foreach ($numbering as $key => $data) {
                 if (isset($data['Type']) && strtolower($data['Type']) == 'issue') {
@@ -686,17 +706,7 @@ class EDS extends SolrDefault
      */
     public function getContainerVolume()
     {
-        $arrayKeys = [
-            'RecordInfo',
-            'BibRecord',
-            'BibRelationships',
-            'IsPartOfRelationships',
-            0,
-            'BibEntity',
-            'Numbering',
-        ];
-        
-        $numbering = $this->getFieldRecursive($arrayKeys);
+        $numbering = $this->prioritizedFields('ContainerVolume');
         if (is_array($numbering)) {
             foreach ($numbering as $key => $data) {
                 if (isset($data['Type']) && strtolower($data['Type']) == 'volume') {
@@ -715,17 +725,8 @@ class EDS extends SolrDefault
     public function getISSNs()
     {
         $issns = parent::getIssns();
-        $arrayKeys = [
-            'RecordInfo',
-            'BibRecord',
-            'BibRelationships',
-            'IsPartOfRelationships',
-            0,
-            'BibEntity',
-            'Identifiers',
-        ];
-        
-        $identifiers = $this->getFieldRecursive($arrayKeys);
+       
+        $identifiers = $this->prioritizedFields('ISSNs');
         if (is_array($identifiers)) {
             
             foreach ($identifiers as $key => $data) {
@@ -748,18 +749,7 @@ class EDS extends SolrDefault
      */
     public function getContainerYear()
     {
-        $arrayKeys = [
-            'RecordInfo',
-            'BibRecord',
-            'BibRelationships',
-            'IsPartOfRelationships',
-            0,
-            'BibEntity',
-            'Dates',
-            '0',
-            'Y'
-        ];
-        return $this->getFieldRecursive($arrayKeys);
+        return $this->prioritizedFields('ContainerYear');
     }
     
     /**
@@ -769,16 +759,8 @@ class EDS extends SolrDefault
      */
     public function getContainerPages()
     {
-        $arrayKeys = [
-            'RecordInfo',
-            'BibRecord',
-            'BibEntity',
-            'PhysicalDescription',
-            'Pagination',
-            
-        ];
         $pages = '';
-        $pagination = $this->getFieldRecursive($arrayKeys);
+        $pagination = $this->prioritizedFields('ContainerPages');
         if (isset($pagination['StartPage'])) {
             $pages = $pagination['StartPage'];
         }
