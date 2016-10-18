@@ -228,6 +228,7 @@ class EDS extends SolrDefault
      * Get the items of the record.
      * 
      * @param string $label Filter items by label     
+     * 
      * @return array
      */
     public function getItems($label = null)
@@ -746,9 +747,14 @@ class EDS extends SolrDefault
         return $issns;
     }
     
+    /**
+     * Get an array of ISBNs
+     * 
+     * @return array
+     */
     public function getISBNs()
     {
-        $isbns = parent::getIssns();
+        $isbns = parent::getISBNs();
        
         $identifiers = $this->prioritizedFields('ISBNs');
         if (is_array($identifiers)) {
@@ -814,21 +820,21 @@ class EDS extends SolrDefault
         $formats = [];
         $pubType = $this->getPubType();
         switch ($pubType) {
-            case 'academic journal': $formats[] = 'Journal';
-                break;
-            case 'report': $formats[] = 'Report';
-                break;
-            case 'aook': $formats[] = 'Book';
-                break;
-            case 'article': $formats[] = 'Journal';
-                break;
-            case 'ebook': $formats[] = 'EBook';
-                break;
-            case 'periodical': $formats[] = 'Magazine';
-                break;
-            case 'dissertation/thesis': $formats[] = 'Thesis';
-                break;
-            default: $formats[] = 'Generic';
+        case 'academic journal': $formats[] = 'Journal';
+            break;
+        case 'report': $formats[] = 'Report';
+            break;
+        case 'aook': $formats[] = 'Book';
+            break;
+        case 'article': $formats[] = 'Journal';
+            break;
+        case 'ebook': $formats[] = 'EBook';
+            break;
+        case 'periodical': $formats[] = 'Magazine';
+            break;
+        case 'dissertation/thesis': $formats[] = 'Thesis';
+            break;
+        default: $formats[] = 'Generic';
 
         }
         return $formats;
