@@ -835,8 +835,8 @@ class EDS extends SolrDefault
         case 'dissertation/thesis': $formats[] = 'Thesis';
             break;
         default: $formats[] = 'Generic';
-
         }
+        
         return $formats;
     }
     
