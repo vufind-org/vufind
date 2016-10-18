@@ -1,11 +1,8 @@
-/**
- * crhallberg/autocomplete.js 0.16.1
- * ~ @crhallberg
- */
+/* https://github.com/crhallberg/autocomplete.js 0.16.3 */
 (function autocomplete( $ ) {
   var cache = {},
     element = false,
-    options = {
+    options = { // default options
       ajaxDelay: 200,
       cache: true,
       hidingClass: 'hidden',
@@ -106,7 +103,9 @@
       element.html('<i class="item loading">' + options.loadingString + '</i>');
       show();
       align(input);
+      input.data('selected', -1);
       var term = input.val();
+      // Check cache (only for handler-based setups)
       var cid = input.data('cache-id');
       if (options.cache && typeof cache[cid][term] !== "undefined") {
         if (cache[cid][term].length === 0) {
@@ -114,20 +113,25 @@
         } else {
           createList(cache[cid][term], input);
         }
+      // Check for static list
       } else if (typeof options.static !== 'undefined') {
-        var regex = new RegExp(escapeRegExp(input.val()), 'i');
-        handleResults(input, term, options.static.filter(function staticFilter(_item) {
-          var content = typeof _item === 'string'
-            ? _item
-            : _item.label || _item.value;
-          return content.match(regex);
-        }));
+        var matches = options.static.filter(function staticFilter(_item) {
+          return _item.match.match(term);
+        });
+        if (typeof options.staticSort === 'functions') {
+          matches.sort(options.staticSort);
+        } else {
+          matches.sort(function defaultStaticSort(a, b) {
+            return a.match.indexOf(term) - b.match.indexOf(term);
+          });
+        }
+        handleResults(input, term, matches);
+      // Call handler
       } else {
         options.handler(input, function achandlerCallback(data) {
           handleResults(input, term, data);
         });
       }
-      input.data('selected', -1);
     } else {
       hide();
     }
@@ -273,6 +277,16 @@
         console.error('Neither handler function nor static result list provided for autocomplete');
         return this;
       } else {
+        if (typeof settings.static !== 'undefined') {
+          // Preprocess strings into items
+          settings.static = settings.static.map(function preprocessStatic(_item) {
+            var item = typeof _item === 'string'
+              ? { value: _item }
+              : _item;
+            item.match = (item.label || item.value).toLowerCase();
+            return item;
+          });
+        }
         options = $.extend( {}, options, settings );
         setup(input);
       }
