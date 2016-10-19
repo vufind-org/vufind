@@ -5,6 +5,7 @@ VuFind.register('lightbox', function Lightbox() {
   var _currentUrl = false;
   var _lightboxTitle = '';
   var refreshOnClose = false;
+  var _modalParams = {};
   // Elements
   var _modal, _modalBody, _clickedButton = null;
   // Utilities
@@ -82,7 +83,7 @@ VuFind.register('lightbox', function Lightbox() {
     }
     // Fill HTML
     _html(finalHTML);
-    _modal.modal('show');
+    VuFind.modal('show');
     // Attach capturing events
     _modalBody.find('a').click(_constrainLink);
     // Handle submit buttons attached to a form as well as those in a form. Store
@@ -201,9 +202,10 @@ VuFind.register('lightbox', function Lightbox() {
         obj.data = $(this).data('lightboxPost');
       }
       _lightboxTitle = $(this).data('lightboxTitle') || '';
-      ajax(obj);
+      _modalParams = $(this).data();
       _currentUrl = this.href;
       VuFind.modal('show');
+      ajax(obj);
       return false;
     }
   };
@@ -307,6 +309,7 @@ VuFind.register('lightbox', function Lightbox() {
     _originalUrl = false;
     _currentUrl = false;
     _lightboxTitle = '';
+    _modalParams = {};
   }
   function init() {
     _modal = $('#modal');
@@ -322,7 +325,13 @@ VuFind.register('lightbox', function Lightbox() {
       _emit('VuFind.lightbox.closed');
     });
 
-    VuFind.modal = function modalShortcut(cmd) { _modal.modal(cmd); };
+    VuFind.modal = function modalShortcut(cmd) {
+      if (cmd === 'show') {
+        _modal.modal($.extend({ show: true }, _modalParams)); 
+      } else {
+        _modal.modal(cmd);
+      }
+    };
     bind();
   }
 
