@@ -52,28 +52,123 @@ class RecordDataFormatter extends AbstractHelper
     {
         $result = [];
         foreach ($spec as $field => $current) {
-            // Take the first element of the current spec and obtain the data
-            // we need for further rendering.
-            $data = $this->extractData($driver, array_shift($current));
+            // Extract the three key components of the spec: data retrieval
+            // method, rendering type, and additional options array.
+            $dataMethod = array_shift($current);
+            $renderType = array_shift($current);
+            $options = array_shift($current) ?: [];
+
+            // Extract the relevant data from the driver.
+            $data = $this->extractData($driver, $dataMethod, $options);
             if (!empty($data)) {
                 // Determine the rendering method to use with the second element
                 // of the current spec.
-                $renderType = array_shift($current);
                 $renderMethod = empty($renderType)
                     ? 'renderSimple' : 'render' . $renderType;
-
-                // Extract additional options from the third element of the spec:
-                $options = array_shift($current) ?: [];
 
                 // Add the rendered data to the return value if it is non-empty:
                 if (is_callable([$this, $renderMethod])
                     && $text = $this->$renderMethod($driver, $data, $options)
                 ) {
+                    // Allow dynamic label override:
+                    if (isset($options['labelFunction'])
+                        && is_callable($options['labelFunction'])
+                    ) {
+                        $field = call_user_func($options['labelFunction'], $data);
+                    }
                     $result[$field] = $text;
                 }
             }
         }
         return $result;
+    }
+
+    /**
+     * Get default specifications for displaying data in core metadata.
+     *
+     * @return array
+     */
+    public function getDefaultCoreSpecs()
+    {
+        return [
+            'Published in' => [
+                'getContainerTitle', 'RecordDriverTemplate',
+                ['template' => 'data-containerTitle.phtml']
+            ],
+            'New Title' => ['getNewerTitles', null, ['recordLink' => 'title']],
+            'Previous Title' => [
+                'getPreviousTitles', null, ['recordLink' => 'title']
+            ],
+            'Main Authors' => [
+                'getDeduplicatedAuthors', 'RecordDriverTemplate',
+                [
+                    'useCache' => true,
+                    'labelFunction' => function ($data) {
+                        return count($data['main']) > 1
+                            ? 'Main Authors' : 'Main Author';
+                    },
+                    'template' => 'data-authors.phtml',
+                    'context' => ['type' => 'main', 'schemaLabel' => 'author'],
+                ]
+            ],
+            'Corporate Authors' => [
+                'getDeduplicatedAuthors', 'RecordDriverTemplate',
+                [
+                    'useCache' => true,
+                    'labelFunction' => function ($data) {
+                        return count($data['corporate']) > 1
+                            ? 'Corporate Authors' : 'Corporate Author';
+                    },
+                    'template' => 'data-authors.phtml',
+                    'context' => ['type' => 'corporate', 'schemaLabel' => 'creator'],
+                ]
+            ],
+            'Other Authors' => [
+                'getDeduplicatedAuthors', 'RecordDriverTemplate',
+                [
+                    'useCache' => true,
+                    'template' => 'data-authors.phtml',
+                    'context' => [
+                        'type' => 'secondary', 'schemaLabel' => 'contributor'
+                    ],
+                ]
+            ],
+            'Format' => [
+                'getFormats', 'RecordHelper', ['method' => 'getFormatList']
+            ],
+            'Language' => ['getLanguages'],
+            'Published' => [
+                'getPublicationDetails', 'RecordDriverTemplate',
+                ['template' => 'data-publicationDetails.phtml']
+            ],
+            'Edition' => [
+                'getEdition', null,
+                ['prefix' => '<span property="bookEdition">', 'suffix' => '</span>']
+            ],
+            'Series' => [
+                'getSeries', 'RecordDriverTemplate',
+                ['template' => 'data-series.phtml']
+            ],
+            'Subjects' => [
+                'getAllSubjectHeadings', 'RecordDriverTemplate',
+                ['template' => 'data-allSubjectHeadings.phtml']
+            ],
+            'child_records' => [
+                'getChildRecordCount', 'RecordDriverTemplate',
+                ['template' => 'data-childRecords.phtml']
+            ],
+            'Online Access' => [
+                true, 'RecordDriverTemplate',
+                ['template' => 'data-onlineAccess.phtml']
+            ],
+            'Related Items' => [
+                'getAllRecordLinks', 'RecordDriverTemplate',
+                ['template' => 'data-allRecordLinks.phtml']
+            ],
+            'Tags' => [
+                true, 'RecordDriverTemplate', ['template' => 'data-tags.phtml']
+            ],
+        ];
     }
 
     /**
@@ -112,21 +207,62 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Extract data (usually from the record driver).
      *
-     * @param RecordDriver $driver Record driver
-     * @param mixed        $method Configuration for data extraction
+     * @param RecordDriver $driver  Record driver
+     * @param mixed        $method  Configuration for data extraction
+     * @param array        $options Incoming options
      *
      * @return mixed
      */
-    protected function extractData(RecordDriver $driver, $method)
+    protected function extractData(RecordDriver $driver, $method, array $options)
     {
+        // Static cache for persisting data.
+        static $cache = [];
+
         // If $method is a bool, return it as-is; this allows us to force the
         // rendering (or non-rendering) of particular data independent of the
         // record driver.
         if ($method === true || $method === false) {
             return $method;
         }
+
+        $useCache = isset($options['cacheData']) && $options['cacheData'];
+
+        if ($useCache) {
+            $cacheKey = $driver->getUniqueID() . '|'
+                . $driver->getSourceIdentifier() . '|' . $method;
+            if (isset($cache[$cacheKey])) {
+                return $cache[$cacheKey];
+            }
+        }
+
         // Default action: try to extract data from the record driver:
-        return $driver->tryMethod($method);
+        $data = $driver->tryMethod($method);
+
+        if ($useCache) {
+            $cache[$cacheKey] = $data;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Render using the record view helper.
+     *
+     * @param RecordDriver $driver  Reoord driver object.
+     * @param mixed        $data    Data to render
+     * @param array        $options Rendering options.
+     *
+     * @return string
+     */
+    protected function renderRecordHelper(RecordDriver $driver, $data,
+        array $options
+    ) {
+        $method = isset($options['method']) ? $options['method'] : null;
+        $plugin = $this->getView()->plugin('record');
+        if (empty($method) || !is_callable([$plugin, $method])) {
+            throw new \Exception('Cannot call "' . $method . '" on helper.');
+        }
+        return $plugin($driver)->$method($data);
     }
 
     /**
@@ -154,6 +290,24 @@ class RecordDataFormatter extends AbstractHelper
     }
 
     /**
+     * Get a link associated with a value, or else return false if link does
+     * not apply.
+     *
+     * @param string $value   Value associated with link.
+     * @param array  $options Rendering options.
+     *
+     * return string|bool
+     */
+    protected function getLink($value, $options)
+    {
+        if (isset($options['recordLink']) && $options['recordLink']) {
+            $helper = $this->getView()->plugin('record');
+            return $helper->getLink($options['recordLink'], $value);
+        }
+        return false;
+    }
+
+    /**
      * Simple rendering method.
      *
      * @param RecordDriver $driver  Reoord driver object.
@@ -174,11 +328,15 @@ class RecordDataFormatter extends AbstractHelper
         $remaining = count($data);
         foreach ($array as $line) {
             $remaining--;
-            $retVal .= $escaper($line);
+            $text = $escaper($line);
+            $retVal .= ($link = $this->getLink($line, $options))
+                ? '<a href="' . $link . '">' . $text . '</a>' : $text;
             if ($remaining > 0) {
                 $retVal .= $separator;
             }
         }
-        return $retVal;
+        return (isset($options['prefix']) ? $options['prefix'] : '')
+            . $retVal
+            . (isset($options['suffix']) ? $options['suffix'] : '');
     }
 }
