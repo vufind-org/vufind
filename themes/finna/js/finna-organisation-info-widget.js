@@ -304,12 +304,12 @@ finna = $.extend(finna, {
                 }
             }
 
-
+            // References
             var infoHolder = holder.find('.schedules-info');
             infoHolder.empty();
 
-            if ('schedule-descriptions' in data) {
-                $.each(data['schedule-descriptions'], function(ind, obj) {
+            if ('scheduleDescriptions' in data.details) {
+                $.each(data.details['scheduleDescriptions'], function(ind, obj) {
                     obj = obj.replace(/(?:\r\n|\r|\n)/g, '<br />');
                     $('<p/>').html(obj).appendTo(infoHolder);
                 });

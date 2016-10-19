@@ -240,10 +240,10 @@ finna.organisationInfoPage = (function() {
     };
 
     var updateSelectedOrganisation = function(id) {
+        setOfficeInformationLoader(true);
         holder.find('.error, .info-element').hide();
         infoWidget.showDetails(id, '', true);
         $('#office-search').val('');
-        setOfficeInformationLoader(true);
         
         var notification = holder.find('.office-search-notifications .notification');
         if (id in organisationList) {
