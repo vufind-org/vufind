@@ -40,9 +40,7 @@
     hide();
   }
 
-  function createList(fulldata, input) {
-    // Limit results
-    var data = fulldata.slice(0, Math.min(options.maxResults, fulldata.length));
+  function createList(data, input) {
     input.data('length', data.length);
     // highlighting setup
     // escape term for regex - https://github.com/sindresorhus/escape-string-regexp/blob/master/index.js
@@ -85,6 +83,8 @@
   }
 
   function handleResults(input, term, data) {
+    // Limit results
+    var data = data.slice(0, Math.min(options.maxResults, data.length));
     var cid = input.data('cache-id');
     cache[cid][term] = data;
     if (data.length === 0) {
@@ -111,14 +111,15 @@
         }
       // Check for static list
       } else if (typeof options.static !== 'undefined') {
+        var lcterm = term.toLowerCase();
         var matches = options.static.filter(function staticFilter(_item) {
-          return _item.match.match(term);
+          return _item.match.match(lcterm);
         });
         if (typeof options.staticSort === 'function') {
           matches.sort(options.staticSort);
         } else {
           matches.sort(function defaultStaticSort(a, b) {
-            return a.match.indexOf(term) - b.match.indexOf(term);
+            return a.match.indexOf(lcterm) - b.match.indexOf(lcterm);
           });
         }
         handleResults(input, term, matches);
