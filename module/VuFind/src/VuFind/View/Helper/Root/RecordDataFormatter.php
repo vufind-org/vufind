@@ -296,7 +296,7 @@ class RecordDataFormatter extends AbstractHelper
      * @param string $value   Value associated with link.
      * @param array  $options Rendering options.
      *
-     * return string|bool
+     * @return string|bool
      */
     protected function getLink($value, $options)
     {
