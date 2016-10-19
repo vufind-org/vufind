@@ -178,10 +178,7 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
                     "and ITEM.ITEM_ID = :item_id";
                 $params = ['item_id' => $holdDetails['item_id']];
                 try {
-                    $this->debugSQL(__FUNCTION__, $sql, $params);
-                    $sqlStmt = $this->db->prepare($sql);
-                    $sqlStmt->execute($params);
-
+                    $sqlStmt = $this->executeSQL($sql, $params);
                     while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                         $this->ws_pickUpLocations[$row['LOCATION_ID']]
                             = utf8_encode($row['LOCATION_NAME']);
