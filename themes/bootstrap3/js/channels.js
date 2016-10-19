@@ -19,72 +19,72 @@ function bindChannelAddMenu(scope) {
 
 function setupChannelSlider(i, op) {
   if (ChannelSlider(op)) {
+    bindChannelAddMenu(op);
     $(op).find('.thumb').each(function thumbnailBackgrounds(index, thumb) {
       var img = $(thumb).find('img');
       $(thumb).css('background-image', 'url(' + img.attr('src') + ')');
       img.remove();
     });
-    $('.channel-add-menu[data-group="' + op.dataset.group + '"]')
+    $(op).find('.channel-add-menu[data-group="' + op.dataset.group + '"]')
       .clone()
       .removeAttr('data-group')
       .addClass('pull-right')
       .removeClass('hidden')
-      .appendTo($(op).find('.slider-menu'));
-    bindChannelAddMenu(op);
+        .appendTo($(op).find('.slider-menu'));
+    // truncate long titles and add hover
+    $(op).find('.channel-record').dotdotdot({
+      callback: function dddcallback(istrunc, orig) {
+        if (istrunc) {
+          $(this).attr('title', $(orig).text());
+        }
+      }
+    });
+    $('.channel-record').click(function channelRecord(event) {
+      var record = $(event.delegateTarget);
+      if (record.data('popover')) {
+        if (record.attr('aria-describedby')) {
+          record.popover('hide');
+        } else {
+          $('[aria-describedby]').popover('hide');
+          record.popover('show');
+        }
+      } else {
+        record.data('popover', true);
+        record.popover({
+          content: VuFind.translate('loading') + '...',
+          html: true,
+          placement: 'bottom',
+          trigger: 'focus',
+          container: '#' + record.closest('.channel').attr('id')
+        });
+        $('[aria-describedby]').popover('hide');
+        record.popover('show');
+        $.ajax({
+          url: VuFind.path + getUrlRoot(record.attr('href')) + '/AjaxTab',
+          type: 'POST',
+          data: {tab: 'description'}
+        })
+        .done(function channelPopoverDone(data) {
+          record.data('bs.popover').options.content = '<h2>' + htmlEncode(record.text()) + '</h2>'
+            + '<div class="btn-group btn-group-justified">'
+            + '<a href="' + VuFind.path + '/Channels/Record?'
+              + 'id=' + encodeURIComponent(record.attr('data-record-id'))
+              + '&source=' + encodeURIComponent(record.attr('data-record-source'))
+            + '" class="btn btn-default">More Like This</a>'
+            + '<a href="' + record.attr('href') + '" class="btn btn-default">Go To Record</a>'
+            + '</div>'
+            + data;
+          record.popover('show');
+        });
+      }
+      return false;
+    });
   }
 }
 
 $(document).ready(function channelReady() {
-  // truncate long titles and add hover
-  $('.channel-record').dotdotdot({
-    callback: function dddcallback(istrunc, orig) {
-      if (istrunc) {
-        $(this).attr('title', $(orig).text());
-      }
-    }
-  });
   $('.channel').each(setupChannelSlider);
   $('.channel').on('dragStart', function channelDrag() {
     $('[aria-describedby]').popover('hide');
-  });
-  $('.channel-record').click(function channelRecord(event) {
-    var record = $(event.delegateTarget);
-    if (record.data('popover')) {
-      if (record.attr('aria-describedby')) {
-        record.popover('hide');
-      } else {
-        $('[aria-describedby]').popover('hide');
-        record.popover('show');
-      }
-    } else {
-      record.data('popover', true);
-      record.popover({
-        content: VuFind.translate('loading') + '...',
-        html: true,
-        placement: 'bottom',
-        trigger: 'focus',
-        container: '#' + record.closest('.channel').attr('id')
-      });
-      $('[aria-describedby]').popover('hide');
-      record.popover('show');
-      $.ajax({
-        url: VuFind.path + getUrlRoot(record.attr('href')) + '/AjaxTab',
-        type: 'POST',
-        data: {tab: 'description'}
-      })
-      .done(function channelPopoverDone(data) {
-        record.data('bs.popover').options.content = '<h2>' + htmlEncode(record.text()) + '</h2>'
-          + '<div class="btn-group btn-group-justified">'
-          + '<a href="' + VuFind.path + '/Channels/Record?'
-            + 'id=' + encodeURIComponent(record.attr('data-record-id'))
-            + '&source=' + encodeURIComponent(record.attr('data-record-source'))
-          + '" class="btn btn-default">More Like This</a>'
-          + '<a href="' + record.attr('href') + '" class="btn btn-default">Go To Record</a>'
-          + '</div>'
-          + data;
-        record.popover('show');
-      });
-    }
-    return false;
   });
 });

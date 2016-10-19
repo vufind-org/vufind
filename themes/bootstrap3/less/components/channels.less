@@ -9,13 +9,14 @@
   border-top-color: @btn-default-border;
   border-radius: 0 0 @border-radius-base @border-radius-base;
 }
-.channel .channel-record {
+.channel .channel-record.slide {
   display: inline-block;
   min-width: 100px;
-  max-height: 300px;
+  max-height: 240px;
   padding: 0 .5rem;
   text-align: center;
   text-overflow: ellipsis;
+  overflow: hidden;
 }
 .channel .channel-record.is-selected { &:extend(a:hover); }
 .channel .channel-record .thumb {
