@@ -471,29 +471,6 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
         $result = ['consortium' => $consortium];
         $result['list'] = $this->parseList($target, $response);
 
-        // References
-        if (isset($response['references']['period'])) {
-            $scheduleDescriptions = [];
-            foreach ($response['references']['period'] as $key => $period) {
-                $id = $period['organisation'];
-                $scheduleDesc = $this->getField($period, 'description');
-                if (!empty($scheduleDesc)) {
-                    if (!isset($scheduleDescriptions[$id])) {
-                        $scheduleDescriptions[$id] = [];
-                    }
-                    $scheduleDescriptions[$id][] = $scheduleDesc;
-                }
-            }
-            foreach ($scheduleDescriptions as $id => $descriptions) {
-                foreach ($result['list'] as &$item) {
-                    if ($item['id'] == $id) {
-                        $item['schedule-descriptions']
-                            = array_unique($descriptions);
-                        continue;
-                    }
-                }
-            }
-        }
         return $result;
     }
 
@@ -518,9 +495,9 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             return false;
         }
 
-        $with = $schedules ? 'schedules,' : '';
+        $with = 'schedules';
         if ($fullDetails) {
-            $with .= 'extra,phone_numbers,pictures,links,services';
+            $with .= ',extra,phone_numbers,pictures,links,services';
         }
 
         $params = [
@@ -543,6 +520,18 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             return false;
         }
 
+        // References
+        $scheduleDescriptions = null;
+        if (isset($response['references']['period'])) {
+            $scheduleDescriptions = [];
+            foreach ($response['references']['period'] as $key => $period) {
+                $scheduleDesc = $this->getField($period, 'description');
+                if (!empty($scheduleDesc)) {
+                    $scheduleDescriptions[] = $scheduleDesc;
+                }
+            }
+        }
+
         // Details
         $response = $response['items'][0];
         $result = $this->parseDetails(
@@ -551,6 +540,9 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
 
         $result['id'] = $id;
         $result['periodStart'] = $startDate;
+        if ($scheduleDescriptions) {
+            $result['scheduleDescriptions'] = $scheduleDescriptions;
+        }
 
         return $result;
     }
