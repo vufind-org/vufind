@@ -2,7 +2,7 @@
 <? $formats = $this->driver->tryMethod('getFormats'); ?>
 <div class="recordcover-holder" data-format="<?=$this->transEsc(end($formats))?>" data-noimage="<?=$this->transEsc('no_image')?>">
 <?
-$images = null;
+$images = [];
 if (count($allImages)) {
   $images = $allImages;
 } else if ($largeImage) {
