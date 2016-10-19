@@ -141,7 +141,7 @@ VuFind.register('lightbox', function Lightbox() {
         }
         if ( // Close the lightbox after deliberate login
           obj.method                                                                 // is a form
-          && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/) && !obj.url.match(/Delete/)) // that matches login/create account
+          && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/) && !obj.url.match(/Delete/) && !obj.url.match(/Recover/)) // that matches login/create account
             || obj.url.match(/catalogLogin/))                                        // or catalog login for holds
           && $('<div/>').html(content).find('.flash-message.alert-danger').length === 0 // skip failed logins
         ) {

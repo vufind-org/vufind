@@ -1642,7 +1642,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         //       . "&password=" . $password
         // );
         $idObj = $this->makeRequest(
-            "LookupPatron" . "&id=" . $username
+            "LookupPatron" . "&id=" . urlencode($username)
             . "&id_type=userid"
         );
 
