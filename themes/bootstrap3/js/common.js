@@ -304,8 +304,9 @@ function setupFacets() {
     var source = $('#result0 .hiddenSource').val();
     var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
     if (storedItem) {
-      item.className = storedItem;
-      if ($(item).hasClass('in')) {
+      var tmpItem = $('<div/>');
+      tmpItem.attr('class', storedItem);
+      if (tmpItem.hasClass('in')) {
         $(item).collapse('show');
       } else {
         $(item).collapse('hide');
