@@ -10,6 +10,9 @@ import org.solrmarc.callnum.DeweyCallNumber;
 import org.solrmarc.index.SolrIndexer;
 import org.solrmarc.tools.CallNumUtils;
 
+// The beanshell script class will initialize this variable to pointer to the singleton SolrIndexer class.
+SolrIndexer indexer;
+
 /**
  * Extract a numeric portion of the Dewey decimal call number
  *
@@ -30,7 +33,7 @@ public Set getDeweyNumber(Record record, String fieldSpec, String precisionStr) 
     float precision = Float.parseFloat(precisionStr);
 
     // Loop through the specified MARC fields:
-    Set input = SolrIndexer.getFieldList(record, fieldSpec);
+    Set input = indexer.getFieldList(record, fieldSpec);
     for (String current: input) {
         DeweyCallNumber callNum = new DeweyCallNumber(current);
         if (callNum.isValid()) {
@@ -66,7 +69,7 @@ public Set getDeweySearchable(Record record, String fieldSpec) {
     Set result = new LinkedHashSet();
 
     // Loop through the specified MARC fields:
-    Set input = SolrIndexer.getFieldList(record, fieldSpec);
+    Set input = indexer.getFieldList(record, fieldSpec);
     Iterator iter = input.iterator();
     while (iter.hasNext()) {
         // Get the current string to work on:
@@ -98,7 +101,7 @@ public Set getDeweySearchable(Record record, String fieldSpec) {
  */
 public String getDeweySortable(Record record, String fieldSpec) {
     // Loop through the specified MARC fields:
-    Set input = SolrIndexer.getFieldList(record, fieldSpec);
+    Set input = indexer.getFieldList(record, fieldSpec);
     Iterator iter = input.iterator();
     while (iter.hasNext()) {
         // Get the current string to work on:
@@ -180,7 +183,7 @@ public List getDeweySortables(Record record, String fieldSpec) {
     List result = new LinkedList();
 
     // Loop through the specified MARC fields:
-    Set input = SolrIndexer.getFieldList(record, fieldSpec);
+    Set input = indexer.getFieldList(record, fieldSpec);
     Iterator iter = input.iterator();
     while (iter.hasNext()) {
         // Get the current string to work on:
