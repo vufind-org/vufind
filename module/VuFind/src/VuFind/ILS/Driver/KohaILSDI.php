@@ -607,9 +607,9 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         // The following check is mainly required for certain old buggy Koha versions
         // that allowed multiple holds from the same user to the same item
         $sql = "select count(*) as RCOUNT from reserves where borrowernumber = :rid "
-            . "and biblionumber = :bid";
+            . "and itemnumber = :iid";
         $reservesSqlStmt = $this->db->prepare($sql);
-        $reservesSqlStmt->execute([':rid' => $patron_id, ':bid' => $bib_id]);
+        $reservesSqlStmt->execute([':rid' => $patron_id, ':iid' => $item_id]);
         $reservesCount = $reservesSqlStmt->fetch()["RCOUNT"];
 
         if ($reservesCount > 0) {
