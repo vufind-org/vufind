@@ -1,8 +1,10 @@
+<? // Do not output this: <!-- START of: finna - RecordDriver/SolrDefault/record-image-popup.phtml --> ?>
 <?
 $largeImage = $this->recordImage($this->record($this->driver))->getLargeImage($this->index, ['w' => 1200, 'h' => 1200]);
 $originalImage = $this->recordImage($this->record($this->driver))->getLargeImage($this->index);
 $currentImage = $this->index+1;
 $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
+$imageDescription = $this->driver->tryMethod('getImageDescription', [$this->index]);
 ?>
 <? $formats = $this->driver->tryMethod('getFormats'); ?>
 <? $translatedFormat = $this->transEsc(end($formats)); ?>
@@ -10,21 +12,21 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
 <div class="imagepopup-holder <?=$this->escapeHtmlAttr($recordType) ?>" data-type="<?=$this->escapeHtmlAttr($recordType) ?>" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID()) ?>">
   <div class="imagepopup-container">
     <div class="image iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>">
-      <img src="<?= $largeImage ?>" />
+      <img src="<?=$largeImage ?>" />
     </div>
     <div class="content">
-      <h3 class="title"><?= $this->escapeHtml($this->driver->getTitle()) ?></h3>
+      <h3 class="title"><?=$this->escapeHtml($this->driver->getTitle()) ?></h3>
       <div class="author-and-dates">
         <? if ($recordType != 'lido'): ?>
           <p>
           <? if ($author = $this->driver->getPrimaryAuthor()): ?>
-            <?= $this->escapeHtml($author) ?>
+            <?=$this->escapeHtml($author) ?>
             <? endif; ?>
             <? if ($dates = $this->driver->trymethod('getResultDateRange')): ?>
               <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
           <? else: ?>
             <? foreach ($this->driver->getPublicationDates() as $date): ?>
-            <?= $this->escapeHtml($date) ?>
+            <?=$this->escapeHtml($date) ?>
             <? endforeach ?>
           <? endif; ?>
           </p>
@@ -57,9 +59,14 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
         <? if ($recordType == 'marc'): ?>
           <p></p>
         <? else: ?>
+          <? if ($imageDescription): ?>
+            <div class="image-description">
+              <p><strong><?=$this->transEsc('Image') ?>:</strong> <?=$this->escapeHtml($imageDescription) ?></p>
+            </div>
+          <? endif; ?>
           <? if ($summary = $this->driver->getSummary()): ?>
             <? foreach ($this->driver->getSummary() as $item): ?>
-              <p><?=preg_replace('/&lt;br\/?&gt;/', '<br>', $this->escapeHtml($item)) /* Allow <br> tag */ ?></p>
+              <p><?=$recordType == 'forward' ? $item : preg_replace('/&lt;br\/?&gt;/', '<br>', $this->escapeHtml($item)) /* Allow <br> tag */ ?></p>
             <? endforeach ?>
           <? endif ?>
         <? endif ?>
@@ -67,10 +74,10 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
       </div>
       <? if ($listNotes): ?>
         <div class="list-notes">
-          <strong><?= $this->translate('Description'); ?></strong><? if ($listUser): ?><span class="notes-user"> (<?=$this->escapeHtml(trim($this->userPublicName($this->listUser)))?>)</span><? endif; ?>:
+          <strong><?=$this->transEsc('Description') ?></strong><? if ($listUser): ?><span class="notes-user"> (<?=$this->escapeHtml(trim($this->userPublicName($this->listUser)))?>)</span><? endif; ?>:
           <ul>
           <? foreach ($listNotes as $note): ?>
-            <li><?= preg_replace("/\r\n|\r|\n/",'<br>', $this->escapeHtml($note)) ?></li>
+            <li><?=$this->markdown()->toHtml($note) ?></li>
           <? endforeach; ?>
           </ul>
         </div>
@@ -110,31 +117,31 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
                   <? endforeach; ?>
                 <? endif; ?>
           <? endif; ?>
-          <div class="record-link"><a href="<?= $this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('To the record') ?></a></div>
+          <div class="record-link"><a href="<?=$this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-right"></i><?=$this->transEsc('To the record') ?></a></div>
           <? $rights = $this->driver->getImageRights($this->layout()->userLang) ?>
           <? if ($this->userlist()->getMode() !== 'disabled'): ?><div class="save-record-link"><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <?=$this->transEsc('Add to favorites')?></a></div><? endif; ?>
-          <div class="open-link"><a target="_blank" href="<?= $originalImage ?>"><i class="fa fa-download"></i> <?= $this->translate('Show image in new window') ?></a> <span class="image-dimensions"></span></div>
+          <div class="open-link"><a target="_blank" href="<?=$originalImage ?>"><i class="fa fa-download"></i> <?=$this->transEsc('Show image in new window') ?></a> <span class="image-dimensions"></span></div>
 
         </div>
         <? if (in_array($recordType, ['ead', 'lido', 'qdc'])): ?>
         <div class="image-rights">
           <div class="rights">
             <? $hasLink = isset($rights['link']); ?>
-            <span><?= $this->translate("Image Rights") ?>:</span> <? if (isset($rights['copyright'])) : ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
+            <span><?=$this->transEsc('Image Rights') ?>:</span> <? if (isset($rights['copyright'])): ?><? if ($hasLink): ?><a target="_blank" href="<?=$rights['link'] ?>"><? endif; ?><?=$this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
           </div>
-          <div class="more-link copyright-link"><a data-mode="1" href=""><?= $this->translate('show_more') ?><i class="fa fa-arrow-down"></i></a></div>
+          <div class="more-link copyright-link"><a data-mode="1" href=""><?=$this->transEsc('show_more') ?><i class="fa fa-arrow-down"></i></a></div>
           <div class="copyright">
             <? if (isset($rights['description'])): ?>
               <? foreach ($rights['description'] as $item): ?>
-              <p><?= $this->transEsc($item) ?></p>
+              <p><?=$this->transEsc($item) ?></p>
               <? endforeach ?>
             <? endif ?>
             <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
-              <p><?= $this->translate('Image Rights Default') ?>
-              <p><a href="<?= $this->url('content-page', ['page' => 'terms_conditions']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
+              <p><?=$this->transEsc('Image Rights Default') ?>
+              <p><a href="<?=$this->url('content-page', ['page' => 'terms_conditions']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?=$this->transEsc('See also terms and conditions') ?></a>
             <? endif; ?>
           </div>
-          <div class="less-link copyright-link"><a data-mode="0" href=""><?= $this->translate('show_less') ?><i class="fa fa-arrow-up"></i></a></div>
+          <div class="less-link copyright-link"><a data-mode="0" href=""><?=$this->transEsc('show_less') ?><i class="fa fa-arrow-up"></i></a></div>
           <? if ($this->resolver('record/record-organisation-menu.phtml')): ?>
             <?=$this->render('record/record-organisation-menu.phtml') ?>
           <? endif; ?>
@@ -144,7 +151,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
     </div>
     <div class="image-info">
         <? if ($numOfImages > 1): ?>
-        <div class="image-index"><?= $this->translate('Image') . " $currentImage / $numOfImages" ?></div>
+        <div class="image-index"><?=$this->transEsc('Image') . " $currentImage / $numOfImages" ?></div>
         <? endif; ?>
         <div class="record-index"><span class="index"></span> / <span class="total"></span></div>
     </div>
@@ -161,3 +168,4 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
   ]);
   ?>
 </div>
+<? // Do not output this: <!-- END of: finna - RecordDriver/SolrDefault/record-image-popup.phtml --> ?>

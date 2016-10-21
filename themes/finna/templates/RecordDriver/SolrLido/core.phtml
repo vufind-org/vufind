@@ -27,7 +27,7 @@
         <div class="access-rights">
           <div class="image-rights">
             <? $hasLink = isset($rights['link']); ?>
-            <strong><?= $this->translate("Image Rights") ?>:</strong> <? if (isset($rights['copyright'])) : ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
+            <strong><?= $this->transEsc('Image Rights') ?>:</strong> <? if (isset($rights['copyright'])) : ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
           </div>
           <div class="copyright truncate-field">
             <? if (isset($rights['description'])): ?>
@@ -36,7 +36,7 @@
               <? endforeach ?>
             <? endif ?>
             <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
-              <p><?= $this->translate('Image Rights Default') ?>
+              <p><?= $this->transEsc('Image Rights Default') ?>
               <p><a href="<?= $this->url('content-page', ['page' => 'terms_conditions']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
             <? endif; ?>
           </div>
