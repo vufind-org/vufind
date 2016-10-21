@@ -1,5 +1,5 @@
 /*global grecaptcha, isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, recaptchaOnLoad, bulkFormHandler */
+/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler */
 
 // IE 9< console polyfill
 window.console = window.console || {log: function polyfillLog() {}};
@@ -167,6 +167,14 @@ function recaptchaOnLoad() {
     var captchas = $('.g-recaptcha:empty');
     for (var i = 0; i < captchas.length; i++) {
       captchas[i].dataset.captchaId = grecaptcha.render(captchas[i], captchas[i].dataset);
+    }
+  }
+}
+function resetCaptcha($form) {
+  if (typeof grecaptcha !== 'undefined') {
+    var captcha = $form.find('.g-recaptcha');
+    if (captcha.length > 0) {
+      grecaptcha.reset(captcha.data('captchaId'));
     }
   }
 }
@@ -377,7 +385,7 @@ $(document).ready(function commonDocReady() {
   }
 
   setupFacets();
-  
+
   // retain filter sessionStorage
   $('.searchFormKeepFilters').click(function retainFiltersInSessionStorage() {
     sessionStorage.setItem('vufind_retain_filters', this.checked ? 'true' : 'false');

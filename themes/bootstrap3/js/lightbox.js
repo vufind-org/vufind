@@ -1,4 +1,4 @@
-/*global grecaptcha, recaptchaOnLoad, VuFind */
+/*global grecaptcha, recaptchaOnLoad, resetCaptcha, VuFind */
 VuFind.register('lightbox', function Lightbox() {
   // State
   var _originalUrl = false;
@@ -277,12 +277,7 @@ VuFind.register('lightbox', function Lightbox() {
       method: $(form).attr('method') || 'GET',
       data: data
     }).done(function recaptchaReset() {
-      if (typeof grecaptcha !== 'undefined') {
-        var captcha = $(form).find('.g-recaptcha');
-        if (captcha.length > 0) {
-          grecaptcha.reset(captcha.data('captchaId'));
-        }
-      }
+      resetCaptcha($(form));
     });
 
     VuFind.modal('show');
