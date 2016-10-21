@@ -163,6 +163,7 @@ class Demo extends AbstractBase
                 }
             }
         }
+        $this->checkIntermittentFailure();
     }
 
     /**
@@ -289,6 +290,19 @@ class Demo extends AbstractBase
     {
         return isset($this->config['Records']['source'])
             ? $this->config['Records']['source'] : DEFAULT_SEARCH_BACKEND;
+    }
+
+    /**
+     * Should we simulate a system failure?
+     *
+     * @return void
+     * @throws ILSException
+     */
+    protected function checkIntermittentFailure()
+    {
+        if ($this->isFailing(__METHOD__, 0)) {
+            throw new ILSException('Simulating low-level system failure');
+        }
     }
 
     /**
@@ -586,6 +600,7 @@ class Demo extends AbstractBase
      */
     public function getStatuses($ids)
     {
+        $this->checkIntermittentFailure();
         return array_map([$this, 'getStatus'], $ids);
     }
 
@@ -604,6 +619,8 @@ class Demo extends AbstractBase
      */
     public function getHolding($id, array $patron = null)
     {
+        $this->checkIntermittentFailure();
+
         // Get basic status info:
         $status = $this->getSimulatedStatus($id, $patron);
 
@@ -640,6 +657,7 @@ class Demo extends AbstractBase
      */
     public function getPurchaseHistory($id)
     {
+        $this->checkIntermittentFailure();
         $issues = rand(0, 3);
         $retval = [];
         for ($i = 0; $i < $issues; $i++) {
@@ -662,6 +680,7 @@ class Demo extends AbstractBase
      */
     public function patronLogin($barcode, $password)
     {
+        $this->checkIntermittentFailure();
         if (isset($this->config['Users'])) {
             if (!isset($this->config['Users'][$barcode])
                 || $password !== $this->config['Users'][$barcode]
@@ -694,6 +713,7 @@ class Demo extends AbstractBase
      */
     public function getMyProfile($patron)
     {
+        $this->checkIntermittentFailure();
         $patron = [
             'firstname' => 'Lib-' . $patron['cat_username'],
             'lastname'  => 'Rarian',
@@ -721,6 +741,7 @@ class Demo extends AbstractBase
      */
     public function getMyFines($patron)
     {
+        $this->checkIntermittentFailure();
         $session = $this->getSession();
         if (!isset($session->fines)) {
             // How many items are there? %20 - 2 = 10% chance of none,
@@ -777,6 +798,7 @@ class Demo extends AbstractBase
      */
     public function getMyHolds($patron)
     {
+        $this->checkIntermittentFailure();
         $session = $this->getSession();
         if (!isset($session->holds)) {
             $session->holds = $this->createRequestList('Holds');
@@ -797,6 +819,7 @@ class Demo extends AbstractBase
      */
     public function getMyStorageRetrievalRequests($patron)
     {
+        $this->checkIntermittentFailure();
         $session = $this->getSession();
         if (!isset($session->storageRetrievalRequests)) {
             $session->storageRetrievalRequests
@@ -818,6 +841,7 @@ class Demo extends AbstractBase
      */
     public function getMyILLRequests($patron)
     {
+        $this->checkIntermittentFailure();
         $session = $this->getSession();
         if (!isset($session->ILLRequests)) {
             $session->ILLRequests = $this->createRequestList('ILLRequests');
@@ -833,6 +857,7 @@ class Demo extends AbstractBase
      */
     protected function getTransactionList()
     {
+        $this->checkIntermittentFailure();
         // If Demo.ini includes a fixed set of transactions, load those; otherwise
         // build some random ones.
         return isset($this->config['Records']['transactions'])
@@ -936,6 +961,7 @@ class Demo extends AbstractBase
      */
     public function getMyTransactions($patron)
     {
+        $this->checkIntermittentFailure();
         $session = $this->getSession();
         if (!isset($session->transactions)) {
             $session->transactions = $this->getTransactionList();
@@ -964,6 +990,7 @@ class Demo extends AbstractBase
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
+        $this->checkIntermittentFailure();
         return [
             [
                 'locationID' => 'A',
@@ -993,6 +1020,7 @@ class Demo extends AbstractBase
      */
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {
+        $this->checkIntermittentFailure();
         // 5 years in the future (but similate intermittent failure):
         return !$this->isFailing(__METHOD__, 50)
             ? mktime(0, 0, 0, date('m'), date('d'), date('Y') + 5) : null;
@@ -1016,6 +1044,7 @@ class Demo extends AbstractBase
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
+        $this->checkIntermittentFailure();
         $locations = $this->getPickUpLocations($patron);
         return $locations[0]['locationID'];
     }
@@ -1038,6 +1067,7 @@ class Demo extends AbstractBase
      */
     public function getDefaultRequestGroup($patron = false, $holdDetails = null)
     {
+        $this->checkIntermittentFailure();
         if ($this->isFailing(__METHOD__, 50)) {
             return false;
         }
@@ -1059,6 +1089,7 @@ class Demo extends AbstractBase
      */
     public function getRequestGroups($bibId = null, $patron = null)
     {
+        $this->checkIntermittentFailure();
         return [
             [
                 'id' => 1,
@@ -1080,6 +1111,7 @@ class Demo extends AbstractBase
      */
     public function getFunds()
     {
+        $this->checkIntermittentFailure();
         return ["Fund A", "Fund B", "Fund C"];
     }
 
@@ -1092,6 +1124,7 @@ class Demo extends AbstractBase
      */
     public function getDepartments()
     {
+        $this->checkIntermittentFailure();
         return ["Dept. A", "Dept. B", "Dept. C"];
     }
 
@@ -1104,6 +1137,7 @@ class Demo extends AbstractBase
      */
     public function getInstructors()
     {
+        $this->checkIntermittentFailure();
         return ["Instructor A", "Instructor B", "Instructor C"];
     }
 
@@ -1116,6 +1150,7 @@ class Demo extends AbstractBase
      */
     public function getCourses()
     {
+        $this->checkIntermittentFailure();
         return ["Course A", "Course B", "Course C"];
     }
 
@@ -1140,6 +1175,7 @@ class Demo extends AbstractBase
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
+        $this->checkIntermittentFailure();
         // Pick a random number of results to return -- don't exceed limit or 30,
         // whichever is smaller (this can be pretty slow due to the random ID code).
         $count = rand(0, $limit > 30 ? 30 : $limit);
@@ -1174,6 +1210,7 @@ class Demo extends AbstractBase
      */
     public function findReserves($course, $inst, $dept)
     {
+        $this->checkIntermittentFailure();
         // Pick a random number of results to return -- don't exceed 30.
         $count = rand(0, 30);
         $results = [];
@@ -1206,6 +1243,7 @@ class Demo extends AbstractBase
      */
     public function cancelHolds($cancelDetails)
     {
+        $this->checkIntermittentFailure();
         // Rewrite the holds in the session, removing those the user wants to
         // cancel.
         $newHolds = new ArrayObject();
@@ -1269,6 +1307,7 @@ class Demo extends AbstractBase
      */
     public function cancelStorageRetrievalRequests($cancelDetails)
     {
+        $this->checkIntermittentFailure();
         // Rewrite the items in the session, removing those the user wants to
         // cancel.
         $newRequests = new ArrayObject();
@@ -1331,6 +1370,7 @@ class Demo extends AbstractBase
      */
     public function renewMyItems($renewDetails)
     {
+        $this->checkIntermittentFailure();
         // Simulate an account block at random.
         if ($this->checkRenewBlock()) {
             return [
@@ -1419,6 +1459,7 @@ class Demo extends AbstractBase
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
+        $this->checkIntermittentFailure();
         return !$this->isFailing(__METHOD__, 10);
     }
 
@@ -1435,6 +1476,7 @@ class Demo extends AbstractBase
      */
     public function placeHold($holdDetails)
     {
+        $this->checkIntermittentFailure();
         // Simulate failure:
         if ($this->isFailing(__METHOD__, 50)) {
             return [
@@ -1520,6 +1562,7 @@ class Demo extends AbstractBase
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
+        $this->checkIntermittentFailure();
         if (!$this->storageRetrievalRequests || $this->isFailing(__METHOD__, 10)) {
             return false;
         }
@@ -1539,6 +1582,7 @@ class Demo extends AbstractBase
      */
     public function placeStorageRetrievalRequest($details)
     {
+        $this->checkIntermittentFailure();
         if (!$this->storageRetrievalRequests) {
             return [
                 "success" => false,
@@ -1623,6 +1667,7 @@ class Demo extends AbstractBase
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {
+        $this->checkIntermittentFailure();
         if (!$this->ILLRequests || $this->isFailing(__METHOD__, 10)) {
             return false;
         }
@@ -1642,6 +1687,7 @@ class Demo extends AbstractBase
      */
     public function placeILLRequest($details)
     {
+        $this->checkIntermittentFailure();
         if (!$this->ILLRequests) {
             return [
                 'success' => false,
@@ -1746,6 +1792,7 @@ class Demo extends AbstractBase
      */
     public function getILLPickupLibraries($id, $patron)
     {
+        $this->checkIntermittentFailure();
         if (!$this->ILLRequests) {
             return false;
         }
@@ -1782,6 +1829,7 @@ class Demo extends AbstractBase
      */
     public function getILLPickupLocations($id, $pickupLib, $patron)
     {
+        $this->checkIntermittentFailure();
         switch ($pickupLib) {
         case 1:
             return [
@@ -1827,6 +1875,7 @@ class Demo extends AbstractBase
      */
     public function cancelILLRequests($cancelDetails)
     {
+        $this->checkIntermittentFailure();
         // Rewrite the items in the session, removing those the user wants to
         // cancel.
         $newRequests = new ArrayObject();
@@ -1889,6 +1938,7 @@ class Demo extends AbstractBase
      */
     public function changePassword($details)
     {
+        $this->checkIntermittentFailure();
         if (!$this->isFailing(__METHOD__, 33)) {
             return ['success' => true, 'status' => 'change_password_ok'];
         }
@@ -1912,6 +1962,7 @@ class Demo extends AbstractBase
      */
     public function getConfig($function, $params = null)
     {
+        $this->checkIntermittentFailure();
         if ($function == 'Holds') {
             return [
                 'HMACKeys' => 'id:item_id:level',

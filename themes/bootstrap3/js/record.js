@@ -149,6 +149,15 @@ function registerTabEvents() {
   VuFind.lightbox.bind('.tab-pane.active');
 }
 
+function removeHashFromLocation() {
+  if (window.history.replaceState) {
+    var href = window.location.href.split('#');
+    window.history.replaceState({}, document.title, href[0]);
+  } else {
+    window.location.hash = '#';
+  }
+}
+
 function ajaxLoadTab($newTab, tabid, setHash) {
   // Parse out the base URL for the current record:
   var urlParts = document.URL.split(/[?#]/);
@@ -260,15 +269,6 @@ function applyRecordTabHash() {
     $initiallyActiveTab.click();
   } else if (newTab.length > 0 && '#' + activeTab !== newTab) {
     $('.' + newTab.substr(1)).click();
-  }
-}
-
-function removeHashFromLocation() {
-  if (window.history.replaceState) {
-    var href = window.location.href.split('#');
-    window.history.replaceState({}, document.title, href[0]);
-  } else {
-    window.location.hash = '#';
   }
 }
 

@@ -302,7 +302,7 @@ function keyboardShortcuts() {
  */
 function setupFacets() {
   // Advanced facets
-  $('.facetOR').click(function facetBlocking() {
+  $('.facetAND a,.facetOR a').click(function facetBlocking() {
     $(this).closest('.collapse').html('<div class="list-group-item">' + VuFind.translate('loading') + '...</div>');
     window.location.assign($(this).attr('href'));
   });
