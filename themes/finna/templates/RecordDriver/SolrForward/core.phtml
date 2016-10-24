@@ -2,9 +2,9 @@
 <?
   $img = $this->recordImage($this->record($this->driver));
   $thumbnail = false;
-  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');  
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   ob_start(); ?>
-  <div class="media-<?=$thumbnailAlignment ?> col-sm-3 col-md-2">
+  <div class="media-<?=$thumbnailAlignment ?> col-sm-4">
     <div class="row">
       <div class="col-xs-12 image-information">
         <div class="cover-wrapper">
@@ -25,6 +25,34 @@
       <?=$this->record($this->driver)->getPreviews()?>
       </div>
     </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <? if ($rights = $this->driver->getImageRights($this->layout()->userLang)): ?>
+          <div class="access-rights">
+            <div class="image-rights">
+              <? $hasLink = isset($rights['link']); ?>
+              <strong><?= $this->transEsc('Image Rights') ?>:</strong> <? if (isset($rights['copyright'])) : ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
+            </div>
+            <div class="copyright truncate-field">
+              <? if (isset($rights['description'])): ?>
+                <? foreach ($rights['description'] as $item): ?>
+                <p><?= $this->transEsc($item) ?></p>
+                <? endforeach ?>
+              <? endif ?>
+              <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
+                <p><?= $this->transEsc('Image Rights Default') ?>
+                <p><a href="<?= $this->url('content-page', ['page' => 'terms_conditions']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
+              <? endif; ?>
+            </div>
+          </div>
+        <? endif; ?>
+      </div>
+    </div>
+
+    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr'): ?>
+      <?=$this->render('record/record-organisation-menu.phtml') ?>
+    <? endif; ?>
+
     <div class="row record-rating">
       <div class="col-xs-12 rating-stars">
         <div onclick="$('a.usercomments').click();">
@@ -47,7 +75,7 @@
   <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
     <?=$thumbnail ?>
   <? endif; ?>
-  <div class="media-body col-sm-9 col-md-10 record-information">
+  <div class="media-body col-sm-8 record-information">
     <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle())?><? if ($subtitle = $this->driver->getSubtitle()): ?>&nbsp;: <?=$this->escapeHtml($subtitle) ?><? endif; ?></h1>
     <? if ($results = $this->driver->getAlternativeTitles()): ?>
       <div class="recordAltTitles record-alt-titles">
@@ -187,6 +215,13 @@
     <?/* Display Main Details */?>
     <table class="table table-finna-record record-details record-details-more" style="table-layout:initial;">
       <tbody>
+      <? if ($originalWork = $this->driver->getOriginalWork()): ?>
+      <tr class="recordOriginalWork">
+        <th><?=$this->transEsc('Original Work')?>: </th>
+        <td><?=$originalWork // intentionally left unescaped due to embedded HTML?></td>
+      </tr>
+      <? endif; ?>
+
       <? $nextTitles = $this->driver->getNewerTitles(); $prevTitles = $this->driver->getPreviousTitles(); ?>
       <? if (!empty($nextTitles)): ?>
       <tr class="recordNextTitles">
@@ -312,7 +347,7 @@
           <th><?=$this->transEsc('Item Description')?>: </th>
           <td>
             <? foreach ($notes as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
+              <?=$field // intentionally left unescaped due to embedded HTML?><br/>
             <? endforeach; ?>
           </td>
         </tr>
@@ -433,8 +468,7 @@
             <? foreach ($subjects as $field): ?>
             <div class="subjectLine" property="keywords">
               <? $subject = ''; ?>
-              <? if(count($field) == 1) $field = explode('--', $field[0]); ?>
-              <? $i = 0; foreach ($field as $subfield): ?>
+               <? $i = 0; foreach ($field as $subfield): ?>
                 <?=($i++ == 0) ? '' : ' &#8594; '?>
                 <? $subject = trim($subject . ' ' . $subfield); ?>
                 <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" rel="nofollow"><?=trim($this->escapeHtml($subfield))?></a>
@@ -609,7 +643,7 @@
           <th><?=$this->transEsc('Awards')?>: </th>
           <td>
             <? foreach ($awards as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
+              <?=$field // intentionally left unescaped due to embedded HTML ?><br/>
             <? endforeach; ?>
           </td>
         </tr>
