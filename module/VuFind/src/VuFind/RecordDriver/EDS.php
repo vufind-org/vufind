@@ -765,11 +765,11 @@ class EDS extends SolrDefault
                 if (isset($data['Type']) && isset($data['Value'])
                     && ($type == 'isbn-print' || $type == 'isbn-electronic')
                 ) {
-                    $issns[] = $data['Value'];
+                    $isbns[] = $data['Value'];
                 }
             }
         }
-        return $issns;
+        return $isbns;
         
     }
         
