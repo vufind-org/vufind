@@ -751,7 +751,7 @@ class AjaxController extends AbstractBase
             $tagList[] = [
                 'tag'   => $tag->tag,
                 'cnt'   => $tag->cnt,
-                'is_me' => $tag->is_me == 1 ? true : false
+                'is_me' => !empty($tag->is_me)
             ];
         }
 
