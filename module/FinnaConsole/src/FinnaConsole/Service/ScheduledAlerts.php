@@ -429,7 +429,7 @@ class ScheduledAlerts extends AbstractService
                 }
 
                 $records = $collection->getRecords();
-            } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
+            } catch (\Exception $e) {
                 $this->err(
                     'Error processing search ' . $s->id . ': ' . $e->getMessage()
                 );
