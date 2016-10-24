@@ -304,11 +304,16 @@ function setupFacets() {
     var source = $('#result0 .hiddenSource').val();
     var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
     if (storedItem) {
-      item.className = storedItem;
-      if ($(item).hasClass('in')) {
-        $(item).collapse('show');
-      } else {
-        $(item).collapse('hide');
+      var saveTransition = $.support.transition;
+      try {
+        $.support.transition = false;
+        if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
+          $(item).collapse('show');
+        } else {
+          $(item).collapse('hide');
+        }
+      } finally {
+        $.support.transition = saveTransition;    
       }
     }
   });
