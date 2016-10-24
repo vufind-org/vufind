@@ -125,13 +125,13 @@ $(document).ready(function() {
 });
 
 $('#{$this->escapeHtmlAttr($title)}from, #{$this->escapeHtmlAttr($title)}to').change(function () {
-  var fromValue = $('#{$this->escapeHtmlAttr($title)}from').val();
-  var toValue = $('#{$this->escapeHtmlAttr($title)}to').val();
+  var fromValue = Number($('#{$this->escapeHtmlAttr($title)}from').val());
+  var toValue = Number($('#{$this->escapeHtmlAttr($title)}to').val());
   $('#{$this->escapeHtmlAttr($title)}dateSlider').slider(
     'setValue',
     [
-      isNaN(Number(fromValue)) || Number(fromValue) <= 0 ? {$min} : Number(fromValue),
-      isNaN(Number(toValue)) || Number(toValue) <= 0 ? {$max} : Number(toValue)
+      isNaN(fromValue) || fromValue <= 0 ? {$min} : fromValue,
+      isNaN(toValue) || toValue <= 0 ? {$max} : toValue
     ],
     true
   );
