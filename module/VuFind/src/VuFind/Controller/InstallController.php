@@ -509,13 +509,7 @@ class InstallController extends AbstractBase
         if (in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
             $status = false;
         } else {
-            try {
-                $catalog = $this->getILS();
-                $catalog->getStatus('1');
-                $status = true;
-            } catch (\Exception $e) {
-                $status = false;
-            }
+            $status = 'ils-offline' !== $this->getILS()->getOfflineMode(true);
         }
         return ['title' => 'ILS', 'status' => $status, 'fix' => 'fixils'];
     }

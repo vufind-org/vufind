@@ -22,7 +22,10 @@
         <? endif; ?>
         <? $cart = $this->cart(); if ($cart->isActive()): ?>
           <li id="cartSummary">
-            <a id="cartItems" data-lightbox title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>"><i class="fa fa-suitcase" aria-hidden="true"></i> <strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?><?=$cart->isFull() ? ' (' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
+            <a id="cartItems" data-lightbox title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>">
+              <i class="fa fa-suitcase" aria-hidden="true"></i> <strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?>
+              <span class="full<?=!$cart->isFull() ? ' hidden' : '' ?>">(<?=$this->transEsc('bookbag_full') ?>)</span>
+            </a>
           </li>
         <? endif; ?>
         <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>

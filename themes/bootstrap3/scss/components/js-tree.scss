@@ -93,3 +93,7 @@ li.jstree-node {
 }
 li.jstree-facet .badge {cursor: text;}
 li.jstree-facet ul {padding-left: 20px;}
+
+.list-group.facet .jstree-node.list-group-item { padding-left: 19px; }
+.list-group.facet .jstree-icon::before { margin-left: -12px; }
+.list-group.facet .jstree-facet li span.main { padding: 1px; }

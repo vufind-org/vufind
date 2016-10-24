@@ -463,6 +463,45 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             if (!$this->db) {
                 $this->initDb();
             }
+            if (!$this->pickupEnableBranchcodes) {
+                // No defaultPickupLocation is defined in config 
+                // AND no pickupLocations are defined either
+                if (isset($holdDetails['item_id']) && (empty($holdDetails['level'])
+                    || $holdDetails['level'] == 'item')
+                ) {
+                    // We try to get the actual branchcode the item is found at
+                    $item_id = $holdDetails['item_id'];
+                    $sql = "SELECT holdingbranch
+                            FROM items
+                            WHERE itemnumber=($item_id)";
+                    try {
+                        $sqlSt = $this->db->prepare($sql);
+                        $sqlSt->execute();
+                        $this->pickupEnableBranchcodes = $sqlSt->fetch();
+                    } catch (PDOException $e) {
+                            $this->debug('Connection failed: ' . $e->getMessage());
+                            throw new ILSException($e->getMessage());
+                    }
+                } elseif (!empty($holdDetails['level'])
+                    && $holdDetails['level'] == 'title'
+                ) {
+                    // We try to get the actual branchcodes the title is found at
+                    $id = $holdDetails['id'];
+                    $sql = "SELECT DISTINCT holdingbranch
+                            FROM items
+                            WHERE biblionumber=($id)";
+                    try {
+                        $sqlSt = $this->db->prepare($sql);
+                        $sqlSt->execute();
+                        foreach ($sqlSt->fetchAll() as $row) {
+                            $this->pickupEnableBranchcodes[] = $row['holdingbranch'];
+                        }
+                    } catch (PDOException $e) {
+                            $this->debug('Connection failed: ' . $e->getMessage());
+                            throw new ILSException($e->getMessage());
+                    }
+                }
+            }
             $branchcodes = "'" . implode(
                 "','", $this->pickupEnableBranchcodes
             ) . "'";
@@ -565,6 +604,22 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->debug("Needed before date: " . $needed_before_date);
         $this->debug("Level: " . $level);
 
+        // The following check is mainly required for certain old buggy Koha versions
+        // that allowed multiple holds from the same user to the same item
+        $sql = "select count(*) as RCOUNT from reserves where borrowernumber = :rid "
+            . "and itemnumber = :iid";
+        $reservesSqlStmt = $this->db->prepare($sql);
+        $reservesSqlStmt->execute([':rid' => $patron_id, ':iid' => $item_id]);
+        $reservesCount = $reservesSqlStmt->fetch()["RCOUNT"];
+
+        if ($reservesCount > 0) {
+            $this->debug("Fatal error: Patron has already reserved this item.");
+            return [
+                "success" => false,
+                "sysMessage" => "It seems you have already reserved this item."
+            ];
+        }
+
         if ($level == "title") {
             $rqString = "HoldTitle&patron_id=$patron_id&bib_id=$bib_id"
                 . "&request_location=$request_location"
@@ -652,7 +707,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $reserves = "N";
 
         $sql = "select i.itemnumber as ITEMNO, i.location,
-            COALESCE(av.lib_opac,av.lib, av.authorised_value) AS LOCATION,
+            COALESCE(av.lib_opac,av.lib,av.authorised_value,i.location) AS LOCATION,
             i.holdingbranch as HLDBRNCH, i.homebranch as HOMEBRANCH,
             i.reserves as RESERVES, i.itemcallnumber as CALLNO, i.barcode as BARCODE,
             i.copynumber as COPYNO, i.notforloan as NOTFORLOAN,
@@ -1603,7 +1658,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         //       . "&password=" . $password
         // );
         $idObj = $this->makeRequest(
-            "LookupPatron" . "&id=" . $username
+            "LookupPatron" . "&id=" . urlencode($username)
             . "&id_type=userid"
         );
 

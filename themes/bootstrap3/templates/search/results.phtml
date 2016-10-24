@@ -110,10 +110,10 @@
       <? endforeach; ?>
     <? else: ?>
       <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
-        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
         <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
-        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_'))?>
-        <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results, 'options' => isset($this->paginationOptions) ? $this->paginationOptions : []))?>
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_'])?>
+        <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results, 'options' => isset($this->paginationOptions) ? $this->paginationOptions : []])?>
       </form>
 
       <div class="searchtools hidden-print">
