@@ -123,6 +123,19 @@ $(document).ready(function() {
   .on('slide', fillTexts)
   .data('slider');
 });
+
+$('#{$this->escapeHtmlAttr($title)}from, #{$this->escapeHtmlAttr($title)}to').change(function () {
+  var fromValue = Number($('#{$this->escapeHtmlAttr($title)}from').val());
+  var toValue = Number($('#{$this->escapeHtmlAttr($title)}to').val());
+  $('#{$this->escapeHtmlAttr($title)}dateSlider').slider(
+    'setValue',
+    [
+      isNaN(fromValue) || fromValue <= 0 ? {$min} : fromValue,
+      isNaN(toValue) || toValue <= 0 ? {$max} : toValue
+    ],
+    true
+  );
+});
 JS;
             ?>
             <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
