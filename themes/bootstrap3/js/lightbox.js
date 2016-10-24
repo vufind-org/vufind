@@ -203,9 +203,9 @@ VuFind.register('lightbox', function Lightbox() {
       }
       _lightboxTitle = $(this).data('lightboxTitle') || '';
       _modalParams = $(this).data();
+      ajax(obj);
       _currentUrl = this.href;
       VuFind.modal('show');
-      ajax(obj);
       return false;
     }
   };
@@ -327,7 +327,7 @@ VuFind.register('lightbox', function Lightbox() {
 
     VuFind.modal = function modalShortcut(cmd) {
       if (cmd === 'show') {
-        _modal.modal($.extend({ show: true }, _modalParams)); 
+        _modal.modal($.extend({ show: true }, _modalParams));
       } else {
         _modal.modal(cmd);
       }
