@@ -1,11 +1,3 @@
-<?
-  if($loggedin = $this->auth()->isLoggedIn()) {
-    $user_id = $loggedin->id;
-    $loggedin = true;
-  } else {
-    $user_id = false;
-  }
-?>
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <? $QRCode = $this->record($this->driver)->getQRCode("core");
      $cover = $this->record($this->driver)->getCover('core', 'medium', $this->record($this->driver)->getThumbnail('large'));
