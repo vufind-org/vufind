@@ -91,6 +91,13 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected function getDriver($overrides = [])
     {
+        // "Mock out" tag functionality to avoid database access:
+        $record = $this->getMockBuilder('VuFind\RecordDriver\SolrDefault')
+            ->setMethods(['getTags'])
+            ->getMock();
+        $record->expects($this->any())->method('getTags')->will($this->returnValue([]));
+
+        // Load record data from fixture file:
         $fixture = json_decode(
             file_get_contents(
                 realpath(
@@ -99,11 +106,6 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             ),
             true
         );
-
-        $record = $this->getMockBuilder('VuFind\RecordDriver\SolrDefault')
-            ->setMethods(['getTags'])
-            ->getMock();
-        $record->expects($this->any())->method('getTags')->will($this->returnValue([]));
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
         return $record;
     }
@@ -115,19 +117,27 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected function getFormatter()
     {
+        // Build the formatter:
         $factory = new RecordDataFormatterFactory();
         $formatter = $factory->__invoke();
+
+        // Create a view object with a set of helpers:
         $helpers = $this->getViewHelpers();
         $view = $this->getPhpRenderer($helpers);
+
+        // Mock out the router to avoid errors:
         $match = new \Zend\Mvc\Router\RouteMatch([]);
         $match->setMatchedRouteName('foo');
         $view->plugin('url')
             ->setRouter($this->getMock('Zend\Mvc\Router\RouteStackInterface'))
             ->setRouteMatch($match);
+
+        // Inject the view object into all of the helpers:
         $formatter->setView($view);
         foreach ($helpers as $helper) {
             $helper->setView($view);
         }
+
         return $formatter;
     }
 
