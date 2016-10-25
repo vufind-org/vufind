@@ -40,11 +40,11 @@
     <? if (!empty($tabs)): ?></div><? endif; ?>
   </div>
 <? else: ?>
-  <form id="searchForm" class="navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
+  <form id="searchForm" class="searchForm navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
     <?= $this->context($this)->renderInContext('search/searchTabs', ['hiddenFilters' => $hiddenFilters]); ?>
-    <input id="searchForm_lookfor" class="form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>" autofocus />
+    <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>" autofocus />
     <? if ($handlerCount > 1): ?>
-      <select id="searchForm_type" class="form-control" name="type" data-native-menu="false">
+      <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false">
         <? foreach ($handlers as $handler): ?>
           <option value="<?=$this->escapeHtmlAttr($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
         <? endforeach; ?>
@@ -81,7 +81,7 @@
       <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
       <div class="checkbox">
         <label>
-          <input onChange="$('.applied-filter').click()" type="checkbox"<?=$defaultFilterState?> id="searchFormKeepFilters"/>
+          <input onChange="$('.applied-filter').click()" type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
           <?=$this->transEsc("basic_search_keep_filters")?>
         </label>
       </div>
@@ -93,7 +93,7 @@
         <? if (isset($hasDefaultsApplied) && $hasDefaultsApplied): ?>
           <!-- this is a hidden element that flags whether or not default filters have been applied;
                it is intentionally unlabeled, as users are not meant to manipulate it directly. -->
-          <input id="applied-filter" type="checkbox" name="dfApplied" value="1"<?=$defaultFilterState?> />
+          <input class="applied-filter" id="dfApplied" type="checkbox" name="dfApplied" value="1"<?=$defaultFilterState?> />
         <? endif; ?>
       </div>
     <? endif; ?>
