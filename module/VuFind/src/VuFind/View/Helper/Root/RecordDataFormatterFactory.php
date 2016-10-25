@@ -1,6 +1,6 @@
 <?php
 /**
- * Record driver data formatting view helper
+ * Factory for record driver data formatting view helper
  *
  * PHP version 5
  *
@@ -28,7 +28,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * Record driver data formatting view helper
+ * Factory for record driver data formatting view helper
  *
  * @category VuFind
  * @package  View_Helpers
