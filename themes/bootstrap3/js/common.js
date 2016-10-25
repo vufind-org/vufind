@@ -166,7 +166,7 @@ function recaptchaOnLoad() {
   if (typeof grecaptcha !== 'undefined') {
     var captchas = $('.g-recaptcha:empty');
     for (var i = 0; i < captchas.length; i++) {
-      captchas[i].dataset.captchaId = grecaptcha.render(captchas[i], captchas[i].dataset);
+      $(captchas[i]).data('captchaId', grecaptcha.render(captchas[i], $(captchas[i]).data()));
     }
   }
 }
@@ -304,16 +304,31 @@ function setupFacets() {
     var source = $('#result0 .hiddenSource').val();
     var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
     if (storedItem) {
-      item.className = storedItem;
-      if ($(item).hasClass('in')) {
-        $(item).collapse('show');
-      } else {
-        $(item).collapse('hide');
+      var saveTransition = $.support.transition;
+      try {
+        $.support.transition = false;
+        if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
+          $(item).collapse('show');
+        } else {
+          $(item).collapse('hide');
+        }
+      } finally {
+        $.support.transition = saveTransition;    
       }
     }
   });
   $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
   $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
+}
+
+function setupIeSupport() {
+  // Disable Bootstrap modal focus enforce on IE since it breaks Recaptcha.
+  // Cannot use conditional comments since IE 11 doesn't support them but still has
+  // the issue
+  var ua = window.navigator.userAgent;
+  if (ua.indexOf('MSIE') || ua.indexOf('Trident/')) {
+    $.fn.modal.Constructor.prototype.enforceFocus = function emptyEnforceFocus() { };
+  }
 }
 
 $(document).ready(function commonDocReady() {
@@ -377,4 +392,6 @@ $(document).ready(function commonDocReady() {
     $('.searchFormKeepFilters').prop('checked', state);
     $('.applied-filter').prop('checked', state);
   }
+
+  setupIeSupport();
 });

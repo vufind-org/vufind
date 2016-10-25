@@ -604,6 +604,22 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->debug("Needed before date: " . $needed_before_date);
         $this->debug("Level: " . $level);
 
+        // The following check is mainly required for certain old buggy Koha versions
+        // that allowed multiple holds from the same user to the same item
+        $sql = "select count(*) as RCOUNT from reserves where borrowernumber = :rid "
+            . "and itemnumber = :iid";
+        $reservesSqlStmt = $this->db->prepare($sql);
+        $reservesSqlStmt->execute([':rid' => $patron_id, ':iid' => $item_id]);
+        $reservesCount = $reservesSqlStmt->fetch()["RCOUNT"];
+
+        if ($reservesCount > 0) {
+            $this->debug("Fatal error: Patron has already reserved this item.");
+            return [
+                "success" => false,
+                "sysMessage" => "It seems you have already reserved this item."
+            ];
+        }
+
         if ($level == "title") {
             $rqString = "HoldTitle&patron_id=$patron_id&bib_id=$bib_id"
                 . "&request_location=$request_location"

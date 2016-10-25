@@ -199,8 +199,10 @@ class Tags extends Gateway
                         ['subq' => $subq],
                         'tags.id = subq.tag_id',
                         [
+                            // is_me will either be null (not owned) or the ID
+                            // of the tag (owned by the current user).
                             'is_me' => new Expression(
-                                'MAX(?)', ['subq.is_me'],
+                                'MAX(?)', ['subq.tag_id'],
                                 [Expression::TYPE_IDENTIFIER]
                             )
                         ],
@@ -324,7 +326,7 @@ class Tags extends Gateway
     protected function getIsMeSubquery($id, $source, $userToCheck)
     {
         $sub = new Select('resource_tags');
-        $sub->columns(['tag_id', 'is_me' => new Expression("1")])
+        $sub->columns(['tag_id'])
             ->join(
                 // Convert record_id to resource_id
                 ['r' => 'resource'],
