@@ -59,7 +59,7 @@
     <?/* Display Main Details */?>
     <?
       $formatter = $this->recordDataFormatter();
-      $coreFields = $formatter->getData($driver, $formatter->getDefaultCoreSpecs());
+      $coreFields = $formatter->getData($driver, $formatter->getDefaults('core'));
     ?>
     <? if (!empty($coreFields)): ?>
       <table class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">

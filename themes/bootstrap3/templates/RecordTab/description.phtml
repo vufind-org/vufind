@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('Description') . ': ' . $this->driver->getBreadcrumb());
 
     $formatter = $this->recordDataFormatter();
-    $mainFields = $formatter->getData($driver, $formatter->getDefaultDescriptionSpecs());
+    $mainFields = $formatter->getData($driver, $formatter->getDefaults('description'));
 ?>
 <table class="table table-striped" summary="<?=$this->transEsc('Description')?>">
   <? if (!empty($mainFields)): ?>
