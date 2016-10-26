@@ -51,14 +51,14 @@ class SimilarItems extends AbstractChannelProvider
      *
      * @var int
      */
-    protected $channelSize = 20;
+    protected $channelSize;
 
     /**
      * Maximum number of records to examine for similar results.
      *
      * @var int
      */
-    protected $maxRecordsToExamine = 2;
+    protected $maxRecordsToExamine;
 
     /**
      * Search service
@@ -95,12 +95,22 @@ class SimilarItems extends AbstractChannelProvider
         $this->searchService = $search;
         $this->url = $url;
         $this->recordRouter = $router;
-        if (isset($options['channelSize'])) {
-            $this->channelSize = $options['channelSize'];
-        }
-        if (isset($options['maxRecordsToExamine'])) {
-            $this->maxRecordsToExamine = $options['maxRecordsToExamine'];
-        }
+        $this->setOptions($options);
+    }
+
+    /**
+     * Set the options for the provider.
+     *
+     * @param array $options Options
+     *
+     * @return void
+     */
+    public function setOptions(array $options)
+    {
+        $this->channelSize = isset($options['channelSize'])
+            ? $options['channelSize'] : 20;
+        $this->maxRecordsToExamine = isset($options['maxRecordsToExamine'])
+            ? $options['maxRecordsToExamine'] : 2;
     }
 
     /**

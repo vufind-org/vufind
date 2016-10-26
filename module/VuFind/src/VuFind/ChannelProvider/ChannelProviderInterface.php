@@ -72,6 +72,15 @@ interface ChannelProviderInterface
     public function getFromSearch(Results $results, $channelToken = null);
 
     /**
+     * Set the options for the provider.
+     *
+     * @param array $options Options
+     *
+     * @return void
+     */
+    public function setOptions(array $options);
+
+    /**
      * Set an identifier that will be injected as the 'providerId' key of all
      * channels created by this provider.
      *

@@ -47,24 +47,21 @@ class Facets extends AbstractChannelProvider
      *
      * @var array
      */
-    protected $fields = [
-        'topic_facet' => 'Topic',
-        'author_facet' => 'Author',
-    ];
+    protected $fields;
 
     /**
      * Maximum number of different fields to suggest in the channel list.
      *
      * @var int
      */
-    protected $maxFieldsToSuggest = 2;
+    protected $maxFieldsToSuggest;
 
     /**
      * Maximum number of values to suggest per field.
      *
      * @var int
      */
-    protected $maxValuesToSuggestPerField = 2;
+    protected $maxValuesToSuggestPerField;
 
     /**
      * Search results manager.
@@ -91,16 +88,26 @@ class Facets extends AbstractChannelProvider
     {
         $this->resultsManager = $rm;
         $this->url = $url;
-        if (isset($options['fields'])) {
-            $this->fields = $options['fields'];
-        }
-        if (isset($options['maxFieldsToSuggest'])) {
-            $this->maxFieldsToSuggest = $options['maxFieldsToSuggest'];
-        }
-        if (isset($options['maxValuesToSuggestPerField'])) {
-            $this->maxValuesToSuggestPerField
-                = $options['maxValuesToSuggestPerField'];
-        }
+        $this->setOptions($options);
+    }
+
+    /**
+     * Set the options for the provider.
+     *
+     * @param array $options Options
+     *
+     * @return void
+     */
+    public function setOptions(array $options)
+    {
+        $this->fields = isset($options['fields'])
+            ? $options['fields']
+            : ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
+        $this->maxFieldsToSuggest = isset($options['maxFieldsToSuggest'])
+            ? $options['maxFieldsToSuggest'] : 2;
+        $this->maxValuesToSuggestPerField
+            = isset($options['maxValuesToSuggestPerField'])
+            ? $options['maxValuesToSuggestPerField'] : 2;
     }
 
     /**

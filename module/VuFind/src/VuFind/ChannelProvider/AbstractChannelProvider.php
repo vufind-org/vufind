@@ -79,6 +79,18 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
     }
 
     /**
+     * Set the options for the provider.
+     *
+     * @param array $options Options
+     *
+     * @return void
+     */
+    public function setOptions(array $options)
+    {
+        // No options required by default
+    }
+
+    /**
      * Convert a search results object into channel contents.
      *
      * @param array|\Traversable $drivers Record drivers to summarize.
