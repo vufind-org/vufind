@@ -1182,7 +1182,7 @@ class MultiBackend extends AbstractBase
                 $this->stripIdPrefixes($patron, $source)
             );
         }
-        throw new ILSException('No suitable backend driver found');
+        return false;
     }
 
     /**
@@ -1204,7 +1204,7 @@ class MultiBackend extends AbstractBase
                 $this->stripIdPrefixes($patron, $source)
             );
         }
-        throw new ILSException('No suitable backend driver found');
+        return false;
     }
 
     /**
