@@ -110,7 +110,7 @@ finna.itemStatus = (function() {
     .fail(function(response, textStatus) {
       if (textStatus == "abort") { return; }
       // display the error message on each of the ajax status place holder
-      item.find('.locationDetails').empty().append(response.responseJSON.data);
+      item.find('.locationDetails').empty().append(typeof response.responseJSON !== 'undefined' ? response.responseJSON.data : '');
       item.find('.locationDetails').removeClass('hidden');
       item.find(".availability-load-indicator").addClass('hidden');
     });
