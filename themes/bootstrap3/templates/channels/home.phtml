@@ -5,4 +5,9 @@
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Channels') . '</li>';
 ?>
-Coming soon.
+<form action="<?=$this->url('channels-search')?>">
+  Search for more channels:
+  <input type="text" name="lookfor" />
+  <input type="submit" />
+</form>
+<?=$this->render('channels/channelList.phtml')?>

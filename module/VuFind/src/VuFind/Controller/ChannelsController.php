@@ -48,6 +48,31 @@ class ChannelsController extends AbstractBase
     public function homeAction()
     {
         $view = $this->createViewModel();
+        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+
+        // Send both GET and POST variables to search class:
+        $request = [];
+        $searchClassId = DEFAULT_SEARCH_BACKEND;
+
+        $config = $this->getConfig('channels');
+        $providerIds = isset($config->{"source.$searchClassId"}->home)
+            ? $config->{"source.$searchClassId"}->home->toArray() : [];
+        $providers = $this->getChannelProviderArray($providerIds);
+
+        $callback = function ($runner, $params, $searchClassId) use ($providers) {
+            foreach ($providers as $provider) {
+                $provider->configureSearchParams($params);
+            }
+        };
+        $view->results = $runner->run($request, $searchClassId, $callback);
+
+        $view->channels = [];
+        $token = $this->params()->fromQuery('channelToken');
+        foreach ($providers as $provider) {
+            $view->channels = array_merge(
+                $view->channels, $provider->getFromSearch($view->results, $token)
+            );
+        }
         return $view;
     }
 
