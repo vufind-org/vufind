@@ -1317,7 +1317,7 @@ class MyResearchController extends AbstractBase
                     $view->hash = $hash;
                     $view->username = $user->username;
                     $view->useRecaptcha
-                        = $this->recaptcha()->active('passwordRecovery');
+                        = $this->recaptcha()->active('changePassword');
                     $view->setTemplate('myresearch/newpassword');
                     return $view;
                 }
