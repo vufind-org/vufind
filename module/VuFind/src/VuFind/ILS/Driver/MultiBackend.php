@@ -1207,7 +1207,6 @@ class MultiBackend extends AbstractBase
         throw new ILSException('No suitable backend driver found');
     }
 
-
     /**
      * Function which specifies renew, hold and cancel settings.
      *
