@@ -1,58 +1,10 @@
-<? $this->headLink()->appendStylesheet('lib/channel-slider.css'); ?>
-<? $this->headScript()->appendFile('lib/channel-slider.js'); ?>
-<? $this->headScript()->appendFile('channels.js'); ?>
-<? $this->headScript()->appendFile('vendor/jquery.dotdotdot.min.js'); ?>
-<? $insideButton = false; ?>
-<? foreach ($channels as $key=>$channel): ?>
-  <?
-    $groupId = $channel['providerId'];
-    if ($channel['providerId'] === 'facets') {
-      $groupId = explode('|', $channel['token']);
-      $groupId = explode(':', $groupId[1])[0];
-    }
-  ?>
-  <? if (isset($channel['contents'])): ?>
-    <? if ($insideButton): ?>
-        </ul>
-      </div>
-      <? $insideButton = false; ?>
-    <? endif; ?>
-    <div class="channel-title">
-      <h2>
-        <?=$this->escapeHtml($channel['title'])?>
-        <? if (isset($channel['searchUrl'])): ?>
-          <a href="<?=$channel['searchUrl'] ?>"><i class="fa fa-fw fa-list" title="<?=$this->transEsc('channel_search_icon') ?>"></i></a>
-        <? else: ?>
-          <span class="placeholder pull-left">&nbsp;</span>
-        <? endif; ?>
-        <? if (isset($channel['channelsUrl'])): ?>
-          <a href="<?=$channel['channelsUrl'] ?>"><i class="fa fa-fw fa-search-plus" title="<?=$this->transEsc('channel_expand_icon') ?>"></i></a>
-        <? else: ?>
-          <span class="placeholder pull-left">&nbsp;</span>
-        <? endif; ?>
-      </h2>
-    </div>
-    <? $channelID = 'channel-' . $key; ?>
-    <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>">
-      <!-- Wrapper for slides -->
-      <? foreach ($channel['contents'] as $item): ?>
-        <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>" class="channel-record slide" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
-          <div class="thumb"><img src="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>"/></div>
-          <?=$this->escapeHtml($item['title'])?>
-        </a>
-      <? endforeach; ?>
-    </div>
-  <? elseif (isset($channel['token'])): ?>
-    <? if (!$insideButton): ?>
-      <div class="channel-add-menu btn-group hidden" data-group="<?=$groupId ?>">
-        <button type="button" class="add-btn btn btn-default">Add more channels like this</button>
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span class="caret"></span>
-          <span class="sr-only">Toggle Dropdown</span>
-        </button>
-        <ul class="dropdown-menu">
-      <? $insideButton = true; ?>
-    <? endif; ?>
-    <li><a href="?channelProvider=<?=urlencode($channel['providerId']) ?>&amp;channelToken=<?=urlencode($channel['token']) ?>&amp;layout=lightbox" data-token="<?=$channel['token'] ?>"><?=$this->escapeHtml($channel['title'])?></a></li>
-  <? endif; ?>
-<? endforeach; ?>
+<?
+    $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->results->getParams()->getDisplayQuery();
+
+    // Set up page title:
+    $this->headTitle($this->translate('Channels') . (empty($lookfor) ? '' : " - {$lookfor}"));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('channels-home') . '">' . $this->transEsc('Channels') . '</a></li> <li class="active">' . $this->escapeHtml($lookfor) . '</li>';
+?>
+<?=$this->render('channels/channelList.phtml')?>

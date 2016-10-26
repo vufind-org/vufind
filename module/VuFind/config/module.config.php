@@ -795,7 +795,7 @@ $staticRoutes = [
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic', 'Cart/doExport',
     'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk',
     'Cart/Processor', 'Cart/Save', 'Cart/SearchResultsBulk',
-    'Channels/Record', 'Channels/Search',
+    'Channels/Home', 'Channels/Record', 'Channels/Search',
     'Collections/ByTitle',
     'Collections/Home', 'Combined/Home', 'Combined/Results', 'Combined/SearchBox',
     'Confirm/Confirm', 'Cover/Show', 'Cover/Unavailable',

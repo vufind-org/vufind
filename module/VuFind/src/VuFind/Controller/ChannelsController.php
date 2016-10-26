@@ -41,6 +41,17 @@ namespace VuFind\Controller;
 class ChannelsController extends AbstractBase
 {
     /**
+     * Generates static front page of channels.
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function homeAction()
+    {
+        $view = $this->createViewModel();
+        return $view;
+    }
+
+    /**
      * Generates channels for a record.
      *
      * @return \Zend\View\Model\ViewModel
@@ -51,7 +62,7 @@ class ChannelsController extends AbstractBase
 
         $loader = $this->getRecordLoader();
         $source = $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND);
-        $record = $loader->load($this->params()->fromQuery('id'), $source);
+        $view->driver = $loader->load($this->params()->fromQuery('id'), $source);
 
         $config = $this->getConfig('channels');
         $providerIds = isset($config->{"source.$source"}->record)
@@ -60,10 +71,9 @@ class ChannelsController extends AbstractBase
         $token = $this->params()->fromQuery('channelToken');
         foreach ($this->getChannelProviderArray($providerIds) as $provider) {
             $view->channels = array_merge(
-                $view->channels, $provider->getFromRecord($record, $token)
+                $view->channels, $provider->getFromRecord($view->driver, $token)
             );
         }
-        $view->setTemplate('channels/search');
         return $view;
     }
 
@@ -94,13 +104,13 @@ class ChannelsController extends AbstractBase
                 $provider->configureSearchParams($params);
             }
         };
-        $results = $runner->run($request, $searchClassId, $callback);
+        $view->results = $runner->run($request, $searchClassId, $callback);
 
         $view->channels = [];
         $token = $this->params()->fromQuery('channelToken');
         foreach ($providers as $provider) {
             $view->channels = array_merge(
-                $view->channels, $provider->getFromSearch($results, $token)
+                $view->channels, $provider->getFromSearch($view->results, $token)
             );
         }
         return $view;
