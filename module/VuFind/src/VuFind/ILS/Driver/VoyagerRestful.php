@@ -590,7 +590,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         if ('driver' == $mode && 'auto' == $holdType) {
             $itemID = isset($data['item_id']) ? $data['item_id'] : false;
             $result = $this->determineHoldType($patron['id'], $id, $itemID);
-            if (!$result || $result == 'block') {
+            if (!$result) {
                 return false;
             }
         }
@@ -1188,6 +1188,32 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
+     * Check whether the patron is blocked from placing requests (holds/ILL/SRR).
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getRequestBlocks($patron)
+    {
+        return $this->checkAccountBlocks($patron['id']);
+    }
+
+    /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getAccountBlocks($patron)
+    {
+        return $this->checkAccountBlocks($patron['id']);
+    }
+
+    /**
      * Check Account Blocks
      *
      * Checks if a user has any blocks against their account which may prevent them
@@ -1576,7 +1602,7 @@ EOT;
 
         // Check for account Blocks
         if ($this->checkAccountBlocks($patronId)) {
-            return 'block';
+            return false;
         }
 
         // Check Recalls First
@@ -1932,7 +1958,7 @@ EOT;
         // Let's determine Hold Type now
         if ($type == 'auto') {
             $type = $this->determineHoldType($patron['id'], $bibId, $itemId);
-            if (!$type || $type == 'block') {
+            if (!$type) {
                 return $this->holdError('hold_error_blocked');
             }
         }
