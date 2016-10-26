@@ -32,7 +32,8 @@ use VuFind\Exception\Auth as AuthException,
     VuFind\Exception\Mail as MailException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\RecommendListener, Zend\Stdlib\Parameters;
+    VuFind\Search\RecommendListener, Zend\Stdlib\Parameters,
+    Zend\View\Model\ViewModel;
 
 /**
  * Controller for the user account area.
@@ -1351,6 +1352,26 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Reset the new password form and return the modified view. When a user has
+     * already been loaded from an existing hash, this resets the hash and updates
+     * the form so that the user can try again.
+     *
+     * @param mixed     $userFromHash User loaded from database, or false if none.
+     * @param ViewModel $view         View object
+     *
+     * @return ViewModel
+     */
+    protected function resetNewPasswordForm($userFromHash, ViewModel $view)
+    {
+        if ($userFromHash) {
+            $userFromHash->updateHash();
+            $view->username = $userFromHash->username;
+            $view->hash = $userFromHash->verify_hash;
+        }
+        return $view;
+    }
+
+    /**
      * Handling submission of a new password for a user.
      *
      * @return view
@@ -1376,12 +1397,7 @@ class MyResearchController extends AbstractBase
         // Check reCaptcha
         if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
             $this->setUpAuthenticationFromRequest();
-            if ($userFromHash) {
-                $userFromHash->updateHash();
-                $view->username = $userFromHash->username;
-                $view->hash = $userFromHash->verify_hash;
-            }
-            return $view;
+            return $this->resetNewPasswordForm($userFromHash, $view);
         }
         // Missing or invalid hash
         if (false == $userFromHash) {
@@ -1392,10 +1408,7 @@ class MyResearchController extends AbstractBase
         } elseif ($userFromHash->username !== $post->username) {
             $this->flashMessenger()
                 ->addMessage('authentication_error_invalid', 'error');
-            $userFromHash->updateHash();
-            $view->username = $userFromHash->username;
-            $view->hash = $userFromHash->verify_hash;
-            return $view;
+            return $this->resetNewPasswordForm($userFromHash, $view);
         }
         // Verify old password if we're logged in
         if ($this->getUser()) {
