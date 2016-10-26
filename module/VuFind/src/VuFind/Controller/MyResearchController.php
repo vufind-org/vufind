@@ -1375,6 +1375,12 @@ class MyResearchController extends AbstractBase
         $view->useRecaptcha = $this->recaptcha()->active('changePassword');
         // Check reCaptcha
         if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
+            $this->setUpAuthenticationFromRequest();
+            if ($userFromHash) {
+                $userFromHash->updateHash();
+                $view->username = $userFromHash->username;
+                $view->hash = $userFromHash->verify_hash;
+            }
             return $view;
         }
         // Missing or invalid hash
@@ -1476,7 +1482,11 @@ class MyResearchController extends AbstractBase
      */
     protected function setUpAuthenticationFromRequest()
     {
-        $method = trim($this->params()->fromQuery('auth_method'));
+        $method = trim(
+            $this->params()->fromQuery(
+                'auth_method', $this->params()->fromPost('auth_method')
+            )
+        );
         if (!empty($method)) {
             $this->getAuthManager()->setAuthMethod($method);
         }
