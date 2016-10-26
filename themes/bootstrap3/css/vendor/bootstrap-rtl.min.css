@@ -85,6 +85,9 @@ body.rtl i.fa.fa-chevron-right {content: "\f053";}
   body.offcanvas.offcanvas-right.flip.active .offcanvas-toggle {left: 75%; right: auto;}
 }
 
+/* Customization for search */
+.result .checkbox { float: right; }
+
 /* Customization for sidebar */
 .sidebar .list-group:not(.filters) .title:after {float: left;}
 .sidebar label:not(.list-group-item) {

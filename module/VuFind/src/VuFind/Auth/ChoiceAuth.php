@@ -139,6 +139,17 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Reset any internal status; this is essentially an event hook which most auth
+     * modules can ignore. See ChoiceAuth for a use case example.
+     *
+     * @return void
+     */
+    public function resetState()
+    {
+        $this->strategy = false;
+    }
+
+    /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.

@@ -88,6 +88,14 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected $params;
 
     /**
+     * A timestamp used to identify the init function to avoid name clashes when
+     * opening lightboxes.
+     *
+     * @var int
+     */
+    protected $timestamp;
+
+    /**
      * Constructor
      *
      * @param string|bool                      $url        Piwik address
@@ -108,6 +116,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
         $this->customVars = $customVars;
         $this->router = $router;
         $this->request = $request;
+        $this->timestamp = round(microtime(true) * 1000);
     }
 
     /**
@@ -389,7 +398,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     {
         return <<<EOT
 
-function initVuFindPiwikTracker(){
+function initVuFindPiwikTracker{$this->timestamp}(){
     var VuFindPiwikTracker = Piwik.getTracker();
 
     VuFindPiwikTracker.setSiteId({$this->siteId});
@@ -432,11 +441,17 @@ EOT;
     VuFindPiwikTracker.enableLinkTracking();
 };
 (function(){
-var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.defer=true; g.async=true;
-    g.src='{$this->url}piwik.js';
-    g.onload=initVuFindPiwikTracker;
-s.parentNode.insertBefore(g,s); })();
+    if (typeof Piwik === 'undefined') {
+        var d=document, g=d.createElement('script'),
+            s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript'; g.defer=true; g.async=true;
+        g.src='{$this->url}piwik.js';
+        g.onload=initVuFindPiwikTracker{$this->timestamp};
+        s.parentNode.insertBefore(g,s);
+    } else {
+        initVuFindPiwikTracker{$this->timestamp}();
+    }
+})();
 EOT;
     }
 
