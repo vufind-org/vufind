@@ -29,6 +29,7 @@ return [
             'personaAuth' => 'Finna\View\Helper\Root\Factory::getPersonaAuth',
             'piwik' => 'Finna\View\Helper\Root\Factory::getPiwik',
             'primo' => 'Finna\View\Helper\Root\Factory::getPrimo',
+            'recaptcha' => 'VuFind\View\Helper\Root\Factory::getRecaptcha',
             'record' => 'Finna\View\Helper\Root\Factory::getRecord',
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
             'recordLink' => 'Finna\View\Helper\Root\Factory::getRecordLink',
