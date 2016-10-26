@@ -94,96 +94,97 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $patron;
         }
 
-        $view = $this->createViewIfUnsupported('getMyTransactions');
-        if ($view === false) {
-            $view = parent::checkedoutAction();
-            $view->profile = $this->getCatalogProfile();
-            $transactions = count($view->transactions);
-            $renewResult = $view->renewResult;
-            if (isset($renewResult) && is_array($renewResult)) {
-                $renewedCount = 0;
-                $renewErrorCount = 0;
-                foreach ($renewResult as $renew) {
-                    if ($renew['success']) {
-                        $renewedCount++;
-                    } else {
-                        $renewErrorCount++;
-                    }
-                }
-                $flashMsg = $this->flashMessenger();
-                if ($renewedCount > 0) {
-                    $msg = $this->translate(
-                        'renew_ok', ['%%count%%' => $renewedCount,
-                        '%%transactionscount%%' => $transactions]
-                    );
-                    $flashMsg->setNamespace('info')->addMessage($msg);
-                }
-                if ($renewErrorCount > 0) {
-                    $msg = $this->translate(
-                        'renew_failed',
-                        ['%%count%%' => $renewErrorCount]
-                    );
-                    $flashMsg->setNamespace('error')->addMessage($msg);
+        if ($view = $this->createViewIfUnsupported('getMyTransactions')) {
+            return $view;
+        }
+
+        $view = parent::checkedoutAction();
+        $transactions = count($view->transactions);
+        $renewResult = $view->renewResult;
+        if (isset($renewResult) && is_array($renewResult)) {
+            $renewedCount = 0;
+            $renewErrorCount = 0;
+            foreach ($renewResult as $renew) {
+                if ($renew['success']) {
+                    $renewedCount++;
+                } else {
+                    $renewErrorCount++;
                 }
             }
-            // Handle sorting
-            $currentSort = $this->getRequest()->getQuery('sort', 'duedate');
-            $view->sortList = [
-                'duedate' => [
-                    'desc' => 'Due Date',
-                    'url' => '?sort=duedate',
-                    'selected' => $currentSort == 'duedate'
-                ],
-                'title' => [
-                    'desc' => 'Title',
-                    'url' => '?sort=title',
-                    'selected' => $currentSort == 'title'
-                ]
-            ];
-
-            $date = $this->getServiceLocator()->get('VuFind\DateConverter');
-            $sortFunc = function ($a, $b) use ($currentSort, $date) {
-                $aDetails = $a->getExtraDetail('ils_details');
-                $bDetails = $b->getExtraDetail('ils_details');
-                if ($currentSort == 'title') {
-                    $aTitle = is_a($a, 'VuFind\\RecordDriver\\SolrDefault')
-                         && !is_a($a, 'VuFind\\RecordDriver\\Missing')
-                         ? $a->getSortTitle() : '';
-                    if (!$aTitle) {
-                        $aTitle = isset($aDetails['title'])
-                            ? $aDetails['title'] : '';
-                    }
-                    $bTitle = is_a($b, 'VuFind\\RecordDriver\\SolrDefault')
-                         && !is_a($b, 'VuFind\\RecordDriver\\Missing')
-                         ? $b->getSortTitle() : '';
-                    if (!$bTitle) {
-                        $bTitle = isset($bDetails['title'])
-                            ? $bDetails['title'] : '';
-                    }
-                    $result = strcmp($aTitle, $bTitle);
-                    if ($result != 0) {
-                        return $result;
-                    }
-                }
-
-                try {
-                    $aDate = isset($aDetails['duedate'])
-                        ? $date->convertFromDisplayDate('U', $aDetails['duedate'])
-                        : 0;
-                    $bDate = isset($bDetails['duedate'])
-                        ? $date->convertFromDisplayDate('U', $bDetails['duedate'])
-                        : 0;
-                } catch (Exception $e) {
-                    return 0;
-                }
-
-                return $aDate - $bDate;
-            };
-
-            $transactions = $view->transactions;
-            usort($transactions, $sortFunc);
-            $view->transactions = $transactions;
+            $flashMsg = $this->flashMessenger();
+            if ($renewedCount > 0) {
+                $msg = $this->translate(
+                    'renew_ok', ['%%count%%' => $renewedCount,
+                    '%%transactionscount%%' => $transactions]
+                );
+                $flashMsg->setNamespace('info')->addMessage($msg);
+            }
+            if ($renewErrorCount > 0) {
+                $msg = $this->translate(
+                    'renew_failed',
+                    ['%%count%%' => $renewErrorCount]
+                );
+                $flashMsg->setNamespace('error')->addMessage($msg);
+            }
         }
+        // Handle sorting
+        $currentSort = $this->getRequest()->getQuery('sort', 'duedate');
+        $view->sortList = [
+            'duedate' => [
+                'desc' => 'Due Date',
+                'url' => '?sort=duedate',
+                'selected' => $currentSort == 'duedate'
+            ],
+            'title' => [
+                'desc' => 'Title',
+                'url' => '?sort=title',
+                'selected' => $currentSort == 'title'
+            ]
+        ];
+
+        $date = $this->getServiceLocator()->get('VuFind\DateConverter');
+        $sortFunc = function ($a, $b) use ($currentSort, $date) {
+            $aDetails = $a->getExtraDetail('ils_details');
+            $bDetails = $b->getExtraDetail('ils_details');
+            if ($currentSort == 'title') {
+                $aTitle = is_a($a, 'VuFind\\RecordDriver\\SolrDefault')
+                     && !is_a($a, 'VuFind\\RecordDriver\\Missing')
+                     ? $a->getSortTitle() : '';
+                if (!$aTitle) {
+                    $aTitle = isset($aDetails['title'])
+                        ? $aDetails['title'] : '';
+                }
+                $bTitle = is_a($b, 'VuFind\\RecordDriver\\SolrDefault')
+                     && !is_a($b, 'VuFind\\RecordDriver\\Missing')
+                     ? $b->getSortTitle() : '';
+                if (!$bTitle) {
+                    $bTitle = isset($bDetails['title'])
+                        ? $bDetails['title'] : '';
+                }
+                $result = strcmp($aTitle, $bTitle);
+                if ($result != 0) {
+                    return $result;
+                }
+            }
+
+            try {
+                $aDate = isset($aDetails['duedate'])
+                    ? $date->convertFromDisplayDate('U', $aDetails['duedate'])
+                    : 0;
+                $bDate = isset($bDetails['duedate'])
+                    ? $date->convertFromDisplayDate('U', $bDetails['duedate'])
+                    : 0;
+            } catch (Exception $e) {
+                return 0;
+            }
+
+            return $aDate - $bDate;
+        };
+
+        $transactions = $view->transactions;
+        usort($transactions, $sortFunc);
+        $view->transactions = $transactions;
+        $view->blocks = $this->getILS()->getAccountBlocks($patron);
         return $view;
     }
 
@@ -281,6 +282,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             = isset($config->Site->hideProfileEmailAddress)
             && $config->Site->hideProfileEmailAddress;
 
+        if ($patron = $this->catalogLogin()) {
+            $view->blocks = $this->getILS()->getAccountBlocks($patron);
+        }
+
         return $view;
     }
 
@@ -294,11 +299,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
-        $catalog = $this->getILS();
-        $view = $this->createViewIfUnsupported('updateAddress', true);
-        if ($view) {
+        if ($view = $this->createViewIfUnsupported('updateAddress', true)) {
             return $view;
         }
+
+        $catalog = $this->getILS();
         $updateConfig = $catalog->checkFunction('updateAddress', $patron);
         $profile = $catalog->getMyProfile($patron);
         $fields = [];
@@ -494,12 +499,13 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $patron;
         }
 
-        $view = $this->createViewIfUnsupported('getMyHolds');
-        if ($view === false) {
-            $view = parent::holdsAction();
-            $view->recordList = $this->orderAvailability($view->recordList);
-            $view->profile = $this->getCatalogProfile();
+        if ($view = $this->createViewIfUnsupported('getMyHolds')) {
+            return $view;
         }
+
+        $view = parent::holdsAction();
+        $view->recordList = $this->orderAvailability($view->recordList);
+        $view->blocks = $this->getILS()->getAccountBlocks($patron);
         return $view;
     }
 
@@ -544,12 +550,14 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $patron;
         }
 
-        $view = $this->createViewIfUnsupported('StorageRetrievalRequests', true);
-        if ($view === false) {
-            $view = parent::storageRetrievalRequestsAction();
-            $view->recordList = $this->orderAvailability($view->recordList);
-            $view->profile = $this->getCatalogProfile();
+        if ($view = $this->createViewIfUnsupported('StorageRetrievalRequests', true)
+        ) {
+            return $view;
         }
+
+        $view = parent::storageRetrievalRequestsAction();
+        $view->recordList = $this->orderAvailability($view->recordList);
+        $view->blocks = $this->getILS()->getAccountBlocks($patron);
         return $view;
     }
 
@@ -565,12 +573,13 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $patron;
         }
 
-        $view = $this->createViewIfUnsupported('ILLRequests', true);
-        if ($view === false) {
-            $view = parent::illRequestsAction();
-            $view->recordList = $this->orderAvailability($view->recordList);
-            $view->profile = $this->getCatalogProfile();
+        if ($view = $this->createViewIfUnsupported('ILLRequests', true)) {
+            return $view;
         }
+
+        $view = parent::illRequestsAction();
+        $view->recordList = $this->orderAvailability($view->recordList);
+        $view->blocks = $this->getILS()->getAccountBlocks($patron);
         return $view;
     }
 
@@ -586,13 +595,14 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $patron;
         }
 
-        $view = $this->createViewIfUnsupported('getMyFines');
-        if ($view === false) {
-            $view = parent::finesAction();
-            $view->profile = $this->getCatalogProfile();
-            if (isset($patron['source'])) {
-                $result = $this->handleOnlinePayment($patron, $view->fines, $view);
-            }
+        if ($view = $this->createViewIfUnsupported('getMyFines')) {
+            return $view;
+        }
+
+        $view = parent::finesAction();
+        $view->blocks = $this->getILS()->getAccountBlocks($patron);
+        if (isset($patron['source'])) {
+            $result = $this->handleOnlinePayment($patron, $view->fines, $view);
         }
         return $view;
     }
@@ -649,6 +659,19 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 = $this->getRequest()->getRequestUri() . '&confirm=1';
         }
         return $view;
+    }
+
+    /**
+     * Add account blocks to the flash messenger as errors.
+     *
+     * @param \VuFind\ILS\Connection $catalog Catalog connection
+     * @param array                  $patron  Patron details
+     *
+     * @return void
+     */
+    public function addAccountBlocksToFlashMessenger($catalog, $patron)
+    {
+        // We don't use the flash messenger for blocks.
     }
 
     /**
@@ -863,19 +886,4 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         );
     }
 
-    /**
-     * Get the current patron profile.
-     *
-     * @return mixed
-     */
-    protected function getCatalogProfile()
-    {
-        $patron = $this->catalogLogin();
-        if (is_array($patron)) {
-            $catalog = $this->getILS();
-            $profile = $catalog->getMyProfile($patron);
-            return $profile;
-        }
-        return null;
-    }
 }

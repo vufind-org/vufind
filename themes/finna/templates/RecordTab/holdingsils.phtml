@@ -23,12 +23,12 @@
     $first = reset($holdings);
     $useLocationHoldLinks = isset($first['items'][0]['branch']);
 
-    if (!empty($holdings)) {
-      $location = reset($holdings);
+    if (!empty($holdings['holdings'])) {
+      $location = reset($holdings['holdings']);
       $item = $location['items'][0];
       $journal = isset($item['journalInfo']);
 
-      $last = array_pop($holdings);
+      $last = array_pop($holdings['holdings']);
       if (isset($last['items']) && is_array($last['items'])) {
           $summary = $last['items'][0];
           if (!isset($summary['total'])) {
@@ -36,11 +36,11 @@
           }
       }
       if (!$summary) {
-         $holdings[] = $last;
+         $holdings['holdings'][] = $last;
       }
     }
 
-    $disableTitleHold = empty($holdings) || (isset($summary['holdable']) && !$summary['holdable']);
+    $disableTitleHold = empty($holdings['holdings']) || (isset($summary['holdable']) && !$summary['holdable']);
     $showSummary = !$journal && $this->holdingsSettings()->showRecordPageSummary();
     if ($summary && $showSummary) {
       $itemsTotal
@@ -49,7 +49,7 @@
         = isset($summary['reservations']) ? $summary['reservations'] : null;
     }
 
-    foreach ($holdings as $holding) {
+    foreach ($holdings['holdings'] as $holding) {
        foreach ($holding['items'] as $row) {
           if (isset($row['ILLRequestLink']) && $row['ILLRequestLink']) {
              $illRequestLink = $row['ILLRequestLink'];
@@ -66,7 +66,7 @@
 ?>
 
 <?=($offlineMode == "ils-offline") ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message']) : ''?>
-<? if ($holdsAllowed && !$disableTitleHold && (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings)) || $this->ils()->getTitleHoldsMode() == 'driver') ): ?>
+<? if ($holdsAllowed && !$disableTitleHold && (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver') ): ?>
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline' && $ilsLoginAvailable): ?>
     <? if (!$user): ?>
       <div class="pull-right">
@@ -97,26 +97,29 @@
     <a class="expandedCheckILLRequest placeILLRequest btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($illRequestLink)?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('ill_request_place_text') . ': ' . $this->driver->getTitle()) ?>"><?=$this->transEsc("ill_request_check_text")?></a>
   <? endif; ?>
   <? if (!$disableTitleHold): ?>
-  <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
-    <a class="placehold btn btn-primary hidden-print" data-lightbox data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('title_hold_place') . ': ' . $this->driver->getTitle()) ?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
-  <? elseif ($user): ?>
-    <? $patron = $ilsLoginAvailable && $user->cat_username ? $this->ils()->patronLogin($user->cat_username, $user->getCatPassword()) : null; if ($patron): ?>
-      <? if ($profile = $this->ils()->getMyProfile($patron)): ?>
-        <? if (!empty($profile['blocks'])): ?>
-          <p><?=$this->transEsc('hold_error_blocked'); ?></p>
-        <? elseif (!$illRequestLink && !$holdLinks): ?>
-          <p><?=$this->transEsc('title_cant_place_hold'); ?></p>
-        <? endif; ?>
+    <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
+      <a class="placehold btn btn-primary hidden-print" data-lightbox data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('title_hold_place') . ': ' . $this->driver->getTitle()) ?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
+    <? elseif ($user): ?>
+      <?
+        $blocks = [];
+        if (!empty($holdings['blocks'])) {
+          $blocks = $holdings['blocks'];
+          $blocks[] = $this->translate('hold_error_blocked');
+        } elseif (!$illRequestLink && !$holdLinks) {
+          $blocks[] = $this->translate('title_cant_place_hold');
+        }
+        if ($blocks):
+      ?>
+        <?=$this->partial('myresearch/borrowing-block.phtml', ['blocks' => $blocks]) ?>
       <? endif; ?>
     <? endif; ?>
-  <? endif; ?>
   <? endif; ?>
   </div>
 <? endif; ?>
 
 <div class="table record-holdings-table">
   <div class="row headers">
-    <div class="headers <?=(!empty($holdings)) ?  'col-sm-6 col-xs-7' : 'col-xs-12';?>">
+    <div class="headers <?=(!empty($holdings['holdings'])) ?  'col-sm-6 col-xs-7' : 'col-xs-12';?>">
       <? $currentSource = $this->driver->tryMethod('getDataSource'); ?>
       <? $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
       <div class="dedup-information">
@@ -134,7 +137,7 @@
         <? endif; ?>
         </div>
       </div>
-    <? if (!empty($holdings)): ?>
+    <? if (!empty($holdings['holdings'])): ?>
       <div class="headers reservations-container col-sm-4 col-xs-5">
         <? if ($showSummary): ?>
           <? if (!empty($reservationsTotal)): ?>
@@ -151,7 +154,7 @@
     <? endif; ?>
   </div>
 <? $holdingsGroup = 0; ?>
-<? foreach ($holdings as $holdingId => $holding): ?>
+<? foreach ($holdings['holdings'] as $holdingId => $holding): ?>
   <?
     ++$holdingsGroup;
 
@@ -375,7 +378,7 @@
     </div>
   <? endif; ?>
 <? endforeach; ?>
-<? if (empty($holdings)): ?>
+<? if (empty($holdings['holdings'])): ?>
   <div class="row">
     <div class="col-xs-12">
       <h5><?=$this->transEsc('No Holdings Available'); ?></h5>

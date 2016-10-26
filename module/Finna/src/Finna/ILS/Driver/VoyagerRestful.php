@@ -90,23 +90,6 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
     }
 
     /**
-     * Get Patron Profile
-     *
-     * This is responsible for retrieving the profile for a specific patron.
-     *
-     * @param array $patron The patron array
-     *
-     * @throws ILSException
-     * @return array        Array of the patron's profile data on success.
-     */
-    public function getMyProfile($patron)
-    {
-        $profile = parent::getMyProfile($patron);
-        $profile['blocks'] = $this->checkAccountBlocks($patron['id']);
-        return $profile;
-    }
-
-    /**
      * Get ILL (UB) Pickup Locations
      *
      * This is responsible for getting a list of possible pickup locations for a

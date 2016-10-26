@@ -1835,6 +1835,32 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     }
 
     /**
+     * Check whether the patron is blocked from placing requests (holds/ILL/SRR).
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getRequestBlocks($patron)
+    {
+        return false;
+    }
+
+    /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getAccountBlocks($patron)
+    {
+        return false;
+    }
+
+    /**
      * Send a SOAP request
      *
      * @param string $wsdl           Name of the wsdl file

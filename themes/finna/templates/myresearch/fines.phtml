@@ -24,7 +24,7 @@
 
     <? if (!$this->translationEmpty('fines_instructions_html')): ?><p class="no-content-message"><?=$this->translate('fines_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
-    <?=$this->partial('myresearch/borrowing-block.phtml', ['profile' => $this->profile]); ?>
+    <?=$this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
     <div class="useraccount-header"><?=$this->transEsc('Your Fines')?>  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
     <br>
     <? if (isset($this->noSupport)): ?>

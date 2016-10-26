@@ -16,7 +16,7 @@
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
     <? if (!$this->translationEmpty('ill_requests_instructions_html')): ?><p class="no-content-message"><?=$this->transEsc('ill_requests_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
-    <?=$this->partial('myresearch/borrowing-block.phtml', ['profile' => $this->profile]); ?>
+    <?=$this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
     <div class="useraccount-header">
     <?=$this->transEsc('Interlibrary Loan Requests') ?>
     (<?=count($this->recordList);?>)

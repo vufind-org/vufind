@@ -27,7 +27,7 @@ $(document).ready(function() {
       var icon = L.divIcon({
         className: 'mapMarker',
         iconSize: null,
-        html: '<div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -5px; margin-top: -17px; width: 24px; height: 24px;"><i class="fa fa-map-marker" style="position: relative; font-size: 20px;"></i></div>'
+        html: '<div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -5px; margin-top: -17px; width: 24px; height: 24px;"><i class="fa fa-map-marker" style="position: relative; font-size: 35px;"></i></div>'
       });
       L.marker([markersData[i].lat, markersData[i].lon], {icon: icon}).addTo(drawnItems);
     }
