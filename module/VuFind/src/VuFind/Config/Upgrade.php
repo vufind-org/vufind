@@ -611,7 +611,6 @@ class Upgrade
 
         // Warn the user if they are using an unsupported theme:
         $this->checkTheme('theme', 'bootprint3');
-        $this->checkTheme('mobile_theme', 'jquerymobile');
 
         // Translate legacy auth settings:
         if (strtolower($newConfig['Authentication']['method']) == 'db') {
