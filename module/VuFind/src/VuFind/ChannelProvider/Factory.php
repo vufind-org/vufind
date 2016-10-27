@@ -61,6 +61,25 @@ class Factory
     }
 
     /**
+     * Construct the Random channel provider.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Random
+     */
+    public static function getRandom(ServiceManager $sm)
+    {
+        $helper = new Random(
+            $sm->getServiceLocator()->get('VuFind\Search'),
+            $sm->getServiceLocator()->get('VuFind\SearchParamsPluginManager')
+        );
+        $helper->setCoverRouter(
+            $sm->getServiceLocator()->get('VuFind\Cover\Router')
+        );
+        return $helper;
+    }
+
+    /**
      * Construct the SimilarItems channel provider.
      *
      * @param ServiceManager $sm Service manager.
