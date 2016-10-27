@@ -5,11 +5,9 @@
 <? $insideButton = false; ?>
 <? foreach ($channels as $key=>$channel): ?>
   <?
-    $groupId = $channel['providerId'];
-    if ($channel['providerId'] === 'facets') {
-      $groupId = explode('|', $channel['token']);
-      $groupId = explode(':', $groupId[1])[0];
-    }
+    $groupId = isset($channel['groupId'])
+      ? $channel['groupId']
+      : $channel['providerId'];
   ?>
   <? if (isset($channel['contents'])): ?>
     <? if ($insideButton): ?>
