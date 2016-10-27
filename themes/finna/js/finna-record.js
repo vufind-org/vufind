@@ -112,7 +112,7 @@ finna.record = (function() {
                 a.hash = window.location.hash;
             }); 
         });
-        $(window).on('hashchange');
+        $(window).trigger('hashchange');
     }
     
     var init = function() {
