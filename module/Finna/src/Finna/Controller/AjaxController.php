@@ -999,7 +999,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $cookieName = 'organisationInfoId';
         $cookieManager = $this->serviceLocator->get('VuFind\CookieManager');
         $cookie = $cookieManager->get($cookieName);
-                
+
         $action = $params['action'];
         $buildings = isset($params['buildings'])
             ? explode(',', $params['buildings']) : null;
@@ -1495,15 +1495,20 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
         $searchPhrases = [];
         foreach ($response as $item) {
-            if (substr($item['label'], 0, 1) == '(') {
+            $label = $item['label'];
+            // Strip index from the terms
+            $pos = strpos($label, '|');
+            if ($pos > 0) {
+                $label = substr($label, $pos + 1);
+            }
+            $label = trim($label);
+            if (strncmp($label, '(', 1) == 0) {
                 // Ignore searches that begin with a parenthesis
                 // because they are likely to be advanced searches
                 continue;
-            } else if ($item['label'] === '-') {
+            } elseif ($label === '-' || $label === '') {
                 // Ignore empty searches
                 continue;
-            } else {
-                $label = $item['label'];
             }
             $searchPhrases[$label]
                 = !isset($item['nb_actions']) || null === $item['nb_actions']
