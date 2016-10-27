@@ -322,8 +322,8 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     public function getCountry()
     {
         $xml = $this->getRecordXML();
-        return isset($xml->CountryOfReference->Country->RegionName)
-            ? $xml->CountryOfReference->Country->RegionName : '';
+        return !empty($xml->CountryOfReference->Country->RegionName)
+            ? (string)$xml->CountryOfReference->Country->RegionName : '';
     }
 
     /**
