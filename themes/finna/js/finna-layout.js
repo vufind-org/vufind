@@ -564,6 +564,7 @@ finna.layout = (function() {
             initToolTips($('.sidebar'));
             initMobileNarrowSearch();
             VuFind.lightbox.bind($('.sidebar'));
+            setupFacets();            
         })
         .fail(function() {
             $container.find('.facet-load-indicator').addClass('hidden');
