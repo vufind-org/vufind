@@ -82,7 +82,10 @@
             $fine = null;
             if (isset($record['fine'])) {
               $fine = $record['fine'];
-              if (!$this->translationEmpty("status_$fine")) {
+              if (!$this->translationEmpty("fine_status_$fine")) {
+                $fine = "fine_status_$fine";
+              } elseif (!$this->translationEmpty("status_$fine")) {
+                // Fallback to item status translations for backwards-compatibility
                 $fine = "status_$fine";
               }
             }
