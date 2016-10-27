@@ -84,6 +84,8 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
      * @param array $options Options
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function setOptions(array $options)
     {
