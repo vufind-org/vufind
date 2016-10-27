@@ -242,8 +242,9 @@ class Facets extends AbstractChannelProvider
         $retVal = [
             'title' => $title,
             'providerId' => $this->providerId,
+            'groupId' => current(explode(':', $filter)),
+            'token' => $this->getToken($filter, $title),
         ];
-        $retVal['token'] = $this->getToken($filter, $title);
         if ($tokenOnly) {
             return $retVal;
         }
