@@ -1,11 +1,8 @@
-/**
- * crhallberg/autocomplete.js 0.15.1
- * ~ @crhallberg
- */
+/* https://github.com/crhallberg/autocomplete.js 0.16.3 */
 (function autocomplete( $ ) {
   var cache = {},
     element = false,
-    options = {
+    options = { // default options
       ajaxDelay: 200,
       cache: true,
       hidingClass: 'hidden',
@@ -43,9 +40,7 @@
     hide();
   }
 
-  function createList(fulldata, input) {
-    // Limit results
-    var data = fulldata.slice(0, Math.min(options.maxResults, fulldata.length));
+  function createList(data, input) {
     input.data('length', data.length);
     // highlighting setup
     // escape term for regex - https://github.com/sindresorhus/escape-string-regexp/blob/master/index.js
@@ -87,13 +82,26 @@
     align(input);
   }
 
+  function handleResults(input, term, data) {
+    // Limit results
+    var data = data.slice(0, Math.min(options.maxResults, data.length));
+    var cid = input.data('cache-id');
+    cache[cid][term] = data;
+    if (data.length === 0) {
+      hide();
+    } else {
+      createList(data, input);
+    }
+  }
   function search(input) {
     if (xhr) { xhr.abort(); }
     if (input.val().length >= options.minLength) {
       element.html('<i class="item loading">' + options.loadingString + '</i>');
       show();
       align(input);
+      input.data('selected', -1);
       var term = input.val();
+      // Check cache (only for handler-based setups)
       var cid = input.data('cache-id');
       if (options.cache && typeof cache[cid][term] !== "undefined") {
         if (cache[cid][term].length === 0) {
@@ -101,17 +109,26 @@
         } else {
           createList(cache[cid][term], input);
         }
+      // Check for static list
+      } else if (typeof options.static !== 'undefined') {
+        var lcterm = term.toLowerCase();
+        var matches = options.static.filter(function staticFilter(_item) {
+          return _item.match.match(lcterm);
+        });
+        if (typeof options.staticSort === 'function') {
+          matches.sort(options.staticSort);
+        } else {
+          matches.sort(function defaultStaticSort(a, b) {
+            return a.match.indexOf(lcterm) - b.match.indexOf(lcterm);
+          });
+        }
+        handleResults(input, term, matches);
+      // Call handler
       } else {
         options.handler(input, function achandlerCallback(data) {
-          cache[cid][term] = data;
-          if (data.length === 0) {
-            hide();
-          } else {
-            createList(data, input);
-          }
+          handleResults(input, term, data);
         });
       }
-      input.data('selected', -1);
     } else {
       hide();
     }
@@ -253,10 +270,20 @@
           cache[cid] = {};
         }
         return input;
-      } else if ('undefined' == typeof settings.handler) {
-        console.error('handler function not provided for autocomplete');
+      } else if (typeof settings.handler === 'undefined' && typeof settings.static === 'undefined') {
+        console.error('Neither handler function nor static result list provided for autocomplete');
         return this;
       } else {
+        if (typeof settings.static !== 'undefined') {
+          // Preprocess strings into items
+          settings.static = settings.static.map(function preprocessStatic(_item) {
+            var item = typeof _item === 'string'
+              ? { value: _item }
+              : _item;
+            item.match = (item.label || item.value).toLowerCase();
+            return item;
+          });
+        }
         options = $.extend( {}, options, settings );
         setup(input);
       }

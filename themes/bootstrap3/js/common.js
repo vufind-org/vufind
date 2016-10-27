@@ -166,7 +166,7 @@ function recaptchaOnLoad() {
   if (typeof grecaptcha !== 'undefined') {
     var captchas = $('.g-recaptcha:empty');
     for (var i = 0; i < captchas.length; i++) {
-      captchas[i].dataset.captchaId = grecaptcha.render(captchas[i], captchas[i].dataset);
+      $(captchas[i]).data('captchaId', grecaptcha.render(captchas[i], $(captchas[i]).data()));
     }
   }
 }
@@ -247,7 +247,6 @@ function setupAutocomplete() {
 
 /**
  * Handle arrow keys to jump to next record
- * @returns {undefined}
  */
 function keyboardShortcuts() {
   var $searchform = $('#searchForm_lookfor');
@@ -284,6 +283,48 @@ function keyboardShortcuts() {
         }
       }
     });
+  }
+}
+
+/**
+ * Setup facets
+ */
+function setupFacets() {
+  // Advanced facets
+  $('.facetAND a,.facetOR a').click(function facetBlocking() {
+    $(this).closest('.collapse').html('<div class="list-group-item">' + VuFind.translate('loading') + '...</div>');
+    window.location.assign($(this).attr('href'));
+  });
+
+  // Side facet status saving
+  $('.facet.list-group .collapse').each(function openStoredFacets(index, item) {
+    var source = $('#result0 .hiddenSource').val();
+    var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
+    if (storedItem) {
+      var saveTransition = $.support.transition;
+      try {
+        $.support.transition = false;
+        if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
+          $(item).collapse('show');
+        } else {
+          $(item).collapse('hide');
+        }
+      } finally {
+        $.support.transition = saveTransition;    
+      }
+    }
+  });
+  $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
+  $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
+}
+
+function setupIeSupport() {
+  // Disable Bootstrap modal focus enforce on IE since it breaks Recaptcha.
+  // Cannot use conditional comments since IE 11 doesn't support them but still has
+  // the issue
+  var ua = window.navigator.userAgent;
+  if (ua.indexOf('MSIE') || ua.indexOf('Trident/')) {
+    $.fn.modal.Constructor.prototype.enforceFocus = function emptyEnforceFocus() { };
   }
 }
 
@@ -337,27 +378,7 @@ $(document).ready(function commonDocReady() {
     $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   }
 
-  // Advanced facets
-  $('.facetOR').click(function facetBlocking() {
-    $(this).closest('.collapse').html('<div class="list-group-item">' + VuFind.translate('loading') + '...</div>');
-    window.location.assign($(this).attr('href'));
-  });
-
-  // Side facet status saving
-  $('.facet.list-group .collapse').each(function openStoredFacets(index, item) {
-    var source = $('#result0 .hiddenSource').val();
-    var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
-    if (storedItem) {
-      item.className = storedItem;
-      if (item.className.indexOf('in') < 0) {
-        $(item).siblings('.title').addClass('collapsed');
-      } else {
-        $(item).siblings('.title').removeClass('collapsed');
-      }
-    }
-  });
-  $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
-  $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
+  setupFacets();
 
   // retain filter sessionStorage
   $('.searchFormKeepFilters').click(function retainFiltersInSessionStorage() {
@@ -368,4 +389,6 @@ $(document).ready(function commonDocReady() {
     $('.searchFormKeepFilters').prop('checked', state);
     $('#applied-filter').prop('checked', state);
   }
+
+  setupIeSupport();
 });
