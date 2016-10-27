@@ -82,8 +82,35 @@ class Manager extends \VuFind\Auth\Manager
     public function login($request)
     {
         $user = parent::login($request);
-        $auth = $this->getAuth();
 
+        $auth = $this->getAuth();
+        if ($auth instanceof ChoiceAuth) {
+            $method = $auth->getSelectedAuthOption();
+        } else {
+            $method = $this->activeAuth;
+        }
+
+        $user->finna_auth_method = strtolower($method);
+        $user->finna_last_login = date('Y-m-d H:i:s');
+        $user->save();
+
+        return $user;
+    }
+
+    /**
+     * Create a new user account from the request.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * new account details.
+     *
+     * @throws AuthException
+     * @return UserRow New user row.
+     */
+    public function create($request)
+    {
+        $user = parent::create($request);
+
+        $auth = $this->getAuth();
         if ($auth instanceof ChoiceAuth) {
             $method = $auth->getSelectedAuthOption();
         } else {

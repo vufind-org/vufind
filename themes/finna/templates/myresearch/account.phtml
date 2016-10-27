@@ -1,0 +1,44 @@
+<!-- START of: finna - myresearch/account.phtml -->
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Create New Account'));
+    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h3 class="finna-main-header">' . $this->transEsc('Create New Account') . '</h3></div>';
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Create New Account') . '</li>';
+?>
+<h2><?=$this->transEsc('Create New Account')?></h2>
+<?=$this->flashmessages()?>
+
+<form method="post" name="accountForm" id="accountForm" class="form-horizontal" data-toggle="validator">
+  <?=$this->auth()->getCreateFields()?>
+  <div class="form-group">
+    <div class="col-sm-8 col-sm-push-4">
+      <?=$this->recaptcha()->html($this->useRecaptcha) ?>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-4">
+      <a class="back-to-login btn btn-link" href="<?=$this->url('myresearch-userlogin') ?>"><i class="fa fa-arrow-left" aria-hidden="true"></i> <?=$this->transEsc('Back')?></a>
+    </div>
+    <div class="col-sm-8">
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"/>
+    </div>
+  </div>
+</form>
+
+<?
+// Set up validation; we do this inline instead of in the header for lightbox compatibility:
+$js = <<<JS
+  if ($.isReady) {
+    $('#accountForm').validator();
+  } else {
+    $(document).ready(function(){
+      $('#accountForm').validator();
+    });
+  }
+JS;
+
+echo $this->inlineScript()->appendScript($js);
+?>
+<!-- END of: finna - myresearch/account.phtml -->

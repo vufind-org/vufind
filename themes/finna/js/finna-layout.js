@@ -1,5 +1,7 @@
 /*global VuFind,checkSaveStatuses,action*/
 finna.layout = (function() {
+    var _fixFooterTimeout = null;
+    
     var initMap = function(map) {
         // Add zoom control with translated tooltips
         L.control.zoom({
@@ -61,15 +63,22 @@ finna.layout = (function() {
     };
 
     var initFixFooter = function() {
-        $(window).on("resize", function(e) {
-          var detectHeight = $(window).height() - $('body').height();
-          if (detectHeight > 0) {
-              var expandedFooter = $('footer').height() + detectHeight;
-              $('footer').outerHeight(expandedFooter);
-          }
-          else {
-            $('footer').height('auto');
-          }
+        $(window).resize(function(e) {
+            if (!_fixFooterTimeout) {
+                _fixFooterTimeout = setTimeout(function() {
+                    _fixFooterTimeout = null;
+                    $('footer').height('auto');
+                    var detectHeight = $(window).height() - $('body').height();
+                    if (detectHeight > 0) {
+                        var expandedFooter = $('footer').outerHeight() + detectHeight;
+                        $('footer').outerHeight(expandedFooter);
+                        $('body').css('overflow-y', 'hidden');
+                    }
+                    else {
+                        $('body').css('overflow-y', '');
+                    }
+                }, 50);
+            }
         }).resize();
     };
 

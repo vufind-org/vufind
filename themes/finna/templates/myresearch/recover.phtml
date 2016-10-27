@@ -1,0 +1,20 @@
+<!-- START of: finna - myresearch/recover.phtml -->
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('recovery_title'));
+    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h3 class="finna-main-header">' . $this->transEsc('recovery_title') . '</h3></div>';
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('recovery_title') . '</li>';
+
+?>
+<h2><?=$this->transEsc('recovery_title') ?></h2>
+<?=$this->flashmessages()?>
+<? if (!$this->auth()->getManager()->supportsRecovery()): ?>
+  <div class="error"><?=$this->transEsc('recovery_disabled') ?></div>
+<? else: ?>
+  <form class="form-vertical" method="post">
+    <?=$this->auth()->getPasswordRecoveryForm() ?>
+  </form>
+<? endif; ?>
+<!-- END of: finna - myresearch/recover.phtml -->

@@ -73,6 +73,31 @@ class User extends \VuFind\Db\Table\User
     }
 
     /**
+     * Retrieve a user object from the database based on email.
+     *
+     * @param string $email email to use for retrieval.
+     *
+     * @return UserRow
+     */
+    public function getByEmail($email)
+    {
+        $row = $this->select(
+            function (Select $select) use ($email) {
+                $where = $select->where->equalTo('email', $email);
+                // Allow retrieval by email only on users registered with database
+                // method to keep e.g. Shibboleth accounts intact.
+                $where->and->equalTo('finna_auth_method', 'database');
+                // Limit by institution code if set
+                if (isset($this->config->Site->institution)) {
+                    $prefix = $this->config->Site->institution . ':';
+                    $where->and->like('username', "$prefix%");
+                }
+            }
+        );
+        return $row->current();
+    }
+
+    /**
      * Retrieve a user object from the database based on username; create a new
      * row if no existing match is found.
      *
@@ -83,14 +108,15 @@ class User extends \VuFind\Db\Table\User
      */
     public function getByUsername($username, $create = true)
     {
-        // Prefix username with the institution code if set
-        $row = $this->select(
-            [
-                'username' => isset($this->config->Site->institution)
-                    ? $this->config->Site->institution . ":$username"
-                    : $username
-            ]
-        )->current();
+        // Prefix username with the institution code if set and not already prefixed
+        $searchUsername = $username;
+        if (isset($this->config->Site->institution)) {
+            $prefix = $this->config->Site->institution . ':';
+            if (strncmp($username, $prefix, strlen($prefix) !== 0)) {
+                $searchUsername = $prefix . $username;
+            }
+        }
+        $row = $this->select(['username' => $searchUsername])->current();
         return ($create && empty($row))
             ? $this->createRowForUsername($username) : $row;
     }

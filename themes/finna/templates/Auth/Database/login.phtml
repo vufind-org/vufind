@@ -1,0 +1,30 @@
+<!-- START of: finna - Auth/Database/login.phtml -->
+<? $account = $this->auth()->getManager(); ?>
+<div class="row">
+  <form method="post" class="form-vertical" action="<?=$this->url('myresearch-home')?>" name="loginForm">
+    <div class="col-sm-6">
+      <?=$this->auth()->getLoginFields()?>
+      <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>">
+      <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($account->getCsrfHash(true))?>" />
+      <div class="form-group">
+        <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>">
+      </div>
+      <div class="form-group">
+        <? if ($account->supportsCreation()): ?>
+          <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
+        <? endif; ?>
+        <? if ($account->supportsRecovery()): ?>
+          <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
+        <? endif; ?>
+      </div>
+    </div>
+  </form>
+  <div class="col-sm-6 hidden-xs">
+    <div class="login-description">
+      <p class="login-info">
+        <?=$this->translate('login_desc_local_html') ?>
+      </p>
+    </div>
+  </div>
+</div>
+<!-- END of: finna - Auth/Database/login.phtml -->

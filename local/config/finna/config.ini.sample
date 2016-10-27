@@ -288,10 +288,23 @@ hideLogin = false
 
 ; Set this to false if you would like to store local passwords in plain text
 ; (only applies when method = Database above).
-hash_passwords = "1"
+hash_passwords = true
+
+; Allow users to recover passwords via email (if supported by Auth method)
+; You can set the subject of recovery emails in your
+; language files under the term "recovery_email_subject"
+recover_password = true
+; Time (seconds) before another recovery attempt can be made
+recover_interval      = 60
+; Length of time before a recovery hash can no longer be used (expires)
+; Default: Two weeks
+recover_hash_lifetime = 1209600
+
+; Allow users to set change their passwords (if supported by Auth method)
+change_password = true
 
 ; Set this to false if you would like to store catalog passwords in plain text
-encrypt_ils_password = "1"
+encrypt_ils_password = true
 
 ; This is the key used to encrypt and decrypt catalog passwords.  This must be
 ; filled in with a random string value when encrypt_ils_passwords is set to true.
@@ -302,10 +315,17 @@ ils_encryption_key = ""
 ; You can use mcrypt_list_algorithms to see the full list of choices for your system.
 ils_encryption_algo = "aes"
 
-;Whether Mozilla Persona login is enabled
-;mozillaPersona = true
-;Whether Persona autologout is enabled (default is true)
-mozillaPersonaAutoLogout = false
+; Specify default minimum and maximum password length (Auth method may override
+; this).
+minimum_password_length = 8
+maximum_password_length = 32
+; Specify default limit of accepted characters in the password. Allowed values
+; are "numeric", "alphanumeric" or a regular expression
+;password_pattern = "(?=.*\d)(?=.*[a-z])(?=.*[A-Z])"
+; Specify default hint about what the password may contain when using a regexp
+; pattern. May be text or a translation key. The "numeric" and "alphanumeric"
+; patterns have translated default hints.
+;password_hint = "local_login_password_hint"
 
 [ChoiceAuth]
 choice_order = MozillaPersona,Shibboleth,MultiILS
