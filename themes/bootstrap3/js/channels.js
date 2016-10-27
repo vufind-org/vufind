@@ -25,12 +25,12 @@ function setupChannelSlider(i, op) {
       $(thumb).css('background-image', 'url(' + img.attr('src') + ')');
       img.remove();
     });
-    $(op).find('.channel-add-menu[data-group="' + op.dataset.group + '"]')
+    $('.channel-add-menu[data-group="' + op.dataset.group + '"]')
       .clone()
       .removeAttr('data-group')
       .addClass('pull-right')
       .removeClass('hidden')
-        .appendTo($(op).find('.slider-menu'));
+      .appendTo($(op).find('.slider-menu'));
     // truncate long titles and add hover
     $(op).find('.channel-record').dotdotdot({
       callback: function dddcallback(istrunc, orig) {
