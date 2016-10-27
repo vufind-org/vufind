@@ -82,8 +82,8 @@ class Random extends AbstractChannelProvider
      * @param array                               $options      Settings (optional)
      */
     public function __construct(\VuFindSearch\Service $search,
-        \VuFind\Search\Params\PluginManager $paramManager, array $options = [])
-    {
+        \VuFind\Search\Params\PluginManager $paramManager, array $options = []
+    ) {
         $this->searchService = $search;
         $this->paramManager = $paramManager;
         $this->setOptions($options);
