@@ -61,6 +61,27 @@ class Factory
     }
 
     /**
+     * Construct the ListItems channel provider.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ListItems
+     */
+    public static function getListItems(ServiceManager $sm)
+    {
+        $helper = new ListItems(
+            $sm->getServiceLocator()->get('VuFind\DbTablePluginManager')
+                ->get('UserList'),
+            $sm->getServiceLocator()->get('ControllerPluginManager')->get('url'),
+            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+        );
+        $helper->setCoverRouter(
+            $sm->getServiceLocator()->get('VuFind\Cover\Router')
+        );
+        return $helper;
+    }
+
+    /**
      * Construct the Random channel provider.
      *
      * @param ServiceManager $sm Service manager.

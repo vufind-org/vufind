@@ -324,6 +324,7 @@ $config = [
             'channelprovider' => [
                 'factories' => [
                     'facets' => 'VuFind\ChannelProvider\Factory::getFacets',
+                    'listitems' => 'VuFind\ChannelProvider\Factory::getListItems',
                     'random' => 'VuFind\ChannelProvider\Factory::getRandom',
                     'similaritems' => 'VuFind\ChannelProvider\Factory::getSimilarItems',
                 ]
