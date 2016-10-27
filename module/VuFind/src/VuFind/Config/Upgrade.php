@@ -456,7 +456,7 @@ class Upgrade
                 $this->addWarning(
                     "WARNING: This version of VuFind does not support "
                     . "the {$theme} theme. Your config.ini [Site] {$setting} setting"
-                    . " has been reset to the default: {$default}.  You may need to "
+                    . " has been reset to the default: {$default}. You may need to "
                     . "reimplement your custom theme."
                 );
                 $this->newConfigs['config.ini']['Site'][$setting] = $default;
