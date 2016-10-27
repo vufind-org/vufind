@@ -30,7 +30,6 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\Search\Base\Params, VuFind\Search\Base\Results;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use Zend\Mvc\Controller\Plugin\Url;
 
 /**
  * "Random items" channel provider.
