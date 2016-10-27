@@ -443,6 +443,15 @@ class Upgrade
         $parts = explode(',', $theme);
         $theme = trim($parts[0]);
 
+        if ($setting === 'mobile_theme' && $theme === 'jquerymobile') {
+            $this->addWarning(
+                "WARNING: jquerymobile was removed as of VuFind 4.0. " +
+                "As such, we have disabled your mobile_theme setting."
+            );
+            delete $this->newConfigs['config.ini']['Site'][$setting];
+            return;
+        }
+
         if (!file_exists(APPLICATION_PATH . '/themes/' . $theme)
             || !is_dir(APPLICATION_PATH . '/themes/' . $theme)
         ) {
@@ -611,6 +620,7 @@ class Upgrade
 
         // Warn the user if they are using an unsupported theme:
         $this->checkTheme('theme', 'bootprint3');
+        $this->checkTheme('mobile_theme', 'jquerymobile');
 
         // Translate legacy auth settings:
         if (strtolower($newConfig['Authentication']['method']) == 'db') {
