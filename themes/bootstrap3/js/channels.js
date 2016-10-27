@@ -19,18 +19,11 @@ function bindChannelAddMenu(scope) {
 
 function setupChannelSlider(i, op) {
   if (ChannelSlider(op)) {
-    bindChannelAddMenu(op);
     $(op).find('.thumb').each(function thumbnailBackgrounds(index, thumb) {
       var img = $(thumb).find('img');
       $(thumb).css('background-image', 'url(' + img.attr('src') + ')');
       img.remove();
     });
-    $('.channel-add-menu[data-group="' + op.dataset.group + '"]')
-      .clone()
-      .removeAttr('data-group')
-      .addClass('pull-right')
-      .removeClass('hidden')
-      .appendTo($(op).find('.slider-menu'));
     // truncate long titles and add hover
     $(op).find('.channel-record').dotdotdot({
       callback: function dddcallback(istrunc, orig) {
@@ -79,6 +72,14 @@ function setupChannelSlider(i, op) {
       }
       return false;
     });
+    // Channel add buttons
+    $('.channel-add-menu[data-group="' + op.dataset.group + '"]')
+      .clone()
+      .removeAttr('data-group')
+      .addClass('pull-right')
+      .removeClass('hidden')
+      .appendTo($(op).find('.slider-menu'));
+    bindChannelAddMenu(op);
   }
 }
 
