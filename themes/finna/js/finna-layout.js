@@ -82,26 +82,6 @@ finna.layout = (function() {
         }).resize();
     };
 
-    var initHideDetails = function() {
-      if ($(".record-information").height() > 350 && $(".show-details-button")[0]) {
-        $(".record-information .record-details-more").addClass('hidden');
-        $(".record-information .show-details-button").removeClass('hidden');
-        $(".description").addClass('too-long');
-      }
-      $('.show-details-button').click (function() {
-        $(".record-information .record-details-more").toggleClass('hidden');
-        $('.description .more-link.wide').click();
-        $(this).toggleClass('hidden');
-        $(".hide-details-button").toggleClass("hidden");
-      });
-      $('.hide-details-button').click (function() {
-        $(".record-information .record-details-more").toggleClass('hidden');
-        $('.description .less-link.wide').click();
-        $(this).toggleClass('hidden');
-        $(".show-details-button").toggleClass("hidden");
-      });
-    };
-
     var initLocationService = function(holder) {
         if (typeof holder == 'undefined') {
             holder = $(document);
@@ -139,59 +119,58 @@ finna.layout = (function() {
 
       var truncation = [];
       var rowHeight = [];
-      holder.find(".truncate-field").not('.truncate-done').each(function(index) {
-        $(this).addClass('truncate-done');
+      holder.find('.truncate-field').not('.truncate-done').each(function(index) {
+        var self = $(this);
+        self.addClass('truncate-done');
         // check that truncate-field has children, where we can count line-height
-        if ($(this).children().length > 0) {
+        if (self.children().length > 0) {
           var rowCount = 3;
-          if ($(this).data("rows")) {
-            rowCount = $(this).data("rows");
+          if (self.data('rows')) {
+            rowCount = self.data('rows');
           }
 
-          if (typeof($(this).data('row-height')) !== 'undefined') {
-              rowHeight[index] = $(this).data('row-height');
+          if (typeof(self.data('row-height')) !== 'undefined') {
+              rowHeight[index] = self.data('row-height');
           } else {
-            if ($(this).children().first().is("div")) {
-              rowHeight[index] = parseFloat($(this).children().first().height());
+            if (self.children().first().is('div')) {
+              rowHeight[index] = parseFloat(self.children().first().height());
             }
             else {
-              rowHeight[index] = parseFloat($(this).children().first().css('line-height').replace('px', ''));
+              rowHeight[index] = parseFloat(self.children().first().css('line-height').replace('px', ''));
             }
           }
 
           // get the line-height of first element to determine each text line height
           truncation[index] = rowHeight[index] * rowCount;
           // truncate only if there's more than one line to hide
-          if ($(this).height() > (truncation[index] + rowHeight[index] + 1)) {
-            $(this).css('height', truncation[index] - 1 + 'px');
-            if ($( this ).hasClass("wide")) { // generate different truncate styles according to class
-              $(this).after("<div class='more-link wide'><i class='fa fa-handle-open'></i></div><div class='less-link wide'> <i class='fa fa-handle-close'></i></div>");
+          if (self.height() > (truncation[index] + rowHeight[index] + 1)) {
+            self.css('height', truncation[index] - 1 + 'px');
+            if (self.hasClass('wide')) { // generate different truncate styles according to class
+              self.after('<div class="more-link wide"><i class="fa fa-handle-open"></i></div><div class="less-link wide"> <i class="fa fa-handle-close"></i></div>');
             }
             else {
-              $(this).after("<div class='more-link'>" + VuFind.translate('show_more') + " <i class='fa fa-arrow-down'></i></div><div class='less-link'>" + VuFind.translate('show_less') + " <i class='fa fa-arrow-up'></i></div>");
+              self.after('<div class="more-link">' + VuFind.translate('show_more') + ' <i class="fa fa-arrow-down"></i></div><div class="less-link">' + VuFind.translate('show_less') + ' <i class="fa fa-arrow-up"></i></div>');
             }
             $('.less-link').hide();
 
-            var self = $(this);
-
-            $(this).nextAll('.more-link').first().click(function( event ) {
+            self.nextAll('.more-link').first().click(function(event) {
               $(this).hide();
               $(this).next('.less-link').show();
-              $(this).prev('.truncate-field').css('height','auto');
-              notifyTruncateChange(self);
+              $(this).prev('.truncate-field').css('height', 'auto');
+              notifyTruncateChange($(this));
             });
 
-            $(this).nextAll('.less-link').first().click(function( event ) {
+            self.nextAll('.less-link').first().click(function(event) {
               $(this).hide();
               $(this).prev('.more-link').show();
               $(this).prevAll('.truncate-field').first().css('height', truncation[index]-1+'px');
-              notifyTruncateChange(self);
+              notifyTruncateChange($(this));
             });
-            $(this).addClass('truncated');
+            self.addClass('truncated');
           }
-          notifyTruncateChange($(this));
+          notifyTruncateChange(self);
         }
-        $(this).trigger('truncate-done', [$(this)]);
+        self.trigger('truncate-done', [self]);
       });
     };
 
@@ -729,7 +708,6 @@ finna.layout = (function() {
             initJumpMenus();
             initAnchorNavigationLinks();
             initFixFooter();
-            initHideDetails();
             initTruncatedRecordImageNavi();
             initTruncate();
             initContentNavigation();

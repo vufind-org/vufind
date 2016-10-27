@@ -1,7 +1,7 @@
 /*global VuFind,checkSaveStatuses*/
 finna.record = (function() {
     var initDescription = function() {
-        var description = $("#description_text");
+        var description = $('#description_text');
         if (description.length) {
             var id = description.data('id');
             var url = VuFind.path + '/AJAX/JSON?method=getDescription&id=' + id;
@@ -11,6 +11,10 @@ finna.record = (function() {
                     description.html(response.data);
                     description.wrapInner('<div class="truncate-field wide"><p class="summary"></p></div>');
                     finna.layout.initTruncate(description);
+                    if (!$('.hide-details-button').hasClass('hidden')) {
+                        $('.record .description').addClass('too-long');
+                        $('.record .description .more-link.wide').click();
+                    }
                 } else {
                     description.hide();
                 }
@@ -21,6 +25,31 @@ finna.record = (function() {
         }
     }
 
+    var initHideDetails = function() {
+      $('.show-details-button').click (function() {
+        $('.record-information .record-details-more').removeClass('hidden');
+        $(this).addClass('hidden');
+        $('.hide-details-button').removeClass('hidden');
+        $('.record .description .more-link.wide').click();
+        sessionStorage.setItem('finna_record_details', '1');
+      });
+      $('.hide-details-button').click (function() {
+        $('.record-information .record-details-more').addClass('hidden');
+        $(this).addClass('hidden');
+        $('.show-details-button').removeClass('hidden');
+        $('.record .description .less-link.wide').click();
+        sessionStorage.removeItem('finna_record_details');
+      });
+      if ($('.record-information').height() > 350 && $('.show-details-button')[0]) {
+        $('.record .description').addClass('too-long');
+        if (sessionStorage.getItem('finna_record_details')) {
+          $('.show-details-button').click();
+        } else {
+          $('.hide-details-button').click();  
+        }
+      }
+    };
+    
     getRequestLinkData = function(element, recordId) {
       var vars = {}, hash;
       var hashes = element.href.slice(element.href.indexOf('?') + 1).split('&');
@@ -116,6 +145,7 @@ finna.record = (function() {
     }
     
     var init = function() {
+        initHideDetails();
         initDescription();
         initRecordNaviHashUpdate();
     };
