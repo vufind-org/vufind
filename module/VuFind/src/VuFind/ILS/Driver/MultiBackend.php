@@ -1175,9 +1175,12 @@ class MultiBackend extends AbstractBase
     {
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
-        if ($driver
-            && $this->methodSupported($driver, 'getRequestBlocks', compact('patron'))
-        ) {
+        if ($driver) {
+            if (!$this->methodSupported(
+                $driver, 'getRequestBlocks', compact('patron')
+            )) {
+                return false;
+            }
             return $driver->getRequestBlocks(
                 $this->stripIdPrefixes($patron, $source)
             );
@@ -1197,16 +1200,18 @@ class MultiBackend extends AbstractBase
     {
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
-        if ($driver
-            && $this->methodSupported($driver, 'getAccountBlocks', compact('patron'))
-        ) {
+        if ($driver) {
+            if (!$this->methodSupported(
+                $driver, 'getAccountBlocks', compact('patron')
+            )) {
+                return false;
+            }
             return $driver->getAccountBlocks(
                 $this->stripIdPrefixes($patron, $source)
             );
         }
         throw new ILSException('No suitable backend driver found');
     }
-
 
     /**
      * Function which specifies renew, hold and cancel settings.
