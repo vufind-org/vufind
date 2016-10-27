@@ -93,6 +93,10 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
      */
     protected $defaultLocation;
 
+
+    //TODO: make date format configurable
+    protected $dateFormat = "d. m. Y";
+
     /**
      * Date converter object
      *
@@ -100,6 +104,10 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
      */
     //protected $dateConverter;
 
+    /**
+     * Id of CGI session for Koha RESTful API 
+     */
+    protected $CGISESSID;
 
     /**
      * Initialize the driver.
@@ -116,24 +124,38 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
             throw new ILSException('Configuration needs to be set.');
         }
 
-        // Storing the base URL of ILS
-        $this->apiUrl = isset($this->config['Catalog']['apiurl'])
-            ? $this->config['Catalog']['url'] : "";
+        // Is debugging enabled?
+        // TODO: get rid of this and use standard vufind debugging system
+        $this->debug_enabled = isset($this->config['Catalog']['debug'])
+            ? $this->config['Catalog']['debug'] : false;
 
-        // Storing the base URL of ILS
+        // Storing the base RESTful API connection information
+        $this->apiUrl = isset($this->config['Catalog']['apiurl'])
+            ? $this->config['Catalog']['apiurl'] : "";
         $this->apiUserid = isset($this->config['Catalog']['apiuserid'])
             ? $this->config['Catalog']['apiuserid'] : null;
-
-        // Storing the base URL of ILS
         $this->apiPassword = isset($this->config['Catalog']['apiuserpassword'])
             ? $this->config['Catalog']['apiuserpassword'] : null;
+        // Authenticate to RESTful API
+        $patron = $this->makeRESTfulRequest('/auth/session', 'POST', ['userid' => $this->apiUserid, 'password' => $this->apiPassword ]);
+        if ($patron) {
+            $this->CGISESSID = $patron->sessionid;
+        } else {
+            throw new ILSException('Can not authenticate to Koha through RESTful API');
+        }
 
+        // MySQL database host
+        $this->host = isset($this->config['Catalog']['host']) ?
+            $this->config['Catalog']['host'] : "localhost";
+
+        // Storing the base URL of ILS-DI
+        $this->ilsBaseUrl = isset($this->config['Catalog']['url'])
+            ? $this->config['Catalog']['url'] : "";
 
         // Default location defined in 'KohaRESTful.ini'
         $this->defaultLocation
             = isset($this->config['Holds']['defaultPickUpLocation'])
             ? $this->config['Holds']['defaultPickUpLocation'] : null;
-
         $this->pickupEnableBranchcodes
             = isset($this->config['Holds']['pickupLocations'])
             ? $this->config['Holds']['pickupLocations'] : [];
@@ -152,16 +174,17 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
      *
      * Makes a request to the Koha ILSDI API
      *
-     * @param string $apiQuery   Query string for request (starts with "/")
-     * @param string $httpMethod HTTP method (default = GET)
-     * @param array  $data        If method is PUT or POST, provide needed data i this paramater (default = null)
+     * @param string $apiQuery    Query string for request (starts with "/")
+     * @param string $httpMethod  HTTP method (default = GET)
+     * @param array  $data        Provide needed data in this paramater (default = null)
      *
      * @throws ILSException
      * @return array
      */
-    protected function makeRequest($apiQuery, $httpMethod = "GET", $data = null)
+    protected function makeRESTfulRequest($apiQuery, $httpMethod = "GET", $data = null)
     {
-        $kohaDate = date("r"), // RFC 1123/2822
+        // TODO - get rid of this kind of authentication and use just session
+        $kohaDate = date("r"); // RFC 1123/2822
         $signature = implode(" ", [(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "HTTPS" : "HTTP",
                                    $this->apiUserid,
                                    $kohaDate
@@ -172,11 +195,14 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
         $httpHeaders = [
             "Accept" => "application/json",
             "X-Koha-Date" => $kohaDate,
-            "Authorization" => "Koha " . $this->apiUserid . ":" . $hashedSignature ;
+            "Authorization" => "Koha " . $this->apiUserid . ":" . $hashedSignature ,
         ];
 
         $client = $this->httpService->createClient($this->apiUrl . $apiQuery, $httpMethod);
         $client->setHeaders($httpHeaders);
+        if(isset($this->CGISESSID)) {
+            $client->addCookie('CGISESSID', $this->CGISESSID);
+        }
         if($data !== null) {
             $client->setRawBody(http_build_query($data));
         }
@@ -184,36 +210,242 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
         try {
             $response = $client->send();
         } catch (\Exception $e) {
-            throw new ILSEException($e->getMessage());
+            throw new ILSException($e->getMessage());
         }
 
         if (!$response->isSuccess()) {
-            $this->debug(
-                'HTTP status ' . $response->getStatusCode() .
-                ' received, accessing Koha RESTful API: ' . $apiQuery
-            );
-            return false;
+            var_dump($response->getBody());
+            echo $this->apiUrl . $apiQuery;
+            throw new ILSException("Error in communication with Koha API:" . $response->getBody() . 
+                                   " HTTP status code: " . $response->getStatusCode() );
         }
 
-        return json_decode($response->getBody(), true);
+        $result = json_decode($response->getBody());
+        if (json_last_error() !== JSON_ERROR_NONE ) {
+            throw new ILSException("Error parsing hajson response of Koha API");
+        }
+        return $result;
     }
 
-   /**
-    * https://vufind.org/wiki/development:plugins:ils_drivers#getpickuplocations
-    */
+    /**
+     * Format dates
+     */
+    protected function formatDate($date)
+    {
+        if (!$date) { return NULL; }
+        $dateObject = new \DateTime($date);
+        return $dateObject->format($this->dateFormat);
+    }
+
+    /**
+     * Public Function which retrieves renew, hold and cancel settings from the
+     * driver ini file.
+     *
+     * @param string $function The name of the feature to be checked
+     *
+     * @return array An array with key-value pairs.
+     */
+    public function getConfig($function)
+    {
+        $functionConfig = "";
+        if (isset($this->config[$function])) {
+            $functionConfig = $this->config[$function];
+        } else {
+            $functionConfig = false;
+        }
+        return $functionConfig;
+    }
+
+    /**
+     * https://vufind.org/wiki/development:plugins:ils_drivers#getpickuplocations
+     */
     public function getPickupLocations($patron = false, $holdDetails = null)
     {
-        $libraries = $this->makeRequest("/libraries");
-        $locations = [];
-        foreach($libraries => $library)
-        {
-            $locations[] = [
-                "locationID" => $library["branchcode"],
-                "locationDisplay" => $library["branchname"]
-            ];
+        // TODO: check if pickupEnableBranchcodes is set (maybe better in init method), if not, use default, if it's not set, get all locations from API
+        if ( !isset($this->locations )) {
+            $libraries = $this->makeRESTfulRequest("/libraries");
+            $locations = [];
+            foreach($libraries as $library)
+            {
+                if (in_array($library->branchcode, $this->pickupEnableBranchcodes)) {
+                    $locations[] = [
+                        "locationID" => $library->branchcode,
+                        "locationDisplay" => $library->branchname,
+                    ];
+                }
+            }
+            $this->locatins = $locations;
         }
-        return $locations;
+        return $this->locations;
     }
 
+    /**
+     * Get Default Pick Up Location
+     *
+     * Returns the default pick up location set in KohaILSDI.ini
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.    May be used to limit the pickup options
+     * or may be ignored.
+     *
+     * @return string The default pickup location for the patron.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
+    {
+        return $this->defaultLocation;
+    }
+
+    /**
+     * Patron Login
+     *
+     * This is responsible for authenticating a patron against the catalog.
+     *
+     * @param string $username The patron username
+     * @param string $password The patron's password
+     *
+     * @throws ILSException
+     * @return mixed          Associative array of patron info on successful login,
+     * null on unsuccessful login.
+     */
+    public function patronLogin($username, $password)
+    {
+        $patron = $this->makeRESTfulRequest('/auth/session', 'POST', ['userid' => $username, 'password' => $password ]);
+        if ($patron) {
+            return [
+                'id' => $patron->borrowernumber,
+                'firstname' => $patron->firstname,
+                'lastname' => $patron->surname,
+                'cat_username' => $username,
+                'cat_password' => $password,
+                'email' => $patron->email,
+                'major' => null,
+                'college' => null,
+            ];
+        }
+        return null;
+    }
+
+    /**
+     * Get Patron Profile
+     *
+     * This is responsible for retrieving the profile for a specific patron.
+     *
+     * @param array $patron The patron array
+     *
+     * @throws ILSException
+     * @return array        Array of the patron's profile data on success.
+     */
+    public function getMyProfile($patron)
+    {
+         $patron = $this->makeRESTfulRequest('/patrons/' . $patron['id']);
+         if ($patron) {
+             return [
+                'firstname' => $patron->firstname,
+                'lastname'  => $patron->surname,
+                'address1'  => $patron->address . ' ' . $patron->streetnumber,
+                'address2'  => $patron->address2,
+                'city'      => $patron->city,
+                'country'   => $patron->country,
+                'zip'       => $patron->zipcode,
+                'phone'     => $patron->phone,
+                'group'     => $patron->categorycode,
+             ];
+         }
+         return null;
+    }
+
+    /**
+     * Get Patron Transactions
+     *
+     * This is responsible for retrieving all transactions (i.e. checked out items)
+     * by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @throws \VuFind\Exception\Date
+     * @throws ILSException
+     * @return array        Array of the patron's transactions on success.
+     */
+    public function getMyTransactions($patron)
+    {
+        $checkouts = $this->makeRESTfulRequest('/checkouts', 'GET', [ 'borrowernumber' => $patron['id'] ]);
+        $checkoutsList = [];
+        if($checkouts) {
+            foreach ($checkouts as $checkout) {
+                //TODO: it's not nice to make request for each checkout in the loop
+                $item = $this->makeRESTfulRequest('/items/' . $checkout->itemnumber);
+                //$renewable = $this->makeRESTfulRequest('/checkouts/' . $checkout->issue_id . '/renewability');
+                $checkoutsList[] = [
+                    'duedate'           => $this->formatDate($checkout->date_due),
+                    'id'                => $item ? $item->biblionumber : 0,
+                    'item_id'           => $checkout->itemnumber,
+                    'barcode'           => $item ? $item->barcode : 0,
+                    'renew'             => $checkout->renewals,
+                    'borrowingLocation' => $checkout->branchcode, //TODO: add branch name
+            //        'renewable' => is_object($renewable) ? 1 : 0, //TODO: renewability is based on http status - it's weird
+//                    'request => , //TODO: is item reserved?
+                ];
+       
+            }
+        }
+        return $checkoutsList;
+    }
+
+    /** Get Patron Holds
+     *
+     */
+    public function getMyHolds($patron)
+    {
+        $holds = $this->makeRESTfulRequest('/holds', 'GET', [ 'borrowernumber' => $patron['id'] ]);
+        $holdsList = [];
+        if($holds) {
+            foreach ($holds as $hold) {
+                $holdsList[] = [
+                    'id'        => $hold->biblionumber,
+                    'location'  => $hold->branchcode, //TODO: add branch name
+                    'expire'    => $this->formatDate($hold->expirationdate),
+                    'create'    => $this->formatDate($hold->reservedate),
+                    'position'  => $hold->priority,
+                    'available' => $hold->found,
+                ];
+            }
+        }
+        return $holdsList;
+    }
+
+    /** Get Patron Fines
+     *
+     */
+//    public function getMyFines($patron)
+//    {
+//        $fines = $this->makeRESTfulRequest('/');
+ 
+    /**
+     * Place Hold
+     *
+     * Attempts to place a hold or recall on a particular item and returns
+     * an array with result details or throws an exception on failure of support
+     * classes
+     *
+     * @param array $holdDetails An array of item and patron data
+     *
+     * @throws ILSException
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+/*    public function placeHold($holdDetails)
+    {
+
+    }*/
+
+
+    /**
+     * Insert Suggestion
+     */
 }
 
