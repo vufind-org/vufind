@@ -27,7 +27,6 @@
  */
 namespace VuFind\ChannelProvider;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Record\Router as RecordRouter;
 use VuFind\Search\Base\Params, VuFind\Search\Base\Results;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
@@ -161,11 +160,11 @@ class Random extends AbstractChannelProvider
      * Add a new filter to an existing search results object to populate a
      * channel.
      *
-     * @param \VuFind\Search\Base\Params $params Search parameter object
+     * @param Params $params Search parameter object
      *
      * @return array
      */
-    protected function buildChannelFromParams($params)
+    protected function buildChannelFromParams(Params $params)
     {
         $retVal = [
             'title' => $this->translate('random_recommendation_title'),
