@@ -572,7 +572,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                 )
             );
         }
-        return array_values(array_unique($isbn));
+        return array_values(array_unique(array_filter($isbn)));
     }
 
     /**
