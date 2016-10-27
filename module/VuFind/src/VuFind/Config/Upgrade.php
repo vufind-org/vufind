@@ -445,10 +445,10 @@ class Upgrade
 
         if ($setting === 'mobile_theme' && $theme === 'jquerymobile') {
             $this->addWarning(
-                "WARNING: jquerymobile was removed as of VuFind 4.0. " +
+                "WARNING: jquerymobile was removed as of VuFind 4.0. " .
                 "As such, we have disabled your mobile_theme setting."
             );
-            delete $this->newConfigs['config.ini']['Site'][$setting];
+            unset($this->newConfigs['config.ini']['Site'][$setting]);
             return;
         }
 
