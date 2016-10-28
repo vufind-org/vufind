@@ -121,11 +121,27 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
         }
 
         // Store logout URL in session:
-        $config = $this->getConfig()->Shibboleth;
-        if (isset($config->logout_attribute)) {
-            $url = $this->getServerParam($request, $config->logout_attribute);
+        if (isset($shib->logout_attribute)) {
+            $url = $this->getServerParam($request, $shib->logout_attribute);
             if ($url) {
                 $this->session['logoutUrl'] = $url;
+            }
+        }
+
+        // Add session id mapping to external_session table for single logout support
+        if (isset($shib->session_id)) {
+            $shibSessionId = $request->getServer()->get($shib->session_id);
+            if (null !== $shibSessionId) {
+                $localSessionId = $this->sessionManager->getId();
+                $externalSession = $this->getDbTableManager()
+                    ->get('ExternalSession');
+                $externalSession->addSessionMapping(
+                    $localSessionId, $shibSessionId
+                );
+                $this->debug(
+                    "Cached Shibboleth session id '$shibSessionId' for local session"
+                    . " '$localSessionId'"
+                );
             }
         }
 
