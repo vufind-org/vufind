@@ -1,0 +1,11 @@
+<?
+    $heading = $this->driver->getTitle();
+    if (empty($heading)) {
+        $heading = $this->translate('Heading unavailable.');
+    }
+?>
+<a rel="external" href="<?=$this->url('authority-record')?>?id=<?=urlencode($this->driver->getUniqueId())?>">
+  <div class="result">
+    <h3><?=$this->escapeHtml($heading)?></h3>
+  </div>
+</a>

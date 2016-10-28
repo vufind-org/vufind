@@ -1,0 +1,51 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Reserves Search'));
+
+    // Convenience variables:
+    $reservesLookfor = $this->params->getDisplayQuery();
+?>
+
+<div data-role="page">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <h3><?=$this->transEsc('Search For Items on Reserve')?></h3>
+    <form method="get" name="reservesSearchForm" class="search" data-ajax="false">
+      <div data-role="fieldcontain">
+        <label for="reservesSearchForm_lookfor" class="offscreen"><?=$this->transEsc("Your search terms")?></label>
+        <input id="reservesSearchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escapeHtmlAttr($reservesLookfor)?>" <?=$this->searchOptions('SolrReserves')->autocompleteEnabled() ? ' class="autocomplete searcher:SolrReserves type:Reserves"' : ''?> />
+      </div>
+      <div data-role="fieldcontain">
+        <input type="submit" name="submit" value="<?=$this->transEsc("Find")?>"/>
+      </div>
+    </form>
+
+    <? foreach ($this->results->getRecommendations('side') as $current): ?>
+      <?=$this->recommend($current)?>
+    <? endforeach; ?>
+
+    <? if ($this->results->getResultTotal() < 1): ?>
+      <p class="error"><?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($reservesLookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?></p>
+      <? if (isset($this->parseError)): ?>
+        <p class="error"><?=$this->transEsc('nohit_parse_error')?></p>
+      <? endif; ?>
+    <? else: ?>
+      <ul class="results" data-role="listview" data-split-icon="plus" data-split-theme="c">
+        <? foreach ($this->results->getResults() as $record): ?>
+          <?
+              $url = $this->currentPath() . $this->escapeHtmlAttr(
+                  '?inst=' . urlencode($record->getInstructorId())
+                  . '&course=' . urlencode($record->getCourseId())
+                  . '&dept=' . urlencode($record->getDepartmentId())
+              );
+          ?>
+          <li>
+            <a rel="external" href="<?=$url?>"><?=$this->escapeHtml($record->getDepartment())?> <?=$this->escapeHtml($record->getCourse())?> <?=$this->escapeHtml($record->getInstructor())?> <span class="ui-li-count"><?=$this->localizedNumber($record->getItemCount())?></span></a>
+          </li>
+        <? endforeach; ?>
+      </ul>
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

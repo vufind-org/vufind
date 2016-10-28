@@ -1,0 +1,7 @@
+<div data-role="page">
+  <?=$this->mobileMenu()->header(array('searchLink' => 'authority-home'))?>
+  <div data-role="content">
+    <?=$this->record($this->driver)->getTab($this->tabs['Details'])?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

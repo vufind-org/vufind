@@ -1,0 +1,13 @@
+<ul class="results" data-role="listview" data-split-icon="plus" data-split-theme="c">
+  <? foreach ($this->results->getResults() as $record): ?>
+    <li>
+      <a rel="external" href="<?=$this->url('author-home')?>?author=<?=urlencode($record['value'])?>">
+        <div class="result">
+          <h3><?=$this->escapeHtml($record['value'])?></h3>
+          
+        </div>
+      </a>
+      <span class="ui-li-count"><?=$this->escapeHtml($record['count'])?></span>
+    </li>
+  <? endforeach; ?>
+</ul>

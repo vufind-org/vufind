@@ -1,0 +1,28 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Record Citations'));
+
+    // Collect citation data:
+    $helper = $this->citation($this->driver);
+    $citations = array();
+    foreach ($this->driver->getCitationFormats() as $format) {
+        $citations[$format . ' Citation'] = $helper->getCitation($format);
+    }
+?>
+<div data-role="page" id="Record-view">
+  <?=$this->mobileMenu()->header()?>
+  <div class="record" data-role="content" data-record-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+    <? if (count($citations) == 0): ?>
+      <?=$this->transEsc('No citations are available for this record')?>
+    <? else: ?>
+      <? foreach ($citations as $caption => $citation): ?>
+        <strong><?=$this->transEsc($caption)?></strong>
+        <p class="citationText">
+          <?=$citation?>
+        </p>
+      <? endforeach; ?>
+      <div class="note"><?=$this->transEsc('Warning: These citations may not always be 100% accurate')?>.</div>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

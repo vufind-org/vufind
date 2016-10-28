@@ -1,0 +1,5 @@
+<? if ($this->layout()->templateName == 'history'): // use myresearch navbar for Search/history ?>
+  <?=$this->render('myresearch/footer-navbar.phtml')?>
+<? else:                            // use default navbar for everything else ?>
+  <?=$this->render('default-footer-navbar.phtml');?>
+<? endif; ?>

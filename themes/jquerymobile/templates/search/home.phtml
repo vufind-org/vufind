@@ -1,0 +1,32 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Search Home'));
+?>
+<div data-role="page" id="Search-home">
+  <?=$this->mobileMenu()->header(array('searchLink' => false, 'results' => null))?>
+  <div data-role="content">
+    <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
+      <div class="sysInfo">
+        <h2><?=$this->transEsc('ils_offline_title')?></h2>
+        <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+        <p><?=$this->transEsc('ils_offline_home_message')?></p>
+        <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+        <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+      </div>
+    <? endif; ?>
+    <?=$this->render("search/searchbox.phtml")?>
+    <? if (isset($this->overrideHomeOptions)): // allow other templates to override the normal options here ?>
+      <?=$this->overrideHomeOptions?>
+    <? else: ?>
+      <ul data-role="listview" data-inset="true" data-dividertheme="b">
+        <li data-role="list-divider"><?=$this->transEsc('Find More')?></li>
+        <li><a data-ajax="false" href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
+        <li><a data-ajax="false" href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
+        <li><a data-ajax="false" href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
+        <li><a data-ajax="false" href="<?=$this->url('search-reserves')?>"><?=$this->transEsc('Course Reserves')?></a></li>
+        <li><a data-ajax="false" href="<?=$this->url('search-newitem')?>"><?=$this->transEsc('New Items')?></a></li>
+      </ul>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

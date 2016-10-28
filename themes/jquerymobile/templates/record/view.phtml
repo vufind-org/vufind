@@ -1,0 +1,25 @@
+<?
+    // Grab tab contents up front -- this will set the page title, which we need to
+    // do before we display the page header below.
+    $activeTab = false;
+    foreach ($this->tabs as $tab => $obj) {
+        if (strtolower($tab) == strtolower($this->activeTab)) {
+            $activeTab = $tab;
+        }
+    }
+    $tab = $activeTab ? $this->record($this->driver)->getTab($this->tabs[$activeTab]) : '';
+?>
+<div data-role="page" id="Record-view">
+  <?=$this->mobileMenu()->header(array('searchLink' => $this->searchOptions($this->searchClassId)->getSearchHomeAction()))?>
+  <div class="record" data-role="content" data-record-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+    <?=$this->flashmessages()?>
+    <? if ($this->activeTab == $this->defaultTab): ?>
+      <?=$this->record($this->driver)->getCoreMetadata()?>
+    <? else: ?>
+      <h3><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h3>
+    <? endif; ?>
+    <?=$tab?>
+    <?=$this->record($this->driver)->getToolbar()?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

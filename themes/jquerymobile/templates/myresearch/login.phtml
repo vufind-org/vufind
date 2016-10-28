@@ -1,0 +1,31 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Login'));
+
+    // Convenience variables:
+    $account = $this->auth()->getManager();
+    $hideLogin = !(is_object($account) && $account->loginEnabled());
+    $offlineMode = $this->ils()->getOfflineMode();
+?>
+<div data-role="page" id="MyResearch-login">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <? if ($offlineMode == "ils-offline"): ?>
+      <div class="sysInfo">
+        <h2><?=$this->transEsc('ils_offline_title')?></h2>
+        <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+        <p><?=$this->transEsc('ils_offline_login_message')?></p>
+        <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+        <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+      </div>
+    <? elseif ($hideLogin): ?>
+      <div class="error"><?=$this->transEsc('login_disabled')?></div>
+    <? endif; ?>
+
+    <? if (!$hideLogin): ?>
+      <?=$this->auth()->getLogin()?>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>
+

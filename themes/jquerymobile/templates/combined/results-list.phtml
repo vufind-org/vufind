@@ -1,0 +1,36 @@
+<?
+  $view = $currentSearch['view'];
+  $results = $view->results;
+  $params = $results->getParams();
+  $lookfor = $params->getDisplayQuery();
+  $recordTotal = $results->getResultTotal();
+
+  // More link should use default limit, not custom limit:
+  $limit = $params->getLimit();
+  $params->setLimit($params->getOptions()->getDefaultLimit());
+  $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1);
+  $params->setLimit($limit);
+?>
+<h2><?=$this->transEsc($currentSearch['label'])?></h2>
+<? if (isset($currentSearch['sublabel'])): ?>
+  <p><i><?=$this->transEsc($currentSearch['sublabel'])?></i></p>
+<? endif; ?>
+<? if ($recordTotal < 1): ?>
+  <p class="error">
+    <? if (isset($view->overrideEmptyMessage)): ?>
+      <?=$view->overrideEmptyMessage?>
+    <? else: ?>
+      <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
+    <? endif; ?>
+  </p>
+  <? if (isset($view->parseError)): ?>
+    <p class="error"><?=$this->transEsc('nohit_parse_error')?></p>
+  <? endif; ?>
+  <? foreach ($results->getRecommendations('noresults') as $current): ?>
+    <?=$this->recommend($current)?>
+  <? endforeach; ?>
+<? else: ?>
+  <div data-role="controlgroup">
+    <a class="combinedButton" href="<?=$moreUrl?>" data-role="button" rel="external"><?=$this->transEsc("Search Results") . ' (' . $this->localizedNumber($recordTotal) . ')' ?></a>
+  </div>
+<? endif; ?>

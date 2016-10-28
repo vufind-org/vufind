@@ -1,0 +1,43 @@
+<? $user = $this->auth()->isLoggedIn(); if ($user): ?>
+  <?
+    $rows = [];
+    if ($this->userlist()->getMode() !== 'disabled') {
+      $rows[] = '<li><a rel="external" '
+        . ($this->layout()->templateName=="mylist" ? ' class="ui-btn-active"' : '')
+        . ' href="' . $this->url('myresearch-favorites') . '">'
+        . $this->transEsc('Favorites') . '</a></li>';
+    }
+    $rows[] = '<li><a rel="external" '
+      . ($this->layout()->templateName=="history" ? ' class="ui-btn-active"' : '')
+      . ' href="' . $this->url('search-history') . '?require_login">'
+      . $this->transEsc('History') . '</a></li>';
+    if ($this->auth()->getManager()->supportsPasswordChange()) {
+      $rows[] = '<li><a rel="external" href="'
+        . $this->url('myresearch-changepassword') . '">'
+        . $this->transEsc("Change Password") . '</a></li>';
+    }
+    if ($user->libraryCardsEnabled()) {
+      $rows[] = '<li><a rel="external" href="'
+        . $this->url('librarycards-home') . '">'
+        . $this->transEsc('Library Cards') . '</a></li>';
+    }
+    $rows[] = '<li><a rel="external" href="'
+      . $this->url('myresearch-logout') . '">' . $this->transEsc("Log Out")
+      . '</a></li>';
+  ?>
+  <div data-role="navbar">
+    <ul>
+      <? foreach ($rows as $i => $row): ?>
+        <? if ($i > 0 && $i % 3 === 0): ?>
+    </ul>
+  </div>
+  <div data-role="navbar">
+    <ul>
+        <? endif; ?>
+        <?=$row?>
+      <? endforeach; ?>
+    </ul>
+  </div>
+<? else: ?>
+  <?=$this->render('default-footer-navbar.phtml');?>
+<? endif; ?>

@@ -1,0 +1,16 @@
+<?
+    $url = $this->driver->getUrl();
+?>
+<a rel="external" href="<?=$this->escapeHtmlAttr($url)?>">
+  <div class="result">
+    <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>
+  </div>
+  <? $snippet = $this->driver->getHighlightedSnippet(); ?>
+  <? $summary = $this->driver->getSummary(); ?>
+  <? if (!empty($snippet)): ?>
+    <p><?=$this->highlight($snippet['snippet'])?></p>
+  <? elseif (!empty($summary)): ?>
+    <p><?=$this->escapeHtml($summary[0])?></p>
+  <? endif; ?>
+  <span style="color:#008000;" class="ui-li-desc"><?=$this->escapeHtml($url)?></span>
+</a>

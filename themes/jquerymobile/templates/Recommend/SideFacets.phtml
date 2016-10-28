@@ -1,0 +1,22 @@
+<? $results = $this->recommend->getResults(); ?>
+<? $filterList = $this->recommend->getVisibleFilters(); if (!empty($filterList)): ?>
+  <ul class="filters" data-role="listview" data-inset="true" data-dividertheme="e">
+    <li data-role="list-divider"><?=$this->transEsc('adv_search_filters')?></li>
+    <? $i = 0; foreach ($filterList as $field => $filters): ?>
+      <? foreach ($filters as $j => $filter): ?>
+        <?
+            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], true, $filter['operator']);
+            if ($filter['displayText'] == '[* TO *]') $filter['displayText'] = $this->translate('filter_wildcard');
+        ?>
+        <li data-icon="minus">
+          <a data-icon="minus" rel="external" href="<?=$removeLink?>"><?=($i++ > 0 && ($j == 0 || $filter['operator'] != 'OR')) ? $this->transEsc("AND") . ' ' : ''?><? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $j > 0) echo $this->transEsc('OR') . ' '; ?><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?></a>
+        </li>
+      <? endforeach; ?>
+    <? endforeach; ?>
+  </ul>
+<? endif; ?>
+<?
+    // Actual facet options are loaded as an extra hidden dialog box -- inject these into the appropriate
+    // area of the layout object (they won't work if simply displayed inline):
+    $this->layout()->extraDialogs .= $this->render('Recommend/SideFacets-dialog.phtml');
+?>

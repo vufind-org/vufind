@@ -1,0 +1,20 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Collection Items') . ': ' . $this->driver->getBreadcrumb());
+
+    // Get search results
+    $results = $this->tab->getResults();
+    $params = $this->tab->getParams();
+    $searchDetails = array('results' => $results, 'params' => $params);
+?>
+<? if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+  <p>
+  <?=$this->transEsc("Showing")?>
+  <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
+  <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong> <?=$this->transEsc('Items')?>
+  </p>
+  <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
+  <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $results))?>
+<? else: ?>
+  <?=$this->transEsc('collection_empty')?>
+<? endif; ?>

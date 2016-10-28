@@ -1,0 +1,88 @@
+<?
+  $this->headTitle($this->translate('Browse the Collection Alphabetically'));
+  $baseQuery = array('source' => $this->source, 'from' => $this->from);
+?>
+
+<div data-role="page">
+  <? if (!$this->result): ?>
+    <?=$this->mobileMenu()->header() ?>
+    <div class="resulthead">
+      <form method="get" action="<?=$this->url('alphabrowse-home')?>" name="alphaBrowseForm" id="alphaBrowseForm" data-ajax="false">
+        <div class="ui-body ui-body-d">
+          <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
+          <select id="alphaBrowseForm_source" name="source">
+            <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
+              <option value="<?=$this->escapeHtmlAttr($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
+            <? endforeach; ?>
+          </select>
+          <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
+          <input type="search" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>"/>
+          <input type="submit" data-theme="b" value="<?=$this->transEsc('Browse') ?>"/>
+        </div>
+      </form>
+    </div>
+  <? else: ?>
+    <?=$this->mobileMenu()->header(array(
+      'extraButtons' => array('<a rel="external" href="'
+        . $this->url('alphabrowse-home')
+        . '" data-icon="home" class="ui-btn-left">'
+        . $this->transEsc("Browse Home")
+        . '</a>'
+    ))) ?>
+    <? ob_start(); ?>
+      <div class="ui-grid-a">
+        <div class="ui-block-a">
+          <? if (isset($this->prevpage)): ?>
+            <a data-role="button" data-mini="true" data-icon="arrow-l" href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => $baseQuery + array('page' => $this->prevpage))))?>"><?=$this->transEsc('Prev')?></a>
+          <? endif; ?>
+        </div>
+        <div class="ui-block-b">
+          <? if (isset($this->nextpage)): ?>
+            <a data-role="button" data-mini="true" data-icon="arrow-r" data-iconpos="right" href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => $baseQuery + array('page' => $this->nextpage))))?>"><?=$this->transEsc('Next')?></a>
+          <? endif; ?>
+        </div>
+      </div>
+    <? $pageLinks = ob_get_contents(); ?>
+    <? ob_end_clean(); ?>
+    <?=$pageLinks ?>
+    <div class="alphaBrowseResult">
+      <ul class="ui-listview" data-role="listview">
+      <? foreach ($this->result['Browse']['items'] as $i => $item): ?>
+        <? $highlight = (isset($this->highlight_row) && $i == $this->highlight_row) ? true : false ?>
+        <li class="ui-li-has-count<?=$highlight ? ' info' : '' ?>">
+          <? if ($highlight && isset($this->match_type) && ($this->match_type == "NONE")): ?>
+            <?// this is the right row but query doesn't match value ?>
+              <?=$this->transEsc('your_match_would_be_here') ?>
+            </li>
+            <li class="ui-li-has-count">
+          <? endif; ?>
+          <? if ($item['count'] > 0 || count($item['useInstead']) > 0): ?>
+            <? if (count($item['useInstead']) > 0): ?>
+              <? $query = array('from' => implode($item['useInstead'])) + $baseQuery; ?>
+              <? $searchLink = $this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => $query))); ?>
+            <? else: ?>
+              <? $searchLink = $this->escapeHtmlAttr($this->alphabrowse()->getUrl($this->source, $item)); ?>
+            <? endif; ?>
+          <? endif; ?>
+          <a class="ui-link-inherit" data-ajax="false" href="<?=$searchLink ?>">
+            <div class="ui-btn-text">
+              <?=$this->escapeHtml($item['heading'])?>
+              <? if (count($item['useInstead']) > 0): ?>
+              <i>(<?=$this->transEsc('Use instead') ?>: <?=implode($item['useInstead']) ?>)</i>
+              <? endif; ?>
+            </div>
+          </a>
+          <? if ($item['count'] > 0): ?><span class="ui-li-count ui-btn-up-c ui-btn-corner-all"><?=$item['count']?></span><? endif; ?>
+          <span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span>
+        </li>
+      <? endforeach; ?>
+      <? if (isset($this->highlight_end)): ?>
+        <li class="ui-li-has-count info">
+          <?=$this->transEsc('your_match_would_be_here') ?>
+        </li>
+      <? endif; ?>
+      </ul>
+    </div>
+    <?=$pageLinks ?>
+  <? endif; ?>
+</div>

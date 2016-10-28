@@ -1,0 +1,61 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Reserves Search'));
+?>
+<div data-role="page">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <h3><?=$this->transEsc('Search For Items on Reserve')?></h3>
+    <? if (is_array($this->courseList)): ?>
+      <form method="get" name="searchForm" class="search" data-ajax="false">
+        <div data-role="fieldcontain">
+          <label for="reserves_by_course"><?=$this->transEsc('By Course')?>:</label>
+          <select name="course" id="reserves_by_course">
+            <option></option>
+            <? foreach ($this->courseList as $courseId => $courseName): ?>
+              <option value="<?=$this->escapeHtmlAttr($courseId)?>"><?=$this->escapeHtml($courseName)?></option>
+            <? endforeach; ?>
+          </select>
+        </div>
+        <div data-role="fieldcontain">
+          <input type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
+        </div>
+      </form>
+    <? endif; ?>
+
+    <? if (is_array($this->instList)): ?>
+      <form method="get" name="searchForm" class="search" data-ajax="false">
+        <div data-role="fieldcontain">
+          <label for="reserves_by_inst"><?=$this->transEsc('By Instructor')?>:</label>
+          <select name="inst" id="reserves_by_inst">
+            <option></option>
+            <? foreach ($this->instList as $instId => $instName): ?>
+              <option value="<?=$this->escapeHtmlAttr($instId)?>"><?=$this->escapeHtml($instName)?></option>
+            <? endforeach; ?>
+          </select>
+        </div>
+        <div data-role="fieldcontain">
+          <input type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
+        </div>
+      </form>
+    <? endif; ?>
+
+    <? if (is_array($this->deptList)): ?>
+      <form method="get" name="searchForm" class="search" data-ajax="false">
+        <div data-role="fieldcontain">
+          <label for="reserves_by_dept"><?=$this->transEsc('By Department')?>:</label>
+          <select name="dept" id="reserves_by_dept">
+            <option></option>
+            <? foreach ($this->deptList as $deptId => $deptName): ?>
+              <option value="<?=$this->escapeHtmlAttr($deptId)?>"><?=$this->escapeHtml($deptName)?></option>
+            <? endforeach; ?>
+          </select>
+        </div>
+        <div data-role="fieldcontain">
+          <input type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
+        </div>
+      </form>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

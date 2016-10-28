@@ -1,0 +1,60 @@
+<?
+    // Grab list object from search results (if applicable):
+    $list = $this->results->getListObject();
+
+    // Grab current user (if any):
+    $user = $this->auth()->isLoggedIn();
+
+    // Set up page title:
+    $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
+
+    // Load Javascript dependencies into header:
+    $this->headScript()->appendFile("check_item_statuses.js");
+
+    // Set up extra button for header:
+    $extraButton = (isset($list) && $list->editAllowed($user))
+        ? '<a rel="external" href="'
+            . $this->url('editList', array('id' => $list->id))
+            . '" data-icon="gear" class="ui-btn-left">'
+            . $this->transEsc("edit_list")
+            . '</a>'
+        : '';
+?>
+
+<div data-role="page" id="MyResearch-list" class="results-page">
+  <?=$this->mobileMenu()->header(array('extraButtons'=>array($extraButton)))?>
+  <div data-role="content">
+    <? foreach ($this->results->getRecommendations('side') as $current): ?>
+      <?=$this->recommend($current)?>
+    <? endforeach; ?>
+
+    <? if (isset($list)): ?>
+      <h3><?=$this->escapeHtml($list->title)?></h3>
+      <? if (!empty($list->description)): ?><p><?=$this->escapeHtml($list->description)?></p><? endif; ?>
+    <? else: ?>
+      <h3><?=$this->transEsc("Your Favorites")?></h3>
+    <? endif; ?>
+
+    <?=$this->flashmessages();?>
+
+    <? if (($recordTotal = $this->results->getResultTotal()) > 0): ?>
+      <p>
+        <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
+        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
+      </p>
+
+      <ul class="results mylist" data-role="listview" data-split-icon="minus" data-split-theme="d" data-inset="false">
+        <? $i = 0; foreach ($this->results->getResults() as $current): ?>
+          <li>
+            <?=$this->record($current)->getListEntry($list, $user)?>
+          </li>
+        <? endforeach; ?>
+      </ul>
+
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+    <? else: ?>
+      <p><?=$this->transEsc('You do not have any saved resources')?></p>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

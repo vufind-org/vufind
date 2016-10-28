@@ -1,0 +1,54 @@
+<?=$this->doctype('HTML5')?>
+<html lang="<?=$this->layout()->userLang?>">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1"/>
+    <?$this->headThemeResources()?>
+    <?=$this->headMeta()?>
+    <?=$this->headTitle()?>
+    <?=$this->headLink()?>
+    <?=$this->headStyle()?>
+    <?
+        // Set global path for Javascript code:
+        $this->headScript()->prependScript("path = '" . rtrim($this->url('home'), '/') . "';");
+
+        // Session keep-alive
+        if ($this->KeepAlive()) {
+            $this->headScript()->appendScript('var keepAliveInterval = '
+                . $this->KeepAlive());
+            $this->headScript()->appendFile("keep_alive.js");
+        }
+        if ($this->recaptcha()->active()) {
+            $this->headScript()->appendFile("recaptcha_ajax.js");
+        }
+    ?>
+    <?=$this->headScript()?>
+  </head>
+  <body>
+    <?=$this->layout()->content?>
+    <?=$this->layout()->extraDialogs?>
+    <div data-role="dialog" id="Language-dialog">
+      <div data-role="header" data-theme="d" data-position="inline">
+        <h1><?=$this->transEsc("Language")?></h1>
+      </div>
+      <div data-role="content">
+        <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
+        <form method="post" name="langForm" action="#" id="langForm" data-ajax="false">
+          <div data-role="fieldcontain">
+            <label for="langForm_mylang"><?=$this->transEsc("Language")?>:</label>
+            <select id="langForm_mylang" name="mylang">
+              <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+                <option value="<?=$langCode?>"<?=$this->layout()->userLang == $langCode ? ' selected="selected"' : ''?>><?=$this->displayLanguageOption($langName)?></option>
+              <? endforeach; ?>
+            </select>
+            <input type="submit" value="<?=$this->transEsc("Set")?>" />
+          </div>
+        </form>
+        <? endif; ?>
+      </div>
+    </div>
+    <?=$this->googleanalytics()?>
+    <?=$this->piwik()?>
+  </body>
+</html>

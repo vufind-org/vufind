@@ -1,0 +1,17 @@
+<? $comments = $this->driver->getComments(); if (empty($comments) || count($comments) == 0): ?>
+  <li><p><?=$this->transEsc('Be the first to leave a comment')?>!</p></li>
+<? endif; ?>
+<? foreach ($comments as $comment): ?>
+  <li>
+    <a href="#">
+      <p><?=$this->escapeHtml($comment->comment)?></p>
+      <p class="posted-by"><?=$this->transEsc('Posted by')?> <strong><?=$this->escapeHtml(trim($comment->firstname . ' ' . $comment->lastname))?></strong></p>
+      <span class="ui-li-aside"><?=$this->escapeHtml(array_shift(explode(' ', $comment->created)))?></span>
+    </a>
+    <? if (($user = $this->auth()->isLoggedIn()) && $comment->user_id == $user->id): ?>
+      <a rel="external" href="<?=$this->recordLink()->getActionUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" data-comment-id="<?=$this->escapeHtmlAttr($comment->id)?>" class="deleteRecordComment">
+        <?=$this->transEsc('Delete')?>
+      </a>
+    <? endif; ?>
+  </li>
+<? endforeach; ?>

@@ -1,0 +1,59 @@
+<?
+    // Set up page title:
+    $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
+    if (isset($this->overrideTitle)) {
+        $this->headTitle($this->overrideTitle);
+    } else {
+        $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
+    }
+
+    // Load Javascript dependencies into header:
+    $this->headScript()->appendFile("check_item_statuses.js");
+?>
+<div data-role="page" id="Search-list" class="results-page">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <?=$this->flashmessages()?>
+    <? if (($recordTotal = $this->results->getResultTotal()) > 0): ?>
+      <p>
+        <?=$this->transEsc("Showing")?>
+        <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
+        <? if (!isset($this->skipTotalCount)): ?>
+          <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
+        <? endif; ?>
+        <? if (isset($this->overrideSearchHeading)): ?>
+          <?=$this->overrideSearchHeading?>
+        <? elseif ($this->params->getSearchType() == 'basic'): ?>
+          <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>
+        <? endif; ?>
+      </p>
+    <? endif; ?>
+
+    <? foreach ($this->results->getRecommendations('side') as $current): ?>
+      <?=$this->recommend($current)?>
+    <? endforeach; ?>
+
+    <? if ($recordTotal < 1): ?>
+      <p class="error">
+        <? if (isset($this->overrideEmptyMessage)): ?>
+          <?=$this->overrideEmptyMessage?>
+        <? else: ?>
+          <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
+        <? endif; ?>
+      </p>
+      <? if (isset($this->parseError)): ?>
+        <p class="error"><?=$this->transEsc('nohit_parse_error')?></p>
+      <? endif; ?>
+      <? foreach ($this->results->getRecommendations('noresults') as $current): ?>
+        <?=$this->recommend($current)?>
+      <? endforeach; ?>
+    <? else: ?>
+      <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+      <div data-role="controlgroup">
+        <a href="<?=$this->url('search-email')?>" data-role="button" rel="external"><?=$this->transEsc("Email this Search")?></a>
+      </div>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

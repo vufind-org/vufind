@@ -1,0 +1,11 @@
+<div data-role="controlgroup" data-type="horizontal" align="center">
+  <? if ($this->pageCount): ?>
+    <? if (isset($this->previous)): ?>
+      <a rel="external" data-role="button" data-rel="back" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>">&laquo; <?=$this->transEsc('Prev')?></a>
+    <? endif; ?>
+
+    <? if (isset($this->next)): ?>
+      <a rel="external" data-role="button" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><?=$this->transEsc('Next');?> &raquo;</a>
+    <? endif; ?>
+  <? endif; ?>
+</div>

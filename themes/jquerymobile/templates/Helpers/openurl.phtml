@@ -1,0 +1,25 @@
+<? if (!$this->openUrlImageBasedSrc || $this->openUrlImageBasedMode == 'both'): ?>
+  <a rel="external" href="<?=$this->escapeHtmlAttr($this->openUrlBase . '?' . $this->openUrl)?>">
+    <? if ($this->openUrlGraphic): ?>
+      <?
+          $style = '';
+          if ($this->openUrlGraphicWidth) {
+              $style .= 'width:' . $this->escapeHtmlAttr($this->openUrlGraphicWidth) . 'px;';
+          }
+          if ($this->openUrlGraphicHeight) {
+              $style .= 'height:' . $this->escapeHtmlAttr($this->openUrlGraphicHeight) . 'px;';
+          }
+      ?>
+      <img src="<?=$this->escapeHtmlAttr($this->openUrlGraphic)?>" alt="<?=$this->transEsc('Get full text')?>" style="<?=$style?>" />
+    <? else: ?>
+      <?=$this->transEsc('Get full text')?>
+    <? endif; ?>
+  </a>
+<? endif; ?>
+
+<? if ($this->openUrlImageBasedSrc): ?>
+  <? $ibOpenUrl = $this->openUrlImageBasedOverride ? $this->openUrlImageBasedOverride : $this->openUrl; ?>
+  <a rel="external" href="<?=$this->escapeHtmlAttr($this->openUrlBase . '?' . $ibOpenUrl)?>"<?=$class_ib?>>
+    <img data-recordid="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" src="<?=$this->escapeHtmlAttr($this->openUrlImageBasedSrc)?>" alt="<?=$this->transEsc('Get full text')?>" />
+  </a>
+<? endif; ?>

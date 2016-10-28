@@ -1,0 +1,15 @@
+<? if ($this->auth()->isLoggedIn() && 'ils-none' !== $this->ils()->getOfflineMode()): ?>
+  <div data-role="navbar">
+    <ul>
+      <? if ($this->ils()->checkCapability('getMyTransactions')): ?>
+        <li><a rel="external" <?=$this->layout()->templateName=="checkedout" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url('myresearch-checkedout')?>"><?=$this->transEsc('Checked Out')?></a></li>
+      <? endif; ?>
+      <? if ($this->ils()->checkCapability('getMyHolds')): ?>
+        <li><a rel="external" <?=$this->layout()->templateName=="holds" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url('myresearch-holds')?>"><?=$this->transEsc('Holds')?></a></li>
+      <? endif; ?>
+      <? if ($this->ils()->checkCapability('getMyFines')): ?>
+        <li><a rel="external" <?=$this->layout()->templateName=="fines" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url('myresearch-fines')?>"><?=$this->transEsc('Fines')?></a></li>
+      <? endif; ?>
+    </ul>
+  </div>
+<? endif; ?>

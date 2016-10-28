@@ -1,0 +1,45 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Library Cards'));
+
+    // Set up extra button for header:
+    $extraButton = '<a rel="external" href="'
+            . $this->url('editLibraryCard', array('id' => 'NEW'))
+            . '" data-icon="gear" class="ui-btn-left">'
+            . $this->transEsc("Add a Library Card")
+            . '</a>';
+?>
+
+<div data-role="page" id="LibraryCards-home" class="results-page">
+  <?=$this->mobileMenu()->header(array('extraButtons'=>array($extraButton)))?>
+  <div data-role="content">
+
+    <?=$this->flashmessages();?>
+
+    <? if ($this->libraryCards->count() == 0): ?>
+      <?=$this->transEsc('You do not have any library cards')?>
+    <? else: ?>
+      <h3><?=$this->transEsc('Library Cards')?></h3>
+
+      <ul class="results librarycards" data-role="listview" data-split-theme="d" data-inset="false">
+      <? foreach ($this->libraryCards as $record): ?>
+        <li>
+          <a rel="external" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>">
+
+          <?=$this->escapeHtml($record['card_name'])?><br />
+          <? $username = $record['cat_username']; if ($this->multipleTargets): ?>
+            <? $target = ''; ?>
+            <? if (strstr($username, '.')): ?>
+              <? list($target, $username) = explode('.', $username, 2); ?>
+            <? endif; ?>
+            <?=$this->transEsc('login_target')?>: <?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?><br />
+          <? endif; ?>
+          <?=$this->transEsc('Username')?>: <?=$this->escapeHtml($username)?>
+          </a>
+        </li>
+        <? endforeach; ?>
+      </ul>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

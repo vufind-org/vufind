@@ -1,0 +1,10 @@
+<? if (($collectionRecord = $this->tab->getActiveRecord()) !== false): ?>
+  <? $this->headTitle($this->translate('hierarchy_tree') . ': ' . $this->driver->getBreadcrumb()); ?>
+  <? if ($collectionRecord === null): ?>
+    <?=$this->render('collection/collection-record-error.phtml')?>
+  <? else: ?>
+    <?=$this->record($collectionRecord)->getCollectionBriefRecord()?>
+  <? endif; ?>
+<? else: ?>
+  <?=$this->render('RecordTab/hierarchytree.phtml')?>
+<? endif; ?>

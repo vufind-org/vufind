@@ -1,0 +1,25 @@
+<?
+  // Set up page title:
+  $this->headTitle($this->translate('recovery_title'));
+
+  // Set up extra button for header:
+  $extraButton = '<a rel="external" href="'
+    . $this->url('myresearch-userlogin')
+    . '" data-icon="back" class="ui-btn-left">';
+  $extraButton .= $this->transEsc('Login');
+  $extraButton .= '</a>';
+?>
+<div data-role="page" id="MyResearch-recover" class="results-page">
+  <?=$this->mobileMenu()->header(array('extraButtons'=>array($extraButton))) ?>
+  <div data-role="content">
+    <?=$this->flashmessages()?>
+    <? if (!$this->auth()->getManager()->supportsRecovery()): ?>
+      <div class="error"><?=$this->transEsc('recovery_disabled') ?></div>
+    <? else: ?>
+      <form data-ajax="false" method="post">
+        <?=$this->auth()->getPasswordRecoveryForm() ?>
+      </form>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer() ?>
+</div>

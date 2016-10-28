@@ -1,0 +1,15 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Email this Search'));
+?>
+<div data-role="page">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <?=$this->flashmessages()?>
+    <form method="post" name="emailSearch" data-ajax="false">
+      <input type="hidden" name="url" value="<?=$this->escapeHtmlAttr($this->url)?>" />
+      <?=$this->render('Helpers/email-form-fields.phtml')?>
+    </form>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

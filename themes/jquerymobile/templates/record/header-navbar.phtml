@@ -1,0 +1,21 @@
+<?
+    // Disable "staff view" in mobile UI (we copy $this->tabs because unset doesn't
+    // work correctly when run directly against the view model):
+    $tabs = $this->tabs;
+    unset($tabs['Details']);
+?>
+<? if (!empty($tabs)): ?>
+  <div data-role="navbar">
+    <ul>
+      <? foreach ($tabs as $tab => $obj): ?>
+        <?
+          /* Initially invisible tabs are not supported in this theme; just skip them! */
+          if (!$obj->isVisible()) continue;
+        ?>
+        <li>
+          <a rel="external"<?=(strtolower(isset($this->activeTab) ? $this->activeTab : '') == strtolower($tab)) ? ' class="ui-btn-active"' : ''?> href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>"><?=$this->transEsc($obj->getDescription())?></a>
+        </li>
+      <? endforeach; ?>
+    </ul>
+  </div>
+<? endif; ?>

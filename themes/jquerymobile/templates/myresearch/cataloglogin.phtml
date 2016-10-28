@@ -1,0 +1,51 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Login'));
+
+    // Convenience variable:
+    $offlineMode = $this->ils()->getOfflineMode();
+?>
+<div data-role="page" id="MyResearch-login">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <? if ($offlineMode == "ils-offline"): ?>
+      <div class="sysInfo">
+        <h2><?=$this->transEsc('ils_offline_title')?></h2>
+        <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+        <p><?=$this->transEsc('ils_offline_login_message')?></p>
+        <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+        <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+      </div>
+    <? else: ?>
+      <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+      <?=$this->flashmessages()?>
+      <p><?=$this->transEsc('cat_establish_account')?></p>
+      <form method="post" data-ajax="false">
+
+        <? if ($this->targets !== null): ?>
+        <div data-role="fieldcontain">
+          <label class="displayBlock" for="login_target"><?=$this->transEsc('login_target')?>:</label>
+          <select id="login_target" name="target">
+          <? foreach ($this->targets as $target): ?>
+            <option value="<?=$this->escapeHtmlAttr($target)?>"><?=$this->transEsc("source_$target", null, $target)?></option>
+          <? endforeach; ?>
+          </select>
+        </div>
+        <? endif; ?>
+
+        <div data-role="fieldcontain">
+          <label class="displayBlock" for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
+          <input id="profile_cat_username" type="text" name="cat_username" value="" size="25"/>
+        </div>
+        <div data-role="fieldcontain">
+          <label class="displayBlock" for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
+          <input id="profile_cat_password" type="password" name="cat_password" value="" size="25"/>
+        </div>
+        <div data-role="fieldcontain">
+          <input type="submit" name="submit" value="<?=$this->transEsc('Save')?>"/>
+        </div>
+      </form>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

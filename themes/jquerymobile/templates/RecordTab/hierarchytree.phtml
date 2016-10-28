@@ -1,0 +1,22 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('hierarchy_tree') . ': ' . $this->driver->getBreadcrumb());
+    $hierarchyTreeList = $this->tab->getTreeList();
+    $activeTree = $this->tab->getActiveTree();
+?>
+<div>
+  <? if (count($hierarchyTreeList) > 1): ?>
+    <div id="treeSelector">
+      <? foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
+        <a class="tree<?=($activeTree == $hierarchy) ? ' currentTree' : ''?>" href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchy)?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
+      <? endforeach; ?>
+    </div>
+  <? endif; ?>
+  <? if ($activeTree): ?>
+    <div id="hierarchyTreeHolder">
+      <div id="hierarchyTree">
+        <?=str_replace(' href="', ' data-ajax="false" href="', $this->tab->renderTree($this->url('home')))?>
+      </div>
+    </div>
+  <? endif; ?>
+</div>

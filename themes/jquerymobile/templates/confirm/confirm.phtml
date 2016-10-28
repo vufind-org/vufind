@@ -1,0 +1,27 @@
+<div data-role="page" id="MyResearch-login">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <h3><?=$this->transEsc($this->title) ?></h3>
+
+    <?=$this->flashmessages();?>
+
+    <form action="<?=$this->escapeHtmlAttr($this->confirm)?>" method="post" data-ajax="false">
+      <? if (isset($this->extras)): ?>
+        <? foreach ($this->extras as $extra=>$value): ?>
+          <? if (is_array($value)): ?>
+            <? foreach ($value as $current): ?>
+              <input type="hidden" name="<?=$this->escapeHtmlAttr($extra) ?>[]" value="<?=$this->escapeHtmlAttr($current) ?>" />
+            <? endforeach; ?>
+          <? else: ?>
+            <input type="hidden" name="<?=$this->escapeHtmlAttr($extra) ?>" value="<?=$this->escapeHtmlAttr($value) ?>" />
+          <? endif; ?>
+        <? endforeach; ?>
+      <? endif;?>
+      <input type="submit" name="confirm" value="<?=$this->transEsc('confirm_dialog_yes') ?>" />
+    </form>
+    <form action="<?=$this->escapeHtmlAttr($this->cancel) ?>" method="post" data-ajax="false">
+      <input type="submit" name="cancel" value="<?=$this->transEsc('confirm_dialog_no') ?>" />
+    </form>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

@@ -1,0 +1,30 @@
+<div data-role="fieldcontain">
+  <? $toValidations = ($this->maxRecipients == 1) ? array('required'=>'This field is required', 'email'=>'Email address is invalid') : array('required'=>'This field is required')?>
+  <label for="email_to"><?=$this->transEsc('To')?>:</label>
+  <input id="email_to" type="text" name="to" value="<?=isset($this->to) ? $this->to : ''?>" size="40" class="mainFocus <?=$this->jqueryValidation($toValidations)?>"/>
+  <? if ($this->maxRecipients != 1): ?>
+    <p style="text-align: right;">
+      <?=$this->transEsc('email_multiple_recipients_note')?>
+      <? if ($this->maxRecipients > 1): ?>
+        <?=$this->transEsc('email_maximum_recipients_note', array('%%max%%' => $this->maxRecipients))?>
+      <? endif; ?>
+    </p>
+  <? endif; ?>
+  <? if (!$this->disableFrom): ?>
+    <label for="email_from"><?=$this->transEsc('From')?>:</label>
+    <input id="email_from" type="text" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="<?=$this->jqueryValidation(array('required'=>'This field is required', 'email'=>'Email address is invalid'))?>"/>
+  <? endif; ?>
+  <? if ($this->editableSubject): ?>
+    <label for="email_subject"><?=$this->transEsc('email_subject')?>:</label>
+    <input id="email_subject" type="text" name="subject" value="<?=isset($this->subject) ? $this->subject : ''?>" size="40" class="<?=$this->jqueryValidation(array('required'=>'This field is required'))?>"/>
+  <? endif; ?>
+  <label for="email_message"><?=$this->transEsc('Message')?>:</label>
+  <textarea id="email_message" name="message"><?=isset($this->message) ? $this->message : ''?></textarea>
+</div>
+<?=$this->recaptcha()->html($this->useRecaptcha) ?>
+<div data-role="fieldcontain">
+  <input class="button" type="submit" name="submit" value="<?=$this->transEsc('Send')?>"/>
+</div>
+<? if ($this->disableFrom && $this->userEmailInFrom): ?>
+  <input type="checkbox" id="ccme" name="ccself"/><label for="ccme"><?=$this->translate('send_email_copy_to_me'); ?></label>
+<? endif; ?>

@@ -1,0 +1,21 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('System Unavailable'));
+?>
+<div data-role="page" id="Search-home">
+  <?=$this->mobileMenu()->header(array('searchLink' => false))?>
+  <div data-role="content">
+    <div class="error unavailable">
+      <p>
+        <?=$this->transEsc('The system is currently unavailable due to system maintenance')?>.
+        <?=$this->transEsc('Please check back soon')?>.
+      </p>
+      <p>
+        <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
+        <br/>
+        <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+        <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
+      </p>
+    </div>
+  </div>
+</div>

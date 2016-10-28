@@ -1,0 +1,23 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Excerpt') . ': ' . $this->driver->getBreadcrumb());
+
+    // Grab excerpt data:
+    $excerpts = $this->tab->getContent();
+
+    // Activate Syndetics Plus if necessary:
+    if ($this->syndeticsPlus()->isActive()) {
+        $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
+    }
+?>
+<? if (count($excerpts) > 0): ?>
+  <? foreach ($excerpts as $provider => $list): ?>
+    <? foreach ($list as $excerpt): ?>
+      <p class="summary"><?=$excerpt['Content']?></p>
+      <?=isset($excerpt['Copyright']) ? $excerpt['Copyright'] : ''?>
+      <hr/>
+    <? endforeach; ?>
+  <? endforeach; ?>
+<? else: ?>
+  <?=$this->transEsc('No excerpts were found for this record.')?>
+<? endif; ?>

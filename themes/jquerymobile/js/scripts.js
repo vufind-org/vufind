@@ -1,0 +1,1 @@
+$.mobile.pushStateEnabled = false;

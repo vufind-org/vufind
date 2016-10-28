@@ -1,0 +1,79 @@
+<?
+  $this->headTitle($this->translate('Browse the Catalog'));
+
+  $BROWSE_BASE = $this->url('browse-' . strtolower($this->currentAction));
+  $SEARCH_BASE = $this->url($this->currentAction == 'Tag' ? 'tag-home' : 'search-results');
+
+  $BACK_LINK = $this->url('browse-home');
+  if (isset($this->findby) || ($this->currentAction == 'LCC' && isset($this->query))) {
+    $BACK_LINK = $BROWSE_BASE;
+  }
+  if (isset($this->query) && $this->currentAction != 'LCC') {
+    $BACK_LINK .= '?findby='.urlencode($this->findby).'&amp;query_field='.$this->browse()->getSolrField($this->findby, $this->currentAction);
+  }
+?>
+
+<div data-role="header" class="ui-bar-b">
+<? if (!isset($this->currentAction)): ?>
+  <a data-ajax="false" href="<?=$this->url('home') ?>" data-icon="home"><?=$this->transEsc('Search Home') ?></a>
+  <h1><?=$this->transEsc('Choose a Category to Begin Browsing') ?></h1>
+<? else: ?>
+  <a data-ajax="false" href="<?=$BACK_LINK ?>" data-icon="arrow-l"><?=$this->transEsc('navigate_back')?></a>
+  <h1>Browsing By <?=$this->currentAction ?></h1>
+  <a data-ajax="false" href="<?=$this->url('browse-home') ?>" data-icon="home"><?=$this->transEsc('Browse Home') ?></a>
+<? endif; ?>
+</div>
+
+<div data-role="page" id="Search-home">
+  <?=$this->mobileMenu()->header(array('searchLink' => false, 'results' => null))?>
+  <div data-role="content">
+    <ul class="results ui-listview" data-role="listview" data-split-icon="plus" data-split-theme="c">
+      <!-- Links to searches -->
+      <? if (isset($this->query) || !empty($this->resultList)): ?>
+        <? if (!empty($this->resultList)): ?>
+          <? foreach($this->resultList as $result): ?>
+          <li>
+            <a data-ajax="false" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['value']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>"><?=$this->escapeHtml($result['displayText'])/*html*/?> (<?=$this->localizedNumber($result['count']) ?>)</a>
+          </li>
+          <? endforeach; ?>
+        <!-- No Results -->
+        <? else: ?>
+          <li>
+            <a href=""><?=$this->transEsc('nohit_heading') ?></a>
+          </li>
+        <? endif; ?>
+
+      <!-- Layers 2-3 -->
+      <? elseif (!empty($this->secondaryList)): ?>
+      <? foreach($this->secondaryList as $secondary): ?>
+      <li>
+        <a data-ajax="false" href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($this->findby) ?>&category=<?=urlencode($this->category) ?>&query=<?=urlencode($secondary['value']) ?><? if ($this->facetPrefix): ?>&facet_prefix=<?=urlencode($secondary['displayText']) ?><? endif; ?><? if ($this->secondaryParams): foreach($this->secondaryParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>"><?=$this->escapeHtml($secondary['displayText']) ?><? if ($this->findby != 'alphabetical'): ?> (<?=$this->localizedNumber($secondary['count']) ?>)<? endif; ?></a>
+      </li>
+      <? endforeach; ?>
+
+      <!-- Layer 1 -->
+      <? elseif (!empty($this->categoryList)): ?>
+      <? foreach($this->categoryList as $findby=>$category): ?>
+      <li>
+        <a data-ajax="false" href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&query_field=<?=$this->browse()->getSolrField($findby, $this->currentAction) ?>">
+          <? if(is_string($category)): ?>
+            <?=$this->transEsc($category)?>
+          <? else: ?>
+            <?=$this->transEsc($category['text'])?> (<?=$this->localizedNumber($category['count'])?>)
+          <? endif; ?>
+        </a>
+      </li>
+      <? endforeach; ?>
+
+      <!-- Home -->
+      <? else: ?>
+      <? foreach ($this->browseOptions as $item=>$currentOption): ?>
+        <li>
+          <a data-ajax="false" href="<?=$this->url('browse-' . strtolower($currentOption['action'])); ?>"><?=$this->transEsc($currentOption['description']) ?></a>
+        </li>
+      <? endforeach; ?>
+      <? endif; ?>
+    </ul>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

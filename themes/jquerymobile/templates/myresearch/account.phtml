@@ -1,0 +1,20 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('User Account'));
+?>
+<div data-role="page" id="MyResearch-account">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <?=$this->flashmessages();?>
+    <form method="post" name="accountForm" id="accountForm" data-ajax="false">
+      <div data-role="fieldcontain">
+        <?=$this->auth()->getCreateFields()?>
+      </div>
+      <?=$this->recaptcha()->html($this->useRecaptcha) ?>
+      <div data-role="fieldcontain">
+        <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"/>
+      </div>
+    </form>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

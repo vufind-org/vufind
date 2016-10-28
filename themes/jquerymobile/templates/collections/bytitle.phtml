@@ -1,0 +1,18 @@
+<? $this->headTitle($this->translate(empty($collections) ? 'collection_empty' : 'collection_disambiguation')); ?>
+<div data-role="page" id="Search-list" class="results-page">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <? if (!empty($collections)): ?>
+      <ul class="results" data-role="listview" data-split-icon="plus" data-split-theme="c">
+        <? foreach ($collections as $i => $collection): ?>
+         <li>
+           <a rel="external" href="<?=$this->url('collection', array('id' => $collection->getUniqueId()))?>"><h3><?=$this->escapeHtml($collection->getTitle())?></h3>
+           <p><?=$this->escapeHtml(implode(' ', $collection->getSummary()))?></p>
+           </a>
+         </li>
+        <? endforeach; ?>
+      </ul>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

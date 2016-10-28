@@ -1,0 +1,17 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
+?>
+<dl class="biblio" title="<?=$this->transEsc('Staff View')?>">
+  <? foreach ($this->driver->getRawData() as $field => $values): ?>
+    <dt><?=$this->escapeHtml($field)?></dt>
+    <dd>
+      <div style="width: 500px; overflow: auto;">
+        <? if (!is_array($values)) { $values = array($values); } ?>
+        <? foreach ($values as $value): ?>
+          <p><?=$this->escapeHtml(is_array($value) ? print_r($value, true) : $value)?></p>
+        <? endforeach; ?>
+      </div>
+    </dd>
+  <? endforeach; ?>
+</table>

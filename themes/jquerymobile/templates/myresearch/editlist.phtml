@@ -1,0 +1,45 @@
+<?
+    // Set up page title:
+    $pageTitle = $this->newList ? 'Create a List' : "edit_list";
+    $this->headTitle($this->translate($pageTitle));
+?>
+<div data-role="page" id="MyResearch-editlist">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <h3><?=$this->transEsc($pageTitle); ?></h3>
+
+    <?=$this->flashmessages()?>
+
+    <form method="post" name="<?=$this->newList ? 'newList' : 'editListForm'?>" data-ajax="false">
+    <label class="displayBlock" for="list_title"><?=$this->transEsc('List'); ?>:</label>
+    <input id="list_title" type="text" name="title" value="<?=isset($this->list['title']) ? $this->escapeHtml($this->list['title']) : ''?>" size="50"
+      class="mainFocus <?=$this->jqueryValidation(array('required'=>'This field is required')) ?>"/>
+    <label class="displayBlock" for="list_desc"><?=$this->transEsc('Description') ?></label>
+    <textarea id="list_desc" name="desc" rows="3" cols="50"><?=isset($this->list['description']) ? $this->escapeHtml($this->list['description']) : ''?></textarea>
+    <? if ($this->userlist()->getMode() === 'public_only'): ?>
+      <input type="hidden" name="public" value="1" />
+    <? elseif ($this->userlist()->getMode() === 'private_only'): ?>
+      <input type="hidden" name="public" value="0" />
+    <? else: ?>
+      <fieldset>
+        <legend><?=$this->transEsc('Access') ?></legend>
+        <input id="list_public_1" type="radio" name="public" value="1"<? if ($this->list->isPublic()): ?> checked="checked"<? endif; ?>/> <label for="list_public_1"><?=$this->transEsc('Public') ?></label>
+        <input id="list_public_0" type="radio" name="public" value="0"<? if (!$this->list->isPublic()): ?> checked="checked"<? endif; ?>/> <label for="list_public_0"><?=$this->transEsc('Private') ?></label>
+      </fieldset>
+    <? endif; ?>
+    <div class="ui-body ui-body-b">
+        <fieldset class="ui-grid-a">
+            <div class="ui-block-a">
+                <input class="button" data-role="button" data-theme="b" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
+            </div>
+            <? if (!empty($this->list->id)): ?>
+              <div class="ui-block-b">
+                <a data-role="button" data-theme="c" data-mini="true" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($this->list->id)?>" id="deleteList<?=$this->list->id ?>" title="<?=$this->transEsc("delete_list")?>"><?=$this->transEsc("delete_list")?></a>
+              </div>
+            <? endif; ?>
+        </fieldset>
+    </div>
+    </form>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

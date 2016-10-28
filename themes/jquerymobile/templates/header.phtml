@@ -1,0 +1,31 @@
+<div data-role="header" data-theme="b">
+  <? if (isset($this->extraButtons) && is_array($this->extraButtons)): ?>
+    <?=implode('', $this->extraButtons)?>
+  <? endif; ?>
+
+  <h1><? foreach ($this->headTitle() as $str) echo trim($str, ':/') . ' '; ?></h1>
+
+  <?
+      // If no search link value was passed in, pick a default:
+      if (!isset($this->searchLink)) {
+          $this->searchLink = 'search-home';
+      }
+  ?>
+  <? if ($this->searchLink): ?>
+    <a rel="external" href="<?=$this->url($this->searchLink)?>" data-icon="search"  class="ui-btn-right">
+      <?=$this->transEsc('Search')?>
+    </a>
+  <? endif; ?>
+
+  <?
+    // if a module has header-navbar.tpl, then use it
+    try {
+        echo $this->render("{$this->layout()->templateDir}/header-navbar.phtml");
+    } catch (\Zend\View\Exception\RuntimeException $e) {
+        // if this is a record view, load the record header; otherwise, do nothing:
+        if (substr($this->layout()->templateDir, -6) == 'record') {
+            echo $this->render('record/header-navbar.phtml');
+        }
+    }
+  ?>
+</div>

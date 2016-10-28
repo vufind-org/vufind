@@ -1,0 +1,19 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Author Results for') . ':');
+?>
+<div data-role="page">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <form method="get" action="<?=$this->url('author-search')?>" data-ajax="false">
+      <div data-role="fieldcontain">
+        <label class="offscreen" for="author_lookfor"><?=$this->transEsc('Author Results for')?>:</label>
+        <input type="search" id="author_lookfor" name="lookfor" />
+      </div>
+      <div data-role="fieldcontain">
+        <input type="submit" value="<?=$this->transEsc('Find')?>" />
+      </div>
+    </form>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

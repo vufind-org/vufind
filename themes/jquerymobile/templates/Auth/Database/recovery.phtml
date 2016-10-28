@@ -1,0 +1,11 @@
+<div data-role="fieldcontain">
+  <label for="username"><?=$this->transEsc('recovery_by_username') ?>:</label>
+  <input type="text" id="username" name="username" style="margin-top:.5em;height:28px"/>
+</div>
+<div style="text-align:center"><?=$this->translate('conjunction_or') ?></div>
+<div data-role="fieldcontain">
+  <label for="email"><?=$this->transEsc('recovery_by_email') ?>:</label>
+  <input type="email" id="email" name="email" style="margin-top:.5em;height:28px"/>
+</div>
+<?=$this->recaptcha()->html($this->useRecaptcha) ?>
+<input type="submit" name="submit" value="<?=$this->transEsc('Recover Account') ?>"/>

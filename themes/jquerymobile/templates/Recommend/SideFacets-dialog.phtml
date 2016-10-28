@@ -1,0 +1,35 @@
+<?
+    $results = $this->recommend->getResults();
+    $sideFacetSet = $this->recommend->getFacetSet();
+    $hierarchicalFacets = $this->recommend->getHierarchicalFacets();
+?>
+<? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
+  <div data-role="dialog" id="Search-narrow">
+    <div data-role="header" data-theme="d" data-position="inline">
+      <h1><?=$this->transEsc('Narrow Search')?></h1>
+    </div>
+    <div data-role="content">
+      <div data-role="collapsible-set" class="narrow-search">
+        <? $i = 0; foreach ($sideFacetSet as $title => $cluster): ?>
+          <? $hierarchical = in_array($title, $hierarchicalFacets); ?>
+          <? if (empty($cluster['list'])) { continue; } // skip empty facets ?>
+          <div data-role="collapsible" data-collapsed="<?=$i++ == 0 ? 'false' : 'true'?>">
+            <h4><?=$this->transEsc($cluster['label'])?></h4>
+            <ul class="narrow" data-role="listview" data-inset="true">
+              <? foreach ($cluster['list'] as $thisFacet): ?>
+                <? $indent = $hierarchical
+                    ? str_pad('', 4 * $thisFacet['level'] * 6, '&nbsp;', STR_PAD_LEFT)
+                    : ''; ?>
+                <? if ($thisFacet['isApplied']): ?>
+                  <li data-icon="check" class="checked"><a rel="external" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>" data-rel="external"><?=$indent?><?=$this->escapeHtml($thisFacet['displayText'])?></a> <span class="ui-li-count"><?=$this->localizedNumber($thisFacet['count'])?></span></li>
+                <? else: ?>
+                  <li><a rel="external" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$indent?><?=$this->escapeHtml($thisFacet['displayText'])?></a> <span class="ui-li-count"><?=$this->localizedNumber($thisFacet['count'])?></span></li>
+                <? endif; ?>
+              <? endforeach; ?>
+            </ul>
+          </div>
+        <? endforeach; ?>
+      </div>
+    </div>
+  </div>
+<? endif; ?>

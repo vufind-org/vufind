@@ -1,0 +1,18 @@
+<? $sideFacetSet = $this->recommend->getFacetSet(); ?>
+<? if (isset($sideFacetSet['lists']) && !empty($sideFacetSet['lists']['list'])): ?>
+  <div data-role="collapsible" data-collapsed="true">
+    <h3><?=$this->transEsc('Your Lists')?></h3>
+    <ul class="mylists" data-role="listview" data-inset="true" data-dividertheme="e">
+      <? foreach ($sideFacetSet['lists']['list'] as $current): ?>
+        <li>
+          <? if ($current['isApplied']): ?>
+            <?=$this->escapeHtml($current['displayText'])?>
+          <? else: ?>
+            <a data-ajax="false" href="<?=$this->url('userList', array('id' => $current['value']))?>"><?=$this->escapeHtml($current['displayText'])?></a>
+          <? endif; ?>
+          <span class="ui-li-count"><?=$this->escapeHtml($current['count'])?></span>
+        </li>
+      <? endforeach; ?>
+    </ul>
+  </div>
+<? endif; ?>

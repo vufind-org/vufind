@@ -1,0 +1,33 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('My Profile'));
+?>
+<div data-role="page" id="MyResearch-login">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <h3><?=$this->transEsc('Your Profile')?></h3>
+    <?=$this->flashmessages();?>
+
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
+    <dl class="biblio">
+    <?
+        echo $this->renderArray(
+            '<dt>%%LABEL%%:</dt><dd>%%VALUE%%</dd>', $this->profile,
+            array(
+                $this->transEsc('First Name') => 'firstname',
+                $this->transEsc('Last Name') => 'lastname',
+                $this->transEsc('Address') . ' 1' => 'address1',
+                $this->transEsc('Address') . ' 2' => 'address2',
+                $this->transEsc('Zip') => 'zip',
+                $this->transEsc('City') => 'city',
+                $this->transEsc('Country') => 'country',
+                $this->transEsc('Phone Number') => 'phone',
+                $this->transEsc('Group') => 'group'
+            )
+        );
+     ?>
+     </dl>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

@@ -1,0 +1,8 @@
+<?
+    $url = $this->driver->getUniqueId();
+?>
+<a rel="external" href="<?=$this->escapeHtmlAttr($url)?>">
+  <div class="result">
+    <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>
+  </div>
+</a>

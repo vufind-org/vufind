@@ -1,0 +1,12 @@
+<? $account = $this->auth()->getManager(); ?>
+<div data-role="navbar">
+  <ul>
+    <li><a data-rel="dialog" href="#Language-dialog" data-transition="pop"><?=$this->transEsc('Language')?></a></li>
+    <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
+      <li><a rel="external" href="<?=$this->url((is_object($account) && $account->isLoggedIn()) ? 'myresearch-home' : 'myresearch-userlogin')?>"><?=$this->transEsc('Account')?></a></li>
+    <? endif; ?>
+    <? if (is_object($account) && $account->isLoggedIn()): ?>
+      <li><a rel="external" href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?></a></li>
+    <? endif; ?>
+  </ul>
+</div>

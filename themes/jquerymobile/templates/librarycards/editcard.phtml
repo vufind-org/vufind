@@ -1,0 +1,50 @@
+<?
+    // Set up page title:
+    $pageTitle = empty($this->card->id) ? 'Add a Library Card' : "Edit Library Card";
+    $this->headTitle($this->translate($pageTitle));
+?>
+<div data-role="page" id="LibraryCards-editCard">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <h3><?=$this->transEsc($pageTitle); ?></h3>
+
+    <?=$this->flashmessages()?>
+
+    <form method="post" name="<?=empty($this->card->id) ? 'newCardForm' : 'editCardForm'?>" data-ajax="false">
+      <label class="displayBlock" for="card_name"><?=$this->transEsc('Library Card Name'); ?>:</label>
+      <input id="card_name" type="text" name="card_name" value="<?=$this->escapeHtmlAttr($this->cardName)?>" size="50"
+        class="mainFocus <?=$this->jqueryValidation(array('required'=>'This field is required')) ?>"/>
+      <br class="clear"/>
+
+      <? if ($this->targets !== null): ?>
+      <label class="displayBlock" for="login_target"><?=$this->transEsc('login_target')?>:</label>
+      <select id="login_target" name="target">
+      <? foreach ($this->targets as $target): ?>
+        <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->target ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
+      <? endforeach; ?>
+      </select>
+      <br class="clear"/>
+      <? endif; ?>
+
+      <label class="displayBlock" for="login_username"><?=$this->transEsc('Username')?>:</label>
+      <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->username)?>" size="15" class="<?=$this->jqueryValidation(array('required'=>'This field is required'))?>"/>
+      <br class="clear"/>
+      <label class="displayBlock" for="login_password"><?=$this->transEsc('Password')?>:</label>
+      <input id="login_password" type="password" name="password" value="<?=$this->escapeHtmlAttr($this->password)?>" size="15" class="<?=$this->jqueryValidation(array('required'=>'This field is required'))?>"/>
+      <br class="clear"/>
+
+      <div class="ui-body ui-body-b">
+        <fieldset class="ui-grid-a">
+            <div class="ui-block-a">
+                <input class="button" data-role="button" data-theme="b" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
+            </div>
+            <? if (!empty($this->card->id)): ?>
+              <div class="ui-block-b">
+                <a data-role="button" data-theme="c" data-mini="true" href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($this->card->id)?>" id="deleteCard<?=$this->card->id ?>" title="<?=$this->transEsc("Delete")?>"><?=$this->transEsc("Delete")?></a>
+              </div>
+            <? endif; ?>
+        </fieldset>
+      </div>
+    </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>
