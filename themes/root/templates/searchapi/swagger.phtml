@@ -3,7 +3,7 @@
                     {
                         "name": "field[]",
                         "in": "query",
-                        "description": "Fields to return.<? if ($this->defaultFields): ?> If not specified, a set of default fields is returned.\n\nThe default fields are:\n- <?=implode('\n- ', array_map(addslashes, $this->defaultFields)) ?><? endif; ?>",
+                        "description": "Fields to return.<? if ($this->defaultFields): ?> If not specified, a set of default fields is returned.\n\nThe default fields are:\n- <?=implode('\n- ', array_map('addslashes', $this->defaultFields)) ?><? endif; ?>",
                         "type": "array",
                         "collectionFormat": "multi",
                         "items": {
@@ -98,7 +98,7 @@
                     {
                         "name": "type",
                         "in": "query",
-                        "description": "Search type. The following search types are available:\n- <?=implode('\n- ', array_map(addslashes, array_keys($this->searchTypes))) ?>",
+                        "description": "Search type. The following search types are available:\n- <?=implode('\n- ', array_map('addslashes', array_keys($this->searchTypes))) ?>",
                         "required": false,
                         "type": "string",
                         "default": "<?=addslashes($this->defaultSearchType) ?>"
@@ -117,7 +117,7 @@
                     {
                         "name": "facet[]",
                         "in": "query",
-                        "description": "Fields to facet on. Repeat for every field. <? if ($this->facetConfig): ?>At least the following fields are available for faceting (there may be additional facetable index fields not published here):\n- <?=implode('\n- ', array_map(addslashes, array_keys($this->facetConfig))) ?><? endif; ?>",
+                        "description": "Fields to facet on. Repeat for every field. <? if ($this->facetConfig): ?>At least the following fields are available for faceting (there may be additional facetable index fields not published here):\n- <?=implode('\n- ', array_map('addslashes', array_keys($this->facetConfig))) ?><? endif; ?>",
                         "type": "array",
                         "collectionFormat": "multi",
                         "items": {
