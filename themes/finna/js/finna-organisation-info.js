@@ -98,16 +98,6 @@ organisationInfo: function() {
     };
 
     var getSchedules = function(target, parent, id, periodStart, dir, fullDetails, allServices, callback) {
-        if (fullDetails) {
-            details = getCachedDetails(id);
-            if (details && details.periodStart) {
-                if (details.periodStart == periodStart) {
-                    callback(details);
-                    return;
-                }
-            }
-        }
-
         var params = {
             target: target, action: 'details', id: id, 
             fullDetails: fullDetails ? 1 : 0, 
@@ -146,7 +136,8 @@ organisationInfo: function() {
     };
 
     var getField = function(obj, field, organisationId) {
-        if (res = finna.common.getField(obj, field)) {
+        res = finna.common.getField(obj, field);
+        if (res !== null) {
             return res;
         }
         if (organisationId) {
