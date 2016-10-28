@@ -331,7 +331,7 @@ finna.organisationInfoPage = (function() {
             && data.openTimes.schedules.length > 0;
 
         if (hasSchedules) {
-            holder.find('.open-or-closed > span.library-is-' + (data.openTimes.openNow ? 'open' : 'closed')).show();
+            holder.find('.open-or-closed > span.library-is-' + (data.openNow ? 'open' : 'closed')).show();
         }
 
         var img = holder.find('.building-image');

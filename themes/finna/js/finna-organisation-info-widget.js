@@ -115,10 +115,10 @@ finna = $.extend(finna, {
 
             holder.data('id', id);
 
-            if ('openTimes' in data && 'openNow' in data.openTimes 
+            if ('openTimes' in data && 'openNow' in data 
                 && 'schedules' in data.openTimes && data.openTimes.schedules.length
             ) {
-                holder.find('.is-open' + (data.openTimes.openNow ? '.open' : '.closed')).show();
+                holder.find('.is-open' + (data.openNow ? '.open' : '.closed')).show();
             }
 
             if ('email' in data) {
@@ -151,24 +151,6 @@ finna = $.extend(finna, {
                     }
                 }
             );
-        };
-
-        var getScheduleTableRow = function(today, date, day, info) {
-            var schedulesHolder = holder.find('.schedules');
-            var scheduleTable = schedulesHolder.find('table');
-            var tr = scheduleTable.find('div:first-child').clone();
-            tr.removeClass('template hide');
-            if (today) {
-                tr.addClass('today');
-            }
-            tr.find('.date').text(date);
-            tr.find('.day').not('.staff').find('.name').text(day);
-
-            if (info !== null) {
-                tr.find('.info').removeClass('hide').text(' (' + info + ')');
-            }
-
-            return tr;
         };
 
         var schedulesLoaded = function(id, response) {

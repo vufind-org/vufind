@@ -710,6 +710,9 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
 
             $data['openTimes'] = $this->parseSchedules($item['schedules']);
 
+            $data['openNow'] = isset($data['openTimes']['openNow'])
+                ? $data['openTimes']['openNow'] : false
+            ;
             $result[] = $data;
         }
         usort($result, [$this, 'sortList']);
@@ -880,7 +883,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             'friday', 'saturday', 'sunday'
         ];
 
-        $openNow = false;
+        $openNow = null;
         $openToday = false;
         $currentWeek = false;
         foreach ($data as $day) {
@@ -924,8 +927,8 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             if (!empty($day['sections']['selfservice']['times'])) {
                 foreach ($day['sections']['selfservice']['times'] as $time) {
                     $res = $this->extractDayTime($now, $time, $today, true);
-                    if (!empty($res['openNow'])) {
-                        $openNow = true;
+                    if (isset($res['openNow'])) {
+                        $openNow = $res['openNow'];
                     }
                     if (empty($day['times'])) {
                         $res['result']['selfserviceOnly'] = true;
@@ -941,8 +944,8 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             // Staff times
             foreach ($day['times'] as $time) {
                 $res = $this->extractDayTime($now, $time, $today);
-                if (!empty($res['openNow'])) {
-                    $openNow = true;
+                if (isset($res['openNow'])) {
+                    $openNow = $res['openNow'];
                 }
                 if (!empty($info)) {
                     $res['result']['info'] = $info;
@@ -984,7 +987,11 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             }
         }
 
-        return compact('schedules', 'openNow', 'openToday', 'currentWeek');
+        $result = compact('schedules', 'openToday', 'currentWeek');
+        if ($openNow !== null) {
+            $result['openNow'] = $openNow;
+        }
+        return $result;
     }
 
     /**
@@ -1018,7 +1025,11 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
                 $result['openNow'] = true;
             }
         }
-        return compact('result', 'openNow');
+        $result = ['result' => $result];
+        if ($today) {
+            $result['openNow'] = $openNow;
+        }
+        return $result;
     }
 
     /**
