@@ -157,12 +157,13 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      */
     public function getAllSubjectHeadings()
     {
-        return array_map(
-            function ($item) {
-                return [$item];
-            },
-            $this->getProductionEventElement('elokuva_asiasana')
-        );
+        $results = [];
+        foreach ($this->getRecordXML()->SubjectTerms as $subjectTerms) {
+            foreach ($subjectTerms->Term as $term) {
+                $results[] = [$term];
+            }
+        }
+        return $results;
     }
 
     /**
