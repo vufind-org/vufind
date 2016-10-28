@@ -163,7 +163,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             $building = $building[0];
         }
 
-        if (preg_match('/^0\/([a-zA-z0-9]*)\/$/', $building, $matches)) {
+        if (preg_match('/^0\/([^\/]*)\/$/', $building, $matches)) {
             // strip leading '0/' and trailing '/' from top-level building code
             return $matches[1];
         }
