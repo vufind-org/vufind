@@ -84,7 +84,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     /**
      * Constructor
      *
-     * @param array $recordFields Record field definitions
+     * @param RecordFormatter $rf Record formatter
+     * @param FacetFormatter  $ff Facet formatter
      */
     public function __construct(RecordFormatter $rf, FacetFormatter $ff)
     {
