@@ -1164,6 +1164,56 @@ class MultiBackend extends AbstractBase
     }
 
     /**
+     * Check whether the patron is blocked from placing requests (holds/ILL/SRR).
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getRequestBlocks($patron)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if (!$this->methodSupported(
+                $driver, 'getRequestBlocks', compact('patron')
+            )) {
+                return false;
+            }
+            return $driver->getRequestBlocks(
+                $this->stripIdPrefixes($patron, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getAccountBlocks($patron)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if (!$this->methodSupported(
+                $driver, 'getAccountBlocks', compact('patron')
+            )) {
+                return false;
+            }
+            return $driver->getAccountBlocks(
+                $this->stripIdPrefixes($patron, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
      * Function which specifies renew, hold and cancel settings.
      *
      * @param string $function The name of the feature to be checked
