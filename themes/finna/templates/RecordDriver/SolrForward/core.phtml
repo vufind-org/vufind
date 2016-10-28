@@ -205,6 +205,16 @@
       <? endif; ?>
     </div>
 
+    <? if ($result = $this->driver->getSummary()): ?>
+      <div class="description recordSummary">
+        <div class="truncate-field">
+          <? foreach ($result as $item): ?>
+            <p><?=$item // intentionally left unescaped due to embedded HTML ?></p>
+          <? endforeach; ?>
+        </div>
+      </div>
+    <? endif; ?>
+
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
       <? /* Display the lists that this record is saved to */ ?>
       <div class="savedLists hidden alert alert-info" id="savedLists">
@@ -218,7 +228,7 @@
       <? if ($originalWork = $this->driver->getOriginalWork()): ?>
       <tr class="recordOriginalWork">
         <th><?=$this->transEsc('Original Work')?>: </th>
-        <td><?=$originalWork // intentionally left unescaped due to embedded HTML?></td>
+        <td><?=$originalWork // intentionally left unescaped due to embedded HTML ?></td>
       </tr>
       <? endif; ?>
 
@@ -357,7 +367,7 @@
         <? $contentDisplayed = true; ?>
         <tr class="recordDescription">
           <th><?=$this->transEsc('Description') ?>: </th>
-          <td><?=$result // intentionally left unescaped due to embedded HTML ?></td>
+          <td><?=implode('<br/>', $result); // intentionally left unescaped due to embedded HTML ?></td>
         </tr>
       <? endif; ?>
 

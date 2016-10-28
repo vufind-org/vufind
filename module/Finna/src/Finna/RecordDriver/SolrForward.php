@@ -259,7 +259,11 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      */
     public function getAwards()
     {
-        return $this->getProductionEventElement('elokuva_palkinnot');
+        $results = [];
+        foreach ($this->getRecordXML()->Award as $award) {
+            $results[] = (string)$award;
+        }
+        return $results;
     }
 
     /**
@@ -334,8 +338,13 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      */
     public function getDescription()
     {
-        return isset($this->fields['description'])
-            ? $this->fields['description'] : [];
+        list($locale) = explode('-', $this->getTranslatorLocale());
+
+        $result = $this->getDescriptionData('Synopsis', $locale);
+        if (empty($result)) {
+            $result = $this->getDescriptionData('Synopsis');
+        }
+        return $result;
     }
 
     /**
@@ -437,7 +446,11 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      */
     public function getMusicInfo()
     {
-        $result = $this->getProductionEventAttribute('elokuva-musiikki');
+        $result = $this->getProductionEventElement('elokuva_musiikki');
+        $result = reset($result);
+        if (!$result) {
+            return '';
+        }
         $result = preg_replace('/(\d+\. )/', '<br/>\1', $result);
         if (strncmp($result, '<br/>', 5) == 0) {
             $result = substr($result, 5);
@@ -520,6 +533,22 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Return summary
+     *
+     * @return array
+     */
+    public function getSummary()
+    {
+        list($locale) = explode('-', $this->getTranslatorLocale());
+
+        $result = $this->getDescriptionData('Content description', $locale);
+        if (empty($result)) {
+            $result = $this->getDescriptionData('Content description');
+        }
+        return $result;
+    }
+
+    /**
      * Check if a datasource has patron functions in order to show or hide the
      * patron login
      *
@@ -575,6 +604,22 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
             }
         }
         return $result;
+    }
+
+    /**
+     * Get all original records as a SimpleXML object
+     *
+     * @return SimpleXMLElement The record as SimpleXML
+     */
+    protected function getAllRecordsXML()
+    {
+        if ($this->lazyRecordXML === null) {
+            $xml = new \SimpleXMLElement($this->fields['fullrecord']);
+            $records = (array)$xml->children();
+            $records = reset($records);
+            $this->lazyRecordXML = is_array($records) ? $records : [$records];
+        }
+        return $this->lazyRecordXML;
     }
 
     /**
@@ -642,6 +687,30 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Get descriptions, optionally only in given language
+     *
+     * @param string $type     Description type
+     * @param string $language Optional language code
+     *
+     * @return array
+     */
+    protected function getDescriptionData($type, $language = null)
+    {
+        $results = [];
+        foreach ($this->getRecordXML()->ContentDescription as $description) {
+            if (null !== $language && (string)$description->Language !== $language) {
+                continue;
+            }
+            if ((string)$description->DescriptionType == $type
+                && !empty($description->DescriptionText)
+            ) {
+                $results[] = (string)$description->DescriptionText;
+            }
+        }
+        return $results;
+    }
+
+    /**
      * Return a production event attribute
      *
      * @param string $attribute Attribute name
@@ -690,21 +759,5 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     {
         $records = $this->getAllRecordsXML();
         return reset($records);
-    }
-
-    /**
-     * Get all original records as a SimpleXML object
-     *
-     * @return SimpleXMLElement The record as SimpleXML
-     */
-    protected function getAllRecordsXML()
-    {
-        if ($this->lazyRecordXML === null) {
-            $xml = new \SimpleXMLElement($this->fields['fullrecord']);
-            $records = (array)$xml->children();
-            $records = reset($records);
-            $this->lazyRecordXML = is_array($records) ? $records : [$records];
-        }
-        return $this->lazyRecordXML;
     }
 }
