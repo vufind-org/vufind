@@ -27,8 +27,8 @@
  */
 namespace VuFindApi\Controller;
 
-use VuFind\I18n\TranslatableString;
-use VuFind\Search\Base\Results;
+use VuFindApi\Formatter\FacetFormatter;
+use VuFindApi\Formatter\RecordFormatter;
 
 /**
  * Search API Controller
@@ -47,11 +47,18 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     use ApiTrait;
 
     /**
-     * Record field definitions
+     * Record formatter
      *
-     * @var array
+     * @var RecordFormatter
      */
-    protected $recordFields;
+    protected $recordFormatter;
+
+    /**
+     * Facet formatter
+     *
+     * @var FacetFormatter
+     */
+    protected $facetFormatter;
 
     /**
      * Default record fields to return if a request does not define the fields
@@ -79,10 +86,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      *
      * @param array $recordFields Record field definitions
      */
-    public function __construct($recordFields)
+    public function __construct(RecordFormatter $rf, FacetFormatter $ff)
     {
-        $this->recordFields = $recordFields;
-        foreach ($this->recordFields as $fieldName => $fieldSpec) {
+        $this->recordFormatter = $rf;
+        $this->facetFormatter = $ff;
+        foreach ($rf->getRecordFields() as $fieldName => $fieldSpec) {
             if (!empty($fieldSpec['default'])) {
                 $this->defaultRecordFields[] = $fieldName;
             }
@@ -176,8 +184,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             return $this->output([], self::STATUS_ERROR, 400, 'Missing id');
         }
 
-        $requestedFields = $this->getFieldList($request);
-
         $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
         try {
             if (is_array($request['id'])) {
@@ -192,17 +198,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             );
         }
 
-        $records = [];
-        foreach ($results as $result) {
-            $records[] = $this->getFields($result, $requestedFields);
-        }
-
-        $this->filterArrayValues($records);
-
         $response = [
             'resultCount' => count($results)
         ];
-        if ($records) {
+        $requestedFields = $this->getFieldList($request);
+        if ($records = $this->recordFormatter->format($results, $requestedFields)) {
             $response['records'] = $records;
         }
 
@@ -284,232 +284,26 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             return $this->output([], self::STATUS_ERROR, 400, 'Invalid search');
         }
 
-        $facets = $this->buildResultFacets($request, $results, $hierarchicalFacets);
+        $response = ['resultCount' => $results->getResultTotal()];
 
-        $records = [];
-        foreach ($results->getResults() as $result) {
-            $records[] = $this->getFields($result, $requestedFields);
-        }
-
-        $this->filterArrayValues($records);
-
-        $response = [
-            'resultCount' => $results->getResultTotal(),
-        ];
+        $records = $this->recordFormatter
+            ->format($results->getResults(), $requestedFields);
         if ($records) {
             $response['records'] = $records;
         }
+
+        $requestedFacets = isset($request['facet']) ? $request['facet'] : [];
+        $hierarchicalFacetData = $this->getHierarchicalFacetData(
+            array_intersect($requestedFacets, $hierarchicalFacets)
+        );
+        $facets = $this->facetFormatter->format(
+            $request, $results, $hierarchicalFacetData
+        );
         if ($facets) {
             $response['facets'] = $facets;
         }
 
         return $this->output($response, self::STATUS_OK);
-    }
-
-    /**
-     * Build an array of facet filters from the request params
-     *
-     * @param array $request Request params
-     *
-     * @return array
-     */
-    protected function buildFacetFilters($request)
-    {
-        $facetFilters = [];
-        if (isset($request['facetFilter'])) {
-            foreach ($request['facetFilter'] as $filter) {
-                list($facetField, $regex) = explode(':', $filter, 2);
-                $regex = trim($regex);
-                if (substr($regex, 0, 1)  == '"') {
-                    $regex = substr($regex, 1);
-                }
-                if (substr($regex, -1, 1) == '"') {
-                    $regex = substr($regex, 0, -1);
-                }
-                $facetFilters[$facetField][] = $regex;
-            }
-        }
-        return $filters;
-    }
-
-    /**
-     * Recursive function to create a facet value list for a single facet
-     *
-     * @param array $list    Facet items
-     * @param array $filters Facet filters
-     *
-     * @return array
-     */
-    protected function buildFacetValues($list, $filters = false)
-    {
-        $result = [];
-        $fields = [
-            'value', 'displayText', 'count',
-            'children', 'href', 'isApplied'
-        ];
-        foreach ($list as $value) {
-            $resultValue = [];
-            if ($filters && !$this->matchFacetItem($value, $filters)) {
-                continue;
-            }
-
-            foreach ($value as $key => $item) {
-                if (!in_array($key, $fields)) {
-                    continue;
-                }
-                if ($key == 'children') {
-                    if (!empty($item)) {
-                        $resultValue[$key]
-                            = $this->buildFacetValues(
-                                $item, $filters
-                            );
-                    }
-                } else {
-                    if ($key == 'displayText') {
-                        $key = 'translated';
-                    }
-                    $resultValue[$key] = $item;
-                }
-            }
-            $result[] = $resultValue;
-        }
-        return $result;
-    }
-
-    /**
-     * Create the result facet list
-     *
-     * @param array   $request            Request parameters
-     * @param Results $results            Search results
-     * @param array   $hierarchicalFacets Hierarchical facets
-     *
-     * @return array
-     */
-    protected function buildResultFacets($request, Results $results,
-        $hierarchicalFacets
-    ) {
-        if ($results->getResultTotal() == 0 || empty($request['facet'])) {
-            return [];
-        }
-
-        $requestedFacets = $request['facet'];
-        $filters = $this->buildFacetFilters($request);
-        $facets = $results->getFacetList();
-        $translate = $this->getViewRenderer()->plugin('translate');
-
-        // Get requested hierarchical facets
-        $requestedHierarchicalFacets = array_intersect(
-            $requestedFacets, $hierarchicalFacets
-        );
-        if ($requestedHierarchicalFacets) {
-            $facetData = $this->getHierarchicalFacetData(
-                $requestedHierarchicalFacets
-            );
-            foreach ($facetData as $facet => $data) {
-                $facets[$facet]['list'] = $data;
-            }
-        }
-
-        // Add "missing" fields to non-hierarchical facets to make them similar
-        // to hierarchical facets for easier consumption.
-        $urlHelper = $results->getUrlQuery();
-        $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
-        foreach ($facets as $facetKey => &$facetItems) {
-            if (in_array($facetKey, $requestedHierarchicalFacets)) {
-                continue;
-            }
-
-            foreach ($facetItems['list'] as &$item) {
-                $href = $urlHelper->addFacet(
-                    $facetKey, $item['value'], $item['operator'], $paramArray
-                );
-                $item['href'] = $href;
-            }
-        }
-        $this->filterArrayValues($facets);
-
-        $result = [];
-        foreach ($facets as $facetName => $facetData) {
-            $result[$facetName] = $this->buildFacetValues(
-                $facetData['list'],
-                !empty($filters[$facetName]) ? $filters[$facetName] : false
-            );
-        }
-        return $result;
-    }
-
-    /**
-     * Recursive function to filter array fields:
-     * - remove empty values
-     * - convert boolean values to 0/1
-     * - force numerically indexed (non-associative) arrays to have numeric keys.
-     *
-     * @param array $array Array to check
-     *
-     * @return void
-     */
-    protected function filterArrayValues(&$array)
-    {
-        foreach ($array as $key => &$value) {
-            if (is_array($value) && !empty($value)) {
-                $this->filterArrayValues($value);
-                $this->resetArrayIndices($value);
-            }
-
-            if ((is_array($value) && empty($value))
-                || (is_bool($value) && !$value)
-                || $value === null || $value === ''
-            ) {
-                unset($array[$key]);
-            } else if (is_bool($value) || $value === 'true' || $value === 'false') {
-                $array[$key] = $value === true || $value === 'true' ? 1 : 0;
-            }
-        }
-        $this->resetArrayIndices($array);
-    }
-
-    /**
-     * Reset numerical array indices.
-     *
-     * @param array $array Array
-     *
-     * @return void
-     */
-    protected function resetArrayIndices(&$array)
-    {
-        $isNumeric
-            = count(array_filter(array_keys($array), 'is_string')) === 0;
-        if ($isNumeric) {
-            $array = array_values($array);
-        }
-    }
-
-    /**
-     * Match a facet item with the filters.
-     *
-     * @param array $facet   Facet
-     * @param array $filters Facet filters
-     *
-     * @return boolean
-     */
-    protected function matchFacetItem($facet, $filters)
-    {
-        $discard = true;
-        array_walk_recursive(
-            $facet,
-            function ($item, $key) use (&$discard, $filters) {
-                if ($discard && $key == 'value') {
-                    foreach ($filters as $filter) {
-                        $pattern = '/' . addcslashes($filter, '/') . '/';
-                        if (preg_match($pattern, $item) === 1) {
-                            $discard = false;
-                            break;
-                        }
-                    }
-                }
-            }
-        );
-        return !$discard;
     }
 
     /**
@@ -521,6 +315,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      */
     protected function getHierarchicalFacetData($facets)
     {
+        if (!$facets) {
+            return [];
+        }
         $results = $this->getResultsManager()->get('Solr');
         $params = $results->getParams();
         foreach ($facets as $facet) {
@@ -567,188 +364,5 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             $fieldList = $this->defaultRecordFields;
         }
         return $fieldList;
-    }
-
-    /**
-     * Get fields from a record as an array
-     *
-     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
-     * @param array                            $fields Fields to get
-     *
-     * @return array
-     */
-    protected function getFields($record, $fields)
-    {
-        $result = [];
-        foreach ($fields as $field) {
-            if (!isset($this->recordFields[$field])) {
-                continue;
-            }
-            $method = isset($this->recordFields[$field]['method'])
-                ? $this->recordFields[$field]['method']
-                : $this->recordFields[$field];
-            if (method_exists($this, $method)) {
-                $value = $this->{$method}($record);
-            } else {
-                $value = $record->tryMethod($method);
-            }
-            $result[$field] = $value;
-        }
-        // Convert any translation aware string classes to strings
-        $translate = $this->getViewRenderer()->plugin('translate');
-        array_walk_recursive(
-            $result,
-            function (&$value) use ($translate) {
-                if (is_object($value)) {
-                    if ($value instanceof TranslatableString) {
-                        $value = [
-                            'value' => (string)$value,
-                            'translated' => $translate($value)
-                        ];
-                    } else {
-                        $value = (string)$value;
-                    }
-                }
-            }
-        );
-
-        return $result;
-    }
-
-    /**
-     * Get dedup IDs
-     *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
-     *
-     * @return array|null
-     */
-    protected function getRecordDedupIds($record)
-    {
-        if (!($dedupData = $record->tryMethod('getDedupData'))) {
-            return null;
-        }
-        $result = [];
-        foreach ($dedupData as $item) {
-            $result[] = $item['id'];
-        }
-        return $result ? $result : null;
-    }
-
-    /**
-     * Return record field specs for the Swagger specification
-     *
-     * @return array
-     */
-    protected function getRecordFieldSpec()
-    {
-        $fields = array_map(
-            function ($item) {
-                if (isset($item['method'])) {
-                    unset($item['method']);
-                }
-                return $item;
-            },
-            $this->recordFields
-        );
-        return $fields;
-    }
-
-    /**
-     * Get full record for a record as XML
-     *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
-     *
-     * @return string|null
-     */
-    protected function getRecordFullRecord($record)
-    {
-        if ($xml = $record->tryMethod('getFilteredXML')) {
-            return $xml;
-        }
-        $rawData = $record->tryMethod('getRawData');
-        return isset($rawData['fullrecord']) ? $rawData['fullrecord'] : null;
-    }
-
-    /**
-     * Get record identifier
-     *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
-     *
-     * @return mixed
-     */
-    protected function getRecordIdentifier($record)
-    {
-        if ($id = $record->tryMethod('getIdentifier')) {
-            if (is_array($id) && count($id) === 1) {
-                $id = reset($id);
-            }
-            return $id;
-        }
-        return null;
-    }
-
-    /**
-     * Get (relative) link to record page
-     *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
-     *
-     * @return string
-     */
-    protected function getRecordPage($record)
-    {
-        $urlHelper = $this->getViewRenderer()->plugin('recordLink');
-        return $urlHelper->getUrl($record);
-    }
-
-    /**
-     * Get raw data for a record as an array
-     *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
-     *
-     * @return array
-     */
-    protected function getRecordRawData($record)
-    {
-        $rawData = $record->tryMethod('getRawData');
-
-        // Leave out spelling data
-        unset($rawData['spelling']);
-
-        return $rawData;
-    }
-
-    /**
-     * Get source
-     *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
-     *
-     * @return array|null
-     */
-    protected function getRecordSource($record)
-    {
-        if ($sources = $record->tryMethod('getSource')) {
-            $result = [];
-            foreach ($sources as $source) {
-                $result[] = [
-                    'value' => $source,
-                    'translated' => $this->translate("source_$source")
-                ];
-            }
-            return $result;
-        }
-        return null;
-    }
-
-    /**
-     * Get URLs
-     *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
-     *
-     * @return array
-     */
-    protected function getRecordURLs($record)
-    {
-        $recordHelper = $this->getViewRenderer()->plugin('Record');
-        return $recordHelper($record)->getLinkDetails();
     }
 }

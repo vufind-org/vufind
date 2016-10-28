@@ -26,6 +26,8 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindApi\Controller;
+use VuFindApi\Formatter\FacetFormatter;
+use VuFindApi\Formatter\RecordFormatter;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -66,7 +68,11 @@ class Factory
     {
         $recordFields = $sm->getServiceLocator()
             ->get('VuFind\YamlReader')->get('SearchApiRecordFields.yaml');
-        $controller = new SearchApiController($recordFields);
+        $translator = $sm->getServiceLocator()->get('VuFind\Translator');
+        $helperManager = $sm->getServiceLocator()->get('viewmanager')
+            ->getHelperManager();
+        $rf = new RecordFormatter($recordFields, $translator, $helperManager);
+        $controller = new SearchApiController($rf, new FacetFormatter());
         return $controller;
     }
 }
