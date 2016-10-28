@@ -335,7 +335,9 @@ class PAIA extends DAIA
                     isset($array_response['error_description'])
                         ? $array_response['error_description'] : ' '
             ];
-        } elseif ($array_response['patron'] === $post_data['patron']) {
+        } elseif (isset($array_response['patron'])
+            && $array_response['patron'] === $post_data['patron']
+        ) {
             // on success patron_id is returned
             $details = [
                 'success' => true,
