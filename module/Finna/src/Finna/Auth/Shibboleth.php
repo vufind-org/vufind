@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -45,17 +45,6 @@ use VuFind\Exception\Auth as AuthException;
  */
 class Shibboleth extends \VuFind\Auth\Shibboleth
 {
-    /**
-     * Constructor
-     *
-     * @param \Zend\Session\Container $container Session container for persisting
-     * state information.
-     */
-    public function __construct(\Zend\Session\Container $container)
-    {
-        $this->session = $container;
-    }
-
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
@@ -124,13 +113,16 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
         if (isset($shib->logout_attribute)) {
             $url = $this->getServerParam($request, $shib->logout_attribute);
             if ($url) {
-                $this->session['logoutUrl'] = $url;
+                $session = new \Zend\Session\Container(
+                    'Shibboleth', $this->sessionManager
+                );
+                $session['logoutUrl'] = $url;
             }
         }
 
         // Add session id mapping to external_session table for single logout support
         if (isset($shib->session_id)) {
-            $shibSessionId = $request->getServer()->get($shib->session_id);
+            $shibSessionId = $this->getServerParam($request, $shib->session_id);
             if (null !== $shibSessionId) {
                 $localSessionId = $this->sessionManager->getId();
                 $externalSession = $this->getDbTableManager()
@@ -161,21 +153,13 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
     public function logout($url)
     {
         // Check for a dynamic logout url:
-        if (!empty($this->session['logoutUrl'])) {
-            $url = $this->session['logoutUrl'] . '?return=' . urlencode($url);
+        $session = new \Zend\Session\Container('Shibboleth', $this->sessionManager);
+        if (!empty($session['logoutUrl'])) {
+            $url = $session['logoutUrl'] . '?return=' . urlencode($url);
             return $url;
         }
 
-        // If single log-out is enabled, use a special URL:
-        $config = $this->getConfig();
-        if (isset($config->Shibboleth->logout)
-            && !empty($config->Shibboleth->logout)
-        ) {
-            $url = $config->Shibboleth->logout . '?return=' . urlencode($url);
-        }
-
-        // Send back the redirect URL (possibly modified):
-        return $url;
+        return parent::logout($url);
     }
 
     /**
