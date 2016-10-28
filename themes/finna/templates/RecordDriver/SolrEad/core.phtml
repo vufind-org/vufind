@@ -81,7 +81,7 @@
         <div class="local-available-online-record recordURLs">
           <div class="truncate-field">
           <? foreach ($urls as $current): ?>
-            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate('link_' . $current['desc'], null, $current['desc']))?></a><br/>
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="_blank"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate('link_' . $current['desc'], null, $current['desc']))?></a><br/>
           <? endforeach; ?>
           </div>
         </div>
