@@ -87,8 +87,6 @@ VuFind.register('embedded', function embedded() {
   function toggleDataView(_link, tabid) {
     var $link = $(_link);
     var viewType = $link.attr('data-view');
-    var openTab = $link.attr('data-open');
-    if (typeof openTab === 'undefined' || typeof openTab === false) openTab = null;
     // If full, return true
     if (viewType === 'full') {
       return true;
@@ -97,6 +95,21 @@ VuFind.register('embedded', function embedded() {
     var mediaBody = result.find('.media-body');
     var shortNode = mediaBody.find('.short-view');
     var longNode = mediaBody.find('.long-view');
+    var openTab = false;
+    // Open tab
+    if ($link.data('open-tab')) {
+      openTab = $link.data('open-tab');
+    }
+    // Not title link
+    if (!$link.hasClass('title')) {
+      $link = result.find('.title');
+    }
+    // If full, return true
+    var viewType = $link.attr('data-view');
+    if (viewType === 'full') {
+      return true;
+    }
+console.debug(openTab);
     // Insert new elements
     if (!$link.hasClass('js-setup')) {
       $link.prependTo(mediaBody);
@@ -131,8 +144,7 @@ VuFind.register('embedded', function embedded() {
             method: 'getRecordDetails',
             id: divID,
             type: viewType,
-            source: result.find('.hiddenSource')[0].value,
-            open: openTab
+            source: result.find('.hiddenSource')[0].value
           }),
           success: function getRecordDetailsSuccess(response) {
             if (response.status === 'OK') {
@@ -141,6 +153,13 @@ VuFind.register('embedded', function embedded() {
               // Hide loading
               loadingNode.addClass('hidden');
               longNode.collapse('show');
+              // Setup to load a targetted tab
+              if (openTab) {
+                var tab = result.find('[id^="' + openTab + '"]');
+                if (tab.length > 0) {
+                  tabid = tab.attr('id');
+                }
+              }
               // Load first tab
               if (tabid) {
                 ajaxLoadTab(tabid, true);
@@ -178,6 +197,12 @@ VuFind.register('embedded', function embedded() {
         });
       } else {
         longNode.collapse('show');
+        if (openTab) {
+          var tab = result.find('[id^="' + openTab + '"]');
+          if (tab.length > 0) {
+            ajaxLoadTab(tab.attr('id'), true);
+          }
+        }
       }
       shortNode.collapse('hide');
       if (!$link.hasClass('auto')) {
@@ -234,6 +259,7 @@ VuFind.register('embedded', function embedded() {
 
   function init() {
     $('.getFull').click(function linkToggle() { return toggleDataView(this); });
+    $('[data-open-tab]').click(function dataOpenToggle() { return toggleDataView(this); });
     loadStorage();
   }
 

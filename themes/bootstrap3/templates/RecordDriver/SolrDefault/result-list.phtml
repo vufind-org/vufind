@@ -171,6 +171,10 @@
           <div class="savedLists alert alert-info hidden">
             <strong><?=$this->transEsc("Saved in")?>:</strong>
           </div>
+          <? /* Jump to holdings, work only with tabs or accordion view */ ?>
+          <? if ($this->params->getOptions()->getListViewOption()!== 'full'): ?>
+          <i class="fa fa-fw fa-arrow-right"></i><a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title" data-view="<?=$this->params->getOptions()->getListViewOption() ?>" data-open-tab="holdings"> Open Holdings</a>
+          <? endif; ?>
         <? endif; ?>
 
         <? /* Hierarchy tree link */ ?>
