@@ -447,5 +447,39 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
     /**
      * Insert Suggestion
      */
-}
 
+    /** Get Holdings
+     *
+     */
+    public function getHolding($id, array $patron = null)
+    {
+        $biblio = $this->makeRESTfulRequest('/biblios/' . $id);
+        $holdingsList = [];
+        if ($biblio) {
+            foreach ($biblio->items as $i) {
+                $item = $this->makeRESTfulRequest('/items/' . $i->itemnumber);
+                $holdingsList[] = [
+                    'id'          => $id,
+                    'availabiity' => $item->onloan ? false : true,
+                    'status'      => $item->onloan ? 'Checked out' : 'Available', //TODO: more statuses
+                    'location'    => $item->holdingbranch,
+                    'callnumber'  => $item->callnumber,
+                    'number'      => $item->stocknumber,
+                    'barcode'     => $item->barcode,
+                    'supplements' => $item->materials,
+                    'item_notes'  => $item->itemnotes,
+                    'item_id'     => $i->itemnumber,
+//                    ''         =>,
+ //                   ''         =>,
+  //                  ''         =>,
+//                    'rewuests_placed'         =>,
+                    'duedate'         => null, //TODO
+                    'reurnDate'         => false, //TODO
+//                    'reserve'         =>, //Y or N
+//                    ''         =>,
+                ];
+            }
+        }
+        return $holdingsList;
+    }
+}
