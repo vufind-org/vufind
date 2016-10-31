@@ -117,7 +117,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             'version' => \VuFind\Config\Version::getBuildVersion(),
             'searchTypes' => $options->getBasicHandlers(),
             'defaultSearchType' => $options->getDefaultHandler(),
-            'recordFields' => $this->getRecordFieldSpec(),
+            'recordFields' => $this->recordFormatter->getRecordFieldSpec(),
             'defaultFields' => $this->defaultRecordFields,
             'facetConfig' => $params->getFacetConfig(),
             'sortOptions' => $options->getSortOptions(),

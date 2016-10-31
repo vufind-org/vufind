@@ -77,8 +77,7 @@ class BaseFormatter
      */
     protected function resetArrayIndices(&$array)
     {
-        $isNumeric
-            = count(array_filter(array_keys($array), 'is_string')) === 0;
+        $isNumeric = count(array_filter(array_keys($array), 'is_string')) === 0;
         if ($isNumeric) {
             $array = array_values($array);
         }

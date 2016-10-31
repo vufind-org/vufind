@@ -97,25 +97,6 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Return record field specs for the Swagger specification
-     *
-     * @return array
-     */
-    protected function getRecordFieldSpec()
-    {
-        $fields = array_map(
-            function ($item) {
-                if (isset($item['method'])) {
-                    unset($item['method']);
-                }
-                return $item;
-            },
-            $this->recordFields
-        );
-        return $fields;
-    }
-
-    /**
      * Get full record for a record as XML
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
@@ -268,6 +249,25 @@ class RecordFormatter extends BaseFormatter
     public function getRecordFields()
     {
         return $this->recordFields;
+    }
+
+    /**
+     * Return record field specs for the Swagger specification
+     *
+     * @return array
+     */
+    public function getRecordFieldSpec()
+    {
+        $fields = array_map(
+            function ($item) {
+                if (isset($item['method'])) {
+                    unset($item['method']);
+                }
+                return $item;
+            },
+            $this->recordFields
+        );
+        return $fields;
     }
 
     /**
