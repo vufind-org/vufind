@@ -49,12 +49,10 @@ class ContentController extends \VuFind\Controller\AbstractBase
      */
     public function contentAction()
     {
-        $event      = $this->getEvent();
-        $routeMatch = $event->getRouteMatch();
-        $page       = strtolower($routeMatch->getParam('page'));
-        $themeInfo  = $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
-        $translator = $this->getServiceLocator()->get('VuFind\Translator');
-        $language   = $translator->getLocale();
+        $page = $this->params()->fromRoute('page');
+        $themeInfo = $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
+        $language = $this->getServiceLocator()->get('VuFind\Translator')
+            ->getLocale();
         $defaultLanguage = $this->getConfig()->Site->language;
 
         // Try to find a template using
