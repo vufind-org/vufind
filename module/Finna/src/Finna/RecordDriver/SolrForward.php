@@ -688,8 +688,8 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 ) {
                     continue;
                 }
-                if (!empty($attributes->{'elokuva-elotekija-tehtava'})) {
-                    $role = (string)$attributes->{'elokuva-elotekija-tehtava'};
+                if (!empty($attributes->{'finna-activity-text'})) {
+                    $role = (string)$attributes->{'finna-activity-text'};
                     if (isset($this->elonetRoleMap[$role])) {
                         $role = $this->elonetRoleMap[$role];
                     }
@@ -709,8 +709,15 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 $uncredited = true;
             }
 
+            $name = (string)$agent->AgentName;
+            if (empty($name)
+                && !empty($nameAttrs->{'elokuva-elokreditoimatontekija-nimi'})
+            ) {
+                $name = (string)$nameAttrs->{'elokuva-elokreditoimatontekija-nimi'};
+            }
+
             $result[] = [
-                'name' => (string)$agent->AgentName,
+                'name' => $name,
                 'role' => $role,
                 'roleName' => $roleName,
                 'uncredited' => $uncredited
