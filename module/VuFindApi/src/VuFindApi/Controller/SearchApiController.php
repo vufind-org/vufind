@@ -287,8 +287,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
 
         $response = ['resultCount' => $results->getResultTotal()];
 
-        $records = $this->recordFormatter
-            ->format($results->getResults(), $requestedFields);
+        $records = $this->recordFormatter->format(
+            $results->getResults(), $requestedFields
+        );
         if ($records) {
             $response['records'] = $records;
         }

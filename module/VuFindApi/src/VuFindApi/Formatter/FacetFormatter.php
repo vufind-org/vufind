@@ -62,7 +62,7 @@ class FacetFormatter extends BaseFormatter
                 $facetFilters[$facetField][] = $regex;
             }
         }
-        return $filters;
+        return $facetFilters;
     }
 
     /**
@@ -167,7 +167,7 @@ class FacetFormatter extends BaseFormatter
         $urlHelper = $results->getUrlQuery();
         $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
         foreach ($facets as $facetKey => &$facetItems) {
-            if (in_array($facetKey, $requestedHierarchicalFacets)) {
+            if (isset($hierarchicalFacetData[$facetKey])) {
                 continue;
             }
 

@@ -68,10 +68,9 @@ class Factory
     {
         $recordFields = $sm->getServiceLocator()
             ->get('VuFind\YamlReader')->get('SearchApiRecordFields.yaml');
-        $translator = $sm->getServiceLocator()->get('VuFind\Translator');
         $helperManager = $sm->getServiceLocator()->get('viewmanager')
             ->getHelperManager();
-        $rf = new RecordFormatter($recordFields, $translator, $helperManager);
+        $rf = new RecordFormatter($recordFields, $helperManager);
         $controller = new SearchApiController($rf, new FacetFormatter());
         return $controller;
     }

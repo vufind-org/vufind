@@ -101,7 +101,7 @@ corporateAuthors:
   items:
     type: string
 dedupIds:
-  method: getRecordDedupIds
+  method: "Formatter::getDedupIds"
   description: IDs of all records deduplicated with the current record
   type: array
   items:
@@ -124,7 +124,7 @@ formats:
   items:
     type: string
 fullRecord:
-  method: getRecordFullRecord
+  method: "Formatter::getFullRecord"
   description: Full metadata record (typically XML)
   type: array
   items:
@@ -282,7 +282,7 @@ publishers:
   items:
     type: string
 rawData:
-  method: getRecordRawData
+  method: "Formatter::getRawData"
   description: All data in the index fields
   type: string
 recordLinks:
@@ -292,7 +292,7 @@ recordLinks:
   items:
     $ref: '#/definitions/RecordLink'
 recordPage:
-  method: getRecordPage
+  method: "Formatter::getRecordPage"
   description: Link to the record page in the UI
   type: string
 relationshipNotes:
@@ -319,7 +319,7 @@ shortTitle:
   description: Short title (title excluding any subtitle)
   type: string
 source:
-  method: getRecordSource
+  method: "Formatter::getSource"
   description: Record source identifier
   type: string
 subjects:
@@ -371,7 +371,7 @@ toc:
   items:
     type: string
 urls:
-  method: getRecordURLs
+  method: "Formatter::getURLs"
   default: true
   description: URLs contained in the record
   type: array

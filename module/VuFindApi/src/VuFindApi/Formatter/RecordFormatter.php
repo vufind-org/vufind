@@ -27,7 +27,6 @@
  */
 namespace VuFindApi\Formatter;
 use VuFind\I18n\TranslatableString;
-use Zend\I18n\Translator\TranslatorInterface;
 use Zend\View\HelperPluginManager;
 
 /**
@@ -49,13 +48,6 @@ class RecordFormatter extends BaseFormatter
     protected $recordFields;
 
     /**
-     * Translator
-     *
-     * @var TranslatorInterface
-     */
-    protected $translator;
-
-    /**
      * View helper plugin manager
      *
      * @var HelperPluginManager
@@ -66,14 +58,11 @@ class RecordFormatter extends BaseFormatter
      * Constructor
      *
      * @param array               $recordFields  Record field definitions
-     * @param TranslatorInterface $translator    Translator
      * @param HelperPluginManager $helperManager View helper plugin manager
      */
-    public function __construct($recordFields, TranslatorInterface $translator,
-        HelperPluginManager $helperManager
+    public function __construct($recordFields, HelperPluginManager $helperManager
     ) {
         $this->recordFields = $recordFields;
-        $this->translator = $translator;
         $this->helperManager = $helperManager;
     }
 
@@ -84,7 +73,7 @@ class RecordFormatter extends BaseFormatter
      *
      * @return array|null
      */
-    protected function getRecordDedupIds($record)
+    protected function getDedupIds($record)
     {
         if (!($dedupData = $record->tryMethod('getDedupData'))) {
             return null;
@@ -103,7 +92,7 @@ class RecordFormatter extends BaseFormatter
      *
      * @return string|null
      */
-    protected function getRecordFullRecord($record)
+    protected function getFullRecord($record)
     {
         if ($xml = $record->tryMethod('getFilteredXML')) {
             return $xml;
@@ -113,21 +102,20 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get record identifier
+     * Get raw data for a record as an array
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
      *
-     * @return mixed
+     * @return array
      */
-    protected function getRecordIdentifier($record)
+    protected function getRawData($record)
     {
-        if ($id = $record->tryMethod('getIdentifier')) {
-            if (is_array($id) && count($id) === 1) {
-                $id = reset($id);
-            }
-            return $id;
-        }
-        return null;
+        $rawData = $record->tryMethod('getRawData');
+
+        // Leave out spelling data
+        unset($rawData['spelling']);
+
+        return $rawData;
     }
 
     /**
@@ -144,37 +132,21 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get raw data for a record as an array
-     *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
-     *
-     * @return array
-     */
-    protected function getRecordRawData($record)
-    {
-        $rawData = $record->tryMethod('getRawData');
-
-        // Leave out spelling data
-        unset($rawData['spelling']);
-
-        return $rawData;
-    }
-
-    /**
      * Get source
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
      *
      * @return array|null
      */
-    protected function getRecordSource($record)
+    protected function getSource($record)
     {
         if ($sources = $record->tryMethod('getSource')) {
             $result = [];
+            $translator = $this->helperManager->get('translate');
             foreach ($sources as $source) {
                 $result[] = [
                     'value' => $source,
-                    'translated' => $this->translator->translate("source_$source")
+                    'translated' => $translator->translate("source_$source")
                 ];
             }
             return $result;
@@ -189,7 +161,7 @@ class RecordFormatter extends BaseFormatter
      *
      * @return array
      */
-    protected function getRecordURLs($record)
+    protected function getURLs($record)
     {
         $recordHelper = $this->helperManager->get('Record');
         return $recordHelper($record)->getLinkDetails();
@@ -210,18 +182,16 @@ class RecordFormatter extends BaseFormatter
             if (!isset($this->recordFields[$field])) {
                 continue;
             }
-            $method = isset($this->recordFields[$field]['method'])
-                ? $this->recordFields[$field]['method']
-                : $this->recordFields[$field];
-            if (method_exists($this, $method)) {
-                $value = $this->{$method}($record);
+            $method = $this->recordFields[$field]['method'];
+            if (strncmp($method, 'Formatter::', 11) == 0) {
+                $value = $this->{substr($method, 11)}($record);
             } else {
                 $value = $record->tryMethod($method);
             }
             $result[$field] = $value;
         }
         // Convert any translation aware string classes to strings
-        $translator = $this->translator;
+        $translator = $this->helperManager->get('translate');
         array_walk_recursive(
             $result,
             function (&$value) use ($translator) {
