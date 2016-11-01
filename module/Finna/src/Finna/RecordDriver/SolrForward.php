@@ -236,6 +236,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 $embed = '';
                 if (strpos($url, 'elonet.fi') > 0 && strpos($url, '/video/') > 0) {
                     $url = str_replace('/video/', '/embed/', $url);
+                    $url = str_replace('http://', '//', $url);
                     $embed = 'iframe';
                 }
 
@@ -494,6 +495,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 && strpos($url['url'], '/video/') > 0
             ) {
                 $url['url'] = str_replace('/video/', '/embed/', $url['url']);
+                $url['url'] = str_replace('http://', '//', $url['url']);
                 $url['embed'] = 'iframe';
                 $urlJson = json_encode($url);
             }
