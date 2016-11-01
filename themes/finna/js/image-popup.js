@@ -122,6 +122,7 @@ finna.imagePopup = (function(finna) {
                 index: $(this).data('ind'),
                 type: 'ajax',
 	            tLoading: '',
+	            tClose: VuFind.translate('close'),
 	            preloader: true,
 	            preload: [1,3],
 	            removalDelay: 200,
@@ -214,6 +215,9 @@ finna.imagePopup = (function(finna) {
                             finna.layout.initTruncate(summaryHolder);
                             summaryHolder.removeClass('loading');
                         }
+                        
+                        // Init embedding
+                        finna.layout.initIframeEmbed(popup);
                     },
                 },
 
@@ -245,32 +249,39 @@ finna.imagePopup = (function(finna) {
     };
 
     var initDimensions = function() {
-      if (typeof $('.open-link a').attr('href') != 'undefined') {
-          var img = document.createElement('img')
-          img.src = $('.open-link a').attr('href');
-          img.onload = function() {
-            if (this.width == 10 && this.height == 10) {
-              $('.open-link').hide();
-            }
-            else {
-              $('.open-link .image-dimensions').text( '('+ this.width + ' X ' + this.height + ')')
-            }
-          }
-      }
-    }
-    var my = {
-        init: function() {
-            if (module != 'record') {
-                initThumbnailNavi();
-                initRecordImage();
-            } else {
-                resolveRecordImageSize();
-            }
-
-            if (location.hash == '#image') {
-                openPopup($('.image-popup-trigger'));
+        if (typeof $('.open-link a').attr('href') != 'undefined') {
+            var img = document.createElement('img')
+            img.src = $('.open-link a').attr('href');
+            img.onload = function() {
+                if (this.width == 10 && this.height == 10) {
+                    $('.open-link').hide();
+                }
+                else {
+                    $('.open-link .image-dimensions').text( '('+ this.width + ' X ' + this.height + ')')
+                }
             }
         }
+    };
+    
+    var init = function() {
+        if (module != 'record') {
+            initThumbnailNavi();
+            initRecordImage();
+        } else {
+            resolveRecordImageSize();
+        }
+
+        if (location.hash == '#image') {
+            openPopup($('.image-popup-trigger'));
+        }
+        $.extend(true, $.magnificPopup.defaults, {
+            
+            tLoading: VuFind.translate('loading') + '...'
+        });
+    };
+    
+    var my = {
+        init: init    
     };
 
     return my;

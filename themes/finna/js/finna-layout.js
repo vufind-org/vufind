@@ -693,6 +693,42 @@ finna.layout = (function() {
         });
     };
 
+    var initIframeEmbed = function(container) {
+        if (typeof(container) == 'undefined') {
+            container = $('body');
+        }        
+        container.find('a[data-embed-iframe]').click(function(e) {
+            if (typeof $.magnificPopup.instance !== 'undefined' && $.magnificPopup.instance.isOpen) {
+                // Close existing popup (such as image-popup) first without delay so that its 
+                // state doesn't get confused by the immediate reopening.
+                $.magnificPopup.instance.st.removalDelay = 0;
+                $.magnificPopup.close();
+            }
+            $.magnificPopup.open({        
+                type: 'iframe',
+                tClose: VuFind.translate('close'),
+                items: {
+                    src: $(this).attr('href')
+                },
+                iframe: {
+                    markup: '<div class="mfp-iframe-scaler">'
+                        + '<div class="mfp-close"></div>'
+                        + '<iframe class="mfp-iframe" frameborder="0" allowfullscreen></iframe>'+
+                        + '</div>'
+                },
+                callbacks: {
+                    open: function() {
+                        if (finna.layout.isTouchDevice()) {
+                            $('.mfp-container .mfp-close, .mfp-container .mfp-arrow-right, .mfp-container .mfp-arrow-left').addClass('touch-device');
+                        }
+                    }
+                }
+            });
+            e.preventDefault();
+            return false;
+        });
+    }
+    
     var my = {
         getOrganisationPageLink: getOrganisationPageLink,
         isTouchDevice: isTouchDevice,
@@ -703,6 +739,7 @@ finna.layout = (function() {
         initJumpMenus: initJumpMenus,
         initMobileNarrowSearch: initMobileNarrowSearch,
         initSecondaryLoginField: initSecondaryLoginField,
+        initIframeEmbed: initIframeEmbed, 
         init: function() {
             initScrollRecord();
             initJumpMenus();
@@ -731,6 +768,7 @@ finna.layout = (function() {
             initLoadMasonry();
             initOrganisationInfoWidgets();
             initOrganisationPageLinks();
+            initIframeEmbed();
         }
     };
 

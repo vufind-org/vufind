@@ -233,9 +233,16 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                     continue;
                 }
 
+                $embed = '';
+                if (strpos($url, 'elonet.fi') > 0 && strpos($url, '/video/') > 0) {
+                    $url = str_replace('/video/', '/embed/', $url);
+                    $embed = 'iframe';
+                }
+
                 $results[] = [
                     'url' => $url,
-                    'desc' => $description
+                    'desc' => $description,
+                    'embed' => $embed
                 ];
             }
         }
@@ -466,6 +473,32 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     public function getNonPresenterAuthors()
     {
         return $this->getAuthorsByRelators($this->nonPresenterAuthorRelators);
+    }
+
+    /**
+     * Get online URLs
+     *
+     * @param bool $raw Whether to return raw data
+     *
+     * @return array
+     */
+    public function getOnlineURLs($raw = false)
+    {
+        if (!isset($this->fields['online_urls_str_mv'])) {
+            return [];
+        }
+        $urls = $this->fields['online_urls_str_mv'];
+        foreach ($urls as &$urlJson) {
+            $url = json_decode($urlJson, true);
+            if (strpos($url['url'], 'elonet.fi') > 0
+                && strpos($url['url'], '/video/') > 0
+            ) {
+                $url['url'] = str_replace('/video/', '/embed/', $url['url']);
+                $url['embed'] = 'iframe';
+                $urlJson = json_encode($url);
+            }
+        }
+        return $raw ? $urls : $this->mergeURLArray($urls, true);
     }
 
     /**
