@@ -23,7 +23,7 @@
                     {
                         "name": "lng",
                         "in": "query",
-                        "description": "Language for returned translated strings",
+                        "description": "Language for returned translated strings.",
                         "type": "string",
                         "enum": [<?=implode(', ', array_map(function ($v) { return '"' . addslashes($v) . '"'; }, array_keys($this->config->Languages->toArray()))) ?>],
                         "default": "<?=addslashes($this->config->Site->language) ?>"
@@ -31,7 +31,7 @@
                     {
                         "name": "callback",
                         "in": "query",
-                        "description": "A callback that can be used for JSONP",
+                        "description": "A callback that can be used for JSONP.",
                         "type": "string"
                     }
 <? $commonFields = ob_get_contents(); ?>
@@ -107,7 +107,7 @@
                     {
                         "name": "filter[]",
                         "in": "query",
-                        "description": "Filter queries. Repeat for every filter.\nThe format for a filter is field:value.",
+                        "description": "Filter queries. Repeat for every filter.\nThe format for a filter is field:value.\n\n'AND' filtering is used by default. 'OR' or 'NOT' filtering can be used by prepending the field with '~' (OR) or '-' (NOT).",
                         "type": "array",
                         "collectionFormat": "multi",
                         "items": {
@@ -127,7 +127,7 @@
                     {
                         "name": "facetFilter[]",
                         "in": "query",
-                        "description": "Faceting result filters. Contains regular expressions that the facet must match for it to be returned. The result will include the matched facet items and for hierarchical facets any ancestor values.\nFormat for a facet filter is field:regexp.\n\n'AND' filtering is used by default. 'OR' or 'NOT' filtering can be used by prepending the field with '~' (OR) or '-' (NOT).\n\n**N.B.**The filtered facet needs to be present in the list of returned facets (facet[] parameter).",
+                        "description": "Faceting result filters. Contains regular expressions that the facet must match for it to be returned. The result will include the matched facet items and for hierarchical facets any ancestor values.\nFormat for a facet filter is field:regexp, e.g. `author_facet:Sm.*th`.\n\n**N.B.**The filtered facet needs to be present in the list of returned facets (facet[] parameter).",
                         "type": "array",
                         "collectionFormat": "multi",
                         "items": {
@@ -145,7 +145,7 @@
                     {
                         "name": "page",
                         "in": "query",
-                        "description": "Record page (first page is 1)",
+                        "description": "Record page (first page is 1).",
                         "type": "integer",
                         "minimum": 1,
                         "default": 1
