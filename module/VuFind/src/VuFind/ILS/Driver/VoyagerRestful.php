@@ -2370,10 +2370,11 @@ EOT;
      * callslips via the API.
      *
      * @param array $patron The patron array from patronLogin
+     * @param bool  $local  Whether to include local callslips
      *
      * @return mixed        Array of the patron's storage retrieval requests.
      */
-    protected function getRemoteCallSlips($patron)
+    protected function getRemoteCallSlips($patron, $local = false)
     {
         // Build Hierarchy
         $hierarchy = [
@@ -2399,7 +2400,9 @@ EOT;
             foreach ($results->callslips->institution as $institution) {
                 if ($this->isLocalInst((string)$institution->attributes()->id)) {
                     // Ignore local callslips, we have them already
-                    continue;
+                    if (! $local) {
+                        continue;
+                    }
                 }
                 foreach ($institution->callslip as $callslip) {
                     $item = $callslip->requestItem;
