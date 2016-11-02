@@ -2398,11 +2398,12 @@ EOT;
         $requests = [];
         if (isset($results->callslips->institution)) {
             foreach ($results->callslips->institution as $institution) {
-                if ($this->isLocalInst((string)$institution->attributes()->id)) {
-                    // Ignore local callslips, we have them already
-                    if (! $local) {
-                        continue;
-                    }
+                if (!$local
+                    && $this->isLocalInst((string)$institution->attributes()->id)
+                ) {
+                    // Unless $local is set, ignore local callslips; we have them
+                    // already....
+                    continue;
                 }
                 foreach ($institution->callslip as $callslip) {
                     $item = $callslip->requestItem;
