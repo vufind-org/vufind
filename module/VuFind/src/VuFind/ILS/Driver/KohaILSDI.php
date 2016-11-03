@@ -107,6 +107,23 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     protected $logger = false;
 
     /**
+     * Date converter object
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
+
+    /**
      * Set the logger
      *
      * @param LoggerInterface $logger Logger to use.
@@ -152,13 +169,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Date converter object
-     *
-     * @var \VuFind\Date\Converter
-     */
-    protected $dateConverter;
-
-    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -194,9 +204,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->availableLocationsDefault
             = isset($this->config['Other']['availableLocations'])
             ? $this->config['Other']['availableLocations'] : [];
-
-        // Create a dateConverter
-        $this->dateConverter = new \VuFind\Date\Converter;
 
         $this->debug("Config Summary:");
         $this->debug("DB Host: " . $this->host);
