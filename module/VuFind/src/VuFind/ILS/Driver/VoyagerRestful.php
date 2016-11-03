@@ -2369,12 +2369,28 @@ EOT;
      * Get Patron Remote Storage Retrieval Requests (Call Slips). Gets remote
      * callslips via the API.
      *
+     * This is a wrapper around getCallSlips designed for legacy
+     * compatibility. It can probably be removed in the future.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed        Array of the patron's storage retrieval requests.
+     */
+    protected function getRemoteCallSlips($patron)
+    {
+        return $this->getCallSlips($patron, false);
+    }
+
+    /**
+     * Get Patron Storage Retrieval Requests (Call Slips). Gets callslips via
+     * the API.
+     *
      * @param array $patron The patron array from patronLogin
      * @param bool  $local  Whether to include local callslips
      *
      * @return mixed        Array of the patron's storage retrieval requests.
      */
-    protected function getRemoteCallSlips($patron, $local = false)
+    protected function getCallSlips($patron, $local = false)
     {
         // Build Hierarchy
         $hierarchy = [
@@ -3151,7 +3167,7 @@ EOT;
     {
         return array_merge(
             $this->getHoldsFromApi($patron, false),
-            $this->getRemoteCallSlips($patron)
+            $this->getCallSlips($patron, false) // remote only
         );
     }
 
