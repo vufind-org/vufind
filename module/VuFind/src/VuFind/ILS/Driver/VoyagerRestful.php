@@ -2366,14 +2366,17 @@ EOT;
     }
 
     /**
-     * Get Patron Remote Storage Retrieval Requests (Call Slips). Gets remote
-     * callslips via the API.
+     * Get Patron Storage Retrieval Requests (Call Slips). Gets callslips via
+     * the API. Returns only remote slips by default since more complete data
+     * can be retrieved directly from the local database; however, the $local
+     * parameter exists to support potential local customizations.
      *
      * @param array $patron The patron array from patronLogin
+     * @param bool  $local  Whether to include local callslips
      *
      * @return mixed        Array of the patron's storage retrieval requests.
      */
-    protected function getRemoteCallSlips($patron)
+    protected function getCallSlips($patron, $local = false)
     {
         // Build Hierarchy
         $hierarchy = [
@@ -2397,8 +2400,11 @@ EOT;
         $requests = [];
         if (isset($results->callslips->institution)) {
             foreach ($results->callslips->institution as $institution) {
-                if ($this->isLocalInst((string)$institution->attributes()->id)) {
-                    // Ignore local callslips, we have them already
+                if (!$local
+                    && $this->isLocalInst((string)$institution->attributes()->id)
+                ) {
+                    // Unless $local is set, ignore local callslips; we have them
+                    // already....
                     continue;
                 }
                 foreach ($institution->callslip as $callslip) {
@@ -3147,7 +3153,7 @@ EOT;
     {
         return array_merge(
             $this->getHoldsFromApi($patron, false),
-            $this->getRemoteCallSlips($patron)
+            $this->getCallSlips($patron, false) // remote only
         );
     }
 
