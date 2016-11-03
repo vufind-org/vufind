@@ -48,6 +48,9 @@ use VuFind\Exception\Date as DateException;
 class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Web services host
      *
@@ -121,51 +124,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     public function __construct(\VuFind\Date\Converter $dateConverter)
     {
         $this->dateConverter = $dateConverter;
-    }
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Show a debug message.
-     *
-     * @param string $msg Debug message.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
-    }
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**
