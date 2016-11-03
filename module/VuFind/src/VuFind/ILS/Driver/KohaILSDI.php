@@ -29,7 +29,6 @@
 namespace VuFind\ILS\Driver;
 use PDO, PDOException;
 use VuFind\Exception\ILS as ILSException;
-use VuFindHttp\HttpServiceInterface;
 use Zend\Log\LoggerInterface;
 use VuFind\Exception\Date as DateException;
 
