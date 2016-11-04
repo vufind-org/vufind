@@ -70,12 +70,8 @@ finna.layout = (function() {
                     $('footer').height('auto');
                     var detectHeight = $(window).height() - $('body').height();
                     if (detectHeight > 0) {
-                        var expandedFooter = $('footer').outerHeight() + detectHeight;
-                        $('footer').outerHeight(expandedFooter);
-                        $('body').css('overflow-y', 'hidden');
-                    }
-                    else {
-                        $('body').css('overflow-y', '');
+                        var expandedFooter = $('footer').height() + detectHeight;
+                        $('footer').height(expandedFooter);
                     }
                 }, 50);
             }
