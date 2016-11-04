@@ -701,21 +701,27 @@ class MultiBackend extends AbstractBase
     /**
      * Get request groups
      *
-     * @param int   $id     BIB ID
-     * @param array $patron Patron information returned by the patronLogin
+     * @param int   $id          BIB ID
+     * @param array $patron      Patron information returned by the patronLogin
      * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the request group
+     * options or may be ignored.
      *
      * @return array  An array of associative arrays with requestGroupId and
      * name keys
      */
-    public function getRequestGroups($id, $patron)
+    public function getRequestGroups($id, $patron, $holdDetails = null)
     {
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
         if ($driver) {
             if ($this->getSource($patron['cat_username']) != $source
                 || !$this->methodSupported(
-                    $driver, 'getRequestGroups', compact('id', 'patron')
+                    $driver,
+                    'getRequestGroups',
+                    compact('id', 'patron', 'holdDetails')
                 )
             ) {
                 // Return empty array since the sources don't match or the method
@@ -724,7 +730,8 @@ class MultiBackend extends AbstractBase
             }
             $groups = $driver->getRequestGroups(
                 $this->stripIdPrefixes($id, $source),
-                $this->stripIdPrefixes($patron, $source)
+                $this->stripIdPrefixes($patron, $source),
+                $this->stripIdPrefixes($holdDetails, $source)
             );
             return $groups;
         }
