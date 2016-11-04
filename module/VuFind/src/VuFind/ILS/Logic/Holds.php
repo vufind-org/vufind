@@ -488,6 +488,9 @@ class Holds
      */
     protected function getRequestDetails($details, $HMACKeys, $action)
     {
+        // Include request type in the details
+        $details['requestType'] = $action;
+
         // Generate HMAC
         $HMACkey = $this->hmac->generate($HMACKeys, $details);
 

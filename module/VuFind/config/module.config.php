@@ -18,6 +18,19 @@ $config = [
                     ],
                 ],
             ],
+            'content-page' => [
+                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/Content/[:page]',
+                    'constraints' => [
+                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Content',
+                        'action'     => 'Content',
+                    ]
+                ],
+            ],
             'legacy-alphabrowse-results' => [
                 'type' => 'Zend\Mvc\Router\Http\Literal',
                 'options' => [
@@ -106,6 +119,7 @@ $config = [
             'authority' => 'VuFind\Controller\AuthorityController',
             'combined' => 'VuFind\Controller\CombinedController',
             'confirm' => 'VuFind\Controller\ConfirmController',
+            'content' => 'VuFind\Controller\ContentController',
             'cover' => 'VuFind\Controller\CoverController',
             'eds' => 'VuFind\Controller\EdsController',
             'edsrecord' => 'VuFind\Controller\EdsrecordController',
