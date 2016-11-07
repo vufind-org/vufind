@@ -68,10 +68,11 @@ class ChannelsController extends AbstractBase
         $view->results = $runner->run($request, $searchClassId, $callback);
 
         $view->channels = [];
-        $token = $this->params()->fromQuery('channelToken');
+        $view->token = $this->params()->fromQuery('channelToken');
         foreach ($providers as $provider) {
             $view->channels = array_merge(
-                $view->channels, $provider->getFromSearch($view->results, $token)
+                $view->channels,
+                $provider->getFromSearch($view->results, $view->token)
             );
         }
         return $view;
@@ -94,11 +95,12 @@ class ChannelsController extends AbstractBase
         $providerIds = isset($config->{"source.$source"}->record)
             ? $config->{"source.$source"}->record->toArray() : [];
         $view->channels = [];
-        $token = $this->params()->fromQuery('channelToken');
+        $view->token = $this->params()->fromQuery('channelToken');
         $providers = $this->getChannelProviderArray($providerIds, $config);
         foreach ($providers as $provider) {
             $view->channels = array_merge(
-                $view->channels, $provider->getFromRecord($view->driver, $token)
+                $view->channels,
+                $provider->getFromRecord($view->driver, $view->token)
             );
         }
         return $view;
@@ -134,10 +136,11 @@ class ChannelsController extends AbstractBase
         $view->results = $runner->run($request, $searchClassId, $callback);
 
         $view->channels = [];
-        $token = $this->params()->fromQuery('channelToken');
+        $view->token = $this->params()->fromQuery('channelToken');
         foreach ($providers as $provider) {
             $view->channels = array_merge(
-                $view->channels, $provider->getFromSearch($view->results, $token)
+                $view->channels,
+                $provider->getFromSearch($view->results, $view->token)
             );
         }
         return $view;
