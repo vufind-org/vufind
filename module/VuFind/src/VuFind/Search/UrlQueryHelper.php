@@ -281,7 +281,7 @@ class UrlQueryHelper
      * @param string $filter     Filter to add
      * @param array  $paramArray Optional array of parameters to use instead of
      * getParamArray()
-     * @param bool   $escape Should we escape the string for use in the view?
+     * @param bool   $escape     Should we escape the string for use in the view?
      *
      * @return string
      */

@@ -174,7 +174,8 @@ class FacetFormatter extends BaseFormatter
             foreach ($facetItems['list'] as &$item) {
                 $href = !$item['isApplied']
                     ? $urlHelper->addFacet(
-                        $facetKey, $item['value'], $item['operator'], $paramArray, false
+                        $facetKey, $item['value'], $item['operator'],
+                        $paramArray, false
                     ) : $urlHelper->getParams(false);
                 $item['href'] = $href;
             }
