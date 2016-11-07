@@ -66,7 +66,7 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
                         'displayText' => 'translated(baz)',
                         'count' => 150,
                         'operator' => 'AND',
-                        'isApplied' => false, //true,
+                        'isApplied' => true,
                     ],
                 ],
             ],
@@ -126,7 +126,7 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
         $formatter = new \VuFindApi\Formatter\FacetFormatter();
         $request = [
             'facet' => ['foo'],
-            //'filter' => ['foo:baz'], TODO: turn this filter on and adjust test!
+            'filter' => ['foo:baz'],
         ];
         $formatted = $formatter->format($request, $this->getFakeResults($request), []);
 
@@ -136,13 +136,13 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
                     'value' => 'bar',
                     'translated' => 'translated(bar)',
                     'count' => 100,
-                    'href' => '?filter%5B%5D=foo%3A%22bar%22',
+                    'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=foo%3A%22bar%22',
                 ],
                 [
                     'value' => 'baz',
                     'translated' => 'translated(baz)',
                     'count' => 150,
-                    //'isApplied' => true,
+                    'isApplied' => 1,
                     'href' => '?filter%5B%5D=foo%3A%22baz%22',
                 ],
             ],

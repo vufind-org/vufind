@@ -261,14 +261,18 @@ class UrlQueryHelper
      * @param string $operator   Facet type to add (AND, OR, NOT)
      * @param array  $paramArray Optional array of parameters to use instead of
      * getParamArray()
+     * @param bool   $escape     Should we escape the string for use in the view?
      *
      * @return string
      */
-    public function addFacet($field, $value, $operator = 'AND', $paramArray = null)
-    {
+    public function addFacet($field, $value, $operator = 'AND', $paramArray = null,
+        $escape = true
+    ) {
         // Facets are just a special case of filters:
         $prefix = ($operator == 'NOT') ? '-' : ($operator == 'OR' ? '~' : '');
-        return $this->addFilter($prefix . $field . ':"' . $value . '"', $paramArray);
+        return $this->addFilter(
+            $prefix . $field . ':"' . $value . '"', $paramArray, $escape
+        );
     }
 
     /**
@@ -277,10 +281,11 @@ class UrlQueryHelper
      * @param string $filter     Filter to add
      * @param array  $paramArray Optional array of parameters to use instead of
      * getParamArray()
+     * @param bool   $escape Should we escape the string for use in the view?
      *
      * @return string
      */
-    public function addFilter($filter, $paramArray = null)
+    public function addFilter($filter, $paramArray = null, $escape = true)
     {
         $params = is_null($paramArray) ? $this->getParamArray() : $paramArray;
 
@@ -293,7 +298,7 @@ class UrlQueryHelper
         // Clear page:
         unset($params['page']);
 
-        return '?' . $this->buildQueryString($params);
+        return '?' . $this->buildQueryString($params, $escape);
     }
 
     /**
