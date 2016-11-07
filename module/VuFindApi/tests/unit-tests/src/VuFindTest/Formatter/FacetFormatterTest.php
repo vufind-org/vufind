@@ -46,11 +46,13 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
     /**
      * Get fake facet data.
      *
+     * @param bool $includeOr Include OR facet data?
+     *
      * @return array
      */
-    protected function getFakeFacetData()
+    protected function getFakeFacetData($includeOr = false)
     {
-        return [
+        $data = [
             'foo' => [
                 'label' => 'Foo Facet',
                 'list' => [
@@ -70,7 +72,6 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
                     ],
                 ],
             ],
-            /* TODO: uncomment this and adjust test(s)
             'xyzzy' => [
                 'label' => 'Xyzzy Facet',
                 'list' => [
@@ -97,23 +98,27 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
                     ],
                 ],
             ],
-             */
         ];
+        if (!$includeOr) {
+            unset($data['xyzzy']);
+        }
+        return $data;
     }
 
     /**
      * Get fake results object.
      *
-     * @param array $request Request parameters.
+     * @param array $request   Request parameters.
+     * @param array $facetData Facet data to inject into results.
      *
      * @return Results
      */
-    protected function getFakeResults($request)
+    protected function getFakeResults($request, $facetData)
     {
         $configManager = $this->getMock('VuFind\Config\PluginManager');
         $params = new Params(new Options($configManager), $configManager);
         $params->initFromRequest(new \Zend\Stdlib\Parameters($request));
-        return new Results($params, 100, $this->getFakeFacetData());
+        return new Results($params, 100, $facetData);
     }
 
     /**
@@ -128,7 +133,9 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
             'facet' => ['foo'],
             'filter' => ['foo:baz'],
         ];
-        $formatted = $formatter->format($request, $this->getFakeResults($request), []);
+        $formatted = $formatter->format(
+            $request, $this->getFakeResults($request, $this->getFakeFacetData()), []
+        );
 
         $expected = [
             'foo' => [
@@ -144,6 +151,54 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
                     'count' => 150,
                     'isApplied' => 1,
                     'href' => '?filter%5B%5D=foo%3A%22baz%22',
+                ],
+            ],
+        ];
+        $this->assertEquals($expected, $formatted);
+    }
+
+    /**
+     * Test the facet formatter with filtering turned on
+     *
+     * @return void
+     */
+    public function testFormatterWithFiltering()
+    {
+        $formatter = new \VuFindApi\Formatter\FacetFormatter();
+        $request = [
+            'facet' => ['foo', 'xyzzy'],
+            'filter' => ['foo:baz', '~xyzzy:val2', '~xyzzy:val3'],
+            'facetFilter' => ['foo:..z', 'xyzzy:val(2|3)'],
+        ];
+        $formatted = $formatter->format(
+            $request, $this->getFakeResults($request, $this->getFakeFacetData(true)),
+            []
+        );
+
+        $expected = [
+            'foo' => [
+                [
+                    'value' => 'baz',
+                    'translated' => 'translated(baz)',
+                    'count' => 150,
+                    'isApplied' => 1,
+                    'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=%7Exyzzy%3A%22val2%22&filter%5B%5D=%7Exyzzy%3A%22val3%22',
+                ],
+            ],
+            'xyzzy' => [
+                [
+                    'value' => 'val2',
+                    'translated' => 'translated(val2)',
+                    'count' => 15,
+                    'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=%7Exyzzy%3A%22val2%22&filter%5B%5D=%7Exyzzy%3A%22val3%22',
+                    'isApplied' => 1,
+                ],
+                [
+                    'value' => 'val3',
+                    'translated' => 'translated(val3)',
+                    'count' => 5,
+                    'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=%7Exyzzy%3A%22val2%22&filter%5B%5D=%7Exyzzy%3A%22val3%22',
+                    'isApplied' => 1,
                 ],
             ],
         ];
