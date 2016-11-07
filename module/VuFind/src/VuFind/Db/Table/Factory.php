@@ -54,6 +54,36 @@ class Factory
     }
 
     /**
+     * Construct the Tags table.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return User
+     */
+    public static function getTags(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $caseSensitive = isset($config->Social->case_sensitive_tags)
+            && $config->Social->case_sensitive_tags;
+        return new Tags($caseSensitive);
+    }
+
+    /**
+     * Construct the ResourceTags table.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return User
+     */
+    public static function getResourceTags(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $caseSensitive = isset($config->Social->case_sensitive_tags)
+            && $config->Social->case_sensitive_tags;
+        return new ResourceTags($caseSensitive);
+    }
+
+    /**
      * Construct the User table.
      *
      * @param ServiceManager $sm Service manager.

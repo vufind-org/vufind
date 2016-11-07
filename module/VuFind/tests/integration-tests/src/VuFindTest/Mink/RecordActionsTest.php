@@ -84,7 +84,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    protected function makeAccount($page, $username) {
+    protected function makeAccount($page, $username)
+    {
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         $this->snooze();
         $this->fillInAccountForm(
@@ -123,7 +124,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Create new account
         $this->makeAccount($page, 'username1');
         // Make sure page updated for login
-        $page = $this->gotoRecord();
+        // $page = $this->gotoRecord();
         $this->findCss($page, '.record-tabs .usercomments')->click();
         $this->assertEquals(// Can Comment?
             'Add your comment',
@@ -145,7 +146,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test adding comments on records.
+     * Test adding tags on records.
      *
      * @return void
      */
@@ -173,7 +174,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.logoutOptions a.logout')->click();
         $this->snooze();
         // Login
-        $page = $this->gotoRecord(); // redirects to search home???
+        // $page = $this->gotoRecord();
         $this->findCss($page, '.tag-record')->click();
         $this->snooze();
         $this->fillInLoginForm($page, 'username2', 'test');
@@ -223,7 +224,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
-        $page = $this->gotoRecord();
+        // $page = $this->gotoRecord();
         // Check selected == 0
         $this->assertNull($page->find('css', '.tagList .tag.selected'));
         $this->findCss($page, '.tagList .tag');
@@ -239,6 +240,41 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Check selected == 0
         $this->assertNull($page->find('css', '.tagList .tag.selected'));
         $this->findCss($page, '.logoutOptions a.logout')->click();
+    }
+
+    /**
+     * Test adding case sensitive tags on records.
+     *
+     * @return void
+     */
+    public function testAddSensitiveTag()
+    {
+        // Change the theme:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => ['theme' => 'bootstrap3'],
+                    'Social' => ['case_sensitive_tags' => 'true']
+                ]
+            ]
+        );
+        // Login
+        $page = $this->gotoRecord();
+        $this->findCss($page, '.tag-record')->click();
+        $this->snooze();
+        $this->fillInLoginForm($page, 'username2', 'test');
+        $this->submitLoginForm($page);
+        // Add tags
+        $this->findCss($page, '.modal #addtag_tag')->setValue('one ONE "new tag" ONE "THREE 4"');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+        $success = $this->findCss($page, '.modal-body .alert-success');
+        $this->assertEquals('Tags Saved', $success->getText());
+        $this->findCss($page, '.modal .close')->click();
+        // Count tags
+        $this->snooze();
+        $tags = $page->findAll('css', '.tagList .tag');
+        $this->assertEquals(6, count($tags));
     }
 
     /**

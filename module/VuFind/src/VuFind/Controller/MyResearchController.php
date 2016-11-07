@@ -32,7 +32,8 @@ use VuFind\Exception\Auth as AuthException,
     VuFind\Exception\Mail as MailException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\RecommendListener, Zend\Stdlib\Parameters;
+    VuFind\Search\RecommendListener, Zend\Stdlib\Parameters,
+    Zend\View\Model\ViewModel;
 
 /**
  * Controller for the user account area.
@@ -371,6 +372,7 @@ class MyResearchController extends AbstractBase
 
         // Obtain user information from ILS:
         $catalog = $this->getILS();
+        $this->addAccountBlocksToFlashMessenger($catalog, $patron);
         $profile = $catalog->getMyProfile($patron);
         $profile['home_library'] = $user->home_library;
         $view->profile = $profile;
@@ -384,6 +386,25 @@ class MyResearchController extends AbstractBase
         }
 
         return $view;
+    }
+
+    /**
+     * Add account blocks to the flash messenger as errors.
+     *
+     * @param \VuFind\ILS\Connection $catalog Catalog connection
+     * @param array                  $patron  Patron details
+     *
+     * @return void
+     */
+    public function addAccountBlocksToFlashMessenger($catalog, $patron)
+    {
+        if ($catalog->checkCapability('getAccountBlocks', compact($patron))
+            && $blocks = $catalog->getAccountBlocks($patron)
+        ) {
+            foreach ($blocks as $block) {
+                $this->flashMessenger()->addMessage($block, 'error');
+            }
+        }
     }
 
     /**
@@ -1078,6 +1099,9 @@ class MyResearchController extends AbstractBase
         // Connect to the ILS:
         $catalog = $this->getILS();
 
+        // Display account blocks, if any:
+        $this->addAccountBlocksToFlashMessenger($catalog, $patron);
+
         // Get the current renewal status and process renewal form, if necessary:
         $renewStatus = $catalog->checkFunction('Renewals', compact('patron'));
         $renewResult = $renewStatus
@@ -1317,7 +1341,7 @@ class MyResearchController extends AbstractBase
                     $view->hash = $hash;
                     $view->username = $user->username;
                     $view->useRecaptcha
-                        = $this->recaptcha()->active('passwordRecovery');
+                        = $this->recaptcha()->active('changePassword');
                     $view->setTemplate('myresearch/newpassword');
                     return $view;
                 }
@@ -1325,6 +1349,26 @@ class MyResearchController extends AbstractBase
         }
         $this->flashMessenger()->addMessage('recovery_invalid_hash', 'error');
         return $this->forwardTo('MyResearch', 'Login');
+    }
+
+    /**
+     * Reset the new password form and return the modified view. When a user has
+     * already been loaded from an existing hash, this resets the hash and updates
+     * the form so that the user can try again.
+     *
+     * @param mixed     $userFromHash User loaded from database, or false if none.
+     * @param ViewModel $view         View object
+     *
+     * @return ViewModel
+     */
+    protected function resetNewPasswordForm($userFromHash, ViewModel $view)
+    {
+        if ($userFromHash) {
+            $userFromHash->updateHash();
+            $view->username = $userFromHash->username;
+            $view->hash = $userFromHash->verify_hash;
+        }
+        return $view;
     }
 
     /**
@@ -1352,7 +1396,8 @@ class MyResearchController extends AbstractBase
         $view->useRecaptcha = $this->recaptcha()->active('changePassword');
         // Check reCaptcha
         if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
-            return $view;
+            $this->setUpAuthenticationFromRequest();
+            return $this->resetNewPasswordForm($userFromHash, $view);
         }
         // Missing or invalid hash
         if (false == $userFromHash) {
@@ -1363,10 +1408,7 @@ class MyResearchController extends AbstractBase
         } elseif ($userFromHash->username !== $post->username) {
             $this->flashMessenger()
                 ->addMessage('authentication_error_invalid', 'error');
-            $userFromHash->updateHash();
-            $view->username = $userFromHash->username;
-            $view->hash = $userFromHash->verify_hash;
-            return $view;
+            return $this->resetNewPasswordForm($userFromHash, $view);
         }
         // Verify old password if we're logged in
         if ($this->getUser()) {
@@ -1453,7 +1495,11 @@ class MyResearchController extends AbstractBase
      */
     protected function setUpAuthenticationFromRequest()
     {
-        $method = trim($this->params()->fromQuery('auth_method'));
+        $method = trim(
+            $this->params()->fromQuery(
+                'auth_method', $this->params()->fromPost('auth_method')
+            )
+        );
         if (!empty($method)) {
             $this->getAuthManager()->setAuthMethod($method);
         }

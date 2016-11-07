@@ -324,135 +324,181 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Attempt to perform a MySQL upgrade; return either a string containing SQL
+     * (if we are in "log SQL" mode), an empty string (if we are successful but
+     * not logging SQL) or a Zend Framework object representing forward/redirect
+     * (if we need to obtain user input).
+     *
+     * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
+     *
+     * @return mixed
+     */
+    protected function upgradeMySQL($adapter)
+    {
+        $sql = '';
+
+        // Set up the helper with information from our SQL file:
+        $this->dbUpgrade()
+            ->setAdapter($adapter)
+            ->loadSql(APPLICATION_PATH . '/module/VuFind/sql/mysql.sql');
+
+        // Check for missing tables.  Note that we need to finish dealing with
+        // missing tables before we proceed to the missing columns check, or else
+        // the missing tables will cause fatal errors during the column test.
+        $missingTables = $this->dbUpgrade()->getMissingTables();
+        if (!empty($missingTables)) {
+            // Only manipulate DB if we're not in logging mode:
+            if (!$this->logsql) {
+                if (!$this->hasDatabaseRootCredentials()) {
+                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                }
+                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                $this->session->warnings->append(
+                    "Created missing table(s): " . implode(', ', $missingTables)
+                );
+            }
+            $sql .= $this->dbUpgrade()
+                ->createMissingTables($missingTables, $this->logsql);
+        }
+
+        // Check for missing columns.
+        $mT = $this->logsql ? $missingTables : [];
+        $missingCols = $this->dbUpgrade()->getMissingColumns($mT);
+        if (!empty($missingCols)) {
+            // Only manipulate DB if we're not in logging mode:
+            if (!$this->logsql) {
+                if (!$this->hasDatabaseRootCredentials()) {
+                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                }
+                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                $this->session->warnings->append(
+                    "Added column(s) to table(s): "
+                    . implode(', ', array_keys($missingCols))
+                );
+            }
+            $sql .= $this->dbUpgrade()
+                ->createMissingColumns($missingCols, $this->logsql);
+        }
+
+        // Check for modified columns.
+        $mC = $this->logsql ? $missingCols : [];
+        $modifiedCols = $this->dbUpgrade()->getModifiedColumns($mT, $mC);
+        if (!empty($modifiedCols)) {
+            // Only manipulate DB if we're not in logging mode:
+            if (!$this->logsql) {
+                if (!$this->hasDatabaseRootCredentials()) {
+                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                }
+                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                $this->session->warnings->append(
+                    "Modified column(s) in table(s): "
+                    . implode(', ', array_keys($modifiedCols))
+                );
+            }
+            $sql .= $this->dbUpgrade()
+                ->updateModifiedColumns($modifiedCols, $this->logsql);
+        }
+
+        // Check for encoding problems.
+        $encProblems = $this->dbUpgrade()->getEncodingProblems();
+        if (!empty($encProblems)) {
+            if (!isset($this->session->dbChangeEncoding)) {
+                return $this->forwardTo('Upgrade', 'GetDbEncodingPreference');
+            }
+
+            if ($this->session->dbChangeEncoding) {
+                // Only manipulate DB if we're not in logging mode:
+                if (!$this->logsql) {
+                    if (!$this->hasDatabaseRootCredentials()) {
+                        return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                    }
+                    $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                    $this->session->warnings->append(
+                        "Modified encoding settings in table(s): "
+                        . implode(', ', array_keys($encProblems))
+                    );
+                }
+                $sql .= $this->dbUpgrade()
+                    ->fixEncodingProblems($encProblems, $this->logsql);
+                $this->setDbEncodingConfiguration('utf8');
+            } else {
+                // User has requested that we skip encoding conversion:
+                $this->setDbEncodingConfiguration('latin1');
+            }
+        }
+
+        // Check for collation problems.
+        $colProblems = $this->dbUpgrade()->getCollationProblems();
+        if (!empty($colProblems)) {
+            if (!$this->logsql) {
+                if (!$this->hasDatabaseRootCredentials()) {
+                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                }
+                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+            }
+            $sql .= $this->dbUpgrade()
+                ->fixCollationProblems($colProblems, $this->logsql);
+            $this->session->warnings->append(
+                "Modified collation(s) in table(s): "
+                . implode(', ', array_keys($colProblems))
+            );
+        }
+
+        // Don't keep DB credentials in session longer than necessary:
+        unset($this->session->dbRootUser);
+        unset($this->session->dbRootPass);
+
+        return $sql;
+    }
+
+    /**
      * Upgrade the database.
      *
      * @return mixed
      */
     public function fixdatabaseAction()
     {
-        $sql = '';
-
         try {
-            // Set up the helper with information from our SQL file:
-            $this->dbUpgrade()
-                ->setAdapter($this->getServiceLocator()->get('VuFind\DbAdapter'))
-                ->loadSql(APPLICATION_PATH . '/module/VuFind/sql/mysql.sql');
-
-            // Check for missing tables.  Note that we need to finish dealing with
-            // missing tables before we proceed to the missing columns check, or else
-            // the missing tables will cause fatal errors during the column test.
-            $missingTables = $this->dbUpgrade()->getMissingTables();
-            if (!empty($missingTables)) {
-                // Only manipulate DB if we're not in logging mode:
-                if (!$this->logsql) {
-                    if (!$this->hasDatabaseRootCredentials()) {
-                        return $this->forwardTo('Upgrade', 'GetDbCredentials');
+            // If we haven't already tried it, attempt a structure update:
+            if (!isset($this->session->sql)) {
+                // If this is a MySQL connection, we can do an automatic upgrade;
+                // if VuFind is using a different database, we have to prompt the
+                // user to check the migrations directory and upgrade manually.
+                $adapter = $this->getServiceLocator()->get('VuFind\DbAdapter');
+                $platform = $adapter->getDriver()->getDatabasePlatformName();
+                if (strtolower($platform) == 'mysql') {
+                    $upgradeResult = $this->upgradeMySQL($adapter);
+                    if (!is_string($upgradeResult)) {
+                        return $upgradeResult;
                     }
-                    $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
-                    $this->session->warnings->append(
-                        "Created missing table(s): " . implode(', ', $missingTables)
-                    );
-                }
-                $sql .= $this->dbUpgrade()
-                    ->createMissingTables($missingTables, $this->logsql);
-            }
-
-            // Check for missing columns.
-            $mT = $this->logsql ? $missingTables : [];
-            $missingCols = $this->dbUpgrade()->getMissingColumns($mT);
-            if (!empty($missingCols)) {
-                // Only manipulate DB if we're not in logging mode:
-                if (!$this->logsql) {
-                    if (!$this->hasDatabaseRootCredentials()) {
-                        return $this->forwardTo('Upgrade', 'GetDbCredentials');
-                    }
-                    $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
-                    $this->session->warnings->append(
-                        "Added column(s) to table(s): "
-                        . implode(', ', array_keys($missingCols))
-                    );
-                }
-                $sql .= $this->dbUpgrade()
-                    ->createMissingColumns($missingCols, $this->logsql);
-            }
-
-            // Check for modified columns.
-            $mC = $this->logsql ? $missingCols : [];
-            $modifiedCols = $this->dbUpgrade()->getModifiedColumns($mT, $mC);
-            if (!empty($modifiedCols)) {
-                // Only manipulate DB if we're not in logging mode:
-                if (!$this->logsql) {
-                    if (!$this->hasDatabaseRootCredentials()) {
-                        return $this->forwardTo('Upgrade', 'GetDbCredentials');
-                    }
-                    $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
-                    $this->session->warnings->append(
-                        "Modified column(s) in table(s): "
-                        . implode(', ', array_keys($modifiedCols))
-                    );
-                }
-                $sql .= $this->dbUpgrade()
-                    ->updateModifiedColumns($modifiedCols, $this->logsql);
-            }
-
-            // Check for encoding problems.
-            $encProblems = $this->dbUpgrade()->getEncodingProblems();
-            if (!empty($encProblems)) {
-                if (!isset($this->session->dbChangeEncoding)) {
-                    return $this->forwardTo('Upgrade', 'GetDbEncodingPreference');
-                }
-
-                if ($this->session->dbChangeEncoding) {
-                    // Only manipulate DB if we're not in logging mode:
-                    if (!$this->logsql) {
-                        if (!$this->hasDatabaseRootCredentials()) {
-                            return $this->forwardTo('Upgrade', 'GetDbCredentials');
-                        }
-                        $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
-                        $this->session->warnings->append(
-                            "Modified encoding settings in table(s): "
-                            . implode(', ', array_keys($encProblems))
-                        );
-                    }
-                    $sql .= $this->dbUpgrade()
-                        ->fixEncodingProblems($encProblems, $this->logsql);
-                    $this->setDbEncodingConfiguration('utf8');
+                    $this->session->sql = $upgradeResult;
                 } else {
-                    // User has requested that we skip encoding conversion:
-                    $this->setDbEncodingConfiguration('latin1');
+                    $this->session->sql = '';
+                    $this->session->warnings->append(
+                        'Automatic database upgrade not supported for ' . $platform
+                        . '. Check for manual migration scripts in the '
+                        . '$VUFIND_HOME/module/VuFind/sql/migrations directory.'
+                    );
                 }
             }
 
-            // Don't keep DB credentials in session longer than necessary:
-            unset($this->session->dbRootUser);
-            unset($this->session->dbRootPass);
+            // Now that database structure is addressed, we can fix database
+            // content -- the checks below should be platform-independent.
 
             // Check for legacy tag bugs:
             $resourceTagsTable = $this->getTable('ResourceTags');
             $anonymousTags = $resourceTagsTable->getAnonymousCount();
             if ($anonymousTags > 0 && !isset($this->cookie->skipAnonymousTags)) {
                 $this->getRequest()->getQuery()->set('anonymousCnt', $anonymousTags);
-                return $this->forwardTo('Upgrade', 'FixAnonymousTags');
+                return $this->redirect()->toRoute('upgrade-fixanonymoustags');
             }
             $dupeTags = $this->getTable('Tags')->getDuplicates();
             if (count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
-                return $this->forwardTo('Upgrade', 'FixDuplicateTags');
+                return $this->redirect()->toRoute('upgrade-fixduplicatetags');
             }
 
             // Clean up the "VuFind" source, if necessary.
             $this->fixVuFindSourceInDatabase();
-
-            // Add checksums to all saved searches but catch exceptions (e.g. in case
-            // column checksum does not exist yet because of sqllog).
-            try {
-                $this->fixSearchChecksumsInDatabase();
-            } catch (\Exception $e) {
-                $this->session->warnings->append(
-                    'Could not fix checksums in table search - maybe column ' .
-                    'checksum is missing? Exception thrown with ' .
-                    'message: ' . $e->getMessage()
-                );
-            }
         } catch (\Exception $e) {
             $this->flashMessenger()->addMessage(
                 'Database upgrade failed: ' . $e->getMessage(), 'error'
@@ -460,12 +506,23 @@ class UpgradeController extends AbstractBase
             return $this->forwardTo('Upgrade', 'Error');
         }
 
+        // Add checksums to all saved searches but catch exceptions (e.g. in case
+        // column checksum does not exist yet because of sqllog).
+        try {
+            $this->fixSearchChecksumsInDatabase();
+        } catch (\Exception $e) {
+            $this->session->warnings->append(
+                'Could not fix checksums in table search - maybe column ' .
+                'checksum is missing? Exception thrown with ' .
+                'message: ' . $e->getMessage()
+            );
+        }
+
         $this->cookie->databaseOkay = true;
-        if ($this->logsql) {
-            $this->session->sql = $sql;
+        if (!empty($this->session->sql)) {
             return $this->forwardTo('Upgrade', 'ShowSql');
         }
-        return $this->forwardTo('Upgrade', 'Home');
+        return $this->redirect()->toRoute('upgrade-home');
     }
 
     /**
@@ -478,7 +535,7 @@ class UpgradeController extends AbstractBase
         $continue = $this->params()->fromPost('continue', 'nope');
         if ($continue == 'Next') {
             unset($this->session->sql);
-            return $this->forwardTo('Upgrade', 'Home');
+            return $this->redirect()->toRoute('upgrade-home');
         }
 
         return $this->createViewModel(['sql' => $this->session->sql]);

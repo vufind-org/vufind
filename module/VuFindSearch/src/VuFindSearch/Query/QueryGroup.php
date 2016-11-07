@@ -69,7 +69,7 @@ class QueryGroup extends AbstractQuery
     /**
      * Is the query group negated?
      *
-     * @var boolean
+     * @var bool
      */
     protected $negation;
 
@@ -229,7 +229,7 @@ class QueryGroup extends AbstractQuery
     /**
      * Return true if group is an exclusion group.
      *
-     * @return boolean
+     * @return bool
      */
     public function isNegated()
     {

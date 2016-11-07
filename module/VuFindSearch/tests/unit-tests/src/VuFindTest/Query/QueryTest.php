@@ -49,12 +49,16 @@ class QueryTest extends PHPUnit_Framework_TestCase
      */
     public function testContainsTerm()
     {
-        $q = new Query('test query we<(ird');
+        $q = new Query('test query we<(ird and/or');
 
         // Should contain all actual terms (even those containing regex chars):
         $this->assertTrue($q->containsTerm('test'));
         $this->assertTrue($q->containsTerm('query'));
         $this->assertTrue($q->containsTerm('we<(ird'));
+        // A slash can be a word boundary but also a single term
+        $this->assertTrue($q->containsTerm('and'));
+        $this->assertTrue($q->containsTerm('or'));
+        $this->assertTrue($q->containsTerm('and/or'));
 
         // Should not contain a non-present term:
         $this->assertFalse($q->containsTerm('garbage'));
@@ -70,9 +74,14 @@ class QueryTest extends PHPUnit_Framework_TestCase
      */
     public function testReplaceTerm()
     {
-        $q = new Query('test query we<(ird');
+        $q = new Query('test query we<(ird and/or');
         $q->replaceTerm('we<(ird', 'we>(ird');
-        $this->assertEquals('test query we>(ird', $q->getString());
+        $q->replaceTerm('and/or', 'and-or');
+        $this->assertEquals('test query we>(ird and-or', $q->getString());
+
+        $q = new Query('test query we<(ird and/or');
+        $q->replaceTerm('and', 'not');
+        $this->assertEquals('test query we<(ird not/or', $q->getString());
     }
 
     /**

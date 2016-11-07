@@ -150,7 +150,7 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
      * @param string $hiddenFilters Hidden filters
      * @param string $configFilters Filters from filter configuration
      *
-     * @return boolean
+     * @return bool
      */
     public function filtersMatch($class, $hiddenFilters, $configFilters)
     {

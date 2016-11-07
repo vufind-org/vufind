@@ -1,0 +1,92 @@
+$offcanvas-offset: 75% !default;
+$offcanvas-padding: 30px !default;
+
+.offcanvas-overlay,
+.offcanvas-toggle {display: none;}
+
+@media screen and (max-width: 767px) {
+  body.offcanvas {
+    overflow-x: hidden; /* Prevent scroll on narrow devices */
+    .sidebar {
+      position: fixed;
+      height: 100%;
+      top: 0;
+      width: $offcanvas-offset;
+      padding-left: 0;
+      padding-right: 0;
+      overflow-y: auto;
+      h4 {padding-left: $padding-base-horizontal;}
+      .checkbox {margin-left: 20px + $padding-base-horizontal;}
+      .list-group, .list-group-item {
+        border-left: 0;
+        border-right: 0;
+        border-radius: 0 !important;
+      }
+    }
+    &.active {overflow-y: hidden;}
+    &.offcanvas-left {
+      padding-left: $offcanvas-padding - $grid-gutter-width/2;
+      & .main {background: #FFF;}
+      &.active {
+        margin-left: $offcanvas-offset;
+        margin-right: -$offcanvas-offset;
+        .sidebar {left: 0;}
+        .offcanvas-overlay {right: -$offcanvas-offset;}
+        .offcanvas-toggle {left: $offcanvas-offset;}
+      }
+      .sidebar {left: -$offcanvas-offset;}
+      .offcanvas-overlay {right: -100%;}
+      .offcanvas-toggle {
+        border-radius: 0 $border-radius-small $border-radius-small 0; // top right and bottom right
+        left: 0;
+      }
+    }
+    &.offcanvas-right {
+      padding-right: $offcanvas-padding - $grid-gutter-width/2;
+      & .main > .container {background: #FFF;}
+      &.active {
+        margin-left: -$offcanvas-offset;
+        margin-right: $offcanvas-offset;
+        .sidebar {right: 0;}
+        .offcanvas-overlay {left: -$offcanvas-offset;}
+        .offcanvas-toggle {right: $offcanvas-offset;}
+      }
+      .sidebar {right: -$offcanvas-offset;}
+      .offcanvas-overlay {left: -100%;}
+      .offcanvas-toggle {
+        border-radius: $border-radius-small 0 0 $border-radius-small; // top left and bottom left
+        right: 0;
+      }
+    }
+    .offcanvas-overlay {
+      display: block;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,.3);
+      z-index: 3;
+    }
+    .offcanvas-toggle {
+      display: block;
+      position: fixed;
+      top: 50%;
+      width: calc($offcanvas-padding - 5px);
+      padding: 20px 0;
+      background: $brand-primary;
+      color: #EEE;
+      text-align: center;
+      z-index: 5;
+    }
+    .offcanvas-overlay,
+    .offcanvas-toggle,
+    .offcanvas-toggle * {cursor: pointer;}
+    &,.sidebar,
+    .offcanvas-overlay,
+    .offcanvas-toggle {
+      -webkit-transition: all .25s ease-out;
+           -o-transition: all .25s ease-out;
+              transition: all .25s ease-out;
+    }
+  }
+}

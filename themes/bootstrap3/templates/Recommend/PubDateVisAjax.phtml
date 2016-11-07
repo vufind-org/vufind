@@ -2,7 +2,7 @@
 <? if ($visFacets): ?>
 
   <? /* load jQuery flot */ ?>
-<?$this->headScript()->appendFile('vendor/flot/excanvas.min.js', null, array('conditional' => 'IE'));
+<?$this->headScript()->appendFile('vendor/flot/excanvas.min.js', null, ['conditional' => 'IE']);
   $this->headScript()->appendFile('vendor/flot/jquery.flot.min.js');
   $this->headScript()->appendFile('vendor/flot/jquery.flot.resize.min.js');
   $this->headScript()->appendFile('vendor/flot/jquery.flot.selection.min.js');

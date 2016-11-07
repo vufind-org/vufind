@@ -1,0 +1,53 @@
+/* Sidebar rounded corners */
+.narrow-toggle { text-align: center; }
+.sidebar {
+  label:not(.list-group-item) {margin-left: 20px;}
+  .list-group.facet .list-group-item.title {
+    cursor: pointer;
+    &.collapsed {
+      border-radius: $border-radius-base;
+      &:after {content: '\25BC';}
+    }
+    &:after {
+      content: '\25B2';
+      float: right;
+    }
+  }
+  .collapse,.collapsing {
+    .list-group-item {
+      border-top-left-radius: 0px;
+      border-top-right-radius: 0px;
+      &[id^=more] {
+        border-bottom-left-radius: $border-radius-base;
+        border-bottom-right-radius: $border-radius-base;
+      }
+    }
+  }
+  #side-collapse-publishDate .list-group-item {
+    border-bottom-left-radius: $border-radius-base;
+    border-bottom-right-radius: $border-radius-base;
+  }
+}
+label.list-group-item {
+  margin-top: 0;
+  padding-left: 35px;
+  font-weight: normal;
+  border-radius: 0;
+}
+.list-group-item.title {font-weight: bold;}
+.sidebar .facet a {text-decoration: none;}
+.sidebar .format {
+  @extend .label;
+  @extend .label-info;
+}
+.top-row .applied {
+  font-weight: bold;
+  &:hover {
+    color: $state-danger-text;
+    .fa.fa-check:before {
+      content: "\f00d";
+    }
+  }
+}
+
+.full-facet-list { margin-top: 1rem; }
