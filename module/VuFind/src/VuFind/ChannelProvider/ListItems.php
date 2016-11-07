@@ -90,10 +90,11 @@ class ListItems extends AbstractChannelProvider
     /**
      * Constructor
      *
-     * @param \VuFind\Db\Table\UserList           $userList     UserList table
-     * @param Url                                 $url          URL helper
-     * @param \VuFind\Search\Params\PluginManager $paramManager Params manager
-     * @param array                               $options      Settings (optional)
+     * @param \VuFind\Db\Table\UserList            $userList       UserList table
+     * @param Url                                  $url            URL helper
+     * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
+     * @param array                                $options        Settings
+     * (optional)
      */
     public function __construct(\VuFind\Db\Table\UserList $userList, Url $url,
         \VuFind\Search\Results\PluginManager $resultsManager, array $options = []
