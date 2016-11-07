@@ -92,7 +92,6 @@ class ListItems extends AbstractChannelProvider
      *
      * @param \VuFind\Db\Table\UserList           $userList     UserList table
      * @param Url                                 $url          URL helper
-     * @param \VuFindSearch\Service               $search       Search service
      * @param \VuFind\Search\Params\PluginManager $paramManager Params manager
      * @param array                               $options      Settings (optional)
      */
@@ -170,7 +169,7 @@ class ListItems extends AbstractChannelProvider
     /**
      * Build all of the channel data.
      *
-     * @param string  $channelToken Token identifying a single specific channel
+     * @param string $channelToken Token identifying a single specific channel
      * to load (if omitted, all channels will be loaded)
      *
      * @return array
