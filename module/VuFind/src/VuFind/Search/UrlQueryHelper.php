@@ -288,7 +288,7 @@ class UrlQueryHelper
      * @param string $value      Facet value
      * @param string $operator   Facet type to add (AND, OR, NOT)
      * @param array  $paramArray Optional array of parameters to use instead of
-     * getParamArray()
+     * internally stored values.
      *
      * @return UrlQueryHelper
      */
@@ -304,7 +304,7 @@ class UrlQueryHelper
      *
      * @param string $filter     Filter to add
      * @param array  $paramArray Optional array of parameters to use instead of
-     * getParamArray()
+     * internally stored values.
      *
      * @return UrlQueryHelper
      */
@@ -347,7 +347,7 @@ class UrlQueryHelper
      */
     public function getParams($escape = true)
     {
-        return '?' . $this->buildQueryString($this->getParamArray(), $escape);
+        return '?' . $this->buildQueryString($this->urlParams, $escape);
     }
 
     /**
@@ -391,7 +391,7 @@ class UrlQueryHelper
      * @param bool   $escape     Should we escape the string for use in the view?
      * @param string $operator   Facet type to add (AND, OR, NOT)
      * @param array  $paramArray Optional array of parameters to use instead of
-     * getParamArray()
+     * internally stored values.
      *
      * @return string
      */
@@ -558,7 +558,7 @@ class UrlQueryHelper
     public function asHiddenFields($filter = [])
     {
         $retVal = '';
-        foreach ($this->getParamArray() as $paramName => $paramValue) {
+        foreach ($this->urlParams as $paramName => $paramValue) {
             if (is_array($paramValue)) {
                 foreach ($paramValue as $paramValue2) {
                     if (!$this->filtered($paramName, $paramValue2, $filter)) {
@@ -608,7 +608,7 @@ class UrlQueryHelper
     protected function updateQueryString($field, $value, $default = null,
         $escape = true, $clearPage = false
     ) {
-        $params = $this->getParamArray();
+        $params = $this->urlParams;
         if (null !== $value || $value == $default) {
             unset($params[$field]);
         } else {
