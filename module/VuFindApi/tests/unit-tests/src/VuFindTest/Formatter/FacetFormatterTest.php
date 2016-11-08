@@ -69,8 +69,8 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
                         'count' => 150,
                         'operator' => 'AND',
                         'isApplied' => true,
-                    ],
-                ],
+                    ]
+                ]
             ],
             'xyzzy' => [
                 'label' => 'Xyzzy Facet',
@@ -95,44 +95,6 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
                         'count' => 5,
                         'operator' => 'OR',
                         'isApplied' => true,
-                    ],
-                ],
-            ],
-            'hierarchical_foo' => [
-                'label' => 'Hierarchical Foo Facet',
-                'list' => [
-                    [
-                        'value' => '0/bar/',
-                        'displayText' => 'translated(bar)',
-                        'count' => 100,
-                        'operator' => 'AND',
-                        'isApplied' => false,
-                    ],
-                    [
-                        'value' => '1/bar/cookie/',
-                        'displayText' => 'translated(cookie)',
-                        'count' => 150,
-                        'operator' => 'AND',
-                        'isApplied' => true,
-                    ]
-                ]
-            ],
-            'hierarchical_xyzzy' => [
-                'label' => 'Hierarchical Xyzzy Facet',
-                'list' => [
-                    [
-                        'value' => '0/val1/',
-                        'displayText' => 'translated(val1)',
-                        'count' => 10,
-                        'operator' => 'OR',
-                        'isApplied' => false,
-                    ],
-                    [
-                        'value' => '1/val1/val2/',
-                        'displayText' => 'translated(val2)',
-                        'count' => 15,
-                        'operator' => 'OR',
-                        'isApplied' => true,
                     ]
                 ]
             ]
@@ -142,6 +104,70 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
             unset($data['hierarchical_xyzzy']);
         }
         return $data;
+    }
+
+    /**
+     * Get fake hierarchical facet data.
+     *
+     * @param array $request   Request params
+     * @param bool  $includeOr Include OR facet data?
+     *
+     * @return array
+     */
+    protected function getFakeHierarchicalFacetData($request, $includeOr = false)
+    {
+        $data = [
+            'hierarchical_foo' => [
+                [
+                    'value' => '0/bar/',
+                    'displayText' => 'translated(bar)',
+                    'count' => 100,
+                    'operator' => 'AND',
+                    'isApplied' => false,
+                ],
+                [
+                    'value' => '1/bar/cookie/',
+                    'displayText' => 'translated(cookie)',
+                    'count' => 150,
+                    'operator' => 'AND',
+                    'isApplied' => true,
+                ]
+            ],
+            'hierarchical_xyzzy' => [
+                [
+                    'value' => '0/val1/',
+                    'displayText' => 'translated(val1)',
+                    'count' => 10,
+                    'operator' => 'OR',
+                    'isApplied' => false,
+                ],
+                [
+                    'value' => '1/val1/val2/',
+                    'displayText' => 'translated(val2)',
+                    'count' => 15,
+                    'operator' => 'OR',
+                    'isApplied' => true,
+                ]
+            ]
+        ];
+        if (!$includeOr) {
+            unset($data['hierarchical_xyzzy']);
+        }
+
+        $results = [];
+        $helper = new \VuFind\Search\Solr\HierarchicalFacetHelper();
+        $configManager = $this->getMock('VuFind\Config\PluginManager');
+        $params = new Params(new Options($configManager), $configManager);
+        $requestParams = new \Zend\StdLib\Parameters($request);
+        $params->initFromRequest($requestParams);
+        $urlQuery = new \VuFind\Search\UrlQueryHelper($params);
+        foreach ($data as $facet => $values) {
+            $results[$facet] = $helper->buildFacetArray(
+                $facet, $values, $urlQuery
+            );
+        }
+
+        return $results;
     }
 
     /**
@@ -173,7 +199,8 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
             'filter' => ['foo:baz', 'hierarchical_foo:1/bar/cookie/'],
         ];
         $formatted = $formatter->format(
-            $request, $this->getFakeResults($request, $this->getFakeFacetData()), []
+            $request, $this->getFakeResults($request, $this->getFakeFacetData()),
+            $this->getFakeHierarchicalFacetData($request)
         );
 
         $expected = [
@@ -198,13 +225,13 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
                     'translated' => 'translated(bar)',
                     'count' => 100,
                     'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=hierarchical_foo%3A%221%2Fbar%2Fcookie%2F%22&filter%5B%5D=hierarchical_foo%3A%220%2Fbar%2F%22',
-                ],
-                [
-                    'value' => '1/bar/cookie/',
-                    'translated' => 'translated(cookie)',
-                    'count' => 150,
-                    'isApplied' => 1,
-                    'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=hierarchical_foo%3A%221%2Fbar%2Fcookie%2F%22',
+                    'children' => [
+                        'value' => '1/bar/cookie/',
+                        'translated' => 'translated(cookie)',
+                        'count' => 150,
+                        'isApplied' => 1,
+                        'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=hierarchical_foo%3A%221%2Fbar%2Fcookie%2F%22',
+                    ]
                 ]
             ],
         ];
@@ -226,7 +253,7 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
         ];
         $formatted = $formatter->format(
             $request, $this->getFakeResults($request, $this->getFakeFacetData(true)),
-            []
+            $this->getFakeHierarchicalFacetData($request, true)
         );
 
         $expected = [
@@ -261,13 +288,15 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
                     'translated' => 'translated(bar)',
                     'count' => 100,
                     'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=hierarchical_foo%3A%221%2Fbar%2Fcookie%2F%22&filter%5B%5D=%7Exyzzy%3A%22val2%22&filter%5B%5D=%7Exyzzy%3A%22val3%22&filter%5B%5D=hierarchical_xyzzy%3A%221%2Fval1%2Fval2%2F%22&filter%5B%5D=hierarchical_foo%3A%220%2Fbar%2F%22',
-                ],
-                [
-                    'value' => '1/bar/cookie/',
-                    'translated' => 'translated(cookie)',
-                    'count' => 150,
-                    'isApplied' => 1,
-                    'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=hierarchical_foo%3A%221%2Fbar%2Fcookie%2F%22&filter%5B%5D=%7Exyzzy%3A%22val2%22&filter%5B%5D=%7Exyzzy%3A%22val3%22&filter%5B%5D=hierarchical_xyzzy%3A%221%2Fval1%2Fval2%2F%22',
+                    'children' => [
+                        [
+                            'value' => '1/bar/cookie/',
+                            'translated' => 'translated(cookie)',
+                            'count' => 150,
+                            'isApplied' => 1,
+                            'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=hierarchical_foo%3A%221%2Fbar%2Fcookie%2F%22&filter%5B%5D=%7Exyzzy%3A%22val2%22&filter%5B%5D=%7Exyzzy%3A%22val3%22&filter%5B%5D=hierarchical_xyzzy%3A%221%2Fval1%2Fval2%2F%22',
+                        ]
+                    ]
                 ]
             ],
             'hierarchical_xyzzy' => [
@@ -276,13 +305,15 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
                     'translated' => 'translated(val1)',
                     'count' => 10,
                     'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=hierarchical_foo%3A%221%2Fbar%2Fcookie%2F%22&filter%5B%5D=%7Exyzzy%3A%22val2%22&filter%5B%5D=%7Exyzzy%3A%22val3%22&filter%5B%5D=hierarchical_xyzzy%3A%221%2Fval1%2Fval2%2F%22&filter%5B%5D=%7Ehierarchical_xyzzy%3A%220%2Fval1%2F%22',
-                ],
-                [
-                    'value' => '1/val1/val2/',
-                    'translated' => 'translated(val2)',
-                    'count' => 15,
-                    'isApplied' => 1,
-                    'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=hierarchical_foo%3A%221%2Fbar%2Fcookie%2F%22&filter%5B%5D=%7Exyzzy%3A%22val2%22&filter%5B%5D=%7Exyzzy%3A%22val3%22&filter%5B%5D=hierarchical_xyzzy%3A%221%2Fval1%2Fval2%2F%22',
+                    'children' => [
+                        [
+                            'value' => '1/val1/val2/',
+                            'translated' => 'translated(val2)',
+                            'count' => 15,
+                            'isApplied' => 1,
+                            'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=hierarchical_foo%3A%221%2Fbar%2Fcookie%2F%22&filter%5B%5D=%7Exyzzy%3A%22val2%22&filter%5B%5D=%7Exyzzy%3A%22val3%22&filter%5B%5D=hierarchical_xyzzy%3A%221%2Fval1%2Fval2%2F%22',
+                        ]
+                    ]
                 ]
             ]
         ];

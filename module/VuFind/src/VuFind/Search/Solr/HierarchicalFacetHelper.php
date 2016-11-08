@@ -85,6 +85,7 @@ class HierarchicalFacetHelper
      * @param string    $facet     Facet name
      * @param array     $facetList Facet list
      * @param UrlHelper $urlHelper Query URL helper for building facet URLs
+     * @param bool      $escape    Whether to escape URLs
      *
      * @return array Facet hierarchy
      *
@@ -92,15 +93,16 @@ class HierarchicalFacetHelper
      * converting-a-flat-array-with-parent-ids-to-a-nested-tree/
      * Based on this example
      */
-    public function buildFacetArray($facet, $facetList, $urlHelper = false)
-    {
+    public function buildFacetArray($facet, $facetList, $urlHelper = false,
+        $escape = true
+    ) {
         // getParamArray() is expensive, so call it just once and pass it on
         $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
         // Create a keyed (for conversion to hierarchical) array of facet data
         $keyedList = [];
         foreach ($facetList as $item) {
             $keyedList[$item['value']] = $this->createFacetItem(
-                $facet, $item, $urlHelper, $paramArray
+                $facet, $item, $urlHelper, $paramArray, $escape
             );
         }
 
@@ -184,8 +186,9 @@ class HierarchicalFacetHelper
      *
      * @return array Facet item
      */
-    protected function createFacetItem($facet, $item, $urlHelper, $paramArray)
-    {
+    protected function createFacetItem($facet, $item, $urlHelper, $paramArray,
+        $escape = true
+    ) {
         $href = '';
         $exclude = '';
         // Build URLs only if we were given an URL helper
