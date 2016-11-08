@@ -65,20 +65,6 @@ class UrlQueryHelper
     protected $queryObject;
 
     /**
-     * URL search param
-     *
-     * @var string
-     */
-    protected $basicSearchParam = 'lookfor';
-
-    /**
-     * Should we HTML-escape the parameters by default when rendering as a string?
-     *
-     * @var bool
-     */
-    protected $escape = true;
-
-    /**
      * Constructor
      *
      * @param array         $urlParams Array of URL query parameters.
@@ -88,24 +74,20 @@ class UrlQueryHelper
     public function __construct(array $urlParams, AbstractQuery $query,
         array $options = []
     ) {
-        $this->initConfig($options);
+        $this->config = $options;
         $this->urlParams = $urlParams;
         $this->loadQuery($query);
     }
 
     /**
-     * Set up the internal configuration based on an options array.
+     * Get the name of the basic search param.
      *
-     * @param array $options Configuration options for the object.
-     *
-     * @return void
+     * @return string
      */
-    protected function initConfig(array $options)
+    protected function getBasicSearchParam()
     {
-        $this->config = $options;
-        if (isset($options['basicSearchParam'])) {
-            $this->basicSearchParam = $options['basicSearchParam'];
-        }
+        return isset($this->config['basicSearchParam'])
+            ? $this->config['basicSearchParam'] : 'lookfor';
     }
 
     /**
@@ -115,7 +97,7 @@ class UrlQueryHelper
      */
     protected function clearSearchQueryParams()
     {
-        unset($this->urlParams[$this->basicSearchParam]);
+        unset($this->urlParams[$this->getBasicSearchParam()]);
         unset($this->urlParams['join']);
         unset($this->urlParams['type']);
         $searchParams = ['bool', 'lookfor', 'type', 'op'];
@@ -165,7 +147,7 @@ class UrlQueryHelper
         } else if ($query instanceof Query) {
             $search = $query->getString();
             if (!empty($search)) {
-                $this->urlParams[$this->basicSearchParam] = $search;
+                $this->urlParams[$this->getBasicSearchParam()] = $search;
             }
             $type = $query->getHandler();
             if (!empty($type)) {
@@ -263,7 +245,8 @@ class UrlQueryHelper
      */
     public function __toString()
     {
-        return $this->getParams($this->escape);
+        $escape = isset($this->config['escape']) ? $this->config['escape'] : true;
+        return $this->getParams($escape);
     }
 
     /**
@@ -431,7 +414,7 @@ class UrlQueryHelper
         // Clear page:
         unset($params['page']);
 
-        $this->escape = $escape;
+        $this->config['escape'] = $escape;
         return new static($params, $this->queryObject, $this->config);
     }
 
@@ -609,7 +592,7 @@ class UrlQueryHelper
         $escape = true, $clearPage = false
     ) {
         $params = $this->urlParams;
-        if (null !== $value || $value == $default) {
+        if (null === $value || $value == $default) {
             unset($params[$field]);
         } else {
             $params[$field] = $value;
@@ -617,7 +600,7 @@ class UrlQueryHelper
         if ($clearPage && isset($params['page'])) {
             unset($params['page']);
         }
-        $this->escape = $escape;
+        $this->config['escape'] = $escape;
         return new static($params, $this->queryObject, $this->config);
     }
 
