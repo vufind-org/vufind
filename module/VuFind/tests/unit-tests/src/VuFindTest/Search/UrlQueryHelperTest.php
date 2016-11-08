@@ -32,7 +32,6 @@ use VuFind\Search\UrlQueryHelper;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFindTest\Unit\TestCase as TestCase;
 use VuFindSearch\Query\Query;
-use VuFindSearch\Query\QueryGroup;
 
 /**
  * UrlQueryHelper unit tests.
