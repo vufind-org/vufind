@@ -174,11 +174,9 @@ class HierarchicalFacetHelper
     /**
      * Create an item for the hierarchical facet array
      *
-     * @param string         $facet      Facet name
-     * @param array          $item       Facet item received from Solr
-     * @param UrlQueryHelper $urlHelper  UrlQueryHelper for creating facet
-     * url's
-     * active children
+     * @param string         $facet     Facet name
+     * @param array          $item      Facet item received from Solr
+     * @param UrlQueryHelper $urlHelper UrlQueryHelper for creating facet URLs
      *
      * @return array Facet item
      */
