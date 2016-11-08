@@ -322,8 +322,11 @@ class UrlQueryHelper
      */
     protected function parseFilter($filter)
     {
+        // Simplistic explode/trim behavior if no callback is provided:
         if (!is_callable($this->config['parseFilterCallback'])) {
-            throw new \Exception('parseFilterCallback must be set!');
+            $parts = explode(':', $filter, 2);
+            $parts[1] = trim($parts[1], '"');
+            return $parts;
         }
         return call_user_func($this->config['parseFilterCallback'], $filter);
     }
@@ -338,8 +341,9 @@ class UrlQueryHelper
      */
     protected function getAliasesForFacetField($field)
     {
+        // If no callback is provided, aliases are unsupported:
         if (!is_callable($this->config['getAliasesForFacetFieldCallback'])) {
-            throw new \Exception('getAliasesForFacetFieldCallback must be set!');
+            return [];
         }
         return call_user_func(
             $this->config['getAliasesForFacetFieldCallback'], $field
