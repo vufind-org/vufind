@@ -94,13 +94,11 @@ class HierarchicalFacetHelper
      */
     public function buildFacetArray($facet, $facetList, $urlHelper = false)
     {
-        // getParamArray() is expensive, so call it just once and pass it on
-        $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
         // Create a keyed (for conversion to hierarchical) array of facet data
         $keyedList = [];
         foreach ($facetList as $item) {
             $keyedList[$item['value']] = $this->createFacetItem(
-                $facet, $item, $urlHelper, $paramArray
+                $facet, $item, $urlHelper
             );
         }
 
@@ -179,12 +177,11 @@ class HierarchicalFacetHelper
      * @param array          $item       Facet item received from Solr
      * @param UrlQueryHelper $urlHelper  UrlQueryHelper for creating facet
      * url's
-     * @param array          $paramArray URL parameters
      * active children
      *
      * @return array Facet item
      */
-    protected function createFacetItem($facet, $item, $urlHelper, $paramArray)
+    protected function createFacetItem($facet, $item, $urlHelper)
     {
         $href = '';
         $exclude = '';
@@ -192,16 +189,15 @@ class HierarchicalFacetHelper
         if ($urlHelper !== false) {
             if ($item['isApplied']) {
                 $href = $urlHelper->removeFacet(
-                    $facet, $item['value'], true, $item['operator'], $paramArray
-                );
+                    $facet, $item['value'], true, $item['operator']
+                )->getParams();
             } else {
                 $href = $urlHelper->addFacet(
-                    $facet, $item['value'], $item['operator'], $paramArray
-                );
+                    $facet, $item['value'], $item['operator']
+                )->getParams();
             }
-            $exclude = $urlHelper->addFacet(
-                $facet, $item['value'], 'NOT', $paramArray
-            );
+            $exclude = $urlHelper->addFacet($facet, $item['value'], 'NOT')
+                ->getParams();
         }
 
         $displayText = $item['displayText'];
