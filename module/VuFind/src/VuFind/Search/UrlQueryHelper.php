@@ -157,26 +157,6 @@ class UrlQueryHelper
     }
 
     /**
-     * Set up defaults based on a parameters object.
-     *
-     * @param Params $params VuFind search params object.
-     *
-     * @return void
-     */
-    protected function loadDefaults(Params $params)
-    {
-        $options = $params->getOptions();
-        $this->config['defaults'] = [
-            'handler' => $options->getDefaultHandler(),
-            'limit' => $options->getDefaultLimit(),
-            'selectedShards' => $options->getDefaultSelectedShards(),
-            'sort' => $params->getDefaultSort(),
-            'view' => $options->getDefaultView(),
-            
-        ];
-    }
-
-    /**
      * Look up a default value in the internal configuration array.
      *
      * @param string $key Name of default to load
