@@ -1,6 +1,7 @@
 <!-- START of: finna - RecordTab/map.phtml -->
 <?
   $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/leaflet.js');
+  $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/leaflet-omnivore.min.js');
   echo $this->inlineScript();
 ?>
 
@@ -17,19 +18,30 @@ $(document).ready(function() {
   var drawnItems = new L.FeatureGroup();
 
   var markersData = <?=$this->tab->getMapMarkers() ?>;
+  var icon = L.divIcon({
+    className: 'mapMarker',
+    iconSize: null,
+    html: '<div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -5px; margin-top: -17px; width: 24px; height: 24px;"><i class="fa fa-map-marker" style="position: relative; font-size: 35px; opacity: 0.8"></i></div>'
+  });
   for (var i = 0; i < markersData.length; i++) {
-    if (markersData[i].polygon) {
-      L.polygon(markersData[i].polygon).addTo(drawnItems);
-    } else if (markersData[i].multipolygon) {
-      var multipolygon = markersData[i].multipolygon;
-      L.multiPolygon(multipolygon).addTo(drawnItems);
-    } else {
-      var icon = L.divIcon({
-        className: 'mapMarker',
-        iconSize: null,
-        html: '<div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -5px; margin-top: -17px; width: 24px; height: 24px;"><i class="fa fa-map-marker" style="position: relative; font-size: 35px;"></i></div>'
-      });
-      L.marker([markersData[i].lat, markersData[i].lon], {icon: icon}).addTo(drawnItems);
+    var marker = markersData[i]
+    var item = null;
+    if (marker.wkt) {
+      item = omnivore.wkt.parse(marker.wkt);
+    } else if (marker.polygon) {
+      item = L.polygon(marker.polygon);
+    } else if (marker.multipolygon) {
+      item = L.multiPolygon(marker.multipolygon);
+    }
+
+    if (item) {
+      item.addTo(drawnItems);
+      var center = item.getBounds().getCenter();
+      L.marker(center, {icon: icon}).addTo(drawnItems);
+    } else if (marker.points) {
+      for (var p = 0; p < marker.points.length; p++) {
+        L.marker([marker.points[p].lat, marker.points[p].lon], {icon: icon}).addTo(drawnItems);
+      }
     }
   }
   var map = new L.Map($('.map-canvas').get(0), {
