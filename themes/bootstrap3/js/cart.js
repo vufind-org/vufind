@@ -122,8 +122,10 @@ VuFind.register('cart', function Cart() {
   }
 
   var _cartNotificationTimeout = false;
-  function _registerUpdate() {
-    var $form = $('form[name="bulkActionForm"]');
+  function _registerUpdate(_form) {
+    var $form = typeof _form === 'undefined'
+      ? $('form[name="bulkActionForm"]')
+      : $(_form);
     $("#updateCart, #bottom_updateCart").unbind('click').click(function cartUpdate() {
       var elId = this.id;
       var selected = [];
