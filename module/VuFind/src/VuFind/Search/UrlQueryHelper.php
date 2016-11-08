@@ -192,8 +192,8 @@ class UrlQueryHelper
      */
     public function setSuppressQuery($suppress)
     {
-        $this->clearSearchQueryParams();
         $this->config['suppressQuery'] = $suppress;
+        $this->loadQuery($this->queryObject);
         return $this;
     }
 
@@ -323,7 +323,9 @@ class UrlQueryHelper
     protected function parseFilter($filter)
     {
         // Simplistic explode/trim behavior if no callback is provided:
-        if (!is_callable($this->config['parseFilterCallback'])) {
+        if (!isset($this->config['parseFilterCallback'])
+            || !is_callable($this->config['parseFilterCallback'])
+        ) {
             $parts = explode(':', $filter, 2);
             $parts[1] = trim($parts[1], '"');
             return $parts;
@@ -342,8 +344,10 @@ class UrlQueryHelper
     protected function getAliasesForFacetField($field)
     {
         // If no callback is provided, aliases are unsupported:
-        if (!is_callable($this->config['getAliasesForFacetFieldCallback'])) {
-            return [];
+        if (!isset($this->config['getAliasesForFacetFieldCallback'])
+            || !is_callable($this->config['getAliasesForFacetFieldCallback'])
+        ) {
+            return [$field];
         }
         return call_user_func(
             $this->config['getAliasesForFacetFieldCallback'], $field
@@ -398,8 +402,9 @@ class UrlQueryHelper
         // Clear page:
         unset($params['page']);
 
-        $this->config['escape'] = $escape;
-        return new static($params, $this->queryObject, $this->config);
+        $config = $this->config;
+        $config['escape'] = $escape;
+        return new static($params, $this->queryObject, $config);
     }
 
     /**
@@ -457,10 +462,12 @@ class UrlQueryHelper
      */
     public function setHandler($handler, $escape = true)
     {
-        return $this->updateQueryString(
-            'type', $handler, $this->getDefault('handler'),
-            $escape
-        );
+        $query = clone($this->queryObject);
+        // We can only set the handler on basic queries:
+        if ($query instanceof Query) {
+            $query->setHandler($handler);
+        }
+        return new static($this->urlParams, $query, $this->config);
     }
 
     /**
@@ -584,8 +591,9 @@ class UrlQueryHelper
         if ($clearPage && isset($params['page'])) {
             unset($params['page']);
         }
-        $this->config['escape'] = $escape;
-        return new static($params, $this->queryObject, $this->config);
+        $config = $this->config;
+        $config['escape'] = $escape;
+        return new static($params, $this->queryObject, $config);
     }
 
     /**
