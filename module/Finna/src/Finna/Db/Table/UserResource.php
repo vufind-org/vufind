@@ -78,6 +78,82 @@ class UserResource extends \VuFind\Db\Table\UserResource
     }
 
     /**
+     * Add custom favorite list order
+     *
+     * @param int   $userId       User id
+     * @param int   $listId       List id
+     * @param array $resourceList Ordered List of Resources
+     *
+     * @return boolean
+     */
+    public function saveCustomFavoriteOrder($userId, $listId, $resourceList)
+    {
+        $resourceIndex = array_flip(array_values($resourceList));
+
+        $callback = function ($select) use ($listId, $userId) {
+            $select->join(
+                ['r' => 'resource'],
+                'r.id = user_resource.resource_id',
+                ['record_id']
+            );
+            $select->where->equalTo('list_id', $listId);
+            $select->where->equalTo('user_id', $userId);
+        };
+
+        foreach ($this->select($callback) as $row) {
+            if ($rowToUpdate = $this->select(
+                [
+                    'user_id' => $userId,
+                    'list_id' => $listId,
+                    'resource_id' => $row->resource_id
+                ]
+            )->current()) {
+                $rowToUpdate->finna_custom_order_index
+                    = isset($resourceIndex[$row->record_id])
+                    ? $resourceIndex[$row->record_id] : 0;
+                $rowToUpdate->save();
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Get custom favorite list order
+     *
+     * @param int $listId List_id
+     * @param int $userId User_id
+     *
+     * @return boolean|string
+     */
+    public function getCustomFavoriteOrder($listId, $userId = null)
+    {
+        $callback = function ($select) use ($listId, $userId) {
+            if ($userId) {
+                $select->where->equalTo('user_id', $userId);
+            }
+            $select->where->equalTo('list_id', $listId);
+            $select->join(
+                ['r' => 'resource'],
+                'user_resource.resource_id = r.id',
+                ['record_id']
+            );
+            $select->order('finna_custom_order_index');
+        };
+
+        $list = [];
+        foreach ($this->select($callback) as $result) {
+            if ($result->finna_custom_order_index) {
+                $list[] = $result->record_id;
+            }
+        }
+        if (empty($list)) {
+            return false;
+        } else {
+            return $list;
+        }
+    }
+
+    /**
      * Update the date of a list
      *
      * @param string $list_id ID of list to unlink

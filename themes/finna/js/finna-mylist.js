@@ -317,7 +317,9 @@ finna.myList = (function() {
             }
         };
         target = $('.add-new-list .name');
-        target.editable({action: 'click', triggers: [target, $('.add-new-list .icon')]}, newListCallBack, editableSettings);
+        if (target.length > 0) {
+            target.editable({action: 'click', triggers: [target, $('.add-new-list .icon')]}, newListCallBack, editableSettings);
+        }
 
         $('.myresearch-row').each(function(ind, obj) {
             var target = $(obj).find('.myresearch-notes .resource-note');
@@ -347,6 +349,16 @@ finna.myList = (function() {
                 return VuFind.translate('loading') + '...';
             }
         };
+    };
+
+    var initFavoriteOrderingFunctionality = function() {
+    	$('#sortable').sortable({cursor: 'move', opacity: 0.7});
+    	
+    	$('#sort_form').submit(function(event) {
+    	    var listOfItems = $('#sortable').sortable('toArray');
+    	    $('#sort_form input[name="orderedList"]').val(JSON.stringify(listOfItems));
+    	    return true;
+    	});
     };
 
     var initEditableMarkdownField = function(element, callback) {
@@ -459,6 +471,7 @@ finna.myList = (function() {
     };
 
     var my = {
+        initFavoriteOrderingFunctionality: initFavoriteOrderingFunctionality,
         init: function() {
             initEditComponents();
         }

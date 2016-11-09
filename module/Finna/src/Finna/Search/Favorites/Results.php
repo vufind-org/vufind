@@ -46,7 +46,22 @@ class Results extends \VuFind\Search\Favorites\Results
      */
     protected function performSearch()
     {
+        $authManager = $this->serviceLocator->get('VuFind\AuthManager');
+        $user = $authManager->isLoggedIn();
+        $table = $this->getTable('UserResource');
+        $list = $this->getListObject();
         $sort = $this->getParams()->getSort();
+
+        if ($sort == 'custom_order'
+            && (empty($list)
+            || ((! $list->public
+            && $table->getCustomFavoriteOrder($list->id, $user->id) === false))
+            || ($list->public
+            && $table->getCustomFavoriteOrder($list->id) === false))
+        ) {
+            $sort = 'id desc';
+        }
+
         $sortNewestAddedFirst = $sort == 'id desc';
         if ($sortNewestAddedFirst) {
             // Set sort option to 'id' (ascending), since we reverse the
@@ -54,6 +69,8 @@ class Results extends \VuFind\Search\Favorites\Results
             $this->getParams()->setSort('id');
         }
 
+        $this->getParams()->setSort($sort);
+        
         parent::performSearch();
 
         // Other sort options are handled in the database, but format is language-
@@ -100,6 +117,7 @@ class Results extends \VuFind\Search\Favorites\Results
             // if one is found:
             $filters = $this->getParams()->getFilters();
             $listId = isset($filters['lists'][0]) ? $filters['lists'][0] : null;
+
             if (null === $listId) {
                 $this->list = null;
             } else {

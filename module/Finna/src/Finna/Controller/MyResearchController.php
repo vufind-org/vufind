@@ -219,6 +219,82 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
+     * Show user's own favorite list (max. 1000) to the view
+     *
+     * @return mixed
+     */
+    public function sortListAction()
+    {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new ForbiddenException('Lists disabled');
+        }
+
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->forceLogin();
+        }
+
+        $listId = $this->params()->fromRoute('id');
+        if (null === $listId) {
+            throw new ListPermissionException('Cannot sort all favorites list');
+        }
+
+        if ($this->formWasSubmitted('cancelOrdering')) {
+            return $this->redirect()->toRoute('userList', ['id' => $listID]);
+        }
+        if ($this->formWasSubmitted('saveOrdering')) {
+            $orderedList = json_decode(
+                $this->params()->fromPost('orderedList'), true
+            );
+            $table = $this->getTable('UserResource');
+            $listID = $this->params()->fromPost('list_id');
+            if (empty($listID) || empty($orderedList)
+                || !$table->saveCustomFavoriteOrder($user->id, $listID, $orderedList)
+            ) {
+                $this->flashMessenger()->addErrorMessage('An error has occurred');
+            } else {
+                // inLightbox (only instance)
+                if ($this->getRequest()->getQuery('layout', 'no') === 'lightbox'
+                    || 'layout/lightbox' == $this->layout()->getTemplate()
+                ) {
+                    $response = $this->getResponse();
+                    $response->setStatusCode(205);
+                    return $response;
+                }
+                return $this->redirect()->toRoute('userList', ['id' => $listID]);
+            }
+        }
+
+        // If we got this far, we just need to display the favorites:
+        try {
+            $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+
+            // We want to merge together GET, POST and route parameters to
+            // initialize our search object:
+            $request = $this->getRequest()->getQuery()->toArray()
+                + $this->getRequest()->getPost()->toArray()
+                + ['id' => $listId];
+
+            $setupCallback = function ($runner, $params, $searchId) {
+                $params->setLimit(1000);
+            };
+            $results = $runner->run($request, 'Favorites', $setupCallback);
+
+            return $this->createViewModel(
+                ['params' => $results->getParams(), 'results' => $results]
+            );
+        } catch (ListPermissionException $e) {
+            if (!$this->getUser()) {
+                return $this->forceLogin();
+            }
+            throw $e;
+        }
+
+        return $view;
+    }
+
+    /**
      * Gather user profile data
      *
      * @return mixed
@@ -478,6 +554,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     public static function getFavoritesSortList()
     {
         return [
+            'custom_order' => 'sort_custom_order',
             'id desc' => 'sort_saved',
             'id' => 'sort_saved asc',
             'title' => 'sort_title',
@@ -507,6 +584,39 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $view->recordList = $this->orderAvailability($view->recordList);
         $view->blocks = $this->getILS()->getAccountBlocks($patron);
         return $view;
+    }
+
+    /**
+     * Save favorite custom order into DB
+     *
+     * @return mixed
+     */
+    public function saveCustomOrderAction()
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->forceLogin();
+        }
+
+        if ($this->formWasSubmitted('opcode')
+            && $this->params()->fromPost('opcode') == 'save_order'
+        ) {
+            $this->session->url = empty($listID)
+                ? $this->url()->fromRoute('myresearch-favorites')
+                : $this->url()->fromRoute('userList', ['id' => $listID]);
+
+            $orderedList = $this->params()->fromPost('orderedList');
+            $table = $this->getTable('UserResource');
+            $listID = $this->params()->fromPost('list_id');
+            if (empty($listID) || empty($orderedList)
+                || !$table->saveCustomFavoriteOrder($user->id, $listID, $orderedList)
+            ) {
+                $this->flashMessenger()->addErrorMessage('An error has occurred');
+            }
+            return $this->redirect()->toRoute('userList', ['id' => $listID]);
+        } else {
+            return $this->redirect()->toRoute('userList', ['id' => $listID]);
+        }
     }
 
     /**
@@ -678,10 +788,20 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      * Create sort list for public list page.
      * If no sort option selected, set first one from the list to default.
      *
+     * @param list $list List object
+     *
      * @return array
      */
-    protected function createSortList()
+    protected function createSortList($list = null)
     {
+        $view = parent::mylistAction();
+        $user = $this->getUser();
+        $table = $this->getTable('UserResource');
+
+        if (empty($list) && $results = $view->results) {
+            $list = $results->getListObject();
+        }
+
         $sortOptions = self::getFavoritesSortList();
         $sort = isset($_GET['sort']) ? $_GET['sort'] : false;
         if (!$sort) {
@@ -689,13 +809,25 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $sort = key($sortOptions);
         }
         $sortList = [];
+
+        if (empty($list)
+            || ((! $list->public
+            && $table->getCustomFavoriteOrder($list->id, $user->id) === false)
+            || ($list->public
+            && $table->getCustomFavoriteOrder($list->id) === false))
+        ) {
+            array_shift($sortOptions);
+            if ($sort == 'custom_order') {
+                $sort = 'id desc';
+            }
+        }
+
         foreach ($sortOptions as $key => $value) {
             $sortList[$key] = [
                 'desc' => $value,
-                'selected' => $key === $sort,
+                'selected' => $key === $sort
             ];
         }
-
         return $sortList;
     }
 

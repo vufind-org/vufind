@@ -23,6 +23,8 @@
   $this->headScript()->appendFile("finna-mylist.js");
   $this->headScript()->appendFile("vendor/jquery.editable.min.js");
   $this->headScript()->appendFile("finna-item-status.js");
+  $this->headScript()->appendFile('vendor/jquery-ui-custom.min.js');
+  $this->headScript()->appendFile('vendor/jquery.ui.touch-punch.min.js');
 
   $this->headScript()->appendFile("vendor/simplemde.min.js");
   $this->headLink()->appendStylesheet('vendor/simplemde.min.css');
@@ -75,6 +77,9 @@
     <? if ($recordTotal > 0): ?>
       <div class="search-controls row">
         <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right hidden-print">
+          <? if (isset($list)): ?>
+          <a class="btn btn-primary" href="<?=$this->url('sortList', ['id' => $list->id]) ?>" data-backdrop=”static” data-lightbox><?=$this->transEsc('Sort manually');?></a>
+          <? endif; ?>
           <?=$this->render('search/controls/sort.phtml')?>
           <?=$this->render('search/controls/limit.phtml')?>
         </div>

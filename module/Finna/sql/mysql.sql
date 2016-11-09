@@ -41,7 +41,14 @@ CREATE INDEX `finna_user_email` ON user (`email`);
 --
 ALTER TABLE user_list ADD COLUMN `finna_updated` datetime DEFAULT NULL;
 
+--
+-- Additional columns for user_resource
+--
+ALTER TABLE `user_resource` ADD COLUMN `finna_custom_order_index` int DEFAULT NULL;
 
+--
+-- Additional tables
+--
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `finna_comments_record` (

@@ -768,3 +768,54 @@
         margin-top: 0;
     }
 }
+
+.own-favorite-list-button-area {
+    display: block;
+    float: left;
+    height: 36px;
+    width: 100%;
+    
+}
+
+.sortable-favorite-list {
+    & li {
+      	background: #f5f5f5;
+        padding: 5px 30px 5px 10px;
+        margin-top: 5px;
+        border-radius: 3px;
+        list-style-type: decimal;
+        list-style-position: inside;
+        &:hover {
+            cursor: move;   
+        }
+        & h4 {
+            margin: 0;
+            font-size: 14px;
+        }
+        & p {
+            margin-top: 2px;
+            margin-bottom: 0px;
+        }
+        & .fa.fa-arrow-down, & .fa.fa-arrow-up {
+            position: absolute;
+            right: 26px;
+            margin-top: 10px;
+        }
+        & .fa.fa-arrow-up {
+            margin-top: 0px;   
+        }
+    }
+    & .btn {
+        margin-bottom: 10px;
+        margin-right: 10px;
+    }
+    @media(max-width: @screen-xs-max) {
+        margin-left: 5px; 
+        margin-right: 10px;
+        & li {
+            & .fa.fa-arrow-down, & .fa.fa-arrow-up {
+                right: 32px;
+            }
+        }
+    }
+}
