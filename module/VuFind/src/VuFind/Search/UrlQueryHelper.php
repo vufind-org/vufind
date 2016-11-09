@@ -251,33 +251,29 @@ class UrlQueryHelper
     /**
      * Add a facet to the parameters.
      *
-     * @param string $field      Facet field
-     * @param string $value      Facet value
-     * @param string $operator   Facet type to add (AND, OR, NOT)
-     * @param array  $paramArray Optional array of parameters to use instead of
-     * internally stored values.
+     * @param string $field    Facet field
+     * @param string $value    Facet value
+     * @param string $operator Facet type to add (AND, OR, NOT)
      *
      * @return UrlQueryHelper
      */
-    public function addFacet($field, $value, $operator = 'AND', $paramArray = null)
+    public function addFacet($field, $value, $operator = 'AND')
     {
         // Facets are just a special case of filters:
         $prefix = ($operator == 'NOT') ? '-' : ($operator == 'OR' ? '~' : '');
-        return $this->addFilter($prefix . $field . ':"' . $value . '"', $paramArray);
+        return $this->addFilter($prefix . $field . ':"' . $value . '"');
     }
 
     /**
      * Add a filter to the parameters.
      *
-     * @param string $filter     Filter to add
-     * @param array  $paramArray Optional array of parameters to use instead of
-     * internally stored values.
+     * @param string $filter Filter to add
      *
      * @return UrlQueryHelper
      */
-    public function addFilter($filter, $paramArray = null)
+    public function addFilter($filter)
     {
-        $params = (null === $paramArray) ? $this->urlParams : $paramArray;
+        $params = $this->urlParams;
 
         // Add the filter:
         if (!isset($params['filter'])) {
@@ -361,19 +357,16 @@ class UrlQueryHelper
     /**
      * Remove a facet from the parameters.
      *
-     * @param string $field      Facet field
-     * @param string $value      Facet value
-     * @param bool   $escape     Should we escape the string for use in the view?
-     * @param string $operator   Facet type to add (AND, OR, NOT)
-     * @param array  $paramArray Optional array of parameters to use instead of
-     * internally stored values.
+     * @param string $field    Facet field
+     * @param string $value    Facet value
+     * @param bool   $escape   Should we escape the string for use in the view?
+     * @param string $operator Facet type to add (AND, OR, NOT)
      *
      * @return string
      */
-    public function removeFacet($field, $value, $escape = true, $operator = 'AND',
-        $paramArray = null
-    ) {
-        $params = (null === $paramArray) ? $this->urlParams : $paramArray;
+    public function removeFacet($field, $value, $escape = true, $operator = 'AND')
+    {
+        $params = $this->urlParams;
 
         // Account for operators:
         if ($operator == 'NOT') {
