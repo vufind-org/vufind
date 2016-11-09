@@ -118,7 +118,7 @@ class UrlQueryHelper
     {
         $this->queryObject = $query;
         $this->clearSearchQueryParams();
-        if (!empty($this->config['suppressQuery'])) {
+        if ($this->isQuerySuppressed()) {
             return;
         }
         if ($query instanceof QueryGroup) {
