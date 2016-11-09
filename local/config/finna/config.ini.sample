@@ -1361,7 +1361,7 @@ sv['CC BY-NC-SA 4.0'] = "http://creativecommons.org/licenses/by-nc-sa/4.0/deed.s
 en-gb['CC BY-NC-SA 4.0'] = "http://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
 
 fi['CC BY-NC-ND 4.0'] = "http://creativecommons.org/licenses/by-nc-nd/4.0/deed.fi"
-sv['CC BY-NC_ND 4.0'] = "http://creativecommons.org/licenses/by-nc-nd/4.0/deed.sv"
+sv['CC BY-NC-ND 4.0'] = "http://creativecommons.org/licenses/by-nc-nd/4.0/deed.sv"
 en-gb['CC BY-NC-ND 4.0'] = "http://creativecommons.org/licenses/by-nc-nd/4.0/deed.en"
 
 fi['FREE ACCESS - NO-REUSE'] = "http://www.europeana.eu/portal/rights/rr-f.html"
