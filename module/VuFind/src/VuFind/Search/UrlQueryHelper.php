@@ -66,16 +66,24 @@ class UrlQueryHelper
     /**
      * Constructor
      *
-     * @param array         $urlParams Array of URL query parameters.
-     * @param AbstractQuery $query     Query object to use to update URL query.
-     * @param array         $options   Configuration options for the object.
+     * @param array         $urlParams             Array of URL query parameters.
+     * @param AbstractQuery $query                 Query object to use to update
+     * URL query.
+     * @param array         $options               Configuration options for the
+     * object.
+     * @param bool          $regenerateQueryParams Should we add parameters based
+     * on the contents of $query to $urlParams (true) or are they already there
+     * (false)?
      */
     public function __construct(array $urlParams, AbstractQuery $query,
-        array $options = []
+        array $options = [], $regenerateQueryParams = true
     ) {
         $this->config = $options;
         $this->urlParams = $urlParams;
-        $this->loadQuery($query);
+        $this->queryObject = $query;
+        if ($regenerateQueryParams) {
+            $this->regenerateSearchQueryParams();
+        }
     }
 
     /**
@@ -108,22 +116,19 @@ class UrlQueryHelper
     }
 
     /**
-     * Adjust the internal query array based on a query object.
-     *
-     * @param AbstractQuery $query Query object
+     * Adjust the internal query array based on the query object.
      *
      * @return void
      */
-    protected function loadQuery(AbstractQuery $query)
+    protected function regenerateSearchQueryParams()
     {
-        $this->queryObject = $query;
         $this->clearSearchQueryParams();
         if ($this->isQuerySuppressed()) {
             return;
         }
-        if ($query instanceof QueryGroup) {
-            $this->urlParams['join'] = $query->getOperator();
-            foreach ($query->getQueries() as $i => $current) {
+        if ($this->queryObject instanceof QueryGroup) {
+            $this->urlParams['join'] = $this->queryObject->getOperator();
+            foreach ($this->queryObject->getQueries() as $i => $current) {
                 if ($current instanceof QueryGroup) {
                     $operator = $current->isNegated()
                         ? 'NOT' : $current->getOperator();
@@ -143,12 +148,12 @@ class UrlQueryHelper
                     }
                 }
             }
-        } else if ($query instanceof Query) {
-            $search = $query->getString();
+        } else if ($this->queryObject instanceof Query) {
+            $search = $this->queryObject->getString();
             if (!empty($search)) {
                 $this->urlParams[$this->getBasicSearchParam()] = $search;
             }
-            $type = $query->getHandler();
+            $type = $this->queryObject->getHandler();
             if (!empty($type)) {
                 $this->urlParams['type'] = $type;
             }
@@ -192,7 +197,7 @@ class UrlQueryHelper
     public function setSuppressQuery($suppress)
     {
         $this->config['suppressQuery'] = $suppress;
-        $this->loadQuery($this->queryObject);
+        $this->regenerateSearchQueryParams();
         return $this;
     }
 
@@ -283,7 +288,7 @@ class UrlQueryHelper
         // Clear page:
         unset($params['page']);
 
-        return new static($params, $this->queryObject, $this->config);
+        return new static($params, $this->queryObject, $this->config, false);
     }
 
     /**
@@ -297,7 +302,7 @@ class UrlQueryHelper
         // Clear page:
         unset($params['filter']);
 
-        return new static($params, $this->queryObject, $this->config);
+        return new static($params, $this->queryObject, $this->config, false);
     }
 
     /**
@@ -403,7 +408,7 @@ class UrlQueryHelper
 
         $config = $this->config;
         $config['escape'] = $escape;
-        return new static($params, $this->queryObject, $config);
+        return new static($params, $this->queryObject, $config, false);
     }
 
     /**
@@ -592,7 +597,7 @@ class UrlQueryHelper
         }
         $config = $this->config;
         $config['escape'] = $escape;
-        return new static($params, $this->queryObject, $config);
+        return new static($params, $this->queryObject, $config, false);
     }
 
     /**

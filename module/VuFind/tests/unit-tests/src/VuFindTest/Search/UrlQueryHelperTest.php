@@ -92,15 +92,15 @@ class UrlQueryHelperTest extends TestCase
         // Test adding/removing facets and filters
         $faceted = $helper->addFacet('f', '1')->addFilter('f:2');
         $this->assertEquals(
-            '?foo=baz&filter%5B%5D=f%3A%221%22&filter%5B%5D=f%3A2&lookfor=search',
+            '?foo=baz&lookfor=search&filter%5B%5D=f%3A%221%22&filter%5B%5D=f%3A2',
             $faceted->getParams(false)
         );
         $this->assertEquals(
-            '?foo=baz&filter%5B%5D=f%3A%221%22&lookfor=search',
+            '?foo=baz&lookfor=search&filter%5B%5D=f%3A%221%22',
             $faceted->removeFacet('f', '2')->getParams(false)
         );
         $this->assertEquals(
-            '?foo=baz&filter%5B%5D=f%3A2&lookfor=search',
+            '?foo=baz&lookfor=search&filter%5B%5D=f%3A2',
             $faceted->removeFilter('f:1')->getParams(false)
         );
         $this->assertEquals(
@@ -110,7 +110,7 @@ class UrlQueryHelperTest extends TestCase
 
         // Test stacking setters
         $this->assertEquals(
-            '?foo=baz&sort=title&view=grid&limit=50&page=3&lookfor=search&type=x',
+            '?foo=baz&sort=title&view=grid&lookfor=search&type=x&limit=50&page=3',
             $helper->setSort('title')->setViewParam('grid')->setHandler('x')
                 ->setLimit(50)->setPage(3)->getParams(false)
         );
