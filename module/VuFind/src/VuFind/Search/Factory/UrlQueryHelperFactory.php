@@ -56,7 +56,6 @@ class UrlQueryHelperFactory
             'selectedShards' => $options->getDefaultSelectedShards(),
             'sort' => $params->getDefaultSort(),
             'view' => $options->getDefaultView(),
-            
         ];
     }
 
