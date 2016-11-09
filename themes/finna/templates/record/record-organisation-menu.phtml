@@ -20,7 +20,7 @@
       <? if (isset($currentSource['moreinfoLink'])): ?>
         <li><a href="<?=$currentSource['moreinfoLink']?>"><?=$this->transEsc('More information about organisation')?></a></li>
       <? endif; ?>
-        <? if ($this->organisationInfo() && $organisationInfoId = $this->driver->getOrganisationInfoId()): ?><li class="organisation-page-link" data-organisation="<?=$organisationInfoId?>" data-link="1"></li><? endif; ?>
+        <? if ($this->organisationInfo() && $organisationInfoId = $this->driver->getOrganisationInfoId()): ?><li class="organisation-page-link" data-organisation="<?=$organisationInfoId?>"></li><? endif; ?>
         <li><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Feedback')?>" data-lightbox id="feedback-record"><i class="fa fa-send-feedback"></i> <?=$this->transEsc('Send feedback on record')?></a></li>
       </ul>
     </li>

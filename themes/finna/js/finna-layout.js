@@ -652,16 +652,11 @@ finna.layout = (function() {
             $(this).one('inview', function() {
                 var holder = $(this);
                 var organisation = $(this).data('organisation');
-                var link = $(this).data('link');
-                getOrganisationPageLink(organisation, link, function(response) {
+                getOrganisationPageLink(organisation, true, function(response) {
                     holder.toggleClass('done', true);
                     if (response) {
                         var data = response[organisation];
-                        if (link === '1') {
-                            holder.wrap($('<a/>').attr('href', data));
-                        } else {
-                            holder.html(data);
-                        }
+                        holder.html(data);
                     }
                 });
             });
@@ -670,7 +665,7 @@ finna.layout = (function() {
 
     var getOrganisationPageLink = function(organisation, link, callback) {
         var url = VuFind.path + '/AJAX/JSON?method=getOrganisationInfo';
-        url += '&params[action]=lookup&link=' + link + '&parent=' + organisation;
+        url += '&params[action]=lookup&link=' + (link ? '1' : '0') + '&parent=' + organisation;
         $.getJSON(url)
             .done(function(response) {
                 callback(response.data.items);
@@ -734,6 +729,7 @@ finna.layout = (function() {
         initHierarchicalFacet: initHierarchicalFacet,
         initJumpMenus: initJumpMenus,
         initMobileNarrowSearch: initMobileNarrowSearch,
+        initOrganisationPageLinks: initOrganisationPageLinks,
         initSecondaryLoginField: initSecondaryLoginField,
         initIframeEmbed: initIframeEmbed, 
         init: function() {

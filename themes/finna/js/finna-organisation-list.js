@@ -7,7 +7,7 @@ finna.organisationList = (function() {
         if (!ids.length) {
             return;
         }
-        finna.layout.getOrganisationPageLink(ids, 'url', function(response) {
+        finna.layout.getOrganisationPageLink(ids, false, function(response) {
             if (response) {
                 $.each(response, function(id, url) {
                     var link = $('.organisations .page-link[data-organisation="' + id + '"]');
