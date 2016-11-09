@@ -304,7 +304,7 @@ finna.organisationInfoPage = (function() {
                 $.each(links, function(ind, obj) {
                     if (obj.name == 'Facebook') {
                         var btn = holder.find('.social-button');
-                        btn.find('> a').attr('href', links[0]['url']);
+                        btn.find('> a').attr('href', obj['url']);
                         btn.show();
                     }
                 });

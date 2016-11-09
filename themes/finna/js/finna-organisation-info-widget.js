@@ -318,7 +318,11 @@ finna = $.extend(finna, {
             if ('links' in response) {
                 var links = response['links'];
                 if (links.length) {
-                    holder.find('.facebook').attr('href', links[0]['url']).show();
+                    $.each(links, function(ind, obj) {
+                       if (obj.name == 'Facebook') {
+                          holder.find('.facebook').attr('href', obj['url']).show();
+                       }
+                    });
                 }
             }
 

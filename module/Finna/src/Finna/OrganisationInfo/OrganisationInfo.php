@@ -811,7 +811,11 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
                     }
                 }
                 if ($includeAllServices) {
-                    $data = [$this->getField($service, 'name')];
+                    $name = $this->getField($service, 'custom_name');
+                    if (!$name) {
+                        $name = $this->getField($service, 'name');
+                    }
+                    $data = [$name];
                     $desc = $this->getField($service, 'short_description');
                     if ($desc) {
                         $data[] = $desc;

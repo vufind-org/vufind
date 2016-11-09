@@ -223,7 +223,7 @@ class Feed implements \Zend\Log\LoggerAwareInterface
     protected function processReadFeed($feedConfig, $urlHelper, $viewUrl, $id = null)
     {
         $config = $feedConfig['result'];
-        $url = $feedConfig['url'];
+        $url = trim($feedConfig['url']);
 
         $type = $config->type;
 
@@ -267,7 +267,12 @@ class Feed implements \Zend\Log\LoggerAwareInterface
             // No cache available, read from source.
             if (preg_match('/^http(s)?:\/\//', $url)) {
                 // Absolute URL
-                $channel = Reader::import($url);
+                try {
+                    $channel = Reader::import($url);
+                } catch (\Exception $e) {
+                    $this->logError("Error importing feed from url $url");
+                    $this->logError("   " . $e->getMessage());
+                }
             } else if (substr($url, 0, 1) === '/') {
                 // Relative URL
                 $url = substr($viewUrl, 0, -1) . $url;
