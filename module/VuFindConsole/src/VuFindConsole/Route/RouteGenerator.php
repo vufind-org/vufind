@@ -1,6 +1,6 @@
 <?php
 /**
- * ConsoleRouter Test Class
+ * Route Generator Class
  *
  * PHP version 5
  *
@@ -20,39 +20,43 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Tests
+ * @package  Route
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFindTest\Mvc\Router;
-use VuFindConsole\Mvc\Router\ConsoleRouter;
+namespace VuFindConsole\Route;
 
 /**
- * InjectTemplateListener Test Class
+ * Route Generator Class
  *
  * @category VuFind
- * @package  Tests
+ * @package  Route
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class ConsoleRouterTest extends \PHPUnit_Framework_TestCase
+class RouteGenerator
 {
     /**
-     * Test routing.
+     * Add console routes to the configuration.
+     *
+     * @param array $config Configuration array to update
+     * @param array $routes Array of Controller/Action strings => route values
      *
      * @return void
      */
-    public function testRoute()
+    public function addRoutes(& $config, $routes)
     {
-        $router = ConsoleRouter::factory();
-        $router->setCliDir(__DIR__);
-        $request = $this->getMock('Zend\Console\Request', ['getScriptName']);
-        $request->expects($this->any())->method('getScriptName')
-            ->will($this->returnValue('ConsoleRouterTest.php'));
-        $result = $router->match($request);
-        $this->assertEquals($result->getParam('controller'), 'Router');
-        $this->assertEquals($result->getParam('action'), 'ConsoleRouterTest');
+        foreach ($routes as $key => $route) {
+            list($controller, $action) = explode('/', $key);
+            $name = $controller . '-' . $action;
+            $config['console']['router']['routes'][$name] = [
+                'options' => [
+                    'route' => $route,
+                    'defaults' => compact('controller', 'action'),
+                ]
+            ];
+        }
     }
 }

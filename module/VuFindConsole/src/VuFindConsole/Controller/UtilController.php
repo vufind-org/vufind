@@ -93,7 +93,7 @@ class UtilController extends AbstractBase
         Console::writeLine(
             '     Default template is BIB_ID,COURSE,INSTRUCTOR,DEPARTMENT'
         );
-        Console::writeLine(' -h or -? display this help information.');
+        Console::writeLine(' -h or --help display this help information.');
 
         return $this->getFailureResponse();
     }
@@ -108,26 +108,14 @@ class UtilController extends AbstractBase
         ini_set('memory_limit', '50M');
         ini_set('max_execution_time', '3600');
 
-        $this->consoleOpts->setOptions(
-            [\Zend\Console\Getopt::CONFIG_CUMULATIVE_PARAMETERS => true]
-        );
-        $this->consoleOpts->addRules(
-            [
-                'h|help' => 'Get help',
-                'd-s' => 'Delimiter',
-                't-s' => 'Template',
-                'f-s' => 'File',
-            ]
-        );
+        $request = $this->getRequest();
 
-        if ($this->consoleOpts->getOption('h')
-            || $this->consoleOpts->getOption('help')
-        ) {
+        if ($request->getParam('h') || $request->getParam('help')) {
             return $this->indexReservesHelp();
-        } elseif ($file = $this->consoleOpts->getOption('f')) {
+        } elseif ($file = $request->getParam('f')) {
             try {
-                $delimiter = ($d = $this->consoleOpts->getOption('d')) ? $d : ',';
-                $template = ($t = $this->consoleOpts->getOption('t')) ? $t : null;
+                $delimiter = $request->getParam('d', ',');
+                $template = $request->getParam('t');
                 $reader = new \VuFind\Reserves\CsvReader(
                     $file, $delimiter, $template
                 );
@@ -138,9 +126,9 @@ class UtilController extends AbstractBase
             } catch (\Exception $e) {
                 return $this->indexReservesHelp($e->getMessage());
             }
-        } elseif ($this->consoleOpts->getOption('d')) {
+        } elseif ($request->getParam('d')) {
             return $this->indexReservesHelp('-d is meaningless without -f');
-        } elseif ($this->consoleOpts->getOption('t')) {
+        } elseif ($request->getParam('t')) {
             return $this->indexReservesHelp('-t is meaningless without -f');
         } else {
             try {
@@ -270,10 +258,8 @@ class UtilController extends AbstractBase
         ini_set('memory_limit', '50M');
         ini_set('max_execution_time', '3600');
 
-        // Setup Solr Connection -- Allow core to be specified as first command line
-        // param.
-        $argv = $this->consoleOpts->getRemainingArgs();
-        $core = isset($argv[0]) ? $argv[0] : 'Solr';
+        // Setup Solr Connection -- Allow core to be specified from command line.
+        $core = $this->getRequest()->getParam('core', 'Solr');
 
         // Commit and Optimize the Solr Index
         $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
@@ -314,23 +300,22 @@ class UtilController extends AbstractBase
         // Parse the command line parameters -- check verbosity, see if we are in
         // "flat file" mode, find out what file we are reading in, and determine
         // the index we are affecting!
-        $this->consoleOpts->addRules(
-            [
-                'verbose' => 'Verbose mode',
-            ]
-        );
-        $verbose = $this->consoleOpts->getOption('verbose');
-        $argv = $this->consoleOpts->getRemainingArgs();
-        $filename = isset($argv[0]) ? $argv[0] : null;
-        $mode = isset($argv[1]) ? $argv[1] : 'marc';
-        $index = isset($argv[2]) ? $argv[2] : 'Solr';
+        $request = $this->getRequest();
+        $verbose = $request->getParam('verbose');
+        $filename = $request->getParam('filename');
+        $mode = $request->getParam('format', 'marc');
+        $index = $request->getParam('index', 'Solr');
 
         // No filename specified?  Give usage guidelines:
         if (empty($filename)) {
+            $scriptName = $this->getRequest()->getScriptName();
+            if (substr($scriptName, -9) === 'index.php') {
+                $scriptName .= ' util deletes';
+            }
             Console::writeLine("Delete records from VuFind's index.");
             Console::writeLine('');
             Console::writeLine(
-                'Usage: deletes.php [--verbose] FILENAME FORMAT INDEX'
+                'Usage: ' . $scriptName . ' [--verbose] FILENAME FORMAT INDEX'
             );
             Console::writeLine('');
             Console::writeLine(
@@ -431,15 +416,8 @@ class UtilController extends AbstractBase
      */
     public function cleanuprecordcacheAction()
     {
-        $this->consoleOpts->addRules(
-            [
-                'h|help' => 'Get help',
-            ]
-        );
-
-        if ($this->consoleOpts->getOption('h')
-            || $this->consoleOpts->getOption('help')
-        ) {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
             Console::writeLine('Clean up unused cached records from the database.');
             return $this->getFailureResponse();
         }
@@ -494,15 +472,8 @@ class UtilController extends AbstractBase
      */
     public function expiresearchesAction()
     {
-        $this->consoleOpts->addRules(
-            [
-                'h|help' => 'Get help',
-                'batch=i' => 'Batch size',
-                'sleep=i' => 'Sleep interval between batches'
-            ]
-        );
-
-        if ($this->consoleOpts->getOption('h')) {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
             return $this->expirationHelp('searches');
         }
 
@@ -521,15 +492,8 @@ class UtilController extends AbstractBase
      */
     public function expiresessionsAction()
     {
-        $this->consoleOpts->addRules(
-            [
-                'h|help' => 'Get help',
-                'batch=i' => 'Batch size',
-                'sleep=i' => 'Sleep interval between batches'
-            ]
-        );
-
-        if ($this->consoleOpts->getOption('h')) {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
             return $this->expirationHelp('sessions');
         }
 
@@ -548,15 +512,8 @@ class UtilController extends AbstractBase
      */
     public function expireExternalSessionsAction()
     {
-        $this->consoleOpts->addRules(
-            [
-                'h|help' => 'Get help',
-                'batch=i' => 'Batch size',
-                'sleep=i' => 'Sleep interval between batches'
-            ]
-        );
-
-        if ($this->consoleOpts->getOption('h')) {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
             return $this->expirationHelp('external sessions');
         }
 
@@ -574,15 +531,19 @@ class UtilController extends AbstractBase
      */
     public function suppressedAction()
     {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
+            Console::writeLine('Available switches:');
+            Console::writeLine(
+                '--authorities =>'
+                . ' Delete authority records instead of bibliographic records'
+            );
+            Console::writeLine('--help or -h => Show this message');
+            return $this->getFailureResponse();
+        }
+
         // Setup Solr Connection
-        $this->consoleOpts->addRules(
-            [
-                'authorities' =>
-                    'Delete authority records instead of bibliographic records'
-            ]
-        );
-        $backend = $this->consoleOpts->getOption('authorities')
-            ? 'SolrAuth' : 'Solr';
+        $backend = $request->getParam('authorities') ? 'SolrAuth' : 'Solr';
 
         // Make ILS Connection
         try {
@@ -619,17 +580,23 @@ class UtilController extends AbstractBase
      */
     public function createhierarchytreesAction()
     {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
+            Console::writeLine('Available switches:');
+            Console::writeLine('--skip-xml or -sx => Skip the XML cache');
+            Console::writeLine('--skip-json or -sj => Skip the JSON cache');
+            Console::writeLine('--help or -h => Show this message');
+            return $this->getFailureResponse();
+        }
+        $skipJson = $request->getParam('skip-json') || $request->getParam('sj');
+        $skipXml = $request->getParam('skip-xml') || $request->getParam('sx');
         $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
-        // Parse switches:
-        $this->consoleOpts->addRules(
-            [
-                'skip-xml|sx' => 'Skip the XML cache',
-                'skip-json|sj' => 'Skip the JSON cache'
-            ]
-        );
         $hierarchies = $this->getServiceLocator()
             ->get('VuFind\SearchResultsPluginManager')->get('Solr')
             ->getFullFieldFacets(['hierarchy_top_id']);
+        if (!isset($hierarchies['hierarchy_top_id']['data']['list'])) {
+            $hierarchies['hierarchy_top_id']['data']['list'] = [];
+        }
         foreach ($hierarchies['hierarchy_top_id']['data']['list'] as $hierarchy) {
             $recordid = $hierarchy['value'];
             $count = $hierarchy['count'];
@@ -645,7 +612,7 @@ class UtilController extends AbstractBase
                 // Only do this if the record is actually a hierarchy type record
                 if ($driver->getHierarchyType()) {
                     // JSON
-                    if (!$this->consoleOpts->getOption('skip-json')) {
+                    if (!$skipJson) {
                         Console::writeLine("\t\tJSON cache...");
                         $driver->getHierarchyDriver()->getTreeSource()->getJSON(
                             $recordid, ['refresh' => true]
@@ -654,7 +621,7 @@ class UtilController extends AbstractBase
                         Console::writeLine("\t\tJSON skipped.");
                     }
                     // XML
-                    if (!$this->consoleOpts->getOption('skip-xml')) {
+                    if (!$skipXml) {
                         Console::writeLine("\t\tXML cache...");
                         $driver->getHierarchyDriver()->getTreeSource()->getXML(
                             $recordid, ['refresh' => true]
@@ -683,12 +650,12 @@ class UtilController extends AbstractBase
      */
     public function cssbuilderAction()
     {
-        $argv = $this->consoleOpts->getRemainingArgs();
+        $opts = new \Zend\Console\Getopt([]);
         $compiler = new \VuFindTheme\LessCompiler(true);
         $cacheManager = $this->getServiceLocator()->get('VuFind\CacheManager');
         $cacheDir = $cacheManager->getCacheDir() . 'less/';
         $compiler->setTempPath($cacheDir);
-        $compiler->compile($argv);
+        $compiler->compile(array_unique($opts->getRemainingArgs()));
         return $this->getSuccessResponse();
     }
 
@@ -706,15 +673,14 @@ class UtilController extends AbstractBase
     protected function expire($tableName, $successString, $failString, $minAge = 2)
     {
         // Get command-line arguments
-        $argv = $this->consoleOpts->getRemainingArgs();
+        $request = $this->getRequest();
 
         // Use command line value as expiration age, or default to $minAge.
-        $daysOld = isset($argv[0]) ? intval($argv[0]) : $minAge;
+        $daysOld = intval($request->getParam('daysOld', $minAge));
 
         // Use command line values for batch size and sleep time if specified.
-        $options = $this->consoleOpts->getArguments();
-        $batchSize = isset($options['batch']) ? $options['batch'] : 1000;
-        $sleepTime = isset($options['sleep']) ? $options['sleep'] : 100;
+        $batchSize = $request->getParam('batch', 1000);
+        $sleepTime = $request->getParam('sleep', 100);
 
         // Abort if we have an invalid expiration age.
         if ($daysOld < 2) {
@@ -781,8 +747,9 @@ class UtilController extends AbstractBase
     public function switchdbhashAction()
     {
         // Validate command line arguments:
-        $argv = $this->consoleOpts->getRemainingArgs();
-        if (count($argv) < 1) {
+        $request = $this->getRequest();
+        $newhash = $request->getParam('newhash');
+        if (empty($newhash)) {
             Console::writeLine(
                 'Expected parameters: newmethod [newkey]'
             );
@@ -804,8 +771,7 @@ class UtilController extends AbstractBase
         }
 
         // Pull new encryption settings from arguments:
-        $newhash = $argv[0];
-        $newkey = isset($argv[1]) ? $argv[1] : $oldkey;
+        $newkey = $request->getParam('newkey', $oldkey);
 
         // No key specified AND no key on file = fatal error:
         if ($newkey === null) {
