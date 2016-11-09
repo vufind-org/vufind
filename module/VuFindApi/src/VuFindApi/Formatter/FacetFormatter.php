@@ -165,7 +165,6 @@ class FacetFormatter extends BaseFormatter
         // Add "missing" fields to non-hierarchical facets to make them similar
         // to hierarchical facets for easier consumption.
         $urlHelper = $results->getUrlQuery();
-        $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
         foreach ($facets as $facetKey => &$facetItems) {
             if (isset($hierarchicalFacetData[$facetKey])) {
                 continue;
@@ -174,9 +173,8 @@ class FacetFormatter extends BaseFormatter
             foreach ($facetItems['list'] as &$item) {
                 $href = !$item['isApplied']
                     ? $urlHelper->addFacet(
-                        $facetKey, $item['value'], $item['operator'],
-                        $paramArray, false
-                    ) : $urlHelper->getParams(false);
+                        $facetKey, $item['value'], $item['operator']
+                    )->getParams(false) : $urlHelper->getParams(false);
                 $item['href'] = $href;
             }
         }

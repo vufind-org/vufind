@@ -160,10 +160,11 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
         $params = new Params(new Options($configManager), $configManager);
         $requestParams = new \Zend\StdLib\Parameters($request);
         $params->initFromRequest($requestParams);
-        $urlQuery = new \VuFind\Search\UrlQueryHelper($params);
+        $factory = new \VuFind\Search\Factory\UrlQueryHelperFactory();
+        $urlQuery = $factory->fromParams($params);
         foreach ($data as $facet => $values) {
             $results[$facet] = $helper->buildFacetArray(
-                $facet, $values, $urlQuery
+                $facet, $values, $urlQuery, false
             );
         }
 
@@ -226,11 +227,13 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
                     'count' => 100,
                     'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=hierarchical_foo%3A%221%2Fbar%2Fcookie%2F%22&filter%5B%5D=hierarchical_foo%3A%220%2Fbar%2F%22',
                     'children' => [
-                        'value' => '1/bar/cookie/',
-                        'translated' => 'translated(cookie)',
-                        'count' => 150,
-                        'isApplied' => 1,
-                        'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=hierarchical_foo%3A%221%2Fbar%2Fcookie%2F%22',
+                        [
+                            'value' => '1/bar/cookie/',
+                            'translated' => 'translated(cookie)',
+                            'count' => 150,
+                            'isApplied' => 1,
+                            'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=hierarchical_foo%3A%221%2Fbar%2Fcookie%2F%22',
+                        ],
                     ]
                 ]
             ],
