@@ -28,6 +28,7 @@
 namespace VuFind\Search\Solr;
 
 use VuFind\I18n\TranslatableString;
+use VuFind\Search\UrlQueryHelper;
 
 /**
  * Functions for manipulating facets
@@ -96,13 +97,11 @@ class HierarchicalFacetHelper
     public function buildFacetArray($facet, $facetList, $urlHelper = false,
         $escape = true
     ) {
-        // getParamArray() is expensive, so call it just once and pass it on
-        $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
         // Create a keyed (for conversion to hierarchical) array of facet data
         $keyedList = [];
         foreach ($facetList as $item) {
             $keyedList[$item['value']] = $this->createFacetItem(
-                $facet, $item, $urlHelper, $paramArray, $escape
+                $facet, $item, $urlHelper, $escape
             );
         }
 
@@ -177,34 +176,30 @@ class HierarchicalFacetHelper
     /**
      * Create an item for the hierarchical facet array
      *
-     * @param string         $facet      Facet name
-     * @param array          $item       Facet item received from Solr
-     * @param UrlQueryHelper $urlHelper  UrlQueryHelper for creating facet
-     * url's
-     * @param array          $paramArray URL parameters
-     * active children
+     * @param string         $facet     Facet name
+     * @param array          $item      Facet item received from Solr
+     * @param UrlQueryHelper $urlHelper UrlQueryHelper for creating facet URLs
+     * @param bool           $escape    Whether to escape URLs
      *
      * @return array Facet item
      */
-    protected function createFacetItem($facet, $item, $urlHelper, $paramArray,
-        $escape = true
-    ) {
+    protected function createFacetItem($facet, $item, $urlHelper, $escape = true)
+    {
         $href = '';
         $exclude = '';
         // Build URLs only if we were given an URL helper
         if ($urlHelper !== false) {
             if ($item['isApplied']) {
                 $href = $urlHelper->removeFacet(
-                    $facet, $item['value'], true, $item['operator'], $paramArray
-                );
+                    $facet, $item['value'], true, $item['operator']
+                )->getParams($escape);
             } else {
                 $href = $urlHelper->addFacet(
-                    $facet, $item['value'], $item['operator'], $paramArray
-                );
+                    $facet, $item['value'], $item['operator']
+                )->getParams($escape);
             }
-            $exclude = $urlHelper->addFacet(
-                $facet, $item['value'], 'NOT', $paramArray
-            );
+            $exclude = $urlHelper->addFacet($facet, $item['value'], 'NOT')
+                ->getParams($escape);
         }
 
         $displayText = $item['displayText'];
