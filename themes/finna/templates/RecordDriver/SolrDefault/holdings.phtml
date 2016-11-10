@@ -45,7 +45,7 @@
         <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
       <? endif; ?>
     <? endif; ?>
-    <? if ($this->driver->getRecordType() != 'forward'): ?>
+    <? if (!in_array($this->driver->getRecordType(), ['ead', 'forward', 'lido'])): ?>
       <div class="no-holdings<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
         <?=$this->transEsc('No Holdings Available')?>
       </div>

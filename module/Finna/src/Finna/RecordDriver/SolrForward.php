@@ -46,7 +46,9 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      * @var array
      */
     protected $nonPresenterAuthorRelators = [
-        'A00', 'A03', 'A06', 'A50', 'A99', 'D01', 'D02', 'F01', 'F02'
+        'A00', 'A03', 'A06', 'A50', 'A99', 'D01', 'D02', 'E10', 'F01', 'F02',
+        'anm', 'aud', 'chr', 'cnd', 'cst', 'exp', 'fds', 'lgd', 'oth', 'pmn', 'prn',
+        'sds', 'std', 'trl', 'wst'
     ];
 
     /**
@@ -55,7 +57,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      * @var array
      */
     protected $presenterAuthorRelators = [
-        'E01'
+        'E01', 'E99', 'cmm'
     ];
 
     /**
@@ -72,8 +74,9 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
         'D01' => 'fmp',
         'D02' => 'drt',
         'E01' => 'act',
+        'E10' => 'fmp',
         'F01' => 'cng',
-        'F02' => 'edt'
+        'F02' => 'flm'
     ];
 
     /**
