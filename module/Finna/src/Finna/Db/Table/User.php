@@ -112,7 +112,7 @@ class User extends \VuFind\Db\Table\User
         $searchUsername = $username;
         if (isset($this->config->Site->institution)) {
             $prefix = $this->config->Site->institution . ':';
-            if (strncmp($username, $prefix, strlen($prefix) !== 0)) {
+            if (strncmp($username, $prefix, strlen($prefix)) !== 0) {
                 $searchUsername = $prefix . $username;
             }
         }
