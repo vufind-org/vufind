@@ -341,7 +341,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             $facetList[$facet] = $facetHelper->buildFacetArray(
                 $facet,
                 $facetResults[$facet]['data']['list'],
-                $results->getUrlQuery()
+                $results->getUrlQuery(),
+                false
             );
         }
 
