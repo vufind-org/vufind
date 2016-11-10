@@ -73,7 +73,7 @@ class Search extends Gateway
             }
             $eventFeature = new Feature\EventFeature();
             $eventFeature->getEventManager()->attach(
-                Feature\EventFeature::EVENT_PRE_INITIALIZE, [$this, 'onPreInsert']
+                Feature\EventFeature::EVENT_PRE_INITIALIZE, [$this, 'onPreInit']
             );
             $this->featureSet->addFeature($eventFeature);
         }
@@ -91,7 +91,7 @@ class Search extends Gateway
      *
      * @return void
      */
-    public function onPreInsert($event)
+    public function onPreInit($event)
     {
         $driver = $event->getTarget()->getAdapter()->getDriver();
         $statement = $driver->createStatement();
