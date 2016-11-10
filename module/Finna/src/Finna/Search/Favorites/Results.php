@@ -54,7 +54,7 @@ class Results extends \VuFind\Search\Favorites\Results
 
         if ($sort == 'custom_order'
             && (empty($list)
-            || !$table->isCustomOrderAvailable($list->id, $user->id))
+            || !$table->isCustomOrderAvailable($list->id))
         ) {
             $sort = 'id desc';
         }
