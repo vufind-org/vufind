@@ -232,8 +232,8 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
                             'translated' => 'translated(cookie)',
                             'count' => 150,
                             'isApplied' => 1,
-                            'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=hierarchical_foo%3A%221%2Fbar%2Fcookie%2F%22',
-                        ],
+                            'href' => '?filter%5B%5D=foo%3A%22baz%22',
+                        ]
                     ]
                 ]
             ],
@@ -297,7 +297,7 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
                             'translated' => 'translated(cookie)',
                             'count' => 150,
                             'isApplied' => 1,
-                            'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=hierarchical_foo%3A%221%2Fbar%2Fcookie%2F%22&filter%5B%5D=%7Exyzzy%3A%22val2%22&filter%5B%5D=%7Exyzzy%3A%22val3%22&filter%5B%5D=hierarchical_xyzzy%3A%221%2Fval1%2Fval2%2F%22',
+                            'href' => '?filter%5B%5D=foo%3A%22baz%22&filter%5B%5D=%7Exyzzy%3A%22val2%22&filter%5B%5D=%7Exyzzy%3A%22val3%22&filter%5B%5D=hierarchical_xyzzy%3A%221%2Fval1%2Fval2%2F%22',
                         ]
                     ]
                 ]
