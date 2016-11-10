@@ -111,7 +111,7 @@
       <tr>
         <th><?=$this->transEsc(count($authors['primary']) > 1 ? 'Main Authors' : 'Main Author')?>: </th>
         <td>
-          <?=$this->record($this->driver)->getDeduplicatedAuthors($authors['primary'])?>
+          <?=$this->record($this->driver)->getDeduplicatedAuthors($authors['primary'], "author")?>
         </td>
       </tr>
       <? endif; ?>
@@ -120,7 +120,7 @@
       <tr>
         <th><?=$this->transEsc(count($authors['corporate']) > 1 ? 'Corporate Author' : 'Corporate Authors')?>: </th>
         <td>
-          <?=$this->record($this->driver)->getDeduplicatedAuthors($authors['corporate'])?>
+          <?=$this->record($this->driver)->getDeduplicatedAuthors($authors['corporate'], "creator")?>
         </td>
       </tr>
       <? endif; ?>
@@ -129,7 +129,7 @@
       <tr>
         <th><?=$this->transEsc('Other Authors')?>: </th>
         <td>
-          <?=$this->record($this->driver)->getDeduplicatedAuthors($authors['secondary'])?>
+          <?=$this->record($this->driver)->getDeduplicatedAuthors($authors['secondary'], "contributor")?>
         </td>
       </tr>
       <? endif; ?>

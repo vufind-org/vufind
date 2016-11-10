@@ -68,7 +68,7 @@ class SolrDefault extends AbstractBase
         'title_full_unstemmed', 'title_auth', 'title_sub', 'spelling', 'id',
         'ctrlnum', 'author_variant', 'author2_variant'
     ];
-    
+
     /**
      * These are captions corresponding with Solr fields for use when displaying
      * snippets.

@@ -191,16 +191,21 @@ class Record extends AbstractHelper
     /**
      * Render deduplicated authors.
      *
-     * @param array $authors An array of authors with optional data fields
-     *                       e.g. "role"
+     * @param array  $authors  An array of authors with optional data fields
+     *                         e.g. "role"
+     * @param string $property A schema.org property to markup the author
      *
      * @return string
      */
-    public function getDeduplicatedAuthors($authors)
+    public function getDeduplicatedAuthors($authors, $property = false)
     {
         return $this->renderTemplate(
             'deduplicated-authors.phtml',
-            ['driver' => $this->driver, 'authors' => $authors]
+            [
+                'driver' => $this->driver,
+                'authors' => $authors,
+                'property' => $property
+            ]
         );
     }
 
