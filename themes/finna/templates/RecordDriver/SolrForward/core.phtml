@@ -153,7 +153,7 @@
     <div class="record-authors" property="author">
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
         <span class="recordFormat">
-          <?=$this->record($this->driver)->getFormatList()?><br>
+          <?=$this->record($this->driver)->getFormatList() ?> <?=$this->escapeHtml($this->driver->getType()) ?><br>
         </span>
       <? endif; ?>
       <? $results = $this->driver->getNonPresenterAuthors(); $containerTitle = $this->driver->getContainerTitle(); ?>
@@ -281,13 +281,6 @@
       <? if ($result = $this->driver->getCountry()): ?>
         <tr class="record-country">
           <th><?=$this->transEsc('Country') ?>: </th>
-          <td><?=$this->escapeHtml($result) ?></td>
-        </tr>
-      <? endif; ?>
-
-      <? if ($result = $this->driver->getType()): ?>
-        <tr class="record-type">
-          <th><?=$this->transEsc('Type') ?>: </th>
           <td><?=$this->escapeHtml($result) ?></td>
         </tr>
       <? endif; ?>

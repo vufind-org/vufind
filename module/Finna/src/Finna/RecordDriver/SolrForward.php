@@ -304,10 +304,14 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      */
     public function getType()
     {
-        return trim(
-            $this->getProductionEventAttribute('elokuva-laji1fin') . ' '
-            . $this->getProductionEventAttribute('elokuva-laji2fin')
+        $type = [];
+        if ($laji = $this->getProductionEventAttribute('elokuva-laji1fin')) {
+            $type[] = $laji;
+        }
+        $type = array_merge(
+            $type, $this->getProductionEventElement('elokuva_laji2fin')
         );
+        return trim(implode(', ', $type));
     }
 
     /**
