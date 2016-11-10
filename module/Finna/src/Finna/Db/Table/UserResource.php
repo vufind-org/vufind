@@ -118,58 +118,43 @@ class UserResource extends \VuFind\Db\Table\UserResource
     }
 
     /**
-     * Get custom favorite list order
+     * Check if custom favorite order is used in a list
      *
-     * @param int $listId List_id
-     * @param int $userId User_id
+     * @param int $listId List id
      *
-     * @return boolean|string
+     * @return bool
      */
-    public function getCustomFavoriteOrder($listId, $userId = null)
+    public function isCustomOrderAvailable($listId)
     {
-        $callback = function ($select) use ($listId, $userId) {
-            if ($userId) {
-                $select->where->equalTo('user_id', $userId);
-            }
+        $callback = function ($select) use ($listId) {
             $select->where->equalTo('list_id', $listId);
             $select->join(
                 ['r' => 'resource'],
                 'user_resource.resource_id = r.id',
                 ['record_id']
             );
-            $select->order('finna_custom_order_index');
+            $select->where->isNotNull('finna_custom_order_index');
         };
-
-        $list = [];
-        foreach ($this->select($callback) as $result) {
-            if ($result->finna_custom_order_index) {
-                $list[] = $result->record_id;
-            }
-        }
-        if (empty($list)) {
-            return false;
-        } else {
-            return $list;
-        }
+        return $this->select($callback)->count() > 0;
     }
 
     /**
      * Update the date of a list
      *
-     * @param string $list_id ID of list to unlink
-     * @param string $user_id ID of user removing links
+     * @param string $listId ID of list to unlink
+     * @param string $userId ID of user removing links
      *
      * @return void
      */
-    protected function updateListDate($list_id, $user_id)
+    protected function updateListDate($listId, $userId)
     {
         $userTable = $this->getDbTable('User');
-        $user = $userTable->select(['id' => $user_id])->current();
+        $user = $userTable->select(['id' => $userId])->current();
         if (empty($user)) {
             return;
         }
         $listTable = $this->getDbTable('UserList');
-        $list = $listTable->getExisting($list_id);
+        $list = $listTable->getExisting($listId);
         $list->save($user);
     }
 }

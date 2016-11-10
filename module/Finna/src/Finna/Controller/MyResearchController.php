@@ -213,7 +213,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $view;
         }
 
-        $view->sortList = $this->createSortList();
+        $view->sortList = $this->createSortList($results->getListObject());
 
         return $view;
     }
@@ -785,22 +785,16 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
-     * Create sort list for public list page.
+     * Create sort list.
      * If no sort option selected, set first one from the list to default.
      *
      * @param list $list List object
      *
      * @return array
      */
-    protected function createSortList($list = null)
+    protected function createSortList($list)
     {
-        $view = parent::mylistAction();
-        $user = $this->getUser();
         $table = $this->getTable('UserResource');
-
-        if (empty($list) && $results = $view->results) {
-            $list = $results->getListObject();
-        }
 
         $sortOptions = self::getFavoritesSortList();
         $sort = isset($_GET['sort']) ? $_GET['sort'] : false;
@@ -810,12 +804,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
         $sortList = [];
 
-        if (empty($list)
-            || ((! $list->public
-            && $table->getCustomFavoriteOrder($list->id, $user->id) === false)
-            || ($list->public
-            && $table->getCustomFavoriteOrder($list->id) === false))
-        ) {
+        if (empty($list) || !$table->isCustomOrderAvailable($list->id)) {
             array_shift($sortOptions);
             if ($sort == 'custom_order') {
                 $sort = 'id desc';

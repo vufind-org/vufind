@@ -54,10 +54,7 @@ class Results extends \VuFind\Search\Favorites\Results
 
         if ($sort == 'custom_order'
             && (empty($list)
-            || ((! $list->public
-            && $table->getCustomFavoriteOrder($list->id, $user->id) === false))
-            || ($list->public
-            && $table->getCustomFavoriteOrder($list->id) === false))
+            || !$table->isCustomOrderAvailable($list->id, $user->id))
         ) {
             $sort = 'id desc';
         }
@@ -70,7 +67,7 @@ class Results extends \VuFind\Search\Favorites\Results
         }
 
         $this->getParams()->setSort($sort);
-        
+
         parent::performSearch();
 
         // Other sort options are handled in the database, but format is language-
