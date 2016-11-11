@@ -71,7 +71,7 @@ VuFind.register('lightbox', function Lightbox() {
     }
     // Isolate successes
     var htmlDiv = $('<div/>').html(content);
-    var alerts = htmlDiv.find('.flash-message.alert-success');
+    var alerts = htmlDiv.find('.flash-message.alert-success:not([data-lightbox-ignore])');
     if (alerts.length > 0) {
       showAlert(alerts[0].innerHTML, 'success');
       return;
@@ -132,10 +132,7 @@ VuFind.register('lightbox', function Lightbox() {
           return;
         }
         var testDiv = $('<div/>').html(content);
-        var errorMsgs = testDiv.find('.flash-message.alert-danger');
-        if ($(errorMsgs[0]).data('lightbox-ignore')) {
-          errorMsgs = [];
-        }
+        var errorMsgs = testDiv.find('.flash-message.alert-danger:not([data-lightbox-ignore])');
         // Place Hold error isolation
         if (obj.url.match(/\/Record/) && (obj.url.match(/Hold\?/) || obj.url.match(/Request\?/))) {
           if (errorMsgs.length && testDiv.find('.record').length) {

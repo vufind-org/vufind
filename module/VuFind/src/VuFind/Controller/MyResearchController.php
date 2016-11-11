@@ -402,7 +402,10 @@ class MyResearchController extends AbstractBase
             && $blocks = $catalog->getAccountBlocks($patron)
         ) {
             foreach ($blocks as $block) {
-                $this->flashMessenger()->addMessage($block, 'error');
+                $this->flashMessenger()->addMessage([
+                    'msg' => $block,
+                    'dataset' => [ 'lightbox-ignore' => true ]
+                ], 'error');
             }
         }
     }
