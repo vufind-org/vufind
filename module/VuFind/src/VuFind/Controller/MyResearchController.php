@@ -404,7 +404,7 @@ class MyResearchController extends AbstractBase
         ) {
             foreach ($blocks as $block) {
                 $this->flashMessenger()->addMessage(
-                    [ 'msg' => $block, 'dataset' => [ 'lightbox-ignore' => true ] ],
+                    [ 'msg' => $block, 'dataset' => [ 'lightbox-ignore' => '1' ] ],
                     'error'
                 );
             }
