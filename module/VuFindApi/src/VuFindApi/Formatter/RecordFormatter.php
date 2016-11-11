@@ -170,8 +170,8 @@ class RecordFormatter extends BaseFormatter
     /**
      * Get fields from a record as an array
      *
-     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
-     * @param array                            $fields Fields to get
+     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
+     * @param array                             $fields Fields to get
      *
      * @return array
      */
@@ -243,7 +243,7 @@ class RecordFormatter extends BaseFormatter
     /**
      * Format the results.
      *
-     * @param array $results         Results to process
+     * @param array $results         Results to process (array of record drivers)
      * @param array $requestedFields Fields to include in response
      *
      * @return array
