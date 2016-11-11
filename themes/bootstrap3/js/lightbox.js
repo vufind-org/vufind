@@ -131,20 +131,24 @@ VuFind.register('lightbox', function Lightbox() {
           VuFind.refreshPage();
           return;
         }
+        var testDiv = $('<div/>').html(content);
+        var errorMsgs = testDiv.find('.flash-message.alert-danger');
+        if ($(errorMsgs[0]).data('lightbox-ignore')) {
+          errorMsgs = [];
+        }
         // Place Hold error isolation
         if (obj.url.match(/\/Record/) && (obj.url.match(/Hold\?/) || obj.url.match(/Request\?/))) {
-          var testDiv = $('<div/>').html(content);
-          var error = testDiv.find('.flash-message.alert-danger');
-          if (error.length && testDiv.find('.record').length) {
-            showAlert(error[0].innerHTML, 'danger');
+          if (errorMsgs.length && testDiv.find('.record').length) {
+            showAlert(errorMsgs[0].innerHTML, 'danger');
             return false;
           }
         }
         if ( // Close the lightbox after deliberate login
-          obj.method                                                                 // is a form
-          && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/) && !obj.url.match(/Delete/) && !obj.url.match(/Recover/)) // that matches login/create account
-            || obj.url.match(/catalogLogin/))                                        // or catalog login for holds
-          && $('<div/>').html(content).find('.flash-message.alert-danger').length === 0 // skip failed logins
+          obj.method                        // is a form
+          && (obj.url.match(/catalogLogin/) // catalog login for holds
+            || (obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/) && !obj.url.match(/Delete/) && !obj.url.match(/Recover/)))
+                                            // or that matches login/create account
+          && errorMsgs.length === 0         // skip failed logins
         ) {
           var eventResult = _emit('VuFind.lightbox.login', {
             originalUrl: _originalUrl,
