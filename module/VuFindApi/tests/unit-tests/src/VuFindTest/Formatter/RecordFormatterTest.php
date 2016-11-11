@@ -27,7 +27,7 @@
  * @link     https://vufind.org
  */
 namespace VuFindTest\Formatter;
-use \VuFindApi\Formatter\RecordFormatter;
+use VuFindApi\Formatter\RecordFormatter;
 
 /**
  * Unit tests for record formatter.
@@ -48,9 +48,10 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
     protected function getDefaultDefs()
     {
         return [
-            'cleanDOI' => [
-                'method' => 'getCleanDOI',
-            ],
+            'cleanDOI' => ['method' => 'getCleanDOI'],
+            'dedupIds' => ['method' => 'Formatter::getDedupIds'],
+            'fullRecord' => ['method' => 'Formatter::getFullRecord'],
+            'rawData' => ['method' => 'Formatter::getRawData'],
         ];
     }
 
@@ -91,6 +92,9 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
         $driver->setRawData(
             [
                 'CleanDOI' => 'foo',
+                'DedupData' => [['id' => 'bar']],
+                'fullrecord' => 'xyzzy',
+                'spelling' => 's',
             ]
         );
         return $driver;
@@ -105,14 +109,23 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
     {
         $formatter = $this->getFormatter();
 
+        $driver = $this->getDriver();
+
         // Test requesting no fields.
-        $this->assertEquals([], $formatter->format([$this->getDriver()], []));
+        $this->assertEquals([], $formatter->format([$driver], []));
 
         // Test requesting fields:
-        $results = $formatter->format([$this->getDriver()], ['cleanDOI']);
+        $results = $formatter->format(
+            [$driver], array_keys($this->getDefaultDefs())
+        );
+        $expectedRaw = $driver->getRawData();
+        unset($expectedRaw['spelling']);
         $expected = [
             [
                 'cleanDOI' => 'foo',
+                'dedupIds' => ['bar'],
+                'fullRecord' => 'xyzzy',
+                'rawData' => $expectedRaw,
             ],
         ];
         $this->assertEquals($expected, $results);
