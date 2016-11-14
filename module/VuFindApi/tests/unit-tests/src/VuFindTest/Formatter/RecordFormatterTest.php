@@ -28,6 +28,7 @@
  */
 namespace VuFindTest\Formatter;
 use VuFindApi\Formatter\RecordFormatter;
+use VuFind\I18n\TranslatableString;
 
 /**
  * Unit tests for record formatter.
@@ -52,6 +53,7 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
             'dedupIds' => ['method' => 'Formatter::getDedupIds'],
             'fullRecord' => ['method' => 'Formatter::getFullRecord'],
             'rawData' => ['method' => 'Formatter::getRawData'],
+            'buildings' => ['method' => 'getBuilding']
         ];
     }
 
@@ -95,6 +97,7 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
                 'DedupData' => [['id' => 'bar']],
                 'fullrecord' => 'xyzzy',
                 'spelling' => 's',
+                'Building' => ['foo', new TranslatableString('bar', 'xyzzy')]
             ]
         );
         return $driver;
@@ -120,12 +123,16 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
         );
         $expectedRaw = $driver->getRawData();
         unset($expectedRaw['spelling']);
+        $expectedRaw['Building'] = [
+            'foo', ['value' => 'bar', 'translated' => 'xyzzy']
+        ];
         $expected = [
             [
                 'cleanDOI' => 'foo',
                 'dedupIds' => ['bar'],
                 'fullRecord' => 'xyzzy',
                 'rawData' => $expectedRaw,
+                'buildings' => ['foo', ['value' => 'bar', 'translated' => 'xyzzy']]
             ],
         ];
         $this->assertEquals($expected, $results);
