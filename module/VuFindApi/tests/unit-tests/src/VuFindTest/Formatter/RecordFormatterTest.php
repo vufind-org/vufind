@@ -145,6 +145,16 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
             ],
         ];
         $this->assertEquals($expected, $results);
+
+        // Test filtered XML
+        $filtered = '<filtered></filtered>';
+        $driver->setFilteredXML($filtered);
+        $results = $formatter->format(
+            [$driver], array_keys($this->getDefaultDefs())
+        );
+        $expected[0]['fullRecord'] = $filtered;
+        $expected[0]['rawData']['FilteredXML'] = $filtered;
+        $this->assertEquals($expected, $results);
     }
 
     /**
