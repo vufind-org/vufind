@@ -49,8 +49,17 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
     protected function getDefaultDefs()
     {
         return [
-            'cleanDOI' => ['method' => 'getCleanDOI'],
-            'dedupIds' => ['method' => 'Formatter::getDedupIds'],
+            'cleanDOI' => [
+                'method' => 'getCleanDOI',
+                'description' => 'First valid DOI',
+                'type' => 'string'
+            ],
+            'dedupIds' => [
+                'method' => 'Formatter::getDedupIds',
+                'description' => 'IDs of all records deduplicated',
+                'type' => 'array',
+                'items' => ['type' => 'string']
+            ],
             'fullRecord' => ['method' => 'Formatter::getFullRecord'],
             'rawData' => ['method' => 'Formatter::getRawData'],
             'buildings' => ['method' => 'getBuilding']
@@ -134,6 +143,32 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
                 'rawData' => $expectedRaw,
                 'buildings' => ['foo', ['value' => 'bar', 'translated' => 'xyzzy']]
             ],
+        ];
+        $this->assertEquals($expected, $results);
+    }
+
+    /**
+     * Test getting the field specs.
+     *
+     * @return void
+     */
+    public function testFieldSpecs()
+    {
+        $formatter = $this->getFormatter();
+        $results = $formatter->getRecordFieldSpec();
+        $expected = [
+            'cleanDOI' => [
+                'description' => 'First valid DOI',
+                'type' => 'string'
+            ],
+            'dedupIds' => [
+                'description' => 'IDs of all records deduplicated',
+                'type' => 'array',
+                'items' => ['type' => 'string']
+            ],
+            'fullRecord' => [],
+            'rawData' => [],
+            'buildings' => []
         ];
         $this->assertEquals($expected, $results);
     }
