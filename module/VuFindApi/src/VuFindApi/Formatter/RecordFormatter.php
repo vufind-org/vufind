@@ -132,29 +132,6 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get source
-     *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
-     *
-     * @return array|null
-     */
-    protected function getSource($record)
-    {
-        if ($sources = $record->tryMethod('getSource')) {
-            $result = [];
-            $translator = $this->helperManager->get('translate');
-            foreach ($sources as $source) {
-                $result[] = [
-                    'value' => $source,
-                    'translated' => $translator->translate("source_$source")
-                ];
-            }
-            return $result;
-        }
-        return null;
-    }
-
-    /**
      * Get URLs
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver

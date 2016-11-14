@@ -318,10 +318,6 @@ shortTitle:
   method: getShortTitle
   description: Short title (title excluding any subtitle)
   type: string
-source:
-  method: "Formatter::getSource"
-  description: Record source identifier
-  type: string
 subjects:
   method: getAllSubjectHeadings
   default: true
