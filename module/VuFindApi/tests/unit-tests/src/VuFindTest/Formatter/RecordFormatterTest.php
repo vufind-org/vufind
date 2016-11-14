@@ -62,7 +62,8 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
             ],
             'fullRecord' => ['method' => 'Formatter::getFullRecord'],
             'rawData' => ['method' => 'Formatter::getRawData'],
-            'buildings' => ['method' => 'getBuilding']
+            'buildings' => ['method' => 'getBuilding'],
+            'recordPage' => ['method' => 'Formatter::getRecordPage']
         ];
     }
 
@@ -75,6 +76,12 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
     {
         $hm = new \Zend\View\HelperPluginManager();
         $hm->setService('translate', new \VuFind\View\Helper\Root\Translate());
+
+        $mockRecordLink = $this->getMockBuilder('VuFind\View\Helper\Root\RecordLink')
+            ->disableOriginalConstructor()->getMock();
+        $mockRecordLink->expects($this->any())->method('getUrl')
+            ->will($this->returnValue('http://record'));
+        $hm->setService('recordLink', $mockRecordLink);
         return $hm;
     }
 
@@ -141,7 +148,8 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
                 'dedupIds' => ['bar'],
                 'fullRecord' => 'xyzzy',
                 'rawData' => $expectedRaw,
-                'buildings' => ['foo', ['value' => 'bar', 'translated' => 'xyzzy']]
+                'buildings' => ['foo', ['value' => 'bar', 'translated' => 'xyzzy']],
+                'recordPage' => 'http://record'
             ],
         ];
         $this->assertEquals($expected, $results);
@@ -178,7 +186,8 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
             ],
             'fullRecord' => [],
             'rawData' => [],
-            'buildings' => []
+            'buildings' => [],
+            'recordPage' => []
         ];
         $this->assertEquals($expected, $results);
     }
