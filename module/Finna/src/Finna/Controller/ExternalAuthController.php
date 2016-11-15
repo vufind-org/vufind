@@ -47,4 +47,21 @@ class ExternalAuthController extends \VuFind\Controller\ExternalAuthController
     {
         $this->ezproxyRequiredPermission = 'finna.authorized';
     }
+
+    /**
+     * Get the user object if logged in, false otherwise.
+     *
+     * @return object|bool
+     */
+    protected function getUser()
+    {
+        $user = parent::getUser();
+        if ($user) {
+            $parts = explode(':', $user->username, 2);
+            if (isset($parts[1])) {
+                $user->username = $parts[1];
+            }
+        }
+        return $user;
+    }
 }
