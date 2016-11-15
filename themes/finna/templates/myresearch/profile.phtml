@@ -79,18 +79,18 @@
           <span class="myresearch-profile-middle-header"><?=$this->transEsc('Personal details maintained by the library') ?></span>
           <? if (!$this->translationEmpty('contact_details_instructions')): ?><p class="no-content-message"><?=$this->translate('contact_details_instructions')?></p><? endif; ?>
         </div>
-        <? if (isset($this->profile['firstname'])): ?>
+        <? if (!empty($this->profile['firstname'])): ?>
           <div class="col-sm-4 profile-title"><?=$this->transEsc('First Name') ?>:</div>
           <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['firstname']) ?></div>
         <? endif; ?>
-        <? if (isset($this->profile['lastname'])): ?>
+        <? if (!empty($this->profile['lastname'])): ?>
           <div class="col-sm-4 profile-title"><?=$this->transEsc('Last Name') ?>:</div>
           <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['lastname']) ?></div>
         <? endif; ?>
-        <? if (isset($this->profile['address1'])): ?>
+        <? if (!empty($this->profile['address1']) || $updateAddress): ?>
           <? if ($updateAddress): ?>
             <div class="col-sm-4 profile-title profile-long"><?=$this->transEsc('Address') ?> 1:</div>
-            <div class="col-sm-4 profile-text-value profile-long"><?=$this->escapeHtml($this->profile['address1']) ?></div>
+            <div class="col-sm-4 profile-text-value profile-long"><?=empty($this->profile['address1']) ? '' : $this->escapeHtml($this->profile['address1']) ?></div>
             <div class="clearfix visible-xs profile-xs"></div>
             <div class="col-sm-4 profile-long">
               <i class="fa fa-info-big"></i> <?=$this->transEsc('request_address_change_title') ?>
@@ -106,15 +106,15 @@
             <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['address1']) ?></div>
           <? endif; ?>
         <? endif; ?>
-        <? if (isset($this->profile['address2']) && !$updateAddress): ?>
+        <? if (!empty($this->profile['address2']) && !$updateAddress): ?>
           <div class="col-sm-4 profile-title"><?=$this->transEsc('Address') ?> 2:</div>
           <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['address2']) ?></div>
         <? endif; ?>
-        <? if (isset($this->profile['zip'])): ?>
+        <? if (!empty($this->profile['zip'])): ?>
           <div class="col-sm-4 profile-title"><?=$this->transEsc('Zip') ?>:</div>
           <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['zip']) ?></div>
         <? endif; ?>
-        <? if (isset($this->profile['city'])): ?>
+        <? if (!empty($this->profile['city'])): ?>
           <div class="col-sm-4 profile-title"><?=$this->transEsc('City') ?>:</div>
           <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['city']) ?></div>
         <? endif; ?>
@@ -122,28 +122,28 @@
           <div class="col-sm-4 profile-title"><?=$this->transEsc('Country') ?>:</div>
           <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['country']) ?></div>
         <? endif; ?>
-        <? if (isset($this->profile['phone'])): ?>
+        <? if (!empty($this->profile['phone']) || $updatePhone): ?>
           <? if ($updatePhone): ?>
             <div class="col-sm-4 profile-title"><?=$this->transEsc('Phone') ?>:</div>
             <div class="col-sm-8">
-              <input class="form-control" type="tel" name="profile_tel" value="<?=$this->escapeHtml($this->profile['phone']) ?>" title="<?=$this->transEsc('Phone') ?>" />
+              <input class="form-control" type="tel" name="profile_tel" value="<?=empty($this->profile['phone']) ? '' : $this->escapeHtml($this->profile['phone']) ?>" title="<?=$this->transEsc('Phone') ?>" />
             </div>
           <? else: ?>
             <div class="col-sm-4 profile-title"><?=$this->transEsc('Phone') ?>:</div>
             <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['phone']) ?></div>
           <? endif; ?>
         <? endif; ?>
-        <? if (isset($this->profile['email'])): ?>
+        <? if (!empty($this->profile['email']) || $updateEmail): ?>
           <div class="col-sm-4 profile-title"><?=$this->transEsc('Email') ?>:</div>
           <? if ($updateEmail): ?>
             <div class="col-sm-8">
-              <input class="form-control" type="email" name="profile_email" value="<?=$this->escapeHtml($this->profile['email']) ?>" title="<?=$this->transEsc('Email') ?>" />
+              <input class="form-control" type="email" name="profile_email" value="<?=empty($this->profile['email']) ? '' : $this->escapeHtml($this->profile['email']) ?>" title="<?=$this->transEsc('Email') ?>" />
             </div>
           <? else: ?>
             <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['email']) ?></div>
           <? endif; ?>
         <? endif; ?>
-        <? if (isset($this->profile['group'])): ?>
+        <? if (!empty($this->profile['group'])): ?>
           <div class="col-sm-4 profile-title"><?=$this->transEsc('Group') ?>:</div>
           <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['group']) ?></div>
         <? endif; ?>
