@@ -445,6 +445,16 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
+     * Remove all hidden filters
+     *
+     * @return void
+     */
+    public function clearHiddenFilters()
+    {
+        $this->hiddenFilters = [];
+    }
+
+    /**
      * Format a single filter for use in getFilterList().
      *
      * @param string $field     Field name
