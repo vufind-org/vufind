@@ -266,7 +266,11 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected function getCombinedSearchResults()
     {
         $viewModel = $this->getView()->plugin('view_model');
-        $children = $viewModel->getCurrent()->getChildren();
+        $current = $viewModel->getCurrent();
+        if (null === $current) {
+            return null;
+        }
+        $children = $current->getChildren();
         if (isset($children[0])) {
             $results = $children[0]->getVariable('combinedResults');
             if (is_array($results)) {
