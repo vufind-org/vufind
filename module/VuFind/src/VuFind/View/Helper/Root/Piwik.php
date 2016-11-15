@@ -530,7 +530,7 @@ EOT;
         $searchType = $escape($params->getSearchType());
         $resultCount = 0;
         foreach ($combinedResults as $currentSearch) {
-            if ($currentSearch['ajax']) {
+            if (!empty($currentSearch['ajax'])) {
                 // Some results fetched via ajax, so report that we don't know the
                 // result count.
                 $resultCount = 'false';
