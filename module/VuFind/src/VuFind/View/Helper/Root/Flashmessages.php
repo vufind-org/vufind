@@ -85,7 +85,8 @@ class Flashmessages extends AbstractHelper
                 $html .= '<div class="' . $this->getClassForNamespace($ns) . '"';
                 if (isset($msg['dataset'])) {
                     foreach ($msg['dataset'] as $attr => $value) {
-                        $html .= ' data-' . $attr . '="' . $value . '"';
+                        $html .= ' data-' . $attr . '="'
+                            . htmlspecialchars($value) . '"';
                     }
                 }
                 $html .= '>';
