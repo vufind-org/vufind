@@ -78,7 +78,7 @@ class ExternalAuthController extends AbstractBase
                 'url', $this->params()->fromQuery('url')
             );
             return $this->redirect()->toUrl(
-                $this->createEzproxyTicketUrl($username, $url)
+                $this->createEzproxyTicketUrl($user->username, $url)
             );
         }
         return $this->forceLogin('external_auth_login_message');
