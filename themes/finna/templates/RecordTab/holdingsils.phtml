@@ -15,6 +15,9 @@
         $offlineMode = 'ils-offline';
     }
     $holdsAllowed = $this->driver->tryMethod('getHoldsAllowed');
+    if (!isset($holdings['holdings'])) {
+        $holdings['holdings'] = [];
+    }
 
     $illRequestLink = false;
     $holdLinks = $journal = $summary = false;
