@@ -74,7 +74,6 @@ class ExternalAuthController extends AbstractBase
                 );
                 return $view;
             }
-            $username = end(explode(':', $user->username, 2));
             $url = $this->params()->fromPost(
                 'url', $this->params()->fromQuery('url')
             );
