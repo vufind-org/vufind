@@ -347,6 +347,10 @@ trait SolrFinna
     public function getOrganisationInfoId()
     {
         $building = $this->getBuilding();
+        if (empty($building)) {
+            return null;
+        }
+
         if (is_array($building)) {
             $building = $building[0];
         }
