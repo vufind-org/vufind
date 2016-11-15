@@ -358,7 +358,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             = isset($config->Site->hideProfileEmailAddress)
             && $config->Site->hideProfileEmailAddress;
 
-        if ($patron = $this->catalogLogin()) {
+        if (is_array($patron = $this->catalogLogin())) {
             $view->blocks = $this->getILS()->getAccountBlocks($patron);
         }
 
@@ -899,10 +899,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     /**
      * Change phone number and email from library info.
      *
-     * @param type $profile patron data
-     * @param type $values  form values
+     * @param array  $profile patron data
+     * @param object $values  form values
      *
-     * @return type
+     * @return bool
      */
     protected function processLibraryDataUpdate($profile, $values)
     {
@@ -910,6 +910,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $catalog = $this->getILS();
 
         $validator = new \Zend\Validator\EmailAddress();
+        $result = true;
         if ($validator->isValid($values->profile_email)) {
             //Update Email
             $result = $catalog->updateEmail($profile, $values->profile_email);
