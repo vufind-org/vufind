@@ -114,7 +114,9 @@ class OrganisationsList extends \Zend\View\Helper\AbstractHelper implements
                     $params->setFacetPrefix('0');
                     $params->setFacetLimit('-1');
 
-                    $collection = $results->getFacetList()['building']['list'];
+                    $facetList = $results->getFacetList();
+                    $collection = isset($facetList['building']['list'])
+                        ? $facetList['building']['list'] : [];
 
                     foreach ($collection as $item) {
                         $link = $emptyResults->getUrlQuery()
