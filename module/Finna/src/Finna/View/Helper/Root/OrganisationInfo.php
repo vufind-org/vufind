@@ -65,7 +65,7 @@ class OrganisationInfo extends \Zend\View\Helper\AbstractHelper
     public function __invoke($params = false)
     {
         if (!$this->isAvailable()) {
-            return;
+            return null;
         }
 
         $id = isset($params['id']) ? $params['id'] : null;
@@ -73,7 +73,7 @@ class OrganisationInfo extends \Zend\View\Helper\AbstractHelper
 
         if (!$id) {
             if (!isset($this->config->General->defaultOrganisation)) {
-                return;
+                return null;
             }
             $id = $this->config->General->defaultOrganisation;
             if (isset($this->config->General->buildings)) {
