@@ -322,7 +322,7 @@ class Primo extends \VuFind\RecordDriver\Primo
     /**
      * Return record format.
      *
-     * @return string.
+     * @return string
      */
     public function getRecordType()
     {

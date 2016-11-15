@@ -112,7 +112,7 @@ class MetaLib extends \Finna\RecordDriver\SolrMarc
     /**
      * Return record format.
      *
-     * @return string.
+     * @return string
      */
     public function getRecordType()
     {

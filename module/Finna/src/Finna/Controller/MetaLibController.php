@@ -26,14 +26,13 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace Finna\Controller;
-use Finna\MetaLib\MetaLibIrdTrait,
-    Finna\Search\MetaLib\Options as Options,
-    Finna\Search\MetaLib\Params as Params,
-    Finna\Search\MetaLib\Results as Results,
-    Finna\Search\Results\Factory as Factory,
-    VuFindSearch\ParamBag as ParamBag,
-    VuFindSearch\Query\Query as Query,
-    Zend\Session\Container as SessionContainer;
+
+use Finna\MetaLib\MetaLibIrdTrait;
+use Finna\Search\MetaLib\Params as Params;
+use Finna\Search\MetaLib\Results as Results;
+use VuFindSearch\ParamBag as ParamBag;
+use VuFindSearch\Query\Query as Query;
+use Zend\Session\Container as SessionContainer;
 
 /**
  * MetaLib Controller
@@ -140,7 +139,7 @@ class MetaLibController extends \VuFind\Controller\AbstractSearch
      * @param \Zend\View\Model\View\Model $view  View
      * @param \VuFind\Search\Query\Query  $query Query
      *
-     * @return $view
+     * @return view
      */
     protected function initSets($view, $query)
     {

@@ -894,7 +894,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     /**
      * Return SFX Object ID
      *
-     * @return string.
+     * @return string
      */
     public function getSfxObjectId()
     {
