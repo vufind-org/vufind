@@ -1920,15 +1920,14 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     protected function formatDate($dateString)
     {
         // Support also the more complex date format of the old AWS version
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}/', $dateString)) {
+        if (!preg_match('/^(\d{4}-\d{2}-\d{2})/', $dateString, $matches)) {
             return $this->dateFormat->convertToDisplayDate(
                 '* M d G:i:s e Y', $dateString
             );
         }
         // remove timezone from Axiell obscure dateformat
-        $date = substr($dateString, 0, strpos("$dateString*", "+"));
-
-        return $this->dateFormat->convertToDisplayDate("Y-m-d", $date);
+        $date = $matches[1];
+        return $this->dateFormat->convertToDisplayDate('Y-m-d', $date);
     }
 
     /**
