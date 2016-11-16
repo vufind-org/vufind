@@ -712,7 +712,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             $issn = $link->getSubfield('x');
             if ($isbn) {
                 $isn = $isbn->getData();
-            } else if ($issn) {
+            } elseif ($issn) {
                 $isn = $issn->getData();
             } else {
                 $isn = '';
@@ -805,7 +805,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             $month = intval(substr($dateString, 4, 2));
             $day = intval(substr($dateString, 6, 2));
             return implode('.', [$day, $month, $year]);
-        } else if (strlen($dateString) === 6) {
+        } elseif (strlen($dateString) === 6) {
             $year = intval(substr($dateString, 0, 4));
             $month = intval(substr($dateString, 4, 2));
             return implode('/', [$month, $year]);
@@ -1069,7 +1069,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             $titleFields = [];
             if ($issn = $field->getSubfield('x')) {
                 $titleFields[] = $issn->getData();
-            } else if ($isbn = $field->getSubfield('z')) {
+            } elseif ($isbn = $field->getSubfield('z')) {
                 $titleFields[] = $isbn->getData();
             }
             $title = implode(' ', $titleFields);
@@ -1093,7 +1093,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         // If reference found, exit loop and go straight to end
         // If no reference found, check the next link type instead
         foreach ($linkTypes as $linkType) {
-            switch (trim($linkType)){
+            switch (trim($linkType)) {
             case 'oclc':
                 foreach ($linkFields as $current) {
                     if ($oclc = $this->getIdFromLinkingField($current, 'OCoLC')) {
