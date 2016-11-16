@@ -52,112 +52,77 @@ class RecordDataFormatterFactory
     }
 
     /**
-     * Construct a generic spec line.
-     *
-     * @param string $dataMethod Method of data retrieval for rendering element
-     * @param string $renderType Type of rendering to use to generate output
-     * @param array  $options    Additional options
-     *
-     * @return array
-     */
-    protected function getSpecLine($dataMethod, $renderType = null, $options = [])
-    {
-        $options['dataMethod'] = $dataMethod;
-        $options['renderType'] = $renderType;
-        return $options;
-    }
-
-    /**
-     * Construct a record driver template spec line.
-     *
-     * @param string $dataMethod Method of data retrieval for rendering element
-     * @param string $template   Record driver template to render with data
-     * @param array  $options    Additional options
-     *
-     * @return array
-     */
-    protected function getTemplateSpecLine($dataMethod, $template, $options = [])
-    {
-        $options['template'] = $template;
-        return $this->getSpecLine($dataMethod, 'RecordDriverTemplate', $options);
-    }
-
-    /**
      * Get default specifications for displaying data in core metadata.
      *
      * @return array
      */
     public function getDefaultCoreSpecs()
     {
-        return [
-            'Published in' => $this->getTemplateSpecLine(
-                'getContainerTitle', 'data-containerTitle.phtml'
-            ),
-            'New Title' => $this->getSpecLine(
-                'getNewerTitles', null, ['recordLink' => 'title']
-            ),
-            'Previous Title' => $this->getSpecLine(
-                'getPreviousTitles', null, ['recordLink' => 'title']
-            ),
-            'Main Authors' => $this->getTemplateSpecLine(
-                'getDeduplicatedAuthors', 'data-authors.phtml',
-                [
-                    'useCache' => true,
-                    'labelFunction' => function ($data) {
-                        return count($data['main']) > 1
-                            ? 'Main Authors' : 'Main Author';
-                    },
-                    'context' => ['type' => 'main', 'schemaLabel' => 'author'],
-                ]
-            ),
-            'Corporate Authors' => $this->getTemplateSpecLine(
-                'getDeduplicatedAuthors', 'data-authors.phtml',
-                [
-                    'useCache' => true,
-                    'labelFunction' => function ($data) {
-                        return count($data['corporate']) > 1
-                            ? 'Corporate Authors' : 'Corporate Author';
-                    },
-                    'context' => ['type' => 'corporate', 'schemaLabel' => 'creator'],
-                ]
-            ),
-            'Other Authors' => $this->getTemplateSpecLine(
-                'getDeduplicatedAuthors', 'data-authors.phtml',
-                [
-                    'useCache' => true,
-                    'context' => [
-                        'type' => 'secondary', 'schemaLabel' => 'contributor'
-                    ],
-                ]
-            ),
-            'Format' => $this->getSpecLine(
-                'getFormats', 'RecordHelper', ['method' => 'getFormatList']
-            ),
-            'Language' => $this->getSpecLine('getLanguages'),
-            'Published' => $this->getTemplateSpecLine(
-                'getPublicationDetails', 'data-publicationDetails.phtml'
-            ),
-            'Edition' => $this->getSpecLine(
-                'getEdition', null,
-                ['prefix' => '<span property="bookEdition">', 'suffix' => '</span>']
-            ),
-            'Series' => $this->getTemplateSpecLine(
-                'getSeries', 'data-series.phtml'
-            ),
-            'Subjects' => $this->getTemplateSpecLine(
-                'getAllSubjectHeadings', 'data-allSubjectHeadings.phtml'
-            ),
-            'child_records' => $this->getTemplateSpecLine(
-                'getChildRecordCount', 'data-childRecords.phtml'
-            ),
-            'Online Access' => $this->getTemplateSpecLine(
-                true, 'data-onlineAccess.phtml'
-            ),
-            'Related Items' => $this->getTemplateSpecLine(
-                'getAllRecordLinks', 'data-allRecordLinks.phtml'
-            ),
-            'Tags' => $this->getTemplateSpecLine(true, 'data-tags.phtml'),
-        ];
+        $spec = new RecordDataFormatter\SpecBuilder();
+        $spec->setTemplateLine(
+            'Published in', 'getContainerTitle', 'data-containerTitle.phtml'
+        );
+        $spec->setLine(
+            'New Title', 'getNewerTitles', null, ['recordLink' => 'title']
+        );
+        $spec->setLine(
+            'Previous Title', 'getPreviousTitles', null, ['recordLink' => 'title']
+        );
+        $spec->setTemplateLine(
+            'Main Authors', 'getDeduplicatedAuthors', 'data-authors.phtml',
+            [
+                'useCache' => true,
+                'labelFunction' => function ($data) {
+                    return count($data['main']) > 1
+                        ? 'Main Authors' : 'Main Author';
+                },
+                'context' => ['type' => 'main', 'schemaLabel' => 'author'],
+            ]
+        );
+        $spec->setTemplateLine(
+            'Corporate Authors', 'getDeduplicatedAuthors', 'data-authors.phtml',
+            [
+                'useCache' => true,
+                'labelFunction' => function ($data) {
+                    return count($data['corporate']) > 1
+                        ? 'Corporate Authors' : 'Corporate Author';
+                },
+                'context' => ['type' => 'corporate', 'schemaLabel' => 'creator'],
+            ]
+        );
+        $spec->setTemplateLine(
+            'Other Authors', 'getDeduplicatedAuthors', 'data-authors.phtml',
+            [
+                'useCache' => true,
+                'context' => [
+                    'type' => 'secondary', 'schemaLabel' => 'contributor'
+                ],
+            ]
+        );
+        $spec->setLine(
+            'Format', 'getFormats', 'RecordHelper', ['method' => 'getFormatList']
+        );
+        $spec->setLine('Language', 'getLanguages');
+        $spec->setTemplateLine(
+            'Published', 'getPublicationDetails', 'data-publicationDetails.phtml'
+        );
+        $spec->setLine(
+            'Edition', 'getEdition', null,
+            ['prefix' => '<span property="bookEdition">', 'suffix' => '</span>']
+        );
+        $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
+        $spec->setTemplateLine(
+            'Subjects', 'getAllSubjectHeadings', 'data-allSubjectHeadings.phtml'
+        );
+        $spec->setTemplateLine(
+            'child_records', 'getChildRecordCount', 'data-childRecords.phtml'
+        );
+        $spec->setTemplateLine('Online Access', true, 'data-onlineAccess.phtml');
+        $spec->setTemplateLine(
+            'Related Items', 'getAllRecordLinks', 'data-allRecordLinks.phtml'
+        );
+        $spec->setTemplateLine('Tags', true, 'data-tags.phtml');
+        return $spec->getArray();
     }
 
     /**
@@ -167,28 +132,26 @@ class RecordDataFormatterFactory
      */
     public function getDefaultDescriptionSpecs()
     {
-        return [
-            'Summary' => $this->getSpecLine('getSummary'),
-            'Published' => $this->getSpecLine('getDateSpan'),
-            'Item Description' => $this->getSpecLine('getGeneralNotes'),
-            'Physical Description' => $this->getSpecLine('getPhysicalDescriptions'),
-            'Publication Frequency' => $this->getSpecLine('getPublicationFrequency'),
-            'Playing Time' => $this->getSpecLine('getPlayingTimes'),
-            'Format' => $this->getSpecLine('getSystemDetails'),
-            'Audience' => $this->getSpecLine('getTargetAudienceNotes'),
-            'Awards' => $this->getSpecLine('getAwards'),
-            'Production Credits' => $this->getSpecLine('getProductionCredits'),
-            'Bibliography' => $this->getSpecLine('getBibliographyNotes'),
-            'ISBN' => $this->getSpecLine('getISBNs'),
-            'ISSN' => $this->getSpecLine('getISSNs'),
-            'DOI' => $this->getSpecLine('getCleanDOI'),
-            'Related Items' => $this->getSpecLine('getRelationshipNotes'),
-            'Access' => $this->getSpecLine('getAccessRestrictions'),
-            'Finding Aid' => $this->getSpecLine('getFindingAids'),
-            'Publication_Place' => $this->getSpecLine('getHierarchicalPlaceNames'),
-            'Author Notes' => $this->getTemplateSpecLine(
-                true, 'data-authorNotes.phtml'
-            ),
-        ];
+        $spec = new RecordDataFormatter\SpecBuilder();
+        $spec->setLine('Summary', 'getSummary');
+        $spec->setLine('Published', 'getDateSpan');
+        $spec->setLine('Item Description', 'getGeneralNotes');
+        $spec->setLine('Physical Description', 'getPhysicalDescriptions');
+        $spec->setLine('Publication Frequency', 'getPublicationFrequency');
+        $spec->setLine('Playing Time', 'getPlayingTimes');
+        $spec->setLine('Format', 'getSystemDetails');
+        $spec->setLine('Audience', 'getTargetAudienceNotes');
+        $spec->setLine('Awards', 'getAwards');
+        $spec->setLine('Production Credits', 'getProductionCredits');
+        $spec->setLine('Bibliography', 'getBibliographyNotes');
+        $spec->setLine('ISBN', 'getISBNs');
+        $spec->setLine('ISSN', 'getISSNs');
+        $spec->setLine('DOI', 'getCleanDOI');
+        $spec->setLine('Related Items', 'getRelationshipNotes');
+        $spec->setLine('Access', 'getAccessRestrictions');
+        $spec->setLine('Finding Aid', 'getFindingAids');
+        $spec->setLine('Publication_Place', 'getHierarchicalPlaceNames');
+        $spec->setTemplateLine('Author Notes', true, 'data-authorNotes.phtml');
+        return $spec->getArray();
     }
 }
