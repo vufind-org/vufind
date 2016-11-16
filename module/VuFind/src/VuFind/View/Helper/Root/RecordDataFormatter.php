@@ -59,29 +59,23 @@ class RecordDataFormatter extends AbstractHelper
     {
         $result = [];
         foreach ($spec as $field => $current) {
-            // Extract the three key components of the spec: data retrieval
-            // method, rendering type, and additional options array.
-            $dataMethod = array_shift($current);
-            $renderType = array_shift($current);
-            $options = array_shift($current) ?: [];
-
             // Extract the relevant data from the driver.
-            $data = $this->extractData($driver, $dataMethod, $options);
+            $data = $this->extractData($driver, $current);
             if (!empty($data)) {
                 // Determine the rendering method to use with the second element
                 // of the current spec.
-                $renderMethod = empty($renderType)
-                    ? 'renderSimple' : 'render' . $renderType;
+                $renderMethod = empty($current['renderType'])
+                    ? 'renderSimple' : 'render' . $current['renderType'];
 
                 // Add the rendered data to the return value if it is non-empty:
                 if (is_callable([$this, $renderMethod])
-                    && $text = $this->$renderMethod($driver, $data, $options)
+                    && $text = $this->$renderMethod($driver, $data, $current)
                 ) {
                     // Allow dynamic label override:
-                    if (isset($options['labelFunction'])
-                        && is_callable($options['labelFunction'])
+                    if (isset($current['labelFunction'])
+                        && is_callable($current['labelFunction'])
                     ) {
-                        $field = call_user_func($options['labelFunction'], $data);
+                        $field = call_user_func($current['labelFunction'], $data);
                     }
                     $result[$field] = $text;
                 }
@@ -119,12 +113,11 @@ class RecordDataFormatter extends AbstractHelper
      * Extract data (usually from the record driver).
      *
      * @param RecordDriver $driver  Record driver
-     * @param mixed        $method  Configuration for data extraction
      * @param array        $options Incoming options
      *
      * @return mixed
      */
-    protected function extractData(RecordDriver $driver, $method, array $options)
+    protected function extractData(RecordDriver $driver, array $options)
     {
         // Static cache for persisting data.
         static $cache = [];
@@ -132,6 +125,7 @@ class RecordDataFormatter extends AbstractHelper
         // If $method is a bool, return it as-is; this allows us to force the
         // rendering (or non-rendering) of particular data independent of the
         // record driver.
+        $method = isset($options['dataMethod']) ? $options['dataMethod'] : false;
         if ($method === true || $method === false) {
             return $method;
         }

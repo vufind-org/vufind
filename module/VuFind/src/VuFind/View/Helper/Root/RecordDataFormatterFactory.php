@@ -52,6 +52,37 @@ class RecordDataFormatterFactory
     }
 
     /**
+     * Construct a generic spec line.
+     *
+     * @param string $dataMethod Method of data retrieval for rendering element
+     * @param string $renderType Type of rendering to use to generate output
+     * @param array  $options    Additional options
+     *
+     * @return array
+     */
+    protected function getSpecLine($dataMethod, $renderType = null, $options = [])
+    {
+        $options['dataMethod'] = $dataMethod;
+        $options['renderType'] = $renderType;
+        return $options;
+    }
+
+    /**
+     * Construct a record driver template spec line.
+     *
+     * @param string $dataMethod Method of data retrieval for rendering element
+     * @param string $template   Record driver template to render with data
+     * @param array  $options    Additional options
+     *
+     * @return array
+     */
+    protected function getTemplateSpecLine($dataMethod, $template, $options = [])
+    {
+        $options['template'] = $template;
+        return $this->getSpecLine($dataMethod, 'RecordDriverTemplate', $options);
+    }
+
+    /**
      * Get default specifications for displaying data in core metadata.
      *
      * @return array
@@ -59,83 +90,73 @@ class RecordDataFormatterFactory
     public function getDefaultCoreSpecs()
     {
         return [
-            'Published in' => [
-                'getContainerTitle', 'RecordDriverTemplate',
-                ['template' => 'data-containerTitle.phtml']
-            ],
-            'New Title' => ['getNewerTitles', null, ['recordLink' => 'title']],
-            'Previous Title' => [
+            'Published in' => $this->getTemplateSpecLine(
+                'getContainerTitle', 'data-containerTitle.phtml'
+            ),
+            'New Title' => $this->getSpecLine(
+                'getNewerTitles', null, ['recordLink' => 'title']
+            ),
+            'Previous Title' => $this->getSpecLine(
                 'getPreviousTitles', null, ['recordLink' => 'title']
-            ],
-            'Main Authors' => [
-                'getDeduplicatedAuthors', 'RecordDriverTemplate',
+            ),
+            'Main Authors' => $this->getTemplateSpecLine(
+                'getDeduplicatedAuthors', 'data-authors.phtml',
                 [
                     'useCache' => true,
                     'labelFunction' => function ($data) {
                         return count($data['main']) > 1
                             ? 'Main Authors' : 'Main Author';
                     },
-                    'template' => 'data-authors.phtml',
                     'context' => ['type' => 'main', 'schemaLabel' => 'author'],
                 ]
-            ],
-            'Corporate Authors' => [
-                'getDeduplicatedAuthors', 'RecordDriverTemplate',
+            ),
+            'Corporate Authors' => $this->getTemplateSpecLine(
+                'getDeduplicatedAuthors', 'data-authors.phtml',
                 [
                     'useCache' => true,
                     'labelFunction' => function ($data) {
                         return count($data['corporate']) > 1
                             ? 'Corporate Authors' : 'Corporate Author';
                     },
-                    'template' => 'data-authors.phtml',
                     'context' => ['type' => 'corporate', 'schemaLabel' => 'creator'],
                 ]
-            ],
-            'Other Authors' => [
-                'getDeduplicatedAuthors', 'RecordDriverTemplate',
+            ),
+            'Other Authors' => $this->getTemplateSpecLine(
+                'getDeduplicatedAuthors', 'data-authors.phtml',
                 [
                     'useCache' => true,
-                    'template' => 'data-authors.phtml',
                     'context' => [
                         'type' => 'secondary', 'schemaLabel' => 'contributor'
                     ],
                 ]
-            ],
-            'Format' => [
+            ),
+            'Format' => $this->getSpecLine(
                 'getFormats', 'RecordHelper', ['method' => 'getFormatList']
-            ],
-            'Language' => ['getLanguages'],
-            'Published' => [
-                'getPublicationDetails', 'RecordDriverTemplate',
-                ['template' => 'data-publicationDetails.phtml']
-            ],
-            'Edition' => [
+            ),
+            'Language' => $this->getSpecLine('getLanguages'),
+            'Published' => $this->getTemplateSpecLine(
+                'getPublicationDetails', 'data-publicationDetails.phtml'
+            ),
+            'Edition' => $this->getSpecLine(
                 'getEdition', null,
                 ['prefix' => '<span property="bookEdition">', 'suffix' => '</span>']
-            ],
-            'Series' => [
-                'getSeries', 'RecordDriverTemplate',
-                ['template' => 'data-series.phtml']
-            ],
-            'Subjects' => [
-                'getAllSubjectHeadings', 'RecordDriverTemplate',
-                ['template' => 'data-allSubjectHeadings.phtml']
-            ],
-            'child_records' => [
-                'getChildRecordCount', 'RecordDriverTemplate',
-                ['template' => 'data-childRecords.phtml']
-            ],
-            'Online Access' => [
-                true, 'RecordDriverTemplate',
-                ['template' => 'data-onlineAccess.phtml']
-            ],
-            'Related Items' => [
-                'getAllRecordLinks', 'RecordDriverTemplate',
-                ['template' => 'data-allRecordLinks.phtml']
-            ],
-            'Tags' => [
-                true, 'RecordDriverTemplate', ['template' => 'data-tags.phtml']
-            ],
+            ),
+            'Series' => $this->getTemplateSpecLine(
+                'getSeries', 'data-series.phtml'
+            ),
+            'Subjects' => $this->getTemplateSpecLine(
+                'getAllSubjectHeadings', 'data-allSubjectHeadings.phtml'
+            ),
+            'child_records' => $this->getTemplateSpecLine(
+                'getChildRecordCount', 'data-childRecords.phtml'
+            ),
+            'Online Access' => $this->getTemplateSpecLine(
+                true, 'data-onlineAccess.phtml'
+            ),
+            'Related Items' => $this->getTemplateSpecLine(
+                'getAllRecordLinks', 'data-allRecordLinks.phtml'
+            ),
+            'Tags' => $this->getTemplateSpecLine(true, 'data-tags.phtml'),
         ];
     }
 
@@ -147,28 +168,27 @@ class RecordDataFormatterFactory
     public function getDefaultDescriptionSpecs()
     {
         return [
-            'Summary' => ['getSummary'],
-            'Published' => ['getDateSpan'],
-            'Item Description' => ['getGeneralNotes'],
-            'Physical Description' => ['getPhysicalDescriptions'],
-            'Publication Frequency' => ['getPublicationFrequency'],
-            'Playing Time' => ['getPlayingTimes'],
-            'Format' => ['getSystemDetails'],
-            'Audience' => ['getTargetAudienceNotes'],
-            'Awards' => ['getAwards'],
-            'Production Credits' => ['getProductionCredits'],
-            'Bibliography' => ['getBibliographyNotes'],
-            'ISBN' => ['getISBNs'],
-            'ISSN' => ['getISSNs'],
-            'DOI' => ['getCleanDOI'],
-            'Related Items' => ['getRelationshipNotes'],
-            'Access' => ['getAccessRestrictions'],
-            'Finding Aid' => ['getFindingAids'],
-            'Publication_Place' => ['getHierarchicalPlaceNames'],
-            'Author Notes' => [
-                true, 'RecordDriverTemplate',
-                ['template' => 'data-authorNotes.phtml']
-            ],
+            'Summary' => $this->getSpecLine('getSummary'),
+            'Published' => $this->getSpecLine('getDateSpan'),
+            'Item Description' => $this->getSpecLine('getGeneralNotes'),
+            'Physical Description' => $this->getSpecLine('getPhysicalDescriptions'),
+            'Publication Frequency' => $this->getSpecLine('getPublicationFrequency'),
+            'Playing Time' => $this->getSpecLine('getPlayingTimes'),
+            'Format' => $this->getSpecLine('getSystemDetails'),
+            'Audience' => $this->getSpecLine('getTargetAudienceNotes'),
+            'Awards' => $this->getSpecLine('getAwards'),
+            'Production Credits' => $this->getSpecLine('getProductionCredits'),
+            'Bibliography' => $this->getSpecLine('getBibliographyNotes'),
+            'ISBN' => $this->getSpecLine('getISBNs'),
+            'ISSN' => $this->getSpecLine('getISSNs'),
+            'DOI' => $this->getSpecLine('getCleanDOI'),
+            'Related Items' => $this->getSpecLine('getRelationshipNotes'),
+            'Access' => $this->getSpecLine('getAccessRestrictions'),
+            'Finding Aid' => $this->getSpecLine('getFindingAids'),
+            'Publication_Place' => $this->getSpecLine('getHierarchicalPlaceNames'),
+            'Author Notes' => $this->getTemplateSpecLine(
+                true, 'data-authorNotes.phtml'
+            ),
         ];
     }
 }
