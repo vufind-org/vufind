@@ -22,7 +22,7 @@ ALTER TABLE comments ADD INDEX `finna_rating` (`finna_rating`);
 -- Additional columns for search
 --
 ALTER TABLE search ADD COLUMN `finna_schedule` int(1) NOT NULL DEFAULT '0';
-ALTER TABLE search ADD COLUMN `finna_last_executed` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
+ALTER TABLE search ADD COLUMN `finna_last_executed` datetime NOT NULL DEFAULT '2000-01-01 00:00:00';
 ALTER TABLE search ADD COLUMN `finna_schedule_base_url` varchar(255) NOT NULL DEFAULT '';
 ALTER TABLE search ADD INDEX `finna_schedule` (`finna_schedule`);
 ALTER TABLE search ADD INDEX `finna_schedule_base_url` (`finna_schedule_base_url`);
@@ -31,7 +31,7 @@ ALTER TABLE search ADD INDEX `finna_schedule_base_url` (`finna_schedule_base_url
 --
 ALTER TABLE `user` ADD COLUMN `finna_language` varchar(30) NOT NULL DEFAULT '';
 ALTER TABLE `user` ADD COLUMN `finna_due_date_reminder` int(11) NOT NULL DEFAULT 0;
-ALTER TABLE `user` ADD COLUMN `finna_last_login` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
+ALTER TABLE `user` ADD COLUMN `finna_last_login` datetime NOT NULL DEFAULT '2000-01-01 00:00:00';
 ALTER TABLE `user` ADD COLUMN `finna_auth_method` varchar(50) DEFAULT NULL;
 CREATE INDEX `finna_user_due_date_reminder_key` ON user (`finna_due_date_reminder`);
 CREATE INDEX `finna_user_email` ON user (`email`);
@@ -68,7 +68,7 @@ CREATE TABLE `finna_comments_inappropriate` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `comment_id` int(11) NOT NULL,
-  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `reason` varchar(1000) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
@@ -98,13 +98,13 @@ CREATE TABLE `finna_transaction` (
   `amount` int(11) NOT NULL,
   `currency` varchar(3) NOT NULL DEFAULT 'EUR',
   `transaction_fee` int(11) NOT NULL,
-  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `paid` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `registered` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `paid` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `registered` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `complete` tinyint(1) NOT NULL DEFAULT '0',
   `status` varchar(255) DEFAULT '',
   `cat_username` varchar(50) NOT NULL,
-  `reported` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `reported` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
   KEY `transaction_id` (`transaction_id`),
   KEY `complete_cat_username_created` (`complete`,`cat_username`, `created`),
@@ -135,7 +135,7 @@ CREATE TABLE `finna_fee` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `finna_metalib_search` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `finna_search_id` char(32) DEFAULT '',
   `search_object` longtext,
   PRIMARY KEY (`id`),
