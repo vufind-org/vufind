@@ -509,7 +509,7 @@ class SolrMarc extends SolrDefault
         // Loop through all subfields, collecting results that match the whitelist;
         // note that it is important to retain the original MARC order here!
         $allSubfields = $currentField->getSubfields();
-        if (count($allSubfields) > 0) {
+        if (!empty($allSubfields)) {
             foreach ($allSubfields as $currentSubfield) {
                 if (in_array($currentSubfield->getCode(), $subfields)) {
                     // Grab the current subfield value and act on it if it is
@@ -523,7 +523,7 @@ class SolrMarc extends SolrDefault
         }
 
         // Send back the data in a different format depending on $concat mode:
-        return $concat ? [implode($separator, $matches)] : $matches;
+        return $concat && $matches ? [implode($separator, $matches)] : $matches;
     }
 
     /**
