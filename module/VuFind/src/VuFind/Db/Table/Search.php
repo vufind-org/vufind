@@ -73,7 +73,7 @@ class Search extends Gateway
             }
             $eventFeature = new Feature\EventFeature();
             $eventFeature->getEventManager()->attach(
-                Feature\EventFeature::EVENT_PRE_INSERT, [$this, 'onPreInsert']
+                Feature\EventFeature::EVENT_PRE_INITIALIZE, [$this, 'onPreInit']
             );
             $this->featureSet->addFeature($eventFeature);
         }
@@ -82,7 +82,7 @@ class Search extends Gateway
     }
 
     /**
-     * Customize the Insert object to include extra metadata about the
+     * Customize the database object to include extra metadata about the
      * search_object field so that it will be written correctly. This is
      * triggered only when we're interacting with PostgreSQL; MySQL works fine
      * without the extra hint.
@@ -91,7 +91,7 @@ class Search extends Gateway
      *
      * @return void
      */
-    public function onPreInsert($event)
+    public function onPreInit($event)
     {
         $driver = $event->getTarget()->getAdapter()->getDriver();
         $statement = $driver->createStatement();

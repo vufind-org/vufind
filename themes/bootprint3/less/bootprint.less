@@ -4,6 +4,7 @@
 @import "search";
 
 @brand-primary: #619144; // a11y overrides @brand-primary in sass
+@active-orange: #E70;
 
 /* --- Bootstrap MODS ---*/
 body {
@@ -151,7 +152,7 @@ header .searchbox .tab-content .navbar-text { margin: 5px 10px 5px 0; }
   }
 }
 header .breadcrumb {
-  border: 1px solid #CCC;
+  border: 1px solid @gray-lighter;
   border-radius: 0;
   border-width: 1px 0;
   font-size: 12px;
@@ -260,7 +261,6 @@ ul.random.image li img { margin: 0 auto; }
 }
 
 /* --- Sidebar --- */
-@active-orange: #E70;
 .sidebar {
   .list-group { margin-bottom: 5px; }
   .list-group label.list-group-item { padding-left: 26px; }
@@ -275,15 +275,15 @@ ul.random.image li img { margin: 0 auto; }
     border-color: @active-orange;
   }
   .list-group-item .badge a { color: #fff; }
-
-  .slider-container {
-    margin: 4px auto 10px;
-    width: 95%;
+}
+.slider-container .slider-handle {
+  background: @brand-primary;
+  border: 1px solid @brand-primary;
+  &:hover,&:active,&:focus {
+    background: #FFF;
+    border-color: @gray-light;
   }
-  .slider-container .slider-handle {
-    background: #619144;
-    opacity: 1;
-  }
+  &:active,&:focus { border-color: @brand-primary; }
 }
 .top-row .badge a {
   color: #fff;

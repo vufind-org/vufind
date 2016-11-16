@@ -36,7 +36,7 @@
         "friendsofphp/php-cs-fixer": "1.11.6",
         "phploc/phploc": "2.0.6",
         "phpmd/phpmd": "1.5.0",
-        "phpunit/phpunit": "4.8.4",
+        "phpunit/phpunit": "4.8.27",
         "sebastian/phpcpd": "2.0.0",
         "squizlabs/php_codesniffer": "2.6.0"
     }

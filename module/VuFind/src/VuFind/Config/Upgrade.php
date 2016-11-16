@@ -431,7 +431,7 @@ class Upgrade
      *
      * @return void
      */
-    protected function checkTheme($setting, $default)
+    protected function checkTheme($setting, $default = null)
     {
         // If a setting is not set, there is nothing to check:
         $theme = isset($this->newConfigs['config.ini']['Site'][$setting])
@@ -446,13 +446,21 @@ class Upgrade
         if (!file_exists(APPLICATION_PATH . '/themes/' . $theme)
             || !is_dir(APPLICATION_PATH . '/themes/' . $theme)
         ) {
-            $this->addWarning(
-                "WARNING: This version of VuFind does not support "
-                . "the {$theme} theme.  Your config.ini [Site] {$setting} setting "
-                . "has been reset to the default: {$default}.  You may need to "
-                . "reimplement your custom theme."
-            );
-            $this->newConfigs['config.ini']['Site'][$setting] = $default;
+            if ($default === null) {
+                $this->addWarning(
+                    "WARNING: This version of VuFind does not support the {$theme} "
+                    . "theme. As such, we have disabled your {$setting} setting."
+                );
+                unset($this->newConfigs['config.ini']['Site'][$setting]);
+            } else {
+                $this->addWarning(
+                    "WARNING: This version of VuFind does not support "
+                    . "the {$theme} theme. Your config.ini [Site] {$setting} setting"
+                    . " has been reset to the default: {$default}. You may need to "
+                    . "reimplement your custom theme."
+                );
+                $this->newConfigs['config.ini']['Site'][$setting] = $default;
+            }
         }
     }
 
@@ -611,7 +619,7 @@ class Upgrade
 
         // Warn the user if they are using an unsupported theme:
         $this->checkTheme('theme', 'bootprint3');
-        $this->checkTheme('mobile_theme', 'jquerymobile');
+        $this->checkTheme('mobile_theme', null);
 
         // Translate legacy auth settings:
         if (strtolower($newConfig['Authentication']['method']) == 'db') {
