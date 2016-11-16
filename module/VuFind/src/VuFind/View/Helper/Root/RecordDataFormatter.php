@@ -58,6 +58,19 @@ class RecordDataFormatter extends AbstractHelper
     public function getData(RecordDriver $driver, array $spec)
     {
         $result = [];
+
+        // Sort the spec into order by position:
+        $sort = function ($a, $b) {
+            $posA = isset($a['pos']) ? $a['pos'] : 0;
+            $posB = isset($b['pos']) ? $b['pos'] : 0;
+            if ($posA === $posB) {
+                return 0;
+            }
+            return $posA < $posB ? -1 : 1;
+        };
+        uasort($spec, $sort);
+
+        // Apply the spec:
         foreach ($spec as $field => $current) {
             // Extract the relevant data from the driver.
             $data = $this->extractData($driver, $current);

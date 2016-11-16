@@ -46,6 +46,27 @@ class SpecBuilder
     protected $spec = [];
 
     /**
+     * Highest position value so far.
+     *
+     * @var int
+     */
+    protected $maxPos = 0;
+
+    /**
+     * Constructor
+     *
+     * @param array $spec Existing specification lines (optional)
+     */
+    public function __construct($spec = [])
+    {
+        $this->spec = $spec;
+        foreach ($spec as $current) {
+            if (isset($current['pos']) && $current['pos'] > $this->maxPos) {
+                $this->maxPos = $current['pos'];
+            }
+        }
+    }
+    /**
      * Set a generic spec line.
      *
      * @param string $key        Label to associate with this spec line
@@ -59,6 +80,10 @@ class SpecBuilder
     {
         $options['dataMethod'] = $dataMethod;
         $options['renderType'] = $renderType;
+        if (!isset($options['pos'])) {
+            $this->maxPos += 100;
+            $options['pos'] = $this->maxPos;
+        }
         $this->spec[$key] = $options;
     }
 
