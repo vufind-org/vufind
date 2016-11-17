@@ -48,6 +48,24 @@ class RecordDataFormatter extends AbstractHelper
     protected $defaults = [];
 
     /**
+     * Sort callback for field specification.
+     *
+     * @param array $a First value to compare
+     * @param array $b Second value to compare
+     *
+     * @return int
+     */
+    public function specSortCallback($a, $b)
+    {
+        $posA = isset($a['pos']) ? $a['pos'] : 0;
+        $posB = isset($b['pos']) ? $b['pos'] : 0;
+        if ($posA === $posB) {
+            return 0;
+        }
+        return $posA < $posB ? -1 : 1;
+    }
+
+    /**
      * Create formatted key/value data based on a record driver and field spec.
      *
      * @param RecordDriver $driver Record driver object.
@@ -60,15 +78,7 @@ class RecordDataFormatter extends AbstractHelper
         $result = [];
 
         // Sort the spec into order by position:
-        $sort = function ($a, $b) {
-            $posA = isset($a['pos']) ? $a['pos'] : 0;
-            $posB = isset($b['pos']) ? $b['pos'] : 0;
-            if ($posA === $posB) {
-                return 0;
-            }
-            return $posA < $posB ? -1 : 1;
-        };
-        uasort($spec, $sort);
+        uasort($spec, [$this, 'specSortCallback']);
 
         // Apply the spec:
         foreach ($spec as $field => $current) {
