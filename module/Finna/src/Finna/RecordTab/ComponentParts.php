@@ -28,7 +28,7 @@
 namespace Finna\RecordTab;
 
 /**
- * User comments tab
+ * Embedded component parts tab
  *
  * @category VuFind
  * @package  RecordTabs
