@@ -24,7 +24,7 @@
 #   the standard Solr control script).
 #
 # SOLR_ADDITIONAL_JVM_OPTIONS
-#   Additional options to pass to the launch_solr() function in solr/vendor/bin/solr.
+#   Additional options to pass to the JVM when launching Solr.
 #
 
 usage()
