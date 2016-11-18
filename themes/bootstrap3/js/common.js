@@ -37,7 +37,15 @@ var VuFind = (function VuFind() {
       }
     }
   };
-  var translate = function translate(op) {
+  var translate = function translate(op, _replacements) {
+    var replacements = _replacements || [];
+    if (replacements) {
+      var translation = _translations[op] || op;
+      for (var key in replacements) {
+        translation = translation.replace(key, replacements[key]);
+      }
+      return translation;
+    }
     return _translations[op] || op;
   };
 
@@ -313,7 +321,7 @@ function setupFacets() {
           $(item).collapse('hide');
         }
       } finally {
-        $.support.transition = saveTransition;    
+        $.support.transition = saveTransition;
       }
     }
   });
