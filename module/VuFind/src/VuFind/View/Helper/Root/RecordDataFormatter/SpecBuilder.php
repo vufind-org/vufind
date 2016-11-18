@@ -104,6 +104,27 @@ class SpecBuilder
     }
 
     /**
+     * Reorder the specs to match the provided array of keys.
+     *
+     * @param array $orderedKeys Keys in the desired order
+     * @param int   $defaultPos  Position to use for elements not included in
+     * $orderedKeys (null to put unrecognized items at end of list).
+     *
+     * @return void
+     */
+    public function reorderKeys($orderedKeys, $defaultPos = null)
+    {
+        $lookup = array_flip($orderedKeys);
+        if (null === $defaultPos) {
+            $defaultPos = (max($lookup) + 2) * 100;
+        }
+        foreach ($this->spec as $key => $options) {
+            $this->spec[$key]['pos'] = isset($lookup[$key])
+                ? ($lookup[$key] + 1) * 100 : $defaultPos;
+        }
+    }
+
+    /**
      * Get the spec.
      *
      * @return array
