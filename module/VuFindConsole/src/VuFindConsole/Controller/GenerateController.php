@@ -50,11 +50,15 @@ class GenerateController extends AbstractBase
      */
     public function dynamicrouteAction()
     {
-        $argv = $this->consoleOpts->getRemainingArgs();
-        if (!isset($argv[3])) {
+        $request = $this->getRequest();
+        $route = $request->getParam('name');
+        $controller = $request->getParam('newController');
+        $action = $request->getParam('newAction');
+        $module = $request->getParam('module');
+        if (empty($module)) {
             Console::writeLine(
-                "Usage: {$_SERVER['argv'][0]} [route] [controller] [action]"
-                . " [target_module]"
+                'Usage: ' . $request->getScriptName() . ' generate dynamicroute'
+                . ' [route] [controller] [action] [target_module]'
             );
             Console::writeLine(
                 "\troute - the route name (used by router), e.g. customList"
@@ -70,11 +74,6 @@ class GenerateController extends AbstractBase
             );
             return $this->getFailureResponse();
         }
-
-        $route = $argv[0];
-        $controller = $argv[1];
-        $action = $argv[2];
-        $module = $argv[3];
 
         // Create backup of configuration
         $configPath = $this->getModuleConfigPath($module);
@@ -98,10 +97,13 @@ class GenerateController extends AbstractBase
     public function extendserviceAction()
     {
         // Display help message if parameters missing:
-        $argv = $this->consoleOpts->getRemainingArgs();
-        if (!isset($argv[1])) {
+        $request = $this->getRequest();
+        $source = $request->getParam('source');
+        $target = $request->getParam('target');
+        if (empty($source) || empty($target)) {
             Console::writeLine(
-                "Usage: {$_SERVER['argv'][0]} [config_path] [target_module]"
+                'Usage: ' . $request->getScriptName() . ' generate extendservice'
+                . ' [config_path] [target_module]'
             );
             Console::writeLine(
                 "\tconfig_path - the path to the service in the framework config"
@@ -112,9 +114,6 @@ class GenerateController extends AbstractBase
             );
             return $this->getFailureResponse();
         }
-
-        $source = $argv[0];
-        $target = $argv[1];
 
         $parts = explode('/', $source);
         $partCount = count($parts);
@@ -166,10 +165,13 @@ class GenerateController extends AbstractBase
      */
     public function nontabrecordactionAction()
     {
-        $argv = $this->consoleOpts->getRemainingArgs();
-        if (!isset($argv[1])) {
+        $request = $this->getRequest();
+        $action = $request->getParam('newAction');
+        $module = $request->getParam('module');
+        if (empty($action) || empty($module)) {
             Console::writeLine(
-                "Usage: {$_SERVER['argv'][0]} [action] [target_module]"
+                'Usage: ' . $request->getScriptName()
+                . ' generate nontabrecordaction [action] [target_module]'
             );
             Console::writeLine(
                 "\taction - new action to add"
@@ -179,9 +181,6 @@ class GenerateController extends AbstractBase
             );
             return $this->getFailureResponse();
         }
-
-        $action = $argv[0];
-        $module = $argv[1];
 
         // Create backup of configuration
         $configPath = $this->getModuleConfigPath($module);
@@ -221,10 +220,14 @@ class GenerateController extends AbstractBase
      */
     public function recordrouteAction()
     {
-        $argv = $this->consoleOpts->getRemainingArgs();
-        if (!isset($argv[2])) {
+        $request = $this->getRequest();
+        $base = $request->getParam('base');
+        $controller = $request->getParam('newController');
+        $module = $request->getParam('module');
+        if (empty($module)) {
             Console::writeLine(
-                "Usage: {$_SERVER['argv'][0]} [base] [controller] [target_module]"
+                'Usage: ' . $request->getScriptName() . ' generate recordroute'
+                . ' [base] [controller] [target_module]'
             );
             Console::writeLine(
                 "\tbase - the base route name (used by router), e.g. record"
@@ -237,10 +240,6 @@ class GenerateController extends AbstractBase
             );
             return $this->getFailureResponse();
         }
-
-        $base = $argv[0];
-        $controller = $argv[1];
-        $module = $argv[2];
 
         // Create backup of configuration
         $configPath = $this->getModuleConfigPath($module);
@@ -263,10 +262,13 @@ class GenerateController extends AbstractBase
      */
     public function staticrouteAction()
     {
-        $argv = $this->consoleOpts->getRemainingArgs();
-        if (!isset($argv[1])) {
+        $request = $this->getRequest();
+        $route = $request->getParam('name');
+        $module = $request->getParam('module');
+        if (empty($module)) {
             Console::writeLine(
-                "Usage: {$_SERVER['argv'][0]} [route_definition] [target_module]"
+                'Usage: ' . $request->getScriptName() . ' generate staticroute'
+                . ' [route_definition] [target_module]'
             );
             Console::writeLine(
                 "\troute_definition - a Controller/Action string, e.g. Search/Home"
@@ -276,9 +278,6 @@ class GenerateController extends AbstractBase
             );
             return $this->getFailureResponse();
         }
-
-        $route = $argv[0];
-        $module = $argv[1];
 
         // Create backup of configuration
         $configPath = $this->getModuleConfigPath($module);
