@@ -255,7 +255,7 @@ class Facets extends AbstractChannelProvider
         // Determine the filter for the current channel, and add it:
         $params->addFilter($filter);
 
-        $query = $newResults->getUrlQuery()->addFilter($filter);
+        $query = $newResults->getUrlQuery();
         $retVal['searchUrl'] = $this->url
             ->fromRoute($params->getOptions()->getSearchAction()) . $query;
         $retVal['channelsUrl'] = $this->url->fromRoute('channels-search')
