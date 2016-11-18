@@ -51,6 +51,6 @@
         <ul class="dropdown-menu">
       <? $insideButton = true; ?>
     <? endif; ?>
-    <li><a href="<?=$_SERVER[REQUEST_URI] ?>&channelProvider=<?=urlencode($channel['providerId']) ?>&amp;channelToken=<?=urlencode($channel['token']) ?>&amp;layout=lightbox" data-token="<?=$channel['token'] ?>"><?=$this->escapeHtml($channel['title'])?></a></li>
+    <li><a href="<?=current(explode('?', $this->serverUrl(true)))?>?<?=empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')?>channelProvider=<?=urlencode($channel['providerId']) ?>&amp;channelToken=<?=urlencode($channel['token']) ?>&amp;layout=lightbox" data-token="<?=$channel['token'] ?>"><?=$this->escapeHtml($channel['title'])?></a></li>
   <? endif; ?>
 <? endforeach; ?>

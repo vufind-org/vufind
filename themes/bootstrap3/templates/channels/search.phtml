@@ -6,5 +6,8 @@
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('channels-home') . '">' . $this->transEsc('Channels') . '</a></li> <li class="active">' . $this->escapeHtml($lookfor) . '</li>';
+
+    // Set up query parameters for channel list:
+    $this->queryParams = ltrim($this->results->getUrlQuery()->getParams(false), '?');
 ?>
 <?=$this->render('channels/channelList.phtml')?>
