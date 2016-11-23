@@ -44,33 +44,14 @@ use VuFind\Exception\ILS as ILSException,
  */
 class SolrMarc extends SolrDefault
 {
+    use IlsAwareTrait;
+
     /**
      * MARC record. Access only via getMarcRecord() as this is initialized lazily.
      *
      * @var \File_MARC_Record
      */
     protected $lazyMarcRecord = null;
-
-    /**
-     * ILS connection
-     *
-     * @var \VuFind\ILS\Connection
-     */
-    protected $ils = null;
-
-    /**
-     * Hold logic
-     *
-     * @var \VuFind\ILS\Logic\Holds
-     */
-    protected $holdLogic;
-
-    /**
-     * Title hold logic
-     *
-     * @var \VuFind\ILS\Logic\TitleHolds
-     */
-    protected $titleHoldLogic;
 
     /**
      * Get access restriction notes for the record.
@@ -984,97 +965,6 @@ class SolrMarc extends SolrDefault
 
         // Try the parent method:
         return parent::getXML($format, $baseUrl, $recordLink);
-    }
-
-    /**
-     * Attach an ILS connection and related logic to the driver
-     *
-     * @param \VuFind\ILS\Connection       $ils            ILS connection
-     * @param \VuFind\ILS\Logic\Holds      $holdLogic      Hold logic handler
-     * @param \VuFind\ILS\Logic\TitleHolds $titleHoldLogic Title hold logic handler
-     *
-     * @return void
-     */
-    public function attachILS(\VuFind\ILS\Connection $ils,
-        \VuFind\ILS\Logic\Holds $holdLogic,
-        \VuFind\ILS\Logic\TitleHolds $titleHoldLogic
-    ) {
-        $this->ils = $ils;
-        $this->holdLogic = $holdLogic;
-        $this->titleHoldLogic = $titleHoldLogic;
-    }
-
-    /**
-     * Do we have an attached ILS connection?
-     *
-     * @return bool
-     */
-    protected function hasILS()
-    {
-        return null !== $this->ils;
-    }
-
-    /**
-     * Get an array of information about record holdings, obtained in real-time
-     * from the ILS.
-     *
-     * @return array
-     */
-    public function getRealTimeHoldings()
-    {
-        return $this->hasILS() ? $this->holdLogic->getHoldings(
-            $this->getUniqueID(), $this->getConsortialIDs()
-        ) : [];
-    }
-
-    /**
-     * Get an array of information about record history, obtained in real-time
-     * from the ILS.
-     *
-     * @return array
-     */
-    public function getRealTimeHistory()
-    {
-        // Get Acquisitions Data
-        if (!$this->hasILS()) {
-            return [];
-        }
-        try {
-            return $this->ils->getPurchaseHistory($this->getUniqueID());
-        } catch (ILSException $e) {
-            return [];
-        }
-    }
-
-    /**
-     * Get a link for placing a title level hold.
-     *
-     * @return mixed A url if a hold is possible, boolean false if not
-     */
-    public function getRealTimeTitleHold()
-    {
-        if ($this->hasILS()) {
-            $biblioLevel = strtolower($this->getBibliographicLevel());
-            if ("monograph" == $biblioLevel || strstr($biblioLevel, "part")) {
-                if ($this->ils->getTitleHoldsMode() != "disabled") {
-                    return $this->titleHoldLogic->getHold($this->getUniqueID());
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns true if the record supports real-time AJAX status lookups.
-     *
-     * @return bool
-     */
-    public function supportsAjaxStatus()
-    {
-        // as AJAX status lookups are done via the ILS AJAX status lookup support is
-        // only given if the ILS is available for this record
-        return $this->hasILS();
     }
 
     /**
