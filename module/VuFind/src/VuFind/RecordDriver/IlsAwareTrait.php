@@ -40,7 +40,7 @@ namespace VuFind\RecordDriver;
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 trait IlsAwareTrait
-{  
+{
     /**
      * ILS connection
      *
