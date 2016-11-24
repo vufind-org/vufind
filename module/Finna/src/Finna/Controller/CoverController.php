@@ -110,6 +110,18 @@ class CoverController extends \VuFind\Controller\CoverController
     }
 
     /**
+     * Convert image parameters into an array for use by the image loader.
+     *
+     * @return array
+     */
+    protected function getImageParams()
+    {
+        $params = parent::getImageParams();
+        $params['invalid_isbn'] =  $this->params()->fromQuery('invisbn');
+        return $params;
+    }
+
+    /**
      * Get the cover loader object
      *
      * @return Loader

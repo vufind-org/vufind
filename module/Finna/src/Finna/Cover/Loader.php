@@ -57,6 +57,13 @@ class Loader extends \VuFind\Cover\Loader
     protected $id;
 
     /**
+     * Invalid ISBN
+     *
+     * @var string
+     */
+    protected $invalidIsbn;
+
+    /**
      * Image index
      *
      * @var int
@@ -173,9 +180,13 @@ class Loader extends \VuFind\Cover\Loader
     {
         if ($this->url) {
             return ['url' => $this->url];
-        } else {
-            return parent::getIdentifiers();
         }
+
+        $identifiers = parent::getIdentifiers();
+        if ($this->invalidIsbn) {
+            $identifiers['invalid_isbn'] = $this->invalidIsbn;
+        }
+        return $identifiers;
     }
 
     /**
@@ -195,12 +206,14 @@ class Loader extends \VuFind\Cover\Loader
         } else {
             if (isset($ids['isbn'])) {
                 $keys['isbn'] = $ids['isbn']->get13();
-            } else if (isset($ids['issn'])) {
+            } elseif (isset($ids['issn'])) {
                 $keys['issn'] = $ids['issn'];
-            } else if (isset($ids['oclc'])) {
+            } elseif (isset($ids['oclc'])) {
                 $keys['oclc'] = $ids['oclc'];
-            } else if (isset($ids['upc'])) {
+            } elseif (isset($ids['upc'])) {
                 $keys['upc'] = $ids['upc'];
+            } elseif (isset($ids['invalid_isbn'])) {
+                $keys['invalid_isbn'] = $ids['invalid_isbn'];
             }
         }
 
@@ -395,5 +408,19 @@ class Loader extends \VuFind\Cover\Loader
         }
 
         return true;
+    }
+
+    /**
+     * Support method for loadImage() -- sanitize and store some key values.
+     *
+     * @param array $settings Settings from loadImage (with missing defaults
+     * already filled in).
+     *
+     * @return void
+     */
+    protected function storeSanitizedSettings($settings)
+    {
+        parent::storeSanitizedSettings($settings);
+        $this->invalidIsbn = $settings['invalid_isbn'];
     }
 }

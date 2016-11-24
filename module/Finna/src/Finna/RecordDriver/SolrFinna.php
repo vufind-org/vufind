@@ -415,6 +415,11 @@ trait SolrFinna
         $params = parent::getThumbnail($size);
         if ($params && !is_array($params)) {
             $params = ['url' => $params];
+        } elseif (!isset($params['isbn'])) {
+            // Allow also invalid ISBNs
+            if ($isbn = $this->getFirstISBN()) {
+                $params['invisbn'] = $isbn;
+            }
         }
         return $params;
     }
@@ -443,6 +448,33 @@ trait SolrFinna
             return $this->mainConfig['ImageRights'][$language][$copyright];
         }
         return false;
+    }
+
+    /**
+     * Return the first ISBN found in the record.
+     *
+     * @return mixed
+     */
+    public function getFirstISBN()
+    {
+        // Get all the ISBNs and initialize the return value:
+        $isbns = $this->getISBNs();
+        $isbn13 = false;
+
+        // Loop through the ISBNs:
+        foreach ($isbns as $isbn) {
+            // Strip off any unwanted notes:
+            if ($pos = strpos($isbn, ' ')) {
+                $isbn = substr($isbn, 0, $pos);
+            }
+
+            $isbn = \VuFindCode\ISBN::normalizeISBN($isbn);
+            $length = strlen($isbn);
+            if ($length == 10 || $length == 13) {
+                return $isbn;
+            }
+        }
+        return $isbn13;
     }
 
     /**
