@@ -128,7 +128,7 @@ indexBasedNewItems = true
 ; Whether to hide email address in patron profile. Default is false
 ;hideProfileEmailAddress = true
 ; Scale for advanced search year slider. Current year + 1 is always added to the end.
-; Default scale is "0,900,1800,1910" 
+; Default scale is "0,900,1800,1910"
 ;advSearchYearScale = "1600,1800,2000,2010"
 
 ; This section allows you to configure the mechanism used for storing user
@@ -262,7 +262,7 @@ library_cards = true
 
 ; The number of checked out items to display per page; 0 for no limit (may cause
 ; memory problems for users with huge numbers of items). Default = 50.
-; N.B. Values other than 0 are not supported in the finna theme. 
+; N.B. Values other than 0 are not supported in the finna theme.
 checked_out_page_size = 0
 
 ; This section allows you to determine how the users will authenticate.
@@ -951,7 +951,7 @@ alphabet_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ"
 ; <result_limit> most popular entries -- it only affects display order.
 ;alphabetical_order = true
 
-; This section controls the availability of export methods. 
+; This section controls the availability of export methods.
 ;
 ; Each entry may be a comma-separated list of contexts in which the export
 ; option will be presented. Valid options:
@@ -1135,7 +1135,7 @@ ead_external_link_template[narc] = "http://www.narc.fi:8080/VakkaWWW/Selaus.acti
 ead_document_order_link_template[narc] = "https://testavapaingest.narc.fi/astiaUi/palvelut/kdk_checkout.php?id={id}"
 ead_usage_permission_request_link_template[narc] = "https://testavapaingest.narc.fi/astiaUi/palvelut/kdk_askpermission.php?id={id}"
 
-; Blacklisting regexp's for record URLs 
+; Blacklisting regexp's for record URLs
 url_blacklist[] = '/btj\.com\/btjcgi\/arvo\/get_add_info\.cgi\?type=(PRES|IMAGE)/'
 url_blacklist[] = '/data\.kirjavalitys\.fi\/data\/servlets\/ProductRequestServlet/'
 url_blacklist[] = '/booky\.fi\/(image\.php\?|description\.php\?)/'
@@ -1368,3 +1368,7 @@ fi['FREE ACCESS - NO-REUSE'] = "http://www.europeana.eu/portal/rights/rr-f.html"
 sv['FREE ACCESS - NO-REUSE'] = "http://www.europeana.eu/portal/rights/rr-f.html"
 en-gb['FREE ACCESS - NO-REUSE'] = "http://www.europeana.eu/portal/rights/rr-f.html"
 
+; Finna survey
+[FinnaSurvey]
+enabled = false
+url = "https://my.surveypal.com/Finnasurvey"

@@ -11,6 +11,7 @@ return [
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
             'feed' => 'Finna\View\Helper\Root\Factory::getFeed',
             'fileSrc' => 'Finna\View\Helper\Root\Factory::getFileSrc',
+            'finnaSurvey' => 'Finna\View\Helper\Root\Factory::getFinnaSurvey',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
             'headLink' => 'FinnaTheme\View\Helper\Factory::getHeadLink',
             'headScript' => 'FinnaTheme\View\Helper\Factory::getHeadScript',

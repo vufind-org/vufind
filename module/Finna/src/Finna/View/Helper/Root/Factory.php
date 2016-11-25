@@ -243,6 +243,19 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the Finna survey helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return FinnaSurvey
+     */
+    public static function getFinnaSurvey(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        return new FinnaSurvey($config);
+    }
+
+    /**
      * Construct Primo view helper.
      *
      * @param ServiceManager $sm Service manager.
