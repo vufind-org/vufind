@@ -61,14 +61,23 @@ class OnlinePayment
     protected $logger;
 
     /**
+     * HTTP service.
+     *
+     * @var VuFind\Http
+     */
+    protected $http;
+
+    /**
      * Constructor.
      *
+     * @param \VuFind\Http         $http         HTTP service.
      * @param DbTablePluginManager $tableManager Table manager
      * @param Logger               $logger       Logger
      * @param Config               $config       Configuration
      */
-    public function __construct($tableManager, $logger, $config)
+    public function __construct($http, $tableManager, $logger, $config)
     {
+        $this->http = $http;
         $this->tableManager = $tableManager;
         $this->logger = $logger;
         $this->config = $config;
@@ -90,7 +99,10 @@ class OnlinePayment
                 "Online payment handler $class not found for $source"
             );
         }
-        $handler = new $class($this->getConfig($source));
+        $handler = new $class(
+            $this->getConfig($source),
+            $this->http
+        );
         $handler->setDbTableManager($this->tableManager);
         $handler->setLogger($this->logger);
         return $handler;

@@ -249,20 +249,25 @@ class OnlinePaymentMonitor extends AbstractService
                 $user = $this->userTable->getById($t->user_id);
             }
 
-            $catUsername = $patron = null;
+            $patron = null;
             foreach ($user->getLibraryCards() as $card) {
                 $card = $user->getLibraryCard($card['id']);
 
                 if ($card['cat_username'] == $t->cat_username) {
                     try {
+                        $cardUser = $this->userTable->createRow();
+                        $cardUser->cat_username = $card['cat_username'];
+                        $cardUser->cat_pass_enc = $card['cat_pass_enc'];
                         $patron = $this->catalog->patronLogin(
-                            $card['cat_username'], $card['cat_password']
+                            $card['cat_username'], $cardUser->getCatPassword()
                         );
+                        
                         if ($patron) {
                             break;
                         }
                     } catch (\Exception $e) {
                         $this->err('Patron login error: ' . $e->getMessage());
+                        $this->logException($e);
                     }
                 }
             }
@@ -295,6 +300,7 @@ class OnlinePaymentMonitor extends AbstractService
                     . $t->transaction_id . ' failed'
                 );
                 $this->err('      ' . $e->getMessage());
+                $this->logException($e);
 
                 if ($this->transactionTable->setTransactionRegistrationFailed(
                     $t->transaction_id, $e->getMessage()
@@ -387,6 +393,7 @@ class OnlinePaymentMonitor extends AbstractService
                         "    Failed to send error email to customer: $email "
                         . "(driver: $driver)"
                     );
+                    $this->logException($e);
                     continue;
                 }
             }

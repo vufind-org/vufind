@@ -21,3 +21,7 @@ onlinePayment['handler'] = ''
 onlinePayment['url'] = ''
 onlinePayment['merchantId'] = ''
 onlinePayment['secret'] = ''
+
+; CPU specific
+onlinePayment['paymentDescription'] = 'Finna: verkkomaksuja'
+onlinePayment['productCode'] = 'demo_001'

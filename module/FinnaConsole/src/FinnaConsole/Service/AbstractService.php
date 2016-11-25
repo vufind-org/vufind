@@ -77,6 +77,84 @@ abstract class AbstractService implements ConsoleServiceInterface
     }
 
     /**
+     * Log an exception triggered by ZF2 for administrative purposes.
+     *
+     * @param \Exception $error Exception to log
+     *
+     * @return void
+     */
+    public function logException($error)
+    {
+        // We need to build a variety of pieces so we can supply
+        // information at five different verbosity levels:
+        $baseError = get_class($error) . ' : ' . $error->getMessage();
+        $prev = $error->getPrevious();
+        while ($prev) {
+            $baseError .= ' ; ' . get_class($prev) . ' : ' . $prev->getMessage();
+            $prev = $prev->getPrevious();
+        }
+        $backtrace = "\nBacktrace:\n";
+        if (is_array($error->getTrace())) {
+            foreach ($error->getTrace() as $line) {
+                if (!isset($line['file'])) {
+                    $line['file'] = 'unlisted file';
+                }
+                if (!isset($line['line'])) {
+                    $line['line'] = 'unlisted';
+                }
+                $backtraceLine = $line['file'] .
+                    ' line ' . $line['line'] . ' - ' .
+                    (isset($line['class']) ? 'class = ' . $line['class'] . ', ' : '')
+                    . 'function = ' . $line['function'];
+                $backtrace .= "{$backtraceLine}\n";
+                if (!empty($line['args'])) {
+                    $args = [];
+                    foreach ($line['args'] as $i => $arg) {
+                        $args[] = $i . ' = ' . $this->argumentToString($arg);
+                    }
+                    $backtraceLine .= ', args: ' . implode(', ', $args);
+                } else {
+                    $backtraceLine .= ', args: none.';
+                }
+                $backtrace .= "{$backtraceLine}\n";
+            }
+        }
+
+        $this->logger->err($baseError . $backtrace);
+    }
+
+    /**
+     * Convert function argument to a loggable string
+     *
+     * @param mixed $arg Argument
+     *
+     * @return string
+     */
+    protected function argumentToString($arg)
+    {
+        if (is_object($arg)) {
+            return get_class($arg) . ' Object';
+        }
+        if (is_array($arg)) {
+            $args = [];
+            foreach ($arg as $key => $item) {
+                $args[] = "$key => " . $this->argumentToString($item);
+            }
+            return 'array(' . implode(', ', $args) . ')';
+        }
+        if (is_bool($arg)) {
+            return $arg ? 'true' : 'false';
+        }
+        if (is_int($arg) || is_float($arg)) {
+            return (string)$arg;
+        }
+        if (is_null($arg)) {
+            return 'null';
+        }
+        return "'$arg'";
+    }
+
+    /**
      * Output a message with a timestamp
      *
      * @param string  $msg   Message

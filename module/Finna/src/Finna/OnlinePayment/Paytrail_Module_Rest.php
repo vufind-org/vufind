@@ -529,6 +529,8 @@ class Paytrail_Module_Rest_Payment_E1 extends Paytrail_Module_Rest_Payment
  */
 class Paytrail_Module_Rest
 {
+    use \Finna\OnlinePayment\OnlinePaymentModuleTrait;
+
     private $_merchantId = "";
     private $_merchantSecret = "";
     private $_serviceUrl = "";
@@ -630,45 +632,26 @@ class Paytrail_Module_Rest
      */
     private function _postJsonRequest($url, $content)
     {
-        // Check that curl is available
-        if (!function_exists("curl_init")) {
-            throw new Paytrail_Exception("Curl extension is not available. Paytrail_Module_Rest requires curl.");
-        }
+        $options = ['maxredirects' => 1];
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'X-Verkkomaksut-Api-Version' => '1'
+        ];
 
-        // Set all the curl options
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
-        curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            "Content-Type: application/json",
-            "Accept: application/json",
-            "X-Verkkomaksut-Api-Version: 1"
-        ]);
-        curl_setopt($ch, CURLOPT_USERPWD, $this->_merchantId . ":" . $this->_merchantSecret);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        $response = $this->postRequest(
+            $url, $content, $options, $headers, $this->_merchantId, $this->_merchantSecret
+        );
+
+        if (!$response) {
+            throw new Paytrail_Exception('Connection failure. Please check that payment.paytrail.com is reachable from your environment');
+        }
 
         // Read result, including http code
         $result = new \StdClass();
-        $result->response = curl_exec($ch);
-        $result->httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $result->contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-
-        // Got no status code?
-        $curlError = $result->httpCode > 0 ? null : curl_error($ch) . ' (' . curl_errno($ch) . ')';
-
-        curl_close($ch);
-
-        // Connection failure
-        if ($curlError) {
-            throw new Paytrail_Exception("Connection failure. Please check that payment.paytrail.com is reachable from your environment ({$curlError})");
-        }
+        $result->response = $response['response'];
+        $result->httpCode = $response['httpCode'];
+        $result->contentType = $response['contentType'];
 
         return $result;
     }

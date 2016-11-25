@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -210,7 +210,11 @@ class Transaction extends \VuFind\Db\Table\Gateway
         if (!$t = $this->getTransaction($transactionId)) {
             return false;
         }
-        return $t->complete == self::STATUS_PROGRESS;
+
+        return in_array(
+            $t->complete,
+            [self::STATUS_PROGRESS, self::STATUS_REGISTRATION_FAILED]
+        );
     }
 
     /**

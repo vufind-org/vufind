@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,7 +27,8 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace Finna\Controller;
-use Zend\Session\Container as SessionContainer;
+use Zend\Console\Console,
+    Zend\Session\Container as SessionContainer;
 
 /**
  * Online payment controller trait.
@@ -71,6 +72,31 @@ trait OnlinePaymentControllerTrait
     protected function generateFingerprint($data)
     {
         return md5(json_encode($data));
+    }
+
+    /**
+     * Return online payment handler.
+     *
+     * @param string $driver Patron MultiBackend ILS source
+     *
+     * @return mixed \Finna\OnlinePayment\BaseHandler or false on failure.
+     */
+    protected function getOnlinePaymentHandler($driver)
+    {
+        $onlinePayment = $this->getServiceLocator()->get('Finna\OnlinePayment');
+        if (!$onlinePayment->isEnabled($driver)) {
+            return false;
+        }
+
+        try {
+            return $onlinePayment->getHandler($driver);
+        } catch (\Exception $e) {
+            $this->handleError(
+                "Error retrieving online payment handler for driver $driver"
+                . ' (' . $e->getMessage() . ')'
+            );
+            return false;
+        }
     }
 
     /**
@@ -133,9 +159,7 @@ trait OnlinePaymentControllerTrait
             $patron['cat_username'], $transactionMaxDuration
         );
 
-        try {
-            $paymentHandler = $onlinePayment->getHandler($patron['source']);
-        } catch (\Exception $e) {
+        if (!$paymentHandler = $this->getOnlinePaymentHandler($patron['source'])) {
             return;
         }
 
@@ -181,22 +205,38 @@ trait OnlinePaymentControllerTrait
             }
 
             // Start payment
-            $paymentHandler->startPayment(
+            if (!($paymentHandler->startPayment(
                 $finesUrl,
                 $ajaxUrl,
-                $user->id,
+                $user,
                 $patron['cat_username'],
                 $driver,
                 $payableOnline['amount'],
                 $view->transactionFee,
                 $payableFines,
                 $paymentConfig['currency'],
-                $paymentParam,
-                'transaction'
-            );
+                $paymentParam
+            ))) {
+                $this->flashMessenger()->addMessage(
+                    'online_payment_failed', 'error'
+                );
+                header("Location: " . $this->getServerUrl('myresearch-fines'));
+            }
             exit();
         } else if ($payment) {
-            // Payment response received. Display page and process via AJAX.
+            // Payment response received.
+
+            // AJAX/onlinePaymentNotify was called before the user returned to Finna.
+            // Display success message and return since the transaction is already
+            // processed.
+            if (!$payableOnline) {
+                $this->flashMessenger()->addMessage(
+                    'online_payment_successful', 'success'
+                );
+                return;
+            }
+
+            //  Display page and process via AJAX.
             $view->registerPayment = true;
             $view->registerPaymentParams
                 = $this->getRequest()->getQuery()->toArray();
@@ -237,28 +277,49 @@ trait OnlinePaymentControllerTrait
     /**
      * Process payment request.
      *
-     * @param array $params Key-value list of request variables.
+     * @param Zend\Http\Request $request Request
      *
      * @return array Associative array with keys
      *   - 'success' (boolean)
      *   - 'msg' (string) error message if payment could not be processed.
      */
-    protected function processPayment($params)
+    protected function processPayment($request)
     {
-        $this->setLogger($this->getServiceLocator()->get('VuFind\Logger'));
+        $params = array_merge(
+            $request->getQuery()->toArray(), $request->getPost()->toArray()
+        );
 
+        if (!isset($params['driver'])) {
+            $this->handleError(
+                'Error processing payment: missing parameter "driver" in response.'
+            );
+            return ['success' => false];
+        }
+
+        $driver = $params['driver'];
+
+        $handler = $this->getOnlinePaymentHandler($driver);
+        if (!$handler) {
+            $this->handleError(
+                'Error processing payment: could not initialize payment'
+                . " handler $handlerName"
+            );
+            return ['success' => false];
+        }
+
+        $params = $handler->getPaymentResponseParams($request);
         $transactionId = $params['transaction'];
 
         $tr = $this->getTable('transaction');
         if (!$t = $tr->getTransaction($transactionId)) {
-            $this->logError(
+            $this->handleError(
                 "Error processing payment: transaction $transactionId not found"
             );
             return ['success' => false];
         }
 
         if (!$tr->isTransactionInProgress($transactionId)) {
-            $this->logError(
+            $this->handleError(
                 'Error processing payment: '
                 . "transaction $transactionId already processed."
             );
@@ -266,17 +327,6 @@ trait OnlinePaymentControllerTrait
         }
 
         $driver = $t['driver'];
-        $onlinePayment = $this->getServiceLocator()->get('Finna\OnlinePayment');
-        if (!$onlinePayment->isEnabled($driver)) {
-            return ['success' => false];
-        }
-
-        try {
-            $paymentHandler = $onlinePayment->getHandler($driver);
-        } catch (\Exception $e) {
-            return ['success' => false];
-        }
-
         $patronId = $t->cat_username;
         $catalog = $this->getILS();
 
@@ -286,17 +336,32 @@ trait OnlinePaymentControllerTrait
                 = $userTable->select(
                     ['cat_username' => $t['cat_username'], 'id' => $t['user_id']]
                 )->current();
-
+            
             try {
                 $patron = $catalog->patronLogin(
-                    $user['cat_username'], $user['cat_password']
+                    $user['cat_username'], $user->getCatPassword()
                 );
             } catch (\Exception $e) {
-                return ['success' => false];
+                $this->handleException($e);
             }
         }
 
-        $res = $paymentHandler->processResponse($params);
+        $res = $handler->processResponse($request);
+        $transactionTable = $this->getTable('transaction');
+
+        if (!$patron) {
+            $this->handleError(
+                'Error processing transaction id ' . $t['id']
+                . ': patronLogin error (cat_username: ' . $user['cat_username']
+                . ', user id: ' . $t['user_id'] . ')'
+            );
+
+            $transactionTable->setTransactionRegistrationFailed(
+                $t['transaction_id'], 'patronLogin error'
+            );
+            return ['success' => false];
+        }
+
         if (!is_array($res) || empty($res['markFeesAsPaid'])) {
             return ['success' => false, 'msg' => $res];
         }
@@ -305,9 +370,9 @@ trait OnlinePaymentControllerTrait
         try {
             $finesAmount = $catalog->getOnlinePayableAmount($patron);
         } catch (\Exception $e) {
+            $this->handleException($e);
             return ['success' => false];
         }
-        $transactionTable = $this->getTable('transaction');
 
         // Check that payable sum has not been updated
         if ($finesAmount['payable']
@@ -317,7 +382,7 @@ trait OnlinePaymentControllerTrait
             // Payable sum updated. Skip registration and inform user
             // that payment processing has been delayed.
             if (!$transactionTable->setTransactionFinesUpdated($tId)) {
-                $this->logError(
+                $this->handleError(
                     "Error updating transaction $transactionId"
                     . " status: payable sum updated"
                 );
@@ -331,21 +396,23 @@ trait OnlinePaymentControllerTrait
         try {
             $catalog->markFeesAsPaid($patron, $res['amount']);
             if (!$transactionTable->setTransactionRegistered($tId)) {
-                $this->logError(
+                $this->handleError(
                     "Error updating transaction $transactionId status: registered"
                 );
             }
             $session = $this->getOnlinePaymentSession();
             $session->paymentOk = true;
         } catch (\Exception $e) {
-            $this->logError(
+            $this->handleError(
                 'SIP2 payment error (patron ' . $patron['id'] . '): '
                 . $e->getMessage()
             );
+            $this->handleException($e);
+
             if (!$transactionTable->setTransactionRegistrationFailed(
                 $tId, $e->getMessage()
             )) {
-                $this->logError(
+                $this->handleError(
                     "Error updating transaction $transactionId status: "
                     . 'registering failed'
                 );
@@ -368,5 +435,35 @@ trait OnlinePaymentControllerTrait
         $session = $this->getOnlinePaymentSession();
         $session->sessionId = $this->generateFingerprint($patron);
         $session->fines = $this->generateFingerprint($fines);
+    }
+
+    /**
+     * Log error message.
+     *
+     * @param string $msg Error message.
+     *
+     * @return void
+     */
+    protected function handleError($msg)
+    {
+        $this->setLogger($this->getServiceLocator()->get('VuFind\Logger'));
+        $this->logError($msg);
+    }
+
+    /**
+     * Log exception.
+     *
+     * @param Exception $e Exception
+     *
+     * @return void
+     */
+    protected function handleException($e)
+    {
+        $this->setLogger($this->getServiceLocator()->get('VuFind\Logger'));
+        if (!Console::isConsole()) {
+            $this->logger->logException($e, new \Zend\Stdlib\Parameters());
+        } else {
+            $this->logException($e);
+        }
     }
 }

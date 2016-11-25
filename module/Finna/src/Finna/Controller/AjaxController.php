@@ -1427,8 +1427,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     public function registerOnlinePaymentAction()
     {
         $this->outputMode = 'json';
-        $params = $this->getRequest()->getPost()->toArray();
-        $res = $this->processPayment($params);
+        $res = $this->processPayment($this->getRequest());
         $returnUrl = $this->url()->fromRoute('myresearch-fines');
         return $res['success']
             ? $this->output($returnUrl, self::STATUS_OK)
@@ -1436,14 +1435,14 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
-     * Handle Paytrail notification request.
+     * Handle online payment handler notification request.
      *
      * @return void
      */
-    public function paytrailNotifyAction()
+    public function onlinePaymentNotifyAction()
     {
-        $params = $this->getRequest()->getQuery()->toArray();
-        $this->processPayment($params);
+        $this->outputMode = 'json';
+        $this->processPayment($this->getRequest());
         // This action does not return anything but a HTTP 200 status.
         exit();
     }
