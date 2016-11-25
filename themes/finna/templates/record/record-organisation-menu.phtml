@@ -1,5 +1,6 @@
 <!-- START of: finna - record/record-organisation-menu.phtml -->
 <? $currentSource = $this->driver->tryMethod('getDataSource');
+   $currentSourceTranslated = $this->transEsc("source_$currentSource", null, $currentSource);
    $mergedData = $this->driver->tryMethod('getMergedRecordData');
 ?>
 <? $dedupData = $this->driver->getDedupData(); ?>
@@ -12,7 +13,7 @@
     <? endif; ?>
   </h4>
   <ul class="<?=(!in_array($this->driver->getRecordType(), ['ead', 'lido', 'qdc', 'forward'])) ? 'list-group organisations' : 'record-type organisations'?>">
-    <li class="record-organisation"><?=$this->transEsc("source_$currentSource", null, $currentSource) ?>
+    <li class="record-organisation"><span class="organisation-name"><?=$currentSourceTranslated?></span>
       <ul class="record-organisation-info">
       <? if (isset($currentSource['imageUrl'])): ?>
         <li><img src="<?=$currentSource['imageUrl']?>"/></li>
@@ -20,7 +21,7 @@
       <? if (isset($currentSource['moreinfoLink'])): ?>
         <li><a href="<?=$currentSource['moreinfoLink']?>"><?=$this->transEsc('More information about organisation')?></a></li>
       <? endif; ?>
-        <? if ($this->organisationInfo() && $organisationInfoId = $this->driver->getOrganisationInfoId()): ?><li class="organisation-page-link" data-organisation="<?=$organisationInfoId?>"></li><? endif; ?>
+        <? if ($this->organisationInfo() && $organisationInfoId = $this->driver->getOrganisationInfoId()): ?><li class="organisation-page-link" data-organisation="<?=$organisationInfoId?>" data-organisation-name="<?=$this->escapeHtmlAttr($currentSourceTranslated)?>"></li><? endif; ?>
         <li><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Feedback')?>" data-lightbox id="feedback-record"><i class="fa fa-send-feedback"></i> <?=$this->transEsc('Send feedback on record')?></a></li>
       </ul>
     </li>

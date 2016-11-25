@@ -652,20 +652,24 @@ finna.layout = (function() {
             $(this).one('inview', function() {
                 var holder = $(this);
                 var organisation = $(this).data('organisation');
-                getOrganisationPageLink(organisation, true, function(response) {
+                var organisationName = $(this).data('organisationName');
+                getOrganisationPageLink(organisation, organisationName, true, function(response) {
                     holder.toggleClass('done', true);
                     if (response) {
                         var data = response[organisation];
-                        holder.html(data);
+                        holder.html(data).closest('li.record-organisation').toggleClass('organisation-page-link-visible', true);
                     }
                 });
             });
         });
     };
 
-    var getOrganisationPageLink = function(organisation, link, callback) {
+    var getOrganisationPageLink = function(organisation, organisationName, link, callback) {
         var url = VuFind.path + '/AJAX/JSON?method=getOrganisationInfo';
         url += '&params[action]=lookup&link=' + (link ? '1' : '0') + '&parent=' + organisation;
+        if (organisationName) {
+           url += '&parentName=' + organisationName;
+        }
         $.getJSON(url)
             .done(function(response) {
                 callback(response.data.items);

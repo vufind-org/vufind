@@ -1,1 +1,9 @@
-<a href="<?=$this->url?>"><?=$this->translate($this->label)?></a>
+<? if ($this->logo): ?>
+<a href="<?=$this->url?>">
+  <img src="<?=$this->logo?>" class="consortium-logo" title="<?=$this->escapeHtmlAttr($this->translate($this->label))?>"/>
+</a>
+<? endif ?>
+<span class="organisation-name"><?=$this->name?></span>
+<div class="link">
+  <a href="<?=$this->url?>"><?=$this->translate($this->label)?></a>
+</div>

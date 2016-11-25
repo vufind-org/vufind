@@ -754,3 +754,66 @@
     }
     /* end organisation own information page styles */
 }
+.recordProvidedBy .record-organisation {
+    &.organisation-page-link-visible > .organisation-name {
+        display: none;
+    }
+    & > a:first-child {
+        line-height: 1;
+    }
+    & li {
+        line-height: 1.5;
+        &.organisation-page-link {
+            padding-top: 9px;
+            & .organisation-name {
+                font-weight: bold;
+            }
+        }
+    }
+    & img.consortium-logo {
+        display: block;
+        margin-top: 15px;
+        margin-bottom: 10px;
+        max-height: 110px;
+        max-width: 200px;
+    }
+    & img.consortium-logo {
+        margin: -3px 0 12px;
+    }
+    @media screen and (max-width: @screen-xs-max) {
+        & img.consortium-logo {
+            max-height: 70px;
+        }
+    }
+}
+.media-left .recordProvidedBy .record-organisation {
+    & #feedback-record {
+        line-height: 2.3;
+    }
+    & .record-organisation-info .organisation-name {
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+    @media screen and (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
+        & img.consortium-logo {
+            max-height: 95px;
+        }
+    }
+}
+.imagepopup-container .recordProvidedBy .record-organisation {
+    & #feedback-record {
+        line-height: 2.3;
+    }
+    & .record-organisation-info .organisation-name {
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+}
+.sidebar .recordProvidedBy .record-organisation {
+    & img.consortium-logo {
+       margin: 8px 0 12px;
+    }
+    & li.organisation-page-link {
+        padding-top: 5px;
+    }
+}

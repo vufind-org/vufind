@@ -262,7 +262,8 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
 
         if ($action == 'lookup') {
             $link = $params['link'];
-            return $this->lookupAction($parent, $link);
+            $parentName = $params['parentName'];
+            return $this->lookupAction($parent, $link, $parentName);
         } elseif ($action == 'consortium') {
             $response = $this->consortiumAction(
                 $parent, $buildings, $target, $startDate, $endDate, $params
@@ -294,14 +295,15 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
      * Check if consortium is found in Kirjastohakemisto and output
      * a link to the organisation page.
      *
-     * @param string  $parent Consortium Finna ID in Kirjastohakemisto.
-     * Use a comma delimited string to check multiple Finna IDs.
-     * @param boolean $link   True to render the link as a html-snippet.
-     * Oherwise only the link URL is outputted.
+     * @param string  $parent     Consortium Finna ID in Kirjastohakemisto.
+     *   Use a comma delimited string to check multiple Finna IDs.
+     * @param boolean $link       True to render the link as a html-snippet.
+     *   Oherwise only the link URL is outputted.
+     * @param string  $parentName Translated consortium display name.
      *
      * @return array Array with the keys 'success' and 'items'.
      */
-    protected function lookupAction($parent, $link = false)
+    protected function lookupAction($parent, $link = false, $parentName = null)
     {
         // Check if consortium is found in Kirjastohakemisto
         $parents = explode(',', $parent);
@@ -328,9 +330,22 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             $id = $item['finna']['finna_id'];
             $data = "{$url}?" . http_build_query(['id' => $id]);
             if ($link) {
+                $logo = null;
+                if (isset($response['items'][0]['logo'])) {
+                    $logos = $response['items'][0]['logo'];
+                    foreach (['small', 'medium'] as $size) {
+                        if (isset($logos[$size])) {
+                            $logo = $logos[$size];
+                            break;
+                        }
+                    }
+                }
+
                 $data = $this->viewRenderer->partial(
-                    'Helpers/organisation-page-link.phtml',
-                    ['url' => $data, 'label' => 'organisation_info_link']
+                    'Helpers/organisation-page-link.phtml', [
+                       'url' => $data, 'label' => 'organisation_info_link',
+                       'logo' => $logo, 'name' => $parentName
+                    ]
                 );
             }
             $result['items'][$id] = $data;

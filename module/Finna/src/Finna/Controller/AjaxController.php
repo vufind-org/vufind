@@ -1022,6 +1022,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         if ($action == 'lookup') {
             $params['link'] = $this->params()->fromQuery('link') === '1';
+            $params['parentName'] = $this->params()->fromQuery('parentName');
         }
 
         $lang = $this->getServiceLocator()->get('VuFind\Translator')->getLocale();
