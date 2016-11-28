@@ -2,6 +2,13 @@ $thumbnail-width-small: 60px !default;
 $thumbnail-width-medium: 100px !default;
 $thumbnail-width-large: 160px !default;
 
+.searchForm {
+  margin: 0;
+  padding: 0;
+}
+
+header .container.navbar { margin-bottom: 0; }
+
 .bulkActionButtons label {display: inline-block;}
 .bulkActionButtons label input {margin-top: 2px;}
 .grid { @media (max-width: 767px) {min-height: 250px;} }
