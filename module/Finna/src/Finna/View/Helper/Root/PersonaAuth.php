@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Helper to check if current user is authenticated with Mozilla Persona
+ * STUB for legacy templates
  *
  * PHP version 5
  *
@@ -29,7 +28,7 @@
 namespace Finna\View\Helper\Root;
 
 /**
- * Helper to check if current user is authenticated with Mozilla Persona
+ * STUB for legacy templates
  *
  * @category VuFind
  * @package  View_Helpers
@@ -39,58 +38,23 @@ namespace Finna\View\Helper\Root;
  */
 class PersonaAuth extends \Zend\View\Helper\AbstractHelper
 {
-    protected $serviceLocator;
-    protected $config;
-
     /**
-     * Constructor
+     * STUB to make sure existing templates calling this still work.
      *
-     * @param type $serviceLocator Service locator
-     */
-    public function __construct($serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        $this->config = $this->serviceLocator->get('VuFind\Config')->get('config');
-    }
-
-    /**
-     * Is current user logged in by Mozilla Persona authentication.
-     *
-     * @return type User's email or null
+     * @return null
      */
     public function getUser()
     {
-        $authManager = $this->serviceLocator->get('VuFind\AuthManager');
-        $user = $authManager->isLoggedIn();
-        if ($user === false) {
-            return null;
-        } else {
-            $authMethod = $authManager->getAuthMethod();
-            if ($authMethod == 'ChoiceAuth') {
-                $currentAuth = $authManager->getActiveAuth();
-                $authMethod = $currentAuth->getSelectedAuthOption();
-            }
-            if ($authMethod != 'MozillaPersona') {
-                return null;
-            }
-            list(,$username) = explode(':', $user->username, 2);
-            return $username;
-        }
+        return null;
     }
 
     /**
-     * Return Mozilla Persona Auto logout value from config file.
+     * STUB to make sure existing templates calling this still work.
      *
-     * @return boolean
+     * @return false
      */
     public function getAutoLogout()
     {
-        $autoLogout = $this->config->Authentication->mozillaPersonaAutoLogout;
-        if (empty($autoLogout)) {
-            return false;
-        } else {
-            return true;
-        }
+        return false;
     }
-
 }

@@ -27,7 +27,6 @@ return [
             'organisationInfo' => 'Finna\View\Helper\Root\Factory::getOrganisationInfo',
             'organisationsList'
                 => 'Finna\View\Helper\Root\Factory::getOrganisationsList',
-            'personaAuth' => 'Finna\View\Helper\Root\Factory::getPersonaAuth',
             'piwik' => 'Finna\View\Helper\Root\Factory::getPiwik',
             'primo' => 'Finna\View\Helper\Root\Factory::getPrimo',
             'recaptcha' => 'VuFind\View\Helper\Root\Factory::getRecaptcha',
@@ -46,6 +45,7 @@ return [
             'checkboxFacetCounts' =>
                 'Finna\View\Helper\Root\CheckboxFacetCounts',
             'markdown' => 'Finna\View\Helper\Root\Markdown',
+            'personaAuth' => 'Finna\View\Helper\Root\PersonaAuth',
             'resultfeed' => 'Finna\View\Helper\Root\ResultFeed',
             'search' => 'Finna\View\Helper\Root\Search',
             'streetSearch' => 'Finna\View\Helper\Root\StreetSearch',
@@ -74,7 +74,6 @@ return [
         'finna-feed.js',
         'finna-layout.js',
         'finna-openurl.js',
-        'finna-persona.js',
         'finna-common.js',
         'vendor/jquery.dataTables.min.js',
         'vendor/dataTables.bootstrap.min.js',

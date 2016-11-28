@@ -19,7 +19,6 @@ var finna = (function() {
                 'myList',
                 'openUrl',
                 'organisationList',
-                'persona',
                 'primoAdvSearch',
                 'record',
                 'searchTabsRecommendations',

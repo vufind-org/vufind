@@ -26,11 +26,11 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace Finna\Controller;
-use VuFindSearch\ParamBag as ParamBag,
-    VuFindSearch\Query\Query as Query,
-    VuFind\Search\RecommendListener,
-    Finna\MetaLib\MetaLibIrdTrait,
-    Zend\Cache\StorageFactory;
+
+use VuFindSearch\ParamBag as ParamBag;
+use VuFindSearch\Query\Query as Query;
+use VuFind\Search\RecommendListener;
+use Finna\MetaLib\MetaLibIrdTrait;
 
 use Finna\Search\Solr\Params;
 
@@ -723,7 +723,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $linkText = null;
         if (isset($config->linkText[$key])) {
             $linkText = $config->linkText[$key];
-        } else if (isset($config->linkText) && is_string($config->linkText)) {
+        } elseif (isset($config->linkText) && is_string($config->linkText)) {
             $linkText = $config->linkText;
         }
 
@@ -1161,7 +1161,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
             }
         }
 
-         return $this->output($html, self::STATUS_OK);
+        return $this->output($html, self::STATUS_OK);
     }
 
     /**
@@ -1214,39 +1214,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $html = $view->partial('Recommend/SideFacets.phtml');
 
         return $this->output($html, self::STATUS_OK);
-    }
-
-    /**
-     * Mozilla Persona login
-     *
-     * @return mixed
-     */
-    public function personaLoginAjax()
-    {
-        try {
-            $request = $this->getRequest();
-            $auth = $this->getServiceLocator()->get('VuFind\AuthManager');
-            // Add auth method to POST
-            $request->getPost()->set('auth_method', 'MozillaPersona');
-            $user = $auth->login($request);
-        } catch (Exception $e) {
-            return $this->output(false, self::STATUS_ERROR, 500);
-        }
-
-        return $this->output(true, self::STATUS_OK);
-    }
-
-    /**
-     * Mozilla Persona logout
-     *
-     * @return mixed
-     */
-    public function personaLogoutAjax()
-    {
-        $auth = $this->getServiceLocator()->get('VuFind\AuthManager');
-        // Logout routing is done in finna-persona.js file.
-        $auth->logout($this->getServerUrl('home'));
-        return $this->output(true, self::STATUS_OK);
     }
 
     /**

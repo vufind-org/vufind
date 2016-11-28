@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\View\Helper\Root;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -426,19 +427,6 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         return new Translation(
             isset($config['Site']['language']) ? $config['Site']['language'] : 'en'
         );
-    }
-
-    /**
-     * Construct the PersonaAuth view helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \Finna\View\Helper\Root\PersonaAuth
-     */
-    public static function getPersonaAuth(ServiceManager $sm)
-    {
-        $locator = $sm->getServiceLocator();
-        return new PersonaAuth($locator);
     }
 
     /**

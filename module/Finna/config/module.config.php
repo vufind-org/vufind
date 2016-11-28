@@ -206,9 +206,6 @@ $config = [
                     'multiils' => 'Finna\Auth\Factory::getMultiILS',
                     'shibboleth' => 'Finna\Auth\Factory::getShibboleth'
                 ],
-                'invokables' => [
-                    'mozillapersona' => 'Finna\Auth\MozillaPersona'
-                ],
             ],
             'autocomplete' => [
                 'factories' => [
