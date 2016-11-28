@@ -23,7 +23,7 @@
     $holdLinks = $journal = $summary = false;
 
     // Use location-specific hold links only if we have branches
-    $first = reset($holdings);
+    $first = reset($holdings['holdings']);
     $useLocationHoldLinks = isset($first['items'][0]['branch']);
 
     if (!empty($holdings['holdings'])) {
