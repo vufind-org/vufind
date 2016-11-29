@@ -67,6 +67,16 @@ abstract class AbstractBase implements SaveHandlerInterface,
     protected $writesDisabled = false;
 
     /**
+     * Enable session writing (default)
+     *
+     * @return void
+     */
+    public function enableWrites()
+    {
+        $this->writesDisabled = false;
+    }
+
+    /**
      * Disable session writing, i.e. make it read-only
      *
      * @return void
