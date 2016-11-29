@@ -92,9 +92,11 @@ class RecordDataFormatter extends AbstractHelper
                     ? 'renderSimple' : 'render' . $current['renderType'];
 
                 // Add the rendered data to the return value if it is non-empty:
-                if (is_callable([$this, $renderMethod])
-                    && $text = $this->$renderMethod($driver, $data, $current)
-                ) {
+                if (is_callable([$this, $renderMethod])) {
+                    $text = $this->$renderMethod($driver, $data, $current);
+                    if (!$text && (!$allowZero || ($text !== 0 && $text !== '0'))) {
+                        continue;
+                    }
                     // Allow dynamic label override:
                     if (isset($current['labelFunction'])
                         && is_callable($current['labelFunction'])
