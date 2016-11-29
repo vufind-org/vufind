@@ -1,6 +1,6 @@
 <?php
 /**
- * Author aspect of the Search Multi-class (Results)
+ * Route Generator Class
  *
  * PHP version 5
  *
@@ -20,55 +20,43 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search_SolrAuthor
+ * @package  Route
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Search\SolrAuthor;
-use VuFind\Search\Solr\Results as SolrResults;
+namespace VuFindConsole\Route;
 
 /**
- * Author Search Options
+ * Route Generator Class
  *
  * @category VuFind
- * @package  Search_SolrAuthor
+ * @package  Route
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class Results extends SolrResults
+class RouteGenerator
 {
     /**
-     * Constructor
+     * Add console routes to the configuration.
      *
-     * @param \VuFind\Search\Base\Params $params Object representing user search
-     * parameters.
-     */
-    public function __construct($params)
-    {
-        // Call parent constructor:
-        parent::__construct($params);
-    }
-
-    /**
-     * Options for UrlQueryHelper
+     * @param array $config Configuration array to update
+     * @param array $routes Array of Controller/Action strings => route values
      *
-     * @return array
+     * @return void
      */
-    protected function getUrlQueryHelperOptions()
+    public function addRoutes(& $config, $routes)
     {
-        return ['basicSearchParam' => 'author'];
-    }
-
-    /**
-     * Is the current search saved in the database?
-     *
-     * @return bool
-     */
-    public function isSavedSearch()
-    {
-        // Author searches are never saved:
-        return false;
+        foreach ($routes as $key => $route) {
+            list($controller, $action) = explode('/', $key);
+            $name = $controller . '-' . $action;
+            $config['console']['router']['routes'][$name] = [
+                'options' => [
+                    'route' => $route,
+                    'defaults' => compact('controller', 'action'),
+                ]
+            ];
+        }
     }
 }
