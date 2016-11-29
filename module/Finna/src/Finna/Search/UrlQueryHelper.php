@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -33,6 +34,7 @@ namespace Finna\Search;
  * @category VuFind
  * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -43,11 +45,11 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
      *
      * @return void
      */
-    public function __clone()
+/*    public function __clone()
     {
-        $this->params = clone($this->params);
+        $this->queryObject = clone($this->queryObject);
     }
-
+*/
     /**
      * Expose parent method since we need to use it from SearchTabs.
      *
@@ -72,10 +74,21 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
      */
     public function replaceFacet($field, $value, $operator = 'AND')
     {
-        $newParams = clone($this->params);
-        $newParams->removeAllFilters($field);
-        $helper = new static($newParams);
-        return $helper->addFacet($field, $value, $operator);
+        // Remove any previous filter:
+        $paramArray = $this->getParamArray();
+        $newFilter = [];
+        $prefix = ($operator == 'NOT') ? '-' : ($operator == 'OR' ? '~' : '');
+        if (isset($paramArray['filter']) && is_array($paramArray['filter'])) {
+            foreach ($paramArray['filter'] as $current) {
+                list($currentField, $currentValue) = $this->parseFilter($current);
+                if ($currentField !== $prefix . $field) {
+                    $newFilter[] = $current;
+                }
+            }
+        }
+
+        $paramArray['filter'] = $newFilter;
+        return $this->addFacet($field, $value, $operator, $paramArray);
     }
 
     /**
@@ -87,7 +100,7 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
      */
     public function removeSearchId($class)
     {
-        $params = $this->defaultParams;
+        $params = $this->getParamArray();
         if (!isset($params['search'])) {
             return;
         }
@@ -113,7 +126,7 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
      */
     public function setSearchId($class, $id, $output = true)
     {
-        $params = $this->defaultParams;
+        $params = $this->getParamArray();
         $searches = isset($params['search']) ? $params['search'] : [];
 
         $res = [];
@@ -130,8 +143,7 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
         $this->setDefaultParameter('search', $res);
 
         if ($output) {
-            $params = $this->getParamArray();
-            return '?' . $this->buildQueryString($params, false);
+            return $this->getParams(false);
         }
     }
 }

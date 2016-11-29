@@ -39,7 +39,7 @@ namespace Finna\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ContentController extends \VuFind\Controller\AbstractBase
+class ContentController extends \VuFind\Controller\ContentController
 {
     /**
      * Default action if none provided
@@ -48,14 +48,7 @@ class ContentController extends \VuFind\Controller\AbstractBase
      */
     public function contentAction()
     {
-        $event      = $this->getEvent();
-        $routeMatch = $event->getRouteMatch();
-        $page       = strtolower($routeMatch->getParam('page'));
-        $themeInfo  = $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
-        $translator = $this->getServiceLocator()->get('VuFind\Translator');
-        $language   = $translator->getLocale();
-        $action     = "{$page}Action";
-        $defaultLanguage = $this->getConfig()->Site->language;
+        $page = $this->params()->fromRoute('page');
 
         // Redirect aboutfinna from VuFind 1 to about_finna (ALLI-4231)
         if ($page == 'aboutfinna') {
@@ -66,63 +59,6 @@ class ContentController extends \VuFind\Controller\AbstractBase
             return $response;
         }
 
-        // Try template with current language first and default language as a
-        // fallback
-        if (null !== $themeInfo->findContainingTheme(
-            "templates/content/{$page}_$language.phtml"
-        )) {
-            $page = "{$page}_$language";
-        } elseif (null !== $themeInfo->findContainingTheme(
-            "templates/content/{$page}_$defaultLanguage.phtml"
-        )) {
-            $page = "{$page}_$defaultLanguage";
-        }
-
-        if (empty($page) || null === $themeInfo->findContainingTheme(
-            "templates/content/$page.phtml"
-        )) {
-            return $this->notFoundAction($this->getResponse());
-        }
-
-        $view = $this->createViewModel(
-            ['page' => $page, 'params' => $this->params()]
-        );
-        if (method_exists($this, $action)) {
-            $view = call_user_func([$this, $action], $view);
-        }
-        return $view;
-    }
-
-    /**
-     * Action called if matched action does not exist
-     *
-     * @return array
-     */
-    public function notFoundAction()
-    {
-        $response   = $this->response;
-
-        if ($response instanceof \Zend\Http\Response) {
-            return $this->createHttpNotFoundModel($response);
-        }
-        return $this->createConsoleNotFoundModel($response);
-    }
-
-    /**
-     * Inject list of login drivers to About Finna page.
-     *
-     * @param Zend\View\Model\ViewModel $view View
-     *
-     * @return Zend\View\Model\ViewModel
-     */
-// @codingStandardsIgnoreStart - method name not in camelCase
-    public function about_finnaAction($view)
-    {
-// @codingStandardsIgnoreEnd - method name not in camelCase
-        $catalog = $this->getILS();
-        if ($catalog->checkCapability('getLoginDrivers')) {
-            $view->loginTargets = $catalog->getLoginDrivers();
-        }
-        return $view;
+        return parent::contentAction();
     }
 }

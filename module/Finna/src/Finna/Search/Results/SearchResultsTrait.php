@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,6 +26,8 @@
  * @link     https://vufind.org Main Page
  */
 namespace Finna\Search\Results;
+
+use Finna\Search\Factory\UrlQueryHelperFactory;
 use Finna\Search\UrlQueryHelper;
 
 /**
@@ -51,15 +53,27 @@ trait SearchResultsTrait
 
     /**
      * Get the URL helper for this object.
+     *
      * N.B. Identical to the base class but creates a Finna version!
      *
-     * @return UrlHelper
+     * @return \VuFind\Search\UrlQueryHelper
      */
     public function getUrlQuery()
     {
         // Set up URL helper:
         if (!isset($this->helpers['urlQuery'])) {
-            $this->helpers['urlQuery'] = new UrlQueryHelper($this->getParams());
+            $factory = new UrlQueryHelperFactory();
+            $this->helpers['urlQuery'] = $factory->fromParams(
+                $this->getParams(), $this->getUrlQueryHelperOptions()
+            );
+            if (is_callable([$this->helpers['urlQuery'], 'setSearchId'])) {
+                $savedSearches
+                    = $this->getServiceLocator()->get('Request')->getQuery('search');
+                if ($savedSearches) {
+                    $this->helpers['urlQuery']
+                        ->setDefaultParameter('search', $savedSearches);
+                }
+            }
         }
         return $this->helpers['urlQuery'];
     }

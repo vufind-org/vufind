@@ -1,5 +1,12 @@
 <!-- START of: finna - content/about_finna-login.phtml -->
-<? if (count($loginTargets)): ?>
+<?
+$loginTargets = [];
+$catalog = $this->ils();
+if ($catalog->checkCapability('getLoginDrivers')) {
+  $loginTargets = $catalog->getLoginDrivers();
+}
+?>
+<? if ($loginTargets): ?>
 <ul class="about-login-targets">
   <? foreach ($loginTargets as $target): ?>
   <li><?=$this->transEsc("source_$target", null, $target)?></li>

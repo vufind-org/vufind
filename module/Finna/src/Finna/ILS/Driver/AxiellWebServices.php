@@ -485,11 +485,15 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      * @param integer $bibId    BIB ID
      * @param array   $patronId Patron information returned by the patronLogin
      * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the request group
+     * options or may be ignored.
      *
      * @return array  False if request groups not in use or an array of
      * associative arrays with id and name keys
      */
-    public function getRequestGroups($bibId, $patronId)
+    public function getRequestGroups($bibId, $patronId, $holdDetails = null)
     {
         // Request Groups are not used for reservations
         return false;

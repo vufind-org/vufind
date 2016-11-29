@@ -28,13 +28,13 @@
         <a name="organisation-views"></a>
         <h2>Andra Finna-söktjänster</h2>
         <p>Finna är en helhet av söktjänster, med många organisationsspecifika webbsidor utöver den nationella webbplatsen finna.fi. Sökningen på de olika organisationernas vyer begränsar sig i regel till den aktuella organisationens material.</p>
-        <p>Finna utvecklas kontinuerligt och kommer stegvis att ersätta de finländska bibliotekens, arkivens och museernas kundgränssnitt. För närvarande är <a href="https://www.finna.fi/Content/Organisations?lng=sv">mer än 100 organisationer</a> med i Finna. Följande av dem har en egen Finnavy:</p> 
+        <p>Finna utvecklas kontinuerligt och kommer stegvis att ersätta de finländska bibliotekens, arkivens och museernas kundgränssnitt. För närvarande är <a href="https://www.finna.fi/Content/Organisations?lng=sv">mer än 100 organisationer</a> med i Finna. Följande av dem har en egen Finnavy:</p>
       </div>
     </div>
     <?=$this->render('content/about_finna_sites.phtml') ?>
     <div class="row">
       <div class="col-md-10 col-lg-8">
-          <p>Alla bibliotek, arkiv och museer är ännu inte med i Finna, men nya ansluter sig hela tiden. Vårt mål är att huvudparten av alla organisationer, inklusive alla allmänna bibliotek, ska vara med i Finna före 2020.  Om ditt bibliotek, arkiv eller museum inte ännu är med, kontakta deras kundtjänst.</p>  
+          <p>Alla bibliotek, arkiv och museer är ännu inte med i Finna, men nya ansluter sig hela tiden. Vårt mål är att huvudparten av alla organisationer, inklusive alla allmänna bibliotek, ska vara med i Finna före 2020.  Om ditt bibliotek, arkiv eller museum inte ännu är med, kontakta deras kundtjänst.</p>
           <p>&nbsp;</p>
       </div>
     </div>
@@ -64,9 +64,7 @@
         <p>&nbsp;</p>
         <h2>Finna är mer än en söktjänst</h2>
         <p>Med Finna kan du inte bara hitta, utan också använda material. I Finna kan man bl.a. reservera material och förnya lån från följande <strong>bibliotek:</strong></p>
-        <? if (isset($loginTargets)): ?>
-          <?= $this->partial('about_finna-login.phtml', ['loginTargets' => $loginTargets]) ?>
-        <? endif ?>
+        <?= $this->partial('about_finna-login.phtml') ?>
         <p>Om du har det aktuella bibliotekets lånekort kan du använda tjänsterna genom att <a href="https://www.finna.fi/MyResearch/Home?lng=sv">logga in på Finna.</a></p>
         <p>Man kan ansöka om behörighet till vissa <strong>arkivmaterial</strong> via länkarna i posten.</p>
         <p>I framtiden kommer man också att kunna använda <strong>museernas</strong> digitala tjänster i Finna.</p>
@@ -99,5 +97,5 @@
 <div class="container-fluid odd-fluid">
   <div class="container">
     <div class="row">
-    <!-- open closed divs for valid HTML --> 
-<!-- END of: finna - content/about_finna_sv.phtml --> 
+    <!-- open closed divs for valid HTML -->
+<!-- END of: finna - content/about_finna_sv.phtml -->

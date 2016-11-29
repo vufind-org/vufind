@@ -26,8 +26,9 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Search\Results;
-use Finna\Search\UrlQueryHelper,
-    \Finna\Search\Results\PluginFactory,
+use Finna\Search\Factory\UrlQueryHelperFactory,
+    Finna\Search\UrlQueryHelper,
+    Finna\Search\Results\PluginFactory,
     Zend\Console\Console,
     Zend\ServiceManager\ServiceManager;
 
@@ -78,8 +79,7 @@ class Factory extends \VuFind\Search\Results\Factory
         $solr->setSpellingProcessor(
             new \VuFind\Search\Solr\SpellingProcessor($spellConfig)
         );
-
-        return Factory::initUrlQueryHelper($solr, $sm->getServiceLocator());
+        return $solr;
     }
 
     /**
@@ -92,8 +92,7 @@ class Factory extends \VuFind\Search\Results\Factory
     public static function getPrimo(ServiceManager $sm)
     {
         $factory = new PluginFactory();
-        $primo = $factory->createServiceWithName($sm, 'primo', 'Primo');
-        return Factory::initUrlQueryHelper($primo, $sm->getServiceLocator());
+        return $factory->createServiceWithName($sm, 'primo', 'Primo');
     }
 
     /**
@@ -106,8 +105,7 @@ class Factory extends \VuFind\Search\Results\Factory
     public static function getMetaLib(ServiceManager $sm)
     {
         $factory = new PluginFactory();
-        $metalib = $factory->createServiceWithName($sm, 'metalib', 'MetaLib');
-        return Factory::initUrlQueryHelper($metalib, $sm->getServiceLocator());
+        return $factory->createServiceWithName($sm, 'metalib', 'MetaLib');
     }
 
     /**
@@ -120,34 +118,6 @@ class Factory extends \VuFind\Search\Results\Factory
     public static function getCombined(ServiceManager $sm)
     {
         $factory = new PluginFactory();
-        $combined = $factory->createServiceWithName($sm, 'combined', 'Combined');
-        return Factory::initUrlQueryHelper($combined, $sm->getServiceLocator());
-    }
-
-    /**
-     * Internal utility function for initializing
-     * UrlQueryHelper for a Results-object with search ids for all tabs.
-     *
-     * @param ResultsManager $results Search results.
-     * @param ServiceManager $locator Service locator.
-     *
-     * @return Results Search results with initialized UrlQueryHelper
-     */
-    public static function initUrlQueryHelper(
-        \VuFind\Search\Base\Results $results, $locator
-    ) {
-        if (Console::isConsole()) {
-            return $results;
-        }
-
-        $helper = new UrlQueryHelper($results->getParams());
-        $savedSearches
-            = $locator->get('Request')->getQuery('search');
-        if ($savedSearches) {
-            $helper->setDefaultParameter('search', $savedSearches);
-        }
-        $results->setHelper('urlQuery', $helper);
-
-        return $results;
+        return $factory->createServiceWithName($sm, 'combined', 'Combined');
     }
 }

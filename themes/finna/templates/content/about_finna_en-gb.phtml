@@ -33,13 +33,13 @@
     </div>
 
     <?=$this->render('content/about_finna_sites.phtml') ?>
-    
+
     <div class="row">
       <div class="col-md-10 col-lg-8">
-          <p>At the moment, some Finnish libraries, archives and museums are yet to join Finna, but new ones keep enlisting. Our goal is that most national memory organisations, including all public libraries, will adopt Finna by 2020. If your library, archive or museum is not yet a Finna organisation, please contact their customer service.</p>  
+          <p>At the moment, some Finnish libraries, archives and museums are yet to join Finna, but new ones keep enlisting. Our goal is that most national memory organisations, including all public libraries, will adopt Finna by 2020. If your library, archive or museum is not yet a Finna organisation, please contact their customer service.</p>
           <p>&nbsp;</p>
       </div>
-    </div> 
+    </div>
   </div> <!-- close container -->
 </div>  <!-- close container-fluid -->
 <div class="container-fluid">
@@ -65,9 +65,7 @@
         <p>&nbsp;</p>
         <h2>Finna is much more than a search service</h2>
         <p>Through Finna, you can not only search for material, but also gain access to it. Currently, the following <strong>libraries</strong> provide functions for reserving material, renewing loans and other activities in Finna:</p>
-        <? if (isset($loginTargets)): ?>
-        <?= $this->partial('about_finna-login.phtml', ['loginTargets' => $loginTargets]) ?>
-        <? endif ?>
+        <?=$this->partial('about_finna-login.phtml') ?>
         <p>After <a href="https://www.finna.fi/MyResearch/Home?lng=en-gb">logging in to Finna</a> these functions are available to you with a library card for the library in question.</p>
         <p>An application for browsing <strong>archive</strong> material, that requires permission to use, can be made through links found in Finna content data.</p>
         <p>In the future, digital <strong>museum</strong> services will also be available in Finna.</p>

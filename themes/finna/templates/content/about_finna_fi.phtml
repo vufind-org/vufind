@@ -6,7 +6,7 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-sm-5 col-md-4"> 
+  <div class="col-sm-5 col-md-4">
     <a href="https://www.finna.fi"><img src="<?=$this->imageLink('finnafi.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'finna.fi'])); ?>" /></a>
     <p>&nbsp;</p>
   </div>
@@ -28,7 +28,7 @@
         <a name="organisation-views"></a>
         <h2>Muut Finna-hakupalvelut</h2>
         <p>Finna on hakupalvelujen kokonaisuus, johon kuuluu monia sivustoja valtakunnallisen finna.fi:n lisäksi. Organisaatiokohtaiset sivustot ovat rajattuja pääasiassa yhden organisaation aineistoihin.</p>
-        <p>Finna kehittyy jatkuvasti ja korvaa vaiheittain suomalaisten kirjastojen, arkistojen ja museoiden asiakkaille suunnattuja verkkopalveluita. Tällä hetkellä Finnassa on mukana <a href="https://www.finna.fi/Content/Organisations">yli 100 organisaatiota</a>, joista seuraavat ovat avanneet oman Finna-hakupalvelunsa:</p> 
+        <p>Finna kehittyy jatkuvasti ja korvaa vaiheittain suomalaisten kirjastojen, arkistojen ja museoiden asiakkaille suunnattuja verkkopalveluita. Tällä hetkellä Finnassa on mukana <a href="https://www.finna.fi/Content/Organisations">yli 100 organisaatiota</a>, joista seuraavat ovat avanneet oman Finna-hakupalvelunsa:</p>
       </div>
     </div>
     <?=$this->render('content/about_finna_sites.phtml') ?>
@@ -38,7 +38,7 @@
             <p>&nbsp;</p>
       </div>
     </div>
-  </div> <!-- close container --> 
+  </div> <!-- close container -->
 </div>  <!-- close container-fluid -->
 <div class="container-fluid">
   <div class="container">
@@ -63,9 +63,7 @@
         <p>&nbsp;</p>
         <h2>Finna on muutakin kuin hakupalvelu</h2>
         <p>Finnan avulla voit paitsi löytää, myös käyttää aineistoja. Tällä hetkellä seuraavat <strong>kirjastot</strong> tarjoavat Finnassa varaus-, lainan uusimis- ja muita toiminnallisuuksia:</p>
-        <? if (isset($loginTargets)): ?>
-        <?= $this->partial('about_finna-login.phtml', ['loginTargets' => $loginTargets]) ?>
-        <? endif ?>
+        <?=$this->partial('about_finna-login.phtml') ?>
         <p>Voit käyttää näitä toiminnallisuuksia, kun olet <a href="https://www.finna.fi/MyResearch/Home">kirjautunut Finnaan</a> ja sinulla on kyseisen kirjaston kirjastokortti.</p>
         <p>Joihinkin <strong>arkistoaineistoihin</strong> voi tehdä käyttölupahakemuksen Finnan aineistotietojen yhteydestä löytyvillä linkeillä.</p>
         <p>Tulevaisuudessa Finnassa on mahdollista käyttää myös <strong>museoiden</strong> digitaalisia palveluja.</p>
@@ -98,5 +96,5 @@
 <div class="container-fluid odd-fluid">
   <div class="container">
     <div class="row">
-    <!-- open closed divs for valid HTML --> 
-<!-- END of: finna - content/about_finna_fi.phtml --> 
+    <!-- open closed divs for valid HTML -->
+<!-- END of: finna - content/about_finna_fi.phtml -->

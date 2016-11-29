@@ -45,19 +45,6 @@ $config = [
                     ]
                 ]
             ],
-            'content-page' => [
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
-                'options' => [
-                    'route'    => '/Content/[:page]',
-                    'constraints' => [
-                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ],
-                    'defaults' => [
-                        'controller' => 'Contentpage',
-                        'action'     => 'Content',
-                    ]
-                ],
-            ],
             'feed-content-page' => [
                 'type'    => 'Zend\Mvc\Router\Http\Segment',
                 'options' => [

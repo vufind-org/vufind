@@ -206,57 +206,56 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
     protected function remapBasicSearch($activeOptions, $targetClass, $query,
         $handler, $filters
     ) {
-        // Set up results object for URL building:
+        $urlQueryFactory = new \Finna\Search\Factory\UrlQueryHelperFactory();
+
+        // Set up results object for URL building
         $targetResults = $this->results->get($targetClass);
         $targetParams = $targetResults->getParams();
-        $targetUrlQuery = $targetResults->getUrlQuery();
         foreach ($filters as $filter) {
             $targetParams->addHiddenFilter($filter);
         }
-
-        // Remove any remembered search hash for this tab:
         $targetTabId
             = $this->getTabId($targetClass, $targetParams->getHiddenFilters());
-        if (method_exists($targetUrlQuery, 'removeSearchId')) {
-            $targetUrlQuery->removeSearchId($targetTabId);
-        }
-
         $targetOptions = $targetResults->getOptions();
         $targetParams->setBasicSearch($query, $handler);
 
         // Clone the active query so that we can remove active filters
         $currentResults = clone($this->getView()->results);
-        $urlQuery = $currentResults->getUrlQuery();
+        $currentParams = $currentResults->getParams();
 
         // Remove current filters
         $oldFilters = $currentResults->getParams()->getFilters();
         $tabId = $this->getTabId(
             $this->activeSearchClass,
-            $currentResults->getParams()->getHiddenFilters()
+            $currentParams->getHiddenFilters()
         );
-        $currentResults->getParams()->removeHiddenFilters();
-        $currentResults->getParams()->removeAllFilters();
+        $currentParams->removeHiddenFilters();
+        $currentParams->removeAllFilters();
 
-        $queryString = null;
+        // Add filters to the new params
+        foreach ($filters as $filter) {
+            $currentParams->addHiddenFilter($filter);
+        }
+
+        $currentUrlQuery = $urlQueryFactory->fromParams($currentParams);
+
+        // Remove any remembered search hash for this tab:
+        if (method_exists($currentUrlQuery, 'removeSearchId')) {
+            $currentUrlQuery->removeSearchId($targetTabId);
+        }
+
         if (!empty($oldFilters)) {
             // Filters were active, include current search id in the url
             $searchId = $currentResults->getSearchId();
-            if (method_exists($urlQuery, 'setSearchId')) {
-                $queryString = $urlQuery->setSearchId($tabId, $searchId);
+            if (method_exists($currentUrlQuery, 'setSearchId')) {
+                $currentUrlQuery->setSearchId($tabId, $searchId);
             }
         }
-        if (null === $queryString) {
-            $queryString = $urlQuery->getParams(false);
-        }
 
-        // Build new URL:
-        $hiddenFilterQuery
-            = substr($targetResults->getUrlQuery()->getParams(false), 1);
+        // Build new URL
         $url = $this->url->__invoke($targetOptions->getSearchAction())
-            . $queryString;
-        if ($hiddenFilterQuery) {
-            $url .= "&$hiddenFilterQuery";
-        }
+            . $currentUrlQuery->getParams(false);
+
         return $url;
     }
 
