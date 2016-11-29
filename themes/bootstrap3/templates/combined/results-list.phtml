@@ -53,7 +53,7 @@
     <? if (isset($view->overrideEmptyMessage)): ?>
       <?=$view->overrideEmptyMessage?>
     <? else: ?>
-      <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
+      <?=$this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]) ?>
     <? endif; ?>
   </p>
   <? if (isset($view->parseError)): ?>
