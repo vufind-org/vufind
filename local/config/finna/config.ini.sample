@@ -328,7 +328,7 @@ maximum_password_length = 32
 ;password_hint = "local_login_password_hint"
 
 [ChoiceAuth]
-choice_order = MozillaPersona,Shibboleth,MultiILS
+choice_order = Database,Shibboleth,MultiILS
 
 ; See the comments in library/VF/Auth/MultiAuth.php for full details
 ; on using multiple authentication methods.  Note that MultiAuth assumes login
@@ -803,8 +803,8 @@ url             = https://www.myendnoteweb.com/EndNoteWeb.html
 [Http]
 ;sslcapath = "/etc/ssl/certs"
 sslcafile = "/etc/ssl/certs/ca-bundle.crt"
-; This is required on RHEL6 with PHP 5.6 for unknown reasons. Otherwise e.g. Persona
-; login fails.
+; This is required on RHEL6 with PHP 5.6 for unknown reasons. Otherwise SSL
+; connections may fail.
 ssltransport = tls
 
 ; Spelling Suggestions

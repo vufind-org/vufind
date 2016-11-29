@@ -110,8 +110,7 @@
         </li>
         <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'loginMenu' => 'true']);?>
         <li role="menuitem" class="logoutOptions<? if (!$user): ?> hidden<? endif ?>">
-          <? $logoutClass = $this->personaAuth()->getUser() === null ? '' : ' persona-logout' ?>
-          <a href="<?=$this->url('myresearch-logout')?>" class="logout<?=$logoutClass?>" title="<?=$this->transEsc("Log Out")?>"><strong><i class="fa fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?></strong></a>
+          <a href="<?=$this->url('myresearch-logout')?>" class="logout" title="<?=$this->transEsc("Log Out")?>"><strong><i class="fa fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?></strong></a>
         </li>
       </ul>
     </li>

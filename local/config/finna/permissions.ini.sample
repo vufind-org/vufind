@@ -113,10 +113,9 @@
 ;authenticationStrategy[] = Shibboleth
 ;authenticationStrategy[] = ILS
 ;authenticationStrategy[] = ILS-statCode
-;authenticationStrategy[] = MozillaPersona
 ;permission = finna.authorized
 
-; Admin access to finna cache clearing function. Normally no local configuration 
+; Admin access to finna cache clearing function. Normally no local configuration
 ; override needed.
 [finna.cache]
 require = ANY
