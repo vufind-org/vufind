@@ -93,9 +93,14 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
     {
         // "Mock out" tag functionality to avoid database access:
         $record = $this->getMockBuilder('VuFind\RecordDriver\SolrDefault')
-            ->setMethods(['getTags'])
+            ->setMethods(['getContainerTitle', 'getTags'])
             ->getMock();
-        $record->expects($this->any())->method('getTags')->will($this->returnValue([]));
+        $record->expects($this->any())->method('getTags')
+            ->will($this->returnValue([]));
+        // Force a return value of zero so we can test this edge case value (even
+        // though in the context of "container title" it makes no sense):
+        $record->expects($this->any())->method('getContainerTitle')
+            ->will($this->returnValue(0));
 
         // Load record data from fixture file:
         $fixture = json_decode(
@@ -152,6 +157,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
         $spec = $formatter->getDefaults('core');
 
         $expected = [
+            'Published in' => '0',
             'Main Author' => 'Vico, Giambattista, 1668-1744.',
             'Other Authors' => 'Pandolfi, Claudia.',
             'Format' => 'Book',

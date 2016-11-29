@@ -84,7 +84,8 @@ class RecordDataFormatter extends AbstractHelper
         foreach ($spec as $field => $current) {
             // Extract the relevant data from the driver.
             $data = $this->extractData($driver, $current);
-            if (!empty($data)) {
+            $allowZero = isset($current['allowZero']) ? $current['allowZero'] : true;
+            if (!empty($data) || ($allowZero && ($data === 0 || $data === '0'))) {
                 // Determine the rendering method to use with the second element
                 // of the current spec.
                 $renderMethod = empty($current['renderType'])
