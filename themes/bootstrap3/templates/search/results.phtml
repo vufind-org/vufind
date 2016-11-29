@@ -57,14 +57,22 @@
     <? endif; ?>
     <?=$this->flashmessages()?>
     <div class="hidden-print search-controls row">
-      <div class="col-sm-6">
+      <div class="pull-left">
         <? if ($recordTotal > 0): ?>
-          <?=$this->transEsc("Showing")?>
-          <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
+          <?
+            $transParams = [
+              '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
+              '%%end%%'   => $this->localizedNumber($this->results->getEndRecord()),
+              '%%total%%' => $this->localizedNumber($recordTotal)
+            ];
+            $showingResults = '';
+          ?>
           <? if (!isset($this->skipTotalCount)): ?>
-            <? $this->layout()->srmessage = $this->transEsc('result_count', ['%%count%%' => $this->localizedNumber($recordTotal)]); ?>
-            <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
+            <? $showingResults = $this->translate('showing_results_of_html', $transParams); ?>
+          <? else: ?>
+            <? $showingResults = $this->translate('showing_results_html', $transParams); ?>
           <? endif; ?>
+          <?=$this->layout()->srmessage = $showingResults; ?>
           <? if (isset($this->overrideSearchHeading)): ?>
             <?=$this->overrideSearchHeading?>
           <? elseif ($this->params->getSearchType() == 'basic'): ?>
@@ -79,7 +87,7 @@
       </div>
 
       <? if ($recordTotal > 0): ?>
-        <div class="col-sm-6 text-right">
+        <div class="pull-right text-right">
           <?=$this->render('search/controls/limit.phtml')?>
           <?=$this->render('search/controls/sort.phtml')?>
           <?=$this->render('search/controls/view.phtml')?>

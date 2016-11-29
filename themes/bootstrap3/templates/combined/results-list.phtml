@@ -28,10 +28,17 @@
       <? foreach (($top = $results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
       <? endforeach; ?>
-      <?=$this->transEsc("Showing")?>
-      <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
-      <? if (!isset($view->skipTotalCount)): ?>
-        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
+      <?
+        $transParams = [
+          '%%start%%' => $this->localizedNumber($results->getStartRecord()),
+          '%%end%%'   => $this->localizedNumber($results->getEndRecord()),
+          '%%total%%' => $this->localizedNumber($recordTotal)
+        ];
+      ?>
+      <? if (!isset($this->skipTotalCount)): ?>
+        <?=$this->translate('showing_results_of_html', $transParams); ?>
+      <? else: ?>
+        <?=$this->translate('showing_results_html', $transParams); ?>
       <? endif; ?>
       <? if (isset($view->overrideSearchHeading)): ?>
         <?=$view->overrideSearchHeading?>
