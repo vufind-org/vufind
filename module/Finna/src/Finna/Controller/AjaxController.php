@@ -641,6 +641,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     public function getOrganisationPageFeedAjax()
     {
+        $this->disableSessionWrites();  // avoid session write timing bug
+
         if (null === ($id = $this->params()->fromQuery('id'))) {
             return $this->handleError('getOrganisationPageFeed: missing feed id');
         }
@@ -958,6 +960,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     public function getMyListsAjax()
     {
+        $this->disableSessionWrites();  // avoid session write timing bug
+
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
             return $this->output('Lists disabled', self::STATUS_ERROR, 400);
@@ -1553,6 +1557,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     protected function getFacetDataAjax()
     {
+        $this->disableSessionWrites();  // avoid session write timing bug
         if ($type = $this->getBrowseAction($this->getRequest())) {
             $config
                 = $this->getServiceLocator()->get('VuFind\Config')->get('browse');
