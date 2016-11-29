@@ -28,7 +28,6 @@
 namespace Finna\Search\Results;
 
 use Finna\Search\Factory\UrlQueryHelperFactory;
-use Finna\Search\UrlQueryHelper;
 
 /**
  * Finna search results trait
