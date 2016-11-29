@@ -482,10 +482,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     /**
      * Get request groups
      *
-     * @param integer $bibId    BIB ID
-     * @param array   $patronId Patron information returned by the patronLogin
+     * @param integer $bibId       BIB ID
+     * @param array   $patronId    Patron information returned by the patronLogin
      * method.
-     * @param array $holdDetails Optional array, only passed in when getting a list
+     * @param array   $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
      * placeHold, minus the patron data.  May be used to limit the request group
      * options or may be ignored.

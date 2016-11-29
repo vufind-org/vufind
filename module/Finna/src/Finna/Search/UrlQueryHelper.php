@@ -41,16 +41,6 @@ namespace Finna\Search;
 class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
 {
     /**
-     * Copy constructor
-     *
-     * @return void
-     */
-/*    public function __clone()
-    {
-        $this->queryObject = clone($this->queryObject);
-    }
-*/
-    /**
      * Expose parent method since we need to use it from SearchTabs.
      *
      * @param array $a      Array of parameters to turn into a GET string
