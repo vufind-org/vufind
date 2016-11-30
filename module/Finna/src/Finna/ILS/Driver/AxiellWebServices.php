@@ -932,13 +932,15 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                         // Status table
                         $statusArray = [
                            'availableForLoan' => 'Available',
+                           'fetchnoteSent' => 'On Hold',
                            'onLoan' => 'Charged',
                            //'nonAvailableForLoan' => 'Not Available',
                            'nonAvailableForLoan' => 'On Reference Desk',
                            'onRefDesk' => 'On Reference Desk',
                            'overdueLoan' => 'overdueLoan',
                            'ordered' => 'Ordered',
-                           'returnedToday' => 'returnedToday'
+                           'returnedToday' => 'returnedToday',
+                           'status_inTransfer' => 'In Transit'
                         ];
 
                         // Convert status text
