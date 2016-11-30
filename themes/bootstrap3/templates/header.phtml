@@ -1,77 +1,79 @@
 <? $account = $this->auth()->getManager(); ?>
-<div class="navbar-header">
-  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse">
-    <span class="sr-only">Toggle navigation</span>
-    <i class="fa fa-bars" aria-hidden="true"></i>
-  </button>
-  <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>">VuFind</a>
-</div>
-<? if ($this->layout()->searchbox !== false): ?>
-  <section class="visible-lg">
-    <?=$this->layout()->searchbox ?>
-  </section>
-<? endif; ?>
-<? if (!isset($this->layout()->renderingError)): ?>
-  <div class="collapse navbar-collapse" id="header-collapse">
-    <nav>
-      <ul role="navigation" class="nav navbar-nav navbar-right flip">
-        <? if ($this->feedback()->tabEnabled()): ?>
-          <li>
-            <a id="feedbackLink" data-lightbox href="<?=$this->url('feedback-home') ?>"><i class="fa fa-envelope" aria-hidden="true"></i> <?=$this->transEsc("Feedback")?></a>
-          </li>
-        <? endif; ?>
-        <? $cart = $this->cart(); if ($cart->isActive()): ?>
-          <li id="cartSummary">
-            <a id="cartItems" data-lightbox title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>">
-              <i class="fa fa-suitcase" aria-hidden="true"></i> <strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?>
-              <span class="full<?=!$cart->isFull() ? ' hidden' : '' ?>">(<?=$this->transEsc('bookbag_full') ?>)</span>
-            </a>
-          </li>
-        <? endif; ?>
-        <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
-          <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
-            <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>"><i class="fa fa-home" aria-hidden="true"></i> <?=$this->transEsc("Your Account")?></a>
-          </li>
-          <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
-            <a href="<?=$this->url('myresearch-logout')?>" class="logout"><i class="fa fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?></a>
-          </li>
-          <li id="loginOptions"<? if($account->isLoggedIn()): ?> class="hidden"<? endif ?>>
-            <? if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
-              <a href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Institutional Login")?></a>
-            <? else: ?>
-              <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Login")?></a>
-            <? endif; ?>
-          </li>
-        <? endif; ?>
-
-        <? if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
-          <li class="theme dropdown">
-            <form method="post" name="themeForm" id="themeForm">
-              <input type="hidden" name="ui"/>
-            </form>
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Theme")?> <b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <? foreach ($this->layout()->themeOptions as $current): ?>
-                <li<?=$current['selected'] ? ' class="active"' : ''?>><a href="#" onClick="document.themeForm.ui.value='<?=$this->escapeHtmlAttr($current['name'])?>';document.themeForm.submit()"><?=$this->transEsc($current['desc'])?></a></li>
-              <? endforeach; ?>
-            </ul>
-          </li>
-        <? endif; ?>
-
-        <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
-          <li class="language dropdown">
-            <form method="post" name="langForm" id="langForm">
-              <input type="hidden" name="mylang"/>
-            </form>
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Language")?> <b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
-                <li<?=$this->layout()->userLang == $langCode ? ' class="active"' : ''?>><a href="#" onClick="document.langForm.mylang.value='<?=$langCode?>';document.langForm.submit()"><?=$this->displayLanguageOption($langName)?></a></li>
-              <? endforeach; ?>
-            </ul>
-          </li>
-        <? endif; ?>
-      </ul>
-    </nav>
+<div class="container navbar">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <i class="fa fa-bars" aria-hidden="true"></i>
+    </button>
+    <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>">VuFind</a>
   </div>
-<? endif; ?>
+  <? if (!isset($this->layout()->renderingError)): ?>
+    <div class="collapse navbar-collapse" id="header-collapse">
+      <nav>
+        <ul role="navigation" class="nav navbar-nav navbar-right flip">
+          <? if ($this->feedback()->tabEnabled()): ?>
+            <li>
+              <a id="feedbackLink" data-lightbox href="<?=$this->url('feedback-home') ?>"><i class="fa fa-envelope" aria-hidden="true"></i> <?=$this->transEsc("Feedback")?></a>
+            </li>
+          <? endif; ?>
+          <? $cart = $this->cart(); if ($cart->isActive()): ?>
+            <li id="cartSummary">
+              <a id="cartItems" data-lightbox title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>">
+                <i class="fa fa-suitcase" aria-hidden="true"></i> <strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?>
+                <span class="full<?=!$cart->isFull() ? ' hidden' : '' ?>">(<?=$this->transEsc('bookbag_full') ?>)</span>
+              </a>
+            </li>
+          <? endif; ?>
+          <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
+            <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
+              <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>"><i class="fa fa-home" aria-hidden="true"></i> <?=$this->transEsc("Your Account")?></a>
+            </li>
+            <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
+              <a href="<?=$this->url('myresearch-logout')?>" class="logout"><i class="fa fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?></a>
+            </li>
+            <li id="loginOptions"<? if($account->isLoggedIn()): ?> class="hidden"<? endif ?>>
+              <? if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+                <a href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Institutional Login")?></a>
+              <? else: ?>
+                <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Login")?></a>
+              <? endif; ?>
+            </li>
+          <? endif; ?>
+
+          <? if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
+            <li class="theme dropdown">
+              <form method="post" name="themeForm" id="themeForm">
+                <input type="hidden" name="ui"/>
+              </form>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Theme")?> <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <? foreach ($this->layout()->themeOptions as $current): ?>
+                  <li<?=$current['selected'] ? ' class="active"' : ''?>><a href="#" onClick="document.themeForm.ui.value='<?=$this->escapeHtmlAttr($current['name'])?>';document.themeForm.submit()"><?=$this->transEsc($current['desc'])?></a></li>
+                <? endforeach; ?>
+              </ul>
+            </li>
+          <? endif; ?>
+
+          <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
+            <li class="language dropdown">
+              <form method="post" name="langForm" id="langForm">
+                <input type="hidden" name="mylang"/>
+              </form>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Language")?> <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+                  <li<?=$this->layout()->userLang == $langCode ? ' class="active"' : ''?>><a href="#" onClick="document.langForm.mylang.value='<?=$langCode?>';document.langForm.submit()"><?=$this->displayLanguageOption($langName)?></a></li>
+                <? endforeach; ?>
+              </ul>
+            </li>
+          <? endif; ?>
+        </ul>
+      </nav>
+    </div>
+  <? endif; ?>
+</div>
+<div class="search container navbar">
+  <nav class="nav searchbox hidden-print">
+    <?=$this->layout()->searchbox ?>
+  </nav>
+</div>
