@@ -26,13 +26,14 @@
             $transParams = [
               '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
               '%%end%%'   => $this->localizedNumber($this->results->getEndRecord()),
-              '%%total%%' => $this->localizedNumber($recordTotal)
+              '%%total%%' => $this->localizedNumber($recordTotal),
+              '%%lookfor%%' => $this->escapeHtml($reservesLookfor)
             ];
           ?>
-          <?=$this->translate('showing_results_of_html', $transParams); ?>
-          <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($reservesLookfor)?>'</strong>,
+          <?=$this->translate('showing_results_of_for_html', $transParams); ?>
         <? endif; ?>
         <? if ($qtime = $this->results->getQuerySpeed()): ?>
+          <? if ($recordTotal > 0) ?>, <? endif ?>
           <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
         <? endif; ?>
       </div>

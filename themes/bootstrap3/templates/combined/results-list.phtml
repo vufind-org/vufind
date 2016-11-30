@@ -34,16 +34,22 @@
           '%%end%%'   => $this->localizedNumber($results->getEndRecord()),
           '%%total%%' => $this->localizedNumber($recordTotal)
         ];
+        $showingResults = '';
       ?>
       <? if (!isset($this->skipTotalCount)): ?>
-        <?=$this->translate('showing_results_of_html', $transParams); ?>
+        <? $showingResults = $this->translate('showing_results_of_html', $transParams); ?>
       <? else: ?>
-        <?=$this->translate('showing_results_html', $transParams); ?>
+        <? $showingResults = $this->translate('showing_results_html', $transParams); ?>
       <? endif; ?>
       <? if (isset($view->overrideSearchHeading)): ?>
+        <?=$showingResults ?>
         <?=$view->overrideSearchHeading?>
       <? elseif ($params->getSearchType() == 'basic'): ?>
-        <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
+        <? if (!isset($this->skipTotalCount)): ?>
+          <? $showingResults = $this->translate('showing_results_of_for_html', $transParams); ?>
+        <? else: ?>
+          <? $showingResults = $this->translate('showing_results_for_html', $transParams); ?>
+        <? endif; ?>
       <? endif; ?>
       <? if ($qtime = $results->getQuerySpeed()): ?>
         <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
