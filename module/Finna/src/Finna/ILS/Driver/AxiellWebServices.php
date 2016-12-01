@@ -550,7 +550,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'language'     => 'en',
             'reservationEntities' => $entityId,
             'reservationSource' => $reservationSource,
-            'reservationType' => 'normal',
+            'reservationType' => $this->regionalHold ? 'regional' : 'normal',
             'organisationId' => $organisation,
             'pickUpBranchId' => $branch,
             'validFromDate' => $validFromDate,
