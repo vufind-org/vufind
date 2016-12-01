@@ -940,7 +940,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                            'overdueLoan' => 'overdueLoan',
                            'ordered' => 'Ordered',
                            'returnedToday' => 'returnedToday',
-                           'status_inTransfer' => 'In Transit'
+                           'inTransfer' => 'In Transit'
                         ];
 
                         // Convert status text
