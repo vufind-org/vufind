@@ -159,12 +159,16 @@
           </then>
         </if>
         <!-- unpack the archive into solr/vendor -->
-        <exec command="tar xzf ${srcdir}/downloads/solr-${solr_version}.tgz -p -C ${srcdir}/solr" passthru="true" checkreturn="true" />
+        <untar file="${srcdir}/downloads/solr-${solr_version}.tgz" todir="${srcdir}/solr" />
         <delete dir="${srcdir}/solr/vendor" includeemptydirs="true" failonerror="false" />
         <move file="${srcdir}/solr/solr-${solr_version}" tofile="${srcdir}/solr/vendor" />
         <!-- make scripts executable -->
-        <exec command="chmod -R +x ${srcdir}/solr/vendor/bin/*" />
-        <exec command="chmod -x ${srcdir}/solr/vendor/bin/*.cmd" />
+        <chmod mode="0755">
+          <fileset dir="${srcdir}/solr/vendor/bin">
+            <include name="**/**" />
+            <exclude name="**/*.cmd" />
+          </fileset>
+        </chmod>
         <!-- update the marker file with the installed version -->
         <echo file="${srcdir}/solr/vendor/.installedVersion" message="${solr_version}" />
       </then>
