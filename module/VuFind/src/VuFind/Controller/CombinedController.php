@@ -251,7 +251,9 @@ class CombinedController extends AbstractSearch
                 return $this->redirect()->toRoute('home');
             }
             // If we have a weird value here, report it as an Exception:
-            throw new \Exception('Unexpected search type: "' . $type . '".');
+            throw new \VuFind\Exception\BadRequest(
+                'Unexpected search type: "' . $type . '".'
+            );
         }
     }
 
