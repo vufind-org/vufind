@@ -204,6 +204,7 @@ class SimilarItems extends AbstractChannelProvider
         $retVal = [
             'title' => "{$heading}: {$driver->getBreadcrumb()}",
             'providerId' => $this->providerId,
+            'links' => []
         ];
         if ($tokenOnly) {
             $retVal['token'] = $driver->getUniqueID();
@@ -213,12 +214,20 @@ class SimilarItems extends AbstractChannelProvider
                 $driver->getSourceIdentifier(), $driver->getUniqueID(), $params
             );
             $retVal['contents'] = $this->summarizeRecordDrivers($similar);
-            $retVal['channelsUrl'] = $this->url->fromRoute('channels-record')
-                . '?id=' . urlencode($driver->getUniqueID())
-                . '&source=' . urlencode($driver->getSourceIdentifier());
             $route = $this->recordRouter->getRouteDetails($driver);
-            $retVal['searchUrl'] = $this->url
-                ->fromRoute($route['route'], $route['params']);
+            $retVal['links'][] = [
+                'label' => 'channel_search_icon',
+                'icon' => 'fa-list',
+                'url' => $this->url
+                    ->fromRoute($route['route'], $route['params'])
+            ];
+            $retVal['links'][] = [
+                'label' => 'channel_expand_icon',
+                'icon' => 'fa-search-plus',
+                'url' => $this->url->fromRoute('channels-record')
+                    . '?id=' . urlencode($driver->getUniqueID())
+                    . '&source=' . urlencode($driver->getSourceIdentifier())
+            ];
         }
         return $retVal;
     }

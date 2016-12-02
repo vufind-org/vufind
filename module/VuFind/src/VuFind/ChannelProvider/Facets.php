@@ -244,6 +244,7 @@ class Facets extends AbstractChannelProvider
             'providerId' => $this->providerId,
             'groupId' => current(explode(':', $filter)),
             'token' => $this->getToken($filter, $title),
+            'links' => []
         ];
         if ($tokenOnly) {
             return $retVal;
@@ -256,10 +257,18 @@ class Facets extends AbstractChannelProvider
         $params->addFilter($filter);
 
         $query = $newResults->getUrlQuery();
-        $retVal['searchUrl'] = $this->url
-            ->fromRoute($params->getOptions()->getSearchAction()) . $query;
-        $retVal['channelsUrl'] = $this->url->fromRoute('channels-search')
-            . $query . '&source=' . urlencode($params->getSearchClassId());
+        $retVal['links'][] = [
+            'label' => 'channel_search_icon',
+            'icon' => 'fa-list',
+            'url' => $this->url->fromRoute($params->getOptions()->getSearchAction())
+                . $query
+        ];
+        $retVal['links'][] = [
+            'label' => 'channel_expand_icon',
+            'icon' => 'fa-search-plus',
+            'url' => $this->url->fromRoute('channels-search')
+                . $query . '&source=' . urlencode($params->getSearchClassId())
+        ];
 
         // Run the search and convert the results into a channel:
         $newResults->performAndProcessSearch();

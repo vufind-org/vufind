@@ -18,15 +18,16 @@
     <div class="channel-title">
       <h2>
         <?=$this->escapeHtml($channel['title'])?>
-        <? if (isset($channel['searchUrl'])): ?>
-          <a href="<?=$channel['searchUrl'] ?>"><i class="fa fa-fw fa-list" title="<?=$this->transEsc('channel_search_icon') ?>"></i></a>
-        <? else: ?>
-          <span class="placeholder pull-left">&nbsp;</span>
-        <? endif; ?>
-        <? if (isset($channel['channelsUrl'])): ?>
-          <a href="<?=$channel['channelsUrl'] ?>"><i class="fa fa-fw fa-search-plus" title="<?=$this->transEsc('channel_expand_icon') ?>"></i></a>
-        <? else: ?>
-          <span class="placeholder pull-left">&nbsp;</span>
+        <? if (!empty($channel['links'])): ?>
+            <? foreach ($channel['links'] as $link): ?>
+                <a href="<?=$link['url'] ?>">
+                <? if (isset($link['icon'])): ?>
+                    <i class="fa fa-fw <?=$link['icon'] ?>"<? if(isset($link['label'])):?> title="<?=$this->transEsc($link['label']) ?>"<?endif?>></i>
+                <? else: ?>
+                    <?=$this->transEsc($link['label']) ?>
+                <? endif; ?>
+                </a>
+            <? endforeach; ?>
         <? endif; ?>
       </h2>
     </div>

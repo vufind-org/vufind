@@ -230,6 +230,7 @@ class ListItems extends AbstractChannelProvider
             'title' => $list->title,
             'providerId' => $this->providerId,
             'token' => $list->id,
+            'links' => []
         ];
         if ($tokenOnly) {
             return $retVal;
@@ -237,8 +238,11 @@ class ListItems extends AbstractChannelProvider
         $results = $this->resultsManager->get('Favorites');
         $results->getParams()->initFromRequest(new Parameters(['id' => $list->id]));
         $retVal['contents'] = $this->summarizeRecordDrivers($results->getResults());
-        $retVal['searchUrl']
-            = $this->url->fromRoute('userList', ['id' => $list->id]);
+        $retVal['links'][] = [
+            'label' => 'channel_search_icon',
+            'icon' => 'fa-list',
+            'url' => $this->url->fromRoute('userList', ['id' => $list->id])
+        ];
         return $retVal;
     }
 
