@@ -3,9 +3,13 @@
 function bindChannelAddMenu(scope) {
   $(scope).find('.channel-add-menu .dropdown-menu a').click(function selectAddedChannel(e) {
     $.ajax(e.target.href).done(function addChannelAjaxDone(data) {
+      var list = $(e.target).closest('.dropdown-menu');
       $(e.target).closest('.channel').after(data);
-      $('[data-token="' + e.target.dataset.token + '"]').remove();
+      $('[data-token="' + e.target.dataset.token + '"]').parent().remove();
       $('.channel').each(setupChannelSlider);
+      if (list.children().length === 0) {
+        $('.channel-add-menu[data-group="' + list.closest('.channel-add-menu').data('group') + '"]').remove();
+      }
     });
     return false;
   });
@@ -73,9 +77,8 @@ function setupChannelSlider(i, op) {
       return false;
     });
     // Channel add buttons
-    $('.channel-add-menu[data-group="' + op.dataset.group + '"]')
+    $('.channel-add-menu[data-group="' + op.dataset.group + '"].hidden')
       .clone()
-      .removeAttr('data-group')
       .addClass('pull-right')
       .removeClass('hidden')
       .appendTo($(op).find('.slider-menu'));
