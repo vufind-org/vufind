@@ -20,12 +20,12 @@ connect_with_sid = false
 ; recommended values are LAST_NAME or PATRON_PIN (LAST_NAME is default)
 login_field = PATRON_PIN
 
-; If using PATRON_PIN as login_field, allow fallback to another field if the 
+; If using PATRON_PIN as login_field, allow fallback to another field if the
 ; user has no PIN code. Disabled by default.
-fallback_login_field = LAST_NAME  
+fallback_login_field = LAST_NAME
 
 ; Optional PATRON table field (colon-separated from text field label)
-; that is prompted when the user attempts to log in or add a library card to his 
+; that is prompted when the user attempts to log in or add a library card to his
 ; account.
 ;secondary_login_field = "LAST_NAME:Last Name"
 
@@ -55,7 +55,7 @@ http_timeout = 60
 ;blacklist[] = "Second Bad Value"
 
 ; This setting can be used to limit the fund list to those that are under a specific
-; fund.  Set it to 0 for top-level funds only.  Set it to a FUND_ID deeper in the 
+; fund.  Set it to 0 for top-level funds only.  Set it to a FUND_ID deeper in the
 ; fund tree to filter out unwanted values.  Leave it commented out to get all funds.
 ;parent_fund = 0
 
@@ -110,19 +110,19 @@ HMACKeys = item_id:holdtype:level
 defaultRequiredDate = 0:1:0
 
 ; extraHoldFields - A colon-separated list used to display extra visible fields in the
-; place holds form. Supported values are "comments", "requiredByDate", 
+; place holds form. Supported values are "comments", "requiredByDate",
 ; "pickUpLocation" and "requestGroup"
 extraHoldFields = comments:requiredByDate:pickUpLocation
 
 ; A Pick Up Location Code used to pre-select the pick up location drop down list and
-; provide a default option if others are not available. Must be one of the following: 
+; provide a default option if others are not available. Must be one of the following:
 ; 1) empty string to indicate that the first location is default (default setting)
 ; 2) "user-selected" to indicate that the user always has to choose the location
 ; 3) a value within the Location IDs returned by getPickUpLocations()
 defaultPickUpLocation = ""
 
 ; The maximum number of holding items to generate request links for. The process of
-; checking the API for a valid hold is intensive. Any hold items above this this 
+; checking the API for a valid hold is intensive. Any hold items above this this
 ; limit will have their hold status checked via ajax or when a user clicks on the
 ; link. Use "0" to check all items via ajax. Default is 15.
 holdCheckLimit = 0
@@ -143,7 +143,7 @@ enableRecalls = false
 ;defaultRequestGroup = ""
 
 ; By default the request group list is sorted alphabetically. This setting can be
-; used to manually set the order by entering request group IDs as a colon-separated 
+; used to manually set the order by entering request group IDs as a colon-separated
 ; list.
 ; This setting is only effective if requestGroup is specified in extraHoldFields.
 ;requestGroupOrder = 33
@@ -155,11 +155,11 @@ enableRecalls = false
 ;pickupLocationsInRequestGroup = true
 
 ; By default a title hold can be placed even when there are no items. Uncomment this
-; to prevent holds if no items exist. If request groups are enabled, item existence 
+; to prevent holds if no items exist. If request groups are enabled, item existence
 ; is checked only in the selected request group.
 ;checkItemsExist = true
 
-; By default a title hold can be placed even when there are items available. 
+; By default a title hold can be placed even when there are items available.
 ; Uncomment this to prevent holds if items are available. If request groups are
 ; enabled, availability is checked only in the selected request group.
 ;checkItemsNotAvailable = true
@@ -170,7 +170,7 @@ enableRecalls = false
 ; This setting is only effective if requestGroup is specified in extraHoldFields.
 disableAvailabilityCheckForRequestGroups = "15:19:21:32"
 
-; A colon-separated list of ids from the LOCATION table. If provided, items with a 
+; A colon-separated list of ids from the LOCATION table. If provided, items with a
 ; matching location are excluded from item availability.
 ;excludedItemLocations = "2:4:23:10"
 
@@ -218,12 +218,12 @@ display_statuses = 1:2:3:5:8:9
 
 ; Usually pickup location does not need to be set as Voyager sets it when the call
 ; slip is processed, but if processing is not done and the pickup location needs to
-; be set, this setting can be enabled to limit pickup locations by the call slip 
-; print group. 
-; N.B. If you enable this setting, also include "requestType" in HMACKeys above. 
+; be set, this setting can be enabled to limit pickup locations by the call slip
+; print group.
+; N.B. If you enable this setting, also include "requestType" in HMACKeys above.
 ;pickupByCallSlipGroup = true
 
-; This section controls UB (Universal Borrowing, ILL in VuFind) behavior. To enable, 
+; This section controls UB (Universal Borrowing, ILL in VuFind) behavior. To enable,
 ; uncomment (at minimum) the HMACKeys and extraFields settings below. See also
 ; section ILLRequestSources for mapping between patron ID's and UB libraries.
 [ILLRequests]
@@ -232,7 +232,7 @@ display_statuses = 1:2:3:5:8:9
 HMACKeys = item_id:holdings_id
 
 ; extraFields - A colon-separated list used to display extra visible fields in the
-; request form. Supported values are "pickUpLibrary", 
+; request form. Supported values are "pickUpLibrary",
 ; "pickUpLibraryLocation", "requiredByDate" and "comments" (although comments are
 ; not properly stored for UB requests at least in version 8.1)
 extraFields = pickUpLibrary:pickUpLibraryLocation:requiredByDate
@@ -248,16 +248,16 @@ defaultRequiredDate = 0:1:0
 
 ; This section lists the valid patron id prefixes for UB (ILL in VuFind) requests,
 ; and maps them to the their Voyager UB library IDs. Any patron of another library
-; with a prefix listed here may attempt a UB request in this system. 
+; with a prefix listed here may attempt a UB request in this system.
 [ILLRequestSources]
 ;devdb = "1@DEVDB20011102161616"
 ;otherdb = "1@OTHERDB20011030191919"
 
 ; Status rankings can be used to either promote or demote certain item statuses when
-; determining the status to be displayed. The lower the rank, the higher the 
+; determining the status to be displayed. The lower the rank, the higher the
 ; priority. The sample values below make "Missing" most important and drop request
-; statuses below others so that e.g. "On Hold" is displayed instead of 
-; "Hold Request".    
+; statuses below others so that e.g. "On Hold" is displayed instead of
+; "Hold Request".
 ;[StatusRankings]
 Missing = 0
 Recall Request = 99
@@ -268,8 +268,8 @@ Hold Request = 99
 ; How purchase history is displayed. Supported values are:
 ; 1) false - Purchase history is not displayed at all.
 ; 2) true - Purchase history is displayed below other holdings (default)
-; 3) "split" - Purchase history is split to each corresponding holdings record and 
-; displayed by location 
+; 3) "split" - Purchase history is split to each corresponding holdings record and
+; displayed by location
 purchase_history = "split"
 ; Fields to include in notes. Default is "852z".
 notes = "506au:845a:852z"
@@ -282,17 +282,17 @@ indexes = "868az"
 ; By default holdings are sorted by Voyager's Holdings Sort Groups. Uncomment this
 ; line to disable sorting.
 ;use_sort_groups = false
-; A colon-separated list of purchase order statuses displayed to the users for 
-; records without items. * = all. 
+; A colon-separated list of purchase order statuses displayed to the users for
+; records without items. * = all.
 ; Default is none.
 ;order_statuses = "Pending:Approved:Approved/Sent"
-; A colon-separated list of allowed BIB formats for purchase order statuses to be 
-; displayed. 
-; Default is any. 
+; A colon-separated list of allowed BIB formats for purchase order statuses to be
+; displayed.
+; Default is any.
 ;order_formats = 'am:jm'
-; Extra texts for the holdings display. These are run through translation, may 
+; Extra texts for the holdings display. These are run through translation, may
 ; contain HTML and %%recordId%% may be used as a placeholder for the BIB ID.
-;extra_texts[] = fennica_viola_access_rights_html 
+;extra_texts[] = fennica_viola_access_rights_html
 ; A colon-separated list of item statuses that are ignored when the first due date
 ; is being calculated.
 ignore_due_date_in_statuses = "Lost--Library Applied:Lost--System Applied:Missing:At bindery:Cataloging review"
@@ -302,7 +302,7 @@ ignore_due_date_in_statuses = "Lost--Library Applied:Lost--System Applied:Missin
 ; Uncomment this line to display the location where each loan was made
 display_borrowing_location = true
 
-; Uncomment the following lines to enable password (PIN) change 
+; Uncomment the following lines to enable password (PIN) change
 [changePassword]
 ; PIN change parameters. The default limits are taken from the interface documentation.
 minLength = 5
@@ -327,10 +327,10 @@ maxLength = 12
 ; emailAddress is required for the email method
 ;emailAddress =
 ; Uncomment the following lines to change which fields are included in the form
-; when using the email method. Format for the fields is label:profile_field  
+; when using the email method. Format for the fields is label:profile_field
 ; Default is address, zip, city and country. Email and phone are included unless
-; they have their own sections [updateEmail] or [updatePhone] defined. Also custom 
-; fields can be defined.  
+; they have their own sections [updateEmail] or [updatePhone] defined. Also custom
+; fields can be defined.
 ;fields[] = Address:address1
 ;fields[] = Zip:zip
 ;fields[] = City:city
@@ -338,10 +338,41 @@ maxLength = 12
 ;fields[] = Phone:phone
 ;fields[] = Email:email
 ;fields[] = Additional info:info
-; url is required for the url method. url can be a single address or an array of 
+; url is required for the url method. url can be a single address or an array of
 ; language-specific addresses. First example is a single one:
 ;url = "http://address.of.change.form"
-; Alternatively different links can be specified for each language:    
+; Alternatively different links can be specified for each language:
 ;url[fi] = http://address.of.change.form/finnish
 ;url[sv] = http://address.of.change.form/swedish
 ;url[en-gb] = http://address.of.change.form/english
+
+[OnlinePayment]
+; Whether online payment is enabled. Default is false.
+;enabled = true
+; Fees listed are not payable online and block the payment of other fees.
+; (Voyager's SIP module does not allow partial payments (not including accrued fines))
+;nonPayable[] = 'Lost Item Replacement'
+; Transaction fee (in cents) added to each payment
+;transactionFee = 0
+; Minimum fee (in cents) allowed to be paid online
+;minimumFee = 60
+; Email address for transactions that could not be registered.
+;errorEmail = ''
+; Maximum duration (in minutes) for a transaction.
+;transactionMaxDuration = 15
+; Currency
+;currency = 'EUR'
+
+; Online payment registration method (SIP2 is currently the only choice)
+registrationMethod = 'SIP2'
+; Selfcheck service host
+registrationParams['host'] = host.name
+; Selfcheck service part
+registrationParams['port'] = 1234
+; Selfcheck service username
+registrationParams['userId'] = 'USER'
+; Selfcheck service password
+registrationParams['password'] = 'PASSWORD'
+; Selfcheck institution ID
+; In Voyager systems this is the Voyager location code
+registrationParams['locationCode'] = 'LocCode'
