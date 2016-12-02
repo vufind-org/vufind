@@ -166,7 +166,7 @@ function recaptchaOnLoad() {
   if (typeof grecaptcha !== 'undefined') {
     var captchas = $('.g-recaptcha:empty');
     for (var i = 0; i < captchas.length; i++) {
-      captchas[i].dataset.captchaId = grecaptcha.render(captchas[i], captchas[i].dataset);
+      $(captchas[i]).data('captchaId', grecaptcha.render(captchas[i], $(captchas[i]).data()));
     }
   }
 }
@@ -213,46 +213,43 @@ function setupOffcanvas() {
 
 function setupAutocomplete() {
   // Search autocomplete
-  $('.autocomplete').each(function autocompleteSetup(i, op) {
-    $(op).autocomplete({
-      maxResults: 10,
-      loadingString: VuFind.translate('loading') + '...',
-      handler: function vufindACHandler(input, cb) {
-        var query = input.val();
-        var searcher = extractClassParams(input);
-        var hiddenFilters = [];
-        $(input).closest('.searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
-          hiddenFilters.push($(this).val());
-        });
-        $.fn.autocomplete.ajax({
-          url: VuFind.path + '/AJAX/JSON',
-          data: {
-            q: query,
-            method: 'getACSuggestions',
-            searcher: searcher.searcher,
-            type: searcher.type ? searcher.type : $(input).closest('.searchForm').find('.searchForm_type').val(),
-            hiddenFilters: hiddenFilters
-          },
-          dataType: 'json',
-          success: function autocompleteJSON(json) {
-            if (json.data.length > 0) {
-              var datums = [];
-              for (var j = 0; j < json.data.length; j++) {
-                datums.push(json.data[j]);
-              }
-              cb(datums);
-            } else {
-              cb([]);
+  $('#searchForm_lookfor').autocomplete({
+    maxResults: 10,
+    loadingString: VuFind.translate('loading') + '...',
+    handler: function vufindACHandler(input, cb) {
+      var query = input.val();
+      var searcher = extractClassParams(input);
+      var hiddenFilters = [];
+      $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
+        hiddenFilters.push($(this).val());
+      });
+      $.fn.autocomplete.ajax({
+        url: VuFind.path + '/AJAX/JSON',
+        data: {
+          q: query,
+          method: 'getACSuggestions',
+          searcher: searcher.searcher,
+          type: searcher.type ? searcher.type : $('#searchForm_type').val(),
+          hiddenFilters: hiddenFilters
+        },
+        dataType: 'json',
+        success: function autocompleteJSON(json) {
+          if (json.data.length > 0) {
+            var datums = [];
+            for (var j = 0; j < json.data.length; j++) {
+              datums.push(json.data[j]);
             }
+            cb(datums);
+          } else {
+            cb([]);
           }
-        });
-      }
-    });
+        }
+      });
+    }
   });
   // Update autocomplete on type change
-  $('.searchForm_type').change(function searchTypeChange() {
-    var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
-    $lookfor.autocomplete('clear cache');
+  $('#searchForm_type').change(function searchTypeChange() {
+    $('#searchForm_lookfor').autocomplete('clear cache');
   });
 }
 
@@ -260,7 +257,7 @@ function setupAutocomplete() {
  * Handle arrow keys to jump to next record
  */
 function keyboardShortcuts() {
-  var $searchform = $('.searchForm_lookfor');
+  var $searchform = $('#searchForm_lookfor');
   if ($('.pager').length > 0) {
     $(window).keydown(function shortcutKeyDown(e) {
       if (!$searchform.is(':focus')) {
@@ -312,16 +309,31 @@ function setupFacets() {
     var source = $('#result0 .hiddenSource').val();
     var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
     if (storedItem) {
-      item.className = storedItem;
-      if ($(item).hasClass('in')) {
-        $(item).collapse('show');
-      } else {
-        $(item).collapse('hide');
+      var saveTransition = $.support.transition;
+      try {
+        $.support.transition = false;
+        if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
+          $(item).collapse('show');
+        } else {
+          $(item).collapse('hide');
+        }
+      } finally {
+        $.support.transition = saveTransition;    
       }
     }
   });
   $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
   $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
+}
+
+function setupIeSupport() {
+  // Disable Bootstrap modal focus enforce on IE since it breaks Recaptcha.
+  // Cannot use conditional comments since IE 11 doesn't support them but still has
+  // the issue
+  var ua = window.navigator.userAgent;
+  if (ua.indexOf('MSIE') || ua.indexOf('Trident/')) {
+    $.fn.modal.Constructor.prototype.enforceFocus = function emptyEnforceFocus() { };
+  }
 }
 
 $(document).ready(function commonDocReady() {
@@ -393,6 +405,8 @@ $(document).ready(function commonDocReady() {
   if (sessionStorage.getItem('vufind_retain_filters')) {
     var state = (sessionStorage.getItem('vufind_retain_filters') === 'true');
     $('.searchFormKeepFilters').prop('checked', state);
-    $('.applied-filter').prop('checked', state);
+    $('#applied-filter').prop('checked', state);
   }
+
+  setupIeSupport();
 });

@@ -53,6 +53,19 @@ $(document).ready(function() {
     .data('slider');
   {$init}
 });
+
+$('#{$escField}from, #{$escField}to').change(function () {
+  var fromValue = Number($('#{$escField}from').val());
+  var toValue = Number($('#{$escField}to').val());
+  $('#{$escField}dateSlider').slider(
+    'setValue',
+    [
+      isNaN(fromValue) || fromValue <= 0 ? {$min} : fromValue,
+      isNaN(toValue) || toValue <= 0 ? {$max} : toValue
+    ],
+    true
+  );
+});
 JS;
         ?>
         <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>

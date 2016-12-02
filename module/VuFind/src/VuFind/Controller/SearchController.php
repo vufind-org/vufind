@@ -365,10 +365,10 @@ class SearchController extends AbstractSearch
         // (check it's set first -- RSS feed will return a response model rather
         // than a view model):
         if (isset($view->results)) {
-            $url = $view->results->getUrlQuery();
-            $url->setDefaultParameter('range', $range);
-            $url->setDefaultParameter('department', $dept);
-            $url->setSuppressQuery(true);
+            $view->results->getUrlQuery()
+                ->setDefaultParameter('range', $range)
+                ->setDefaultParameter('department', $dept)
+                ->setSuppressQuery(true);
         }
 
         // We don't want new items hidden filters to propagate to other searches:
@@ -483,11 +483,11 @@ class SearchController extends AbstractSearch
         // (but only do this if we have access to a results object, which we
         // won't in RSS mode):
         if (isset($view->results)) {
-            $url = $view->results->getUrlQuery();
-            $url->setDefaultParameter('course', $course);
-            $url->setDefaultParameter('inst', $inst);
-            $url->setDefaultParameter('dept', $dept);
-            $url->setSuppressQuery(true);
+            $view->results->getUrlQuery()
+                ->setDefaultParameter('course', $course)
+                ->setDefaultParameter('inst', $inst)
+                ->setDefaultParameter('dept', $dept)
+                ->setSuppressQuery(true);
         }
         return $view;
     }

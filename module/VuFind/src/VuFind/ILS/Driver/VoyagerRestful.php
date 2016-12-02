@@ -590,7 +590,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         if ('driver' == $mode && 'auto' == $holdType) {
             $itemID = isset($data['item_id']) ? $data['item_id'] : false;
             $result = $this->determineHoldType($patron['id'], $id, $itemID);
-            if (!$result || $result == 'block') {
+            if (!$result) {
                 return false;
             }
         }
@@ -840,14 +840,18 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     /**
      * Get request groups
      *
-     * @param int   $bibId  BIB ID
-     * @param array $patron Patron information returned by the patronLogin
+     * @param int   $bibId       BIB ID
+     * @param array $patron      Patron information returned by the patronLogin
      * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the request group
+     * options or may be ignored.
      *
      * @return array False if request groups not in use or an array of
      * associative arrays with id and name keys
      */
-    public function getRequestGroups($bibId, $patron)
+    public function getRequestGroups($bibId, $patron, $holdDetails = null)
     {
         if (!$this->requestGroupsEnabled) {
             return false;
@@ -1185,6 +1189,32 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             }
         }
         return $blockReason;
+    }
+
+    /**
+     * Check whether the patron is blocked from placing requests (holds/ILL/SRR).
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getRequestBlocks($patron)
+    {
+        return $this->checkAccountBlocks($patron['id']);
+    }
+
+    /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getAccountBlocks($patron)
+    {
+        return $this->checkAccountBlocks($patron['id']);
     }
 
     /**
@@ -1576,7 +1606,7 @@ EOT;
 
         // Check for account Blocks
         if ($this->checkAccountBlocks($patronId)) {
-            return 'block';
+            return false;
         }
 
         // Check Recalls First
@@ -1932,7 +1962,7 @@ EOT;
         // Let's determine Hold Type now
         if ($type == 'auto') {
             $type = $this->determineHoldType($patron['id'], $bibId, $itemId);
-            if (!$type || $type == 'block') {
+            if (!$type) {
                 return $this->holdError('hold_error_blocked');
             }
         }
@@ -2340,14 +2370,17 @@ EOT;
     }
 
     /**
-     * Get Patron Remote Storage Retrieval Requests (Call Slips). Gets remote
-     * callslips via the API.
+     * Get Patron Storage Retrieval Requests (Call Slips). Gets callslips via
+     * the API. Returns only remote slips by default since more complete data
+     * can be retrieved directly from the local database; however, the $local
+     * parameter exists to support potential local customizations.
      *
      * @param array $patron The patron array from patronLogin
+     * @param bool  $local  Whether to include local callslips
      *
      * @return mixed        Array of the patron's storage retrieval requests.
      */
-    protected function getRemoteCallSlips($patron)
+    protected function getCallSlips($patron, $local = false)
     {
         // Build Hierarchy
         $hierarchy = [
@@ -2371,8 +2404,11 @@ EOT;
         $requests = [];
         if (isset($results->callslips->institution)) {
             foreach ($results->callslips->institution as $institution) {
-                if ($this->isLocalInst((string)$institution->attributes()->id)) {
-                    // Ignore local callslips, we have them already
+                if (!$local
+                    && $this->isLocalInst((string)$institution->attributes()->id)
+                ) {
+                    // Unless $local is set, ignore local callslips; we have them
+                    // already....
                     continue;
                 }
                 foreach ($institution->callslip as $callslip) {
@@ -3121,7 +3157,7 @@ EOT;
     {
         return array_merge(
             $this->getHoldsFromApi($patron, false),
-            $this->getRemoteCallSlips($patron)
+            $this->getCallSlips($patron, false) // remote only
         );
     }
 
