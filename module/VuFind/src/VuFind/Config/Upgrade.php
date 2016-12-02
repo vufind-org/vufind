@@ -644,17 +644,6 @@ class Upgrade
         // Eliminate obsolete config override settings:
         unset($newConfig['Extra_Config']);
 
-        // Update stats settings:
-        if (isset($newConfig['Statistics']['enabled'])) {
-            // If "enabled" is on, this equates to the new system being in Solr mode:
-            if ($newConfig['Statistics']['enabled']) {
-                $newConfig['Statistics']['mode'] = ['Solr'];
-            }
-
-            // Whether or not "enabled" is on, remove the deprecated setting:
-            unset($newConfig['Statistics']['enabled']);
-        }
-
         // Update generator if it is default value:
         if (isset($newConfig['Site']['generator'])
             && $newConfig['Site']['generator'] == 'VuFind ' . $this->from

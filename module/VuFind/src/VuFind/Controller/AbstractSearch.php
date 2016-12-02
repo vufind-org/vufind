@@ -55,13 +55,6 @@ class AbstractSearch extends AbstractBase
     protected $saveToHistory = true;
 
     /**
-     * Should we log search statistics?
-     *
-     * @var bool
-     */
-    protected $logStatistics = true;
-
-    /**
      * Should we remember the search for breadcrumb purposes?
      *
      * @var bool
@@ -309,12 +302,6 @@ class AbstractSearch extends AbstractBase
             if ($this->resultScrollerActive()) {
                 $this->resultScroller()->init($results);
             }
-        }
-
-        // Save statistics:
-        if ($this->logStatistics) {
-            $this->getServiceLocator()->get('VuFind\SearchStats')
-                ->log($results, $this->getRequest());
         }
 
         // Special case: If we're in RSS view, we need to render differently:

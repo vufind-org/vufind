@@ -230,7 +230,6 @@ $config = [
             'VuFind\SessionPluginManager' => 'VuFind\Service\Factory::getSessionPluginManager',
             'VuFind\SMS' => 'VuFind\SMS\Factory',
             'VuFind\Solr\Writer' => 'VuFind\Service\Factory::getSolrWriter',
-            'VuFind\StatisticsDriverPluginManager' => 'VuFind\Service\Factory::getStatisticsDriverPluginManager',
             'VuFind\Tags' => 'VuFind\Service\Factory::getTags',
             'VuFind\Translator' => 'VuFind\Service\Factory::getTranslator',
             'VuFind\WorldCatUtils' => 'VuFind\Service\Factory::getWorldCatUtils',
@@ -628,20 +627,7 @@ $config = [
                     'memcachesession' => 'Memcache',
                     'mysqlsession' => 'Database',
                 ],
-            ],
-            'statistics_driver' => [
-                'abstract_factories' => ['VuFind\Statistics\Driver\PluginFactory'],
-                'factories' => [
-                    'file' => 'VuFind\Statistics\Driver\Factory::getFile',
-                    'solr' => 'VuFind\Statistics\Driver\Factory::getSolr',
-                ],
-                'invokables' => [
-                    'db' => 'VuFind\Statistics\Driver\Db',
-                ],
-                'aliases' => [
-                    'database' => 'db',
-                ],
-            ],
+            ]
         ],
         // This section behaves just like recorddriver_tabs below, but is used for
         // the collection module instead of the standard record view.

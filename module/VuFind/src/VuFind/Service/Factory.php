@@ -621,22 +621,6 @@ class Factory
     }
 
     /**
-     * Construct the record stats helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Statistics\Record
-     */
-    public static function getRecordStats(ServiceManager $sm)
-    {
-        return new \VuFind\Statistics\Record(
-            $sm->get('VuFind\Config')->get('config'),
-            $sm->get('VuFind\StatisticsDriverPluginManager'),
-            $sm->get('VuFind\SessionManager')->getId()
-        );
-    }
-
-    /**
      * Construct the RecordTab Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.
@@ -771,22 +755,6 @@ class Factory
     }
 
     /**
-     * Construct the search stats helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Statistics\Search
-     */
-    public static function getSearchStats(ServiceManager $sm)
-    {
-        return new \VuFind\Statistics\Search(
-            $sm->get('VuFind\Config')->get('config'),
-            $sm->get('VuFind\StatisticsDriverPluginManager'),
-            $sm->get('VuFind\SessionManager')->getId()
-        );
-    }
-
-    /**
      * Construct the SearchTabs helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -832,18 +800,6 @@ class Factory
             $sm->get('VuFind\Search\BackendManager'),
             $sm->get('VuFind\DbTablePluginManager')->get('changetracker')
         );
-    }
-
-    /**
-     * Construct the Statistics\Driver Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Statistics\Driver\PluginManager
-     */
-    public static function getStatisticsDriverPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Statistics\Driver');
     }
 
     /**
