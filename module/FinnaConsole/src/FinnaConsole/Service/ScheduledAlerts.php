@@ -559,8 +559,8 @@ class ScheduledAlerts extends AbstractService
 Usage:
   VUFIND_LOCAL_MODULES='FinnaTheme,FinnaSearch,Finna,FinnaConsole'
   php $appPath/util/scheduled_alerts.php
-    [view base directory]
-    [VuFind local configuration directory]
+    <view base directory>
+    <VuFind local configuration directory>
 
             For example:
   VUFIND_LOCAL_MODULES='FinnaTheme,FinnaSearch,Finna,FinnaConsole'

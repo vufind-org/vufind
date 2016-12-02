@@ -261,7 +261,7 @@ class OnlinePaymentMonitor extends AbstractService
                         $patron = $this->catalog->patronLogin(
                             $card['cat_username'], $cardUser->getCatPassword()
                         );
-                        
+
                         if ($patron) {
                             break;
                         }
@@ -424,7 +424,7 @@ class OnlinePaymentMonitor extends AbstractService
 // @codingStandardsIgnoreStart
         return <<<EOT
 Usage:
-  php index.php util online_payment_monitor <expire_hours> <internal_error_email> <from_email> <report_interval_hours>
+  php index.php util online_payment_monitor <expire_hours> <from_email> <report_interval_hours>
 
   Validates unregistered online payment transactions.
     expire_hours          Number of hours before considering unregistered
