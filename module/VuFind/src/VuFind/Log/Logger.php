@@ -119,6 +119,36 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             $this->addWriters($writer, $filters);
         }
 
+        // Activate slack logging, if applicable:
+        if (isset($config->Logging->slack) && isset($config->Logging->slackurl)) {
+            $options = [];
+            // Get config
+            list($channel, $error_types) = explode(':', $config->Logging->slack);
+            if ($error_types == null) {
+                $error_types = $channel;
+                $channel = null;
+            }
+            if ($channel) {
+                $options['channel'] = $channel;
+            }
+            if (isset($config->Logging->slackname)) {
+                $options['name'] = $config->Logging->slackname;
+            }
+            $filters = explode(',', $error_types);
+            // Make Writers
+            $writer = new Writer\Slack(
+                $config->Logging->slackurl,
+                $this->getServiceLocator()->get('VuFind\Http')->createClient(),
+                $options
+            );
+            $writer->setContentType('application/json');
+            $formatter = new \Zend\Log\Formatter\Simple(
+                "*%priorityName%*: %message%"
+            );
+            $writer->setFormatter($formatter);
+            $this->addWriters($writer, $filters);
+        }
+
         // Null (no-op) writer to avoid errors
         if (count($this->writers) == 0) {
             $nullWriter = 'Zend\Log\Writer\Noop';
@@ -270,6 +300,24 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Given an exception, return a severity level for logging purposes.
+     *
+     * @param \Exception $error Exception to analyze
+     *
+     * @return int
+     */
+    protected function getSeverityFromException($error)
+    {
+        // Treat unexpected or 5xx errors as more severe than 4xx errors.
+        if ($error instanceof \VuFind\Exception\HttpStatusInterface
+            && in_array($error->getHttpStatus(), [403, 404])
+        ) {
+            return BaseLogger::WARN;
+        }
+        return BaseLogger::CRIT;
+    }
+
+    /**
      * Log an exception triggered by ZF2 for administrative purposes.
      *
      * @param \Exception              $error  Exception to log
@@ -281,7 +329,12 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
     {
         // We need to build a variety of pieces so we can supply
         // information at five different verbosity levels:
-        $baseError = $error->getMessage();
+        $baseError = get_class($error) . ' : ' . $error->getMessage();
+        $prev = $error->getPrevious();
+        while ($prev) {
+            $baseError .= ' ; ' . get_class($prev) . ' : ' . $prev->getMessage();
+            $prev = $prev->getPrevious();
+        }
         $referer = $server->get('HTTP_REFERER', 'none');
         $basicServer
             = '(Server: IP = ' . $server->get('REMOTE_ADDR') . ', '
@@ -329,7 +382,7 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             5 => $baseError . $detailedServer . $detailedBacktrace
         ];
 
-        $this->log(BaseLogger::CRIT, $errorDetails);
+        $this->log($this->getSeverityFromException($error), $errorDetails);
     }
 
     /**

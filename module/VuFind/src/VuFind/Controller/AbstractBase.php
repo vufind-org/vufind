@@ -59,6 +59,13 @@ class AbstractBase extends AbstractActionController
     protected $accessPermission = false;
 
     /**
+     * Behavior when access is denied. Valid values are 'promptLogin' and 'exception'
+     *
+     * @var string
+     */
+    protected $accessDeniedBehavior = 'promptLogin';
+
+    /**
      * Use preDispatch event to block access when appropriate.
      *
      * @param MvcEvent $e Event object
@@ -71,9 +78,11 @@ class AbstractBase extends AbstractActionController
         if ($this->accessPermission
             && !$this->getAuthorizationService()->isGranted($this->accessPermission)
         ) {
-            if (!$this->getUser()) {
-                $e->setResponse($this->forceLogin(null, [], false));
-                return;
+            if ($this->accessDeniedBehavior == 'promptLogin') {
+                if (!$this->getUser()) {
+                    $e->setResponse($this->forceLogin(null, [], false));
+                    return;
+                }
             }
             throw new ForbiddenException('Access denied.');
         }
@@ -460,10 +469,10 @@ class AbstractBase extends AbstractActionController
      * Check to see if a form was submitted from its post value
      * Also validate the Captcha, if it's activated
      *
-     * @param string  $submitElement Name of the post field of the submit button
-     * @param boolean $useRecaptcha  Are we using captcha in this situation?
+     * @param string $submitElement Name of the post field of the submit button
+     * @param bool   $useRecaptcha  Are we using captcha in this situation?
      *
-     * @return boolean
+     * @return bool
      */
     protected function formWasSubmitted($submitElement = 'submit',
         $useRecaptcha = false
@@ -636,5 +645,16 @@ class AbstractBase extends AbstractActionController
     protected function clearFollowupUrl()
     {
         $this->followup()->clear('url');
+    }
+
+    /**
+     * Get the tab configuration for this controller.
+     *
+     * @return array
+     */
+    protected function getRecordTabConfig()
+    {
+        $cfg = $this->getServiceLocator()->get('Config');
+        return $cfg['vufind']['recorddriver_tabs'];
     }
 }

@@ -205,6 +205,9 @@ class Factory
             && $config->Cookies->limit_by_path
         ) {
             $path = $sm->get('Request')->getBasePath();
+            if (empty($path)) {
+                $path = '/';
+            }
         }
         $secure = isset($config->Cookies->only_secure)
             ? $config->Cookies->only_secure
@@ -532,7 +535,7 @@ class Factory
             : (isset($config->Captcha->privateKey)
                 ? $config->Captcha->privateKey
                 : '');
-        $recaptcha = new \LosReCaptcha\Service\ReCaptcha(
+        $recaptcha = new \VuFind\Service\ReCaptcha(
             $siteKey, $secretKey, ['ssl' => true]
         );
         if (isset($config->Captcha->theme)) {

@@ -31,7 +31,6 @@ namespace VuFind\Db\Table;
 use minSO;
 use Zend\Db\Adapter\ParameterContainer;
 use Zend\Db\TableGateway\Feature;
-use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for search
@@ -45,6 +44,8 @@ use Zend\Db\Sql\Expression;
  */
 class Search extends Gateway
 {
+    use ExpirationTrait;
+
     /**
      * Constructor
      */
@@ -72,7 +73,7 @@ class Search extends Gateway
             }
             $eventFeature = new Feature\EventFeature();
             $eventFeature->getEventManager()->attach(
-                Feature\EventFeature::EVENT_PRE_INSERT, [$this, 'onPreInsert']
+                Feature\EventFeature::EVENT_PRE_INITIALIZE, [$this, 'onPreInit']
             );
             $this->featureSet->addFeature($eventFeature);
         }
@@ -81,7 +82,7 @@ class Search extends Gateway
     }
 
     /**
-     * Customize the Insert object to include extra metadata about the
+     * Customize the database object to include extra metadata about the
      * search_object field so that it will be written correctly. This is
      * triggered only when we're interacting with PostgreSQL; MySQL works fine
      * without the extra hint.
@@ -90,7 +91,7 @@ class Search extends Gateway
      *
      * @return void
      */
-    public function onPreInsert($event)
+    public function onPreInit($event)
     {
         $driver = $event->getTarget()->getAdapter()->getDriver();
         $statement = $driver->createStatement();
@@ -130,64 +131,6 @@ class Search extends Gateway
             $select->order('created');
         };
         return $this->select($callback);
-    }
-
-    /**
-     * Delete expired searches. Allows setting of 'from' and 'to' ID's so that rows
-     * can be deleted in small batches.
-     *
-     * @param int $daysOld Age in days of an "expired" search.
-     * @param int $idFrom  Lowest id of rows to delete.
-     * @param int $idTo    Highest id of rows to delete.
-     *
-     * @return int Number of rows deleted
-     */
-    public function deleteExpired($daysOld = 2, $idFrom = null, $idTo = null)
-    {
-        // Determine the expiration date:
-        $expireDate = date('Y-m-d H:i:s', time() - $daysOld * 24 * 60 * 60);
-        $callback = function ($select) use ($expireDate, $idFrom, $idTo) {
-            $where = $select->where->lessThan('created', $expireDate)
-                ->equalTo('saved', 0);
-            if (null !== $idFrom) {
-                $where->and->greaterThanOrEqualTo('id', $idFrom);
-            }
-            if (null !== $idTo) {
-                $where->and->lessThanOrEqualTo('id', $idTo);
-            }
-        };
-        return $this->delete($callback);
-    }
-
-    /**
-     * Get the lowest id and highest id for expired searches.
-     *
-     * @param int $daysOld Age in days of an "expired" search.
-     *
-     * @return array|bool Array of lowest id and highest id or false if no expired
-     * records found
-     */
-    public function getExpiredIdRange($daysOld = 2)
-    {
-        // Determine the expiration date:
-        $expireDate = date('Y-m-d H:i:s', time() - $daysOld * 24 * 60 * 60);
-        $callback = function ($select) use ($expireDate) {
-            $select->where->lessThan('created', $expireDate)->equalTo('saved', 0);
-        };
-        $select = $this->getSql()->select();
-        $select->columns(
-            [
-                'id' => new Expression('1'), // required for TableGateway
-                'minId' => new Expression('MIN(id)'),
-                'maxId' => new Expression('MAX(id)'),
-            ]
-        );
-        $select->where($callback);
-        $result = $this->selectWith($select)->current();
-        if (null === $result->minId) {
-            return false;
-        }
-        return [$result->minId, $result->maxId];
     }
 
     /**
@@ -326,5 +269,29 @@ class Search extends Gateway
         $row->session_id = $sessionId;
         $row->search_object = serialize(new minSO($newSearch));
         $row->save();
+    }
+
+    /**
+     * Update the select statement to find records to delete.
+     *
+     * @param Select $select  Select clause
+     * @param int    $daysOld Age in days of an "expired" record.
+     * @param int    $idFrom  Lowest id of rows to delete.
+     * @param int    $idTo    Highest id of rows to delete.
+     *
+     * @return void
+     */
+    protected function expirationCallback($select, $daysOld, $idFrom = null,
+        $idTo = null
+    ) {
+        $expireDate = date('Y-m-d H:i:s', time() - $daysOld * 24 * 60 * 60);
+        $where = $select->where->lessThan('created', $expireDate)
+            ->equalTo('saved', 0);
+        if (null !== $idFrom) {
+            $where->and->greaterThanOrEqualTo('id', $idFrom);
+        }
+        if (null !== $idTo) {
+            $where->and->lessThanOrEqualTo('id', $idTo);
+        }
     }
 }

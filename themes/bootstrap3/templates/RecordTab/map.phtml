@@ -1,13 +1,27 @@
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.5&sensor=false&language=<?=$this->layout()->userLang?>"></script>
-
-<script type="text/javascript">
-
-var markers;
-var markersData;
-var latlng;
-var myOptions;
-var map;
-var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
+<? $mapType = $this->tab->getMapType(); ?>
+<? if (isset($mapType) && ($mapType == 'openlayers')) : ?>
+  <? $this->headScript()->appendFile('vendor/ol/ol.js');
+  $this->headScript()->appendFile('map_tab_ol.js');
+  $this->headLink()->appendStylesheet('vendor/ol/ol.css');
+  $mapTabData = $this->tab->getMapTabData();
+  $popupTitle = $this->transEsc('map_results_label');
+  $params = [json_encode($mapTabData), json_encode($popupTitle)];
+  $jsParams = implode(', ', $params);
+  $jsLoad = "loadMapTab(" . $jsParams . ");"; ?>
+  <div id="wrap" style="width: 674px; height: 479px">
+    <div id="map-canvas" style="width: 100%; height: 100%"><div id="popup"></div></div>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET');?>
+  </div>
+<? endif; ?>
+<? if (isset($mapType) && ($mapType == 'google')) : ?>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<?=$this->tab->getGoogleMapApiKey()?>&amp;language=<?=$this->layout()->userLang?>"></script>
+  <script type="text/javascript">
+  var markers;
+  var markersData;
+  var latlng;
+  var myOptions;
+  var map;
+  var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
   function initialize() {
     markersData = <?=$this->tab->getGoogleMapMarker()?>;
     latlng = new google.maps.LatLng(0, 0);
@@ -27,16 +41,15 @@ var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
   function showMarkers(){
     deleteOverlays();
     markers = [];
-
     for (var i = 0; i<markersData.length; i++){
-      var disTitle = markersData[i].title;
+      var disTitle = markersData[i][0].title ? markersData[i][0].title : '';
       var iconTitle = disTitle;
       if (disTitle.length>25){
           iconTitle = disTitle.substring(0,25) + "...";
       }
       var markerImg = "https://chart.googleapis.com/chart?chst=d_bubble_text_small&chld=edge_bc|" + iconTitle +"|EEEAE3|";
       var labelXoffset = 1 + disTitle.length * 4;
-      var latLng = new google.maps.LatLng(markersData[i].lat , markersData[i].lon)
+      var latLng = new google.maps.LatLng(markersData[i][0].lat , markersData[i][0].lon)
       var marker = new google.maps.Marker({
         position: latLng,
         map: map,
@@ -63,3 +76,4 @@ var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
 <div id="wrap" onload="initialize()" style="width: 674px; height: 479px">
   <div id="map_canvas" style="width: 100%; height: 100%"></div>
 </div>
+<? endif; ?>

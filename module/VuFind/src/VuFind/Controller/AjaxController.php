@@ -751,7 +751,7 @@ class AjaxController extends AbstractBase
             $tagList[] = [
                 'tag'   => $tag->tag,
                 'cnt'   => $tag->cnt,
-                'is_me' => $tag->is_me == 1 ? true : false
+                'is_me' => !empty($tag->is_me)
             ];
         }
 
@@ -796,6 +796,7 @@ class AjaxController extends AbstractBase
                 'Information'
             );
 
+        $rtpm = $this->getServiceLocator()->get('VuFind\RecordTabPluginManager');
         $html = $this->getViewRenderer()
             ->render(
                 "record/ajaxview-" . $viewtype . ".phtml",
@@ -803,6 +804,9 @@ class AjaxController extends AbstractBase
                     'defaultTab' => $details['default'],
                     'driver' => $driver,
                     'tabs' => $details['tabs'],
+                    'backgroundTabs' => $rtpm->getBackgroundTabNames(
+                        $driver, $this->getRecordTabConfig()
+                    )
                 ]
             );
         return $this->output($html, self::STATUS_OK);
@@ -905,9 +909,8 @@ class AjaxController extends AbstractBase
             $facets[$field]['removalURL']
                 = $results->getUrlQuery()->removeFacet(
                     $field,
-                    isset($filters[$field][0]) ? $filters[$field][0] : null,
-                    false
-                );
+                    isset($filters[$field][0]) ? $filters[$field][0] : null
+                )->getParams(false);
         }
         return $this->output($facets, self::STATUS_OK);
     }
@@ -1083,6 +1086,16 @@ class AjaxController extends AbstractBase
                 $this->translate('bulk_error_missing'),
                 self::STATUS_ERROR,
                 400
+            );
+        }
+
+        $useCaptcha = $this->recaptcha()->active('userComments');
+        $this->recaptcha()->setErrorMode('none');
+        if (!$this->formWasSubmitted('comment', $useCaptcha)) {
+            return $this->output(
+                $this->translate('recaptcha_not_passed'),
+                self::STATUS_ERROR,
+                403
             );
         }
 
@@ -1485,5 +1498,33 @@ class AjaxController extends AbstractBase
     protected function getResultsManager()
     {
         return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
+    }
+
+    /**
+     * Get Ils Status
+     *
+     * This will check the ILS for being online and will return the ils-offline
+     * template upon failure.
+     *
+     * @return \Zend\Http\Response
+     * @author André Lahmann <lahmann@ub.uni-leipzig.de>
+     */
+    protected function getIlsStatusAjax()
+    {
+        $this->disableSessionWrites();  // avoid session write timing bug
+        if ($this->getILS()->getOfflineMode(true) == 'ils-offline') {
+            $offlineModeMsg = $this->params()->fromPost(
+                'offlineModeMsg',
+                $this->params()->fromQuery('offlineModeMsg')
+            );
+            return $this->output(
+                $this->getViewRenderer()->render(
+                    'Helpers/ils-offline.phtml',
+                    compact('offlineModeMsg')
+                ),
+                self::STATUS_OK
+            );
+        }
+        return $this->output('', self::STATUS_OK);
     }
 }

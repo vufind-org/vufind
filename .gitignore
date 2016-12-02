@@ -11,3 +11,4 @@ TAGS
 composer.lock
 composer.phar
 import/solrmarc.log
+node_modules

@@ -1,0 +1,10 @@
+<? $doi = $this->recommend->getDOI(); if (!empty($doi)): ?>
+  <? $url = $this->recommend->getURL(); ?>
+  <div class="alert alert-info">
+    <?=$this->translate('doi_detected_html', ['%%url%%' => $url, '%%doi%%' => $doi])?>
+  </div>
+  <? if ($this->recommend->isFullMatch()): ?>
+    <? $redirect = 'document.location.href = "' . $this->escapeJs($url) . '";'; ?>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $redirect, 'SET')?>
+  <? endif; ?>
+<? endif; ?>

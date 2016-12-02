@@ -71,12 +71,12 @@
   <?
     $viewType = in_array('list', array_keys($params->getViewList()))
       ? 'list' : $params->getView();
-    $viewParams = array(
+    $viewParams = [
       'results' => $results,
       'params' => $params,
       'showCartControls' => $this->showCartControls,
       'showBulkOptions' => $this->showBulkOptions
-    );
+    ];
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
   <? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>

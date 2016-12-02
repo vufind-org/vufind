@@ -45,7 +45,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Is this a consortium? Default: false
      *
-     * @var boolean
+     * @var bool
      */
     protected $consortium = false;
 

@@ -38,8 +38,14 @@ VuFind.register('embedded', function embedded() {
     var id = $result.find('.hiddenId')[0].value;
     var source = $result.find('.hiddenSource')[0].value;
     if ($tab.parent().hasClass('noajax')) {
-      window.location.href = $tab.attr('href');
-      return true;
+      if ($tab.is('a')) {
+        // tab case:
+        window.location.href = $tab.attr('href');
+      } else {
+        // accordion case:
+        window.location.href = $tab.find('a').attr('data-href');
+      }
+      return false;
     }
     var urlroot;
     if (source === VuFind.defaultSearchBackend) {
@@ -72,7 +78,7 @@ VuFind.register('embedded', function embedded() {
         }
       });
     }
-    if (click) {
+    if (click && !$tab.parent().hasClass('default')) {
       $tab.click();
     }
     return true;
@@ -144,11 +150,10 @@ VuFind.register('embedded', function embedded() {
               }
               // Bind tab clicks
               longNode.find('.list-tab-toggle').click(function embeddedTabLoad() {
-                addToStorage(divID, this.id);
+                if (!$(this).parent().hasClass('noajax')) {
+                  addToStorage(divID, this.id);
+                }
                 return ajaxLoadTab(this.id);
-              });
-              longNode.find('.noajax .list-tab-toggle').click(function accordionNoAjax() {
-                window.location.href = $(this).attr('data-href');
               });
               longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(
                 function embeddedComments() {
@@ -157,6 +162,9 @@ VuFind.register('embedded', function embedded() {
                   );
                 }
               );
+              longNode.find('[data-background]').each(function setupEmbeddedBackgroundTabs(index, el) {
+                ajaxLoadTab(el.id, false);
+              });
               // Add events to record toolbar
               VuFind.lightbox.bind(longNode);
               if (typeof checkSaveStatuses == 'function') {

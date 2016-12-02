@@ -60,7 +60,7 @@ class Feedback extends \Zend\View\Helper\AbstractHelper
     /**
      * This will retrieve the config for whether or not the tab is enabled.
      *
-     * @return boolean
+     * @return bool
      */
     public function tabEnabled()
     {

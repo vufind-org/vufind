@@ -74,7 +74,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
-        $this->findCss($page, '.searchForm [name="lookfor"]')->setValue('Dewey');
+        $this->findCss($page, '#searchForm_lookfor')->setValue('Dewey');
         $this->findCss($page, '.btn.btn-primary')->click();
         return $page;
     }
@@ -391,6 +391,13 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     protected function setupBulkTest()
     {
+        $this->changeConfigs(
+            ['config' =>
+                [
+                    'Mail' => ['testOnly' => 1],
+                ],
+            ]
+        );
         // Go home
         $session = $this->getMinkSession();
         $path = '/Search/Home';
