@@ -1234,7 +1234,7 @@ class PAIA extends DAIA
      * This PAIA helper function allows custom overrides for mapping of basic
      * fields in the PAIA response needed in several other contexts.
      *
-     * @param array $items Array of PAIA items to be mapped.
+     * @param array $doc Array of PAIA document to be mapped.
      *
      * @return array
      */
