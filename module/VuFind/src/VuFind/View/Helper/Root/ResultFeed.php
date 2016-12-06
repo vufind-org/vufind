@@ -128,13 +128,15 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             $results->getParams()->getView()
         );
         $feed->setDescription(
-            $this->translate(
-                'showing_results_of_html',
-                [
-                    '%%start%%' => $results->getStartRecord(),
-                    '%%end%%' => $results->getEndRecord(),
-                    '%%total%%' => $results->getResultTotal()
-                ]
+            strip_tags(
+                $this->translate(
+                    'showing_results_of_html',
+                    [
+                        '%%start%%' => $results->getStartRecord(),
+                        '%%end%%' => $results->getEndRecord(),
+                        '%%total%%' => $results->getResultTotal()
+                    ]
+                )
             )
         );
 
