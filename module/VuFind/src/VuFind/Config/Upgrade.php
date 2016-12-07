@@ -552,6 +552,15 @@ class Upgrade
             unset($newConfig['BulkExport']['options']);
         }
 
+        // If [Statistics] is present, warn the user about its deprecation.
+        if (isset($newConfig['Statistics'])) {
+            $this->addWarning(
+                'The Statistics module has been removed from Vufind. ' .
+                'For usage tracking, please configure Google Analytics or Piwik.'
+            );
+            unset($newConfig['Statistics']);
+        }
+
         // Warn the user about Amazon configuration issues:
         $this->checkAmazonConfig($newConfig);
 
