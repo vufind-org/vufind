@@ -71,6 +71,7 @@ class TagsController extends AbstractAdmin
     {
         $view = $this->createViewModel();
         $view->setTemplate('admin/tags/home');
+        $view->statistics = $this->getTable('resourcetags')->getStatistics(true);
         return $view;
     }
 
