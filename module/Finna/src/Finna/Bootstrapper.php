@@ -112,7 +112,7 @@ class Bootstrapper
             $routeMatch = $event->getRouteMatch();
             $controller = $routeMatch->getParam('controller');
             $action = $routeMatch->getParam('action');
-            if ($controller == 'AJAX'
+            if (($controller == 'AJAX' && $action != 'SystemStatus')
                 || ($controller == 'Record' && $action == 'AjaxTab')
             ) {
                 $response = $event->getResponse();
