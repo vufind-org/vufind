@@ -140,7 +140,7 @@
               <? endif; ?>
             <? endif; ?>
             <? if ($showStatus && isset($ilsDetails['message']) && !empty($ilsDetails['message'])): ?>
-              <div class="alert alert-info"><?=$this->transEsc($ilsDetails['message'])?></div>
+              <div class="alert alert-info"><?=$this->translationEmpty('status_' . $ilsDetails['message']) ? $this->transEsc($ilsDetails['message']) : $this->transEsc('status_' . $ilsDetails['message']) ?></div>
             <? endif; ?>
             <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_link'])): ?>
               <a href="<?=$this->escapeHtmlAttr($ilsDetails['renew_link'])?>"><?=$this->transEsc('renew_item')?></a>
