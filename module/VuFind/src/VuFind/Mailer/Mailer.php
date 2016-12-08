@@ -267,7 +267,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Set the maximum number of email recipients
      *
-     * @param type $max Maximum
+     * @param int $max Maximum
      *
      * @return void
      */

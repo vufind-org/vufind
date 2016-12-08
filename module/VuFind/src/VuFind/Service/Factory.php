@@ -205,6 +205,9 @@ class Factory
             && $config->Cookies->limit_by_path
         ) {
             $path = $sm->get('Request')->getBasePath();
+            if (empty($path)) {
+                $path = '/';
+            }
         }
         $secure = isset($config->Cookies->only_secure)
             ? $config->Cookies->only_secure

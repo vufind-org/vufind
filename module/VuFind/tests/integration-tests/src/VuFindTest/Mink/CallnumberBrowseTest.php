@@ -65,7 +65,7 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
-        $this->findCss($page, '.searchForm [name="lookfor"]')->setValue($query);
+        $this->findCss($page, '#searchForm_lookfor')->setValue($query);
         $this->findCss($page, '.btn.btn-primary')->click();
         $this->snooze();
         return $page;
