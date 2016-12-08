@@ -6,12 +6,13 @@
   <div class="<?=$this->layoutClass('mainbody')?>">
     <h2><?=$this->translate('Tag Management')?></h2>
 
-    <div class="toolbar">
-      <ul class="nav nav-pills">
-        <li<?=strtolower($this->layout()->templateName) == "tagslist" ? ' class="active"' : ''?>><a href="<?=$this->url('admin/tags', array('action' => 'List'))?>"><?=$this->transEsc('List Tags')?></a></li>
-        <li<?=strtolower($this->layout()->templateName) == "tagsmanage" ? ' class="active"' : ''?>><a href="<?=$this->url('admin/tags', array('action' => 'Manage'))?>"><?=$this->transEsc('Manage Tags')?></a></li>
-      </ul>
-    </div>
+    <?=$this->render("admin/tags/menu.phtml")?>
+
+    <h3><?=$this->translate('Statistics')?></h3>
+    <table class="table table-striped">
+      <tr><th><?=$this->transEsc('total_users')?></th><th><?=$this->transEsc('total_resources')?></th><th><?=$this->transEsc('total_tags')?></th><th><?=$this->transEsc('unique_tags')?></th><th><?=$this->transEsc('anonymous_tags')?></th></tr>
+      <tr><td><?=$statistics['users']?></td><td><?=$statistics['resources']?></td><td><?=$statistics['total']?></td><td><?=$statistics['unique']?></td><td><?=$statistics['anonymous']?></td></tr>
+    </table>
 
   </div>
 
