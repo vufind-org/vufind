@@ -261,17 +261,16 @@ class ScheduledAlerts extends AbstractService
     protected function switchInstitution($localDir, $scheduleBaseUrl = false)
     {
         $appDir = substr($localDir, 0, strrpos($localDir, "/{$this->confDir}"));
-        $script = "$appDir/util/scheduled_alerts.php";
+        $script = "$appDir/public/index.php";
 
-        $args = [];
-        $args[] = $this->viewBaseDir;
-        $args[] = $localDir;
+        $args = ['util', 'scheduled_alerts', $this->viewBaseDir, $localDir];
         if ($scheduleBaseUrl) {
             $args[] = "'$scheduleBaseUrl'";
         }
 
         $cmd = "VUFIND_LOCAL_DIR='$localDir'";
-        $cmd .= " php -d short_open_tag=1 '$script' " . implode(' ', $args);
+        $cmd .= " php -d short_open_tag=1 -d display_errors=1 '$script' "
+            . implode(' ', $args);
         $this->msg("  Switching to institution configuration $localDir");
         $this->msg("    $cmd");
         $res = system($cmd, $retval);
