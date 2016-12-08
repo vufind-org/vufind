@@ -4,10 +4,10 @@
   <? $cnt = $this->indexedTotal()->getTotalIndexedCount(); ?>
     <? if ($cnt > 0): ?>
         <p>Finna.fi <?=$this->translate('currently_indexed_html', ['%%total%%' => $this->localizedNumber($cnt)]); ?><br>
-        <a href="<?=$this->url('content-page', ['page' => 'Organisations'])?>">Vems material finns i finna.fi?</a></p>
+        <a href="<?=$this->url('content-page', ['page' => 'organisations'])?>">Vems material finns i finna.fi?</a></p>
     <? endif; ?>
   <p>I Finna kan du ta del av det innehåll som är tillgängligt via nätet, förnya lån, beställa material och mycket annat.<br>
-  <a href="<?=$this->url('content-page', ['page' => 'About'])?>">Vad är Finna?</a>
+  <a href="<?=$this->url('content-page', ['page' => 'about'])?>">Vad är Finna?</a>
   </p>
 </div>
 <!-- END of: national - search/home/home-left_sv.phtml -->
