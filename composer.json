@@ -43,6 +43,6 @@
         "squizlabs/php_codesniffer": "2.6.0"
     },
     "scripts": {
-        "post-update-cmd": "rm -rf public/swagger-ui; cp -r vendor/swagger-api/swagger-ui/dist public/swagger-ui; sed -i.orig \"s/defaultModelRendering: 'schema'/defaultModelRendering: 'model'/\" public/swagger-ui/index.html; sed -i.orig 's/url = \".*\"/url = \"..\\/api\\/v1\\?swagger\"/' public/swagger-ui/index.html"
+        "post-update-cmd": "phing installsolr installswaggerui"
     } 
 }

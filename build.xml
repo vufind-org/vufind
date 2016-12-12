@@ -175,6 +175,24 @@
     </if>
   </target>
 
+  <target name="installswaggerui">
+    <delete dir="${srcdir}/public/swagger-ui" includeemptydirs="true" failonerror="false" />
+    <copy todir="${srcdir}/public/swagger-ui">
+      <fileset dir="${srcdir}/vendor/swagger-api/swagger-ui/dist" defaultexcludes="false" />
+    </copy>
+    <reflexive>
+      <fileset dir="${srcdir}/public/swagger-ui">
+        <include pattern="index.html" />
+      </fileset>
+      <filterchain>
+        <replaceregexp>
+          <regexp pattern="defaultModelRendering: 'schema'" replace="defaultModelRendering: 'model'" />
+          <regexp pattern="url = &quot;.*&quot;" replace="url = &quot;../api/v1?swagger&quot;" />
+        </replaceregexp>
+      </filterchain>
+    </reflexive>
+  </target>
+
   <target name="composer" description="Install dependencies with Composer">
     <httpget url="https://getcomposer.org/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
     <echo message="Installing dependencies..." />
@@ -185,7 +203,6 @@
   <target name="startup" description="install and activate demo">
     <!-- get dependencies -->
     <phingcall target="composer" />
-    <phingcall target="installsolr" />
 
     <!-- set up appropriate read/write permissions for Apache -->
     <exec command="chmod -R a+w ${srcdir}/local/cache" />
@@ -342,7 +359,6 @@
     <phingcall target="composer">
       <property name="composer_extra_params" value="--no-dev" />
     </phingcall>
-    <phingcall target="installsolr" />
     <exec command="git archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind" />
     <copy todir="${builddir}/export/vufind/usr/local/vufind/vendor">
       <fileset dir="${srcdir}/vendor" defaultexcludes="false" />
