@@ -60,7 +60,7 @@ class CookieManager
     protected $secure;
 
     /**
-     * the name of the session cookie
+     * The name of the session cookie
      *
      * @var string
      */
@@ -73,7 +73,8 @@ class CookieManager
      * @param string $path        Cookie base path (default = /)
      * @param string $domain      Cookie domain
      * @param bool   $secure      Are cookies secure only? (default = false)
-     * @param string $sessionName Session cookie name (if null defaults to PHP settings)
+     * @param string $sessionName Session cookie name (if null defaults to PHP
+     * settings)
      */
     public function __construct($cookies, $path = '/', $domain = null,
         $secure = false, $sessionName = null

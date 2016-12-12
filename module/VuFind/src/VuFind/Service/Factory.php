@@ -218,7 +218,9 @@ class Factory
         $session_name = isset($config->Cookies->session_name)
             ? $config->Cookies->session_name
             : null;
-        return new \VuFind\Cookie\CookieManager($_COOKIE, $path, $domain, $secure, $session_name);
+        return new \VuFind\Cookie\CookieManager(
+            $_COOKIE, $path, $domain, $secure, $session_name
+        );
     }
 
     /**
