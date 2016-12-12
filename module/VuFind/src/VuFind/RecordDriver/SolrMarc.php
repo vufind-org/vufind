@@ -208,6 +208,19 @@ class SolrMarc extends SolrDefault
     }
 
     /**
+     * Return full record as filtered XML for public APIs.
+     *
+     * @return string
+     */
+    public function getFilteredXML()
+    {
+        $record = clone($this->getMarcRecord());
+        // The default implementation does not filter out any fields
+        // $record->deleteFields('9', true);
+        return $record->toXML();
+    }
+
+    /**
      * Get notes on finding aids related to the record.
      *
      * @return array

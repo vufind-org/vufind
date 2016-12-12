@@ -1,10 +1,10 @@
 <?php
 /**
- * VuFind SearchSpecs Configuration Reader
+ * VuFind Api module.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,32 +20,49 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Config
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Module
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development
  */
-namespace VuFind\Config;
+namespace VuFindApi;
+use Zend\ModuleManager\ModuleManager,
+    Zend\Mvc\MvcEvent;
 
 /**
- * VuFind SearchSpecs Configuration Reader
+ * VuFind Api module.
  *
  * @category VuFind
- * @package  Config
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Module
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development
  */
-class SearchSpecsReader extends YamlReader
+class Module
 {
     /**
-     * Constructor
+     * Get module configuration
      *
-     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
+     * @return array
      */
-    public function __construct(\VuFind\Cache\Manager $cacheManager = null)
+    public function getConfig()
     {
-        parent::__construct($cacheManager);
-        $this->cacheName = 'searchspecs';
+        return include __DIR__ . '/config/module.config.php';
+    }
+
+    /**
+     * Get autoloader configuration
+     *
+     * @return array
+     */
+    public function getAutoloaderConfig()
+    {
+        return [
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
+                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
+                ],
+            ],
+        ];
     }
 }
