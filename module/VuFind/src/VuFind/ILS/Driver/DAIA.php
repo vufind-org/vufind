@@ -802,7 +802,10 @@ class DAIA extends AbstractBase implements
             // check if item is loanable or presentation
             foreach ($item['available'] as $available) {
                 if (isset($available['service'])
-                    && in_array($available['service'], ['loan', 'presentation', 'remote'])
+                    && in_array(
+                        $available['service'],
+                        ['loan', 'presentation', 'remote']
+                    )
                 ) {
                     $services['available'][] = $available['service'];
                 }
@@ -1299,7 +1302,10 @@ class DAIA extends AbstractBase implements
                 }
             }
         }
-        return array_intersect(['loan', 'presentation', 'remote'], $availableServices);
+        return array_intersect(
+            ['loan', 'presentation', 'remote'],
+            $availableServices
+        );
     }
 
     /**
