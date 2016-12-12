@@ -69,9 +69,6 @@
   $this->headScript()->appendFile("check_save_statuses.js");
   $this->headScript()->appendFile("finna-search-tabs-recommendations.js");
   $this->headScript()->appendFile("finna-item-status.js");
-  if ($this->metalib()->isAvailable()) {
-    $this->headScript()->appendFile("finna-metalib-links.js");
-  }
 
   // Load Javascript only if list view parameter is NOT full:
   if ($this->params->getOptions()->getListViewOption() != "full") {

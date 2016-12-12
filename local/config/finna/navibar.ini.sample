@@ -24,8 +24,6 @@
 advanced_search = 'search-advanced'
 pci_search = 'primo-home'
 pci_advanced = 'primo-advanced'
-metalib_search = 'metalib-home'
-metalib_advanced = 'metalib-advanced'
 browse = 'browse-home'
 browse-database = 'browse-database'
 browse-journal = 'browse-journal'

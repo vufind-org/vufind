@@ -172,6 +172,7 @@ $config = [
             'VuFind\ILSHoldLogic' => 'Finna\Service\Factory::getILSHoldLogic',
             'VuFind\DbTablePluginManager' => 'Finna\Service\Factory::getDbTablePluginManager',
             'VuFind\AuthManager' => 'Finna\Auth\Factory::getManager',
+            'VuFind\RecordLoader' => 'Finna\Service\Factory::getRecordLoader',
             'VuFind\SearchResultsPluginManager' => 'Finna\Service\Factory::getSearchResultsPluginManager',
             'VuFind\SearchSpecsReader' => 'Finna\Service\Factory::getSearchSpecsReader',
         ],
@@ -211,7 +212,6 @@ $config = [
                     'comments-record' => 'Finna\Db\Table\CommentsRecord',
                     'due-date-reminder' => 'Finna\Db\Table\DueDateReminder',
                     'fee' => 'Finna\Db\Table\Fee',
-                    'metalibSearch' => 'Finna\Db\Table\MetaLibSearch',
                     'search' => 'Finna\Db\Table\Search',
                     'session' => 'Finna\Db\Table\Session',
                     'transaction' => 'Finna\Db\Table\Transaction',
@@ -241,7 +241,6 @@ $config = [
             ],
             'search_backend' => [
                 'factories' => [
-                    'MetaLib' => 'Finna\Search\Factory\MetaLibBackendFactory',
                     'Primo' => 'Finna\Search\Factory\PrimoBackendFactory',
                     'Solr' => 'Finna\Search\Factory\SolrDefaultBackendFactory',
                 ],
@@ -261,7 +260,6 @@ $config = [
                 'factories' => [
                     'combined' => 'Finna\Search\Results\Factory::getCombined',
                     'favorites' => 'Finna\Search\Results\Factory::getFavorites',
-                    'metalib' => 'Finna\Search\Results\Factory::getMetaLib',
                     'solr' => 'Finna\Search\Results\Factory::getSolr',
                     'primo' => 'Finna\Search\Results\Factory::getPrimo',
                 ]
@@ -274,7 +272,6 @@ $config = [
             ],
             'recorddriver' => [
                 'factories' => [
-                    'metalib' => 'Finna\RecordDriver\Factory::getMetaLib',
                     'solrdefault' => 'Finna\RecordDriver\Factory::getSolrDefault',
                     'solrmarc' => 'Finna\RecordDriver\Factory::getSolrMarc',
                     'solread' => 'Finna\RecordDriver\Factory::getSolrEad',
@@ -300,12 +297,6 @@ $config = [
             ],
         ],
         'recorddriver_tabs' => [
-            'Finna\RecordDriver\MetaLib' => [
-                'tabs' => [
-                    'Details' => 'StaffViewArray'
-                ],
-                'defaultTab' => null,
-            ],
             'Finna\RecordDriver\SolrDefault' => [
                 'tabs' => [
                     'Holdings' => 'HoldingsILS',

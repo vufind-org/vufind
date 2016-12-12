@@ -1297,7 +1297,6 @@ case_sensitive_tags = false
 Solr = tabs_local
 Primo = tabs_pci
 Combined = tabs_combined
-MetaLib = tabs_metalib
 
 ; Recommendations that include a couple of results from other tabs when doing a
 ; basic search (first result page only).

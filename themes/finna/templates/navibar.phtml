@@ -17,13 +17,13 @@
         <ul role="presentation" class="dropdown-menu">
           <? foreach ($val['items'] as $itemKey => $itemVal): ?>
           <?
-          if (!($itemUrl = $this->navibar()->getMenuItemUrl($itemVal))) {
+            if (!($itemUrl = $this->navibar()->getMenuItemUrl($itemVal))) {
              continue;
-          }
-          $url = $itemUrl['url'];
-          $target = !empty($itemUrl['target']) ? $itemUrl['target'] : null;
-          $label = $itemVal['label'];
-          $desc = !empty($itemVal['desc']) ? $itemVal['desc'] : null;
+            }
+            $url = $itemUrl['url'];
+            $target = !empty($itemUrl['target']) ? $itemUrl['target'] : null;
+            $label = $itemVal['label'];
+            $desc = !empty($itemVal['desc']) ? $itemVal['desc'] : null;
           ?>
           <li role="menuitem">
             <a<?= $target ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?=$url?>">

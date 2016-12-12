@@ -77,7 +77,6 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
     public function getConsoleUsage(Console $console)
     {
         return [
-            'util clear_metalib_search' => 'Removes old metalib search entries',
             'util due_date_reminders' => 'Send due date reminders',
             'util encrypt_catalog_passwords' => 'Encrypt ILS passwords in database',
             'util expire_users' => 'Anonymizes expired user accounts',

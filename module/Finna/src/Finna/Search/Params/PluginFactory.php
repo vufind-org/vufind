@@ -76,12 +76,6 @@ class PluginFactory extends \VuFind\Search\Params\PluginFactory
                 clone($options),
                 $serviceLocator->getServiceLocator()->get('VuFind\Config')
             );
-        } elseif ($name === 'metalib') {
-            // Clone the options instance in case caller modifies it:
-            return new \Finna\Search\MetaLib\Params(
-                clone($options),
-                $serviceLocator->getServiceLocator()->get('VuFind\Config')
-            );
         } elseif ($name === 'combined') {
             // Clone the options instance in case caller modifies it:
             return new \Finna\Search\Combined\Params(

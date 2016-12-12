@@ -64,7 +64,7 @@ class PluginFactory extends \VuFind\Search\Options\PluginFactory
             return new \Finna\Search\Favorites\Options(
                 $serviceLocator->getServiceLocator()->get('VuFind\Config')
             );
-        } else if ($name == 'solr' || $name == 'metalib' || $name == 'combined') {
+        } else if ($name == 'solr' || $name == 'combined') {
             $this->defaultNamespace = 'Finna\Search';
             $class = $this->getClassName($name, $requestedName);
             return new $class(

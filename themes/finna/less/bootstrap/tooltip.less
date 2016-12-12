@@ -145,24 +145,20 @@
 .tooltip-pci-advanced {
     display: @tooltip-pci-advanced;   
 }
-.tooltip-metalib-advanced {
-    display: @tooltip-metalib-advanced;   
-}
-.tooltip-tabs_local, .tooltip-tabs_pci, .tooltip-facet, .tooltip-search-metalib, .tooltip-search-pci, .tooltip-search-local, .tooltip-myaccount {
+.tooltip-tabs_local, .tooltip-tabs_pci, .tooltip-facet, .tooltip-search-pci, .tooltip-search-local, .tooltip-myaccount {
     color: @tooltip-button-color;   
 }
 .tooltip-local-advanced,
-.tooltip-pci-advanced,
-.tooltip-metalib-advanced {
+.tooltip-pci-advanced {
     color: @link-color;
     font-size: .8em;
 }
 .finna-main-tabs ul.nav-tabs>li.active>a {
-      & .tooltip-tabs_local, .tooltip-tabs_pci, .tooltip-tabs-metalib {
+      & .tooltip-tabs_local, .tooltip-tabs_pci {
         color: @gray;   
       }
 }
-.tooltip-search-metalib, .tooltip-search-pci, .tooltip-search-local {
+.tooltip-search-pci, .tooltip-search-local {
     margin-top: 10px;
     font-size: 1.2em;
 }

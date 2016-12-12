@@ -43,20 +43,6 @@ use Zend\Console\Console,
 class Factory
 {
     /**
-     * Construct the console service for clearing expired MetaLib searches.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \FinnaConsole\Service\ClearMetaLibSearch
-     */
-    public static function getClearMetaLibSearch(ServiceManager $sm)
-    {
-        $table = $sm->get('VuFind\DbTablePluginManager')->get('metalibSearch');
-
-        return new ClearMetaLibSearch($table);
-    }
-
-    /**
      * Construct the console service for sending due date reminders.
      *
      * @param ServiceManager $sm Service manager.

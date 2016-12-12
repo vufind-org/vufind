@@ -67,7 +67,7 @@ class AuthorizationNotification extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($searchClass)
     {
-        if (in_array($searchClass, ['MetaLib', 'Primo'])) {
+        if (in_array($searchClass, ['Primo'])) {
             if (!$this->authService->isGranted('finna.authorized')) {
                 return $this->getView()->render('Helpers/authorizationNote.phtml');
             }

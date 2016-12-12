@@ -92,20 +92,7 @@
 
     <?
       $formats = $this->driver->getFormats();
-      $metalib = $this->metalib()->isAvailable() && !empty($formats) && strstr((string)$formats[0], '0/Database') !== false;
     ?>
-    <? if ($metalib): ?>
-       <? $this->headScript()->appendFile("finna-metalib-links.js"); ?>
-       <?= $this->partial('RecordDriver/MetaLib/search-link.phtml', ['id' => $this->driver->getUniqueID()]); ?>
-       <?
-       $script = '
-       $(document).ready(function() {
-          finna.metalibLinks.init();
-       });';
-       ?>
-       <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>
-    <? endif; ?>
-
     <?
       $openUrl = $this->openUrl($this->driver, 'record');
       $openUrlActive = $openUrl->isActive();
@@ -113,7 +100,7 @@
       $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     ?>
     <? $onlineURLs = $this->driver->getOnlineURLs(); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
-    <? if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
+    <? if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls'])): ?>
       <div class="recordURLs local-available-online-record">
         <div class="truncate-field">
           <? $renderedURLs = []; ?>

@@ -10,7 +10,6 @@ $config = [
     'service_manager' => [
         'factories' => [
             'VuFind\HMAC' => 'VuFind\Service\Factory::getHMAC',
-            'Finna\ClearMetalibSearch' => 'FinnaConsole\Service\Factory::getClearMetaLibSearch',
             'Finna\DueDateReminders' => 'FinnaConsole\Service\Factory::getDueDateReminders',
             'Finna\EncryptCatalogPasswords' => 'FinnaConsole\Service\Factory::getEncryptCatalogPasswords',
             'Finna\ExpireUsers' => 'FinnaConsole\Service\Factory::getExpireUsers',
@@ -23,7 +22,6 @@ $config = [
 ];
 
 $routes = [
-    'util/clear_metalib_search' => 'util clear_metalib_search <minutes>',
     'util/due_date_reminders' => 'util due_date_reminders <vufind_dir> <view_dir>',
     'util/encrypt_catalog_passwords' => 'util encrypt_catalog_passwords Y',
     'util/expire_users' => 'util expire_users <days>',

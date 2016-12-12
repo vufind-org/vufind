@@ -41,8 +41,6 @@
       <? $searchClass = $info->getParams()->getSearchClassId(); ?>
       <? if ($searchClass == 'Primo'): ?>
         <?=$this->transEsc('tabs_pci')?>
-      <? elseif ($searchClass == 'MetaLib'): ?>
-        <?=$this->transEsc('tabs_metalib')?>
       <? else: ?>
         <?=$this->transEsc('tabs_local')?>
       <? endif; ?>

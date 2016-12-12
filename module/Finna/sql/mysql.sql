@@ -131,21 +131,6 @@ CREATE TABLE `finna_fee` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `finna_metalib_search` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
-  `finna_search_id` char(32) DEFAULT '',
-  `search_object` longtext,
-  PRIMARY KEY (`id`),
-  KEY `finna_search_id` (`finna_search_id`),
-  KEY `created` (`created`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
-
-
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;

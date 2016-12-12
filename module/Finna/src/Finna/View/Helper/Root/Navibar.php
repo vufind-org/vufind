@@ -263,6 +263,11 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
                     $action = isset($action[$lng]) ? $action[$lng] : null;
                 }
 
+                if (strncmp($action, 'metalib-', 8) === 0) {
+                    // Discard MetaLib menu items
+                    continue;
+                }
+
                 $option = [
                     'id' => $itemKey, 'label' => "menu_$itemKey",
                     'action' => $parseUrl($action)
@@ -322,13 +327,13 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
 
         $url = $action['url'];
 
-        if (strpos($url, 'combined-') === 0) {
+        if (strncmp($url, 'combined-', 9) === 0) {
             return $this->getViewHelper('combined')->isAvailable();
         }
-        if (strpos($url, 'metalib-') === 0) {
-            return $this->getViewHelper('metalib')->isAvailable();
+        if (strncmp($url, 'metalib-', 8) === 0) {
+            return false;
         }
-        if (strpos($url, 'primo-') === 0) {
+        if (strncmp($url, 'primo-', 6) === 0) {
             return $this->getViewHelper('primo')->isAvailable();
         }
         if ($url === 'browse-database') {

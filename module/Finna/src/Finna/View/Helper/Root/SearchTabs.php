@@ -113,7 +113,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
 
         foreach ($tabs as $key => &$tab) {
             // Remove any disabled functions
-            if (in_array($tab['class'], ['Combined', 'MetaLib', 'Primo'])) {
+            if (in_array($tab['class'], ['Combined', 'Primo'])) {
                 $helper = $this->getView()->plugin($tab['class']);
                 if (!$helper->isAvailable()) {
                     unset($tabs[$key]);

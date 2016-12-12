@@ -1,10 +1,10 @@
 <?php
 /**
- * MetaLib view helper
+ * Dummy MetaLib view helper (for legacy code template code)
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,41 +21,33 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\View\Helper\Root;
 
 /**
- * MetaLib view helper
+ * Dummy MetaLib view helper (for legacy code template code)
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class MetaLib extends \Zend\View\Helper\AbstractHelper
 {
     /**
-     * Constructor
+     * Return false for all MetaLib view helper calls.
      *
-     * @param \VuFind\Config\PluginManager $config MetaLib configuration
-     */
-    public function __construct($config)
-    {
-        $this->config = $config;
-    }
-
-    /**
-     * Check if MetaLib is available
+     * @param string $name      Method name
+     * @param array  $arguments Method arguments
      *
      * @return bool
      */
-    public function isAvailable()
+    public function __call($name, $arguments)
     {
-        return !isset($this->config['General']['enabled'])
-            || $this->config['General']['enabled'];
+        return false;
     }
 }

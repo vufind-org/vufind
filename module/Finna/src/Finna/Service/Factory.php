@@ -189,6 +189,22 @@ class Factory extends \VuFind\Service\Factory
     }
 
     /**
+     * Construct the record loader.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Record\Loader
+     */
+    public static function getRecordLoader(ServiceManager $sm)
+    {
+        return new \Finna\Record\Loader(
+            $sm->get('VuFind\Search'),
+            $sm->get('VuFind\RecordDriverPluginManager'),
+            $sm->get('VuFind\RecordCache')
+        );
+    }
+
+    /**
      * Construct the Search\Results Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.
@@ -211,6 +227,31 @@ class Factory extends \VuFind\Service\Factory
     {
         return new \Finna\Config\SearchSpecsReader(
             $sm->get('VuFind\CacheManager')
+        );
+    }
+
+    /**
+     * Construct the SearchTabs helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Search\SearchTabsHelper
+     */
+    public static function getSearchTabsHelper(ServiceManager $sm)
+    {
+        $config = $sm->get('VuFind\Config')->get('config');
+        $tabConfig = isset($config->SearchTabs)
+            ? $config->SearchTabs->toArray() : [];
+
+        // Remove MetaLib tab
+        unset($tabConfig['MetaLib']);
+
+        $filterConfig = isset($config->SearchTabsFilters)
+            ? $config->SearchTabsFilters->toArray() : [];
+        return new \VuFind\Search\SearchTabsHelper(
+            $sm->get('VuFind\SearchResultsPluginManager'),
+            $tabConfig, $filterConfig,
+            $sm->get('Application')->getRequest()
         );
     }
 }

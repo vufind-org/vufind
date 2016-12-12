@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,13 +27,6 @@
  */
 namespace Finna\Controller;
 
-use Finna\MetaLib\MetaLibIrdTrait;
-use Finna\Search\MetaLib\Params as Params;
-use Finna\Search\MetaLib\Results as Results;
-use VuFindSearch\ParamBag as ParamBag;
-use VuFindSearch\Query\Query as Query;
-use Zend\Session\Container as SessionContainer;
-
 /**
  * MetaLib Controller
  *
@@ -43,176 +36,45 @@ use Zend\Session\Container as SessionContainer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class MetaLibController extends \VuFind\Controller\AbstractSearch
+class MetaLibController extends \VuFind\Controller\AbstractBase
 {
-    use MetaLibIrdTrait,
-        SearchControllerTrait;
-
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->searchClassId = 'MetaLib';
-        parent::__construct();
-    }
-
-    /**
-     * Home action
+     * Home action -- show MetaLib unavailable message
      *
      * @return mixed
      */
     public function homeAction()
     {
-        if (!$this->isAvailable()) {
-            throw new \Exception('MetaLib is not enabled');
-        }
-
-        $view = $this->createViewModel();
-        $this->layout()->searchClassId = $this->searchClassId;
-        $query = new Query();
-        $view = $this->initSets($view, $query);
-        $metalib = $this->getResultsManager()->get($this->searchClassId);
-        $params = $metalib->getParams();
-        $params->initFromRequest($this->getRequest()->getQuery());
-        $this->layout()->metalibSet = $params->getMetaLibSearchSet();
-        $view->browseDatabase = $this->isBrowseDatabaseAvailable();
-        return $view;
+        return $this->showMetalibUnavailableMessage();
     }
 
     /**
-     * Search action -- call standard results action
+     * Search action -- show MetaLib unavailable message
      *
      * @return mixed
      */
     public function searchAction()
     {
-        if (!$this->isAvailable()) {
-            throw new \Exception('MetaLib is not enabled');
-        }
-
-        $query = $this->getRequest()->getQuery();
-        if ($query->get('ajax') || $query->get('view') == 'rss') {
-            $view = parent::resultsAction();
-        } else {
-            $metalib = $this->getResultsManager()->get($this->searchClassId);
-            $params = $metalib->getParams();
-            $params->initFromRequest($this->getRequest()->getQuery());
-
-            list($isIRD, $set)
-                = $this->getMetaLibSet($params->getMetaLibSearchSet());
-            if ($irds = $this->getMetaLibIrds($set)) {
-                $params->setIrds($irds);
-            }
-
-            $view = $this->createViewModel();
-            $view->qs = $this->getRequest()->getUriString();
-            $view->params = $params;
-            $view->results = $metalib;
-            $view->disablePiwik = true;
-            $view = $this->initSets($view, $params->getQuery());
-            $view->browseDatabase = $this->isBrowseDatabaseAvailable();
-        }
-        $this->initSavedTabs();
-        return $view;
+        return $this->showMetalibUnavailableMessage();
     }
 
     /**
-     * Handle an advanced search
+     * Advanced search -- show MetaLib unavailable message
      *
      * @return mixed
      */
     public function advancedAction()
     {
-        if (!$this->isAvailable()) {
-            throw new \Exception('MetaLib is not enabled');
-        }
-
-        $view = parent::advancedAction();
-        $view = $this->initSets($view, $this->getRequest()->getQuery());
-        return $view;
+        return $this->showMetalibUnavailableMessage();
     }
 
     /**
-     * Support function for assigning MetaLib search sets to a view.
+     * Show MetaLib unavailable show
      *
-     * @param \Zend\View\Model\View\Model $view  View
-     * @param \VuFind\Search\Query\Query  $query Query
-     *
-     * @return view
+     * @return mixed
      */
-    protected function initSets($view, $query)
+    protected function showMetalibUnavailableMessage()
     {
-        $allowedSets = $this->getMetaLibSets();
-        $sets = [];
-        foreach ($allowedSets as $key => $set) {
-            $sets[$key] = $set['name'];
-        }
-        $view->sets = $sets;
-
-        $metalib = $this->getResultsManager()->get($this->searchClassId);
-        $params = $metalib->getParams();
-        $params->initFromRequest($this->getRequest()->getQuery());
-
-        list($isIrd, $set) = $this->getMetaLibSet($params->getMetaLibSearchSet());
-        $view->currentSet = $set;
-        $session = new SessionContainer(
-            'MetaLib', $this->getServiceLocator()->get('VuFind\SessionManager')
-        );
-        if ($isIrd) {
-            $metalib
-                = $this->getServiceLocator()->get('VuFind\Search\BackendManager')
-                    ->get($this->searchClassId);
-            $backendParams = new ParamBag();
-            $backendParams->add('irdInfo', explode(',', substr($set, 5)));
-            $result
-                = $metalib->search($query, false, false, $backendParams);
-            $info = $result->getIRDInfo();
-            $name = $info ? $info['name'] : $set;
-            if (!isset($session->recentSets)) {
-                $session->recentSets = [];
-            }
-            unset($session->recentSets[$set]);
-            $session->recentSets[$set] = $isIrd ? $name : $sets[$set];
-        }
-        $view->recentSets
-            = isset($session->recentSets) ? array_reverse($session->recentSets) : [];
-        return $view;
-    }
-
-    /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        return true;
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('MetaLib');
-        return (isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation);
-    }
-
-    /**
-     * Check if MetaLib is available.
-     *
-     * @return bool
-     */
-    protected function isAvailable()
-    {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('MetaLib');
-        return isset($config->General->enabled) && $config->General->enabled;
-    }
-
-    /**
-     * Check if database browsing is available.
-     *
-     * @return bool
-     */
-    protected function isBrowseDatabaseAvailable()
-    {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('browse');
-        return isset($config['General']['Database'])
-            && $config['General']['Database'];
+        return $this->forwardTo('Content', 'Content', ['page' => 'metalib']);
     }
 }

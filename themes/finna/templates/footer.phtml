@@ -18,10 +18,6 @@
       <li><a href="<?=$this->url('primo-home')?>"><?=$this->transEsc('Primo Search')?></a></li>
       <li><a href="<?=$this->url('primo-advanced')?>"><?=$this->transEsc('Advanced Search from Primo')?></a></li>
       <? endif; ?>
-      <? if ($this->metalib()->isAvailable()): ?>
-      <li><a href="<?=$this->url('metalib-home')?>"><?=$this->transEsc('MetaLib Search')?></a></li>
-      <li><a href="<?=$this->url('metalib-advanced')?>"><?=$this->transEsc('Advanced Nelli Metasearch')?></a></li>
-      <? endif; ?>
       <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
       <? if ($this->browse()->isAvailable('Database')): ?>
       <li><a href="<?=$this->url('browse-database')?>"><?=$this->transEsc('browse_extended_Database')?></a></li>

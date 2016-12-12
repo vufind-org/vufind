@@ -75,7 +75,7 @@
         || !empty($mergedData['urls']) && $this->record($this->driver)->containsNonImageURL($mergedData['urls'], $images)
       ;
     ?>
-    <? if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
+    <? if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls'])): ?>
       <? if ($hasOnlineURLs || $openUrlActive): ?>
       <div class="recordURLs local-available-online-record">
         <div class="truncate-field">

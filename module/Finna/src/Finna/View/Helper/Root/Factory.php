@@ -60,7 +60,7 @@ class Factory extends \VuFind\View\Helper\Root\Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return MetaLib
+     * @return Browse
      */
     public static function getBrowse(ServiceManager $sm)
     {
@@ -191,18 +191,6 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
-     * Construct the RecordLink helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return RecordLink
-     */
-    public static function getRecordLink(ServiceManager $sm)
-    {
-        return new RecordLink($sm->getServiceLocator()->get('VuFind\RecordRouter'));
-    }
-
-    /**
      * Construct the Navibar view helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -241,6 +229,18 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     public static function getContent(ServiceManager $sm)
     {
         return new Content();
+    }
+
+    /**
+     * Construct a dummy MetaLib view helper (for legacy code).
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return MetaLib
+     */
+    public static function getMetaLib(ServiceManager $sm)
+    {
+        return new MetaLib();
     }
 
     /**
@@ -326,19 +326,6 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new HeadTitle($config);
-    }
-
-    /**
-     * Construct MetaLib view helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return MetaLib
-     */
-    public static function getMetaLib(ServiceManager $sm)
-    {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('MetaLib');
-        return new MetaLib($config);
     }
 
     /**
