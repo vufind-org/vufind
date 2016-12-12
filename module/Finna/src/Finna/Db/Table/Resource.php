@@ -126,6 +126,10 @@ class Resource extends \VuFind\Db\Table\Resource
             );
             $order[] = 'ur.finna_custom_order_index';
             $query->order($order);
+            // Add the column to the query for MySQL 5.7 compatibility
+            $columns = $query->getRawState(\Zend\Db\Sql\Select::COLUMNS);
+            $columns[] = new Expression('ur.finna_custom_order_index');
+            $query->columns($columns);
         } else {
             parent::applySort($query, $sort, $alias);
         }
