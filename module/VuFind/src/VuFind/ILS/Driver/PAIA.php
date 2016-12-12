@@ -1231,14 +1231,14 @@ class PAIA extends DAIA
     }
 
     /**
-     * This PAIA helper function allows custom overrides for mapping of basic
-     * fields in the PAIA response needed in several other contexts.
+     * Map a PAIA document to an array for use in generating a VuFind request
+     * (holds, storage retrieval, etc).
      *
      * @param array $doc Array of PAIA document to be mapped.
      *
      * @return array
      */
-    protected function getBasicDetailsMapping($doc)
+    protected function getBasicDetails($doc)
     {
         $result = [];
 
@@ -1323,7 +1323,7 @@ class PAIA extends DAIA
         $results = [];
 
         foreach ($items as $doc) {
-            $result = $this->getBasicDetailsMapping($doc);
+            $result = $this->getBasicDetails($doc);
 
             if ($doc['status'] == '4') {
                 $result['expire'] = (isset($doc['endtime'])
@@ -1354,7 +1354,7 @@ class PAIA extends DAIA
         $results = [];
 
         foreach ($items as $doc) {
-            $result = $this->getBasicDetailsMapping($doc);
+            $result = $this->getBasicDetails($doc);
 
             $results[] = $result;
 
