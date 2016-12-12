@@ -60,20 +60,29 @@ class CookieManager
     protected $secure;
 
     /**
+     * the name of the session cookie
+     *
+     * @var string
+     */
+    protected $session_name;
+
+    /**
      * Constructor
      *
-     * @param array  $cookies Cookie array to manipulate (e.g. $_COOKIE)
-     * @param string $path    Cookie base path (default = /)
-     * @param string $domain  Cookie domain
-     * @param bool   $secure  Are cookies secure only? (default = false)
+     * @param array  $cookies      Cookie array to manipulate (e.g. $_COOKIE)
+     * @param string $path         Cookie base path (default = /)
+     * @param string $domain       Cookie domain
+     * @param bool   $secure       Are cookies secure only? (default = false)
+     * @param string $session_name the name of the cookie (if null defaults to php settings)
      */
     public function __construct($cookies, $path = '/', $domain = null,
-        $secure = false
+        $secure = false, $session_name = null
     ) {
         $this->cookies = $cookies;
         $this->path = $path;
         $this->domain = $domain;
         $this->secure = $secure;
+        $this->session_name = $session_name;
     }
 
     /**
@@ -114,6 +123,15 @@ class CookieManager
     public function isSecure()
     {
         return $this->secure;
+    }
+
+    /**
+     * get the name of the cookie
+     *
+     * @return mixed
+     */
+    public function getSessionName() {
+        return $this->session_name;
     }
 
     /**
