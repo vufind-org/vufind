@@ -50,20 +50,20 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
     {
         return [
             'cleanDOI' => [
-                'method' => 'getCleanDOI',
+                'vufind.method' => 'getCleanDOI',
                 'description' => 'First valid DOI',
                 'type' => 'string'
             ],
             'dedupIds' => [
-                'method' => 'Formatter::getDedupIds',
+                'vufind.method' => 'Formatter::getDedupIds',
                 'description' => 'IDs of all records deduplicated',
                 'type' => 'array',
                 'items' => ['type' => 'string']
             ],
-            'fullRecord' => ['method' => 'Formatter::getFullRecord'],
-            'rawData' => ['method' => 'Formatter::getRawData'],
-            'buildings' => ['method' => 'getBuilding'],
-            'recordPage' => ['method' => 'Formatter::getRecordPage']
+            'fullRecord' => ['vufind.method' => 'Formatter::getFullRecord'],
+            'rawData' => ['vufind.method' => 'Formatter::getRawData'],
+            'buildings' => ['vufind.method' => 'getBuilding'],
+            'recordPage' => ['vufind.method' => 'Formatter::getRecordPage']
         ];
     }
 
