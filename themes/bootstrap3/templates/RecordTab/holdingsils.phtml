@@ -111,6 +111,9 @@
               <? if (isset($row['link']) && $row['link']): ?>
                 <a class="<?=$check ? 'checkRequest ' : ''?>placehold" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
               <? endif; ?>
+              <? if (isset($row['weblink']) && $row['weblink']): ?>
+                <a class="<?=$check ? 'checkRequest ' : ''?>placehold" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['weblink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->recordLink()->getRequestUrl($row['weblink'])?></a>
+              <? endif; ?>
               <? if (isset($row['storageRetrievalRequestLink']) && $row['storageRetrievalRequestLink']): ?>
                 <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['storageRetrievalRequestLink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
               <? endif; ?>
