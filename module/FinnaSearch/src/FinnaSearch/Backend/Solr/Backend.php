@@ -64,8 +64,8 @@ class Backend extends \VuFindSearch\Backend\Solr\Backend
     /**
      * Return similar records.
      *
-     * @param string   $id     Id of record to compare with
-     * @param ParamBag $params Search backend parameters
+     * @param string   $id            Id of record to compare with
+     * @param ParamBag $defaultParams Search backend parameters
      *
      * @return RecordCollectionInterface
      */
