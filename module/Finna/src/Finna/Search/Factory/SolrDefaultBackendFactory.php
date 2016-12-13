@@ -63,7 +63,12 @@ class SolrDefaultBackendFactory
      */
     protected function createBackend(Connector $connector)
     {
-        $backend = parent::createBackend($connector);
+        $backend = new \FinnaSearch\Backend\Solr\Backend($connector);
+        $backend->setQueryBuilder($this->createQueryBuilder());
+        $backend->setSimilarBuilder($this->createSimilarBuilder());
+        if ($this->logger) {
+            $backend->setLogger($this->logger);
+        }
         $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
         $factory = new RecordCollectionFactory(
             [$manager, 'getSolrRecord'],
@@ -126,6 +131,18 @@ class SolrDefaultBackendFactory
         $builder->setLuceneHelper($helper);
 
         return $builder;
+    }
+
+    /**
+     * Create the similar records query builder.
+     *
+     * @return VuFindSearch\Backend\Solr\SimilarBuilder
+     */
+    protected function createSimilarBuilder()
+    {
+        return new \FinnaSearch\Backend\Solr\SimilarBuilder(
+            $this->config->get($this->searchConfig), $this->uniqueKey
+        );
     }
 
     /**
