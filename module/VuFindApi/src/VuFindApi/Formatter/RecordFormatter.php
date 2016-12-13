@@ -210,6 +210,9 @@ class RecordFormatter extends BaseFormatter
                 if (isset($item['method'])) {
                     unset($item['method']);
                 }
+                if (isset($item['defaultField'])) {
+                    unset($item['defaultField']);
+                }
                 return $item;
             },
             $this->recordFields

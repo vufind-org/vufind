@@ -1,6 +1,6 @@
 # Key is the field name that can be requested. It has the following subkeys:
 # - method name to call (either in the SearchApiController class or the record driver)
-# - default: true if the field is displayed by default when the request does not specify fields
+# - defaultField: true if the field is displayed by default when the request does not specify fields
 # - Swagger specification fields describing the returned data.
 #
 # See http://swagger.io/specification/ for information on the Swagger-specific fields
@@ -13,7 +13,7 @@ accessRestrictions:
     type: string
 authors:
   method: getDeduplicatedAuthors
-  default: true
+  defaultField: true
   description: >-
     Deduplicated author information including main, corporate and secondary
     authors
@@ -118,7 +118,7 @@ findingAids:
     type: string
 formats:
   method: getFormats
-  default: true
+  defaultField: true
   description: Formats
   type: array
   items:
@@ -179,7 +179,7 @@ humanReadablePublicationDates:
     type: string
 id:
   method: getUniqueID
-  default: true
+  defaultField: true
   description: Record unique ID (can be used in the record endpoint)
   type: string
 institutions:
@@ -206,7 +206,7 @@ issns:
     type: string
 languages:
   method: getLanguages
-  default: true
+  defaultField: true
   description: Languages
   type: array
   items:
@@ -309,7 +309,7 @@ secondaryAuthors:
     type: string
 series:
   method: getSeries
-  default: true
+  defaultField: true
   description: Series
   type: array
   items:
@@ -320,7 +320,7 @@ shortTitle:
   type: string
 subjects:
   method: getAllSubjectHeadings
-  default: true
+  defaultField: true
   description: Subject headings
   type: array
   items:
@@ -349,7 +349,7 @@ targetAudienceNotes:
     type: string
 title:
   method: getTitle
-  default: true
+  defaultField: true
   description: Title including any subtitle
   type: string
 titleSection:
@@ -368,7 +368,7 @@ toc:
     type: string
 urls:
   method: "Formatter::getURLs"
-  default: true
+  defaultField: true
   description: URLs contained in the record
   type: array
   items:
