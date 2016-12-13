@@ -187,4 +187,18 @@ class SolrDefaultBackendFactory
 
         return $hf;
     }
+
+    /**
+     * Get the Solr URL.
+     *
+     * @return string|array
+     */
+    protected function getSolrUrl()
+    {
+        $url = parent::getSolrUrl();
+        if (is_array($url) && $this->config->get('config')->Index->shuffle) {
+            shuffle($url);
+        }
+        return $url;
+    }
 }
