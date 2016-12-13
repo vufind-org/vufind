@@ -14,33 +14,18 @@
     return;
   }
 
+  function resetFormAttr(form) {
+    var $form = $(form);
+    $form.find('.js-form-attr').remove();
+    return $form;
+  }
+  function makeFieldElement(data) {
+    return $('<input/>', data)
+      .addClass('js-form-attr')
+      .attr('type', 'hidden');
+  }
+
   $(document).ready(function formAttrReady() {
-    /**
-     * Append a field to a form
-     *
-     */
-    $.fn.appendField = function appendField(_data) {
-      var data = (!$.isArray(_data) && _data.name && _data.value)
-        ? [_data] // wrap data
-        : _data;
-      // for form only
-      if (!this.is('form')) {
-        return;
-      }
-
-      var $form = this;
-
-      // attach new params
-      $.each(data, function appendFieldEach(i, item) {
-        $('<input/>')
-          .attr('type', 'hidden')
-          .attr('name', item.name)
-          .val(item.value).appendTo($form);
-      });
-
-      return $form;
-    };
-
     /**
      * Find all input fields with form attribute point to jQuery object
      *
@@ -49,7 +34,11 @@
       // serialize data
       var data = $('[form=' + this.id + ']').serializeArray();
       // append data to form
-      $(this).appendField(data);
+      var $form = resetFormAttr(this);
+      for (var i=0; i<data.length; i++) {
+        $form.append(makeFieldElement(data[i]));
+      }
+      return true;
     }).each(function locateFormAttrEach() {
       var form = this,
         $fields = $('[form=' + this.id + ']');
@@ -69,7 +58,8 @@
             });
           });
         } else if (type.match(/^submit|image$/i)) {
-          $(form).appendField({name: this.name, value: this.value}).submit();
+          var $form = resetFormAttr(form);
+          $form.append( makeFieldElement({name: this.name, value: this.value}) ).submit();
         }
       });
     });
