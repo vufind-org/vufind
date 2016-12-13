@@ -159,7 +159,7 @@ class RecordFormatter extends BaseFormatter
             if (!isset($this->recordFields[$field])) {
                 continue;
             }
-            $method = $this->recordFields[$field]['method'];
+            $method = $this->recordFields[$field]['vufind.method'];
             if (strncmp($method, 'Formatter::', 11) == 0) {
                 $value = $this->{substr($method, 11)}($record);
             } else {
@@ -207,8 +207,10 @@ class RecordFormatter extends BaseFormatter
     {
         $fields = array_map(
             function ($item) {
-                if (isset($item['method'])) {
-                    unset($item['method']);
+                foreach ($item as $key => $value) {
+                    if (strncmp($key, 'vufind.', 7) == 0) {
+                        unset($item[$key]);
+                    }
                 }
                 return $item;
             },

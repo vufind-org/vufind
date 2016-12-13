@@ -1,19 +1,19 @@
 # Key is the field name that can be requested. It has the following subkeys:
-# - method name to call (either in the SearchApiController class or the record driver)
-# - default: true if the field is displayed by default when the request does not specify fields
+# - vufind.method: name to call (either in the SearchApiController class or the record driver)
+# - vufind.default: true if the field is displayed by default when the request does not specify fields
 # - Swagger specification fields describing the returned data.
 #
 # See http://swagger.io/specification/ for information on the Swagger-specific fields
 #
 accessRestrictions:
-  method: getAccessRestrictions
+  vufind.method: getAccessRestrictions
   description: Access restriction notes
   type: array
   items:
     type: string
 authors:
-  method: getDeduplicatedAuthors
-  default: true
+  vufind.method: getDeduplicatedAuthors
+  vufind.default: true
   description: >-
     Deduplicated author information including main, corporate and secondary
     authors
@@ -21,13 +21,13 @@ authors:
   items:
     $ref: '#/definitions/Authors'
 awards:
-  method: getAwards
+  vufind.method: getAwards
   description: Award notes
   type: array
   items:
     type: string
 bibliographicLevel:
-  method: getBibliographicLevel
+  vufind.method: getBibliographicLevel
   description: Bibliographic level
   type: string
   enum:
@@ -39,336 +39,336 @@ bibliographicLevel:
     - CollectionPart
     - Unknown
 bibliographyNotes:
-  method: getBibliographyNotes
+  vufind.method: getBibliographyNotes
   description: Bibliography notes
   type: array
   items:
     type: string
 callNumbers:
-  method: getCallNumbers
+  vufind.method: getCallNumbers
   description: Call numbers
   type: array
   items:
     type: string
 childRecordCount:
-  method: getChildRecordCount
+  vufind.method: getChildRecordCount
   description: Number of child records
   type: integer
 cleanDoi:
-  method: getCleanDOI
+  vufind.method: getCleanDOI
   description: First valid DOI
   type: string
 cleanIsbn:
-  method: getCleanISBN
+  vufind.method: getCleanISBN
   description: First valid ISBN favoring ISBN-10 over ISBN-13 when possible
   type: string
 cleanIssn:
-  method: getCleanISSN
+  vufind.method: getCleanISSN
   description: Base portion of the first listed ISSN
   type: string
 cleanOclcNumber:
-  method: getCleanOCLCNum
+  vufind.method: getCleanOCLCNum
   description: First OCLC number
   type: string
 containerEndPage:
-  method: getContainerEndPage
+  vufind.method: getContainerEndPage
   description: End page in the containing item
   type: string
 containerIssue:
-  method: getContainerIssue
+  vufind.method: getContainerIssue
   description: Issue number of the containing item
   type: string
 containerReference:
-  method: getContainerReference
+  vufind.method: getContainerReference
   description: Reference to the containing item
   type: string
 containerStartPage:
-  method: getContainerStartPage
+  vufind.method: getContainerStartPage
   description: Start page in the containing item
   type: string
 containerTitle:
-  method: getContainerTitle
+  vufind.method: getContainerTitle
   description: Title of the containing item
   type: string
 containerVolume:
-  method: getContainerVolume
+  vufind.method: getContainerVolume
   description: Volume of the containing item
   type: string
 corporateAuthors:
-  method: getCorporateAuthors
+  vufind.method: getCorporateAuthors
   description: Main corporate authors
   type: array
   items:
     type: string
 dedupIds:
-  method: "Formatter::getDedupIds"
+  vufind.method: "Formatter::getDedupIds"
   description: IDs of all records deduplicated with the current record
   type: array
   items:
     type: string
 edition:
-  method: getEdition
+  vufind.method: getEdition
   description: Edition
   type: string
 findingAids:
-  method: getFindingAids
+  vufind.method: getFindingAids
   description: Finding aids
   type: array
   items:
     type: string
 formats:
-  method: getFormats
-  default: true
+  vufind.method: getFormats
+  vufind.default: true
   description: Formats
   type: array
   items:
     type: string
 fullRecord:
-  method: "Formatter::getFullRecord"
+  vufind.method: "Formatter::getFullRecord"
   description: Full metadata record (typically XML)
   type: array
   items:
     type: string
 generalNotes:
-  method: getGeneralNotes
+  vufind.method: getGeneralNotes
   description: General notes
   type: array
   items:
     type: string
 geoLocations:
-  method: getGeoLocation
+  vufind.method: getGeoLocation
   description: Geographic locations (e.g. points, bounding boxes)
   type: array
   items:
     type: string
 hierarchicalPlaceNames:
-  method: getHierarchicalPlaceNames
+  vufind.method: getHierarchicalPlaceNames
   description: Hierarchical place names concatenated for display
   type: array
   items:
     type: string
 hierarchyParentId:
-  method: getHierarchyParentId
+  vufind.method: getHierarchyParentId
   description: Parent record IDs for hierarchical records
   type: array
   items:
     type: string
 hierarchyParentTitle:
-  method: getHierarchyParentTitle
+  vufind.method: getHierarchyParentTitle
   description: Parent record titles for hierarchical records
   type: array
   items:
     type: string
 hierarchyTopId:
-  method: getHierarchyTopId
+  vufind.method: getHierarchyTopId
   description: Hierarchy top record IDs for hierarchical records
   type: array
   items:
     type: string
 hierarchyTopTitle:
-  method: getHierarchyTopTitle
+  vufind.method: getHierarchyTopTitle
   description: Hierarchy top record titles for hierarchical records
   type: array
   items:
     type: string
 humanReadablePublicationDates:
-  method: getHumanReadablePublicationDates
+  vufind.method: getHumanReadablePublicationDates
   description: Publication dates in human-readable format
   type: array
   items:
     type: string
 id:
-  method: getUniqueID
-  default: true
+  vufind.method: getUniqueID
+  vufind.default: true
   description: Record unique ID (can be used in the record endpoint)
   type: string
 institutions:
-  method: getInstitutions
+  vufind.method: getInstitutions
   description: Institutions the record belongs to
   type: array
   items:
     type: string
 isbns:
-  method: getISBNs
+  vufind.method: getISBNs
   description: ISBNs
   type: array
   items:
     type: string
 isCollection:
-  method: isCollection
+  vufind.method: isCollection
   description: Whether the record is a collection node in a hierarchy
   type: boolean
 issns:
-  method: getISSNs
+  vufind.method: getISSNs
   description: ISSNs
   type: array
   items:
     type: string
 languages:
-  method: getLanguages
-  default: true
+  vufind.method: getLanguages
+  vufind.default: true
   description: Languages
   type: array
   items:
     type: string
 lccn:
-  method: getLCCN
+  vufind.method: getLCCN
   description: LCCNs
   type: array
   items:
     type: string
 newerTitles:
-  method: getNewerTitles
+  vufind.method: getNewerTitles
   description: Successor titles
   type: array
   items:
     type: string
 oclc:
-  method: getOCLC
+  vufind.method: getOCLC
   description: OCLC numbers
   type: array
   items:
     type: string
 openUrl:
-  method: getOpenUrl
+  vufind.method: getOpenUrl
   description: OpenURL
   type: string
 physicalDescriptions:
-  method: getPhysicalDescriptions
+  vufind.method: getPhysicalDescriptions
   description: Physical dimensions etc.
   type: array
   items:
     type: string
 placesOfPublication:
-  method: getPlacesOfPublication
+  vufind.method: getPlacesOfPublication
   description: Places of publication
   type: array
   items:
     type: string
 playingTimes:
-  method: getPlayingTimes
+  vufind.method: getPlayingTimes
   description: Playing times (durations)
   type: array
   items:
     type: string
 previousTitles:
-  method: getPreviousTitles
+  vufind.method: getPreviousTitles
   description: Predecessor titles
   type: array
   items:
     type: string
 primaryAuthors:
-  method: getPrimaryAuthors
+  vufind.method: getPrimaryAuthors
   description: Primary authors
   type: array
   items:
     type: string
 productionCredits:
-  method: getProductionCredits
+  vufind.method: getProductionCredits
   description: Production credits
   type: array
   items:
     type: string
 publicationDates:
-  method: getPublicationDates
+  vufind.method: getPublicationDates
   description: Publication dates
   type: array
   items:
     type: string
 publishers:
-  method: getPublishers
+  vufind.method: getPublishers
   description: Publishers
   type: array
   items:
     type: string
 rawData:
-  method: "Formatter::getRawData"
+  vufind.method: "Formatter::getRawData"
   description: All data in the index fields
   type: string
 recordLinks:
-  method: getAllRecordLinks
+  vufind.method: getAllRecordLinks
   description: Links to other related records
   type: array
   items:
     $ref: '#/definitions/RecordLink'
 recordPage:
-  method: "Formatter::getRecordPage"
+  vufind.method: "Formatter::getRecordPage"
   description: Link to the record page in the UI
   type: string
 relationshipNotes:
-  method: getRelationshipNotes
+  vufind.method: getRelationshipNotes
   description: Notes describing relationships to other items
   type: array
   items:
     type: string
 secondaryAuthors:
-  method: getSecondaryAuthors
+  vufind.method: getSecondaryAuthors
   description: Secondary authors
   type: array
   items:
     type: string
 series:
-  method: getSeries
-  default: true
+  vufind.method: getSeries
+  vufind.default: true
   description: Series
   type: array
   items:
     type: string
 shortTitle:
-  method: getShortTitle
+  vufind.method: getShortTitle
   description: Short title (title excluding any subtitle)
   type: string
 subjects:
-  method: getAllSubjectHeadings
-  default: true
+  vufind.method: getAllSubjectHeadings
+  vufind.default: true
   description: Subject headings
   type: array
   items:
     type: string
 subTitle:
-  method: getSubTitle
+  vufind.method: getSubTitle
   description: Subtitle
   type: string
 summary:
-  method: getSummary
+  vufind.method: getSummary
   description: Summary
   type: array
   items:
     type: string
 systemDetails:
-  method: getSystemDetails
+  vufind.method: getSystemDetails
   description: Technical details on the represented item
   type: array
   items:
     type: string
 targetAudienceNotes:
-  method: getTargetAudienceNotes
+  vufind.method: getTargetAudienceNotes
   description: Notes about the target audience
   type: array
   items:
     type: string
 title:
-  method: getTitle
-  default: true
+  vufind.method: getTitle
+  vufind.default: true
   description: Title including any subtitle
   type: string
 titleSection:
-  method: getTitleSection
+  vufind.method: getTitleSection
   description: Part/section portion of the title
   type: string
 titleStatement:
-  method: getTitleStatement
+  vufind.method: getTitleStatement
   description: Statement of responsibility that goes with the title
   type: string
 toc:
-  method: getTOC
+  vufind.method: getTOC
   description: Table of contents
   type: array
   items:
     type: string
 urls:
-  method: "Formatter::getURLs"
-  default: true
+  vufind.method: "Formatter::getURLs"
+  vufind.default: true
   description: URLs contained in the record
   type: array
   items:
