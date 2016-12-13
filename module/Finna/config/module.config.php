@@ -175,6 +175,7 @@ $config = [
             'VuFind\RecordLoader' => 'Finna\Service\Factory::getRecordLoader',
             'VuFind\SearchResultsPluginManager' => 'Finna\Service\Factory::getSearchResultsPluginManager',
             'VuFind\SearchSpecsReader' => 'Finna\Service\Factory::getSearchSpecsReader',
+            'VuFind\SearchTabsHelper' => 'Finna\Service\Factory::getSearchTabsHelper',
         ],
         'invokables' => [
             'VuFind\HierarchicalFacetHelper' => 'Finna\Search\Solr\HierarchicalFacetHelper',
