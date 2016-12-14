@@ -94,6 +94,14 @@
       $checkStorageRetrievalRequest = isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest'];
       $checkILLRequest = isset($row['checkILLRequest']) && $row['checkILLRequest'];
     ?>
+    <? if (isset($row['weblink']) && $row['weblink']): ?>
+      <tr vocab="http://schema.org/" typeof="Offer">
+        <th><?=$this->transEsc("Weblink")?></th>
+        <td>
+            <a data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['weblink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->recordLink()->getRequestUrl($row['weblink'])?></a>
+        </td>
+      </tr>
+    <? endif; ?>
     <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
       <tr vocab="http://schema.org/" typeof="Offer">
         <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($row['number'])?></th>
@@ -110,9 +118,6 @@
                <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
               <? if (isset($row['link']) && $row['link']): ?>
                 <a class="<?=$check ? 'checkRequest ' : ''?>placehold" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
-              <? endif; ?>
-              <? if (isset($row['weblink']) && $row['weblink']): ?>
-                <a class="<?=$check ? 'checkRequest ' : ''?>placehold" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['weblink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->recordLink()->getRequestUrl($row['weblink'])?></a>
               <? endif; ?>
               <? if (isset($row['storageRetrievalRequestLink']) && $row['storageRetrievalRequestLink']): ?>
                 <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['storageRetrievalRequestLink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
