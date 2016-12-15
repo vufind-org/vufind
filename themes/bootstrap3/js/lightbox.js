@@ -1,4 +1,4 @@
-/*global grecaptcha, recaptchaOnLoad, VuFind */
+/*global grecaptcha, recaptchaOnLoad, resetCaptcha, VuFind */
 VuFind.register('lightbox', function Lightbox() {
   // State
   var _originalUrl = false;
@@ -279,9 +279,7 @@ VuFind.register('lightbox', function Lightbox() {
       method: $(form).attr('method') || 'GET',
       data: data
     }).done(function recaptchaReset() {
-      if (typeof grecaptcha !== 'undefined') {
-        grecaptcha.reset($(form).find('.g-recaptcha').data('captchaId'));
-      }
+      resetCaptcha($(form));
     });
 
     VuFind.modal('show');
@@ -301,7 +299,10 @@ VuFind.register('lightbox', function Lightbox() {
     // Handle submit buttons attached to a form as well as those in a form. Store
     // information about which button was clicked here as checking focused button
     // doesn't work on all browsers and platforms.
-    $('form[data-lightbox] [type=submit]').click(_storeClickedStatus);
+    $('form[data-lightbox]').each(function bindFormSubmitsLightbox(i, form) {
+      $(form).find('[type=submit]').click(_storeClickedStatus);
+      $('[type="submit"][form="' + form.id + '"]').click(_storeClickedStatus);
+    });
   }
 
   function reset() {

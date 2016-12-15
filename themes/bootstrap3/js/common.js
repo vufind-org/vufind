@@ -1,5 +1,5 @@
 /*global grecaptcha, isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, recaptchaOnLoad, bulkFormHandler */
+/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler */
 
 // IE 9< console polyfill
 window.console = window.console || {log: function polyfillLog() {}};
@@ -170,6 +170,14 @@ function recaptchaOnLoad() {
     }
   }
 }
+function resetCaptcha($form) {
+  if (typeof grecaptcha !== 'undefined') {
+    var captcha = $form.find('.g-recaptcha');
+    if (captcha.length > 0) {
+      grecaptcha.reset(captcha.data('captchaId'));
+    }
+  }
+}
 
 function bulkFormHandler(event, data) {
   if ($('.checkbox-select-item:checked,checkbox-select-all:checked').length === 0) {
@@ -310,7 +318,7 @@ function setupFacets() {
           $(item).collapse('hide');
         }
       } finally {
-        $.support.transition = saveTransition;    
+        $.support.transition = saveTransition;
       }
     }
   });
@@ -343,10 +351,20 @@ $(document).ready(function commonDocReady() {
 
   // Checkbox select all
   $('.checkbox-select-all').change(function selectAllCheckboxes() {
-    $(this).closest('form').find('.checkbox-select-item').prop('checked', this.checked);
+    var $form = $(this).closest('form')
+    $form.find('.checkbox-select-item').prop('checked', this.checked);
+    $('[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
   });
   $('.checkbox-select-item').change(function selectAllDisable() {
-    $(this).closest('form').find('.checkbox-select-all').prop('checked', false);
+    var $form = $(this).closest('form');
+    if ($form.length === 0 && this.form) {
+      $form = $(this.form);
+    }
+    if ($form.length === 0) {
+      return;
+    }
+    $form.find('.checkbox-select-all').prop('checked', false);
+    $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', false);
   });
 
   // handle QR code links
