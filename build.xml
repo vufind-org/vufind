@@ -36,6 +36,8 @@
     <property name="mysqlpwswitch" value="-p" />
   </then></if>
 
+  <includepath classpath="${srcdir}/vendor/phpdocumentor" />
+
   <!-- Main Target -->
   <target name="main" description="main target">
     <phingcall target="startup" />

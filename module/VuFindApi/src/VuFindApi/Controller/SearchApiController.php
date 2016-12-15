@@ -92,7 +92,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $this->recordFormatter = $rf;
         $this->facetFormatter = $ff;
         foreach ($rf->getRecordFields() as $fieldName => $fieldSpec) {
-            if (!empty($fieldSpec['default'])) {
+            if (!empty($fieldSpec['vufind.default'])) {
                 $this->defaultRecordFields[] = $fieldName;
             }
         }
