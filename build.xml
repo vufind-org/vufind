@@ -368,6 +368,9 @@
     <copy todir="${builddir}/export/vufind/usr/local/vufind/solr/vendor">
       <fileset dir="${srcdir}/solr/vendor" defaultexcludes="false" />
     </copy>
+    <copy todir="${builddir}/export/vufind/usr/local/vufind/public/swagger-ui">
+      <fileset dir="${srcdir}/public/swagger-ui" defaultexcludes="false" />
+    </copy>
 
     <!-- create a version-specific symlink so that tar/zip packages will have
          appropriate directory structures. -->
