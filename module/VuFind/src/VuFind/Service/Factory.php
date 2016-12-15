@@ -215,7 +215,12 @@ class Factory
         $domain = isset($config->Cookies->domain)
             ? $config->Cookies->domain
             : null;
-        return new \VuFind\Cookie\CookieManager($_COOKIE, $path, $domain, $secure);
+        $session_name = isset($config->Cookies->session_name)
+            ? $config->Cookies->session_name
+            : null;
+        return new \VuFind\Cookie\CookieManager(
+            $_COOKIE, $path, $domain, $secure, $session_name
+        );
     }
 
     /**
@@ -930,6 +935,20 @@ class Factory
         return new \VuFind\Connection\WorldCatUtils(
             isset($config->WorldCat) ? $config->WorldCat : null,
             $client, true, $ip
+        );
+    }
+
+    /**
+     * Construct the YAML reader.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Config\YamlReader
+     */
+    public static function getYamlReader(ServiceManager $sm)
+    {
+        return new \VuFind\Config\YamlReader(
+            $sm->get('VuFind\CacheManager')
         );
     }
 }
