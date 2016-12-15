@@ -18,7 +18,9 @@
         "ocramius/proxy-manager": "1.0.2",
         "oyejorge/less.php": "1.7.0.9",
         "pear/file_marc": "1.1.2",
+        "pear/http_request2": "2.3.0",
         "pear/validate_ispn": "dev-master",
+        "phing/phing": "2.15.2",
         "serialssolutions/summon": "1.0.0",
         "symfony/yaml": "2.7.6",
         "swagger-api/swagger-ui": "2.2.4",
@@ -43,6 +45,6 @@
         "squizlabs/php_codesniffer": "2.6.0"
     },
     "scripts": {
-        "post-update-cmd": "rm -rf public/swagger-ui; cp -r vendor/swagger-api/swagger-ui/dist public/swagger-ui; sed -i.orig \"s/defaultModelRendering: 'schema'/defaultModelRendering: 'model'/\" public/swagger-ui/index.html; sed -i.orig 's/url = \".*\"/url = \"..\\/api\\/v1\\?swagger\"/' public/swagger-ui/index.html"
+        "post-update-cmd": "phing installsolr installswaggerui"
     } 
 }
