@@ -318,7 +318,7 @@ function setupFacets() {
           $(item).collapse('hide');
         }
       } finally {
-        $.support.transition = saveTransition;    
+        $.support.transition = saveTransition;
       }
     }
   });
