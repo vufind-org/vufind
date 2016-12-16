@@ -235,7 +235,6 @@
    <dynamicField name="*_geo" type="geo" indexed="true" stored="true" multiValued="true" />
  </fields>
  <uniqueKey>id</uniqueKey>
- <defaultSearchField>allfields</defaultSearchField>
  <!-- CopyFields for Spelling -->
  <!-- ** Basic, single word spelling -->
  <copyField source="allfields" dest="spelling"/>
@@ -266,6 +265,4 @@
  <!-- CopyFields for call numbers -->
  <copyField source="dewey-raw" dest="dewey-search"/>
  <copyField source="callnumber-raw" dest="callnumber-search"/>
- <!-- Default Boolean Operator -->
- <solrQueryParser defaultOperator="AND"/>
 </schema>

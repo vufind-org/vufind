@@ -356,6 +356,8 @@
     -->
     <lst name="defaults">
       <str name="echoParams">explicit</str>
+      <str name="q.op">AND</str>
+      <str name="df">course</str>
     </lst>
   </requestHandler>
   
@@ -369,16 +371,20 @@
   -->
   <requestHandler name="dismax" class="solr.SearchHandler">
     <lst name="defaults">
-     <str name="defType">dismax</str>
-     <str name="echoParams">explicit</str>
+      <str name="defType">dismax</str>
+      <str name="echoParams">explicit</str>
+      <str name="q.op">AND</str>
+      <str name="df">course</str>
     </lst>
   </requestHandler>
   
   <requestHandler name="edismax" class="solr.SearchHandler">
     <lst name="defaults">
-     <str name="defType">edismax</str>
-     <str name="echoParams">explicit</str>
-     <str name="lowercaseOperators">false</str>
+      <str name="defType">edismax</str>
+      <str name="echoParams">explicit</str>
+      <str name="lowercaseOperators">false</str>
+      <str name="q.op">AND</str>
+      <str name="df">course</str>
     </lst>
   </requestHandler>
   
