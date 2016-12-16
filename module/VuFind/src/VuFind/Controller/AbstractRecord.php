@@ -70,6 +70,13 @@ class AbstractRecord extends AbstractBase
     protected $searchClassId = 'Solr';
 
     /**
+     * Should we log statistics?
+     *
+     * @var bool
+     */
+    protected $logStatistics = true;
+
+    /**
      * Record driver
      *
      * @var AbstractRecordDriver
@@ -251,6 +258,12 @@ class AbstractRecord extends AbstractBase
      */
     public function homeAction()
     {
+        // Save statistics:
+        if ($this->logStatistics) {
+            $this->getServiceLocator()->get('VuFind\RecordStats')
+                ->log($this->loadRecord(), $this->getRequest());
+        }
+
         return $this->showTab(
             $this->params()->fromRoute('tab', $this->getDefaultTab())
         );

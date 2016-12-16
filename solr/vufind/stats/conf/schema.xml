@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<schema name="VuFind Usage Statistics Index" version="1.1">
+  <types>
+    <!-- Define fieldType long as it is needed by the _version_ field required by Solr 4.x -->
+    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldtype name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+    <fieldtype name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
+    <fieldtype name="date" class="solr.TrieDateField" sortMissingLast="true" omitNorms="true" precisionStep="6"/>
+  </types>
+  <fields>
+   <!-- Required by Solr 4.x -->
+   <field name="_version_" type="long" indexed="true" stored="true"/>
+   <!-- Core Fields  -->
+   <field name="id" type="string" indexed="true" stored="true"/>
+   <field name="datestamp" type="date" indexed="true" stored="true"/>
+
+   <!-- Institutional Fields -->
+   <field name="institution" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="collection" type="string" indexed="true" stored="true" multiValued="true"/>
+
+   <!-- User fields -->
+   <field name="browser" type="string" indexed="true" stored="true"/>
+   <field name="browserVersion" type="string" indexed="true" stored="true"/>
+   <field name="ipaddress" type="string" indexed="true" stored="true"/>
+   <field name="referrer" type="string" indexed="true" stored="true"/>
+   <field name="session" type="string" indexed="true" stored="true"/>
+   <field name="url" type="string" indexed="true"/>
+
+   <!-- Search fields -->
+   <field name="noresults" type="boolean" indexed="true" stored="true"/>
+   <field name="phrase" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="resultCount" type="string" indexed="true" stored="true"/>
+   <field name="type" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="searchSource" type="string" indexed="true" stored="true"/>
+
+   <!-- Record fields -->
+   <field name="recordId" type="string" indexed="true" stored="true"/>
+   <field name="recordSource" type="string" indexed="true" stored="true"/>
+ </fields>
+
+ <uniqueKey>id</uniqueKey>
+
+ <defaultSearchField>id</defaultSearchField>
+
+ <!-- Default Boolean Operator -->
+ <solrQueryParser defaultOperator="OR"/>
+</schema>

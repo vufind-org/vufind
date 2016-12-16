@@ -1,0 +1,95 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('VuFind Administration - Statistics'));
+?>
+<style>
+  table {
+    table-layout: fixed;
+    width: 100%;
+  }
+  tr td:first-child {
+    width:50%;
+  }
+</style>
+
+<div class="row">
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <h2><?=$this->transEsc('Statistics')?></h2>
+
+    <? if(null !== $this->totalSearches || null !== $this->emptySearches || null !== $this->totalRecordViews): ?>
+      <h3>Executive Summary</h3>
+      <table class="table table-striped">
+        <? if(null !== $this->totalSearches): ?><tr><td>Total Searches</td><td><?=$this->totalSearches ?></td></tr><? endif; ?>
+        <? if(null !== $this->emptySearches): ?><tr><td>0 Hit Searches</td><td><?=$this->emptySearches ?></td></tr><? endif; ?>
+        <? if(null !== $this->totalRecordViews): ?><tr><td>Total Record Views</td><td><?=$this->totalRecordViews ?></td></tr><? endif; ?>
+      </table>
+    <? endif; ?>
+
+    <? if(!empty($this->topSearches)): ?>
+      <h3>Top Searches<? if($this->searchesBySource): ?> by Source<? endif; ?></h3>
+      <? if($this->searchesBySource): ?>
+        <? foreach($this->topSearches as $source=>$searches): ?>
+          <?=$source ?>
+          <table class="table table-striped">
+          <? foreach($searches as $search): ?>
+            <tr><td><?=$search['value'] ?></td><td><?=$this->localizedNumber($search['count']) ?></td></tr>
+          <? endforeach; ?>
+          </table>
+        <? endforeach; ?>
+      <? else: ?>
+        <table class="table table-striped">
+          <? foreach($this->topSearches as $search): ?>
+            <tr><td><?=$search['value'] ?></td><td><?=$this->localizedNumber($search['count']) ?></td><td><?=$search['source'] ?></td></tr>
+          <? endforeach; ?>
+        </table>
+      <? endif; ?>
+    <? endif; ?>
+
+    <? if(!empty($this->topRecords)): ?>
+      <h3>Top Records<? if($this->recordsBySource): ?> by Source<? endif; ?></h3>
+      <? if($this->recordsBySource): ?>
+        <? foreach($this->topRecords as $source=>$records): ?>
+          <?=$source ?>
+          <table class="table table-striped">
+          <? foreach($records as $record): ?>
+            <tr><td><?=$record['value'] ?></td><td><?=$this->localizedNumber($record['count']) ?></td></tr>
+          <? endforeach; ?>
+          </table>
+        <? endforeach; ?>
+      <? else: ?>
+        <table class="table table-striped">
+          <? foreach($this->topRecords as $record): ?>
+            <tr><td><?=$record['value'] ?></td><td><?=$this->localizedNumber($record['count']) ?></td><td><?=$record['source'] ?></td></tr>
+          <? endforeach; ?>
+        </table>
+      <? endif; ?>
+    <? endif; ?>
+
+    <? if(!empty($this->browserStats)): ?>
+      <h3>Browser Usage</h3>
+      <?
+        $total = 0;
+        foreach($this->browserStats as $browser) {
+            $total += $browser['count'];
+        }
+      ?>
+      <table class="table table-striped">
+      <? foreach($this->browserStats as $browser): ?>
+        <tr><td><?=$browser['browserName'] ?></td><td><?=$this->localizedNumber($browser['count']) ?></td><td><?=$this->localizedNumber($browser['count']*100/$total, 2) ?>%</td></tr>
+      <? endforeach; ?>
+      </table>
+      <h4>Top Versions</h4>:
+      <? foreach($this->topVersions as $i=>$browser): ?>
+        <span<? if($this->currentBrowser == $browser['browserName']): ?> class="currentBrowser"<? endif; ?>><?=$browser['browserName'] ?> (<?=$this->localizedNumber($browser['count']) ?>)</span><? if(++$i < count($this->topVersions)): ?>,<? endif; ?>
+      <? endforeach; ?>
+    <? endif; ?>
+
+    <? if(empty($this->topSearches) && empty($this->topRecords) && empty($this->browserStats)): ?>
+      No statistic sources.
+    <? endif; ?>
+  </div>
+
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <?=$this->render("admin/menu.phtml")?>
+  </div>
+</div>

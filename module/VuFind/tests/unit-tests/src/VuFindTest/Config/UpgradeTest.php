@@ -89,10 +89,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
 
         // Prior to 2.4, we expect exactly one warning about using a deprecated
         // theme:
-        $expectedWarnings = [
-            'The Statistics module has been removed from Vufind. '
-            . 'For usage tracking, please configure Google Analytics or Piwik.'
-        ];
+        $expectedWarnings = [];
         if ((float)$version < 1.3) {
             $expectedWarnings[] = "WARNING: This version of VuFind does not support "
                 . "the default theme. Your config.ini [Site] theme setting "
