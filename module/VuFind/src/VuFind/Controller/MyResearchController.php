@@ -390,6 +390,7 @@ class MyResearchController extends AbstractBase
 
     /**
      * Add account blocks to the flash messenger as errors.
+     * These messages are lightbox ignored.
      *
      * @param \VuFind\ILS\Connection $catalog Catalog connection
      * @param array                  $patron  Patron details
@@ -402,7 +403,10 @@ class MyResearchController extends AbstractBase
             && $blocks = $catalog->getAccountBlocks($patron)
         ) {
             foreach ($blocks as $block) {
-                $this->flashMessenger()->addMessage($block, 'error');
+                $this->flashMessenger()->addMessage(
+                    [ 'msg' => $block, 'dataset' => [ 'lightbox-ignore' => '1' ] ],
+                    'error'
+                );
             }
         }
     }
