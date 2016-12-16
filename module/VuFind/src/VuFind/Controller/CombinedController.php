@@ -244,7 +244,16 @@ class CombinedController extends AbstractSearch
             $lookfor = $this->params()->fromQuery('lookfor');
             return $this->redirect()->toUrl($target . urlencode($lookfor));
         default:
-            throw new \Exception('Unexpected search type.');
+            // If parameters are completely missing, just redirect to home instead
+            // of throwing an error; this is possibly a misbehaving crawler that
+            // followed the SearchBox URL without passing any parameters.
+            if (empty($type) && empty($target)) {
+                return $this->redirect()->toRoute('home');
+            }
+            // If we have a weird value here, report it as an Exception:
+            throw new \VuFind\Exception\BadRequest(
+                'Unexpected search type: "' . $type . '".'
+            );
         }
     }
 

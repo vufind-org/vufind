@@ -857,16 +857,15 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * This method queries the ILS for new items
      *
-     * Comment for $fundID: (use a value returned by getFunds, or exclude for no
-     * limit); note that ?fund? may be a misnomer ? if funds are not an
-     * appropriate way to limit your new item results, you can return a different
-     * set of values from getFunds. The important thing is that this parameter
-     * supports an ID returned by getFunds, whatever that may mean.
-     *
-     * @param unknown $page    - page number of results to retrieve (starts at 1)
-     * @param unknown $limit   - the size of each page of results to retrieve
-     * @param unknown $daysOld - the maxi age of records to retrieve in days  -max 30
-     * @param string  $fundId  - optional fund ID to use for limiting results
+     * @param int $page    Page number of results to retrieve (counting starts at 1)
+     * @param int $limit   The size of each page of results to retrieve
+     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * returned by getFunds, or exclude for no limit); note that "fund" may be a
+     * misnomer - if funds are not an appropriate way to limit your new item
+     * results, you can return a different set of values from getFunds. The
+     * important thing is that this parameter supports an ID returned by getFunds,
+     * whatever that may mean.
      *
      * @return array provides a count and the results of new items.
      */
