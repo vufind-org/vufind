@@ -1227,6 +1227,20 @@ class Voyager extends AbstractBase
                "WHERE PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID AND " .
                "lower(PATRON_BARCODE.PATRON_BARCODE) = :barcode";
 
+        // Limit the barcode statuses that allow logging in. By default only
+        // 1 (active) and 4 (expired) are allowed.
+        $allowedStatuses = preg_replace(
+            '/[^:\d]*/',
+            '',
+            isset($this->config['Catalog']['allowed_barcode_statuses'])
+                ? $this->config['Catalog']['allowed_barcode_statuses']
+                : '1:4'
+        );
+        if ($allowedStatuses) {
+            $sql .= ' AND PATRON_BARCODE.BARCODE_STATUS IN ('
+                . str_replace(':', ',', $allowedStatuses) . ')';
+        }
+
         try {
             $bindBarcode = strtolower(utf8_decode($barcode));
             $compareLogin = mb_strtolower($login, 'UTF-8');
