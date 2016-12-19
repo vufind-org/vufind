@@ -28,7 +28,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Record;
-use VuFind\RecordDriver\PluginManager as RecordFactory,
+use VuFind\Exception\RecordMissing as RecordMissingException,
+    VuFind\RecordDriver\PluginManager as RecordFactory,
     VuFindSearch\Service as SearchService,
     VuFind\Record\Cache,
     Finna\Db\Table\Resource;
@@ -71,7 +72,26 @@ class Loader extends \VuFind\Record\Loader
                 'Record ' . $source . ':' . $id . ' does not exist.'
             );
         }
-        return parent::load($id, $source);
+        $missingException = false;
+        try {
+            $result = parent::load($id, $source, $tolerateMissing);
+        } catch (RecordMissingException $e) {
+            $missingException = $e;
+        }
+        if ($source == 'Solr'
+            && ($missingException || $result instanceof \VuFind\RecordDriver\Missing)
+            && preg_match('/\.(FIN\d+)/', $id, $matches)
+        ) {
+            // Probably an old MetaLib record ID. Try to find the record using its
+            // old MetaLib ID
+            if ($mlRecord = $this->loadMetaLibRecord($matches[1])) {
+                return $mlRecord;
+            }
+        }
+        if ($missingException) {
+            throw $missingException;
+        }
+        return $result;
     }
 
     /**
@@ -111,6 +131,19 @@ class Loader extends \VuFind\Record\Loader
 
         $records = parent::loadBatch($loadIds);
 
+        // Check the results for missing MetaLib records and try to load them with
+        // their old MetaLib IDs
+        foreach ($records as &$record) {
+            if ($record instanceof \VuFind\RecordDriver\Missing
+                && $record->getSourceIdentifier() == 'Solr'
+                && preg_match('/\.(FIN\d+)/', $record->getUniqueID(), $matches)
+            ) {
+                if ($mlRecord = $this->loadMetaLibRecord($matches[1])) {
+                    $record = $mlRecord;
+                }
+            }
+        }
+
         $metalibIds = array_flip($metalibIds);
         foreach ($recIds as $recId) {
             if (isset($metalibIds[$recId])) {
@@ -124,5 +157,26 @@ class Loader extends \VuFind\Record\Loader
         }
 
         return $result;
+    }
+
+    /**
+     * Try to load a record using its old MetaLib ID
+     *
+     * @param string $id Record ID (e.g. FIN12345)
+     *
+     * @return \VuFind\RecordDriver\AbstractBase|bool Record or false if not found
+     */
+    protected function loadMetalibRecord($id)
+    {
+        $safeId = addcslashes($id, '"');
+        $query = new \VuFindSearch\Query\Query(
+            'original_id_str_mv:"' . $safeId . '"'
+        );
+        $params = new \VuFindSearch\ParamBag(
+            ['hl' => 'false', 'spellcheck' => 'false']
+        );
+        $results = $this->searchService->search('Solr', $query, 0, 1, $params)
+            ->getRecords();
+        return !empty($results) ? $results[0] : false;
     }
 }
