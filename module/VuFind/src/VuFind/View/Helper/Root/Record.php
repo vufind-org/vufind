@@ -100,7 +100,7 @@ class Record extends AbstractHelper
      *
      * @return string
      */
-    protected function renderTemplate($name, $context = null)
+    public function renderTemplate($name, $context = null)
     {
         // Set default context if none provided:
         if (is_null($context)) {
