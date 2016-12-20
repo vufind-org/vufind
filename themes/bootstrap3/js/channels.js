@@ -1,4 +1,5 @@
 /*global ChannelSlider, getUrlRoot, htmlEncode, VuFind */
+/*exported channelAddLinkButtons */
 
 function bindChannelAddMenu(scope) {
   $(scope).find('.channel-add-menu .dropdown-menu a').click(function selectAddedChannel(e) {
@@ -23,20 +24,20 @@ function bindChannelAddMenu(scope) {
 
 function channelAddLinkButtons(linksJson) {
   for (var elemId in linksJson) {
-    var links = JSON.parse(linksJson[elemId]);
-    var $cont = $('<div class="channel-links pull-left"></div>');
-    console.log(elemId);
-    for (var i = 0; i < links.length; i++) {
-      console.log(links[i]);
-      $cont.append(
-        $('<a/> ', {
-          href: links[i].url,
-          class: "btn btn-default",
-          html: '<i class="fa ' + links[i].icon + '"></i> ' + VuFind.translate(links[i].label)
-        })
-      );
+    if (linksJson.hasOwnProperty(elemId)) {
+      var links = JSON.parse(linksJson[elemId]);
+      var $cont = $('<div class="channel-links pull-left"></div>');
+      for (var i = 0; i < links.length; i++) {
+        $cont.append(
+          $('<a/> ', {
+            href: links[i].url,
+            class: "btn btn-default",
+            html: '<i class="fa ' + links[i].icon + '"></i> ' + VuFind.translate(links[i].label)
+          })
+        );
+      }
+      $('#' + elemId + ' .slider-menu').append($cont);
     }
-    $('#' + elemId + ' .slider-menu').append($cont);
   }
 }
 
