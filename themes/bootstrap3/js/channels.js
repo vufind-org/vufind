@@ -32,7 +32,7 @@ function channelAddLinkButtons(linksJson) {
         $('<a/> ', {
           href: links[i].url,
           class: "btn btn-default",
-          html: '<i class="fa ' + links[i].icon + '"></i> ' + links[i].label
+          html: '<i class="fa ' + links[i].icon + '"></i> ' + VuFind.translate(links[i].label)
         })
       );
     }

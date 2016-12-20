@@ -2,6 +2,13 @@
 <? $this->headScript()->appendFile('lib/channel-slider.js'); ?>
 <? $this->headScript()->appendFile('channels.js'); ?>
 <? $this->headScript()->appendFile('vendor/jquery.dotdotdot.min.js'); ?>
+<?
+  $this->jsTranslations()->addStrings([
+    'channel_expand' => 'channel_expand',
+    'channel_search' => 'channel_search',
+    'View Record' => 'View Record',
+  ]);
+?>
 <? $insideButton = false; ?>
 <? $channelLinkData = []; ?>
 <? foreach ($channels as $key=>$channel): ?>
@@ -36,7 +43,7 @@
   <? elseif (isset($channel['token'])): ?>
     <? if (!$insideButton): ?>
       <div class="channel-add-menu btn-group hidden" data-group="<?=$groupId ?>">
-        <button type="button" class="add-btn btn btn-default">Add more channels like this</button>
+        <button type="button" class="add-btn btn btn-default"><?=$this->transEsc('channel_add_more') ?></button>
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span class="caret"></span>
           <span class="sr-only">Toggle Dropdown</span>
