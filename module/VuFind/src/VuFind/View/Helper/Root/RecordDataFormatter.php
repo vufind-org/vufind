@@ -23,7 +23,8 @@
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
+ * Wiki
  */
 namespace VuFind\View\Helper\Root;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
@@ -36,7 +37,8 @@ use Zend\View\Helper\AbstractHelper;
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
+ * Wiki
  */
 class RecordDataFormatter extends AbstractHelper
 {
