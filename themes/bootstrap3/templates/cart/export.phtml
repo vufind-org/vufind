@@ -59,9 +59,9 @@
   $('button.btn.hidden').removeClass('hidden');
   $('#itemhide').removeClass('in');
   $('#format').change(function exportFormatChange(e) {
+    $('.export.btn').unbind('click');
     if (this.selectedOptions[0].getAttribute('data-redirect') === null) {
       $('.export.btn').removeAttr('data-lightbox-ignore');
-      $('.export.btn').unbind('click');
       $('form[name=exportForm]').removeAttr('target');
     } else {
       $('.export.btn').attr('data-lightbox-ignore', '1');
