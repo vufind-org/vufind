@@ -100,7 +100,8 @@ class RecordDataFormatterFactory
             ]
         );
         $spec->setLine(
-            'Format', 'getFormats', 'RecordHelper', ['method' => 'getFormatList']
+            'Format', 'getFormats', 'RecordHelper',
+            ['helperMethod' => 'getFormatList']
         );
         $spec->setLine('Language', 'getLanguages');
         $spec->setTemplateLine(

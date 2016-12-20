@@ -188,7 +188,7 @@ class RecordDataFormatter extends AbstractHelper
     protected function renderRecordHelper(RecordDriver $driver, $data,
         array $options
     ) {
-        $method = isset($options['method']) ? $options['method'] : null;
+        $method = isset($options['helperMethod']) ? $options['helperMethod'] : null;
         $plugin = $this->getView()->plugin('record');
         if (empty($method) || !is_callable([$plugin, $method])) {
             throw new \Exception('Cannot call "' . $method . '" on helper.');
