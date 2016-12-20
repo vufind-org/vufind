@@ -3,12 +3,14 @@
 <? $this->headScript()->appendFile('channels.js'); ?>
 <? $this->headScript()->appendFile('vendor/jquery.dotdotdot.min.js'); ?>
 <? $insideButton = false; ?>
+<? $channelLinkData = []; ?>
 <? foreach ($channels as $key=>$channel): ?>
   <?
     $groupId = isset($channel['groupId'])
       ? $channel['groupId']
       : $channel['providerId'];
   ?>
+  <? $channelID = 'channel-' . $key; ?>
   <? if (isset($channel['contents'])): ?>
     <? if ($insideButton): ?>
         </ul>
@@ -16,22 +18,12 @@
       <? $insideButton = false; ?>
     <? endif; ?>
     <div class="channel-title">
-      <h2>
-        <?=$this->escapeHtml($channel['title'])?>
-        <? if (!empty($channel['links'])): ?>
-            <? foreach ($channel['links'] as $link): ?>
-                <a href="<?=$link['url'] ?>">
-                <? if (isset($link['icon'])): ?>
-                    <i class="fa fa-fw <?=$link['icon'] ?>"<? if(isset($link['label'])):?> title="<?=$this->transEsc($link['label']) ?>"<?endif?>></i>
-                <? else: ?>
-                    <?=$this->transEsc($link['label']) ?>
-                <? endif; ?>
-                </a>
-            <? endforeach; ?>
-        <? endif; ?>
+      <h2><?=$this->escapeHtml($channel['title'])?>
+      <? if (!empty($channel['links'])): ?>
+        <? $channelLinkData[$channelID] = json_encode($channel['links']); ?>
+      <? endif; ?>
       </h2>
     </div>
-    <? $channelID = 'channel-' . $key; ?>
     <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>">
       <!-- Wrapper for slides -->
       <? foreach ($channel['contents'] as $item): ?>
@@ -55,3 +47,12 @@
     <li><a href="<?=current(explode('?', $this->serverUrl(true)))?>?<?=empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')?>channelProvider=<?=urlencode($channel['providerId']) ?>&amp;channelToken=<?=urlencode($channel['token']) ?>&amp;layout=lightbox" data-token="<?=$channel['token'] ?>"><?=$this->escapeHtml($channel['title'])?></a></li>
   <? endif; ?>
 <? endforeach; ?>
+<?
+$linksJson = json_encode($channelLinkData);
+$script = <<<JS
+  $(document).ready(function addLinkButtons() {
+    channelAddLinkButtons({$linksJson});
+  });
+JS;
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>

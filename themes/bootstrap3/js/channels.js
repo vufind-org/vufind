@@ -21,6 +21,25 @@ function bindChannelAddMenu(scope) {
   });
 }
 
+function channelAddLinkButtons(linksJson) {
+  for (var elemId in linksJson) {
+    var links = JSON.parse(linksJson[elemId]);
+    var $cont = $('<div class="channel-links pull-left"></div>');
+    console.log(elemId);
+    for (var i = 0; i < links.length; i++) {
+      console.log(links[i]);
+      $cont.append(
+        $('<a/> ', {
+          href: links[i].url,
+          class: "btn btn-default",
+          html: '<i class="fa ' + links[i].icon + '"></i> ' + links[i].label
+        })
+      );
+    }
+    $('#' + elemId + ' .slider-menu').append($cont);
+  }
+}
+
 function setupChannelSlider(i, op) {
   if (ChannelSlider(op)) {
     $(op).find('.thumb').each(function thumbnailBackgrounds(index, thumb) {

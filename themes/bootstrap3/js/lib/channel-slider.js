@@ -20,7 +20,7 @@ function ChannelSlider(el) {
     };
     var _addMenu = function _addMenu() {
       var menu = $('<nav class="slider-menu"></nav>');
-      var group = $('<div class="btn-group"></div>');
+      var group = $('<div class="btn-group pull-left"></div>');
       _leftbtn = $('<button class="btn btn-default" disabled><i class="fa fa-arrow-left"></i></button>').click(pageLeft);
       _rightbtn = $('<button class="btn btn-default"><i class="fa fa-arrow-right"></i></button>').click(pageRight);
       group.append(_leftbtn);

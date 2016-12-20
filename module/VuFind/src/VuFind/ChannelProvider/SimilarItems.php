@@ -216,13 +216,13 @@ class SimilarItems extends AbstractChannelProvider
             $retVal['contents'] = $this->summarizeRecordDrivers($similar);
             $route = $this->recordRouter->getRouteDetails($driver);
             $retVal['links'][] = [
-                'label' => 'channel_search_icon',
-                'icon' => 'fa-list',
+                'label' => 'View Record',
+                'icon' => 'fa-file-text-o',
                 'url' => $this->url
                     ->fromRoute($route['route'], $route['params'])
             ];
             $retVal['links'][] = [
-                'label' => 'channel_expand_icon',
+                'label' => 'channel_expand',
                 'icon' => 'fa-search-plus',
                 'url' => $this->url->fromRoute('channels-record')
                     . '?id=' . urlencode($driver->getUniqueID())

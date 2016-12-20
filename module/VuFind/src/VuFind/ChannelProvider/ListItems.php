@@ -239,7 +239,7 @@ class ListItems extends AbstractChannelProvider
         $results->getParams()->initFromRequest(new Parameters(['id' => $list->id]));
         $retVal['contents'] = $this->summarizeRecordDrivers($results->getResults());
         $retVal['links'][] = [
-            'label' => 'channel_search_icon',
+            'label' => 'channel_search',
             'icon' => 'fa-list',
             'url' => $this->url->fromRoute('userList', ['id' => $list->id])
         ];

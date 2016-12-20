@@ -258,13 +258,13 @@ class Facets extends AbstractChannelProvider
 
         $query = $newResults->getUrlQuery();
         $retVal['links'][] = [
-            'label' => 'channel_search_icon',
+            'label' => 'channel_search',
             'icon' => 'fa-list',
             'url' => $this->url->fromRoute($params->getOptions()->getSearchAction())
                 . $query
         ];
         $retVal['links'][] = [
-            'label' => 'channel_expand_icon',
+            'label' => 'channel_expand',
             'icon' => 'fa-search-plus',
             'url' => $this->url->fromRoute('channels-search')
                 . $query . '&source=' . urlencode($params->getSearchClassId())
