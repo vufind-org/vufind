@@ -10,12 +10,10 @@ env:
   - VUFIND_HOME=$PWD VUFIND_LOCAL_DIR=$PWD/local
 
 before_script:
-  - pear install pear/Http_Request2
-  - pear channel-discover pear.phing.info
-  - pear install phing/phing
   - phpenv config-rm xdebug.ini
   - phpenv rehash
+  - composer install
   - npm install -g eslint@"<3.0.0"
 
 script:
-  - phing composer phpunitfast phpcs-console php-cs-fixer-dryrun eslint
+  - vendor/bin/phing phpunitfast phpcs-console php-cs-fixer-dryrun eslint

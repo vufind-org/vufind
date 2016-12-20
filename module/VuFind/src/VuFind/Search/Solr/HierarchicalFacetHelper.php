@@ -86,6 +86,7 @@ class HierarchicalFacetHelper
      * @param string    $facet     Facet name
      * @param array     $facetList Facet list
      * @param UrlHelper $urlHelper Query URL helper for building facet URLs
+     * @param bool      $escape    Whether to escape URLs
      *
      * @return array Facet hierarchy
      *
@@ -93,13 +94,14 @@ class HierarchicalFacetHelper
      * converting-a-flat-array-with-parent-ids-to-a-nested-tree/
      * Based on this example
      */
-    public function buildFacetArray($facet, $facetList, $urlHelper = false)
-    {
+    public function buildFacetArray($facet, $facetList, $urlHelper = false,
+        $escape = true
+    ) {
         // Create a keyed (for conversion to hierarchical) array of facet data
         $keyedList = [];
         foreach ($facetList as $item) {
             $keyedList[$item['value']] = $this->createFacetItem(
-                $facet, $item, $urlHelper
+                $facet, $item, $urlHelper, $escape
             );
         }
 
@@ -177,10 +179,11 @@ class HierarchicalFacetHelper
      * @param string         $facet     Facet name
      * @param array          $item      Facet item received from Solr
      * @param UrlQueryHelper $urlHelper UrlQueryHelper for creating facet URLs
+     * @param bool           $escape    Whether to escape URLs
      *
      * @return array Facet item
      */
-    protected function createFacetItem($facet, $item, $urlHelper)
+    protected function createFacetItem($facet, $item, $urlHelper, $escape = true)
     {
         $href = '';
         $exclude = '';
@@ -189,14 +192,14 @@ class HierarchicalFacetHelper
             if ($item['isApplied']) {
                 $href = $urlHelper->removeFacet(
                     $facet, $item['value'], true, $item['operator']
-                )->getParams();
+                )->getParams($escape);
             } else {
                 $href = $urlHelper->addFacet(
                     $facet, $item['value'], $item['operator']
-                )->getParams();
+                )->getParams($escape);
             }
             $exclude = $urlHelper->addFacet($facet, $item['value'], 'NOT')
-                ->getParams();
+                ->getParams($escape);
         }
 
         $displayText = $item['displayText'];

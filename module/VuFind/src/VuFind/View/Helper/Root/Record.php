@@ -410,16 +410,20 @@ class Record extends AbstractHelper
      * Render an HTML checkbox control for the current record.
      *
      * @param string $idPrefix Prefix for checkbox HTML ids
+     * @param string $formAttr ID of form for [form] attribute
      *
      * @return string
      */
-    public function getCheckbox($idPrefix = '')
+    public function getCheckbox($idPrefix = '', $formAttr = false)
     {
         static $checkboxCount = 0;
         $id = $this->driver->getSourceIdentifier() . '|'
             . $this->driver->getUniqueId();
         $context
             = ['id' => $id, 'count' => $checkboxCount++, 'prefix' => $idPrefix];
+        if ($formAttr) {
+            $context['formAttr'] = $formAttr;
+        }
         return $this->contextHelper->renderInContext(
             'record/checkbox.phtml', $context
         );
