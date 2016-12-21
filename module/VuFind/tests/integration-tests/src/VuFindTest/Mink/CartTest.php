@@ -579,6 +579,9 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
         $this->snooze();
+        $windows = $this->getMinkSession()->getWindowNames();
+        $this->assertEquals(2, count($windows));
+        $this->getMinkSession()->switchToWindow($windows[1]);
         $this->assertEquals(
             'https://www.google.com/', $this->getMinkSession()->getCurrentUrl()
         );
