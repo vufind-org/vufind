@@ -223,13 +223,23 @@ class SolrExtensionsListener
                                 $filter, 'score=recipDistance ', 10, 0
                             );
                             $boosts[] = $bq;
+                            // Add a separate boost for the centroid
+                            $bq = preg_replace(
+                                '/sfield=\w+/', 'sfield=center_coords', $bq
+                            );
+                            $boosts[] = $bq;
                         }
                         $params->set('bq', $boosts);
+
                         // Set also default query type since bq only works with
                         // DisMax and eDisMax.
                         $params->set('defType', 'edismax');
                     }
                 }
+            }
+            $sort = $params->get('sort');
+            if (empty($sort) || $sort[0] == 'score desc') {
+                $params->set('sort', 'score desc, first_indexed desc');
             }
         }
     }

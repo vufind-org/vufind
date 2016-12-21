@@ -398,7 +398,8 @@ $staticRoutes = [
     'MetaLib/Home', 'MetaLib/Search', 'MetaLib/Advanced',
     'MyResearch/SaveCustomOrder',
     'OrganisationInfo/Home',
-    'PCI/Home', 'PCI/Search', 'PCI/Record'
+    'PCI/Home', 'PCI/Search', 'PCI/Record',
+    'Search/StreetSearch'
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();

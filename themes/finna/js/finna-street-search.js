@@ -1,20 +1,20 @@
 finna.StreetSearch = (function() {
-    var startButton, terminateButton, progressContainer, getPositionSuccess, xhr;
+    var startButton, terminateButton, progressContainer;
 
-    var reverseGeocodeService = 'https://api.digitransit.fi/geocoding/v1/reverse';
-    var geolocationAccuracyTreshold = 20; // If accuracy >= treshold then give a warning for the user
+    var geolocationAccuracyThreshold = 20; // If accuracy >= threshold then give a warning for the user
+    var searchRadius = 0.1; // Radius of the search area in KM
 
     var doStreetSearch = function() {
         progressContainer.removeClass('hidden');
         progressContainer.find('.fa-spinner').removeClass('hidden');
         terminate = false;
-        startButton.addClass('hidden'); 
+        startButton.prop('disabled', true);
 
         info(VuFind.translate('street_search_checking_for_geolocation'));
 
         if ('geolocation' in navigator) {
             info(VuFind.translate('street_search_geolocation_available'));
-            navigator.geolocation.getCurrentPosition(reverseGeocode, geoLocationError, { timeout: 10000, maximumAge: 10000 });
+            navigator.geolocation.getCurrentPosition(locationSearch, geoLocationError, { timeout: 30000, maximumAge: 10000 });
         } else {
             geoLocationError();
         }
@@ -23,111 +23,73 @@ finna.StreetSearch = (function() {
     var terminateStreetSearch = function() {
         terminate = true;
         progressContainer.addClass('hidden');
-        startButton.removeClass('hidden');
-        if (typeof xhr !== 'undefined') {
-            xhr.abort();
-        }
-    };
-   
-    var geoLocationError = function(error) {
-        if (!getPositionSuccess) {
-            var errorString = 'street_search_geolocation_other_error';
-            var additionalInfo = '';
-            if (error) {
-                additionalInfo = error.message;
-                switch(error.code) {
-                    case error.POSITION_UNAVAILABLE:
-                        errorString = 'street_search_geolocation_position_unavailable';
-                        break;
-                    case error.PERMISSION_DENIED:
-                        errorString = 'street_search_geolocation_inactive';
-                        break;
-                    case error.TIMEOUT:
-                        errorString = 'street_search_timeout';
-                        break;
-                    default:
-                        // do nothing
-                        break;
-                }
-            }
-            errorString = VuFind.translate(errorString);
-            if (additionalInfo) {
-                errorString += ' -- ' + additionalInfo;
-            }
-            info(errorString, 1);
-        }
+        startButton.prop('disabled', false);
     };
 
-    var reverseGeocode = function(position) {
+    var geoLocationError = function(error) {
+        var errorString = 'street_search_geolocation_other_error';
+        var additionalInfo = '';
+        if (error) {
+            additionalInfo = error.message;
+            switch(error.code) {
+                case error.POSITION_UNAVAILABLE:
+                    errorString = 'street_search_geolocation_position_unavailable';
+                    break;
+                case error.PERMISSION_DENIED:
+                    errorString = 'street_search_geolocation_inactive';
+                    break;
+                case error.TIMEOUT:
+                    errorString = 'street_search_timeout';
+                    break;
+                default:
+                    // do nothing
+                    break;
+            }
+        }
+        errorString = VuFind.translate(errorString);
+        if (additionalInfo) {
+            errorString += ' -- ' + additionalInfo;
+        }
+        info(errorString, true);
+    };
+
+    var locationSearch = function(position) {
         if (terminate) {
             return;
         }
-        getPositionSuccess = true;
-    
-        if (position.coords.accuracy >= geolocationAccuracyTreshold) {
-            info(VuFind.translate('street_search_coordinates_found_accuracy_bad'));
+
+        if (position.coords.accuracy >= geolocationAccuracyThreshold) {
+            info(VuFind.translate('street_search_coordinates_found_accuracy_bad'), false, false);
         } else {
-            info(VuFind.translate('street_search_coordinates_found'));
+            info(VuFind.translate('street_search_coordinates_found'), false, false);
         }
 
         queryParameters = {
-            'point.lat': position.coords.latitude,
-            'point.lon': position.coords.longitude,
-            'size': '1'
+            'type': 'AllFields',
+            'limit': '100',
+            'view': 'grid',
+            'filter': [
+                '~format:"0/Image/"',
+                '~format:"0/Place/"',
+                'online_boolean:"1"',
+                '{!geofilt sfield=location_geo pt=' + position.coords.latitude + ',' + position.coords.longitude + ' d=' + searchRadius + '}'
+            ],
+            'streetsearch': '1'
         };
-    
-        url = reverseGeocodeService + '?' + $.param(queryParameters);
-    
-        xhr = $.ajax({
-            method: "GET",
-            dataType: "json",
-            url: url
-        })
-        .done(function(data) {
-            if (data.features[0] && (street = data.features[0].properties.street) 
-                && (city = data.features[0].properties.locality)
-            ) {
-                buildSearch(street, city);
-            } else {
-                info(VuFind.translate('street_search_no_streetname_found'), 1, 1);
-            }
-        })
-        .fail(function() {
-            info(VuFind.translate('street_search_reversegeocode_unavailable'), 1, 1);          
-        });
-    };
- 
-    var buildSearch = function(street, city) {
-        if (!terminate) {
-            info(VuFind.translate('street_search_searching_for') + ' ' + street + ' ' + city, 1, 1);
-
-            queryParameters = {
-                'lookfor': street + ' ' + city,
-                'type': 'AllFields',
-                'limit': '100',
-                'view': 'grid',
-                'filter': [
-                    '~format:"0/Image/"',
-                    '~format:"0/Place/"',
-                    'online_boolean:"1"'
-                ]
-            };
-            url = VuFind.path + '/Search/Results?' + $.param(queryParameters);
-            window.location.href = url;
-        }
+        url = VuFind.path + '/Search/Results?' + $.param(queryParameters);
+        window.location.href = url;
     };
 
-    var info = function(message, stopped, keepPrevious) {
+    var info = function(message, stopped, allowStopping) {
         if (typeof stopped !== 'undefined' && stopped) {
             terminateButton.addClass('hidden');
             progressContainer.find('.fa-spinner').addClass('hidden');
-            startButton.removeClass('hidden'); 
-        }
-        if (typeof keepPrevious === 'undefined' || !keepPrevious) {
-            progressContainer.find('.info').empty();
+            startButton.prop('disabled', false);
+        } else if (typeof allowStopping !== 'undefined' && !allowStopping) {
+            terminateButton.addClass('hidden');
         }
         var div = $('<div></div>').text(message);
-        progressContainer.find('.info').append(div);        
+        progressContainer.find('.info').empty().append(div);
     };
 
     var initPageElements = function () {
@@ -137,13 +99,16 @@ finna.StreetSearch = (function() {
         terminate = false;
         startButton.click(doStreetSearch);
         terminateButton.click(terminateStreetSearch);
+        var query = '&' + window.location.href.split('?')[1];
+        if (query.indexOf('&go=1') >= 0) {
+           startButton.click();
+        }
     };
 
     var init = function () {
-        getPositionSuccess = false;
         initPageElements();
     };
-    
+
     var my = {
         init: init
     };

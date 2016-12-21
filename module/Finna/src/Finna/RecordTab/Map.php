@@ -118,7 +118,7 @@ class Map extends \VuFind\RecordTab\Map
         ];
 
         $p = strpos($location, '(');
-        $type = strtolower(substr($location, 0, $p));
+        $type = strtolower(trim(substr($location, 0, $p)));
 
         if ($p > 0 && in_array($type, $wktTypes)) {
             return ['wkt' => $location];
