@@ -1,22 +1,22 @@
 <?
     $this->layout()->searchbox = false;
+    $language = $this->layout()->userLang;
     $titles = [
        'fi' => 'Asiakastietojen käsittely',
        'sv' => 'Behandling av kunduppgifter',
        'en-gb' => 'Privacy policy'
     ];
-    if (!isset($titles[$this->language])) {
-       $this->language = 'en-gb';
+    if (!isset($titles[$language])) {
+       $language = 'en-gb';
     }
-    $title = $titles[$this->language];
+    $title = $titles[$language];
     $this->headTitle($title);
-    $link = $this->url('content-page', ['page' => 'privacy']);
 ?>
 <!-- START of: finna - myresearch/terms.phtml -->
 <h2 class="lightbox-header"><?=$title?></h2>
 <div class="terms-of-service">
-  <form name="termsForm" method="post" action="<?=$this->url('myresearch-userlogin')?>" data-toggle="validator">
-    <?=$this->partial('terms_' . $this->language . '.phtml', ['link' => $link])?>
+  <form name="termsForm" method="post" data-toggle="validator">
+    <?=$this->partial("terms_$language.phtml") ?>
   </form>
 </div>
 <?

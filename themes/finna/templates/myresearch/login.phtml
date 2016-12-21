@@ -29,6 +29,10 @@
 <? if ($hideLogin): ?>
   <div class="alert alert-danger"><?=$this->transEsc('login_disabled')?></div>
 <? else: ?>
+  <? if ($this->fromTermsPage): ?>
+    <? // Force lightbox login to display ?>
+    <div class="flash-message alert-danger hidden"></div>
+  <? endif; ?>
   <?=$this->auth()->getLogin()?>
 <? endif; ?>
 <? if ($template = $this->content()->findTemplateForLng("content/Additions/login-post")): ?>

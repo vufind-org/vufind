@@ -195,37 +195,37 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function loginAction()
     {
-        $conf = $this->serviceLocator->get('VuFind\Config')->get('config');
-        
-        if (empty($conf->TermsOfService->enabled)
-            || !isset($conf->TermsOfService->version)
+        $config = $this->getConfig();
+
+        if (empty($config->TermsOfService->enabled)
+            || !isset($config->TermsOfService->version)
         ) {
             return parent::loginAction();
         }
 
-        $termsOfServiceVersion = $conf->TermsOfService->version;
         $cookieName = 'finnaTermsOfService';
 
         $cookieManager = $this->serviceLocator->get('VuFind\CookieManager');
         $cookie = $cookieManager->get($cookieName);
-
-        if ($cookie && $cookie === $termsOfServiceVersion) {
+        if ($cookie && $cookie === $config->TermsOfService->version) {
             return parent::loginAction();
         }
 
-        if ($this->formWasSubmitted('submit', false)) {
-            if ($this->params()->fromPost('acceptTerms', false) === '1') {
-                $expire = time() + 5 * 365 * 60 * 60 * 24; // 5 years
-                $cookieManager->set($cookieName, $termsOfServiceVersion, $expire);
-            }
+        $fromTermsPage = false;
+        if ($this->formWasSubmitted('submit', false)
+            && $this->params()->fromPost('acceptTerms', false) === '1'
+        ) {
+            $expire = time() + 5 * 365 * 60 * 60 * 24; // 5 years
+            $cookieManager->set(
+                $cookieName, $config->TermsOfService->version, $expire
+            );
             $this->getRequest()->getPost()->offsetUnset('submit');
-            return $this->forwardTo('MyResearch', 'UserLogin');
+            $fromTermsPage = true;
+            $view = parent::loginAction();
+            $view->fromTermsPage = $fromTermsPage;
+            return $view;
         }
-        
         $view = $this->createViewModel();
-        $translator = $this->getServiceLocator()->get('VuFind\Translator');
-        $view->language = $translator->getLocale();
-
         $view->setTemplate('myresearch/terms.phtml');
 
         return $view;
