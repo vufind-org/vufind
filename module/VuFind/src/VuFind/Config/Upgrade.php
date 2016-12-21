@@ -552,6 +552,15 @@ class Upgrade
             unset($newConfig['BulkExport']['options']);
         }
 
+        // If [Statistics] is present, warn the user about its deprecation.
+        if (isset($newConfig['Statistics'])) {
+            $this->addWarning(
+                'The Statistics module has been removed from Vufind. ' .
+                'For usage tracking, please configure Google Analytics or Piwik.'
+            );
+            unset($newConfig['Statistics']);
+        }
+
         // Warn the user about Amazon configuration issues:
         $this->checkAmazonConfig($newConfig);
 
@@ -643,17 +652,6 @@ class Upgrade
 
         // Eliminate obsolete config override settings:
         unset($newConfig['Extra_Config']);
-
-        // Update stats settings:
-        if (isset($newConfig['Statistics']['enabled'])) {
-            // If "enabled" is on, this equates to the new system being in Solr mode:
-            if ($newConfig['Statistics']['enabled']) {
-                $newConfig['Statistics']['mode'] = ['Solr'];
-            }
-
-            // Whether or not "enabled" is on, remove the deprecated setting:
-            unset($newConfig['Statistics']['enabled']);
-        }
 
         // Update generator if it is default value:
         if (isset($newConfig['Site']['generator'])

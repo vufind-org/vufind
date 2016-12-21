@@ -29,7 +29,6 @@
 namespace VuFind\ILS\Driver;
 use PDO, PDOException;
 use VuFind\Exception\ILS as ILSException;
-use VuFindHttp\HttpServiceInterface;
 use Zend\Log\LoggerInterface;
 use VuFind\Exception\Date as DateException;
 
@@ -48,6 +47,9 @@ use VuFind\Exception\Date as DateException;
 class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Web services host
      *
@@ -107,56 +109,21 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     protected $logger = false;
 
     /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Show a debug message.
-     *
-     * @param string $msg Debug message.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
-    }
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
-
-    /**
      * Date converter object
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
 
     /**
      * Initialize the driver.
@@ -194,9 +161,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->availableLocationsDefault
             = isset($this->config['Other']['availableLocations'])
             ? $this->config['Other']['availableLocations'] : [];
-
-        // Create a dateConverter
-        $this->dateConverter = new \VuFind\Date\Converter;
 
         $this->debug("Config Summary:");
         $this->debug("DB Host: " . $this->host);
@@ -893,16 +857,15 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * This method queries the ILS for new items
      *
-     * Comment for $fundID: (use a value returned by getFunds, or exclude for no
-     * limit); note that ?fund? may be a misnomer ? if funds are not an
-     * appropriate way to limit your new item results, you can return a different
-     * set of values from getFunds. The important thing is that this parameter
-     * supports an ID returned by getFunds, whatever that may mean.
-     *
-     * @param unknown $page    - page number of results to retrieve (starts at 1)
-     * @param unknown $limit   - the size of each page of results to retrieve
-     * @param unknown $daysOld - the maxi age of records to retrieve in days  -max 30
-     * @param string  $fundId  - optional fund ID to use for limiting results
+     * @param int $page    Page number of results to retrieve (counting starts at 1)
+     * @param int $limit   The size of each page of results to retrieve
+     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * returned by getFunds, or exclude for no limit); note that "fund" may be a
+     * misnomer - if funds are not an appropriate way to limit your new item
+     * results, you can return a different set of values from getFunds. The
+     * important thing is that this parameter supports an ID returned by getFunds,
+     * whatever that may mean.
      *
      * @return array provides a count and the results of new items.
      */

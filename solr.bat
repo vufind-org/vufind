@@ -21,6 +21,9 @@ rem
 rem JAVA_HOME
 rem   Home of Java installation (not directly used by this script, but passed along to
 rem   the standard Solr control script).
+rem
+rem SOLR_ADDITIONAL_JVM_OPTIONS
+rem   Additional options to pass to the JVM when launching Solr.
 
 rem Make sure that environment edits are local and that we have access to the
 rem Windows command extensions.
@@ -74,7 +77,7 @@ if not "!%SOLR_PORT%!"=="!!" goto solrportset
 set SOLR_PORT=8080
 :solrportset
 
-call %SOLR_BIN%\solr.cmd %1 -p %SOLR_PORT% -s %SOLR_HOME% -m %SOLR_HEAP% -a "-Dsolr.log=%SOLR_LOGS_DIR%"
+call %SOLR_BIN%\solr.cmd %1 -p %SOLR_PORT% -s %SOLR_HOME% -m %SOLR_HEAP% -a "-Dsolr.log=%SOLR_LOGS_DIR% %SOLR_ADDITIONAL_JVM_OPTIONS%"
 goto end
 
 :usage

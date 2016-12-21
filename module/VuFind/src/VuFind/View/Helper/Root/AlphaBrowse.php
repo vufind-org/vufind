@@ -90,7 +90,7 @@ class AlphaBrowse extends \Zend\View\Helper\AbstractHelper
     /**
      * Escape a string for inclusion in a Solr query.
      *
-     * @param type $str String to escape
+     * @param string $str String to escape
      *
      * @return string
      */
