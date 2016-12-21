@@ -189,6 +189,49 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
+     * Login Action
+     *
+     * @return mixed
+     */
+    public function loginAction()
+    {
+        $conf = $this->serviceLocator->get('VuFind\Config')->get('config');
+        
+        if (empty($conf->TermsOfService->enabled)
+            || !isset($conf->TermsOfService->version)
+        ) {
+            return parent::loginAction();
+        }
+
+        $termsOfServiceVersion = $conf->TermsOfService->version;
+        $cookieName = 'finnaTermsOfService';
+
+        $cookieManager = $this->serviceLocator->get('VuFind\CookieManager');
+        $cookie = $cookieManager->get($cookieName);
+
+        if ($cookie && $cookie === $termsOfServiceVersion) {
+            return parent::loginAction();
+        }
+
+        if ($this->formWasSubmitted('submit', false)) {
+            if ($this->params()->fromPost('acceptTerms', false) === '1') {
+                $expire = time() + 5 * 365 * 60 * 60 * 24; // 5 years
+                $cookieManager->set($cookieName, $termsOfServiceVersion, $expire);
+            }
+            $this->getRequest()->getPost()->offsetUnset('submit');
+            return $this->forwardTo('MyResearch', 'UserLogin');
+        }
+        
+        $view = $this->createViewModel();
+        $translator = $this->getServiceLocator()->get('VuFind\Translator');
+        $view->language = $translator->getLocale();
+
+        $view->setTemplate('myresearch/terms.phtml');
+
+        return $view;
+    }
+
+    /**
      * Send user's saved favorites from a particular list to the view
      *
      * @return mixed

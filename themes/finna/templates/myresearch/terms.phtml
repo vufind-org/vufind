@@ -1,0 +1,36 @@
+<?
+    $this->layout()->searchbox = false;
+    $titles = [
+       'fi' => 'Asiakastietojen käsittely',
+       'sv' => 'Behandling av kunduppgifter',
+       'en-gb' => 'Privacy policy'
+    ];
+    if (!isset($titles[$this->language])) {
+       $this->language = 'en-gb';
+    }
+    $title = $titles[$this->language];
+    $this->headTitle($title);
+    $link = $this->url('content-page', ['page' => 'privacy']);
+?>
+<!-- START of: finna - myresearch/terms.phtml -->
+<h2 class="lightbox-header"><?=$title?></h2>
+<div class="terms-of-service">
+  <form name="termsForm" method="post" action="<?=$this->url('myresearch-userlogin')?>" data-toggle="validator">
+    <?=$this->partial('terms_' . $this->language . '.phtml', ['link' => $link])?>
+  </form>
+</div>
+<?
+// Set up validation; we do this inline instead of in the header for lightbox compatibility:
+$js = <<<JS
+  if ($.isReady) {
+    $('.terms-of-service form').validator();
+  } else {
+    $(document).ready(function(){
+      $('.terms-of-service form').validator();
+    });
+  }
+JS;
+
+echo $this->inlineScript()->appendScript($js);
+?>
+<!-- END of: finna - myresearch/terms.phtml -->
