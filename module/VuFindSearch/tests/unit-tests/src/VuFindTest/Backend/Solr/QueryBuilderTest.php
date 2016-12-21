@@ -151,12 +151,30 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
             if ($handler === 'standard'
                 || ($handler === 'dismax' && empty($flags['basic']))
             ) {
-                $output = '(' . $output . ')';
+                $basicOutput = '(' . $output . ')';
+            } else {
+                $basicOutput = $output;
             }
+            // Run basic query:
             $q = new Query($input, 'test');
             $response = $qb->build($q);
             $processedQ = $response->get('q');
-            $this->assertEquals($output, $processedQ[0]);
+            $this->assertEquals($basicOutput, $processedQ[0]);
+
+            if ($handler === 'standard'
+                || ($handler === 'dismax' && empty($flags['basic']))
+            ) {
+                $advOutput = '((' . $output . '))';
+            } else {
+                $mm = $handler == 'dismax' ? '100%' : '0%';
+                $advOutput = "((_query_:\"{!$handler qf=\\\"foo\\\" mm=\\'$mm\\'}"
+                    . addslashes($output) . '"))';
+            }
+            // Run same query in advanced mode to check for consistency:
+            $advancedQ = new QueryGroup('AND', [$q]);
+            $advResponse = $qb->build($advancedQ);
+            $advProcessedQ = $advResponse->get('q');
+            $this->assertEquals($advOutput, $advProcessedQ[0]);
         }
     }
 

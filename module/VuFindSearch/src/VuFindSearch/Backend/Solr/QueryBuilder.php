@@ -358,6 +358,9 @@ class QueryBuilder implements QueryBuilderInterface
         if (null === $string) {
             return '';
         }
+        if ($advanced) {
+            $string = $this->fixTrailingQuestionMarks($string);
+        }
         if ($advanced && $handler) {
             return $handler->createAdvancedQueryString($string);
         } else if ($handler) {
