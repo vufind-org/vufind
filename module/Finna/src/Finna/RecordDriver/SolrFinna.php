@@ -119,6 +119,24 @@ trait SolrFinna
     }
 
     /**
+     * Return geographic center point
+     *
+     * @return array lon, lat
+     */
+    public function getGeoCenter()
+    {
+        if (isset($this->fields['center_coords'])) {
+            if (strstr($this->fields['center_coords'], ',') !== false) {
+                list($lat, $lon) = explode(',', $this->fields['center_coords'], 2);
+            } else {
+                list($lon, $lat) = explode(' ', $this->fields['center_coords'], 2);
+            }
+            return ['lon' => $lon, 'lat' => $lat];
+        }
+        return [];
+    }
+
+    /**
      * Get data source id
      *
      * @return string

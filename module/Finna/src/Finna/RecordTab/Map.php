@@ -63,9 +63,13 @@ class Map extends \VuFind\RecordTab\Map
         if (empty($locations)) {
             return json_encode([]);
         }
-        foreach ($locations as $location) {
+        $center = $this->getRecordDriver()->tryMethod('getGeoCenter');
+        foreach ($locations as $i => $location) {
             $marker = $this->locationToMarker($location);
             $marker['title'] = (string)$this->getRecordDriver()->getBreadcrumb();
+            if ($i == 0 && $center) {
+                $marker['center'] = $center;
+            }
             $markers[] = $marker;
         }
         return json_encode($markers);
