@@ -354,7 +354,8 @@ class Results extends \VuFind\Search\Base\Results
             throw new \Exception("$facetSort facet sort not supported by Summon.");
         }
         foreach ($facetfields as $facet) {
-            $params->addFacet($facet . ',or,' . $page . ',' . $limit);
+            $mode = $params->getFacetOperator($facet) === 'OR' ? 'or' : 'and';
+            $params->addFacet("$facet,$mode,$page,$limit");
 
             // Clear existing filters for the selected field if necessary:
             if ($removeFilter) {
