@@ -850,6 +850,8 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      *
      * @return array False if request groups not in use or an array of
      * associative arrays with id and name keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getRequestGroups($bibId, $patron, $holdDetails = null)
     {
