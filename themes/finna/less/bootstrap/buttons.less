@@ -27,20 +27,20 @@
             .tab-focus();
         }
     }
-    
+
     &:hover,
     &:focus {
         color: @btn-default-color;
         text-decoration: none;
     }
-    
+
     &:active,
     &.active {
         outline: 0;
         background-image: none;
         .box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
     }
-    
+
     &.disabled,
     &[disabled],
     fieldset[disabled] & {
@@ -70,7 +70,7 @@
     background: @btn-primary-bg;
 
     &:hover {
-        background: darken(@btn-primary-bg, 5%);   
+        background: darken(@btn-primary-bg, 5%);
     }
     & i {
         font-size: @font-size-icon-large;
@@ -95,15 +95,15 @@
         height: 39px;
         &:before {
             font-family: 'icomoon';
-            content: "\e01a";      
+            content: "\e01a";
         }
         &:hover {
-            cursor: pointer;   
+            cursor: pointer;
         }
     }
 }
 .nav.searchbox .btn.btn-link {
-    color: @finna-searchbox-link-color; 
+    color: @finna-searchbox-link-color;
     font-size: 1em;
     font-weight: bold;
     background: @finna-searchbox-link-background;
@@ -130,7 +130,7 @@
     box-shadow: 0px 15px 20px -12px #000;
     z-index: 1;
     @media (max-width: @screen-sm-min) {
-        top: 37px;   
+        top: 37px;
     }
 }
 .searchbox, .checkboxFilter {
@@ -139,7 +139,7 @@
     }
     & .checkbox label {
         margin-left: 10px;
-        line-height: 24px;  
+        line-height: 24px;
     }
     & .checkbox label:before {
         content: "\f096";
@@ -149,7 +149,7 @@
     }
     & .checkbox.checked label:before {
         font-family: 'Fontawesome';
-        content: "\f14a"; 
+        content: "\f14a";
     }
 }
 
@@ -160,7 +160,7 @@
     & .checkbox {
         padding-left: 32px;
         @media(min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-            padding-left: 26px;   
+            padding-left: 26px;
         }
         margin: 8px 0px;
     }
@@ -183,21 +183,21 @@
     }
 }
 .checkboxFilter.mylist-select-all {
-    padding-left: 0; 
+    padding-left: 0;
     padding-top: 2px;
     & .checkbox {
         padding-left: 0;
         & label {
-            margin-left: 0;   
+            margin-left: 0;
         }
     }
 }
 .bulk-action-buttons-col.fixed .checkboxFilter.mylist-select-all {
-    color: @body-bg; 
+    color: @body-bg;
 }
 .checkboxFilter label {
     font-size: 14px;
-    font-weight: normal;   
+    font-weight: normal;
 }
 .checkboxFilter label.checkbox input {
     border: none;
@@ -221,7 +221,7 @@
         padding-left: 0;
         margin-top: 0;
         & label {
-            margin-left: 0;   
+            margin-left: 0;
         }
     }
 }
@@ -243,7 +243,7 @@
     & input:before {
         content: "\e61b";
         font-family: 'icomoon';
-        font-size: 18px;       
+        font-size: 18px;
         margin: -3px 0px 0px -3px;
         position: absolute;
         background: @body-bg;
@@ -279,7 +279,7 @@
     display: inline-block;
     min-width: 60px;
     font-weight: 500;
-    
+
     & select {
         font-family: "Helvetica Neue", arial;
         background-color: transparent;
@@ -309,10 +309,10 @@
         color: @gray;
         padding: 5px;
         &:hover {
-            background-color: @gray-light;   
+            background-color: @gray-light;
         }
     }
-    
+
     &:before {
         display: block;
         font-size: 1em;
@@ -323,7 +323,7 @@
         right: 0px;
         text-align: center;
         width: 1em;
-        z-index: -1;    
+        z-index: -1;
     }
     &.controls {
         border-radius: @finna-button-radius;
@@ -334,12 +334,12 @@
         height: 33px;
         transition: background-color .1s linear;
         &:hover, &:active, &:hover:before, &:active:before {
-            background-color: darken(@brand-primary, 6%);   
+            background-color: darken(@brand-primary, 6%);
         }
         & option:checked {
             background: @btn-primary-bg;
             color: @body-bg;
-        }   
+        }
     }
     &.controls:before {
         transition: background-color .1s linear;
@@ -350,7 +350,7 @@
         line-height: 34px;
     }
     &.disabled {
-        .opacity(0.5);   
+        .opacity(0.5);
     }
 }
 .jump-menu-style select::-ms-expand {
@@ -359,7 +359,7 @@
 :-moz-any(.prefilter-select,.jump-menu-style.controls):before {
     background-color:  @body-bg; /* this is necessary for overcome the caret default browser */
     pointer-events: none; /* https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events  */
-    z-index: 1; /* this is necessary for overcome the pseudo element */ 
+    z-index: 1; /* this is necessary for overcome the pseudo element */
 }
 button.multiselect {
     height: auto;
@@ -387,7 +387,7 @@ button.multiselect {
     @media (max-width: 399px) {
         & .view-button, & .sort-button {
             & .dropdown>a {
-                padding: 7px 3px 7px 8px;   
+                padding: 7px 3px 7px 8px;
             }
             &  .dropdown > a span {
                 padding-right: 20px;
@@ -401,14 +401,19 @@ button.multiselect {
             }
         }
     }
+    @media (min-width: @screen-sm-min) {
+        .update-location-button {
+            display: none;
+        }
+    }
 }
-.view-button, .sort-button, .results-per-page-button {
+.view-button, .sort-button, .results-per-page-button, .update-location-button {
     color: @body-bg;
     display: inline-block;
     font-weight: normal;
     & .dropdown {
         border-radius: 10px;
-        
+
     }
     & .dropdown > a {
         background: @link-color;
@@ -417,7 +422,7 @@ button.multiselect {
         padding: 7px 10px;
         display: block;
         & span {
-            padding-right: 20px;   
+            padding-right: 20px;
         }
         &:hover, &:focus {
             text-decoration: none;
@@ -443,7 +448,7 @@ button.multiselect {
         padding-top: 10px;
         padding-bottom: 10px;
         & i {
-            color: @gray;   
+            color: @gray;
         }
         & i.fa-available {
             font-size: 1em;
@@ -473,7 +478,7 @@ button.multiselect {
     box-shadow: none;
     color: @gray;
     @media (max-width: @screen-xs-max) {
-        width: 25%;  
+        width: 25%;
     }
     & a {
         color: @gray;
@@ -554,7 +559,7 @@ button.multiselect {
         background: #fff;
         color: @gray;
         border: 1px solid @gray-lighter;
-        
+
     }
 }
 & .finna-main-header .select-card-wrapper{
@@ -564,16 +569,16 @@ button.multiselect {
         margin-top: 20px;
         margin-left: 0px;
         & li {
-            text-align: left;   
+            text-align: left;
         }
         & .select-card-label {
-            margin-top: -7px;   
+            margin-top: -7px;
         }
     }
     @media (max-width: 350px) {
         & .select-card-label {
-            display: none;   
-        } 
+            display: none;
+        }
     }
 }
 
@@ -586,7 +591,7 @@ button.multiselect {
     color: @body-bg;
     border-radius: 50%;
     &.arrow-navigation-left {
-        left: 0px; 
+        left: 0px;
         border-top-left-radius: 0px;
         border-bottom-left-radius: 0px;
     }

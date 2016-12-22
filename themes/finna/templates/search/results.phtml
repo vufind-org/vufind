@@ -85,7 +85,7 @@
     <? endif; ?>
     <?=$this->flashmessages()?>
     <? if ($recordTotal > 0): ?>
-    <div class="search-controls row">
+      <div class="search-controls row">
         <? if (!$browse): ?>
         <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right hidden-print">
           <?=$this->render('search/controls/view.phtml')?>
@@ -97,8 +97,15 @@
             <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results, 'label' => $browse ? "browse_extended_" . ucfirst($browse) : 'Showing'])?>
         </div>
         <? $this->layout()->srmessage = $this->translate('Showing') . ' ' . $this->results->getStartRecord() . ' - ' . $this->results->getEndRecord() . " / $recordTotal"; ?>
-    </div>
-      <? endif; ?>
+        <? if ($this->fromStreetSearch): ?>
+          <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right hidden-print">
+            <div class="update-location-button">
+              <a class="btn btn-primary" href="<?=$this->url('search-streetsearch')?>?go=1"><i class="fa fa-crosshairs"></i> <span><?=$this->transEsc('street_search_refresh')?></span></a>
+            </div>
+          </div>
+        <? endif; ?>
+      </div>
+    <? endif; ?>
 <div class="row results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
   <? if ($recordTotal < 1): ?>
   <div class="col-sm-9">
@@ -119,6 +126,13 @@
         <?=$this->recommend($current)?>
       <? endif; ?>
     <? endforeach; ?>
+    <? if ($this->fromStreetSearch): ?>
+      <div class="search-controls">
+        <div class="update-location-button">
+          <a class="btn btn-primary" href="<?=$this->url('search-streetsearch')?>?go=1"><i class="fa fa-crosshairs"></i> <span><?=$this->transEsc('street_search_refresh')?></span></a>
+        </div>
+      </div>
+    <? endif; ?>
   </div>
   <? endif; ?>
   <div class="<?=$recordTotal < 1 ? "col-sm-9" : $this->layoutClass('mainbody')?>">
