@@ -1,9 +1,0 @@
-org.apache.solr.analytics.accumulator
-org.apache.solr.analytics.accumulator.facet
-org.apache.solr.analytics.expression
-org.apache.solr.analytics.plugin
-org.apache.solr.analytics.request
-org.apache.solr.analytics.statistics
-org.apache.solr.analytics.util
-org.apache.solr.analytics.util.valuesource
-org.apache.solr.handler.component

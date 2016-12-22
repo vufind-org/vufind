@@ -784,7 +784,6 @@ class AjaxController extends AbstractBase
         );
         $request = $this->getRequest();
         $config = $this->getServiceLocator()->get('Config');
-        $sconfig = $this->getServiceLocator()->get('VuFind\Config')->get('searches');
 
         $recordTabPlugin = $this->getServiceLocator()
             ->get('VuFind\RecordTabPluginManager');
