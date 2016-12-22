@@ -123,6 +123,12 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
             ['start t?his that', 'start t?his that', []],
             // multiple ? terms:
             ['start? this?', '((start?) OR (start\?)) ((this?) OR (this\?))', []],
+            // ? term in field-specific context:
+            ['xyzzy:this?', 'xyzzy:((this?) OR (this\?))', []],
+            // ? term in field-specific context w/ extra term:
+            ['xyzzy:(this? that)', 'xyzzy:(((this?) OR (this\?)) that)', []],
+            // Multiple fields, one w/ ? term:
+            ['foo:this? OR bar:tha?t', 'foo:((this?) OR (this\?)) OR bar:tha?t', []],
             // repeating ? term:
             ['this? that? this?', '((this?) OR (this\?)) ((that?) OR (that\?)) ((this?) OR (this\?))', []],
             // ? terms inside quoted phrase (basic flag set to indicate that
@@ -130,6 +136,61 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
             ['"this? that?"', '"this? that?"', ['basic' => true]],
         ];
         // @codingStandardsIgnoreEnd
+    }
+
+    /**
+     * Run a test case through a basic query.
+     *
+     * @param QueryBuilder $qb      Query builder
+     * @param string       $handler Search handler: dismax|edismax|standard
+     * @param array        $test    Test to run
+     *
+     * @return void
+     */
+    protected function runBasicQuestionTest($qb, $handler, $test)
+    {
+        list($input, $output, $flags) = $test;
+        if ($handler === 'standard'
+            || ($handler === 'dismax' && empty($flags['basic']))
+        ) {
+            // We expect an extra set of parentheses to be added, unless the
+            // string contains a colon, in which case some processing will be
+            // skipped due to field-specific query behavior.
+            $basicOutput = strstr($output, ':') ? $output : '(' . $output . ')';
+        } else {
+            $basicOutput = $output;
+        }
+        $q = new Query($input, 'test');
+        $response = $qb->build($q);
+        $processedQ = $response->get('q');
+        $this->assertEquals($basicOutput, $processedQ[0]);
+    }
+
+    /**
+     * Run a test case through an advanced query.
+     *
+     * @param QueryBuilder $qb      Query builder
+     * @param string       $handler Search handler: dismax|edismax|standard
+     * @param array        $test    Test to run
+     *
+     * @return void
+     */
+    protected function runAdvancedQuestionTest($qb, $handler, $test)
+    {
+        list($input, $output, $flags) = $test;
+        if ($handler === 'standard'
+            || ($handler === 'dismax' && empty($flags['basic']))
+        ) {
+            $advOutput = '((' . $output . '))';
+        } else {
+            $mm = $handler == 'dismax' ? '100%' : '0%';
+            $advOutput = "((_query_:\"{!$handler qf=\\\"foo\\\" mm=\\'$mm\\'}"
+                . addslashes($output) . '"))';
+        }
+        $advancedQ = new QueryGroup('AND', [new Query($input, 'test')]);
+        $advResponse = $qb->build($advancedQ);
+        $advProcessedQ = $advResponse->get('q');
+        $this->assertEquals($advOutput, $advProcessedQ[0]);
     }
 
     /**
@@ -147,34 +208,8 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
         $tests = $this->getQuestionTests();
         $qb = new QueryBuilder($builderParams);
         foreach ($tests as $test) {
-            list($input, $output, $flags) = $test;
-            if ($handler === 'standard'
-                || ($handler === 'dismax' && empty($flags['basic']))
-            ) {
-                $basicOutput = '(' . $output . ')';
-            } else {
-                $basicOutput = $output;
-            }
-            // Run basic query:
-            $q = new Query($input, 'test');
-            $response = $qb->build($q);
-            $processedQ = $response->get('q');
-            $this->assertEquals($basicOutput, $processedQ[0]);
-
-            if ($handler === 'standard'
-                || ($handler === 'dismax' && empty($flags['basic']))
-            ) {
-                $advOutput = '((' . $output . '))';
-            } else {
-                $mm = $handler == 'dismax' ? '100%' : '0%';
-                $advOutput = "((_query_:\"{!$handler qf=\\\"foo\\\" mm=\\'$mm\\'}"
-                    . addslashes($output) . '"))';
-            }
-            // Run same query in advanced mode to check for consistency:
-            $advancedQ = new QueryGroup('AND', [$q]);
-            $advResponse = $qb->build($advancedQ);
-            $advProcessedQ = $advResponse->get('q');
-            $this->assertEquals($advOutput, $advProcessedQ[0]);
+            $this->runBasicQuestionTest($qb, $handler, $test);
+            $this->runAdvancedQuestionTest($qb, $handler, $test);
         }
     }
 
