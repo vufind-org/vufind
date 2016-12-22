@@ -63,8 +63,12 @@ class Map extends \VuFind\RecordTab\Map
         if (empty($locations)) {
             return json_encode([]);
         }
+        $markers = [];
         $center = $this->getRecordDriver()->tryMethod('getGeoCenter');
         foreach ($locations as $i => $location) {
+            if (strstr($location, 'EMPTY') !== false) {
+                continue;
+            }
             $marker = $this->locationToMarker($location);
             $marker['title'] = (string)$this->getRecordDriver()->getBreadcrumb();
             if ($i == 0 && $center) {
@@ -83,7 +87,13 @@ class Map extends \VuFind\RecordTab\Map
     public function isActive()
     {
         $locations = $this->getRecordDriver()->tryMethod('getGeoLocations');
-        return !empty($locations);
+        foreach ($locations as $location) {
+            if (strstr($location, 'EMPTY') !== false) {
+                continue;
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
