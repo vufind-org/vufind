@@ -89,6 +89,8 @@ trait ConcatTrait
      * @param stdClass $item Link element object
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getType($item)
     {
