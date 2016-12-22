@@ -151,7 +151,7 @@ trait ConcatTrait
 
         $this->getContainer()->ksort();
 
-        foreach ($this as $key => $item) {
+        foreach ($this as $item) {
             if ($this->isExcludedFromConcat($item)) {
                 $this->groups[] = [
                     'other' => true,

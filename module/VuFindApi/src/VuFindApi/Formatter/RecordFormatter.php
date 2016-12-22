@@ -207,7 +207,7 @@ class RecordFormatter extends BaseFormatter
     {
         $fields = array_map(
             function ($item) {
-                foreach ($item as $key => $value) {
+                foreach (array_keys($item) as $key) {
                     if (strncmp($key, 'vufind.', 7) == 0) {
                         unset($item[$key]);
                     }
