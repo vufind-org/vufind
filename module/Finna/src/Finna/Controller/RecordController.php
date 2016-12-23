@@ -168,7 +168,7 @@ class RecordController extends \VuFind\Controller\RecordController
                 . $response->getReasonPhrase()
             );
         }
-        $metadata = json_decode($response->getContent(), true);
+        $metadata = json_decode($response->getBody(), true);
         $recordFactory = $this->serviceLocator
             ->get('VuFind\RecordDriverPluginManager');
         $this->driver = $recordFactory->getSolrRecord($metadata);
