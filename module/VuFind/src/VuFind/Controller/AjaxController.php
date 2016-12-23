@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -224,7 +224,10 @@ class AjaxController extends AbstractBase
                 // If a full status display has been requested, append the HTML:
                 if ($showFullStatus) {
                     $current['full_status'] = $renderer->render(
-                        'ajax/status-full.phtml', ['statusItems' => $record]
+                        'ajax/status-full.phtml', [
+                            'statusItems' => $record,
+                            'callnumberHandler' => $this->getCallnumberHandler()
+                         ]
                     );
                 }
                 $current['record_number'] = array_search($current['id'], $ids);
@@ -295,12 +298,32 @@ class AjaxController extends AbstractBase
                 $list = $transList;
             }
             // All values mode?  Return comma-separated values:
-            return implode(', ', $list);
+            return implode(",\t", $list);
         } else {
             // Message mode?  Return the specified message, translated to the
             // appropriate language.
             return $this->translate($msg);
         }
+    }
+
+    /**
+     * Based on settings and the number of callnumbers, return callnumber handler
+     * Use callnumbers before pickValue is run.
+     *
+     * @param array  $list           Array of callnumbers.
+     * @param string $displaySetting config.ini setting -- first, all or msg
+     *
+     * @return string
+     */
+    protected function getCallnumberHandler($list = null, $displaySetting = null)
+    {
+        if ($displaySetting == 'msg' && count($list) > 1) {
+            return false;
+        }
+        $config = $this->getConfig();
+        return isset($config->Item_Status->callnumber_handler)
+            ? $config->Item_Status->callnumber_handler
+            : false;
     }
 
     /**
@@ -376,6 +399,10 @@ class AjaxController extends AbstractBase
             }
         }
 
+        $callnumberHandler = $this->getCallnumberHandler(
+            $callNumbers, $callnumberSetting
+        );
+
         // Determine call number string based on findings:
         $callNumber = $this->pickValue(
             $callNumbers, $callnumberSetting, 'Multiple Call Numbers'
@@ -406,7 +433,8 @@ class AjaxController extends AbstractBase
             'reserve_message' => $record[0]['reserve'] == 'Y'
                 ? $this->translate('on_reserve')
                 : $this->translate('Not On Reserve'),
-            'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8')
+            'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8'),
+            'callnumber_handler' => $callnumberHandler
         ];
     }
 
@@ -449,6 +477,9 @@ class AjaxController extends AbstractBase
         foreach ($locations as $location => $details) {
             $locationCallnumbers = array_unique($details['callnumbers']);
             // Determine call number string based on findings:
+            $callnumberHandler = $this->getCallnumberHandler(
+                $locationCallnumbers, $callnumberSetting
+            );
             $locationCallnumbers = $this->pickValue(
                 $locationCallnumbers, $callnumberSetting, 'Multiple Call Numbers'
             );
@@ -462,7 +493,8 @@ class AjaxController extends AbstractBase
                 'callnumbers' =>
                     htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
                 'status_unknown' => isset($details['status_unknown'])
-                    ? $details['status_unknown'] : false
+                    ? $details['status_unknown'] : false,
+                'callnumber_handler' => $callnumberHandler
             ];
             $locationList[] = $locationInfo;
         }
@@ -719,7 +751,7 @@ class AjaxController extends AbstractBase
             $tagList[] = [
                 'tag'   => $tag->tag,
                 'cnt'   => $tag->cnt,
-                'is_me' => $tag->is_me == 1 ? true : false
+                'is_me' => !empty($tag->is_me)
             ];
         }
 
@@ -733,6 +765,50 @@ class AjaxController extends AbstractBase
         );
         $view->setTemplate('record/taglist');
         return $view;
+    }
+
+    /**
+     * Get record for integrated list view.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getRecordDetailsAjax()
+    {
+        $driver = $this->getRecordLoader()->load(
+            $this->params()->fromQuery('id'),
+            $this->params()->fromQuery('source')
+        );
+        $viewtype = preg_replace(
+            '/\W/', '',
+            trim(strtolower($this->params()->fromQuery('type')))
+        );
+        $request = $this->getRequest();
+        $config = $this->getServiceLocator()->get('Config');
+
+        $recordTabPlugin = $this->getServiceLocator()
+            ->get('VuFind\RecordTabPluginManager');
+        $details = $recordTabPlugin
+            ->getTabDetailsForRecord(
+                $driver,
+                $config['vufind']['recorddriver_tabs'],
+                $request,
+                'Information'
+            );
+
+        $rtpm = $this->getServiceLocator()->get('VuFind\RecordTabPluginManager');
+        $html = $this->getViewRenderer()
+            ->render(
+                "record/ajaxview-" . $viewtype . ".phtml",
+                [
+                    'defaultTab' => $details['default'],
+                    'driver' => $driver,
+                    'tabs' => $details['tabs'],
+                    'backgroundTabs' => $rtpm->getBackgroundTabNames(
+                        $driver, $this->getRecordTabConfig()
+                    )
+                ]
+            );
+        return $this->output($html, self::STATUS_OK);
     }
 
     /**
@@ -832,9 +908,8 @@ class AjaxController extends AbstractBase
             $facets[$field]['removalURL']
                 = $results->getUrlQuery()->removeFacet(
                     $field,
-                    isset($filters[$field][0]) ? $filters[$field][0] : null,
-                    false
-                );
+                    isset($filters[$field][0]) ? $filters[$field][0] : null
+                )->getParams(false);
         }
         return $this->output($facets, self::STATUS_OK);
     }
@@ -985,6 +1060,15 @@ class AjaxController extends AbstractBase
      */
     protected function commentRecordAjax()
     {
+        // Make sure comments are enabled:
+        if (!$this->commentsEnabled()) {
+            return $this->output(
+                $this->translate('Comments disabled'),
+                self::STATUS_ERROR,
+                403
+            );
+        }
+
         $user = $this->getUser();
         if ($user === false) {
             return $this->output(
@@ -1004,6 +1088,16 @@ class AjaxController extends AbstractBase
             );
         }
 
+        $useCaptcha = $this->recaptcha()->active('userComments');
+        $this->recaptcha()->setErrorMode('none');
+        if (!$this->formWasSubmitted('comment', $useCaptcha)) {
+            return $this->output(
+                $this->translate('recaptcha_not_passed'),
+                self::STATUS_ERROR,
+                403
+            );
+        }
+
         $table = $this->getTable('Resource');
         $resource = $table->findResource(
             $id, $this->params()->fromPost('source', DEFAULT_SEARCH_BACKEND)
@@ -1020,6 +1114,15 @@ class AjaxController extends AbstractBase
      */
     protected function deleteRecordCommentAjax()
     {
+        // Make sure comments are enabled:
+        if (!$this->commentsEnabled()) {
+            return $this->output(
+                $this->translate('Comments disabled'),
+                self::STATUS_ERROR,
+                403
+            );
+        }
+
         $user = $this->getUser();
         if ($user === false) {
             return $this->output(
@@ -1193,7 +1296,7 @@ class AjaxController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $pickupLib = $this->params()->fromQuery('pickupLib');
-        if (empty($id) || empty($pickupLib)) {
+        if (null === $id || null === $pickupLib) {
             return $this->output(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_ERROR,
@@ -1245,7 +1348,7 @@ class AjaxController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $requestGroupId = $this->params()->fromQuery('requestGroupId');
-        if (empty($id) || empty($requestGroupId)) {
+        if (null === $id || null === $requestGroupId) {
             return $this->output(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_ERROR,
@@ -1394,5 +1497,33 @@ class AjaxController extends AbstractBase
     protected function getResultsManager()
     {
         return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
+    }
+
+    /**
+     * Get Ils Status
+     *
+     * This will check the ILS for being online and will return the ils-offline
+     * template upon failure.
+     *
+     * @return \Zend\Http\Response
+     * @author André Lahmann <lahmann@ub.uni-leipzig.de>
+     */
+    protected function getIlsStatusAjax()
+    {
+        $this->disableSessionWrites();  // avoid session write timing bug
+        if ($this->getILS()->getOfflineMode(true) == 'ils-offline') {
+            $offlineModeMsg = $this->params()->fromPost(
+                'offlineModeMsg',
+                $this->params()->fromQuery('offlineModeMsg')
+            );
+            return $this->output(
+                $this->getViewRenderer()->render(
+                    'Helpers/ils-offline.phtml',
+                    compact('offlineModeMsg')
+                ),
+                self::STATUS_OK
+            );
+        }
+        return $this->output('', self::STATUS_OK);
     }
 }

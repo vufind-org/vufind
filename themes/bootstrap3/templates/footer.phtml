@@ -19,9 +19,9 @@
   <div class="col-sm-4">
     <p><strong><?=$this->transEsc('Need Help?')?></strong></p>
     <ul>
-      <li><a href="<?=$this->url('help-home')?>?topic=search" data-lightbox class="help-link"><?=$this->transEsc('Search Tips')?></a></li>
-      <li><a href="#"><?=$this->transEsc('Ask a Librarian')?></a></li>
-      <li><a href="#"><?=$this->transEsc('FAQs')?></a></li>
+      <li><a href="<?=$this->url('help-home')?>?topic=search&amp;_=<?=time() ?>" data-lightbox class="help-link"><?=$this->transEsc('Search Tips')?></a></li>
+      <li><a href="<?=$this->url('content-page', ['page' => 'asklibrary']) ?>"><?=$this->transEsc('Ask a Librarian')?></a></li>
+      <li><a href="<?=$this->url('content-page', ['page' => 'faq']) ?>"><?=$this->transEsc('FAQs')?></a></li>
     </ul>
   </div>
 </div>

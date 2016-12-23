@@ -7,16 +7,22 @@
   <? $i = 0; foreach ($this->statusItems as $item): ?>
     <? if (++$i == 5) break; // Show no more than 5 items ?>
     <tr>
-      <td>
-        <? $locationText = $this->transEsc('location_' . $item['location'], array(), $item['location']); ?>
+      <td class="fullLocation">
+        <? $locationText = $this->transEsc('location_' . $item['location'], [], $item['location']); ?>
         <? if (isset($item['locationhref']) && $item['locationhref']): ?>
           <a href="<?=$item['locationhref']?>" target="_blank"><?=$locationText?></a>
         <? else: ?>
           <?=$locationText?>
         <? endif; ?>
       </td>
-      <td><?=$this->escapeHtml($item['callnumber'])?></td>
-      <td>
+      <td class="fullCallnumber">
+        <? if ($this->callnumberHandler): ?>
+          <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($item['callnumber']) ?>"><?=$this->escapeHtml($item['callnumber'])?></a>
+        <? else: ?>
+          <?=$this->escapeHtml($item['callnumber'])?>
+        <? endif; ?>
+      </td>
+      <td class="fullAvailability">
         <? if (isset($item['use_unknown_message']) && $item['use_unknown_message']): ?>
           <span><?=$this->transEsc("status_unknown_message")?></span>
         <? elseif ($item['availability']): ?>
@@ -28,6 +34,6 @@
     </tr>
   <? endforeach; ?>
 <? if (count($this->statusItems) > 5): ?>
-  <tr><td colspan="3"><a href="<?=$this->url('record', array('id' => $this->statusItems[0]['id']))?>"><?=count($this->statusItems) - 5?> <?=$this->transEsc('more')?> ...</a></td></tr>
+  <tr><td colspan="3"><a href="<?=$this->url('record', ['id' => $this->statusItems[0]['id']])?>"><?=count($this->statusItems) - 5?> <?=$this->transEsc('more')?> ...</a></td></tr>
 <? endif; ?>
 </table>

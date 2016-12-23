@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Authentication
@@ -73,6 +73,28 @@ class ILSAuthenticator
     }
 
     /**
+     * Get stored catalog credentials for the current user.
+     *
+     * Returns associative array of cat_username and cat_password if they are
+     * available, false otherwise. This method does not verify that the credentials
+     * are valid.
+     *
+     * @return array|bool
+     */
+    public function getStoredCatalogCredentials()
+    {
+        // Fail if no username is found, but allow a missing password (not every ILS
+        // requires a password to connect).
+        if (($user = $this->auth->isLoggedIn()) && !empty($user->cat_username)) {
+            return [
+                'cat_username' => $user->cat_username,
+                'cat_password' => $user->cat_password
+            ];
+        }
+        return false;
+    }
+
+    /**
      * Log the current user into the catalog using stored credentials; if this
      * fails, clear the user's stored credentials so they can enter new, corrected
      * ones.
@@ -85,9 +107,7 @@ class ILSAuthenticator
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
-        if (($user = $this->auth->isLoggedIn())
-            && isset($user->cat_username) && !empty($user->cat_username)
-        ) {
+        if (($user = $this->auth->isLoggedIn()) && !empty($user->cat_username)) {
             // Do we have a previously cached ILS account?
             if (isset($this->ilsAccount[$user->cat_username])) {
                 return $this->ilsAccount[$user->cat_username];

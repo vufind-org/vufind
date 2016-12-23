@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Module
@@ -77,9 +77,9 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
     public function getConsoleUsage(Console $console)
     {
         return [
+            'generate dynamicroute' => 'Add a dynamic route',
             'generate extendservice' => 'Override a service with a new child class',
             'generate nontabrecordaction' => 'Add routes for non-tab record action',
-            'generate dynamicroute' => 'Add a dynamic route',
             'generate recordroute' => 'Add a record route',
             'generate staticroute' => 'Add a static route',
             'harvest harvest_oai' => 'OAI-PMH harvester',
@@ -96,15 +96,17 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
             'util createHierarchyTrees' => 'Cache populator for hierarchies',
             'util cssBuilder' => 'LESS compiler',
             'util deletes' => 'Tool for deleting Solr records',
+            'util expire_external_sessions'
+                => 'Database external_session table cleanup',
             'util expire_searches' => 'Database search table cleanup',
             'util expire_sessions' => 'Database session table cleanup',
             'util index_reserves' => 'Solr reserves indexer',
             'util optimize' => 'Solr optimize tool',
             'util sitemap' => 'XML sitemap generator',
+            'util suppressed' => 'Remove ILS-suppressed records from Solr',
             'util switch_db_hash' => 'Switch the hashing algorithm in the database '
                 . 'and config. Expects new algorithm and (optional) new key as'
                 . ' parameters.',
-            'util suppressed' => 'Remove ILS-suppressed records from Solr',
         ];
     }
 }

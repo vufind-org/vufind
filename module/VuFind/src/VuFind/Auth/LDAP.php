@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Authentication
@@ -277,10 +277,21 @@ class LDAP extends AbstractBase
                 foreach ($fields as $field) {
                     $configValue = $this->getSetting($field);
                     if ($data[$i][$j] == $configValue && !empty($configValue)) {
-                        $value = $data[$i][$configValue][0];
-                        $this->debug("found $field = $value");
+                        $value = $data[$i][$configValue];
+                        $separator = $this->config->LDAP->separator;
+                        // if no separator is given map only the first value
+                        if (isset($separator)) {
+                            $tmp = [];
+                            for ($k = 0; $k < $value["count"]; $k++) {
+                                $tmp[] = $value[$k];
+                            }
+                            $value = implode($separator, $tmp);
+                        } else {
+                            $value = $value[0];
+                        }
+                        
                         if ($field != "cat_password") {
-                            $user->$field = $value;
+                            $user->$field = ($value === null) ? '' : $value;
                         } else {
                             $catPassword = $value;
                         }

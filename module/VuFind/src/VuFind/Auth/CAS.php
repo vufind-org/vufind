@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Authentication
@@ -45,7 +45,7 @@ class CAS extends AbstractBase
     /**
      * Already Setup phpCAS
      *
-     * @var boolean
+     * @var bool
      */
     protected $phpCASSetup = false;
 
@@ -142,7 +142,7 @@ class CAS extends AbstractBase
             if (isset($cas->$attribute)) {
                 $value = $casauth->getAttribute($cas->$attribute);
                 if ($attribute != 'cat_password') {
-                    $user->$attribute = $value;
+                    $user->$attribute = ($value === null) ? '' : $value;
                 } else {
                     $catPassword = $value;
                 }

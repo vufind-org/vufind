@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -58,14 +58,29 @@ class Holds extends AbstractRequestBase
                 // Build OPAC URL
                 $ilsDetails['cancel_link']
                     = $catalog->getCancelHoldLink($ilsDetails);
+            } else if (isset($ilsDetails['cancel_details'])) {
+                // The ILS driver provided cancel details up front. If the
+                // details are an empty string (flagging lack of support), we
+                // should unset it to prevent confusion; otherwise, we'll leave it
+                // as-is.
+                if ('' === $ilsDetails['cancel_details']) {
+                    unset($ilsDetails['cancel_details']);
+                } else {
+                    $this->rememberValidId($ilsDetails['cancel_details']);
+                }
             } else {
-                // Form Details
+                // Default case: ILS supports cancel but we need to look up
+                // details:
                 $cancelDetails = $catalog->getCancelHoldDetails($ilsDetails);
                 if ($cancelDetails !== '') {
                     $ilsDetails['cancel_details'] = $cancelDetails;
                     $this->rememberValidId($ilsDetails['cancel_details']);
                 }
             }
+        } else {
+            // Cancelling holds disabled? Make sure no details get passed back:
+            unset($ilsDetails['cancel_link']);
+            unset($ilsDetails['cancel_details']);
         }
 
         return $ilsDetails;

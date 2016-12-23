@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -244,7 +244,16 @@ class CombinedController extends AbstractSearch
             $lookfor = $this->params()->fromQuery('lookfor');
             return $this->redirect()->toUrl($target . urlencode($lookfor));
         default:
-            throw new \Exception('Unexpected search type.');
+            // If parameters are completely missing, just redirect to home instead
+            // of throwing an error; this is possibly a misbehaving crawler that
+            // followed the SearchBox URL without passing any parameters.
+            if (empty($type) && empty($target)) {
+                return $this->redirect()->toRoute('home');
+            }
+            // If we have a weird value here, report it as an Exception:
+            throw new \VuFind\Exception\BadRequest(
+                'Unexpected search type: "' . $type . '".'
+            );
         }
     }
 

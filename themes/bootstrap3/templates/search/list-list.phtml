@@ -7,7 +7,7 @@
     <div class="checkbox hidden-print">
       <? if ($showCheckboxes): ?>
         <label>
-          <?=$this->record($current)->getCheckbox()?>
+          <?=$this->record($current)->getCheckbox('', 'search-cart-form')?>
           <?=$recordNumber ?>
         </label>
       <? else: ?>

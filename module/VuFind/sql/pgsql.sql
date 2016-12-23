@@ -22,6 +22,8 @@ CREATE INDEX comments_resource_id_idx ON comments (resource_id);
 -- Table structure for table resource
 --
 
+DROP TABLE IF EXISTS "resource";
+
 CREATE TABLE resource (
 id SERIAL,
 record_id varchar(255) NOT NULL DEFAULT '',
@@ -39,6 +41,8 @@ CREATE INDEX resource_record_id_idx ON resource (record_id);
 --
 -- Table structure for table resource_tags
 --
+
+DROP TABLE IF EXISTS "resource_tags";
 
 CREATE TABLE resource_tags (
 id SERIAL,
@@ -60,6 +64,8 @@ CREATE INDEX resource_tags_list_id_idx ON resource_tags (list_id);
 --
 -- Table structure for table search. Than fixed created column default value. Old value is 0000-00-00.
 --
+
+DROP TABLE IF EXISTS "search";
 
 CREATE TABLE search (
 id SERIAL,
@@ -84,6 +90,8 @@ CREATE INDEX session_id_idx ON search (session_id);
 -- Table structure for table tags
 --
 
+DROP TABLE IF EXISTS "tags";
+
 CREATE TABLE tags (
 id SERIAL,
 tag varchar(64) NOT NULL DEFAULT '',
@@ -95,6 +103,8 @@ PRIMARY KEY (id)
 --
 -- Table structure for table user
 --
+
+DROP TABLE IF EXISTS "user";
 
 CREATE TABLE "user"(
 id SERIAL,
@@ -123,6 +133,8 @@ UNIQUE (username)
 -- Table structure for table user_list
 --
 
+DROP TABLE IF EXISTS "user_list";
+
 CREATE TABLE user_list (
 id SERIAL,
 user_id int NOT NULL,
@@ -140,6 +152,8 @@ CREATE INDEX user_list_user_id_idx ON user_list (user_id);
 --
 -- Table structure for table user_resource
 --
+
+DROP TABLE IF EXISTS "user_resource";
 
 CREATE TABLE user_resource (
 id SERIAL,
@@ -175,7 +189,23 @@ UNIQUE (session_id)
 CREATE INDEX last_used_idx on session(last_used);
 
 --
--- Table structure for table `change_tracker`
+-- Table structure for table external_session
+--
+
+DROP TABLE IF EXISTS "external_session";
+
+CREATE TABLE external_session (
+id SERIAL,
+session_id varchar(128) NOT NULL,
+external_session_id varchar(255) NOT NULL,
+created timestamp NOT NULL default '1970-01-01 00:00:00',
+PRIMARY KEY (id),
+UNIQUE (session_id)
+);
+CREATE INDEX external_session_id on external_session(external_session_id);
+
+--
+-- Table structure for table change_tracker
 --
 
 DROP TABLE IF EXISTS "change_tracker";
@@ -192,7 +222,7 @@ PRIMARY KEY (core, id)
 CREATE INDEX change_tracker_deleted_idx on change_tracker(deleted);
 
 --
--- Table structure for table `oai_resumption`
+-- Table structure for table oai_resumption
 --
 
 DROP TABLE IF EXISTS "oai_resumption";
@@ -207,51 +237,12 @@ PRIMARY KEY (id)
 -- --------------------------------------------------------
 
 --
--- Statistics tables
---
-
---
--- Table structure for table `statistics`
---
-
-DROP TABLE IF EXISTS "user_stats_fields";
-
-CREATE TABLE user_stats_fields (
-id varchar(24) NOT NULL,
-field varchar(32) NOT NULL,
-value varchar(1024) NOT NULL,
-PRIMARY KEY (id, field)
-);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `user_stats`
---
-
-DROP TABLE IF EXISTS "user_stats";
-
-CREATE TABLE user_stats (
-id varchar(24) NOT NULL,
-datestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-browser varchar(32) NOT NULL,
-browserVersion varchar(8) NOT NULL,
-ipaddress varchar(15) NOT NULL,
-referrer varchar(512) NOT NULL,
-url varchar(512) NOT NULL,
-session varchar(64) NOT NULL,
-PRIMARY KEY (id)
-);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `record`
+-- Table structure for table record
 --
 
 DROP TABLE IF EXISTS "record";
 
-CREATE TABLE `record` (
+CREATE TABLE record (
   id serial NOT NULL,
   record_id varchar(255),
   source varchar(50),
@@ -264,13 +255,13 @@ CREATE TABLE `record` (
 
 -- --------------------------------------------------------
 
--- 
--- Table structure for table `user_card`
+--
+-- Table structure for table user_card
 --
 
 DROP TABLE IF EXISTS "user_card";
 
-CREATE TABLE `user_card` (
+CREATE TABLE user_card (
 id SERIAL,
 user_id int NOT NULL,
 card_name varchar(255) NOT NULL DEFAULT '',

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -365,10 +365,10 @@ class SearchController extends AbstractSearch
         // (check it's set first -- RSS feed will return a response model rather
         // than a view model):
         if (isset($view->results)) {
-            $url = $view->results->getUrlQuery();
-            $url->setDefaultParameter('range', $range);
-            $url->setDefaultParameter('department', $dept);
-            $url->setSuppressQuery(true);
+            $view->results->getUrlQuery()
+                ->setDefaultParameter('range', $range)
+                ->setDefaultParameter('department', $dept)
+                ->setSuppressQuery(true);
         }
 
         // We don't want new items hidden filters to propagate to other searches:
@@ -483,11 +483,11 @@ class SearchController extends AbstractSearch
         // (but only do this if we have access to a results object, which we
         // won't in RSS mode):
         if (isset($view->results)) {
-            $url = $view->results->getUrlQuery();
-            $url->setDefaultParameter('course', $course);
-            $url->setDefaultParameter('inst', $inst);
-            $url->setDefaultParameter('dept', $dept);
-            $url->setSuppressQuery(true);
+            $view->results->getUrlQuery()
+                ->setDefaultParameter('course', $course)
+                ->setDefaultParameter('inst', $inst)
+                ->setDefaultParameter('dept', $dept)
+                ->setSuppressQuery(true);
         }
         return $view;
     }
@@ -507,6 +507,10 @@ class SearchController extends AbstractSearch
             $query->set('type', 'tag');
         }
         if ($this->params()->fromQuery('type') == 'tag') {
+            // Because we're coming in from a search, we want to do a fuzzy
+            // tag search, not an exact search like we would when linking to a
+            // specific tag name.
+            $query = $this->getRequest()->getQuery()->set('fuzzy', 'true');
             return $this->forwardTo('Tag', 'Home');
         }
 

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -57,8 +57,8 @@ Array
     [REQUEST_URI] => /foo/bar
 )
 CONTEXT;
-            return $a[1] === 'test'
-                && $a[2] === 'test(Server: IP = 1.2.3.4, Referer = none, User Agent = Fake browser, Host = localhost:80, Request URI = /foo/bar)'
+            return $a[1] === 'Exception : test'
+                && $a[2] === 'Exception : test(Server: IP = 1.2.3.4, Referer = none, User Agent = Fake browser, Host = localhost:80, Request URI = /foo/bar)'
                 && false !== strpos($a[3], $a[2])
                 && false !== strpos($a[3], 'Backtrace:')
                 && false !== strpos($a[3], 'line')

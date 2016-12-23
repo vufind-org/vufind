@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Summon
@@ -350,8 +350,17 @@ class Results extends \VuFind\Search\Base\Results
             $limit = 50;
         }
         $params->resetFacetConfig();
+        if (null !== $facetSort && 'count' !== $facetSort) {
+            throw new \Exception("$facetSort facet sort not supported by Summon.");
+        }
         foreach ($facetfields as $facet) {
-            $params->addFacet($facet . ',or,' . $page . ',' . $limit);
+            $mode = $params->getFacetOperator($facet) === 'OR' ? 'or' : 'and';
+            $params->addFacet("$facet,$mode,$page,$limit");
+
+            // Clear existing filters for the selected field if necessary:
+            if ($removeFilter) {
+                $params->removeAllFilters($facet);
+            }
         }
         $params = $params->getBackendParameters();
         $collection = $this->getSearchService()->search(

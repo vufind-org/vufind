@@ -1,0 +1,83 @@
+<?
+  $this->defaultTab = strtolower($this->defaultTab);
+  $idSuffix = $this->escapeHtmlAttr(md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier()));
+?>
+
+<div class="list-tabs panel-group" id="accordion_<?=$idSuffix?>">
+  <? $coreMetadata = $this->record($this->driver)->getCoreMetadata(); ?>
+  <? if (!empty($coreMetadata)): ?>
+    <div class="panel panel-default">
+      <div id="information_<?=$idSuffix?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#information_<?=$idSuffix?>-content">
+        <h4 class="panel-title">
+          <a class="accordion-toggle">
+            <?=$this->translate('ajaxview_label_information') ?>
+          </a>
+        </h4>
+      </div>
+      <div id="information_<?=$idSuffix?>-content" class="panel-collapse collapse<? if($this->defaultTab === 'information'): ?> in<? endif; ?>">
+        <div class="list-tab-content record panel-body">
+          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffix?>" />
+          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
+          <?=$coreMetadata ?>
+        </div>
+      </div>
+    </div>
+  <? endif; ?>
+
+  <? $toolbar = $this->record($this->driver)->getToolbar(); ?>
+  <? if (!empty($toolbar)): ?>
+    <div class="panel panel-default">
+      <div id="tools_<?=$idSuffix?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#tools_<?=$idSuffix?>-content">
+        <h4 class="panel-title">
+          <a class="accordion-toggle">
+            <?=$this->translate('ajaxview_label_tools') ?>
+          </a>
+        </h4>
+      </div>
+      <div id="tools_<?=$idSuffix?>-content" class="panel-collapse collapse<? if($this->defaultTab === 'tools'): ?> in<? endif; ?>">
+        <div class="list-tab-content panel-body">
+          <?=$toolbar ?>
+        </div>
+      </div>
+    </div>
+  <? endif; ?>
+
+  <? $relatedList = $this->related()->getList($this->driver); ?>
+  <? if ($relatedList != null): ?>
+    <div class="panel panel-default">
+      <div id="related_<?=$idSuffix?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#related_<?=$idSuffix?>-content">
+        <h4 class="panel-title">
+          <a class="accordion-toggle">
+            <?=$this->transEsc("Related Items")?>
+          </a>
+        </h4>
+      </div>
+      <div id="related_<?=$idSuffix?>-content" class="panel-collapse collapse<? if($this->defaultTab === 'related'): ?> in<? endif; ?>">
+        <div class="list-tab-content panel-body">
+          <? foreach ($relatedList as $current): ?>
+            <?=$this->related()->render($current)?>
+          <? endforeach; ?>
+        </div>
+      </div>
+    </div>
+  <? endif; ?>
+  <? if (count($this->tabs) > 0): ?>
+    <? foreach ($this->tabs as $tab => $obj): ?>
+      <? // add current tab to breadcrumbs if applicable:
+        $desc = $obj->getDescription();
+        $tab_classes = [];
+        if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
+        if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+        if ($this->defaultTab === strtolower($tab)) { $tab_classes[] = 'default'; }
+      ?>
+      <div class="panel panel-default <?=implode(' ', $tab_classes) ?>">
+        <div id="<?=strtolower($tab)?>_<?=$idSuffix?>" class="list-tab-toggle panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#<?=strtolower($tab)?>_<?=$idSuffix?>-content"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<? endif ?>>
+          <h4 class="panel-title">
+            <a class="accordion-toggle" data-href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$desc ?></a>
+          </h4>
+        </div>
+        <div id="<?=strtolower($tab)?>_<?=$idSuffix?>-content" class="list-tab-content panel-collapse collapse<? if($this->defaultTab === strtolower($tab)): ?> in<? endif; ?>"></div>
+      </div>
+    <? endforeach; ?>
+  <? endif; ?>
+</div>

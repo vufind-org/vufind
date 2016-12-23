@@ -1,8 +1,9 @@
 @import "vendor/bootstrap/bootstrap";
 @import "vendor/font-awesome/font-awesome";
-@fa-font-path: "../../../fonts";
 @import "vendor/bootstrap-accessibility/bootstrap-accessibility";
 @import "vendor/a11y";
+
+@fa-font-path: "../../../../../../themes/bootstrap3/css/fonts";
 
 @import "components/advanced-search";
 @import "components/alphabrowse";
@@ -45,10 +46,6 @@ img {max-width: 100%;}
 }
 .tab-content {padding: 4px;}
 
-@media (max-width: 991px) {
-  header .container.navbar {margin-bottom: 0;}
-  .searchForm {margin-top: 0;}
-}
 @media (min-width: 768px) {
   h2 {
     font-size: 23px;
@@ -63,7 +60,6 @@ img {max-width: 100%;}
 @media (max-width: 767px) {
   h2 { font-size: 20px; }
   h3 { font-size: 16px; }
-  .searchForm {padding-top: 0;}
 }
 
 /* --- Form Errors --- */

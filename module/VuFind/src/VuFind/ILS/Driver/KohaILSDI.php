@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -29,7 +29,6 @@
 namespace VuFind\ILS\Driver;
 use PDO, PDOException;
 use VuFind\Exception\ILS as ILSException;
-use VuFindHttp\HttpServiceInterface;
 use Zend\Log\LoggerInterface;
 use VuFind\Exception\Date as DateException;
 
@@ -48,6 +47,9 @@ use VuFind\Exception\Date as DateException;
 class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Web services host
      *
@@ -70,11 +72,20 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     protected $locations;
 
     /**
-     * Codes of locations avalaible for pickup
+     * Codes of locations available for pickup
      *
      * @var array
      */
     protected $pickupEnableBranchcodes;
+
+    /**
+     * Codes of locations always should be available
+     *   - For example reference material or material
+     *     not for loan
+     *
+     * @var array
+     */
+    protected $availableLocationsDefault;
 
     /**
      * Default location code
@@ -98,56 +109,21 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     protected $logger = false;
 
     /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Show a debug message.
-     *
-     * @param string $msg Debug message.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
-    }
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
-
-    /**
      * Date converter object
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
 
     /**
      * Initialize the driver.
@@ -163,10 +139,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
         }
-
-        // Is debugging enabled?
-        $this->debug_enabled = isset($this->config['Catalog']['debug'])
-            ? $this->config['Catalog']['debug'] : false;
 
         // Base for API address
         $this->host = isset($this->config['Catalog']['host']) ?
@@ -185,17 +157,16 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             = isset($this->config['Holds']['pickupLocations'])
             ? $this->config['Holds']['pickupLocations'] : [];
 
-        // Create a dateConverter
-        $this->dateConverter = new \VuFind\Date\Converter;
+        // Locations that should default to available, defined in 'KohaILSDI.ini'
+        $this->availableLocationsDefault
+            = isset($this->config['Other']['availableLocations'])
+            ? $this->config['Other']['availableLocations'] : [];
 
-        if ($this->debug_enabled) {
-            $this->debug("Config Summary:");
-            $this->debug("Debug: " . $this->debug_enabled);
-            $this->debug("DB Host: " . $this->host);
-            $this->debug("ILS URL: " . $this->ilsBaseUrl);
-            $this->debug("Locations: " . $this->locations);
-            $this->debug("Default Location: " . $this->defaultLocation);
-        }
+        $this->debug("Config Summary:");
+        $this->debug("DB Host: " . $this->host);
+        $this->debug("ILS URL: " . $this->ilsBaseUrl);
+        $this->debug("Locations: " . $this->locations);
+        $this->debug("Default Location: " . $this->defaultLocation);
     }
 
     /**
@@ -231,8 +202,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             // set communication enoding to utf8
             $this->db->exec("SET NAMES utf8");
         } catch (PDOException $e) {
-            echo 'Connection failed: ' . $e->getMessage();
             $this->debug('Connection failed: ' . $e->getMessage());
+            throw new ILSException($e->getMessage);
         }
 
         $this->debug('Connected to DB');
@@ -274,9 +245,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
         $url = $this->ilsBaseUrl . "?service=" . $api_query;
 
-        if ($this->debug_enabled) {
-            $this->debug("URL: '$url'");
-        }
+        $this->debug("URL: '$url'");
+
         $http_headers = [
             "Accept: text/xml",
             "Accept-encoding: plain",
@@ -301,11 +271,10 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         //$answer = str_replace('xmlns=', 'ns=', $answer);
         $result = simplexml_load_string($answer);
         if (!$result) {
-            if ($this->debug_enabled) {
-                $this->debug("XML is not valid, URL: $url");
-            }
+            $this->debug("XML is not valid, URL: $url");
+
             throw new ILSException(
-                "XML is not valid, URL: $url method: $method answer: $answer."
+                "XML is not valid, URL: $url method: $http_method answer: $answer."
             );
         }
         return $result;
@@ -342,9 +311,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $url .= "&$paramname=" . urlencode($paramvalue);
         }
 
-        if ($this->debug_enabled) {
-            $this->debug("URL: '$url'");
-        }
+        $this->debug("URL: '$url'");
+
         $http_headers = [
             "Accept: text/xml",
             "Accept-encoding: plain",
@@ -369,9 +337,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $start = microtime(true);
         $result = simplexml_load_string($result->getBody());
         if (!$result) {
-            if ($this->debug_enabled) {
-                $this->debug("XML is not valid, URL: $url");
-            }
+            $this->debug("XML is not valid, URL: $url");
+
             throw new ILSException(
                 "XML is not valid, URL: $url"
             );
@@ -460,6 +427,45 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             if (!$this->db) {
                 $this->initDb();
             }
+            if (!$this->pickupEnableBranchcodes) {
+                // No defaultPickupLocation is defined in config 
+                // AND no pickupLocations are defined either
+                if (isset($holdDetails['item_id']) && (empty($holdDetails['level'])
+                    || $holdDetails['level'] == 'item')
+                ) {
+                    // We try to get the actual branchcode the item is found at
+                    $item_id = $holdDetails['item_id'];
+                    $sql = "SELECT holdingbranch
+                            FROM items
+                            WHERE itemnumber=($item_id)";
+                    try {
+                        $sqlSt = $this->db->prepare($sql);
+                        $sqlSt->execute();
+                        $this->pickupEnableBranchcodes = $sqlSt->fetch();
+                    } catch (PDOException $e) {
+                            $this->debug('Connection failed: ' . $e->getMessage());
+                            throw new ILSException($e->getMessage());
+                    }
+                } elseif (!empty($holdDetails['level'])
+                    && $holdDetails['level'] == 'title'
+                ) {
+                    // We try to get the actual branchcodes the title is found at
+                    $id = $holdDetails['id'];
+                    $sql = "SELECT DISTINCT holdingbranch
+                            FROM items
+                            WHERE biblionumber=($id)";
+                    try {
+                        $sqlSt = $this->db->prepare($sql);
+                        $sqlSt->execute();
+                        foreach ($sqlSt->fetchAll() as $row) {
+                            $this->pickupEnableBranchcodes[] = $row['holdingbranch'];
+                        }
+                    } catch (PDOException $e) {
+                            $this->debug('Connection failed: ' . $e->getMessage());
+                            throw new ILSException($e->getMessage());
+                    }
+                }
+            }
             $branchcodes = "'" . implode(
                 "','", $this->pickupEnableBranchcodes
             ) . "'";
@@ -527,7 +533,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function placeHold($holdDetails)
     {
-        $rsvLst             = [];
         $patron             = $holdDetails['patron'];
         $patron_id          = $patron['id'];
         $request_location   = isset($patron['ip']) ? $patron['ip'] : "127.0.0.1";
@@ -553,15 +558,29 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             ];
         }
 
-        if ($this->debug_enabled) {
-            $this->debug("patron: " . $patron);
-            $this->debug("patron_id: " . $patron_id);
-            $this->debug("request_location: " . $request_location);
-            $this->debug("item_id: " . $item_id);
-            $this->debug("bib_id: " . $bib_id);
-            $this->debug("pickup loc: " . $pickup_location);
-            $this->debug("Needed before date: " . $needed_before_date);
-            $this->debug("Level: " . $level);
+        $this->debug("patron: " . $patron);
+        $this->debug("patron_id: " . $patron_id);
+        $this->debug("request_location: " . $request_location);
+        $this->debug("item_id: " . $item_id);
+        $this->debug("bib_id: " . $bib_id);
+        $this->debug("pickup loc: " . $pickup_location);
+        $this->debug("Needed before date: " . $needed_before_date);
+        $this->debug("Level: " . $level);
+
+        // The following check is mainly required for certain old buggy Koha versions
+        // that allowed multiple holds from the same user to the same item
+        $sql = "select count(*) as RCOUNT from reserves where borrowernumber = :rid "
+            . "and itemnumber = :iid";
+        $reservesSqlStmt = $this->db->prepare($sql);
+        $reservesSqlStmt->execute([':rid' => $patron_id, ':iid' => $item_id]);
+        $reservesCount = $reservesSqlStmt->fetch()["RCOUNT"];
+
+        if ($reservesCount > 0) {
+            $this->debug("Fatal error: Patron has already reserved this item.");
+            return [
+                "success" => false,
+                "sysMessage" => "It seems you have already reserved this item."
+            ];
         }
 
         if ($level == "title") {
@@ -601,11 +620,9 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         			));
         }
         */
-        if ($this->debug_enabled) {
-            $this->debug("Title: " . $rsp->{'title'});
-            $this->debug("Pickup Location: " . $rsp->{'pickup_location'});
-            $this->debug("Code: " . $rsp->{'code'});
-        }
+        $this->debug("Title: " . $rsp->{'title'});
+        $this->debug("Pickup Location: " . $rsp->{'pickup_location'});
+        $this->debug("Code: " . $rsp->{'code'});
 
         if ($rsp->{'code'} != "") {
             return [
@@ -639,7 +656,9 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     {
 
         $this->debug(
-            "Function getHolding($id, " . implode(",", $patron) . ") called"
+            "Function getHolding($id, "
+               . implode(",", (array)$patron)
+               . ") called"
         );
 
         $started = microtime(true);
@@ -647,16 +666,16 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $holding = [];
         $available = true;
         $duedate = $status = '';
-        $loc = $shelf = '';
-        $reserves = "N";
+        $loc = '';
 
-        $sql = "select i.itemnumber as ITEMNO, i.location, av.lib_opac AS LOCATION,
+        $sql = "select i.itemnumber as ITEMNO, i.location,
+            COALESCE(av.lib_opac,av.lib,av.authorised_value,i.location) AS LOCATION,
             i.holdingbranch as HLDBRNCH, i.homebranch as HOMEBRANCH,
             i.reserves as RESERVES, i.itemcallnumber as CALLNO, i.barcode as BARCODE,
             i.copynumber as COPYNO, i.notforloan as NOTFORLOAN,
             i.itemnotes as PUBLICNOTES, b.frameworkcode as DOCTYPE,
             t.frombranch as TRANSFERFROM, t.tobranch as TRANSFERTO,
-            i.itemlost as ITEMLOST
+            i.itemlost as ITEMLOST, i.itemlost_on AS LOSTON
             from items i join biblio b on i.biblionumber = b.biblionumber
             left outer join
                 (SELECT itemnumber, frombranch, tobranch from branchtransfers
@@ -685,11 +704,11 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $sqlStmtHoldings->execute([':id' => $id]);
         } catch (PDOException $e) {
             $this->debug('Connection failed: ' . $e->getMessage());
+            throw new ILSException($e->getMessage);
         }
 
-        if ($this->debug_enabled) {
-            $this->debug("Rows count: " . $itemSqlStmt->rowCount());
-        }
+        $this->debug("Rows count: " . $itemSqlStmt->rowCount());
+
         $notes = $sqlStmtHoldings->fetch();
         $reservesRow = $sqlStmtReserves->fetch();
         $reservesCount = $reservesRow["RESERVESCOUNT"];
@@ -726,12 +745,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 break;
             }
             /*
-             * If the Item is in Location INTERNET or ONLINE,
+             * If the Item is in any of locations defined by
+             * availableLocations[] in the KohaILSDI.ini file
              * the item is considered available
              */
-            if ($rowItem['LOCATION'] == 'INTERNET'
-                || $rowItem['LOCATION'] == 'ONLINE'
-            ) {
+
+            if (in_array($rowItem['LOCATION'], $this->availableLocationsDefault)) {
                 $available = true;
                 $duedate = '';
                 $status = 'Available';
@@ -740,7 +759,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             // If Item is Lost or Missing, provide that status
             if ($rowItem['ITEMLOST'] > 0) {
                 $available = false;
-                $duedate = '01/01/2099';
+                $duedate = $rowItem['LOSTON'];
                 $status = 'Lost/Missing';
             }
 
@@ -836,16 +855,15 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * This method queries the ILS for new items
      *
-     * Comment for $fundID: (use a value returned by getFunds, or exclude for no
-     * limit); note that ?fund? may be a misnomer ? if funds are not an
-     * appropriate way to limit your new item results, you can return a different
-     * set of values from getFunds. The important thing is that this parameter
-     * supports an ID returned by getFunds, whatever that may mean.
-     *
-     * @param unknown $page    - page number of results to retrieve (starts at 1)
-     * @param unknown $limit   - the size of each page of results to retrieve
-     * @param unknown $daysOld - the maxi age of records to retrieve in days  -max 30
-     * @param string  $fundId  - optional fund ID to use for limiting results
+     * @param int $page    Page number of results to retrieve (counting starts at 1)
+     * @param int $limit   The size of each page of results to retrieve
+     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * returned by getFunds, or exclude for no limit); note that "fund" may be a
+     * misnomer - if funds are not an appropriate way to limit your new item
+     * results, you can return a different set of values from getFunds. The
+     * important thing is that this parameter supports an ID returned by getFunds,
+     * whatever that may mean.
      *
      * @return array provides a count and the results of new items.
      */
@@ -1042,10 +1060,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             "GetPatronInfo&patron_id=$id" . "&show_contact=0&show_fines=1"
         );
 
-        if ($this->debug_enabled) {
-            $this->debug("ID: " . $rsp->{'borrowernumber'});
-            $this->debug("Chrgs: " . $rsp->{'charges'});
-        }
+        $this->debug("ID: " . $rsp->{'borrowernumber'});
+        $this->debug("Chrgs: " . $rsp->{'charges'});
 
         foreach ($rsp->{'fines'}->{'fine'} as $fine) {
             $fineLst[] = [
@@ -1084,10 +1100,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             "GetPatronInfo&patron_id=$id" . "&show_contact=0&show_holds=1"
         );
 
-        if ($this->debug_enabled) {
-            $this->debug("ID: " . $rsp->{'borrowernumber'});
-            //print_r($rsp); // Proof that no itemnumber is returned.
-        }
+        $this->debug("ID: " . $rsp->{'borrowernumber'});
+
         foreach ($rsp->{'holds'}->{'hold'} as $hold) {
             $holdLst[] = [
                 'id'       => $this->getField($hold->{'biblionumber'}),
@@ -1178,10 +1192,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             "GetPatronInfo&patron_id=$id" . "&show_contact=1"
         );
 
-        if ($this->debug_enabled) {
-            $this->debug("Code: " . $rsp->{'code'});
-            $this->debug("Cardnumber: " . $rsp->{'cardnumber'});
-        }
+        $this->debug("Code: " . $rsp->{'code'});
+        $this->debug("Cardnumber: " . $rsp->{'cardnumber'});
 
         if ($rsp->{'code'} != 'PatronNotFound') {
             $profile = [
@@ -1223,9 +1235,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $end = microtime(true);
         $requestTimes[] = $end - $start;
 
-        if ($this->debug_enabled) {
-            $this->debug("ID: " . $rsp->{'borrowernumber'});
-        }
+        $this->debug("ID: " . $rsp->{'borrowernumber'});
 
         foreach ($rsp->{'loans'}->{'loan'} as $loan) {
             $start = microtime(true);
@@ -1339,8 +1349,30 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getPurchaseHistory($id)
     {
-        // TODO
-        return [];
+        try {
+            if (!$this->db) {
+                $this->initDb();
+            }
+            $sql = "SELECT b.title, b.biblionumber,
+                       MAX(CONCAT(s.publisheddate, ' / ',s.serialseq))
+                         AS 'date and enumeration'
+                    FROM serial s
+                    LEFT JOIN biblio b USING (biblionumber)
+                    WHERE s.STATUS=2 and b.biblionumber = :id
+                    GROUP BY b.biblionumber
+                    ORDER BY s.publisheddate DESC";
+
+            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->execute(['id' => $id]);
+
+            $result = [];
+            foreach ($sqlStmt->fetchAll() as $rowItem) {
+                $result[] = ['issue' => $rowItem["date and enumeration"]];
+            }
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+        return $result;
     }
 
     /**
@@ -1432,7 +1464,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-            $result = [];
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $deptList[$rowItem["abv"]] = $rowItem["DEPARTMENT"];
             }
@@ -1463,7 +1494,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-            $result = [];
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $instList[$rowItem["borrowernumber"]] = $rowItem["name"];
             }
@@ -1493,7 +1523,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-            $result = [];
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $courseList[$rowItem["course_id"]] = $rowItem["course"];
             }
@@ -1521,7 +1550,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function findReserves($course, $inst, $dept)
     {
-        $recordList = [];
         $reserveWhere = [];
         $bindParams = [];
         if ($course != '') {
@@ -1580,21 +1608,19 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function patronLogin($username, $password)
     {
-        $patron = [];
-
         //       $idObj = $this->makeRequest(
         //         "AuthenticatePatron" . "&username=" . $username
         //       . "&password=" . $password
         // );
         $idObj = $this->makeRequest(
-            "LookupPatron" . "&id=" . $username
+            "LookupPatron" . "&id=" . urlencode($username)
             . "&id_type=userid"
         );
-        if ($this->debug_enabled) {
-            $this->debug("username: " . $username);
-            $this->debug("Code: " . $idObj->{'code'});
-            $this->debug("ID: " . $idObj->{'id'});
-        }
+
+        $this->debug("username: " . $username);
+        $this->debug("Code: " . $idObj->{'code'});
+        $this->debug("ID: " . $idObj->{'id'});
+
         $id = $this->getField($idObj->{'id'}, 0);
         if ($id) {
             $rsp = $this->makeRequest(

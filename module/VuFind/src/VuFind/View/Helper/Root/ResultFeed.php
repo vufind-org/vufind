@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -121,7 +121,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             );
         }
         $feed->setLink(
-            $baseUrl . $results->getUrlQuery()->setViewParam(null, false)
+            $baseUrl . $results->getUrlQuery()->setViewParam(null)->getParams(false)
         );
         $feed->setFeedLink(
             $baseUrl . $results->getUrlQuery()->getParams(false),
@@ -137,14 +137,14 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
 
         // add atom links for easier paging
         $feed->addOpensearchLink(
-            $baseUrl . $results->getUrlQuery()->setPage(1, false),
+            $baseUrl . $results->getUrlQuery()->setPage(1)->getParams(false),
             'first',
             $params->getView()
         );
         if ($params->getPage() > 1) {
             $feed->addOpensearchLink(
                 $baseUrl . $results->getUrlQuery()
-                    ->setPage($params->getPage() - 1, false),
+                    ->setPage($params->getPage() - 1)->getParams(false),
                 'previous',
                 $params->getView()
             );
@@ -153,13 +153,13 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         if ($params->getPage() < $lastPage) {
             $feed->addOpensearchLink(
                 $baseUrl . $results->getUrlQuery()
-                    ->setPage($params->getPage() + 1, false),
+                    ->setPage($params->getPage() + 1)->getParams(false),
                 'next',
                 $params->getView()
             );
         }
         $feed->addOpensearchLink(
-            $baseUrl . $results->getUrlQuery()->setPage($lastPage, false),
+            $baseUrl . $results->getUrlQuery()->setPage($lastPage)->getParams(false),
             'last',
             $params->getView()
         );

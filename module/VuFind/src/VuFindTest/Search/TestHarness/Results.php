@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Base
@@ -56,17 +56,26 @@ class Results extends \VuFind\Search\Base\Results
     protected $driverCache = [];
 
     /**
+     * Fake facet response
+     *
+     * @var array
+     */
+    protected $facets;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Params $params Object representing user search
      * parameters.
      * @param int                        $total  Total result set size to simulate
+     * @param array                      $facets Facet response (optional)
      */
-    public function __construct(Params $params, $total = 100)
+    public function __construct(Params $params, $total = 100, $facets = [])
     {
         parent::__construct($params);
         $this->fakeExpectedTotal = $total;
         $this->searchId = 'fake';   // fill a fake value here so we don't hit the DB
+        $this->facets = $facets;
     }
 
     /**
@@ -79,8 +88,7 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getFacetList($filter = null)
     {
-        // not supported
-        return [];
+        return $this->facets;
     }
 
     /**

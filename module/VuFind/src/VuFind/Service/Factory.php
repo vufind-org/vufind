@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Service
@@ -205,6 +205,9 @@ class Factory
             && $config->Cookies->limit_by_path
         ) {
             $path = $sm->get('Request')->getBasePath();
+            if (empty($path)) {
+                $path = '/';
+            }
         }
         $secure = isset($config->Cookies->only_secure)
             ? $config->Cookies->only_secure
@@ -212,7 +215,26 @@ class Factory
         $domain = isset($config->Cookies->domain)
             ? $config->Cookies->domain
             : null;
-        return new \VuFind\Cookie\CookieManager($_COOKIE, $path, $domain, $secure);
+        $session_name = isset($config->Cookies->session_name)
+            ? $config->Cookies->session_name
+            : null;
+        return new \VuFind\Cookie\CookieManager(
+            $_COOKIE, $path, $domain, $secure, $session_name
+        );
+    }
+
+    /**
+     * Construct the cover router.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Cover\Router
+     */
+    public static function getCoverRouter(ServiceManager $sm)
+    {
+        $base = $sm->get('ControllerPluginManager')->get('url')
+            ->fromRoute('cover-show');
+        return new \VuFind\Cover\Router($base);
     }
 
     /**
@@ -518,7 +540,7 @@ class Factory
             : (isset($config->Captcha->privateKey)
                 ? $config->Captcha->privateKey
                 : '');
-        $recaptcha = new \LosReCaptcha\Service\ReCaptcha(
+        $recaptcha = new \VuFind\Service\ReCaptcha(
             $siteKey, $secretKey, ['ssl' => true]
         );
         if (isset($config->Captcha->theme)) {
@@ -600,22 +622,6 @@ class Factory
         return new \VuFind\Record\Router(
             $sm->get('VuFind\RecordLoader'),
             $sm->get('VuFind\Config')->get('config')
-        );
-    }
-
-    /**
-     * Construct the record stats helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Statistics\Record
-     */
-    public static function getRecordStats(ServiceManager $sm)
-    {
-        return new \VuFind\Statistics\Record(
-            $sm->get('VuFind\Config')->get('config'),
-            $sm->get('VuFind\StatisticsDriverPluginManager'),
-            $sm->get('VuFind\SessionManager')->getId()
         );
     }
 
@@ -754,22 +760,6 @@ class Factory
     }
 
     /**
-     * Construct the search stats helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Statistics\Search
-     */
-    public static function getSearchStats(ServiceManager $sm)
-    {
-        return new \VuFind\Statistics\Search(
-            $sm->get('VuFind\Config')->get('config'),
-            $sm->get('VuFind\StatisticsDriverPluginManager'),
-            $sm->get('VuFind\SessionManager')->getId()
-        );
-    }
-
-    /**
      * Construct the SearchTabs helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -818,18 +808,6 @@ class Factory
     }
 
     /**
-     * Construct the Statistics\Driver Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Statistics\Driver\PluginManager
-     */
-    public static function getStatisticsDriverPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Statistics\Driver');
-    }
-
-    /**
      * Construct the tag helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -859,7 +837,7 @@ class Factory
         // Set up the ExtendedIni plugin:
         $config = $sm->get('VuFind\Config')->get('config');
         $pathStack = [
-            APPLICATION_PATH  . '/languages',
+            APPLICATION_PATH . '/languages',
             LOCAL_OVERRIDE_DIR . '/languages'
         ];
         $fallbackLocales = $config->Site->language == 'en'
@@ -913,6 +891,20 @@ class Factory
         return new \VuFind\Connection\WorldCatUtils(
             isset($config->WorldCat) ? $config->WorldCat : null,
             $client, true, $ip
+        );
+    }
+
+    /**
+     * Construct the YAML reader.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Config\YamlReader
+     */
+    public static function getYamlReader(ServiceManager $sm)
+    {
+        return new \VuFind\Config\YamlReader(
+            $sm->get('VuFind\CacheManager')
         );
     }
 }

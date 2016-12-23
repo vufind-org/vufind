@@ -19,21 +19,28 @@
 ?>
 
 <div class="searchHomeContent">
-  <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
-    <div class="alert alert-warning">
-      <h2><?=$this->transEsc('ils_offline_title')?></h2>
-      <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
-      <p><?=$this->transEsc('ils_offline_home_message')?></p>
-      <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
-      <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
-    </div>
-  <? endif; ?>
+  <?
+  $ilsStatusScript = <<<JS
+      $(document).ready(function() {
+        $.ajax({
+            dataType: 'json',
+            method: 'GET',
+            data: {'offlineModeMsg':'ils_offline_home_message'},
+            url: VuFind.path + '/AJAX/JSON?method=getIlsStatus',
+            success: function(response) {
+                $('.searchHomeContent').append(response.data);
+            }
+        });
+      });
+JS;
+  ?>
+  <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $ilsStatusScript, 'SET'); ?>
   <div class="well well-lg clearfix" role="search">
     <?=$this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => true])?>
   </div>
 </div>
 
-<? $facetList = is_object($this->results) ? $this->results->getFacetList() : array(); ?>
+<? $facetList = is_object($this->results) ? $this->results->getFacetList() : []; ?>
 <? if (isset($facetList) && is_array($facetList)): ?>
   <div class="row">
     <? foreach ($facetList as $field => $details): ?>

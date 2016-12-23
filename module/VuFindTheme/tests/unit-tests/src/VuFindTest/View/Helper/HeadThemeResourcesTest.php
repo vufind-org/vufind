@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -49,6 +49,25 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
         $helper = new HeadThemeResources($this->getResourceContainer());
         $helper->setView($this->getMockView());
         $helper->__invoke();
+    }
+
+    /**
+     * Test configuration parsing.
+     *
+     * @return void
+     */
+    public function testConfigParsing()
+    {
+        $helper = new HeadThemeResources($this->getResourceContainer());
+        $tests = [
+            'foo:bar:baz' => ['foo', 'bar', 'baz'],
+            'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy']
+        ];
+        foreach ($tests as $test => $expected) {
+            $this->assertEquals(
+                $expected, $this->callMethod($helper, 'parseSetting', [$test])
+            );
+        }
     }
 
     /**

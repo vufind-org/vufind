@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Recommendations
@@ -183,6 +183,21 @@ class Factory
     }
 
     /**
+     * Factory for MapSelection module.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return MapSelection
+     */
+    public function getMapSelection(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('Vufind\Config');
+        $backend = $sm->getServiceLocator()->get('VuFind\Search\BackendManager');
+        $solr = $backend->get('Solr');
+        return new MapSelection($config, $solr);
+    }
+
+    /**
      * Factory for Random Recommendations.
      *
      * @param ServiceManager $sm Service manager.
@@ -195,6 +210,21 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\Search'),
             $sm->getServiceLocator()->get('VuFind\SearchParamsPluginManager')
         );
+    }
+
+    /**
+     * Factory for ResultGoogleMapAjax Recommendations.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ResultGoogleMapAjax
+     */
+    public static function getResultGoogleMapAjax(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $key = isset($config->Content->googleMapApiKey)
+            ? $config->Content->googleMapApiKey : null;
+        return new ResultGoogleMapAjax($key);
     }
 
     /**

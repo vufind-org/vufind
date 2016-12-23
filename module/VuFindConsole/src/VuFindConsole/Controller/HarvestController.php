@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -26,7 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
-use VuFind\Harvester\OAI, Zend\Console\Console;
+use VuFindHarvest\OaiPmh\HarvesterConsoleRunner, Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools
@@ -40,6 +40,31 @@ use VuFind\Harvester\OAI, Zend\Console\Console;
 class HarvestController extends AbstractBase
 {
     /**
+     * Get the base directory for harvesting OAI-PMH data.
+     *
+     * @return string
+     */
+    protected function getHarvestRoot()
+    {
+        // Get the base VuFind path:
+        if (strlen(LOCAL_OVERRIDE_DIR) > 0) {
+            $home = LOCAL_OVERRIDE_DIR;
+        } else {
+            $home = realpath(APPLICATION_PATH . '/..');
+        }
+
+        // Build the full harvest path:
+        $dir = $home . '/harvest/';
+
+        // Create the directory if it does not already exist:
+        if (!is_dir($dir) && !mkdir($dir)) {
+            throw new \Exception("Problem creating directory {$dir}.");
+        }
+
+        return $dir;
+    }
+
+    /**
      * Harvest OAI-PMH records.
      *
      * @return \Zend\Console\Response
@@ -48,56 +73,22 @@ class HarvestController extends AbstractBase
     {
         $this->checkLocalSetting();
 
-        // Parse switches:
-        $this->consoleOpts->addRules(
-            ['from-s' => 'Harvest start date', 'until-s' => 'Harvest end date']
+        // Get default options, add the default --ini setting if missing:
+        $opts = HarvesterConsoleRunner::getDefaultOptions();
+        if (!$opts->getOption('ini')) {
+            $ini = \VuFind\Config\Locator::getConfigPath('oai.ini', 'harvest');
+            $opts->addArguments(['--ini=' . $ini]);
+        }
+
+        // Get the default VuFind HTTP client:
+        $client = $this->getServiceLocator()->get('VuFind\Http')->createClient();
+
+        // Run the job!
+        $runner = new HarvesterConsoleRunner(
+            $opts, $client, $this->getHarvestRoot()
         );
-        $from = $this->consoleOpts->getOption('from');
-        $until = $this->consoleOpts->getOption('until');
-
-        // Read Config files
-        $configFile = \VuFind\Config\Locator::getConfigPath('oai.ini', 'harvest');
-        $oaiSettings = @parse_ini_file($configFile, true);
-        if (empty($oaiSettings)) {
-            Console::writeLine("Please add OAI-PMH settings to oai.ini.");
-            return $this->getFailureResponse();
-        }
-
-        // If first command line parameter is set, see if we can limit to just the
-        // specified OAI harvester:
-        $argv = $this->consoleOpts->getRemainingArgs();
-        if (isset($argv[0])) {
-            if (isset($oaiSettings[$argv[0]])) {
-                $oaiSettings = [$argv[0] => $oaiSettings[$argv[0]]];
-            } else {
-                Console::writeLine("Could not load settings for {$argv[0]}.");
-                return $this->getFailureResponse();
-            }
-        }
-
-        // Loop through all the settings and perform harvests:
-        $processed = 0;
-        foreach ($oaiSettings as $target => $settings) {
-            if (!empty($target) && !empty($settings)) {
-                Console::writeLine("Processing {$target}...");
-                try {
-                    $client = $this->getServiceLocator()->get('VuFind\Http')
-                        ->createClient();
-                    $harvest = new OAI($target, $settings, $client, $from, $until);
-                    $harvest->launch();
-                } catch (\Exception $e) {
-                    Console::writeLine($e->getMessage());
-                    return $this->getFailureResponse();
-                }
-                $processed++;
-            }
-        }
-
-        // All done.
-        Console::writeLine(
-            "Completed without errors -- {$processed} source(s) processed."
-        );
-        return $this->getSuccessResponse();
+        return $runner->run()
+            ? $this->getSuccessResponse() : $this->getFailureResponse();
     }
 
     /**
@@ -110,10 +101,12 @@ class HarvestController extends AbstractBase
     {
         $this->checkLocalSetting();
 
-        $argv = $this->consoleOpts->getRemainingArgs();
-        $dir = isset($argv[0]) ? rtrim($argv[0], '/') : '';
+        $dir = rtrim($this->getRequest()->getParam('dir', ''), '/');
         if (empty($dir)) {
             $scriptName = $this->getRequest()->getScriptName();
+            if (substr($scriptName, -9) === 'index.php') {
+                $scriptName .= ' harvest merge-marc';
+            }
             Console::writeLine('Merge MARC XML files into a single <collection>;');
             Console::writeLine('writes to stdout.');
             Console::writeLine('');

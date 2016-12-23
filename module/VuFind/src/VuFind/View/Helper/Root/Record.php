@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+use VuFind\Cover\Router as CoverRouter;
 use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
 
 /**
@@ -45,6 +46,13 @@ class Record extends AbstractHelper
      * @var \VuFind\View\Helper\Root\Context
      */
     protected $contextHelper;
+
+    /**
+     * Cover router
+     *
+     * @var CoverRouter
+     */
+    protected $coverRouter = null;
 
     /**
      * Record driver
@@ -71,6 +79,18 @@ class Record extends AbstractHelper
     }
 
     /**
+     * Inject the cover router
+     *
+     * @param CoverRouter $router Cover router
+     *
+     * @return void
+     */
+    public function setCoverRouter($router)
+    {
+        $this->coverRouter = $router;
+    }
+
+    /**
      * Render a template within a record driver folder.
      *
      * @param string $name    Template name to render
@@ -80,7 +100,7 @@ class Record extends AbstractHelper
      *
      * @return string
      */
-    protected function renderTemplate($name, $context = null)
+    public function renderTemplate($name, $context = null)
     {
         // Set default context if none provided:
         if (is_null($context)) {
@@ -390,16 +410,20 @@ class Record extends AbstractHelper
      * Render an HTML checkbox control for the current record.
      *
      * @param string $idPrefix Prefix for checkbox HTML ids
+     * @param string $formAttr ID of form for [form] attribute
      *
      * @return string
      */
-    public function getCheckbox($idPrefix = '')
+    public function getCheckbox($idPrefix = '', $formAttr = false)
     {
         static $checkboxCount = 0;
         $id = $this->driver->getSourceIdentifier() . '|'
             . $this->driver->getUniqueId();
         $context
             = ['id' => $id, 'count' => $checkboxCount++, 'prefix' => $idPrefix];
+        if ($formAttr) {
+            $context['formAttr'] = $formAttr;
+        }
         return $this->contextHelper->renderInContext(
             'record/checkbox.phtml', $context
         );
@@ -408,7 +432,7 @@ class Record extends AbstractHelper
     /**
      * Render a cover for the current record.
      *
-     * @param string $context Context of code being genarated
+     * @param string $context Context of code being generated
      * @param string $default The default size of the cover
      * @param string $link    The link for the anchor
      *
@@ -421,9 +445,31 @@ class Record extends AbstractHelper
     }
 
     /**
+     * Should cover images be linked to previews (when applicable) in the provided
+     * template context?
+     *
+     * @param string $context Context of code being generated
+     *
+     * @return bool
+     */
+    protected function getPreviewCoverLinkSetting($context)
+    {
+        static $previewContexts = false;
+        if (false === $previewContexts) {
+            $previewContexts = isset($this->config->Content->linkPreviewsToCovers)
+                ? array_map(
+                    'trim',
+                    explode(',', $this->config->Content->linkPreviewsToCovers)
+                ) : ['*'];
+        }
+        return in_array('*', $previewContexts)
+            || in_array($context, $previewContexts);
+    }
+
+    /**
      * Get the rendered cover plus some useful parameters.
      *
-     * @param string $context Context of code being genarated
+     * @param string $context Context of code being generated
      * @param string $default The default size of the cover
      * @param string $link    The link for the anchor
      *
@@ -432,7 +478,8 @@ class Record extends AbstractHelper
     public function getCoverDetails($context, $default, $link = false)
     {
         $details = compact('link', 'context') + [
-            'driver' => $this->driver, 'cover' => false, 'size' => false
+            'driver' => $this->driver, 'cover' => false, 'size' => false,
+            'linkPreview' => $this->getPreviewCoverLinkSetting($context),
         ];
         $preferredSize = $this->getCoverSize($context, $default);
         if (empty($preferredSize)) {    // covers disabled entirely
@@ -456,7 +503,7 @@ class Record extends AbstractHelper
     /**
      * Get the configured thumbnail size for record lists
      *
-     * @param string $context Context of code being genarated
+     * @param string $context Context of code being generated
      * @param string $default The default size of the cover
      *
      * @return string
@@ -552,22 +599,9 @@ class Record extends AbstractHelper
      */
     public function getThumbnail($size = 'small')
     {
-        // Try to build thumbnail:
-        $thumb = $this->driver->tryMethod('getThumbnail', [$size]);
-
-        // No thumbnail?  Return false:
-        if (empty($thumb)) {
-            return false;
-        }
-
-        // Array?  It's parameters to send to the cover generator:
-        if (is_array($thumb)) {
-            $urlHelper = $this->getView()->plugin('url');
-            return $urlHelper('cover-show') . '?' . http_build_query($thumb);
-        }
-
-        // Default case -- return fixed string:
-        return $thumb;
+        return $this->coverRouter
+            ? $this->coverRouter->getUrl($this->driver, $size)
+            : false;
     }
 
     /**

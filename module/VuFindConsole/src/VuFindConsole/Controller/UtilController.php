@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -93,7 +93,7 @@ class UtilController extends AbstractBase
         Console::writeLine(
             '     Default template is BIB_ID,COURSE,INSTRUCTOR,DEPARTMENT'
         );
-        Console::writeLine(' -h or -? display this help information.');
+        Console::writeLine(' -h or --help display this help information.');
 
         return $this->getFailureResponse();
     }
@@ -108,26 +108,14 @@ class UtilController extends AbstractBase
         ini_set('memory_limit', '50M');
         ini_set('max_execution_time', '3600');
 
-        $this->consoleOpts->setOptions(
-            [\Zend\Console\Getopt::CONFIG_CUMULATIVE_PARAMETERS => true]
-        );
-        $this->consoleOpts->addRules(
-            [
-                'h|help' => 'Get help',
-                'd-s' => 'Delimiter',
-                't-s' => 'Template',
-                'f-s' => 'File',
-            ]
-        );
+        $request = $this->getRequest();
 
-        if ($this->consoleOpts->getOption('h')
-            || $this->consoleOpts->getOption('help')
-        ) {
+        if ($request->getParam('h') || $request->getParam('help')) {
             return $this->indexReservesHelp();
-        } elseif ($file = $this->consoleOpts->getOption('f')) {
+        } elseif ($file = $request->getParam('f')) {
             try {
-                $delimiter = ($d = $this->consoleOpts->getOption('d')) ? $d : ',';
-                $template = ($t = $this->consoleOpts->getOption('t')) ? $t : null;
+                $delimiter = $request->getParam('d', ',');
+                $template = $request->getParam('t');
                 $reader = new \VuFind\Reserves\CsvReader(
                     $file, $delimiter, $template
                 );
@@ -138,9 +126,9 @@ class UtilController extends AbstractBase
             } catch (\Exception $e) {
                 return $this->indexReservesHelp($e->getMessage());
             }
-        } elseif ($this->consoleOpts->getOption('d')) {
+        } elseif ($request->getParam('d')) {
             return $this->indexReservesHelp('-d is meaningless without -f');
-        } elseif ($this->consoleOpts->getOption('t')) {
+        } elseif ($request->getParam('t')) {
             return $this->indexReservesHelp('-t is meaningless without -f');
         } else {
             try {
@@ -270,10 +258,8 @@ class UtilController extends AbstractBase
         ini_set('memory_limit', '50M');
         ini_set('max_execution_time', '3600');
 
-        // Setup Solr Connection -- Allow core to be specified as first command line
-        // param.
-        $argv = $this->consoleOpts->getRemainingArgs();
-        $core = isset($argv[0]) ? $argv[0] : 'Solr';
+        // Setup Solr Connection -- Allow core to be specified from command line.
+        $core = $this->getRequest()->getParam('core', 'Solr');
 
         // Commit and Optimize the Solr Index
         $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
@@ -314,23 +300,22 @@ class UtilController extends AbstractBase
         // Parse the command line parameters -- check verbosity, see if we are in
         // "flat file" mode, find out what file we are reading in, and determine
         // the index we are affecting!
-        $this->consoleOpts->addRules(
-            [
-                'verbose' => 'Verbose mode',
-            ]
-        );
-        $verbose = $this->consoleOpts->getOption('verbose');
-        $argv = $this->consoleOpts->getRemainingArgs();
-        $filename = isset($argv[0]) ? $argv[0] : null;
-        $mode = isset($argv[1]) ? $argv[1] : 'marc';
-        $index = isset($argv[2]) ? $argv[2] : 'Solr';
+        $request = $this->getRequest();
+        $verbose = $request->getParam('verbose');
+        $filename = $request->getParam('filename');
+        $mode = $request->getParam('format', 'marc');
+        $index = $request->getParam('index', 'Solr');
 
         // No filename specified?  Give usage guidelines:
         if (empty($filename)) {
+            $scriptName = $this->getRequest()->getScriptName();
+            if (substr($scriptName, -9) === 'index.php') {
+                $scriptName .= ' util deletes';
+            }
             Console::writeLine("Delete records from VuFind's index.");
             Console::writeLine('');
             Console::writeLine(
-                'Usage: deletes.php [--verbose] FILENAME FORMAT INDEX'
+                'Usage: ' . $scriptName . ' [--verbose] FILENAME FORMAT INDEX'
             );
             Console::writeLine('');
             Console::writeLine(
@@ -431,15 +416,8 @@ class UtilController extends AbstractBase
      */
     public function cleanuprecordcacheAction()
     {
-        $this->consoleOpts->addRules(
-            [
-                'h|help' => 'Get help',
-            ]
-        );
-
-        if ($this->consoleOpts->getOption('h')
-            || $this->consoleOpts->getOption('help')
-        ) {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
             Console::writeLine('Clean up unused cached records from the database.');
             return $this->getFailureResponse();
         }
@@ -454,6 +432,39 @@ class UtilController extends AbstractBase
     }
 
     /**
+     * Display help for the search or session expiration actions
+     *
+     * @param string $rows Plural name of records to delete
+     *
+     * @return \Zend\Console\Response
+     */
+    protected function expirationHelp($rows)
+    {
+        Console::writeLine("Expire old $rows in the database.");
+        Console::writeLine('');
+        Console::writeLine(
+            'Optional parameters: [--batch=size] [--sleep=time] [age]'
+        );
+        Console::writeLine('');
+        Console::writeLine(
+            '  batch: number of records to delete in a single batch'
+            . ' (default 1000)'
+        );
+        Console::writeLine(
+            '  sleep: milliseconds to sleep between batches (default 100)'
+        );
+
+        Console::writeLine(
+            "  age: the age (in days) of $rows to expire (default 2)"
+        );
+        Console::writeLine('');
+        Console::writeLine(
+            "By default, $rows more than 2 days old will be removed."
+        );
+        return $this->getFailureResponse();
+    }
+
+    /**
      * Command-line tool to clear unwanted entries
      * from search history database table.
      *
@@ -461,24 +472,9 @@ class UtilController extends AbstractBase
      */
     public function expiresearchesAction()
     {
-        $this->consoleOpts->addRules(
-            [
-                'h|help' => 'Get help',
-            ]
-        );
-
-        if ($this->consoleOpts->getOption('h')
-            || $this->consoleOpts->getOption('help')
-        ) {
-            Console::writeLine('Expire old searches in the database.');
-            Console::writeLine('');
-            Console::writeLine(
-                'Optional parameter: the age (in days) of searches to expire;'
-            );
-            Console::writeLine(
-                'by default, searches more than 2 days old will be removed.'
-            );
-            return $this->getFailureResponse();
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
+            return $this->expirationHelp('searches');
         }
 
         return $this->expire(
@@ -496,24 +492,9 @@ class UtilController extends AbstractBase
      */
     public function expiresessionsAction()
     {
-        $this->consoleOpts->addRules(
-            [
-                'h|help' => 'Get help',
-            ]
-        );
-
-        if ($this->consoleOpts->getOption('h')
-            || $this->consoleOpts->getOption('help')
-        ) {
-            Console::writeLine('Expire old sessions in the database.');
-            Console::writeLine('');
-            Console::writeLine(
-                'Optional parameter: the age (in days) of sessions to expire;'
-            );
-            Console::writeLine(
-                'by default, sessions more than 2 days old will be removed.'
-            );
-            return $this->getFailureResponse();
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
+            return $this->expirationHelp('sessions');
         }
 
         return $this->expire(
@@ -524,21 +505,45 @@ class UtilController extends AbstractBase
     }
 
     /**
+     * Command-line tool to clear unwanted entries
+     * from external_session database table.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function expireExternalSessionsAction()
+    {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
+            return $this->expirationHelp('external sessions');
+        }
+
+        return $this->expire(
+            'ExternalSession',
+            '%%count%% expired external sessions deleted.',
+            'No expired external sessions to delete.'
+        );
+    }
+
+    /**
      * Command-line tool to delete suppressed records from the index.
      *
      * @return \Zend\Console\Response
      */
     public function suppressedAction()
     {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
+            Console::writeLine('Available switches:');
+            Console::writeLine(
+                '--authorities =>'
+                . ' Delete authority records instead of bibliographic records'
+            );
+            Console::writeLine('--help or -h => Show this message');
+            return $this->getFailureResponse();
+        }
+
         // Setup Solr Connection
-        $this->consoleOpts->addRules(
-            [
-                'authorities' =>
-                    'Delete authority records instead of bibliographic records'
-            ]
-        );
-        $backend = $this->consoleOpts->getOption('authorities')
-            ? 'SolrAuth' : 'Solr';
+        $backend = $request->getParam('authorities') ? 'SolrAuth' : 'Solr';
 
         // Make ILS Connection
         try {
@@ -575,17 +580,23 @@ class UtilController extends AbstractBase
      */
     public function createhierarchytreesAction()
     {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
+            Console::writeLine('Available switches:');
+            Console::writeLine('--skip-xml or -sx => Skip the XML cache');
+            Console::writeLine('--skip-json or -sj => Skip the JSON cache');
+            Console::writeLine('--help or -h => Show this message');
+            return $this->getFailureResponse();
+        }
+        $skipJson = $request->getParam('skip-json') || $request->getParam('sj');
+        $skipXml = $request->getParam('skip-xml') || $request->getParam('sx');
         $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
-        // Parse switches:
-        $this->consoleOpts->addRules(
-            [
-                'skip-xml|sx' => 'Skip the XML cache',
-                'skip-json|sj' => 'Skip the JSON cache'
-            ]
-        );
         $hierarchies = $this->getServiceLocator()
             ->get('VuFind\SearchResultsPluginManager')->get('Solr')
             ->getFullFieldFacets(['hierarchy_top_id']);
+        if (!isset($hierarchies['hierarchy_top_id']['data']['list'])) {
+            $hierarchies['hierarchy_top_id']['data']['list'] = [];
+        }
         foreach ($hierarchies['hierarchy_top_id']['data']['list'] as $hierarchy) {
             $recordid = $hierarchy['value'];
             $count = $hierarchy['count'];
@@ -601,7 +612,7 @@ class UtilController extends AbstractBase
                 // Only do this if the record is actually a hierarchy type record
                 if ($driver->getHierarchyType()) {
                     // JSON
-                    if (!$this->consoleOpts->getOption('skip-json')) {
+                    if (!$skipJson) {
                         Console::writeLine("\t\tJSON cache...");
                         $driver->getHierarchyDriver()->getTreeSource()->getJSON(
                             $recordid, ['refresh' => true]
@@ -610,7 +621,7 @@ class UtilController extends AbstractBase
                         Console::writeLine("\t\tJSON skipped.");
                     }
                     // XML
-                    if (!$this->consoleOpts->getOption('skip-xml')) {
+                    if (!$skipXml) {
                         Console::writeLine("\t\tXML cache...");
                         $driver->getHierarchyDriver()->getTreeSource()->getXML(
                             $recordid, ['refresh' => true]
@@ -639,19 +650,19 @@ class UtilController extends AbstractBase
      */
     public function cssbuilderAction()
     {
-        $argv = $this->consoleOpts->getRemainingArgs();
+        $opts = new \Zend\Console\Getopt([]);
         $compiler = new \VuFindTheme\LessCompiler(true);
         $cacheManager = $this->getServiceLocator()->get('VuFind\CacheManager');
         $cacheDir = $cacheManager->getCacheDir() . 'less/';
         $compiler->setTempPath($cacheDir);
-        $compiler->compile($argv);
+        $compiler->compile(array_unique($opts->getRemainingArgs()));
         return $this->getSuccessResponse();
     }
 
     /**
      * Abstract delete method.
      *
-     * @param string $table         Table to operate on.
+     * @param string $tableName     Table to operate on.
      * @param string $successString String for reporting success.
      * @param string $failString    String for reporting failure.
      * @param int    $minAge        Minimum age allowed for expiration (also used
@@ -659,13 +670,17 @@ class UtilController extends AbstractBase
      *
      * @return mixed
      */
-    protected function expire($table, $successString, $failString, $minAge = 2)
+    protected function expire($tableName, $successString, $failString, $minAge = 2)
     {
         // Get command-line arguments
-        $argv = $this->consoleOpts->getRemainingArgs();
+        $request = $this->getRequest();
 
         // Use command line value as expiration age, or default to $minAge.
-        $daysOld = isset($argv[0]) ? intval($argv[0]) : $minAge;
+        $daysOld = intval($request->getParam('daysOld', $minAge));
+
+        // Use command line values for batch size and sleep time if specified.
+        $batchSize = $request->getParam('batch', 1000);
+        $sleepTime = $request->getParam('sleep', 100);
 
         // Abort if we have an invalid expiration age.
         if ($daysOld < 2) {
@@ -678,21 +693,49 @@ class UtilController extends AbstractBase
             return $this->getFailureResponse();
         }
 
-        // Delete the expired searches--this cleans up any junk left in the database
-        // from old search histories that were not
-        // caught by the session garbage collector.
-        $search = $this->getTable($table);
-        if (!method_exists($search, 'getExpiredQuery')) {
-            throw new \Exception($table . ' does not support getExpiredQuery()');
+        // Delete the expired rows--this cleans up any junk left in the database
+        // e.g. from old searches or sessions that were not caught by the session
+        // garbage collector.
+        $table = $this->getTable($tableName);
+        if (!method_exists($table, 'getExpiredIdRange')) {
+            throw new \Exception("$tableName does not support getExpiredIdRange()");
         }
-        $query = $search->getExpiredQuery($daysOld);
-        if (($count = count($search->select($query))) == 0) {
-            Console::writeLine($failString);
+        if (!method_exists($table, 'deleteExpired')) {
+            throw new \Exception("$tableName does not support deleteExpired()");
+        }
+
+        $idRange = $table->getExpiredIdRange($daysOld);
+        if (false === $idRange) {
+            $this->timestampedMessage($failString);
             return $this->getSuccessResponse();
         }
-        $search->delete($query);
-        Console::writeLine(str_replace('%%count%%', $count, $successString));
+
+        // Delete records in batches
+        for ($batch = $idRange[0]; $batch <= $idRange[1]; $batch += $batchSize) {
+            $count = $table->deleteExpired(
+                $daysOld, $batch, $batch + $batchSize - 1
+            );
+            $this->timestampedMessage(
+                str_replace('%%count%%', $count, $successString)
+            );
+            // Be nice to others and wait between batches
+            if ($batch + $batchSize <= $idRange[1]) {
+                usleep($sleepTime * 1000);
+            }
+        }
         return $this->getSuccessResponse();
+    }
+
+    /**
+     * Print a message with a time stamp to the console
+     *
+     * @param string $msg Message
+     *
+     * @return void
+     */
+    protected function timestampedMessage($msg)
+    {
+        Console::writeLine('[' . date('Y-m-d H:i:s') . '] ' . $msg);
     }
 
     /**
@@ -704,8 +747,9 @@ class UtilController extends AbstractBase
     public function switchdbhashAction()
     {
         // Validate command line arguments:
-        $argv = $this->consoleOpts->getRemainingArgs();
-        if (count($argv) < 1) {
+        $request = $this->getRequest();
+        $newhash = $request->getParam('newhash');
+        if (empty($newhash)) {
             Console::writeLine(
                 'Expected parameters: newmethod [newkey]'
             );
@@ -727,8 +771,7 @@ class UtilController extends AbstractBase
         }
 
         // Pull new encryption settings from arguments:
-        $newhash = $argv[0];
-        $newkey = isset($argv[1]) ? $argv[1] : $oldkey;
+        $newkey = $request->getParam('newkey', $oldkey);
 
         // No key specified AND no key on file = fatal error:
         if ($newkey === null) {

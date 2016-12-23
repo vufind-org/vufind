@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Summon
@@ -147,11 +147,11 @@ class Params extends \VuFind\Search\Base\Params
         // Special case -- if we have a "holdings only" or "expand query" facet,
         // we want this to always appear, even on the "no results" screen, since
         // setting this facet actually EXPANDS rather than reduces the result set.
-        if (isset($facets['holdingsOnly'])) {
-            $facets['holdingsOnly']['alwaysVisible'] = true;
-        }
-        if (isset($facets['queryExpansion'])) {
-            $facets['queryExpansion']['alwaysVisible'] = true;
+        foreach ($facets as $i => $facet) {
+            list($field) = explode(':', $facet['filter']);
+            if ($field == 'holdingsOnly' || $field == 'queryExpansion') {
+                $facets[$i]['alwaysVisible'] = true;
+            }
         }
 
         // Return modified list:

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -509,13 +509,7 @@ class InstallController extends AbstractBase
         if (in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
             $status = false;
         } else {
-            try {
-                $catalog = $this->getILS();
-                $catalog->getStatus('1');
-                $status = true;
-            } catch (\Exception $e) {
-                $status = false;
-            }
+            $status = 'ils-offline' !== $this->getILS()->getOfflineMode(true);
         }
         return ['title' => 'ILS', 'status' => $status, 'fix' => 'fixils'];
     }

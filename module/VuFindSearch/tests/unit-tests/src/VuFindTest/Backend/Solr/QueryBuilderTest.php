@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -102,31 +102,104 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Return array of [test query, expected result] arrays.
+     *
+     * @return array
+     */
+    protected function getQuestionTests()
+    {
+        // Format: [input, expected output, flags array]
+        // @codingStandardsIgnoreStart
+        return [
+            // trailing question mark:
+            ['this?', '(this?) OR (this\?)', []],
+            // question mark after first word:
+            ['this? that', '((this?) OR (this\?)) that', []],
+            // question mark after the middle word:
+            ['start this? that', 'start ((this?) OR (this\?)) that', []],
+            // question mark with boolean operators:
+            ['start AND this? AND that', 'start AND ((this?) OR (this\?)) AND that', []],
+            // question mark as a wildcard in the middle of a word:
+            ['start t?his that', 'start t?his that', []],
+            // multiple ? terms:
+            ['start? this?', '((start?) OR (start\?)) ((this?) OR (this\?))', []],
+            // repeating ? term:
+            ['this? that? this?', '((this?) OR (this\?)) ((that?) OR (that\?)) ((this?) OR (this\?))', []],
+            // ? terms inside quoted phrase (basic flag set to indicate that
+            // this does not contain any syntax unsupported by basic Dismax):
+            ['"this? that?"', '"this? that?"', ['basic' => true]],
+        ];
+        // @codingStandardsIgnoreEnd
+    }
+
+    /**
+     * Run the standard suite of question mark tests, accounting for differences
+     * between stanard Lucene, basic Dismax and eDismax handlers.
+     *
+     * @param array  $builderParams Parameters for QueryBuilder constructor
+     * @param string $handler       Search handler: dismax|edismax|standard
+     *
+     * @return void
+     */
+    protected function runQuestionTests($builderParams, $handler)
+    {
+        // Set up an array of expected inputs and outputs:
+        $tests = $this->getQuestionTests();
+        $qb = new QueryBuilder($builderParams);
+        foreach ($tests as $test) {
+            list($input, $output, $flags) = $test;
+            if ($handler === 'standard'
+                || ($handler === 'dismax' && empty($flags['basic']))
+            ) {
+                $output = '(' . $output . ')';
+            }
+            $q = new Query($input, 'test');
+            $response = $qb->build($q);
+            $processedQ = $response->get('q');
+            $this->assertEquals($output, $processedQ[0]);
+        }
+    }
+
+    /**
      * Test generation with a query handler
      *
      * @return void
      */
     public function testQueryHandler()
     {
-        // Set up an array of expected inputs and outputs:
-        // @codingStandardsIgnoreStart
-        $tests = [
-            ['this?', '((this?) OR (this\?))'],// trailing question mark
-        ];
-        // @codingStandardsIgnoreEnd
-
-        $qb = new QueryBuilder(
+        $this->runQuestionTests(
             [
                 'test' => []
-            ]
+            ], 'standard'
         );
-        foreach ($tests as $test) {
-            list($input, $output) = $test;
-            $q = new Query($input, 'test');
-            $response = $qb->build($q);
-            $processedQ = $response->get('q');
-            $this->assertEquals($output, $processedQ[0]);
-        }
+    }
+
+    /**
+     * Test generation with a query handler with regular dismax
+     *
+     * @return void
+     */
+    public function testQueryHandlerWithDismax()
+    {
+        $this->runQuestionTests(
+            [
+                'test' => ['DismaxHandler' => 'dismax', 'DismaxFields' => ['foo']]
+            ], 'dismax'
+        );
+    }
+
+    /**
+     * Test generation with a query handler with edismax
+     *
+     * @return void
+     */
+    public function testQueryHandlerWithEdismax()
+    {
+        $this->runQuestionTests(
+            [
+                'test' => ['DismaxHandler' => 'edismax', 'DismaxFields' => ['foo']]
+            ], 'edismax'
+        );
     }
 
     /**
