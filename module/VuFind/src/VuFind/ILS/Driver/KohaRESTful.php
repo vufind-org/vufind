@@ -5,7 +5,6 @@
  * PHP version 5
  *
  * Copyright (C) Josef Moravec, 2016.
- * Copyright (C) Jiri Kozlovsky, 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,7 +22,6 @@
  * @category VuFind
  * @package  ILS_Drivers
  * @author   Josef Moravec <josef.moravec@gmail.com>
- * @author   Jiri Kozlovsky <@>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
@@ -259,6 +257,8 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
     /**
      * https://vufind.org/wiki/development:plugins:ils_drivers#getpickuplocations
      */
+    /* Will be available after Bug 16497 is pushed: https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=16497 */
+    /*
     public function getPickupLocations($patron = false, $holdDetails = null)
     {
         // TODO: check if pickupEnableBranchcodes is set (maybe better in init method), if not, use default, if it's not set, get all locations from API
@@ -277,7 +277,7 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
             $this->locatins = $locations;
         }
         return $this->locations;
-    }
+    }*/
 
     /**
      * Get Default Pick Up Location
@@ -312,6 +312,8 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
      * @return mixed          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
+    /* Will be available after Bug 17004 is pushed: https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=17004 */
+    /*
     public function patronLogin($username, $password)
     {
         $patron = $this->makeRESTfulRequest('/auth/session', 'POST', ['userid' => $username, 'password' => $password ]);
@@ -329,6 +331,7 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
         }
         return null;
     }
+    */
 
     /**
      * Get Patron Profile
@@ -371,6 +374,10 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
+    /* Will be available after Bugs 13895, 17003 and 16825 are pushed: https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=13895,
+     * https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=17003 , https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=16825
+     */
+    /*
     public function getMyTransactions($patron)
     {
         $checkouts = $this->makeRESTfulRequest('/checkouts', 'GET', [ 'borrowernumber' => $patron['id'] ]);
@@ -394,7 +401,7 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
             }
         }
         return $checkoutsList;
-    }
+    }*/
 
     /** Get Patron Holds
      *
@@ -451,6 +458,12 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
     /** Get Holdings
      *
      */
+    
+    /* Will be available after Bugs 17371 and 16825 are pushed: https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=17371,
+     * https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=16825
+     */
+    
+/*
     public function getHolding($id, array $patron = null)
     {
         $biblio = $this->makeRESTfulRequest('/biblios/' . $id);
@@ -482,4 +495,5 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
         }
         return $holdingsList;
     }
+*/
 }
