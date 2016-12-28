@@ -5,7 +5,13 @@
 <?
 $script = <<<JS
 $(document).ready(function() {
-  $('#similar-records').load(path +'/AJAX/SimilarRecords', { id: $('#similar-records').data('id') });
+  $('#similar-records').load(
+    path +'/AJAX/SimilarRecords',
+    { id: $('#similar-records').data('id') },
+    function() {
+      $('#similar-records .fa-spinner').addClass('hidden');
+    }
+  );
 });
 JS;
 ?>
