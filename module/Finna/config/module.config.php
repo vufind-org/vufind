@@ -407,18 +407,6 @@ $routeGenerator->addRecordRoutes($config, $recordRoutes);
 $routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);
 
-// Route alias for Search/StreetSearch
-$config['router']['routes']['Street'] = [
-    'type' => 'Zend\Mvc\Router\Http\Literal',
-    'options' => [
-        'route'    => '/Search/Street',
-        'defaults' => [
-            'controller' => 'Search',
-            'action'     => 'StreetSearch',
-        ]
-    ]
-];
-
 // API routes
 $config['router']['routes']['searchApi'] = [
     'type' => 'Zend\Mvc\Router\Http\Literal',
