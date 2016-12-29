@@ -119,6 +119,8 @@ class QueryBuilder implements QueryBuilderInterface
     public function build(AbstractQuery $query)
     {
         $params = new ParamBag();
+        // Clone the query to avoid modifying the original user-visible query
+        $query = clone($query);
 
         // Add spelling query if applicable -- note that we must set this up before
         // we process the main query in order to avoid unwanted extra syntax:
