@@ -33,7 +33,7 @@ use VuFind\Exception\ILS as ILSException,
     Zend\Log\LoggerAwareInterface as LoggerAwareInterface,
     VuFind\Exception\Date as DateException;
 
-//todo: will extend \VuFind\ILS\Driver\AbstractBase, this is just for testing and developing purposes
+/* TODO: will extend \VuFind\ILS\Driver\AbstractBase, this is just for testing and developing purposes */
 class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
     HttpServiceAwareInterface, LoggerAwareInterface
 {
@@ -91,7 +91,6 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
      */
     protected $defaultLocation;
 
-
     //TODO: make date format configurable
     protected $dateFormat = "d. m. Y";
 
@@ -103,7 +102,7 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
     //protected $dateConverter;
 
     /**
-     * Id of CGI session for Koha RESTful API 
+     * Id of CGI session for Koha RESTful API
      */
     protected $CGISESSID;
 
@@ -135,11 +134,17 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
         $this->apiPassword = isset($this->config['Catalog']['apiuserpassword'])
             ? $this->config['Catalog']['apiuserpassword'] : null;
         // Authenticate to RESTful API
-        $patron = $this->makeRESTfulRequest('/auth/session', 'POST', ['userid' => $this->apiUserid, 'password' => $this->apiPassword ]);
+        $patron = $this->makeRESTfulRequest(
+                '/auth/session',
+                'POST',
+                ['userid' => $this->apiUserid, 'password' => $this->apiPassword ]
+        );
         if ($patron) {
             $this->CGISESSID = $patron->sessionid;
         } else {
-            throw new ILSException('Can not authenticate to Koha through RESTful API');
+            throw new ILSException(
+                    'Can not authenticate to Koha through RESTful API'
+            );
         }
 
         // MySQL database host
@@ -167,26 +172,32 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
         //$this->dateConverter = new \VuFind\Date\Converter;
     }
 
-   /**
+    /**
      * Make Request
      *
      * Makes a request to the Koha ILSDI API
      *
-     * @param string $apiQuery    Query string for request (starts with "/")
-     * @param string $httpMethod  HTTP method (default = GET)
-     * @param array  $data        Provide needed data in this paramater (default = null)
+     * @param string $apiQuery   Query string for request (starts with "/")
+     * @param string $httpMethod HTTP method (default = GET)
+     * @param array  $data       Provide needed data (default = null)
      *
      * @throws ILSException
      * @return array
      */
-    protected function makeRESTfulRequest($apiQuery, $httpMethod = "GET", $data = null)
+    protected function makeRESTfulRequest(
+            $apiQuery,
+            $httpMethod = "GET",
+            $data = null
+    )
     {
         // TODO - get rid of this kind of authentication and use just session
         $kohaDate = date("r"); // RFC 1123/2822
-        $signature = implode(" ", [(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "HTTPS" : "HTTP",
-                                   $this->apiUserid,
-                                   $kohaDate
-                     ]);
+        $signature = implode(" ", [
+                (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "HTTPS" : "HTTP",
+                $this->apiUserid,
+                $kohaDate
+                ]
+        );
 
         $hashedSignature = hash_hmac("sha256", $signature, $this->apiPassword);
 
@@ -196,12 +207,15 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
             "Authorization" => "Koha " . $this->apiUserid . ":" . $hashedSignature ,
         ];
 
-        $client = $this->httpService->createClient($this->apiUrl . $apiQuery, $httpMethod);
+        $client = $this->httpService->createClient(
+            $this->apiUrl . $apiQuery,
+            $httpMethod
+        );
         $client->setHeaders($httpHeaders);
-        if(isset($this->CGISESSID)) {
+        if (isset($this->CGISESSID)) {
             $client->addCookie('CGISESSID', $this->CGISESSID);
         }
-        if($data !== null) {
+        if ($data !== null) {
             $client->setRawBody(http_build_query($data));
         }
 
@@ -214,12 +228,14 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
         if (!$response->isSuccess()) {
             var_dump($response->getBody());
             echo $this->apiUrl . $apiQuery;
-            throw new ILSException("Error in communication with Koha API:" . $response->getBody() . 
-                                   " HTTP status code: " . $response->getStatusCode() );
+            throw new ILSException(
+                "Error in communication with Koha API:" . $response->getBody() .
+                " HTTP status code: " . $response->getStatusCode()
+            );
         }
 
         $result = json_decode($response->getBody());
-        if (json_last_error() !== JSON_ERROR_NONE ) {
+        if (json_last_error() !== JSON_ERROR_NONE) {
             throw new ILSException("Error parsing hajson response of Koha API");
         }
         return $result;
@@ -230,7 +246,9 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
      */
     protected function formatDate($date)
     {
-        if (!$date) { return NULL; }
+        if (!$date) {
+            return null;
+        }
         $dateObject = new \DateTime($date);
         return $dateObject->format($this->dateFormat);
     }
@@ -257,11 +275,14 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
     /**
      * https://vufind.org/wiki/development:plugins:ils_drivers#getpickuplocations
      */
-    /* Will be available after Bug 16497 is pushed: https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=16497 */
+    /* Will be available after Bug 16497 is pushed:
+     * https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=16497
+     */
     /*
     public function getPickupLocations($patron = false, $holdDetails = null)
     {
-        // TODO: check if pickupEnableBranchcodes is set (maybe better in init method), if not, use default, if it's not set, get all locations from API
+        // TODO: check if pickupEnableBranchcodes is set (maybe in init method),
+        // if not, use default, if it's not set, get all locations from API
         if ( !isset($this->locations )) {
             $libraries = $this->makeRESTfulRequest("/libraries");
             $locations = [];
@@ -312,11 +333,15 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
      * @return mixed          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    /* Will be available after Bug 17004 is pushed: https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=17004 */
+    /* Will be available after Bug 17004 is pushed:
+     * https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=17004
+     */
     /*
     public function patronLogin($username, $password)
     {
-        $patron = $this->makeRESTfulRequest('/auth/session', 'POST', ['userid' => $username, 'password' => $password ]);
+        $patron = $this->makeRESTfulRequest('/auth/session', 'POST',
+                ['userid' => $username, 'password' => $password ]
+        );
         if ($patron) {
             return [
                 'id' => $patron->borrowernumber,
@@ -345,9 +370,9 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
      */
     public function getMyProfile($patron)
     {
-         $patron = $this->makeRESTfulRequest('/patrons/' . $patron['id']);
-         if ($patron) {
-             return [
+        $patron = $this->makeRESTfulRequest('/patrons/' . $patron['id']);
+        if ($patron) {
+            return [
                 'firstname' => $patron->firstname,
                 'lastname'  => $patron->surname,
                 'address1'  => $patron->address . ' ' . $patron->streetnumber,
@@ -357,9 +382,9 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
                 'zip'       => $patron->zipcode,
                 'phone'     => $patron->phone,
                 'group'     => $patron->categorycode,
-             ];
-         }
-         return null;
+            ];
+        }
+        return null;
     }
 
     /**
@@ -374,13 +399,17 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    /* Will be available after Bugs 13895, 17003 and 16825 are pushed: https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=13895,
-     * https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=17003 , https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=16825
+    /* Will be available after Bugs 13895, 17003 and 16825 are pushed:
+     * https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=13895
+     * https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=17003
+     * https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=16825
      */
     /*
     public function getMyTransactions($patron)
     {
-        $checkouts = $this->makeRESTfulRequest('/checkouts', 'GET', [ 'borrowernumber' => $patron['id'] ]);
+        $checkouts = $this->makeRESTfulRequest('/checkouts', 'GET',
+                [ 'borrowernumber' => $patron['id'] ]
+        );
         $checkoutsList = [];
         if($checkouts) {
             foreach ($checkouts as $checkout) {
@@ -393,24 +422,27 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
                     'item_id'           => $checkout->itemnumber,
                     'barcode'           => $item ? $item->barcode : 0,
                     'renew'             => $checkout->renewals,
-                    'borrowingLocation' => $checkout->branchcode, //TODO: add branch name
-            //        'renewable' => is_object($renewable) ? 1 : 0, //TODO: renewability is based on http status - it's weird
-//                    'request => , //TODO: is item reserved?
+                    'borrowingLocation' => $checkout->branchcode,//TODO: branchname
+                    // 'renewable' => is_object($renewable) ? 1 : 0,
+                    // 'request => , //TODO: is item reserved?
                 ];
-       
+
             }
         }
         return $checkoutsList;
     }*/
 
-    /** Get Patron Holds
+    /**
+     * Get Patron Holds
      *
      */
     public function getMyHolds($patron)
     {
-        $holds = $this->makeRESTfulRequest('/holds', 'GET', [ 'borrowernumber' => $patron['id'] ]);
+        $holds = $this->makeRESTfulRequest('/holds', 'GET',
+                [ 'borrowernumber' => $patron['id'] ]
+        );
         $holdsList = [];
-        if($holds) {
+        if ($holds) {
             foreach ($holds as $hold) {
                 $holdsList[] = [
                     'id'        => $hold->biblionumber,
@@ -425,13 +457,17 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
         return $holdsList;
     }
 
-    /** Get Patron Fines
+    /**
+     * Get Patron Fines
      *
      */
-//    public function getMyFines($patron)
-//    {
-//        $fines = $this->makeRESTfulRequest('/');
- 
+    /*
+    public function getMyFines($patron)
+    {
+        $fines = $this->makeRESTfulRequest('/');
+    }
+    */
+
     /**
      * Place Hold
      *
@@ -445,25 +481,27 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-/*    public function placeHold($holdDetails)
+
+    /*
+    public function placeHold($holdDetails)
     {
 
     }*/
-
 
     /**
      * Insert Suggestion
      */
 
-    /** Get Holdings
-     *
+    /**
+     * Get Holdings
      */
-    
-    /* Will be available after Bugs 17371 and 16825 are pushed: https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=17371,
+
+    /* Will be available after Bugs 17371 and 16825 are pushed:
+     * https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=17371,
      * https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=16825
      */
-    
-/*
+
+    /*
     public function getHolding($id, array $patron = null)
     {
         $biblio = $this->makeRESTfulRequest('/biblios/' . $id);
@@ -482,18 +520,14 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
                     'supplements' => $item->materials,
                     'item_notes'  => $item->itemnotes,
                     'item_id'     => $i->itemnumber,
-//                    ''         =>,
- //                   ''         =>,
-  //                  ''         =>,
-//                    'rewuests_placed'         =>,
+                    // reqests_placed'         =>,
                     'duedate'         => null, //TODO
-                    'reurnDate'         => false, //TODO
-//                    'reserve'         =>, //Y or N
-//                    ''         =>,
+                    'returnDate'         => false, //TODO
+                    // 'reserve'         =>, //Y or N
                 ];
             }
         }
         return $holdingsList;
     }
-*/
+    */
 }
