@@ -50,13 +50,9 @@ class ContentController extends \VuFind\Controller\ContentController
     {
         $page = $this->params()->fromRoute('page');
 
-        // Redirect aboutfinna from VuFind 1 to about_finna (ALLI-4231)
-        if ($page == 'aboutfinna') {
-            $response = $this->redirect()
-                ->toRoute('content-page', ['page' => 'about_finna']);
-            // Mark this redirect permanent
-            $response->setStatusCode(301);
-            return $response;
+        // Redirect Help to help since it was previously wrong in the footer
+        if ($page == 'Help') {
+            $this->getEvent()->getRouteMatch()->setParam('page', 'help');
         }
 
         return parent::contentAction();
