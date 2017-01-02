@@ -196,7 +196,7 @@ class Record extends \VuFind\View\Helper\Root\Record
         if ($formAttr) {
             $context['formAttr'] = $formAttr;
         }
-            return $this->contextHelper->renderInContext(
+        return $this->contextHelper->renderInContext(
             'record/checkbox.phtml', $context
         );
     }
