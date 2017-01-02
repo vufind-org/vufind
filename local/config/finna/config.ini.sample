@@ -95,8 +95,7 @@ defaultAccountPage = Favorites
 admin_enabled = false
 ; Show sidebar on the left side instead of right. This only affects on facet sidebar in search result view
 sidebarOnLeft = true
-; Show (true) / Hide (false) Book Bag - Default is Hide.  The Book Bag is currently
-; only supported by the blueprint theme; other themes will ignore this setting.
+; Show (true) / Hide (false) Book Bag - Default is Hide.
 showBookBag = false
 ; Set the maximum amount of items allowed in the Book Bag - Default is 100
 bookBagMaxSize = 100
