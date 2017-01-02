@@ -45,12 +45,14 @@ class HierarchicalFacetHelper extends \VuFind\Search\Solr\HierarchicalFacetHelpe
      * @param string    $facet     Facet name
      * @param array     $facetList Facet list
      * @param UrlHelper $urlHelper Query URL helper for building facet URLs
+     * @param bool      $escape    Whether to escape URLs
      *
      * @return array Facet hierarchy
      */
-    public function buildFacetArray($facet, $facetList, $urlHelper = false)
-    {
-        $result = parent::buildFacetArray($facet, $facetList, $urlHelper);
+    public function buildFacetArray($facet, $facetList, $urlHelper = false,
+        $escape = true
+    ) {
+        $result = parent::buildFacetArray($facet, $facetList, $urlHelper, $escape);
 
         if ($urlHelper !== false) {
             // Recreate href's for any facet items that have children/ancestors
@@ -210,6 +212,7 @@ class HierarchicalFacetHelper extends \VuFind\Search\Solr\HierarchicalFacetHelpe
      * @param bool   $children Whether to remove children or ancestors
      *
      * @return string Modified href
+     * @todo   New UrlQueryHelper might do the trick!
      */
     protected function removeFilters($facet, $item, $children)
     {

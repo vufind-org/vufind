@@ -177,11 +177,12 @@ class Record extends \VuFind\View\Helper\Root\Record
      * Render an HTML checkbox control for the current record.
      *
      * @param string $idPrefix Prefix for checkbox HTML ids
+     * @param string $formAttr ID of form for [form] attribute
      * @param bool   $label    Whether to enclose the actual checkbox in a label
      *
      * @return string
      */
-    public function getCheckbox($idPrefix = '', $label = false)
+    public function getCheckbox($idPrefix = '', $formAttr = false, $label = false)
     {
         static $checkboxCount = 0;
         $id = $this->driver->getSourceIdentifier() . '|'
@@ -192,7 +193,10 @@ class Record extends \VuFind\View\Helper\Root\Record
             'prefix' => $idPrefix,
             'label' => $label
         ];
-        return $this->contextHelper->renderInContext(
+        if ($formAttr) {
+            $context['formAttr'] = $formAttr;
+        }
+            return $this->contextHelper->renderInContext(
             'record/checkbox.phtml', $context
         );
     }

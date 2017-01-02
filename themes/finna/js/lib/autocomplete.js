@@ -10,14 +10,18 @@
 (function ( $ ) {
     var xhr = false;
 
+    // Disable original autocomplete by providing just a stub function instead
+    $.fn.autocomplete = function(settings) {
+    };
+
     $.fn.autocompleteFinna = function(settings) {
         var options = $.extend( {}, $.fn.autocompleteFinna.options, settings );
 
-        // Use input position from setup or focus event with IE Mobile to avoid 
+        // Use input position from setup or focus event with IE Mobile to avoid
         // trouble with changing offset of the input field when the keyboard is
         // displayed (IE Mobile does something quite weird here).
-        var autocompleteTop = 0; 
-        
+        var autocompleteTop = 0;
+
         function align(input, element) {
             var position = input.offset();
             var iemobile = navigator.userAgent.match(/iemobile/i);
@@ -262,9 +266,9 @@
             }
             return form.find('.applied-filter[name=type]').val();
         };
-        
+
         function updateAutocompleteTop(input) {
-            autocompleteTop = input.offset().top + input.outerHeight();            
+            autocompleteTop = input.offset().top + input.outerHeight();
         }
 
         function setup(input, element) {

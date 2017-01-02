@@ -6,7 +6,8 @@
   if (!isset($this->indexStart)) {
     $this->indexStart = 0;
   }
-  $showCheckboxes = !isset($this->hideCartControls) && $this->cart()->isActive();
+  $showCheckboxes = (isset($this->showCartControls) && $this->showCartControls)
+    || (isset($this->showBulkOptions) && $this->showBulkOptions);
   $resultCount = $this->results->getResults();
   $recommendationConfig = $this->searchTabsRecommendations()->getConfig();
   $needRecommendationHolder = !$browse && $this->results->getStartRecord() == 1 && !empty($recommendationConfig['recommendations'][$this->results->getParams()->getSearchClassId()]);
@@ -21,15 +22,13 @@
     <? $haveRecommendationHolder = true; ?>
   <? endif; ?>
   <div id="result<?=$i++ ?>" class="row result clearfix<?=$current->supportsAjaxStatus()?' ajaxItem':''?>">
-    <div class="checkbox hidden-print sr-only">
+    <div class="checkbox hidden-print">
       <? if ($showCheckboxes): ?>
         <label>
-          <?=$this->record($current)->getCheckbox()?>
-          <?=$this->transEsc('Search Result');?> <?=$recordNumber ?>
+          <?=$this->record($current)->getCheckbox('', 'search-cart-form')?>
         </label>
-      <? else: ?>
-        <?=$this->transEsc('Search Result');?> <?=$recordNumber ?>
       <? endif; ?>
+      <span class="sr-only"><?=$this->transEsc('Search Result');?> <?=$recordNumber ?></span>
     </div>
     <?=$this->record($current)->getSearchResult('list')?>
   </div>

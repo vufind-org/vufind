@@ -28,7 +28,7 @@
     <div class="checkboxFilter">
       <div class="checkbox">
         <? // Request a checkbox with a label (can't add the label here as checkbox template contains more than one field): ?>
-        <?=$this->record($this->driver)->getCheckbox('', true) ?>
+        <?=$this->record($this->driver)->getCheckbox('', false, true) ?>
       </div>
     </div>
     <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId"/>
