@@ -108,18 +108,56 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
      */
     protected function getQuestionTests()
     {
+        // Format: [input, expected output, flags array]
         // @codingStandardsIgnoreStart
         return [
-            ['this?', '(this?) OR (this\?)'], // trailing question mark
-            ['this? that', '((this?) OR (this\?)) that'], // question mark after first word
-            ['start this? that', 'start ((this?) OR (this\?)) that'], // question mark after the middle word
-            ['start AND this? AND that', 'start AND ((this?) OR (this\?)) AND that'], // question mark with boolean operators
-            ['start t?his that', 'start t?his that'], // question mark as a wildcard in the middle of a word
-            ['start? this?', '((start?) OR (start\?)) ((this?) OR (this\?))'], // multiple ? terms
-            ['this? that? this?', '((this?) OR (this\?)) ((that?) OR (that\?)) ((this?) OR (this\?))'], // repeating ? term
-            ['"this? that?"', '"this? that?"'], // ? terms inside quoted phrase
+            // trailing question mark:
+            ['this?', '(this?) OR (this\?)', []],
+            // question mark after first word:
+            ['this? that', '((this?) OR (this\?)) that', []],
+            // question mark after the middle word:
+            ['start this? that', 'start ((this?) OR (this\?)) that', []],
+            // question mark with boolean operators:
+            ['start AND this? AND that', 'start AND ((this?) OR (this\?)) AND that', []],
+            // question mark as a wildcard in the middle of a word:
+            ['start t?his that', 'start t?his that', []],
+            // multiple ? terms:
+            ['start? this?', '((start?) OR (start\?)) ((this?) OR (this\?))', []],
+            // repeating ? term:
+            ['this? that? this?', '((this?) OR (this\?)) ((that?) OR (that\?)) ((this?) OR (this\?))', []],
+            // ? terms inside quoted phrase (basic flag set to indicate that
+            // this does not contain any syntax unsupported by basic Dismax):
+            ['"this? that?"', '"this? that?"', ['basic' => true]],
         ];
         // @codingStandardsIgnoreEnd
+    }
+
+    /**
+     * Run the standard suite of question mark tests, accounting for differences
+     * between stanard Lucene, basic Dismax and eDismax handlers.
+     *
+     * @param array  $builderParams Parameters for QueryBuilder constructor
+     * @param string $handler       Search handler: dismax|edismax|standard
+     *
+     * @return void
+     */
+    protected function runQuestionTests($builderParams, $handler)
+    {
+        // Set up an array of expected inputs and outputs:
+        $tests = $this->getQuestionTests();
+        $qb = new QueryBuilder($builderParams);
+        foreach ($tests as $test) {
+            list($input, $output, $flags) = $test;
+            if ($handler === 'standard'
+                || ($handler === 'dismax' && empty($flags['basic']))
+            ) {
+                $output = '(' . $output . ')';
+            }
+            $q = new Query($input, 'test');
+            $response = $qb->build($q);
+            $processedQ = $response->get('q');
+            $this->assertEquals($output, $processedQ[0]);
+        }
     }
 
     /**
@@ -129,20 +167,25 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
      */
     public function testQueryHandler()
     {
-        // Set up an array of expected inputs and outputs:
-        $tests = $this->getQuestionTests();
-        $qb = new QueryBuilder(
+        $this->runQuestionTests(
             [
                 'test' => []
-            ]
+            ], 'standard'
         );
-        foreach ($tests as $test) {
-            list($input, $output) = $test;
-            $q = new Query($input, 'test');
-            $response = $qb->build($q);
-            $processedQ = $response->get('q');
-            $this->assertEquals('(' . $output . ')', $processedQ[0]);
-        }
+    }
+
+    /**
+     * Test generation with a query handler with regular dismax
+     *
+     * @return void
+     */
+    public function testQueryHandlerWithDismax()
+    {
+        $this->runQuestionTests(
+            [
+                'test' => ['DismaxHandler' => 'dismax', 'DismaxFields' => ['foo']]
+            ], 'dismax'
+        );
     }
 
     /**
@@ -152,21 +195,11 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
      */
     public function testQueryHandlerWithEdismax()
     {
-        // Set up an array of expected inputs and outputs:
-        $tests = $this->getQuestionTests();
-
-        $qb = new QueryBuilder(
+        $this->runQuestionTests(
             [
                 'test' => ['DismaxHandler' => 'edismax', 'DismaxFields' => ['foo']]
-            ]
+            ], 'edismax'
         );
-        foreach ($tests as $test) {
-            list($input, $output) = $test;
-            $q = new Query($input, 'test');
-            $response = $qb->build($q);
-            $processedQ = $response->get('q');
-            $this->assertEquals($output, $processedQ[0]);
-        }
     }
 
     /**

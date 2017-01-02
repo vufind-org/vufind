@@ -77,7 +77,6 @@ class User implements PermissionProviderInterface,
         }
 
         // which user attribute has to match which pattern to get permissions?
-        $criteria = [];
         foreach ((array)$options as $option) {
             $parts = explode(' ', $option, 2);
             if (count($parts) < 2) {

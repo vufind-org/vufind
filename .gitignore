@@ -5,6 +5,8 @@ ChangeLog
 .\#*
 TAGS
 *~
+/downloads
+/solr/vendor
 /vendor
 composer.lock
 composer.phar
@@ -45,3 +47,4 @@ local/import/import.properties
 local/import/import_auth.properties
 *.diff
 vufind.bat
+public/swagger-ui

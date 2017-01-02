@@ -56,10 +56,17 @@ class ManagerFactory implements \Zend\ServiceManager\FactoryInterface
             'cookie_path' => $cookieManager->getPath(),
             'cookie_secure' => $cookieManager->isSecure()
         ];
+
         $domain = $cookieManager->getDomain();
         if (!empty($domain)) {
             $options['cookie_domain'] = $domain;
         }
+
+        $name = $cookieManager->getSessionName();
+        if (!empty($name)) {
+            $options['name'] = $name;
+        }
+
         return $options;
     }
 
