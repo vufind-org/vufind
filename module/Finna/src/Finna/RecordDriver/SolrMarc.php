@@ -242,13 +242,16 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     {
         $result = [];
 
-        foreach (['050', '080', '084'] as $fieldCode) {
+        foreach (['050', '060', '080', '084'] as $fieldCode) {
             $fields = $this->getMarcRecord()->getFields($fieldCode);
             if (is_array($fields)) {
                 foreach ($fields as $field) {
                     switch ($fieldCode) {
                     case '050':
                         $classification = 'dlc';
+                        break;
+                    case '060':
+                        $classification = 'nlm';
                         break;
                     case '080':
                         $classification = 'udk';
