@@ -975,6 +975,12 @@ MARCXML = false
 RDF = false
 BibTeX = false
 
+[BulkExport]
+; Export behavior to use when no bulkExportType setting is found in the matching
+; format section of export.ini; default is 'link' if not overridden below. See
+; export.ini for more details on available options.
+;defaultType = download
+
 ;AddThis is optional. It uses the Add This tool available from www.addthis.com
 ; and requires the username generated when an analytics account is registered.
 [AddThis]
