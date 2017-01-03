@@ -6,9 +6,14 @@ VuFind.register('cart', function Cart() {
   var _COOKIE_SOURCES = 'vufind_cart_src';
   var _COOKIE_DELIM = "\t";
   var _COOKIE_DOMAIN = false;
+  var _COOKIE_PATH = '/';
 
   function setDomain(domain) {
     _COOKIE_DOMAIN = domain;
+  }
+
+  function setCookiePath(path) {
+    _COOKIE_PATH = path;
   }
 
   function _uniqueArray(op) {
@@ -70,11 +75,11 @@ VuFind.register('cart', function Cart() {
       // Add source to source cookie
       cartItems[cartItems.length] = String.fromCharCode(65 + cartSources.length) + id;
       cartSources[cartSources.length] = source;
-      Cookies.setItem(_COOKIE_SOURCES, cartSources.join(_COOKIE_DELIM), false, '/', _COOKIE_DOMAIN);
+      Cookies.setItem(_COOKIE_SOURCES, cartSources.join(_COOKIE_DELIM), false, _COOKIE_PATH, _COOKIE_DOMAIN);
     } else {
       cartItems[cartItems.length] = String.fromCharCode(65 + sIndex) + id;
     }
-    Cookies.setItem(_COOKIE, _uniqueArray(cartItems).join(_COOKIE_DELIM), false, '/', _COOKIE_DOMAIN);
+    Cookies.setItem(_COOKIE, _uniqueArray(cartItems).join(_COOKIE_DELIM), false, _COOKIE_PATH, _COOKIE_DOMAIN);
     updateCount();
     return true;
   }
@@ -109,11 +114,11 @@ VuFind.register('cart', function Cart() {
         }
       }
       if (cartItems.length > 0) {
-        Cookies.setItem(_COOKIE, _uniqueArray(cartItems).join(_COOKIE_DELIM), false, '/', _COOKIE_DOMAIN);
-        Cookies.setItem(_COOKIE_SOURCES, _uniqueArray(cartSources).join(_COOKIE_DELIM), false, '/', _COOKIE_DOMAIN);
+        Cookies.setItem(_COOKIE, _uniqueArray(cartItems).join(_COOKIE_DELIM), false, _COOKIE_PATH, _COOKIE_DOMAIN);
+        Cookies.setItem(_COOKIE_SOURCES, _uniqueArray(cartSources).join(_COOKIE_DELIM), false, _COOKIE_PATH, _COOKIE_DOMAIN);
       } else {
-        Cookies.removeItem(_COOKIE, '/', _COOKIE_DOMAIN);
-        Cookies.removeItem(_COOKIE_SOURCES, '/', _COOKIE_DOMAIN);
+        Cookies.removeItem(_COOKIE, _COOKIE_PATH, _COOKIE_DOMAIN);
+        Cookies.removeItem(_COOKIE_SOURCES, _COOKIE_PATH, _COOKIE_DOMAIN);
       }
       updateCount();
       return true;
@@ -207,6 +212,7 @@ VuFind.register('cart', function Cart() {
     getFullItems: getFullItems,
     updateCount: updateCount,
     setDomain: setDomain,
+    setCookiePath: setCookiePath,
     // Init
     init: init
   };
