@@ -185,7 +185,8 @@ VuFind.register('lightbox', function Lightbox() {
     if ('function' === typeof window[callback]) {
       return window[callback](event, data);
     } else {
-      return eval('(function(event, data) {' + callback + '}())'); // inline code
+      console.error('Lightbox callback function not found.');
+      return null;
     }
   }
 
