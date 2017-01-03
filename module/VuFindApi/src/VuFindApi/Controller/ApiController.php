@@ -108,6 +108,12 @@ class ApiController extends \VuFind\Controller\AbstractBase
         foreach ($this->apiControllers as $controller) {
             $api = $controller->getSwaggerSpecFragment();
             $specs = json_decode($api, true);
+            if (null === $specs) {
+                throw new \Exception(
+                    'Could not parse Swagger spec fragment of '
+                    . get_class($controller)
+                );
+            }
             foreach ($specs as $key => $spec) {
                 if (isset($results[$key])) {
                     $results[$key] = array_merge($results[$key], $spec);
