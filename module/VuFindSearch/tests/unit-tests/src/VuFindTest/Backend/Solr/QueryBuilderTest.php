@@ -161,7 +161,10 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
             $basicOutput = $output;
         }
         $q = new Query($input, 'test');
+        $before = $q->getString();
         $response = $qb->build($q);
+        // Make sure the query builder had no side effects on the query object:
+        $this->assertEquals($before, $q->getString());
         $processedQ = $response->get('q');
         $this->assertEquals($basicOutput, $processedQ[0]);
     }
