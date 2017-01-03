@@ -61,7 +61,10 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $path = '/Search/Results?lookfor=id%3A(testsample1+OR+testsample2)';
         $session->visit($this->getVuFindUrl() . $path);
-        return $session->getPage();
+        $page = $session->getPage();
+        // Hide autocomplete menu
+        $this->findCss($page, '#side-panel-format .title')->click();
+        return $page;
     }
 
     /**

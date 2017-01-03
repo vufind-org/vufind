@@ -245,39 +245,6 @@ CREATE TABLE `user_resource` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `user_stats`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_stats` (
-  `id` varchar(24) NOT NULL,
-  `datestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `browser` varchar(32) NOT NULL,
-  `browserVersion` varchar(8) NOT NULL,
-  `ipaddress` varchar(15) NOT NULL,
-  `referrer` varchar(512) NOT NULL,
-  `url` varchar(512) NOT NULL,
-  `session` varchar(64) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `user_stats_fields`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_stats_fields` (
-  `id` varchar(24) NOT NULL,
-  `field` varchar(32) NOT NULL,
-  `value` varchar(1024) NOT NULL,
-  PRIMARY KEY (`id`,`field`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `user_card`
 --
 
