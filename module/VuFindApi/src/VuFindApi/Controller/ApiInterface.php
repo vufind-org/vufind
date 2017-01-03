@@ -46,7 +46,7 @@ interface ApiInterface
      * Get Swagger specification JSON fragment for services provided by the
      * controller
      *
-     * @return \Zend\Http\Response
+     * @return string
      */
     public function getSwaggerSpecFragment();
 }
