@@ -190,7 +190,9 @@ VuFind.register('lightbox', function Lightbox() {
    * data-lightbox-title = Lightbox title (overrides any title the page provides)
    */
   _constrainLink = function constrainLink(event) {
-    if (typeof $(this).data('lightboxIgnore') != 'undefined' || this.attributes.href.value.charAt(0) === '#') {
+    if (typeof $(this).data('lightboxIgnore') != 'undefined'
+      || typeof this.attributes.href === 'undefined' || this.attributes.href.value.charAt(0) === '#'
+    ) {
       return true;
     }
     if (this.href.length > 1) {
