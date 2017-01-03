@@ -101,6 +101,36 @@ class HeadScript extends \Zend\View\Helper\HeadScript
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
     }
 
+    protected function addDefer($value) {
+        if (isset($value->attributes['src'])) {
+            if (!empty($value->attributes['conditional'])
+                && $value->attributes['conditional'] == 'critical'
+            ) {
+                unset($value->attributes['conditional']);
+            } else {
+                $value->attributes['defer'] = 'defer';
+            }
+        }
+        return $value;
+    }
+
+    public function appendFile($src, $type = 'text/javascript', $attrs = []) {
+        $parts = explode(':', $src);
+        if (isset($parts[1])) {
+            $src = $parts[0];
+            $attrs['conditional'] = $parts[1];
+        }
+        return parent::appendFile($src, $type, $attrs);
+    }
+
+    public function append($value) {
+        return parent::append($this->addDefer($value));
+    }
+
+    public function prepend($value) {
+        return parent::prepend($this->addDefer($value));
+    }
+
     /**
      * Returns true if file should not be included in the compressed concat file
      * Required by ConcatTrait
