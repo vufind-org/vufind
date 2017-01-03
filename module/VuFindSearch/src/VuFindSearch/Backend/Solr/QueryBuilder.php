@@ -119,8 +119,6 @@ class QueryBuilder implements QueryBuilderInterface
     public function build(AbstractQuery $query)
     {
         $params = new ParamBag();
-        // Clone the query to avoid modifying the original user-visible query
-        $query = clone($query);
 
         // Add spelling query if applicable -- note that we must set this up before
         // we process the main query in order to avoid unwanted extra syntax:
@@ -132,13 +130,15 @@ class QueryBuilder implements QueryBuilderInterface
         }
 
         if ($query instanceof QueryGroup) {
-            $query = $this->reduceQueryGroup($query);
+            $finalQuery = $this->reduceQueryGroup($query);
         } else {
-            $query->setString($this->getNormalizedQueryString($query));
+            // Clone the query to avoid modifying the original user-visible query
+            $finalQuery = clone($query);
+            $finalQuery->setString($this->getNormalizedQueryString($query));
         }
-        $string = $query->getString() ?: '*:*';
+        $string = $finalQuery->getString() ?: '*:*';
 
-        if ($handler = $this->getSearchHandler($query->getHandler(), $string)) {
+        if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
             if (!$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
             ) {
