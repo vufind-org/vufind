@@ -131,7 +131,7 @@ VuFind.register('lightbox', function Lightbox() {
     _xhr.always(function lbAjaxAlways() { _xhr = false; })
       .done(function lbAjaxDone(content, status, jq_xhr) {
         if (jq_xhr.status === 205) {
-          VuFind.refreshPage();
+          refreshPage();
           return;
         }
         var testDiv = $('<div/>').html(content);
@@ -159,7 +159,7 @@ VuFind.register('lightbox', function Lightbox() {
           });
           if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
             if (eventResult) {
-              VuFind.refreshPage();
+              refreshPage();
             }
             return false;
           } else {
@@ -325,7 +325,7 @@ VuFind.register('lightbox', function Lightbox() {
     _modalBody = _modal.find('.modal-body');
     _modal.on('hide.bs.modal', function lightboxHide() {
       if (VuFind.lightbox.refreshOnClose) {
-        VuFind.refreshPage();
+        refreshPage();
       }
       _emit('VuFind.lightbox.closing');
     });
