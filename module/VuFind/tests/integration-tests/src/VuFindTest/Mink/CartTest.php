@@ -428,6 +428,34 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Test that we can put items in the cart and then remove them outside of
+     * the lightbox.
+     *
+     * @return void
+     */
+    public function testFillAndEmptyCartWithoutLightbox()
+    {
+        // Turn on limit by path setting; there used to be a bug where cookie
+        // paths were set inconsistently between JS and server-side code. This
+        // test should catch any regressions in that area.
+        $page = $this->setUpGenericCartTest(
+            ['config' => ['Cookies' => ['limit_by_path' => 1]]]
+        );
+
+        // Go to the cart page and activate the "empty" control:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Cart');
+        $empty = $this->findCss($page, '#cart-empty-label');
+        $empty->click();
+        $emptyConfirm = $this->findCss($page, '#cart-confirm-empty');
+        $emptyConfirm->click();
+
+        // Confirm that the cart has truly been emptied:
+        $this->snooze(); // wait for display to update
+        $this->assertEquals('0', $this->findCss($page, '#cartItems strong')->getText());
+    }
+
+    /**
      * Test that the email control works.
      *
      * @return void
