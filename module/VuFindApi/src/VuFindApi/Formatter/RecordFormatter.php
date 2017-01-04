@@ -86,6 +86,21 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
+     * Get extended subject headings
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array|null
+     */
+    protected function getExtendedSubjectHeadings($record)
+    {
+        $result = $record->getAllSubjectHeadings(true);
+        // Make sure that the record driver returned the additional information and
+        // return data only if it did
+        return $result && isset($result[0]['heading']) ? $result : null;
+    }
+
+    /**
      * Get full record for a record as XML
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver

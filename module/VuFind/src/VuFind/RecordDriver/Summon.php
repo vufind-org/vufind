@@ -50,9 +50,15 @@ class Summon extends SolrDefault
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
      * @return array
      */
-    public function getAllSubjectHeadings()
+    public function getAllSubjectHeadings($extended = false)
     {
         $retval = [];
         $topic = isset($this->fields['SubjectTerms']) ?
@@ -66,16 +72,36 @@ class Summon extends SolrDefault
 
         $retval = [];
         foreach ($topic as $t) {
-            $retval[] = [trim($t)];
+            $retval[] = $extended
+                ? [
+                    'heading' => [trim($t)],
+                    'type' => 'topic',
+                    'source' => ''
+                ] : [trim($t)];
         }
         foreach ($temporal as $t) {
-            $retval[] = [trim($t)];
+            $retval[] = $extended
+                ? [
+                    'heading' => [trim($t)],
+                    'type' => 'chronological',
+                    'source' => ''
+                ] : [trim($t)];
         }
         foreach ($geo as $g) {
-            $retval[] = [trim($g)];
+            $retval[] = $extended
+                ? [
+                    'heading' => [trim($g)],
+                    'type' => 'geographic',
+                    'source' => ''
+                ] : [trim($g)];
         }
         foreach ($key as $k) {
-            $retval[] = [trim($k)];
+            $retval[] = $extended
+                ? [
+                    'heading' => [trim($k)],
+                    'type' => 'keyword',
+                    'source' => ''
+                ] : [trim($k)];
         }
         return $retval;
     }
