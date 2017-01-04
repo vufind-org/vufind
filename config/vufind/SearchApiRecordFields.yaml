@@ -330,8 +330,7 @@ subjects:
       type: string
 subjectsExtended:
   vufind.method: "Formatter::getExtendedSubjectHeadings"
-  description: >
-    Subject headings with type and source information
+  description: Subject headings with type and source information
   type: array
   items:
     $ref: '#/definitions/Subject'
