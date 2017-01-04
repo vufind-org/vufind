@@ -41,6 +41,22 @@ var VuFind = (function VuFind() {
     return _translations[op] || op;
   };
 
+  /**
+   * Reload the page without causing trouble with POST parameters while keeping hash
+   */
+  var refreshPage = function refreshPage() {
+    var parts = window.location.href.split('#');
+    if (typeof parts[1] === 'undefined') {
+      window.location.href = window.location.href;
+    } else {
+      var href = parts[0];
+      // Force reload with a timestamp
+      href += href.indexOf('?') === -1 ? '?_=' : '&_=';
+      href += new Date().getTime() + '#' + parts[1];
+      window.location.href = href;
+    }
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -48,27 +64,13 @@ var VuFind = (function VuFind() {
 
     addTranslations: addTranslations,
     init: init,
+    refreshPage: refreshPage,
     register: register,
     translate: translate
   };
 })();
 
 /* --- GLOBAL FUNCTIONS --- */
-/**
- * Reload the page without causing trouble with POST parameters while keeping hash
- */
-function refreshPage() {
-  var parts = window.location.href.split('#');
-  if (typeof parts[1] === 'undefined') {
-    window.location.href = window.location.href;
-  } else {
-    var href = parts[0];
-    // Force reload with a timestamp
-    href += href.indexOf('?') === -1 ? '?_=' : '&_=';
-    href += new Date().getTime() + '#' + parts[1];
-    window.location.href = href;
-  }
-}
 function htmlEncode(value) {
   if (value) {
     return $('<div />').text(value).html();

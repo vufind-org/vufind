@@ -131,7 +131,7 @@ VuFind.register('lightbox', function Lightbox() {
     _xhr.always(function lbAjaxAlways() { _xhr = false; })
       .done(function lbAjaxDone(content, status, jq_xhr) {
         if (jq_xhr.status === 205) {
-          refreshPage();
+          VuFind.refreshPage();
           return;
         }
         var testDiv = $('<div/>').html(content);
@@ -159,7 +159,7 @@ VuFind.register('lightbox', function Lightbox() {
           });
           if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
             if (eventResult) {
-              refreshPage();
+              VuFind.refreshPage();
             }
             return false;
           } else {
@@ -184,6 +184,13 @@ VuFind.register('lightbox', function Lightbox() {
   function _evalCallback(callback, event, data) {
     if ('function' === typeof window[callback]) {
       return window[callback](event, data);
+    } else if (callback.substr(0, 7) === 'VuFind.') {
+      var parts = callback.substr(7).split('.');
+      var obj = VuFind;
+      for (var i = 0; i < parts.length; i++) {
+        obj = obj[parts[i]];
+      }
+      return obj(event, data);
     } else {
       console.error('Lightbox callback function not found.');
       return null;
@@ -199,9 +206,7 @@ VuFind.register('lightbox', function Lightbox() {
    * data-lightbox-title = Lightbox title (overrides any title the page provides)
    */
   _constrainLink = function constrainLink(event) {
-    if (typeof $(this).data('lightboxIgnore') != 'undefined'
-      || typeof this.attributes.href === 'undefined' || this.attributes.href.value.charAt(0) === '#'
-    ) {
+    if (typeof $(this).data('lightboxIgnore') != 'undefined' || this.attributes.href.value.charAt(0) === '#') {
       return true;
     }
     if (this.href.length > 1) {
@@ -327,7 +332,7 @@ VuFind.register('lightbox', function Lightbox() {
     _modalBody = _modal.find('.modal-body');
     _modal.on('hide.bs.modal', function lightboxHide() {
       if (VuFind.lightbox.refreshOnClose) {
-        refreshPage();
+        VuFind.refreshPage();
       }
       _emit('VuFind.lightbox.closing');
     });
