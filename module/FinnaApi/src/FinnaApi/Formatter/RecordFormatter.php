@@ -247,7 +247,7 @@ class RecordFormatter extends \VuFindApi\Formatter\RecordFormatter
                     && !$translationEmpty($link['title'])
                 ) {
                     $link['translated'] = $translate($link['title']);
-                 }
+                }
             }
         }
         return $links;

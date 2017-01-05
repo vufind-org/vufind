@@ -161,6 +161,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      * - heading: the actual subject heading
      * - type: heading type
      * - source: source vocabulary
+     *
      * @return array
      */
     public function getAllSubjectHeadings($extended)
