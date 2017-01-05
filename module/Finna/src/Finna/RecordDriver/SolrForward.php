@@ -173,8 +173,8 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 } else {
                     $results[] = [
                         'heading' => [$term],
-                        'type' => 'unknown',
-                        'source' => 'unknown'
+                        'type' => '',
+                        'source' => ''
                     ];
                 }
             }

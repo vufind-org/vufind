@@ -164,7 +164,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             '648' => 'chronological term',
             '650' => 'topical term',
             '651' => 'geographic term',
-            '653' => 'unknown',
+            '653' => '',
             '656' => 'occupation'
         ];
 
