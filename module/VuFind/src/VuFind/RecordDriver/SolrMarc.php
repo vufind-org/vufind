@@ -54,7 +54,7 @@ class SolrMarc extends SolrDefault
     protected $lazyMarcRecord = null;
 
     /**
-     * Fields that may contain subject headings and their descriptions
+     * Fields that may contain subject headings, and their descriptions
      *
      * @var array
      */
@@ -66,9 +66,27 @@ class SolrMarc extends SolrDefault
         '648' => 'chronological',
         '650' => 'topic',
         '651' => 'geographic',
-        '653' => 'unknown',
+        '653' => '',
         '655' => 'genre/form',
         '656' => 'occupation'
+    ];
+
+    /**
+     * Mappings from subject source indicators (2nd indicator of subject fields in
+     * MARC 21) to the their codes.
+     *
+     * @var array
+     * @link https://www.loc.gov/marc/bibliographic/bd6xx.html     Subject field docs
+     * @link https://www.loc.gov/standards/sourcelist/subject.html Code list
+     */
+    protected $subjectSources = [
+        '0' => 'lcsh',
+        '1' => 'lcshac',
+        '2' => 'mesh',
+        '3' => 'nal',
+        '4' => 'unknown',
+        '5' => 'cash',
+        '6' => 'rvm'
     ];
 
     /**
@@ -125,19 +143,10 @@ class SolrMarc extends SolrDefault
                     // If we found at least one chunk, add a heading to our result:
                     if (!empty($current)) {
                         if ($extended) {
-                            $sources = [
-                                '0' => 'lcsh',
-                                '1' => 'lcshac',
-                                '2' => 'mesh',
-                                '3' => 'nal',
-                                '4' => 'unknown',
-                                '5' => 'cash',
-                                '6' => 'rvm'
-                            ];
                             $sourceIndicator = $result->getIndicator(2);
                             $source = '';
-                            if (isset($sources[$sourceIndicator])) {
-                                $source = $sources[$sourceIndicator];
+                            if (isset($this->subjectSources[$sourceIndicator])) {
+                                $source = $this->subjectSources[$sourceIndicator];
                             } else {
                                 $source = $result->getSubfield('2');
                                 if ($source) {
