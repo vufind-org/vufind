@@ -37,7 +37,7 @@
             <? endif ?>
             <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
               <p><?= $this->transEsc('Image Rights Default') ?>
-              <p><a href="<?= $this->url('content-page', ['page' => 'terms_conditions']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
+              <p><a href="<?= $this->url('content-page', ['page' => 'terms']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
             <? endif; ?>
           </div>
         </div>
