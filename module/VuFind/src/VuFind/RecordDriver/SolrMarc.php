@@ -75,7 +75,7 @@ class SolrMarc extends SolrDefault
      * Mappings from subject source indicators (2nd indicator of subject fields in
      * MARC 21) to the their codes.
      *
-     * @var array
+     * @var  array
      * @link https://www.loc.gov/marc/bibliographic/bd6xx.html     Subject field docs
      * @link https://www.loc.gov/standards/sourcelist/subject.html Code list
      */
