@@ -7,6 +7,35 @@
     }
 }
 
+.terms-of-service-text {
+    // Hacks to make the dialog fit the screen since scrolling a modal is erratic
+    // with Safari on iOS
+    @media only screen and (-webkit-min-device-pixel-ratio: 1) {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid @modal-content-border-color;
+        padding: 0.1em;
+        @media (min-device-width: 768px) {
+            max-height: 460px;
+        }
+    }
+    @media only screen and (-webkit-min-device-pixel-ratio: 2) {
+        max-height: 150px;
+        overflow-y: auto;
+        border: 1px solid @modal-content-border-color;
+        padding: 0.1em;
+        @media (min-device-width: 375px) {
+            max-height: 240px;
+        }
+    }
+    @media only screen and (-webkit-min-device-pixel-ratio: 3) {
+        max-height: 360px;
+        overflow-y: auto;
+        border: 1px solid @modal-content-border-color;
+        padding: 0.1em;
+    }
+}
+
 .terms-of-service-title {
    font-size: 18px;
 }
