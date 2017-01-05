@@ -133,9 +133,7 @@ $config = [
             'record' => 'Finna\Controller\Factory::getRecordController',
         ],
         'invokables' => [
-            'adminapi' => 'Finna\Controller\AdminApiController',
             'ajax' => 'Finna\Controller\AjaxController',
-            'searchapi' => 'Finna\Controller\SearchApiController',
             'combined' => 'Finna\Controller\CombinedController',
             'comments' => 'Finna\Controller\CommentsController',
             'content' => 'Finna\Controller\ContentController',
@@ -176,6 +174,7 @@ $config = [
             'VuFind\SearchResultsPluginManager' => 'Finna\Service\Factory::getSearchResultsPluginManager',
             'VuFind\SearchSpecsReader' => 'Finna\Service\Factory::getSearchSpecsReader',
             'VuFind\SearchTabsHelper' => 'Finna\Service\Factory::getSearchTabsHelper',
+            'VuFind\YamlReader' => 'Finna\Service\Factory::getYamlReader',
         ],
         'invokables' => [
             'VuFind\HierarchicalFacetHelper' => 'Finna\Search\Solr\HierarchicalFacetHelper',
@@ -408,7 +407,7 @@ $routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);
 
 // API routes
-$config['router']['routes']['searchApi'] = [
+/*$config['router']['routes']['searchApi'] = [
     'type' => 'Zend\Mvc\Router\Http\Literal',
     'verb' => 'get,post,options',
     'options' => [
@@ -449,6 +448,6 @@ $config['router']['routes']['searchApiRecordv1'] = [
             'action'     => 'record',
         ]
     ]
-];
+];*/
 
 return $config;

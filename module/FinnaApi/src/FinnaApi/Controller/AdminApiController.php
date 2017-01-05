@@ -4,7 +4,7 @@
  *
  * PHP Version 5
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,10 +22,11 @@
  * @category VuFind
  * @package  Controller
  * @author   Riikka Kalliomäki <riikka.kalliomaki@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-namespace Finna\Controller;
+namespace FinnaApi\Controller;
 
 /**
  * Provides web api for different admin tasks.
@@ -33,13 +34,14 @@ namespace Finna\Controller;
  * @category VuFind
  * @package  Controller
  * @author   Riikka Kalliomäki <riikka.kalliomaki@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class AdminApiController extends \VuFind\Controller\AbstractBase
-    implements FinnaApiInterface
+class AdminApiController extends \VuFindApi\Controller\ApiController
+    implements \VuFindApi\Controller\ApiInterface
 {
-    use FinnaApiTrait;
+    use \VuFindApi\Controller\ApiTrait;
 
     /**
      * Clears the view's cache.
@@ -51,10 +53,8 @@ class AdminApiController extends \VuFind\Controller\AbstractBase
         $this->disableSessionWrites();
         $this->determineOutputMode();
 
-        $auth = $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService');
-
-        if (!$auth->isGranted('finna.cache')) {
-            return $this->output([], self::STATUS_ERROR, 403, 'Permission denied');
+        if ($result = $this->isAccessDenied('finna.cache')) {
+            return $result;
         }
 
         $manager = $this->getServiceLocator()->get('VuFind\CacheManager');
@@ -69,5 +69,17 @@ class AdminApiController extends \VuFind\Controller\AbstractBase
         }
 
         return $this->output([], self::STATUS_OK);
+    }
+
+    /**
+     * Get Swagger specification JSON fragment for services provided by the
+     * controller
+     *
+     * @return string
+     */
+    public function getSwaggerSpecFragment()
+    {
+        // Admin API endpoints are not published
+        return '{}';
     }
 }

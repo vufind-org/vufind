@@ -254,4 +254,18 @@ class Factory extends \VuFind\Service\Factory
             $sm->get('Application')->getRequest()
         );
     }
+
+    /**
+     * Construct the YAML reader.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Config\YamlReader
+     */
+    public static function getYamlReader(ServiceManager $sm)
+    {
+        return new \Finna\Config\YamlReader(
+            $sm->get('VuFind\CacheManager')
+        );
+    }
 }

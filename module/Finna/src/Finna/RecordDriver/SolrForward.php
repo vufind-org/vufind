@@ -156,14 +156,27 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     /**
      * Return all subject headings
      *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading
+     * - type: heading type
+     * - source: source vocabulary
      * @return array
      */
-    public function getAllSubjectHeadings()
+    public function getAllSubjectHeadings($extended)
     {
         $results = [];
         foreach ($this->getRecordXML()->SubjectTerms as $subjectTerms) {
             foreach ($subjectTerms->Term as $term) {
-                $results[] = [$term];
+                if ($extended) {
+                    $results[] = [$term];
+                } else {
+                    $results[] = [
+                        'heading' => [$term],
+                        'type' => 'unknown',
+                        'source' => 'unknown'
+                    ];
+                }
             }
         }
         return $results;

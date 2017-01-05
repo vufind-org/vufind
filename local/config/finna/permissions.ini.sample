@@ -129,3 +129,5 @@ permission = finna.cache
 ;ipRange[] = 127.0.0.1
 ;ipRange[] = ::1
 ;permission = finna.api
+;permission = access.api.Search
+;permission = access.api.Record
