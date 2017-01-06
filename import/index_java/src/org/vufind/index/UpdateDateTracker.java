@@ -1,4 +1,4 @@
-package org.solrmarc.index;
+package org.vufind.index;
 /**
  * Class for managing record update dates.
  *

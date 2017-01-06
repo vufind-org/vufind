@@ -1,4 +1,4 @@
-package org.solrmarc.index;
+package org.vufind.index;
 /**
  * Singleton for storing relator information.
  *

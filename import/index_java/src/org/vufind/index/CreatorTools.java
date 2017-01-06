@@ -1,4 +1,4 @@
-package org.solrmarc.index;
+package org.vufind.index;
 /**
  * Indexing routines for dealing with creators and relator terms.
  *
@@ -21,6 +21,7 @@ package org.solrmarc.index;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.DataField;
+import org.solrmarc.index.SolrIndexer;
 import org.apache.log4j.Logger;
 import java.util.Arrays;
 import java.util.ArrayList;

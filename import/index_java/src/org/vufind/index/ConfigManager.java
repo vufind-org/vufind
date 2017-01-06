@@ -1,16 +1,4 @@
-package org.solrmarc.index;
-
-import java.io.File;
-import java.io.FileReader;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-import org.solrmarc.index.indexer.ValueIndexerFactory;
-import org.solrmarc.tools.PropertyUtils;
-import org.solrmarc.tools.SolrMarcIndexerException;
-import org.ini4j.Ini;
-import org.apache.log4j.Logger;
-
+package org.vufind.index;
 /**
  * VuFind configuration manager
  *
@@ -29,6 +17,17 @@ import org.apache.log4j.Logger;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+
+import java.io.File;
+import java.io.FileReader;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import org.solrmarc.index.indexer.ValueIndexerFactory;
+import org.solrmarc.tools.PropertyUtils;
+import org.solrmarc.tools.SolrMarcIndexerException;
+import org.ini4j.Ini;
+import org.apache.log4j.Logger;
 
 /**
  * VuFind configuration manager

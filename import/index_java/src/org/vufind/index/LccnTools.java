@@ -1,4 +1,4 @@
-package org.solrmarc.index;
+package org.vufind.index;
 /**
  * LCCN indexing routines.
  *
@@ -19,6 +19,7 @@ package org.solrmarc.index;
  */
 
 import org.marc4j.marc.Record;
+import org.solrmarc.index.SolrIndexer;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;

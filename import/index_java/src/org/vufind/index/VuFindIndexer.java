@@ -1,4 +1,4 @@
-package org.solrmarc.index;
+package org.vufind.index;
 /**
  * Custom VuFind indexing routines.
  *
@@ -56,6 +56,7 @@ import org.solrmarc.callnum.LCCallNumber;
 import org.solrmarc.tools.CallNumUtils;
 import org.solrmarc.tools.SolrMarcIndexerException;
 import org.solrmarc.tools.Utils;
+import org.solrmarc.index.SolrIndexer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
