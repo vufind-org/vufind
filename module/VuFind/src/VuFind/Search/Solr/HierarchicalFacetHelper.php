@@ -191,7 +191,7 @@ class HierarchicalFacetHelper
         if ($urlHelper !== false) {
             if ($item['isApplied']) {
                 $href = $urlHelper->removeFacet(
-                    $facet, $item['value'], true, $item['operator']
+                    $facet, $item['value'], $item['operator']
                 )->getParams($escape);
             } else {
                 $href = $urlHelper->addFacet(
