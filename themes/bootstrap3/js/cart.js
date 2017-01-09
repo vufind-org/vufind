@@ -183,6 +183,7 @@ VuFind.register('cart', function Cart() {
         var $this = $(this);
         var currentId = $this.data('cart-id');
         var currentSource = $this.data('cart-source');
+        $this.find('.correct').removeClass('correct hidden');
         $this.find('.cart-add').click(function cartAddClick() {
           if (addItem(currentId, currentSource)) {
             $this.find('.cart-add,.cart-remove').toggleClass('hidden');
