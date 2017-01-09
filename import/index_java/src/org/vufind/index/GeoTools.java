@@ -2,6 +2,14 @@ package org.vufind.index;
 /**
  * Geographic indexing routines.
  *
+ * This code is designed to get latitude and longitude coordinates.
+ * Records can have multiple coordinates sets of points and/or rectangles.
+ * Points are represented by coordinate sets where N=S E=W.
+ *
+ * code adapted from xrosecky - Moravian Library
+ * https://github.com/moravianlibrary/VuFind-2.x/blob/master/import/index_scripts/geo.bsh
+ * and incorporates legacy VuFind functionality for GoogleMap display.
+ *
  * Copyright (C) Villanova University 2017.
  *
  * This program is free software; you can redistribute it and/or modify
