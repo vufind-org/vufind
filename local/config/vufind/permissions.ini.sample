@@ -1,6 +1,6 @@
 [Parent_Config]
 relative_path = "../finna/permissions.ini"
-override_full_sections = "finna.api,finna.authorized"
+override_full_sections = ""
 
 ; Add any overrides below
 
