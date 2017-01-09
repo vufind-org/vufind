@@ -388,7 +388,6 @@ class Bootstrapper
         };
         $this->events->attach('dispatch.error', $callback, 9000);
         $this->events->attach('dispatch', $callback, 9000);
-
     }
 
     /**
