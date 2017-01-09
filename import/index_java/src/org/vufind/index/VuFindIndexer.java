@@ -284,64 +284,6 @@ public class VuFindIndexer extends SolrIndexer
     }
 
     /**
-     * Get all available publishers from the record.
-     *
-     * @param  record MARC record
-     * @return set of publishers
-     */
-    public Set<String> getPublishers(final Record record) {
-        Set<String> publishers = new LinkedHashSet<String>();
-
-        // First check old-style 260b name:
-        List<VariableField> list260 = record.getVariableFields("260");
-        for (VariableField vf : list260)
-        {
-            DataField df = (DataField) vf;
-            String currentString = "";
-            for (Subfield current : df.getSubfields('b')) {
-                currentString = currentString.trim().concat(" " + current.getData()).trim();
-            }
-            if (currentString.length() > 0) {
-                publishers.add(currentString);
-            }
-        }
-
-        // Now track down relevant RDA-style 264b names; we only care about
-        // copyright and publication names (and ignore copyright names if
-        // publication names are present).
-        Set<String> pubNames = new LinkedHashSet<String>();
-        Set<String> copyNames = new LinkedHashSet<String>();
-        List<VariableField> list264 = record.getVariableFields("264");
-        for (VariableField vf : list264)
-        {
-            DataField df = (DataField) vf;
-            String currentString = "";
-            for (Subfield current : df.getSubfields('b')) {
-                currentString = currentString.trim().concat(" " + current.getData()).trim();
-            }
-            if (currentString.length() > 0) {
-                char ind2 = df.getIndicator2();
-                switch (ind2)
-                {
-                    case '1':
-                        pubNames.add(currentString);
-                        break;
-                    case '4':
-                        copyNames.add(currentString);
-                        break;
-                }
-            }
-        }
-        if (pubNames.size() > 0) {
-            publishers.addAll(pubNames);
-        } else if (copyNames.size() > 0) {
-            publishers.addAll(copyNames);
-        }
-
-        return publishers;
-    }
-
-    /**
      * Get call numbers of a specific type.
      * 
      * <p>{@code fieldSpec} is of form {@literal 098abc:099ab}, does not accept subfield ranges.
