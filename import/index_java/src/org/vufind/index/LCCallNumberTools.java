@@ -1,19 +1,32 @@
+package org.vufind.index;
 /**
- * Custom call number script.
+ * LC Call number indexing routines.
  *
- * This can be used to override built-in SolrMarc custom functions.  If you change
- * this script, you will need to activate it in import/marc_local.properties before
- * it will be applied during indexing.
+ * Copyright (C) Villanova University 2017.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+
 import org.marc4j.marc.Record;
 import org.solrmarc.callnum.LCCallNumber;
 import org.solrmarc.index.SolrIndexer;
 
-
-// define the base level indexer so that its methods can be called from the script.
-// note that the SolrIndexer code will set this value before the script methods are called.
-org.solrmarc.index.SolrIndexer indexer = null;
-
+/**
+ * LC Call number indexing routines.
+ */
+public class LCCallNumberTools
+{
     /**
      * Extract the full call number from a record, stripped of spaces
      * @param record MARC record
@@ -22,7 +35,8 @@ org.solrmarc.index.SolrIndexer indexer = null;
      *          This method exists only to support the VuFind call number search, version <= 2.3.
      *          As of VuFind 2.4, the munging for call number search in handled entirely in Solr.
      */
-    public String getFullCallNumber(Record record) {
+    @Deprecated
+    public String getFullCallNumber(final Record record) {
 
         return(getFullCallNumber(record, "099ab:090ab:050ab"));
     }
@@ -36,9 +50,10 @@ org.solrmarc.index.SolrIndexer indexer = null;
      *          This method exists only to support the VuFind call number search, version <= 2.3.
      *          As of VuFind 2.4, the munging for call number search in handled entirely in Solr.
      */
-    public String getFullCallNumber(Record record, String fieldSpec) {
+    @Deprecated
+    public String getFullCallNumber(final Record record, String fieldSpec) {
 
-        String val = SolrIndexer.getFirstFieldVal(record, fieldSpec);
+        String val = SolrIndexer.instance().getFirstFieldVal(record, fieldSpec);
 
         if (val != null) {
             return val.toUpperCase().replaceAll(" ", "");
@@ -47,13 +62,12 @@ org.solrmarc.index.SolrIndexer indexer = null;
         }
     }
 
-
     /**
      * Extract the call number label from a record
      * @param record MARC record
      * @return Call number label
      */
-    public String getCallNumberLabel(Record record) {
+    public String getCallNumberLabel(final Record record) {
 
         return getCallNumberLabel(record, "090a:050a");
     }
@@ -64,9 +78,9 @@ org.solrmarc.index.SolrIndexer indexer = null;
      * @param fieldSpec taglist for call number fields
      * @return Call number label
      */
-    public String getCallNumberLabel(Record record, String fieldSpec) {
+    public String getCallNumberLabel(final Record record, String fieldSpec) {
 
-        String val = SolrIndexer.getFirstFieldVal(record, fieldSpec);
+        String val = SolrIndexer.instance().getFirstFieldVal(record, fieldSpec);
 
         if (val != null) {
             int dotPos = val.indexOf(".");
@@ -87,7 +101,7 @@ org.solrmarc.index.SolrIndexer indexer = null;
      * @param record MARC record
      * @return Call number subject letters
      */
-    public String getCallNumberSubject(Record record) {
+    public String getCallNumberSubject(final Record record) {
 
         return(getCallNumberSubject(record, "090a:050a"));
     }
@@ -100,9 +114,9 @@ org.solrmarc.index.SolrIndexer indexer = null;
      * @param record current MARC record
      * @return Call number subject letters
      */
-    public String getCallNumberSubject(Record record, String fieldSpec) {
+    public String getCallNumberSubject(final Record record, String fieldSpec) {
 
-        String val = SolrIndexer.getFirstFieldVal(record, fieldSpec);
+        String val = SolrIndexer.instance().getFirstFieldVal(record, fieldSpec);
 
         if (val != null) {
             String [] callNumberSubject = val.toUpperCase().split("[^A-Z]+");
@@ -119,7 +133,7 @@ org.solrmarc.index.SolrIndexer indexer = null;
      * @param record current MARC record
      * @return String Normalized LCCN
      */
-    public String getFullCallNumberNormalized(Record record) {
+    public String getFullCallNumberNormalized(final Record record) {
 
         return(getFullCallNumberNormalized(record, "099ab:090ab:050ab"));
     }
@@ -130,13 +144,14 @@ org.solrmarc.index.SolrIndexer indexer = null;
      * @param fieldSpec which MARC fields / subfields need to be analyzed
      * @return String Normalized LC call number
      */
-    public String getFullCallNumberNormalized(Record record, String fieldSpec) {
+    public String getFullCallNumberNormalized(final Record record, String fieldSpec) {
 
         // TODO: is the null fieldSpec still an issue?
         if (fieldSpec != null) {
-            String cn = SolrIndexer.getFirstFieldVal(record, fieldSpec);
+            String cn = SolrIndexer.instance().getFirstFieldVal(record, fieldSpec);
             return (new LCCallNumber(cn)).getShelfKey();
         }
         // If we got this far, we couldn't find a valid value:
         return null;
     }
+}
