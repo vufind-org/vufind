@@ -37,6 +37,25 @@ public class UpdateDateTracker
     PreparedStatement selectSql;
     PreparedStatement updateSql;
 
+    private static ThreadLocal<UpdateDateTracker> trackerCache = 
+        new ThreadLocal<UpdateDateTracker>()
+        {
+            @Override
+            protected UpdateDateTracker initialValue()
+            {
+                try {
+                    return new UpdateDateTracker(DatabaseManager.instance().getConnection());
+                } catch (SQLException e) {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        };
+
+    public static UpdateDateTracker instance()
+    {
+        return trackerCache.get();
+    }
+
     /* Private support method: create a row in the change_tracker table.
      */
     private void createRow(Timestamp newRecordChange) throws SQLException
