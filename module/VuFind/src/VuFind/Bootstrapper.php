@@ -385,15 +385,6 @@ class Bootstrapper
         $callback = function ($event) use ($config) {
             $theme = new \VuFindTheme\Initializer($config, $event);
             $theme->init();
-            // Searchbox place
-            $sm = $event->getApplication()->getServiceManager();
-            $viewModel = $sm->get('viewmanager')->getViewModel();
-            $viewModel->setVariable(
-                'placeholderTexts',
-                isset($this->config->SearchPlaceholder)
-                    ? $this->config->SearchPlaceholder
-                    : []
-            );
         };
         $this->events->attach('dispatch.error', $callback, 9000);
         $this->events->attach('dispatch', $callback, 9000);

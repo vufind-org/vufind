@@ -446,7 +446,8 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config');
         return new SearchBox(
             $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager'),
-            $config->get('searchbox')->toArray()
+            $config->get('searchbox')->toArray(),
+            $config->get('config')->SearchPlaceholder
         );
     }
 
