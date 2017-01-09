@@ -72,6 +72,7 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
      *
      * @param OptionsManager $optionsManager Search options plugin manager
      * @param array          $config         Configuration for search box
+     * @param array          $placeholders   Array of placeholders keyed by backend
      */
     public function __construct(OptionsManager $optionsManager, $config = [],
         $placeholders = []
