@@ -23,10 +23,7 @@ import org.solrmarc.tools.SolrMarcIndexerException;
 import java.sql.*;
 
 /**
- *
- * @author Robert Haschart
- * @version $Id: VuFindIndexer.java 224 2008-11-05 19:33:21Z asnagy $
- *
+ * Database manager.
  */
 public class DatabaseManager
 {

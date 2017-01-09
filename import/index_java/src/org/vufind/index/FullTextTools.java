@@ -19,15 +19,12 @@ package org.vufind.index;
  */
 
 import org.marc4j.marc.Record;
-import org.marc4j.marc.DataField;
-import java.util.regex.Pattern;
 import java.io.*;
 import java.util.Iterator;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.apache.log4j.Logger;
