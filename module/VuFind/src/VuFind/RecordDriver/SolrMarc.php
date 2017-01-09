@@ -54,6 +54,42 @@ class SolrMarc extends SolrDefault
     protected $lazyMarcRecord = null;
 
     /**
+     * Fields that may contain subject headings, and their descriptions
+     *
+     * @var array
+     */
+    protected $subjectFields = [
+        '600' => 'personal name',
+        '610' => 'corporate name',
+        '611' => 'meeting name',
+        '630' => 'uniform title',
+        '648' => 'chronological',
+        '650' => 'topic',
+        '651' => 'geographic',
+        '653' => '',
+        '655' => 'genre/form',
+        '656' => 'occupation'
+    ];
+
+    /**
+     * Mappings from subject source indicators (2nd indicator of subject fields in
+     * MARC 21) to the their codes.
+     *
+     * @var  array
+     * @link https://www.loc.gov/marc/bibliographic/bd6xx.html     Subject field docs
+     * @link https://www.loc.gov/standards/sourcelist/subject.html Code list
+     */
+    protected $subjectSources = [
+        '0' => 'lcsh',
+        '1' => 'lcshac',
+        '2' => 'mesh',
+        '3' => 'nal',
+        '4' => 'unknown',
+        '5' => 'cash',
+        '6' => 'rvm'
+    ];
+
+    /**
      * Get access restriction notes for the record.
      *
      * @return array
@@ -68,20 +104,21 @@ class SolrMarc extends SolrDefault
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
      * @return array
      */
-    public function getAllSubjectHeadings()
+    public function getAllSubjectHeadings($extended = false)
     {
-        // These are the fields that may contain subject headings:
-        $fields = [
-            '600', '610', '611', '630', '648', '650', '651', '653', '655', '656'
-        ];
-
         // This is all the collected data:
         $retval = [];
 
         // Try each MARC field one at a time:
-        foreach ($fields as $field) {
+        foreach ($this->subjectFields as $field => $fieldType) {
             // Do we have any results for the current field?  If not, try the next.
             $results = $this->getMarcRecord()->getFields($field);
             if (!$results) {
@@ -105,7 +142,25 @@ class SolrMarc extends SolrDefault
                     }
                     // If we found at least one chunk, add a heading to our result:
                     if (!empty($current)) {
-                        $retval[] = $current;
+                        if ($extended) {
+                            $sourceIndicator = $result->getIndicator(2);
+                            $source = '';
+                            if (isset($this->subjectSources[$sourceIndicator])) {
+                                $source = $this->subjectSources[$sourceIndicator];
+                            } else {
+                                $source = $result->getSubfield('2');
+                                if ($source) {
+                                    $source = $source->getData();
+                                }
+                            }
+                            $retval[] = [
+                                'heading' => $current,
+                                'type' => $fieldType,
+                                'source' => $source ?: ''
+                            ];
+                        } else {
+                            $retval[] = $current;
+                        }
                     }
                 }
             }
