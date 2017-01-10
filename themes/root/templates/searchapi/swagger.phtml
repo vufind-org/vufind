@@ -267,26 +267,6 @@
                 }
             }
         },
-        "Record": {
-            "type": "object",
-            "properties": <?=json_encode($this->recordFields) ?>
-        },
-        "RecordLink": {
-            "type": "object",
-            "properties": {
-                "title": {
-                    "description": "Link title",
-                    "type": "string"
-                },
-                "value": {
-                    "description": "Link value",
-                    "type": "string"
-                },
-                "link": {
-                    "$ref": "#/definitions/Link"
-                }
-            }
-        },
         "Link": {
             "type": "object",
             "properties": {
@@ -304,6 +284,26 @@
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "Record": {
+            "type": "object",
+            "properties": <?=json_encode($this->recordFields) ?>
+        },
+        "RecordLink": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "description": "Link title",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Link value",
+                    "type": "string"
+                },
+                "link": {
+                    "$ref": "#/definitions/Link"
                 }
             }
         },
@@ -335,6 +335,27 @@
                 }
             },
             "required": ["resultCount", "status"]
+        },
+        "Subject": {
+            "type": "object",
+            "properties": {
+                "heading": {
+                    "description": "Subject heading parts as an array from the least specific to the most specific",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "description": "Subject type",
+                    "type": "string",
+                    "enum": ["", "personal name", "corporate name", "meeting name", "uniform title", "chronological", "topic", "geographic", "genre\/form", "occupation", "keyword"]
+                },
+                "source": {
+                    "description": "Subject source/thesaurus (e.g. lcsh, mesh)",
+                    "type": "string"
+                }
+            }
         },
         "Url": {
             "type": "object",

@@ -152,6 +152,9 @@
     <if>
       <not><equals arg1="${existing_solr_version}" arg2="${solr_version}" /></not>
       <then>
+        <!-- make sure we don't run out of memory during installation: -->
+        <php expression="ini_set('memory_limit', '1G');" />
+
         <!-- download from Apache if not already present in the downloads cache -->
         <if>
           <not><available file="${srcdir}/downloads/solr-${solr_version}.tgz" /></not>

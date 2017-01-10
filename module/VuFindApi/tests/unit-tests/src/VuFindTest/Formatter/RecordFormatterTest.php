@@ -63,7 +63,10 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
             'fullRecord' => ['vufind.method' => 'Formatter::getFullRecord'],
             'rawData' => ['vufind.method' => 'Formatter::getRawData'],
             'buildings' => ['vufind.method' => 'getBuilding'],
-            'recordPage' => ['vufind.method' => 'Formatter::getRecordPage']
+            'recordPage' => ['vufind.method' => 'Formatter::getRecordPage'],
+            'subjectsExtended' => [
+                'vufind.method' => 'Formatter::getExtendedSubjectHeadings'
+            ],
         ];
     }
 
@@ -113,7 +116,8 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
                 'DedupData' => [['id' => 'bar']],
                 'fullrecord' => 'xyzzy',
                 'spelling' => 's',
-                'Building' => ['foo', new TranslatableString('bar', 'xyzzy')]
+                'Building' => ['foo', new TranslatableString('bar', 'xyzzy')],
+                'AllSubjectHeadings' => [['heading' => 'subject']],
             ]
         );
         return $driver;
@@ -149,7 +153,8 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
                 'fullRecord' => 'xyzzy',
                 'rawData' => $expectedRaw,
                 'buildings' => ['foo', ['value' => 'bar', 'translated' => 'xyzzy']],
-                'recordPage' => 'http://record'
+                'recordPage' => 'http://record',
+                'subjectsExtended' => [['heading' => 'subject']],
             ],
         ];
         $this->assertEquals($expected, $results);
@@ -187,7 +192,8 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
             'fullRecord' => [],
             'rawData' => [],
             'buildings' => [],
-            'recordPage' => []
+            'recordPage' => [],
+            'subjectsExtended' => [],
         ];
         $this->assertEquals($expected, $results);
     }
