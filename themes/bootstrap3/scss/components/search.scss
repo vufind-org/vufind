@@ -4,6 +4,7 @@ $thumbnail-width-large: 160px !default;
 
 @media (max-width: 767px) {
   .bulkActionButtons,
+  #datevispublishDatexWrapper,
   .result .checkbox { display: none; }
 }
 
