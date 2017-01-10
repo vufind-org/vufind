@@ -853,7 +853,24 @@ trait VoyagerFinna
     protected function executeSQL($sql, $bind = [])
     {
         $startTime = microtime(true);
-        $result = parent::executeSQL($sql, $bind);
+        try {
+            $result = parent::executeSQL($sql, $bind);
+        } catch (\PDOException $e) {
+            if ($e->getCode() != 3135) {
+                $this->error(
+                    "Re-throwing PDO exception in {$this->dbName}, code: "
+                    . $e->getCode() . ', message: ' . $e->getMessage()
+                );
+                throw $e;
+            }
+
+            $this->error(
+                "PDO connection to {$this->dbName} lost ("
+                . $e->getMessage() . '), retrying...'
+            );
+            $this->lazyDb = null;
+            $result = parent::executeSQL($sql, $bind);
+        }
         if (!empty($this->config['Debug']['durationLogPrefix'])) {
             list(, $caller) = debug_backtrace(false);
             file_put_contents(
