@@ -1,7 +1,7 @@
-<? $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $this->hiddenFilters); ?>
 <? if (count($searchTabs) > 0): ?>
   <ul class="nav nav-tabs">
-    <? foreach ($searchTabs as $tab): ?>
+    <? foreach ($searchTabs as $key => $tab): ?>
+      <? if ($key === 'selected') continue; ?>
       <li<?=$tab['selected'] ? ' class="active"' : ''?>>
         <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
       </li>

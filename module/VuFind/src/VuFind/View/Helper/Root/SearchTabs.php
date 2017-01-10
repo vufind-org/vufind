@@ -120,7 +120,8 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
                 && $this->helper->filtersMatch($class, $hiddenFilters, $filters)
             ) {
                 $matchFound = true;
-                $retVal[] = $this->createSelectedTab($key, $class, $label);
+                $retVal['selected'] = $this->createSelectedTab($key, $class, $label);
+                $retVal[] = $retVal['selected'];
             } else if ($type == 'basic') {
                 if (!isset($activeOptions)) {
                     $activeOptions
@@ -140,6 +141,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
             // Make the first tab for the given search class selected
             foreach ($retVal as &$tab) {
                 if ($tab['class'] == $activeSearchClass) {
+                    $retVal['selected'] = $tab;
                     $tab['selected'] = true;
                     break;
                 }
