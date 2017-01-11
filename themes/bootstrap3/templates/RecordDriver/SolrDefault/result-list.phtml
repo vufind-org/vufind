@@ -164,7 +164,7 @@
           </span>
         <? endif; ?>
 
-        <? if ($this->cart()->isActive()): ?>
+        <? if ($this->cart()->isActiveInSearch()): ?>
           <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
         <? endif; ?>
 

@@ -109,9 +109,11 @@ class Factory
             ? (bool)$config->Site->showBookBag : false;
         $size = isset($config->Site->bookBagMaxSize)
             ? $config->Site->bookBagMaxSize : 100;
+        $activeInSearch = isset($config->Site->cartTogglesInSearch)
+            ? $config->Site->cartTogglesInSearch : true;
         return new \VuFind\Cart(
             $sm->get('VuFind\RecordLoader'), $sm->get('VuFind\CookieManager'),
-            $size, $active
+            $size, $active, $activeInSearch
         );
     }
 
