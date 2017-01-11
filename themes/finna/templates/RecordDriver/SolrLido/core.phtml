@@ -1,13 +1,17 @@
 <!-- START of: finna - RecordDriver/SolrLido/core.phtml -->
-<? $this->headScript()->appendFile("finna-record.js"); ?>
-<div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
-  <div class="col-sm-4">
+<?
+  $img = $this->recordImage($this->record($this->driver));
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  ob_start(); ?>
+  <div class="media-<?=$thumbnailAlignment ?> col-sm-4">
     <div class="row">
       <div class="col-xs-12 image-information">
         <div class="cover-wrapper">
           <? /* Display thumbnail if appropriate: */ ?>
-          <? $img = $this->recordImage($this->record($this->driver)); ?>
-          <?=$img->render('record', ['small' => ['w' => 50, 'h' => 50], 'medium' => ['w' => 1200, 'h' => 1200]]) ?>
+          <? if ($img): ?>
+            <?=$img->render('record', ['small' => ['w' => 50, 'h' => 50], 'medium' => ['w' => 1200, 'h' => 1200]]) ?>
+          <? endif;?>
           <? /* Display qrcode if appropriate: */ ?>
           <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
           <? if ($QRCode): ?>
@@ -33,20 +37,22 @@
         </div>
       </div>
     </div>
-
     <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-toolbar")): ?>
     <div class="row">
-      <div class="col-xs-12">
-        <div class="record-post-toolbar">
-          <?=$this->render($template)?>
-        </div>
+      <div class="col-xs-12 record-post-toolbar">
+        <?=$this->render($template)?>
       </div>
     </div>
     <? endif; ?>
-
   </div>
-
-  <div class="col-sm-8 record-information">
+  <? $thumbnail = ob_get_contents(); ?>
+<? ob_end_clean(); ?>
+<? $this->headScript()->appendFile("finna-record.js"); ?>
+<div class="media row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+  <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <?=$thumbnail ?>
+  <? endif; ?>
+  <div class="media-body col-sm-8 record-information">
     <h3 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
     <? if ($results = $this->driver->getAlternativeTitles()): ?>
       <div class="recordAltTitles record-alt-titles">
@@ -368,5 +374,8 @@
     </div>
     <? endif; ?>
   </div>
+  <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+    <?=$thumbnail ?>
+  <? endif; ?>
 </div>
 <!-- END of: finna - RecordDriver/SolrLido/core.phtml -->
