@@ -3,7 +3,7 @@
     $openUrl = $this->openUrl($this->driver, 'results');
     $openUrlActive = $openUrl->isActive();
 
-    $images = $this->record($this->driver)->getAllRecordImages();
+    $images = $this->record($this->driver)->getAllRecordImageUrls();
     $urls = $this->driver->getURLs();
     $onlineURLs = $this->driver->tryMethod('getOnlineURLs');
     $mergedData = $this->driver->tryMethod('getMergedRecordData');
@@ -26,7 +26,7 @@
       <? if (!empty($urls)): ?>
         <? foreach ($urls as $i => $url): ?>
           <?
-            if (in_array($url['url'], $images)) {
+            if (isset($images[$url['url']])) {
                continue;
             } else {
                $renderedURLs[] = $url['url'];
@@ -52,7 +52,7 @@
 
       <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
         <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $i => $url): ?>
-          <? if (in_array($url['url'], $images) || in_array($url['url'], $renderedURLs)) { continue; } ?>
+          <? if (isset($images[$url['url']]) || in_array($url['url'], $renderedURLs)) { continue; } ?>
           <?=count($renderedURLs) || $i > 0 ? '<br/>' : '' ?>
           <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>"<?=!empty($url['embed']) && $url['embed'] == 'iframe' ? ' data-embed-iframe' : '' ?> target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link" aria-hidden="true"></i> <?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
           <? if (!empty($url['part'])): ?> <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part']) ?></span><? endif; ?>

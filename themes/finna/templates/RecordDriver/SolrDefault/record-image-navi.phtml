@@ -2,20 +2,20 @@
 <div class="<?= $type === 'record' ? 'truncate-field ' : ''?> recordcovers <?=$type ?><?=count($images) == 1 ? ' hidden' : ''?> <?=$type === 'list' ? ' hidden-xs hidden-sm' : ''?>"<?= $type === 'record' ? ' data-rows="2" data-row-height="35"' : ''?>>
 <? $ind = 0; ?>
 <? foreach ($images as $img): ?>
-<?
-  $content = null;
-  if ($type === 'list' || $type === 'list grid') {
-     $content = $ind === 4 ? '&hellip;' : $ind+1;
-  } else {
-     $content = '<span data-src="' . $this->escapeHtmlAttr($img['small']) . '">IMG</span>';
-  }
-  $largeImg = isset($img['large']) && is_string($img['large']);
-?>
-<a href="<?=str_replace('&', '&amp;', $img['medium']) ?>" class="image-popup image-popup-navi<?= (($type === 'list' || $type === 'list grid') && $ind > 4) ? ' hide' : '' ?><?= $type === 'record' ? ' truncate-change' : ''?> hidden-print"><?= $content ?></a>
-<? if ($largeImg): ?>
-<a href="<?=str_replace('&', '&amp;', isset($img['large']) ? $img['large'] : $img['medium']) ?>" class="hide"><?= $content ?></a>
-<? endif; ?>
-<? $ind++; ?>
+  <?
+    $content = null;
+    if ($type === 'list' || $type === 'list grid') {
+      $content = $ind === 4 ? '&hellip;' : $ind+1;
+    } else {
+      $content = '<span data-src="' . $this->escapeHtmlAttr($img['urls']['small']) . '">IMG</span>';
+    }
+    $largeImg = isset($img['urls']['large']) && is_string($img['urls']['large']);
+  ?>
+  <a href="<?=$this->escapeHtmlAttr($img['urls']['medium']) ?>" class="image-popup image-popup-navi<?=(($type === 'list' || $type === 'list grid') && $ind > 4) ? ' hide' : '' ?><?= $type === 'record' ? ' truncate-change' : ''?> hidden-print" data-img-index="<?=$ind ?>"><?=$content ?></a>
+  <? if ($largeImg): ?>
+    <a href="<?=$this->escapeHtmlAttr(isset($img['urls']['large']) ? $img['urls']['large'] : $img['urls']['medium']) ?>" class="hide"><?=$content ?></a>
+  <? endif; ?>
+  <? $ind++; ?>
 <? endforeach; ?>
 </div>
 <!-- END of: finna - RecordDriver/SolrDefault/record-image-navi.phtml -->

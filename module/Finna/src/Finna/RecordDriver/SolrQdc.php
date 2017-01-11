@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2013-2015.
+ * Copyright (C) The National Library of Finland 2013-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -74,43 +74,52 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Return an associative array of image URLs associated with this record
-     * (key = URL, value = description).
+     * Return an array of image URLs associated with this record with keys:
+     * - url         Image URL
+     * - description Description text
+     * - rights      Rights
+     *   - copyright   Copyright (e.g. 'CC BY 4.0') (optional)
+     *   - description Human readable description (array)
+     *   - link        Link to copyright info
      *
-     * @param string $size Size of requested images
+     * @param string $language Language for copyright information
      *
-     * @return array
+     * @return mixed
      */
-    public function getAllThumbnails($size = 'large')
+    public function getAllImages($language = 'fi')
     {
+        $result = [];
         $urls = [];
-        foreach ($this->getSimpleXML()
-            ->xpath('file') as $node
-        ) {
+        foreach ($this->getSimpleXML()->xpath('file') as $node) {
             $attributes = $node->attributes();
-            if ($attributes->bundle
-                && $attributes->bundle == 'ORIGINAL' && $size == 'large'
-                || $attributes->bundle == 'THUMBNAIL' && $size != 'large'
-            ) {
-                $mimes = ['image/jpeg', 'image/png'];
-                $url = isset($attributes->href)
-                    ? (string)$attributes->href : (string)$node;
-
-                if ($size == 'large') {
-                    if (isset($attributes->type)) {
-                        if (!in_array($attributes->type, $mimes)) {
-                            continue;
-                        }
-                    } else {
-                        if (!preg_match('/\.(jpg|png)$/i', $url)) {
-                            continue;
-                        }
-                    }
+            $size = $attributes->bundle == 'THUMBNAIL' ? 'small': 'large';
+            $mimes = ['image/jpeg', 'image/png'];
+            if (isset($attributes->type)) {
+                if (!in_array($attributes->type, $mimes)) {
+                    continue;
                 }
-                $urls[$url] = $url;
             }
+            $url = isset($attributes->href)
+                ? (string)$attributes->href : (string)$node;
+
+            if (!preg_match('/\.(jpg|png)$/i', $url)) {
+                continue;
+            }
+            $urls[$size] = $url;
         }
-        return $urls;
+        if ($urls) {
+            if (!isset($urls['small'])) {
+                $urls['small'] = $urls['large'];
+            }
+            $urls['medium'] = $urls['small'];
+
+            $result[] = [
+                'urls' => $urls,
+                'description' => '',
+                'rights' => []
+            ];
+        }
+        return $result;
     }
 
     /**

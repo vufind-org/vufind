@@ -184,10 +184,14 @@ class Factory extends \VuFind\View\Helper\Root\Factory
      */
     public static function getRecord(ServiceManager $sm)
     {
-        return new Record(
+        $helper = new Record(
             $sm->getServiceLocator()->get('VuFind\RecordLoader'),
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
+        $helper->setCoverRouter(
+            $sm->getServiceLocator()->get('VuFind\Cover\Router')
+        );
+        return $helper;
     }
 
     /**

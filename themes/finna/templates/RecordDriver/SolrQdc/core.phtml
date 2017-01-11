@@ -9,9 +9,7 @@
       <div class="col-xs-12 image-information">
         <div class="cover-wrapper">
           <? /* Display thumbnail if appropriate: */ ?>
-          <? if ($img): ?>
-            <?= $img->render('record', ['small' => ['w' => 50, 'h' => 50], 'medium' => ['w' => 1200, 'h' => 1200]]) ?>
-          <? endif;?>
+          <?=$img->render('record', ['small' => ['w' => 50, 'h' => 50], 'medium' => ['w' => 1200, 'h' => 1200]]) ?>
           <? /* Display qrcode if appropriate: */ ?>
           <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
           <? if ($QRCode): ?>
@@ -19,9 +17,9 @@
           <? endif; ?>
         </div>
         <? // if you have a preview tab but want to move or remove the preview link
-         // from this area of the record view, this can be split into
-         // getPreviewData() (should stay here) and
-         // getPreviewLink() (can go in your desired tab) ?>
+           // from this area of the record view, this can be split into
+           // getPreviewData() (should stay here) and
+           // getPreviewLink() (can go in your desired tab) ?>
         <?=$this->record($this->driver)->getPreviews()?>
       </div>
     </div>
@@ -67,7 +65,7 @@
       $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
       $onlineURLs = $this->driver->getOnlineURLs();
       $mergedData = $this->driver->tryMethod('getMergedRecordData');
-      $images = $this->record($this->driver)->getAllRecordImages();
+      $images = $this->record($this->driver)->getAllRecordImageUrls();
 
       $hasOnlineURLs =
         $this->record($this->driver)->containsNonImageURL($urls, $images)
@@ -81,14 +79,14 @@
         <div class="truncate-field">
           <? if (!empty($urls)): ?>
             <? foreach ($urls as $url): ?>
-              <? if (in_array($url['url'], $images)) { continue; } ?>
+              <? if (isset($images[$url['url']])) { continue; } ?>
               <? $desc = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
               <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=$this->transEsc('default::link_' . $desc, null, $desc) ?></a></div>
             <? endforeach; ?>
           <? endif; ?>
           <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
             <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
-              <? if (in_array($url['url'], $images)) { continue; } ?>
+              <? if (isset($images[$url['url']])) { continue; } ?>
               <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
               <? if ($url['source']): ?>
                 <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('default::source_' . $url['source'], null, $url['source']) ?>)</span>

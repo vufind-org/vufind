@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -234,18 +234,24 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
-     * Return an associative array of image URLs associated with this record
-     * (key = URL, value = description).
+     * Return an array of image URLs associated with this record with keys:
+     * - urls        Image URLs
+     *   - small     Small image (mandatory)
+     *   - medium    Medium image (mandatory)
+     *   - large     Large image (optional)
+     * - description Description text
+     * - rights      Rights
+     *   - copyright   Copyright (e.g. 'CC BY 4.0') (optional)
+     *   - description Human readable description (array)
+     *   - link        Link to copyright info
      *
-     * @param string $size Size of requested images
+     * @param string $language Language for copyright information
      *
      * @return array
      */
-    public function getAllThumbnails($size = 'large')
+    public function getAllImages($language = 'fi')
     {
-        $urls = [];
-        $url = '';
-        $type = '';
+        $result = [];
         foreach ($this->getMarcRecord()->getFields('856') as $url) {
             $type = $url->getSubfield('q');
             if ($type) {
@@ -254,12 +260,20 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                     $address = $url->getSubfield('u');
                     if ($address && $this->urlAllowed($address->getData())) {
                         $address = $address->getData();
-                        $urls[$address] = '';
+                        $result[] = [
+                            'urls' => [
+                                'small' => $address,
+                                'medium' => $address,
+                                'large' => $address
+                            ],
+                            'description' => '',
+                            'rights' => []
+                        ];
                     }
                 }
             }
         }
-        return $urls;
+        return $result;
     }
 
     /**

@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -39,13 +40,6 @@ namespace Finna\View\Helper\Root;
 class RecordImage extends \Zend\View\Helper\AbstractHelper
 {
     /**
-     * Image parameters
-     *
-     * @var array
-     */
-    protected $params;
-
-    /**
      * Record view helper
      *
      * @var Zend\View\Helper\Record
@@ -61,18 +55,26 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke(\Finna\View\Helper\Root\Record $record)
     {
-        $this->params['small']
-            = $this->params['medium']
-                = $this->params['large']
-                    = [];
         $this->record = $record;
-
         return $this;
     }
 
     /**
+     * Return image rights.
+     *
+     * @param int    $index    Record image index.
+     *
+     * @return array
+     */
+    public function getImageRights($index = 0)
+    {
+        $language = $this->getView()->layout()->userLang;
+        $images = $this->record->getAllImages($language);
+        return isset($images[$index]) ? $images[$index]['rights'] : [];
+    }
+
+    /**
      * Return URL to large record image.
-     * Fallbacks to thumbnail if no large image is available.
      *
      * @param int   $index     Record image index.
      * @param array $params    Optional array of image parameters.
@@ -84,16 +86,13 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
      */
     public function getLargeImage($index = 0, $params = [], $canonical = false)
     {
-        $cnt = $this->record->getNumOfRecordImages('large');
-        $urlHelper = $this->getView()->plugin('url');
-        $imageParams = $this->record->getRecordImage($cnt ? 'large' : 'small');
-        if (is_string($imageParams)) {
-            return $imageParams;
+        $images = $this->record->getAllImages('');
+        if (!isset($images[$index])) {
+            return false;
         }
-        unset($imageParams['url']);
-
-        $imageParams['index'] = $index;
-        $imageParams = array_merge($imageParams, $this->params['large']);
+        $urlHelper = $this->getView()->plugin('url');
+        $imageParams = isset($images[$index]['urls']['large'])
+            ? $images[$index]['urls']['large'] : $images[$index]['urls']['medium'];
         $imageParams = array_merge($imageParams, $params);
 
         return $urlHelper(
@@ -102,77 +101,74 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get all images as Cover links
+     *
+     * @param string $language Language for copyright information
+     * @param array  $params   Optional array of image parameters as
+     *                         an associative array of parameter => value pairs:
+     *                           - w  Width
+     *                           - h  Height
+     * @param bool   $thumbnails Whether to include thumbnail links if no image links
+     * are found
+     *
+     * @return array
+     */
+    public function getAllImagesAsCoverLinks($language, $params = [],
+        $thumbnails = true
+    ) {
+        $imageParams = [
+            'small' => [],
+            'medium' => [],
+            'large' => []
+        ];
+        foreach ($params as $size => $sizeParams) {
+            $imageParams[$size] = $sizeParams;
+        }
+
+        $urlHelper = $this->getView()->plugin('url');
+
+        $imageTypes = ['small', 'medium', 'large'];
+
+        $images = $this->record->getAllImages($language, $thumbnails);
+        foreach ($images as $idx => &$image) {
+            foreach ($imageTypes as $imageType) {
+                if (!isset($image['urls'][$imageType])) {
+                    continue;
+                }
+                $params = $image['urls'][$imageType];
+                $image['urls'][$imageType] = $urlHelper('cover-show') . '?' .
+                    http_build_query(
+                        array_merge($params, $imageParams[$imageType])
+                    );
+            }
+        }
+        return $images;
+    }
+
+    /**
      * Return rendered record image HTML.
      *
      * @param string $type   Page type (list, record).
      * @param array  $params Optional array of image parameters as
      *                       an associative array of parameter => value pairs:
-     *                         'w'    Width
-     *                         'h'    Height
+     *                         - w  Width
+     *                         - h  Height
      *
      * @return string
      */
     public function render($type = 'list', $params = null)
     {
-        if ($params) {
-            foreach ($params as $size => $sizeParams) {
-                $this->params[$size]
-                    = array_merge($this->params[$size], $sizeParams);
-            }
+        $view = $this->getView();
+        $images = $this->getAllImagesAsCoverLinks(
+            $view->layout()->userLang, $params
+        );
+        if ($images && $view->layout()->templateDir === 'combined') {
+            // Limit combined results to a single image
+            $images = [$images[0]];
         }
 
-        $view = $this->getView();
         $view->type = $type;
-
-        $view = $this->getView();
-        $urlHelper = $this->getView()->plugin('url');
-        $numOfImages = $this->record->getNumOfRecordImages('small');
-        $numOfLargeImages = $this->record->getNumOfRecordImages('large');
-
-        if ($view->layout()->templateDir === 'combined') {
-            $numOfImages = min(1, $numOfImages);
-        }
-
-        $imageTypes = [
-            'small' => 'smallImage',
-            'medium' => 'mediumImage',
-            'large' => 'largeImage'
-        ];
-
-        $images = [];
-        foreach ($imageTypes as $imageType => $viewParam) {
-            $params = $this->record->getRecordImage($imageType);
-
-            if ($imageType == 'large' && !$numOfLargeImages || !is_array($params)) {
-                $view->{$viewParam} = $params;
-            } else {
-                unset($params['url']);
-                unset($params['size']);
-
-                $view->{$viewParam}
-                    = $urlHelper('cover-show') . '?' .
-                    http_build_query(
-                        array_merge(
-                            $params, $this->params[$imageType]
-                        )
-                    );
-
-                if ($numOfImages > 1) {
-                    for ($i = 0; $i < $numOfImages; $i++) {
-                        if (!isset($images[$i])) {
-                            $images[$i] = [];
-                        }
-                        $params['index'] = $i;
-                        $images[$i][$imageType]
-                            = $urlHelper('cover-show') . '?' .
-                            http_build_query(
-                                array_merge($params, $this->params[$imageType])
-                            );
-                    }
-                }
-            }
-        }
-        $view->allImages = $images;
+        $view->images = $images;
 
         return $view->render('RecordDriver/SolrDefault/record-image.phtml');
     }

@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2007.
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -75,36 +75,36 @@ class Loader extends \VuFind\Cover\Loader
      *
      * @var int
      */
-    protected $width;
+    protected $width = 100;
 
     /**
      * Image height
      *
      * @var int
      */
-    protected $height;
+    protected $height = 100;
 
     /**
-     * Use full-resolution image?
+     * Image size to use
      *
      * @var boolean
      */
-    protected $fullRes;
+    protected $size = 'medium';
 
     /**
      * Set image parameters.
      *
      * @param int     $width   Image width
      * @param int     $height  Image height
-     * @param boolean $fullRes Use full-resolution image?
+     * @param string  $size    Image size to use
      *
      * @return void
      */
-    public function setParams($width, $height, $fullRes = false)
+    public function setParams($width, $height, $size = 'medium')
     {
         $this->width = $width;
         $this->height = $height;
-        $this->fullRes = $fullRes;
+        $this->size = $size;
     }
 
     /**
@@ -160,12 +160,10 @@ class Loader extends \VuFind\Cover\Loader
     ) {
         $this->index = $index;
 
-        $params = $driver->getRecordImage(
-            $this->fullRes ? 'large' : 'medium', $index
-        );
+        $params = $driver->getRecordImage($this->size, $index);
 
         if (isset($params['url'])) {
-            $this->id = $params['id'];
+            $this->id = $driver->getUniqueID();
             $this->url = $params['url'];
             return parent::fetchFromAPI();
         }
@@ -219,7 +217,7 @@ class Loader extends \VuFind\Cover\Loader
 
         $keys = array_merge(
             $keys,
-            [$this->index, $this->width, $this->height, $this->fullRes ? '1' : '0']
+            [$this->index, $this->width, $this->height, $this->size]
         );
 
         $file = implode('-', $keys);

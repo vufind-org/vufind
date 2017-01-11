@@ -406,6 +406,63 @@
                 }
             }
         },
+        "Image": {
+            "type": "object",
+            "properties": {
+                "urls": {
+                    "description": "Image URLs (different sizes are subject to availability)",
+                    "type": "object",
+                    "properties": {
+                        "small": {
+                            "description": "Small image",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "medium": {
+                            "description": "Medium image",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "large": {
+                            "description": "Large image",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "description": {
+                    "description": "Image description",
+                    "type": "string"
+                },
+                "rights": {
+                    "description": "Image access and usage rights",
+                    "type": "object",
+                    "properties": {
+                        "copyright": {
+                            "description": "License",
+                            "type": "string"
+                        },
+                        "description": {
+                            "description": "Human-readable description",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "link": {
+                            "description": "Link to copyright information",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "Link": {
             "type": "object",
             "properties": {
@@ -562,7 +619,7 @@
                     "type": "string"
                 },
                 "desc": {
-                    "description": "URL Description",
+                    "description": "URL description",
                     "type": "string"
                 }
             }

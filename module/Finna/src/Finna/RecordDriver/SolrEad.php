@@ -96,29 +96,72 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Return an associative array of image URLs associated with this record
-     * (key = URL, value = description), if available; false otherwise.
+     * Return an array of image URLs associated with this record with keys:
+     * - urls        Image URLs
+     *   - small     Small image (mandatory)
+     *   - medium    Medium image (mandatory)
+     *   - large     Large image (optional)
+     * - description Description text
+     * - rights      Rights
+     *   - copyright   Copyright (e.g. 'CC BY 4.0') (optional)
+     *   - description Human readable description (array)
+     *   - link        Link to copyright info
      *
-     * @param string $size Size of requested images
+     * @param string $language Language for copyright information
      *
-     * @return mixed
+     * @return array
      */
-    public function getAllThumbnails($size = 'large')
+    public function getAllImages($language = 'fi')
     {
-        $urls = [];
-        $url = '';
-        $role = $size == 'large'
-            ? 'image_reference'
-            : 'image_thumbnail';
+        $result = [];
+        // All images have same rights..
+        $rights = $this->getImageRights($language, true);
+        foreach ($this->getSimpleXML()->xpath('did/daogrp') as $daogrp) {
+            $urls = [];
+            foreach ($daogrp->daoloc as $daoloc) {
+                $attributes = $daoloc->attributes();
+                $role = (string)$attributes->role;
+                $size = '';
+                switch ($role) {
+                case 'image_thumbnail':
+                    $size = 'small';
+                    break;
+                case 'image_reference':
+                    $size = 'medium';
+                    break;
+                case 'image_full':
+                    $size = 'large';
+                    break;
+                }
+                if (!$size) {
+                    continue;
+                }
+                $url = (string)$attributes->href;
+                $urls[$size] = $url;
+            }
+            if (empty($urls)) {
+                continue;
+            }
 
-        foreach ($this->getSimpleXML()
-            ->xpath("did/daogrp/daoloc[@role=\"$role\"]") as $node
-        ) {
-            $url = (string)$node->attributes()->href;
-            $urls[$url] = '';
+            if (!isset($urls['small'])) {
+                $urls['small'] = isset($urls['medium']) ? $urls['medium']
+                    : $urls['large'];
+            }
+            if (!isset($urls['medium'])) {
+                $urls['medium'] = isset($urls['large']) ? $urls['large']
+                    : $urls['small'];
+            }
+
+            $description = isset($daogrp->daodesc->p) ? $daogrp->daodesc->p
+                : $daogrp->daodesc;
+            $result[] = [
+                'urls' => $urls,
+                'description' => (string)$description,
+                'rights' => $rights
+            ];
         }
 
-        return $urls;
+        return $result;
     }
 
     /**
@@ -175,7 +218,8 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     /**
      * Return image rights.
      *
-     * @param string $language Language
+     * @param string $language       Language
+     * @param bool   $skipImageCheck Whether to check that images exist
      *
      * @return mixed array with keys:
      *   'copyright'   Copyright (e.g. 'CC BY 4.0') (optional)
@@ -183,9 +227,9 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      *   'link'        Link to copyright info
      *   or false if the record contains no images
      */
-    public function getImageRights($language)
+    public function getImageRights($language, $skipImageCheck = false)
     {
-        if (!count($this->getAllThumbnails())) {
+        if (!$skipImageCheck && !$this->getAllImages()) {
             return false;
         }
 
@@ -198,11 +242,35 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
             }
         }
 
+        $parts = explode('_', $language);
+        $language = $parts[0];
+        switch ($language) {
+        case 'fi':
+            $language = 'fin';
+            break;
+        case 'sv':
+            $language = 'swe';
+            break;
+        case 'en':
+            $language = 'eng';
+            break;
+        }
+
         $desc = $this->getAccessRestrictions();
         if ($desc && count($desc)) {
             $description = [];
+            // First try with the language code
             foreach ($desc as $p) {
-                $description[] = (string)$p;
+                $lang = (string)$p->attributes()->lang;
+                if ($lang == $language) {
+                    $description[] = (string)$p;
+                }
+            }
+            // Fallback to anything
+            if (empty($description)) {
+                foreach ($desc as $p) {
+                    $description[] = (string)$p;
+                }
             }
             $rights['description'] = $description;
         }

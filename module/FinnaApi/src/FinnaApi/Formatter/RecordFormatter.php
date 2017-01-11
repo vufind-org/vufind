@@ -142,6 +142,32 @@ class RecordFormatter extends \VuFindApi\Formatter\RecordFormatter
     }
 
     /**
+     * Get extended image information
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array
+     */
+    protected function getImagesExtended($record)
+    {
+        $lang = $this->translator->getLocale();
+        $imageHelper = $this->helperManager->get('recordImage');
+        $recordHelper = $this->helperManager->get('record');
+        $translate = $this->helperManager->get('translate');
+        $images = $imageHelper($recordHelper($record))->getAllImagesAsCoverLinks(
+            $lang, [], false
+        );
+        foreach ($images as &$image) {
+            if (empty($image['rights'])) {
+                $image['rights'] = [
+                    'copyright' => $translate('Image Rights Default')
+                ];
+            }
+        }
+        return $images;
+    }
+
+    /**
      * Get institutions
      *
      * @param \VuFind\RecordDriver\SolrDefault $record Record driver

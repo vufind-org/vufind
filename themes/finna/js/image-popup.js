@@ -49,7 +49,12 @@ finna.imagePopup = (function(finna) {
             var trigger = $(this).closest('.recordcover-holder').find('.image-popup-trigger');
             trigger.data('ind', $(this).data('ind'));
             trigger.data('thumbInd', $(this).data('thumbInd'));
+            // Temporarily reset src so that the user sees something is happening
+            trigger.find('img').attr('src', '');
             trigger.find('img').attr('src', $(this).attr('href'));
+            var textContainers = $(this).closest('.record-image-container').find('.image-text-container');
+            textContainers.addClass('hidden');
+            textContainers.filter('[data-img-index="' + $(this).data('imgIndex') + '"]').removeClass('hidden');
         });
 
         // Open image-popup from medium size record image.
@@ -215,7 +220,7 @@ finna.imagePopup = (function(finna) {
                             finna.layout.initTruncate(summaryHolder);
                             summaryHolder.removeClass('loading');
                         }
-                        
+
                         // Init embedding
                         finna.layout.initIframeEmbed(popup);
                     },
@@ -262,7 +267,7 @@ finna.imagePopup = (function(finna) {
             }
         }
     };
-    
+
     var init = function() {
         if (module != 'record') {
             initThumbnailNavi();
@@ -275,13 +280,13 @@ finna.imagePopup = (function(finna) {
             openPopup($('.image-popup-trigger'));
         }
         $.extend(true, $.magnificPopup.defaults, {
-            
+
             tLoading: VuFind.translate('loading') + '...'
         });
     };
-    
+
     var my = {
-        init: init    
+        init: init
     };
 
     return my;

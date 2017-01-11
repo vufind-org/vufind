@@ -52,11 +52,15 @@ class CoverController extends \VuFind\Controller\CoverController
         $this->disableSessionWrites();  // avoid session write timing bug
         $width = $this->params()->fromQuery('w');
         $height = $this->params()->fromQuery('h');
-        // Use full-resolution image?
+        $size = $this->params()->fromQuery('size');
+        // Support for legacy fullres parameter
         $fullRes = $this->params()->fromQuery('fullres');
+        if ($fullRes) {
+            $size = 'large';
+        }
 
         $loader = $this->getLoader();
-        $loader->setParams($width, $height, $fullRes);
+        $loader->setParams($width, $height, $size);
 
         if ($id = $this->params()->fromQuery('id')) {
             $driver = $this->getRecordLoader()->load($id, 'Solr');
