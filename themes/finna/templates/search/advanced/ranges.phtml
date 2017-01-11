@@ -28,7 +28,7 @@
         </div>
         <? if ($current['type'] == 'date'): ?>
         <?
-          $this->headScript()->appendFile('vendor/bootstrap-slider.js');
+          $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
           $min = $current['ticks'][0];
           $max = end($current['ticks']);
           $low  = !empty($current['values'][0]) ? $current['values'][0] : $min;
@@ -52,10 +52,8 @@ $(document).ready(function() {
        'min':{$min},
        'max':{$max},
        'handle':"square",
+       'tooltip':"hide",
        'value':[{$low},{$high}],
-       'formatter':function(value) {
-		     return value[0]+' - '+value[1];
-	     },
 	     'ticks':{$ticks},
 	     'ticks_labels':{$ticks_labels},
 	     'ticks_positions':{$ticks_positions}

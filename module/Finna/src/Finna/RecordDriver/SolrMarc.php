@@ -48,6 +48,23 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     protected $datasourceConfig;
 
     /**
+     * Fields that may contain subject headings, and their descriptions
+     *
+     * @var array
+     */
+    protected $subjectFields = [
+        '600' => 'personal name',
+        '610' => 'corporate name',
+        '611' => 'meeting name',
+        '630' => 'uniform title',
+        '648' => 'chronological',
+        '650' => 'topic',
+        '651' => 'geographic',
+        '653' => '',
+        '656' => 'occupation'
+    ];
+
+    /**
      * Constructor
      *
      * @param \Zend\Config\Config $mainConfig       VuFind main configuration (omit
@@ -138,99 +155,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         }
 
         return $result;
-    }
-
-    /**
-     * Get all subject headings associated with this record.  Each heading is
-     * returned as an array of chunks, increasing from least specific to most
-     * specific.
-     *
-     * @param bool $extended Whether to return a keyed array with the following
-     * keys:
-     * - heading: the actual subject heading
-     * - type: heading type
-     * - source: source vocabulary
-     *
-     * @return array
-     */
-    public function getAllSubjectHeadings($extended = false)
-    {
-        // These are the fields that may contain subject headings:
-        $fields = [
-            '600' => 'personal name',
-            '610' => 'corporate name',
-            '611' => 'meeting name',
-            '630' => 'uniform title',
-            '648' => 'chronological term',
-            '650' => 'topical term',
-            '651' => 'geographic term',
-            '653' => '',
-            '656' => 'occupation'
-        ];
-
-        // This is all the collected data:
-        $retval = [];
-
-        // Try each MARC field one at a time:
-        foreach ($fields as $field => $fieldType) {
-            // Do we have any results for the current field?  If not, try the next.
-            $results = $this->getMarcRecord()->getFields($field);
-            if (!$results) {
-                continue;
-            }
-
-            // If we got here, we found results -- let's loop through them.
-            foreach ($results as $result) {
-                // Start an array for holding the chunks of the current heading:
-                $current = [];
-
-                // Get all the chunks and collect them together:
-                $subfields = $result->getSubfields();
-                if ($subfields) {
-                    foreach ($subfields as $subfield) {
-                        // Numeric subfields are for control purposes and should not
-                        // be displayed:
-                        if (!is_numeric($subfield->getCode())) {
-                            $current[] = $subfield->getData();
-                        }
-                    }
-                    // If we found at least one chunk, add a heading to our result:
-                    if (!empty($current)) {
-                        if ($extended) {
-                            $sources = [
-                                '0' => 'lcsh',
-                                '1' => 'lcshac',
-                                '2' => 'mesh',
-                                '3' => 'nal',
-                                '4' => 'unknown',
-                                '5' => 'cash',
-                                '6' => 'rvm'
-                            ];
-                            $sourceIndicator = $result->getIndicator(2);
-                            $source = '';
-                            if (isset($sources[$sourceIndicator])) {
-                                $source = $sources[$sourceIndicator];
-                            } else {
-                                $source = $result->getSubfield('2');
-                                if ($source) {
-                                    $source = $source->getData();
-                                }
-                            }
-                            $retval[] = [
-                                'heading' => $current,
-                                'type' => $fieldType,
-                                'source' => $source ?: 'unknown'
-                            ];
-                        } else {
-                            $retval[] = $current;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Send back everything we collected:
-        return $retval;
     }
 
     /**

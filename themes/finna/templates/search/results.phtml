@@ -147,10 +147,10 @@
     <? else: ?>
     <div class="row">
       <div class="col-xs-12">
-        <form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
-          <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
-        </form>
         <?= $this->authorizationNote($searchClassId) ?>
+        <form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+        </form>
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => '', 'formAttr' => 'search-cart-form'])?>
         <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_', 'formAttr' => 'search-cart-form'])?>
       </div>
