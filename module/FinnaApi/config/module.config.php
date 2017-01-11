@@ -23,6 +23,39 @@ $config = [
                         'action'     => 'Index',
                     ]
                 ]
+            ],
+            'apiHomeBareV1' => [
+                'type' => 'Zend\Mvc\Router\Http\Segment',
+                'verb' => 'get,post,options',
+                'options' => [
+                    'route'    => '/v1[/]',
+                    'defaults' => [
+                        'controller' => 'Api',
+                        'action'     => 'Index',
+                    ]
+                ],
+            ],
+            'searchApiBareV1' => [
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'verb' => 'get,post,options',
+                'options' => [
+                    'route'    => '/v1/search',
+                    'defaults' => [
+                        'controller' => 'SearchApi',
+                        'action'     => 'search',
+                    ]
+                ]
+            ],
+            'recordApiBareV1' => [
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'verb' => 'get,post,options',
+                'options' => [
+                    'route'    => '/v1/record',
+                    'defaults' => [
+                        'controller' => 'SearchApi',
+                        'action'     => 'record',
+                    ]
+                ]
             ]
         ]
     ]
