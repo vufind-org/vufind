@@ -9,7 +9,9 @@
       <div class="col-xs-12 image-information">
         <div class="cover-wrapper">
           <? /* Display thumbnail if appropriate: */ ?>
-          <?=$img->render('record', ['small' => ['w' => 50, 'h' => 50], 'medium' => ['w' => 1200, 'h' => 1200]]) ?>
+          <? if ($img): ?>
+            <?=$img->render('record', ['small' => ['w' => 50, 'h' => 50], 'medium' => ['w' => 1200, 'h' => 1200]]) ?>
+          <? endif; ?>
           <? /* Display qrcode if appropriate: */ ?>
           <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
           <? if ($QRCode): ?>
