@@ -94,9 +94,9 @@ class Loader extends \VuFind\Cover\Loader
     /**
      * Set image parameters.
      *
-     * @param int     $width   Image width
-     * @param int     $height  Image height
-     * @param string  $size    Image size to use
+     * @param int    $width  Image width
+     * @param int    $height Image height
+     * @param string $size   Image size to use
      *
      * @return void
      */

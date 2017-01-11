@@ -482,7 +482,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     /**
      * Return image rights.
      *
-     * @param string $language Language
+     * @param string $language       Language
      * @param bool   $skipImageCheck Whether to check that images exist
      *
      * @return mixed array with keys:

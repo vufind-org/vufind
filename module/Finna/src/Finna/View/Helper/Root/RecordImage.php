@@ -62,7 +62,7 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
     /**
      * Return image rights.
      *
-     * @param int    $index    Record image index.
+     * @param int $index Record image index.
      *
      * @return array
      */
@@ -103,11 +103,11 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
     /**
      * Get all images as Cover links
      *
-     * @param string $language Language for copyright information
-     * @param array  $params   Optional array of image parameters as
-     *                         an associative array of parameter => value pairs:
-     *                           - w  Width
-     *                           - h  Height
+     * @param string $language   Language for copyright information
+     * @param array  $params     Optional array of image parameters as an
+     *                           associative array of parameter => value pairs:
+     *                             - w  Width
+     *                             - h  Height
      * @param bool   $thumbnails Whether to include thumbnail links if no image links
      * are found
      *
