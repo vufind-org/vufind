@@ -92,7 +92,7 @@
           <input type="text" id="PublicationDateSlider">
         </div>
         <?
-          $this->headScript()->appendFile('vendor/bootstrap-slider.js');
+          $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
           $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
           $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
           $future = date('Y', time()+31536000);
@@ -119,7 +119,7 @@ $(document).ready(function() {
        'tooltip':"hide",
        'value':[{$low},{$high}]
     })
-    .on('slide', fillTexts)
+    .on('change', fillTexts)
     .data('slider');
   {$init}
 });
