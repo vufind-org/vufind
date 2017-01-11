@@ -87,7 +87,6 @@ class RecordFormatter extends \VuFindApi\Formatter\RecordFormatter
         return $images;
     }
 
-
     /**
      * Get record identifier
      *
