@@ -2,7 +2,7 @@
 <?
   $combinedView = $this->layout()->templateDir === 'combined';
 ?>
-<div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>">
+<div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?>">
     <div>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />

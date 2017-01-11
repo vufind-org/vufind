@@ -786,12 +786,15 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 /* --- Search --- */
 .bulkActionButtons {
-  margin-left: -20px;
+  margin-left: -40px;
   @media (max-width: @screen-xs-max) {
-    margin-left: -33px;
+    margin-left: 0px;
+    .checkbox {
+      margin-left: -33px;
+    }
   }
   @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-    margin-left: -5px;
+    margin-left: -25px;
   }
   .checkbox {
     display: inline-block;
@@ -1503,6 +1506,11 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     & .online-source {
         color: @gray-light;
         font-size: .9em;
+    }
+}
+.template-dir-primo .record-container {
+    @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+        margin-left: 15px;
     }
 }
 //== PCI FACETS
