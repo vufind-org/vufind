@@ -92,7 +92,7 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
         $urls = [];
         foreach ($this->getSimpleXML()->xpath('file') as $node) {
             $attributes = $node->attributes();
-            $size = $attributes->bundle == 'THUMBNAIL' ? 'small': 'large';
+            $size = $attributes->bundle == 'THUMBNAIL' ? 'small' : 'large';
             $mimes = ['image/jpeg', 'image/png'];
             if (isset($attributes->type)) {
                 if (!in_array($attributes->type, $mimes)) {
