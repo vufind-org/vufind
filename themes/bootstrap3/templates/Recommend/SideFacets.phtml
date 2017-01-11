@@ -42,7 +42,7 @@
           if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
             $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($filter['value'], '');
           } else {
-            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], true, $filter['operator']);
+            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], $filter['operator']);
           }
           if ($filter['displayText'] == '[* TO *]') {
             $filter['displayText'] = $this->translate('filter_wildcard');
@@ -95,7 +95,7 @@
             </form>
           </div>
           <? if ($rangeFacets[$title]['type'] == 'date'): ?>
-            <? $this->headScript()->appendFile('vendor/bootstrap-slider.js'); ?>
+            <? $this->headScript()->appendFile('vendor/bootstrap-slider.min.js'); ?>
             <? $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css'); ?>
             <?
               $min = !empty($rangeFacets[$title]['values'][0]) ? min($rangeFacets[$title]['values'][0], 1400) : 1400;
@@ -120,7 +120,7 @@ $(document).ready(function() {
     'value':[{$low},{$high}],
     'reversed': {$reversed}
   })
-  .on('slide', fillTexts)
+  .on('change', fillTexts)
   .data('slider');
 });
 
@@ -195,7 +195,7 @@ JS;
               <? endif; ?>
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
-              <a class="list-group-item active<? if ($i >= $facets_before_more): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>" title="<?=$this->transEsc('applied_filter') ?>">
+              <a class="list-group-item active<? if ($i >= $facets_before_more): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']) ?>" title="<?=$this->transEsc('applied_filter') ?>">
                 <? if ($thisFacet['operator'] == 'OR'): ?>
                   <i class="fa fa-check-square-o" aria-hidden="true"></i>
                 <? else: ?>

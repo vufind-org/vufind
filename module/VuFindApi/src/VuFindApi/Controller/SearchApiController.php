@@ -222,8 +222,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
 
         $this->determineOutputMode();
 
-        if ($result = $this->isAccessDenied($this->searchAccessPermission)
-        ) {
+        if ($result = $this->isAccessDenied($this->searchAccessPermission)) {
             return $result;
         }
 

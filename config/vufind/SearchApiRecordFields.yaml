@@ -321,10 +321,19 @@ shortTitle:
 subjects:
   vufind.method: getAllSubjectHeadings
   vufind.default: true
-  description: Subject headings
+  description: >
+    Subject headings as an array from the least specific to the most specific
   type: array
   items:
-    type: string
+    type: array
+    items:
+      type: string
+subjectsExtended:
+  vufind.method: "Formatter::getExtendedSubjectHeadings"
+  description: Subject headings with type and source information
+  type: array
+  items:
+    $ref: '#/definitions/Subject'
 subTitle:
   vufind.method: getSubTitle
   description: Subtitle
