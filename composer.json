@@ -23,7 +23,7 @@
         "phing/phing": "2.15.2",
         "serialssolutions/summon": "1.0.0",
         "symfony/yaml": "2.7.6",
-        "swagger-api/swagger-ui": "2.2.4",
+        "swagger-api/swagger-ui": "2.2.10",
         "vufind-org/vufindcode": "1.0.3",
         "vufind-org/vufindharvest": "2.2.0",
         "vufind-org/vufindhttp": "2.1.1",
@@ -46,5 +46,5 @@
     },
     "scripts": {
         "post-update-cmd": "phing installsolr installswaggerui"
-    } 
+    }
 }
