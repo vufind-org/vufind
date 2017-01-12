@@ -130,6 +130,7 @@ public class DatabaseManager
 
     public Connection getConnection()
     {
+        connectToDatabase();
         return vufindDatabase;
     }
 
