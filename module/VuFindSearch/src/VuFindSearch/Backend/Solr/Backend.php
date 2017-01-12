@@ -235,17 +235,22 @@ class Backend extends AbstractBackend
      *
      * @return Terms
      */
-    public function terms($field, $start, $limit, ParamBag $params = null)
+    public function terms(ParamBag $params, $field = null, $limit = null, $start = "")
     {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
         $params->set('terms', 'true');
-        $params->set('terms.fl', $field);
-        $params->set('terms.lower', $start);
-        $params->set('terms.limit', $limit);
-        $params->set('terms.lower.incl', 'false');
-        $params->set('terms.sort', 'index');
+
+        if (!empty($start)) {
+            $params->set('terms.lower', $start);
+        }
+        if (isset($limit)) {
+            $params->set('terms.limit', $limit);
+        }
+        if (isset($field)) {
+            $params->set('terms.fl', $field);
+        }
 
         $response = $this->connector->terms($params);
         $terms    = new Terms($this->deserialize($response));
