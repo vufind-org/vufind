@@ -84,30 +84,29 @@ VuFind.register('embedded', function embedded() {
     return true;
   }
 
-  function toggleDataView(_link, tabid) {
+  function toggleDataView(_link, _tabid) {
     var $link = $(_link);
+    var tabid = _tabid;
     var viewType = $link.attr('data-view');
     // If full, return true
     if (viewType === 'full') {
       return true;
     }
-    var result = $link.closest('.result');
-    var mediaBody = result.find('.media-body');
-    var shortNode = mediaBody.find('.short-view');
-    var longNode = mediaBody.find('.long-view');
-    var openTab = false;
     // Open tab
+    var openTab = false;
     if ($link.data('open-tab')) {
       openTab = $link.data('open-tab');
     }
-    // Not title link
+    var result = $link.closest('.result');
     if (!$link.hasClass('title')) {
       $link = result.find('.title');
     }
-    // If full, return true
-    var viewType = $link.attr('data-view');
-    if (viewType === 'full') {
-      return true;
+    var mediaBody = result.find('.media-body');
+    var shortNode = mediaBody.find('.short-view');
+    var longNode = mediaBody.find('.long-view');
+    // Not title link
+    if (!$link.hasClass('title')) {
+      $link = result.find('.title');
     }
     // Insert new elements
     if (!$link.hasClass('js-setup')) {
@@ -122,12 +121,12 @@ VuFind.register('embedded', function embedded() {
         .before(longNode);
       $link.addClass('js-setup');
       longNode.on('show.bs.collapse', function embeddedExpand(e) {
-        if($(e.target).hasClass('long-view')) {
+        if ($(e.target).hasClass('long-view')) {
           $link.addClass('expanded');
         }
       });
       longNode.on('hidden.bs.collapse', function embeddedCollapsed(e) {
-        if($(e.target).hasClass('long-view')) {
+        if ($(e.target).hasClass('long-view')) {
           $link.removeClass('expanded');
         }
       });
