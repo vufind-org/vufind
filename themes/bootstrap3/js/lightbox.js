@@ -354,6 +354,7 @@ VuFind.register('lightbox', function Lightbox() {
     bind: bind,
     flashMessage: flashMessage,
     reload: reload,
+    update: _update,
     // Reset
     reset: reset,
     // Init
