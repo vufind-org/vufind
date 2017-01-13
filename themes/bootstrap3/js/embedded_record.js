@@ -109,7 +109,6 @@ VuFind.register('embedded', function embedded() {
     if (viewType === 'full') {
       return true;
     }
-console.debug(openTab);
     // Insert new elements
     if (!$link.hasClass('js-setup')) {
       $link.prependTo(mediaBody);
@@ -122,11 +121,15 @@ console.debug(openTab);
                 + VuFind.translate('loading') + '...</div>')
         .before(longNode);
       $link.addClass('js-setup');
-      longNode.on('show.bs.collapse', function embeddedExpand() {
-        $link.addClass('expanded');
+      longNode.on('show.bs.collapse', function embeddedExpand(e) {
+        if($(e.target).hasClass('long-view')) {
+          $link.addClass('expanded');
+        }
       });
-      longNode.on('hidden.bs.collapse', function embeddedCollapsed() {
-        $link.removeClass('expanded');
+      longNode.on('hidden.bs.collapse', function embeddedCollapsed(e) {
+        if($(e.target).hasClass('long-view')) {
+          $link.removeClass('expanded');
+        }
       });
     }
     // Gather information
