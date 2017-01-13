@@ -196,7 +196,7 @@ class Map extends AbstractBase
         }
         $coordarray = [];
         /* Extract coordinates from location_geo field */
-        foreach ($geoCoords as $key => $value) {
+        foreach ($geoCoords as $value) {
             $match = [];
             if (preg_match('/ENVELOPE\((.*),(.*),(.*),(.*)\)/', $value, $match)) {
                 $lonW = (float)$match[1];
@@ -309,7 +309,7 @@ class Map extends AbstractBase
             $mapDisplayLabels = $this->getMapLabels();
         }
         // Pass coordinates, display coordinates, and labels
-        foreach ($geoCoords as $key => $value) {
+        foreach (array_keys($geoCoords) as $key) {
             $mapCoords = '';
             $mapLabel = '';
             if ($this->displayCoords) {

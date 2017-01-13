@@ -75,6 +75,12 @@
               'VuFind.cart.setDomain("' . $domain . '");'
             );
           }
+          $cookiePath = $cart->getCookiePath();
+          if (!empty($cookiePath)) {
+            $this->headScript()->appendScript(
+              'VuFind.cart.setCookiePath("' . $cookiePath . '");'
+            );
+          }
           $this->jsTranslations()->addStrings(
             [
               'addBookBag' => 'Add to Book Bag',
@@ -127,17 +133,12 @@ JS;
       }
     ?>
     <header class="hidden-print">
-      <div class="container navbar">
-        <? if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
-          <span class="sr-only"><?=$this->layout()->srmessage ?></span>
-        <? endif; ?>
-        <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
-        <?=$this->render('header.phtml')?>
-      </div>
+      <? if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
+        <span class="sr-only"><?=$this->layout()->srmessage ?></span>
+      <? endif; ?>
+      <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+      <?=$this->render('header.phtml')?>
       <div class="container">
-        <nav class="nav searchbox hidden-lg hidden-print">
-          <?=$this->layout()->searchbox ?>
-        </nav>
         <? if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
           && !empty($this->layout()->breadcrumbs)
           && $this->layout()->breadcrumbs !== false

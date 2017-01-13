@@ -83,9 +83,15 @@ class EIT extends SolrDefault
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
      * @return array
      */
-    public function getAllSubjectHeadings()
+    public function getAllSubjectHeadings($extended = false)
     {
         $su = isset($this->controlInfo['artinfo']['su'])
             ? $this->controlInfo['artinfo']['su'] : [];
@@ -94,7 +100,9 @@ class EIT extends SolrDefault
         // format, so we'll just send each value as a single chunk.
         $retval = [];
         foreach ($su as $s) {
-            $retval[] = [$s];
+            $retval[] = $extended
+                ? ['heading' => [$s], 'type' => '', 'source' => '']
+                : [$s];
         }
         return $retval;
     }

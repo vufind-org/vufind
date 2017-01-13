@@ -1,4 +1,4 @@
-/*global deparam, grecaptcha, recaptchaOnLoad, syn_get_widget, userIsLoggedIn, VuFind */
+/*global deparam, grecaptcha, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind */
 /*exported ajaxTagUpdate, recordDocReady */
 
 /**
@@ -78,9 +78,7 @@ function refreshCommentList($target, recordId, recordSource) {
       return false;
     });
     $target.find('.comment-form input[type="submit"]').button('reset');
-    if (typeof grecaptcha !== 'undefined') {
-      grecaptcha.reset();
-    }
+    resetCaptcha($target);
   });
 }
 
@@ -109,16 +107,15 @@ function registerAjaxCommentRecord() {
       dataType: 'json'
     })
     .done(function addCommentDone(/*response, textStatus*/) {
-      var $tab = $(form).closest('.list-tab-content');
+      var $form = $(form);
+      var $tab = $form.closest('.list-tab-content');
       if (!$tab.length) {
-        $tab = $(form).closest('.tab-pane');
+        $tab = $form.closest('.tab-pane');
       }
       refreshCommentList($tab, id, recordSource);
-      $(form).find('textarea[name="comment"]').val('');
-      $(form).find('input[type="submit"]').button('loading');
-      if (typeof grecaptcha !== 'undefined') {
-        grecaptcha.reset($(form).find('.g-recaptcha').data('captchaId'));
-      }
+      $form.find('textarea[name="comment"]').val('');
+      $form.find('input[type="submit"]').button('loading');
+      resetCaptcha($form);
     })
     .fail(function addCommentFail(response, textStatus) {
       if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
@@ -150,6 +147,15 @@ function registerTabEvents() {
   setUpCheckRequest();
 
   VuFind.lightbox.bind('.tab-pane.active');
+}
+
+function removeHashFromLocation() {
+  if (window.history.replaceState) {
+    var href = window.location.href.split('#');
+    window.history.replaceState({}, document.title, href[0]);
+  } else {
+    window.location.hash = '#';
+  }
 }
 
 function ajaxLoadTab($newTab, tabid, setHash) {
@@ -258,20 +264,11 @@ function applyRecordTabHash() {
   var newTab = typeof window.location.hash !== 'undefined'
     ? window.location.hash.toLowerCase() : '';
 
-  // Open tag in url hash
-  if (newTab.length === 0 || newTab === '#tabnav') {
+  // Open tab in url hash
+  if (newTab.length <= 1 || newTab === '#tabnav') {
     $initiallyActiveTab.click();
-  } else if (newTab.length > 0 && '#' + activeTab !== newTab) {
+  } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
     $('.' + newTab.substr(1)).click();
-  }
-}
-
-function removeHashFromLocation() {
-  if (window.history.replaceState) {
-    var href = window.location.href.split('#');
-    window.history.replaceState({}, document.title, href[0]);  
-  } else {
-    window.location.hash = '#';  
   }
 }
 

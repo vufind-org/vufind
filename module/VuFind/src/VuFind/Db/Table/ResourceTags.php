@@ -205,7 +205,7 @@ class ResourceTags extends Gateway
         $stats = (array)$result->current();
         if ($extended) {
             $stats['unique'] = count($this->getUniqueTags());
-            $stats['anonymous'] = count($this->getAnonymousCount());
+            $stats['anonymous'] = $this->getAnonymousCount();
         }
         return $stats;
     }

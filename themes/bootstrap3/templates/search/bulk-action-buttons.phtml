@@ -3,23 +3,23 @@
   <div class="bulkActionButtons hidden-print">
     <div class="checkbox">
       <label>
-        <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"/> <?=$this->transEsc('select_page')?>
+        <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/> <?=$this->transEsc('select_page')?>
         &#124; <?=$this->transEsc('with_selected')?>:
       </label>
     </div>
     <div class="btn-group">
       <? if (isset($this->showBulkOptions) && $this->showBulkOptions): ?>
-        <input id="ribbon-email" class="btn btn-default" type="submit" name="email" title="<?=$this->transEsc('bookbag_email_selected')?>" value="<?=$this->transEsc('Email')?>"/>
+        <input id="ribbon-email" class="btn btn-default" type="submit" name="email" title="<?=$this->transEsc('bookbag_email_selected')?>" value="<?=$this->transEsc('Email')?>"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/>
         <? $exportOptions = $this->export()->getBulkOptions(); if (count($exportOptions) > 0): ?>
-          <input id="ribbon-export" class="btn btn-default" type="submit" name="export" title="<?=$this->transEsc('bookbag_export_selected')?>" value="<?=$this->transEsc('Export')?>"/>
+          <input id="ribbon-export" class="btn btn-default" type="submit" name="export" title="<?=$this->transEsc('bookbag_export_selected')?>" value="<?=$this->transEsc('Export')?>"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/>
         <? endif; ?>
-        <input id="ribbon-print" class="btn btn-default" type="submit" name="print" title="<?=$this->transEsc('bookbag_print_selected')?>" value="<?=$this->transEsc('Print')?>"/>
+        <input id="ribbon-print" class="btn btn-default" type="submit" name="print" title="<?=$this->transEsc('bookbag_print_selected')?>" value="<?=$this->transEsc('Print')?>"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/>
         <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <input id="ribbon-save" class="btn btn-default" type="submit" name="saveCart" title="<?=$this->transEsc('bookbag_save_selected')?>" value="<?=$this->transEsc('Save')?>"/>
+          <input id="ribbon-save" class="btn btn-default" type="submit" name="saveCart" title="<?=$this->transEsc('bookbag_save_selected')?>" value="<?=$this->transEsc('Save')?>"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/>
         <? endif; ?>
       <? endif; ?>
       <? if (isset($this->showCartControls) && $this->showCartControls): ?>
-        <input id="<?=$this->idPrefix?>updateCart" type="submit" class="btn btn-default" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
+        <input id="<?=$this->idPrefix?>updateCart" type="submit" class="btn btn-default" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/>
       <? endif; ?>
     </div>
   </div>

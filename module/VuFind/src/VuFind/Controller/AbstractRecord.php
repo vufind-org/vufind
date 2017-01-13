@@ -70,13 +70,6 @@ class AbstractRecord extends AbstractBase
     protected $searchClassId = 'Solr';
 
     /**
-     * Should we log statistics?
-     *
-     * @var bool
-     */
-    protected $logStatistics = true;
-
-    /**
      * Record driver
      *
      * @var AbstractRecordDriver
@@ -258,12 +251,6 @@ class AbstractRecord extends AbstractBase
      */
     public function homeAction()
     {
-        // Save statistics:
-        if ($this->logStatistics) {
-            $this->getServiceLocator()->get('VuFind\RecordStats')
-                ->log($this->loadRecord(), $this->getRequest());
-        }
-
         return $this->showTab(
             $this->params()->fromRoute('tab', $this->getDefaultTab())
         );
@@ -616,15 +603,6 @@ class AbstractRecord extends AbstractBase
         $details = $this->getRecordRouter()
             ->getTabRouteDetails($this->loadRecord(), $tab);
         $target = $this->url()->fromRoute($details['route'], $details['params']);
-
-        // Special case: don't use anchors in jquerymobile theme, since they
-        // mess things up!
-        if (strlen($params) && substr($params, 0, 1) == '#') {
-            $themeInfo = $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
-            if ($themeInfo->getTheme() == 'jquerymobile') {
-                $params = '';
-            }
-        }
 
         return $this->redirect()->toUrl($target . $params);
     }

@@ -1,0 +1,384 @@
+# Key is the field name that can be requested. It has the following subkeys:
+# - vufind.method: name to call (either in the SearchApiController class or the record driver)
+# - vufind.default: true if the field is displayed by default when the request does not specify fields
+# - Swagger specification fields describing the returned data.
+#
+# See http://swagger.io/specification/ for information on the Swagger-specific fields
+#
+accessRestrictions:
+  vufind.method: getAccessRestrictions
+  description: Access restriction notes
+  type: array
+  items:
+    type: string
+authors:
+  vufind.method: getDeduplicatedAuthors
+  vufind.default: true
+  description: >-
+    Deduplicated author information including main, corporate and secondary
+    authors
+  type: array
+  items:
+    $ref: '#/definitions/Authors'
+awards:
+  vufind.method: getAwards
+  description: Award notes
+  type: array
+  items:
+    type: string
+bibliographicLevel:
+  vufind.method: getBibliographicLevel
+  description: Bibliographic level
+  type: string
+  enum:
+    - Monograph
+    - Serial
+    - MonographPart
+    - SerialPart
+    - Collection
+    - CollectionPart
+    - Unknown
+bibliographyNotes:
+  vufind.method: getBibliographyNotes
+  description: Bibliography notes
+  type: array
+  items:
+    type: string
+callNumbers:
+  vufind.method: getCallNumbers
+  description: Call numbers
+  type: array
+  items:
+    type: string
+childRecordCount:
+  vufind.method: getChildRecordCount
+  description: Number of child records
+  type: integer
+cleanDoi:
+  vufind.method: getCleanDOI
+  description: First valid DOI
+  type: string
+cleanIsbn:
+  vufind.method: getCleanISBN
+  description: First valid ISBN favoring ISBN-10 over ISBN-13 when possible
+  type: string
+cleanIssn:
+  vufind.method: getCleanISSN
+  description: Base portion of the first listed ISSN
+  type: string
+cleanOclcNumber:
+  vufind.method: getCleanOCLCNum
+  description: First OCLC number
+  type: string
+containerEndPage:
+  vufind.method: getContainerEndPage
+  description: End page in the containing item
+  type: string
+containerIssue:
+  vufind.method: getContainerIssue
+  description: Issue number of the containing item
+  type: string
+containerReference:
+  vufind.method: getContainerReference
+  description: Reference to the containing item
+  type: string
+containerStartPage:
+  vufind.method: getContainerStartPage
+  description: Start page in the containing item
+  type: string
+containerTitle:
+  vufind.method: getContainerTitle
+  description: Title of the containing item
+  type: string
+containerVolume:
+  vufind.method: getContainerVolume
+  description: Volume of the containing item
+  type: string
+corporateAuthors:
+  vufind.method: getCorporateAuthors
+  description: Main corporate authors
+  type: array
+  items:
+    type: string
+dedupIds:
+  vufind.method: "Formatter::getDedupIds"
+  description: IDs of all records deduplicated with the current record
+  type: array
+  items:
+    type: string
+edition:
+  vufind.method: getEdition
+  description: Edition
+  type: string
+findingAids:
+  vufind.method: getFindingAids
+  description: Finding aids
+  type: array
+  items:
+    type: string
+formats:
+  vufind.method: getFormats
+  vufind.default: true
+  description: Formats
+  type: array
+  items:
+    type: string
+fullRecord:
+  vufind.method: "Formatter::getFullRecord"
+  description: Full metadata record (typically XML)
+  type: array
+  items:
+    type: string
+generalNotes:
+  vufind.method: getGeneralNotes
+  description: General notes
+  type: array
+  items:
+    type: string
+geoLocations:
+  vufind.method: getGeoLocation
+  description: Geographic locations (e.g. points, bounding boxes)
+  type: array
+  items:
+    type: string
+hierarchicalPlaceNames:
+  vufind.method: getHierarchicalPlaceNames
+  description: Hierarchical place names concatenated for display
+  type: array
+  items:
+    type: string
+hierarchyParentId:
+  vufind.method: getHierarchyParentId
+  description: Parent record IDs for hierarchical records
+  type: array
+  items:
+    type: string
+hierarchyParentTitle:
+  vufind.method: getHierarchyParentTitle
+  description: Parent record titles for hierarchical records
+  type: array
+  items:
+    type: string
+hierarchyTopId:
+  vufind.method: getHierarchyTopId
+  description: Hierarchy top record IDs for hierarchical records
+  type: array
+  items:
+    type: string
+hierarchyTopTitle:
+  vufind.method: getHierarchyTopTitle
+  description: Hierarchy top record titles for hierarchical records
+  type: array
+  items:
+    type: string
+humanReadablePublicationDates:
+  vufind.method: getHumanReadablePublicationDates
+  description: Publication dates in human-readable format
+  type: array
+  items:
+    type: string
+id:
+  vufind.method: getUniqueID
+  vufind.default: true
+  description: Record unique ID (can be used in the record endpoint)
+  type: string
+institutions:
+  vufind.method: getInstitutions
+  description: Institutions the record belongs to
+  type: array
+  items:
+    type: string
+isbns:
+  vufind.method: getISBNs
+  description: ISBNs
+  type: array
+  items:
+    type: string
+isCollection:
+  vufind.method: isCollection
+  description: Whether the record is a collection node in a hierarchy
+  type: boolean
+issns:
+  vufind.method: getISSNs
+  description: ISSNs
+  type: array
+  items:
+    type: string
+languages:
+  vufind.method: getLanguages
+  vufind.default: true
+  description: Languages
+  type: array
+  items:
+    type: string
+lccn:
+  vufind.method: getLCCN
+  description: LCCNs
+  type: array
+  items:
+    type: string
+newerTitles:
+  vufind.method: getNewerTitles
+  description: Successor titles
+  type: array
+  items:
+    type: string
+oclc:
+  vufind.method: getOCLC
+  description: OCLC numbers
+  type: array
+  items:
+    type: string
+openUrl:
+  vufind.method: getOpenUrl
+  description: OpenURL
+  type: string
+physicalDescriptions:
+  vufind.method: getPhysicalDescriptions
+  description: Physical dimensions etc.
+  type: array
+  items:
+    type: string
+placesOfPublication:
+  vufind.method: getPlacesOfPublication
+  description: Places of publication
+  type: array
+  items:
+    type: string
+playingTimes:
+  vufind.method: getPlayingTimes
+  description: Playing times (durations)
+  type: array
+  items:
+    type: string
+previousTitles:
+  vufind.method: getPreviousTitles
+  description: Predecessor titles
+  type: array
+  items:
+    type: string
+primaryAuthors:
+  vufind.method: getPrimaryAuthors
+  description: Primary authors
+  type: array
+  items:
+    type: string
+productionCredits:
+  vufind.method: getProductionCredits
+  description: Production credits
+  type: array
+  items:
+    type: string
+publicationDates:
+  vufind.method: getPublicationDates
+  description: Publication dates
+  type: array
+  items:
+    type: string
+publishers:
+  vufind.method: getPublishers
+  description: Publishers
+  type: array
+  items:
+    type: string
+rawData:
+  vufind.method: "Formatter::getRawData"
+  description: All data in the index fields
+  type: string
+recordLinks:
+  vufind.method: getAllRecordLinks
+  description: Links to other related records
+  type: array
+  items:
+    $ref: '#/definitions/RecordLink'
+recordPage:
+  vufind.method: "Formatter::getRecordPage"
+  description: Link to the record page in the UI
+  type: string
+relationshipNotes:
+  vufind.method: getRelationshipNotes
+  description: Notes describing relationships to other items
+  type: array
+  items:
+    type: string
+secondaryAuthors:
+  vufind.method: getSecondaryAuthors
+  description: Secondary authors
+  type: array
+  items:
+    type: string
+series:
+  vufind.method: getSeries
+  vufind.default: true
+  description: Series
+  type: array
+  items:
+    type: string
+shortTitle:
+  vufind.method: getShortTitle
+  description: Short title (title excluding any subtitle)
+  type: string
+subjects:
+  vufind.method: getAllSubjectHeadings
+  vufind.default: true
+  description: >
+    Subject headings as an array from the least specific to the most specific
+  type: array
+  items:
+    type: array
+    items:
+      type: string
+subjectsExtended:
+  vufind.method: "Formatter::getExtendedSubjectHeadings"
+  description: Subject headings with type and source information
+  type: array
+  items:
+    $ref: '#/definitions/Subject'
+subTitle:
+  vufind.method: getSubTitle
+  description: Subtitle
+  type: string
+summary:
+  vufind.method: getSummary
+  description: Summary
+  type: array
+  items:
+    type: string
+systemDetails:
+  vufind.method: getSystemDetails
+  description: Technical details on the represented item
+  type: array
+  items:
+    type: string
+targetAudienceNotes:
+  vufind.method: getTargetAudienceNotes
+  description: Notes about the target audience
+  type: array
+  items:
+    type: string
+title:
+  vufind.method: getTitle
+  vufind.default: true
+  description: Title including any subtitle
+  type: string
+titleSection:
+  vufind.method: getTitleSection
+  description: Part/section portion of the title
+  type: string
+titleStatement:
+  vufind.method: getTitleStatement
+  description: Statement of responsibility that goes with the title
+  type: string
+toc:
+  vufind.method: getTOC
+  description: Table of contents
+  type: array
+  items:
+    type: string
+urls:
+  vufind.method: "Formatter::getURLs"
+  vufind.default: true
+  description: URLs contained in the record
+  type: array
+  items:
+    $ref: '#/definitions/Url'

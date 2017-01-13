@@ -1231,6 +1231,86 @@ class PAIA extends DAIA
     }
 
     /**
+     * Map a PAIA document to an array for use in generating a VuFind request
+     * (holds, storage retrieval, etc).
+     *
+     * @param array $doc Array of PAIA document to be mapped.
+     *
+     * @return array
+     */
+    protected function getBasicDetails($doc)
+    {
+        $result = [];
+
+        // item (0..1) URI of a particular copy
+        $result['item_id'] = (isset($doc['item']) ? $doc['item'] : '');
+
+        $result['cancel_details']
+            = (isset($doc['cancancel']) && $doc['cancancel'])
+            ? $result['item_id'] : '';
+
+        // edition (0..1) URI of a the document (no particular copy)
+        // hook for retrieving alternative ItemId in case PAIA does not
+        // the needed id
+        $result['id'] = (isset($doc['edition'])
+            ? $this->getAlternativeItemId($doc['edition']) : '');
+
+        $result['type'] = $this->paiaStatusString($doc['status']);
+
+        // storage (0..1) textual description of location of the document
+        $result['location'] = (isset($doc['storage']) ? $doc['storage'] : null);
+
+        // queue (0..1) number of waiting requests for the document or item
+        $result['position'] =  (isset($doc['queue']) ? $doc['queue'] : null);
+
+        // only true if status == 4
+        $result['available'] = false;
+
+        // about (0..1) textual description of the document
+        $result['title'] = (isset($doc['about']) ? $doc['about'] : null);
+
+        // PAIA custom field
+        // label (0..1) call number, shelf mark or similar item label
+        $result['callnumber'] = $this->getCallNumber($doc);
+
+        /*
+         * meaning of starttime and endtime depends on status:
+         *
+         * status | starttime
+         *        | endtime
+         * -------+--------------------------------
+         * 0      | -
+         *        | -
+         * 1      | when the document was reserved
+         *        | when the reserved document is expected to be available
+         * 2      | when the document was ordered
+         *        | when the ordered document is expected to be available
+         * 3      | when the document was lend
+         *        | when the loan period ends or ended (due)
+         * 4      | when the document is provided
+         *        | when the provision will expire
+         * 5      | when the request was rejected
+         *        | -
+         */
+
+        $result['create'] = (isset($doc['starttime'])
+            ? $this->convertDatetime($doc['starttime']) : '');
+
+        // Optional VuFind fields
+        /*
+        $result['reqnum'] = null;
+        $result['volume'] =  null;
+        $result['publication_year'] = null;
+        $result['isbn'] = null;
+        $result['issn'] = null;
+        $result['oclc'] = null;
+        $result['upc'] = null;
+        */
+
+        return $result;
+    }
+
+    /**
      * This PAIA helper function allows custom overrides for mapping of PAIA response
      * to getMyHolds data structure.
      *
@@ -1243,61 +1323,7 @@ class PAIA extends DAIA
         $results = [];
 
         foreach ($items as $doc) {
-            $result = [];
-
-            // item (0..1) URI of a particular copy
-            $result['item_id'] = (isset($doc['item']) ? $doc['item'] : '');
-
-            $result['cancel_details']
-                = (isset($doc['cancancel']) && $doc['cancancel'])
-                ? $result['item_id'] : '';
-
-            // edition (0..1) URI of a the document (no particular copy)
-            // hook for retrieving alternative ItemId in case PAIA does not
-            // the needed id
-            $result['id'] = (isset($doc['edition'])
-                ? $this->getAlternativeItemId($doc['edition']) : '');
-
-            $result['type'] = $this->paiaStatusString($doc['status']);
-
-            // storage (0..1) textual description of location of the document
-            $result['location'] = (isset($doc['storage']) ? $doc['storage'] : null);
-
-            // queue (0..1) number of waiting requests for the document or item
-            $result['position'] =  (isset($doc['queue']) ? $doc['queue'] : null);
-
-            // only true if status == 4
-            $result['available'] = false;
-
-            // about (0..1) textual description of the document
-            $result['title'] = (isset($doc['about']) ? $doc['about'] : null);
-
-            // PAIA custom field
-            // label (0..1) call number, shelf mark or similar item label
-            $result['callnumber'] = $this->getCallNumber($doc);
-
-            /*
-             * meaning of starttime and endtime depends on status:
-             *
-             * status | starttime
-             *        | endtime
-             * -------+--------------------------------
-             * 0      | -
-             *        | -
-             * 1      | when the document was reserved
-             *        | when the reserved document is expected to be available
-             * 2      | when the document was ordered
-             *        | when the ordered document is expected to be available
-             * 3      | when the document was lend
-             *        | when the loan period ends or ended (due)
-             * 4      | when the document is provided
-             *        | when the provision will expire
-             * 5      | when the request was rejected
-             *        | -
-             */
-
-            $result['create'] = (isset($doc['starttime'])
-                ? $this->convertDatetime($doc['starttime']) : '');
+            $result = $this->getBasicDetails($doc);
 
             if ($doc['status'] == '4') {
                 $result['expire'] = (isset($doc['endtime'])
@@ -1310,23 +1336,11 @@ class PAIA extends DAIA
             // status: provided (the document is ready to be used by the patron)
             $result['available'] = $doc['status'] == 4 ? true : false;
 
-            // Optional VuFind fields
-            /*
-            $result['reqnum'] = null;
-            $result['volume'] =  null;
-            $result['publication_year'] = null;
-            $result['isbn'] = null;
-            $result['issn'] = null;
-            $result['oclc'] = null;
-            $result['upc'] = null;
-            */
-
             $results[] = $result;
 
         }
         return $results;
     }
-
     /**
      * This PAIA helper function allows custom overrides for mapping of PAIA response
      * to getMyStorageRetrievalRequests data structure.
@@ -1340,52 +1354,7 @@ class PAIA extends DAIA
         $results = [];
 
         foreach ($items as $doc) {
-            $result = [];
-
-            // item (0..1) URI of a particular copy
-            $result['item_id'] = (isset($doc['item']) ? $doc['item'] : '');
-
-            $result['cancel_details']
-                = (isset($doc['cancancel']) && $doc['cancancel'])
-                ? $result['item_id'] : '';
-
-            // edition (0..1) URI of a the document (no particular copy)
-            // hook for retrieving alternative ItemId in case PAIA does not
-            // the needed id
-            $result['id'] = (isset($doc['edition'])
-                ? $this->getAlternativeItemId($doc['edition']) : '');
-
-            $result['type'] = $this->paiaStatusString($doc['status']);
-
-            // storage (0..1) textual description of location of the document
-            $result['location'] = (isset($doc['storage']) ? $doc['storage'] : null);
-
-            // queue (0..1) number of waiting requests for the document or item
-            $result['position'] =  (isset($doc['queue']) ? $doc['queue'] : null);
-
-            // only true if status == 4
-            $result['available'] = false;
-
-            // about (0..1) textual description of the document
-            $result['title'] = (isset($doc['about']) ? $doc['about'] : null);
-
-            // PAIA custom field
-            // label (0..1) call number, shelf mark or similar item label
-            $result['callnumber'] = $this->getCallNumber($doc);
-
-            $result['create'] = (isset($doc['starttime'])
-                ? $this->convertDatetime($doc['starttime']) : '');
-
-            // Optional VuFind fields
-            /*
-            $result['reqnum'] = null;
-            $result['volume'] =  null;
-            $result['publication_year'] = null;
-            $result['isbn'] = null;
-            $result['issn'] = null;
-            $result['oclc'] = null;
-            $result['upc'] = null;
-            */
+            $result = $this->getBasicDetails($doc);
 
             $results[] = $result;
 
