@@ -126,7 +126,20 @@ class PluginFactory implements AbstractFactoryInterface
                     $config->$section = $child->$section;
                 } else {
                     foreach (array_keys($contents->toArray()) as $key) {
-                        $config->$section->$key = $child->$section->$key;
+                        // If a key is defined as key[] in the config file the key
+                        // remains a Zend\Config\Config object. If the current
+                        // section is not configured as an override section we try to
+                        // merge the key[] values instead of overwriting them.
+                        if (is_object($config->$section->$key)
+                            && is_object($child->$section->$key)
+                        ) {
+                            $config->$section->$key = array_merge(
+                                $config->$section->$key->toArray(),
+                                $child->$section->$key->toArray()
+                            );
+                        } else {
+                            $config->$section->$key = $child->$section->$key;
+                        }
                     }
                 }
             }
