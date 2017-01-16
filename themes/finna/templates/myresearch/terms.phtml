@@ -15,7 +15,7 @@
 <!-- START of: finna - myresearch/terms.phtml -->
 <h2 class="lightbox-header"><?=$title?></h2>
 <div class="terms-of-service">
-  <form name="termsForm" method="post" data-toggle="validator">
+  <form name="termsForm" method="post" data-toggle="validator" action="<?=$this->escapeHtmlAttr($this->url('myresearch-userlogin')) ?>">
     <?=$this->partial("terms_$language.phtml") ?>
   </form>
 </div>
