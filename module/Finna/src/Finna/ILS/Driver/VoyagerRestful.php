@@ -182,6 +182,169 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
     }
 
     /**
+     * Get request groups
+     *
+     * @param int   $bibId       BIB ID
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the request group
+     * options or may be ignored.
+     *
+     * @return array False if request groups not in use or an array of
+     * associative arrays with id and name keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getRequestGroups($bibId, $patron, $holdDetails = null)
+    {
+        if (!$this->requestGroupsEnabled) {
+            return false;
+        }
+
+        $sqlExpressions = [
+            'rg.GROUP_ID',
+            'rg.GROUP_NAME',
+        ];
+        $sqlFrom = [
+            "$this->dbName.REQUEST_GROUP rg"
+
+        ];
+        $sqlWhere = [];
+        $sqlBind = [];
+
+        if ($this->pickupLocationsInRequestGroup) {
+            // Limit to request groups that have valid pickup locations
+            $sqlWhere[] = <<<EOT
+rg.GROUP_ID IN (
+  SELECT rgl.GROUP_ID
+  FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
+  WHERE rgl.LOCATION_ID IN (
+    SELECT cpl.LOCATION_ID
+    FROM $this->dbName.CIRC_POLICY_LOCS cpl
+    WHERE cpl.PICKUP_LOCATION='Y'
+  )
+)
+EOT;
+        }
+
+        if ($this->checkItemsExist) {
+            $sqlWhere[] = <<<EOT
+rg.GROUP_ID IN (
+  SELECT rgl.GROUP_ID
+  FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
+  WHERE rgl.LOCATION_ID IN (
+    SELECT mm.LOCATION_ID FROM $this->dbName.MFHD_MASTER mm
+    WHERE mm.MFHD_ID IN (
+      SELECT mi.MFHD_ID
+      FROM $this->dbName.MFHD_ITEM mi, $this->dbName.BIB_ITEM bi
+      WHERE mi.ITEM_ID = bi.ITEM_ID AND bi.BIB_ID=:bibId
+    )
+  )
+)
+EOT;
+            $sqlBind['bibId'] = $bibId;
+        }
+
+        if ($this->checkItemsNotAvailable) {
+            // Build first the inner query that return item statuses for all request
+            // groups
+            $subExpressions = [
+                'sub_rgl.GROUP_ID',
+                'sub_i.ITEM_ID',
+                'max(sub_ist.ITEM_STATUS) as STATUS'
+            ];
+
+            $subFrom = [
+                "$this->dbName.ITEM_STATUS sub_ist",
+                "$this->dbName.BIB_ITEM sub_bi",
+                "$this->dbName.ITEM sub_i",
+                "$this->dbName.REQUEST_GROUP_LOCATION sub_rgl",
+                "$this->dbName.MFHD_ITEM sub_mi",
+                "$this->dbName.MFHD_MASTER sub_mm"
+            ];
+
+            $subWhere = [
+                'sub_bi.BIB_ID=:subBibId',
+                'sub_i.ITEM_ID=sub_bi.ITEM_ID',
+                'sub_ist.ITEM_ID=sub_i.ITEM_ID',
+                'sub_mi.ITEM_ID=sub_i.ITEM_ID',
+                'sub_mm.MFHD_ID=sub_mi.MFHD_ID',
+                'sub_rgl.LOCATION_ID=sub_mm.LOCATION_ID'
+            ];
+
+            $subGroup = [
+                'sub_rgl.GROUP_ID',
+                'sub_i.ITEM_ID'
+            ];
+
+            $sqlBind['subBibId'] = $bibId;
+
+            $subArray = [
+                'expressions' => $subExpressions,
+                'from' => $subFrom,
+                'where' => $subWhere,
+                'group' => $subGroup,
+                'bind' => []
+            ];
+
+            $subSql = $this->buildSqlFromArray($subArray);
+
+            $itemWhere = <<<EOT
+rg.GROUP_ID NOT IN (
+  SELECT status.GROUP_ID
+  FROM ({$subSql['string']}) status
+  WHERE status.status=1
+)
+EOT;
+
+            $key = 'disableAvailabilityCheckForRequestGroups';
+            if (isset($this->config['Holds'][$key])) {
+                $disabledGroups = array_map(
+                    function ($s) {
+                        return preg_replace('/[^\d]*/', '', $s);
+                    },
+                    explode(':', $this->config['Holds'][$key])
+                );
+                if ($disabledGroups) {
+                    $itemWhere = "($itemWhere OR rg.GROUP_ID IN ("
+                        . implode(',', $disabledGroups) . '))';
+                }
+            }
+            $sqlWhere[] = $itemWhere;
+        }
+
+        $sqlArray = [
+            'expressions' => $sqlExpressions,
+            'from' => $sqlFrom,
+            'where' => $sqlWhere,
+            'bind' => $sqlBind
+        ];
+
+        $sql = $this->buildSqlFromArray($sqlArray);
+
+        try {
+            $sqlStmt = $this->executeSQL($sql);
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+        $results = [];
+        while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
+            $results[] = [
+                'id' => $row['GROUP_ID'],
+                'name' => utf8_encode($row['GROUP_NAME'])
+            ];
+        }
+
+        // Sort request groups
+        usort($results, [$this, 'requestGroupSortFunction']);
+
+        return $results;
+    }
+
+    /**
      * Check Account Blocks
      *
      * Checks if a user has any blocks against their account which may prevent them
