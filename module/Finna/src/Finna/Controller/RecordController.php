@@ -224,7 +224,7 @@ class RecordController extends \VuFind\Controller\RecordController
                 throw new \Exception('Missing record data');
             }
             $data = $record->toXML();
-            $data = preg_replace('/[\x00-\x1f]/', '', $data);
+            $data = preg_replace('/[\x00-\x09,\x11,\x12,\x14-\x1f]/', '', $data);
             $data = iconv('UTF-8', 'UTF-8//IGNORE', $data);
         }
         if (!$data || !$format || !$source) {
