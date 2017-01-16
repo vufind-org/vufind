@@ -57,7 +57,7 @@
     <li class="bookbag-menu">
       <input class="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($cartId)?>" />
       <a class="cart-add hidden<? if(!$cart->contains($cartId)): ?> correct<? endif ?>" href="#"><i class="fa fa-plus"></i> <?=$this->transEsc('Add to Book Bag') ?></a>
-      <a class="cart-remove hidden<? if($cart->contains($cartId)): ?> correct<? endif ?>" href="#"><i class="fa fa-minus-circle"></i> <?=$this->transEsc('Remove from Book Bag') ?></a>
+      <a class="cart-remove hidden<? if($cart->contains($cartId)): ?> correct<? endif ?>" href="#"><i class="fa fa-minus"></i> <?=$this->transEsc('Remove from Book Bag') ?></a>
       <noscript>
         <form method="post" name="addForm" action="<?=$this->url('cart-processor')?>">
           <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($cartId)?>" />
