@@ -255,19 +255,8 @@ class Generator
     protected function getIdsFromBackendUsingTerms(Backend $backend, $lastTerm)
     {
         $key = $backend->getConnector()->getUniqueKey();
-
-        $params = new ParamBag();
-
-        $params->set('terms', 'true');
-        $params->set('terms.fl', $key);
-        $params->set('terms.lower', $lastTerm);
-        $params->set('terms.limit', $this->countPerPage);
-        $params->set('terms.lower.incl', 'false');
-        $params->set('terms.sort', 'count');
-
-        $info = $backend->terms($params)
+        $info = $backend->terms($key, $lastTerm, $this->countPerPage)
             ->getFieldTerms($key);
-
         return null === $info ? [] : array_keys($info->toArray());
     }
 

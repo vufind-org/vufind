@@ -235,25 +235,42 @@ class Backend extends AbstractBackend
      *
      * @return Terms
      */
-    public function terms(ParamBag $params, $field = null, $limit = null, $start = "")
-    {
+    public function terms($field = null, $start = null, $limit = null,
+        ParamBag $params = null
+    ) {
+        // Support alternate syntax with ParamBag as first parameter:
+        if ($field instanceof ParamBag && $params === null) {
+            $params = $field;
+        }
+
+        // Create empty ParamBag if none provided:
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
+        // Always enable terms:
         $params->set('terms', 'true');
 
-        if (!empty($start)) {
+        // Use parameters if provided:
+        if (null !== $field) {
+            $params->set('terms.fl', $field);
+        }
+        if (null !== $start) {
             $params->set('terms.lower', $start);
         }
-        if (isset($limit)) {
+        if (null !== $limit) {
             $params->set('terms.limit', $limit);
         }
-        if (isset($field)) {
-            $params->set('terms.fl', $field);
+
+        // Set defaults unless overridden:
+        if (!$params->hasParam('terms.lower.incl')) {
+            $params->set('terms.lower.incl', 'false');
+        }
+        if (!$params->hasParam('terms.sort')) {
+            $params->set('terms.sort', 'index');
         }
 
         $response = $this->connector->terms($params);
-        $terms    = new Terms($this->deserialize($response));
+        $terms = new Terms($this->deserialize($response));
         return $terms;
     }
 
