@@ -49,26 +49,21 @@ class Session extends \VuFind\Db\Table\Session
      */
     public function getBySessionId($sid, $create = true)
     {
-        $try = 1;
-        while (true) {
-            try {
-                $result = parent::getBySessionId($sid, $create);
-                return $result;
-            } catch (\Exception $e) {
-                if ($try <= 5) {
-                    usleep($try * 100000);
-                    ++$try;
-                    // Reset connection before retrying
-                    $this->getAdapter()->getDriver()->getConnection()->disconnect();
-                    $this->getAdapter()->getDriver()->getConnection()->connect();
-                    continue;
-                }
-                error_log(
-                    'getBySessionId failed even after retries: ' . $e->getMessage()
-                );
-                throw $e;
-            }
-        }
+        return $this->tryWithRetry('parent::getBySessionId', [$sid, $create]);
+    }
+
+    /**
+     * Retrieve data for the given session ID.
+     *
+     * @param string $sid      Session ID to retrieve
+     * @param int    $lifetime Session lifetime (in seconds)
+     *
+     * @throws SessionExpiredException
+     * @return string     Session data
+     */
+    public function readSession($sid, $lifetime)
+    {
+        return $this->tryWithRetry('parent::readSession', [$sid, $lifetime]);
     }
 
     /**
@@ -81,11 +76,25 @@ class Session extends \VuFind\Db\Table\Session
      */
     public function writeSession($sid, $data)
     {
+        $this->tryWithRetry('parent::writeSession', [$sid, $data]);
+    }
+
+    /**
+     * Try to call a method and retry if it fails
+     *
+     * @param string $method Method name
+     * @param array  $params Method parameters
+     *
+     * @throws \Exception
+     * @return mixed
+     */
+    protected function tryWithRetry($method, $params)
+    {
         $try = 1;
         while (true) {
             try {
-                parent::writeSession($sid, $data);
-                return;
+                $result = call_user_func_array($method, $params);
+                return $result;
             } catch (\Exception $e) {
                 if ($try <= 5) {
                     usleep($try * 100000);
@@ -96,7 +105,7 @@ class Session extends \VuFind\Db\Table\Session
                     continue;
                 }
                 error_log(
-                    'writeSession failed even after retries: ' . $e->getMessage()
+                    "$method failed even after retries: " . $e->getMessage()
                 );
                 throw $e;
             }
