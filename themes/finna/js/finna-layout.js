@@ -464,14 +464,17 @@ finna.layout = (function() {
     };
 
     var initImageCheck = function() {
-        $(".image-popup-trigger img").each(function() {
-            $(this).one("load",function() {
-
+        $('.image-popup-trigger img').each(function() {
+            $(this).one('load',function() {
+                // Don't hide anything if we have multiple images
+                var navi = this.closest('.image-popup-navi');
+                if (navi && navi.length > 1) {
+                    return;
+                }
                 if (this.naturalWidth && this.naturalWidth == 10 && this.naturalHeight == 10) {
                     $(this).parent().addClass('no-image');
                     $(this).parents('.grid').addClass('no-image');
                     $('.rating-stars').addClass('hidden-xs');
-                    $(this).parent().addClass('no-image');
                     $(this).parents('.record-image-container').find('.image-text-container').addClass('hidden');
                 }
             }).each(function() {
