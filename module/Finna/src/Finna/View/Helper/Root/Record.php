@@ -209,6 +209,9 @@ class Record extends \VuFind\View\Helper\Root\Record
     public function getAllRecordImageUrls()
     {
         $images = $this->driver->tryMethod('getAllImages', ['']);
+        if (empty($images)) {
+            return [];
+        }
         $urls = [];
         foreach ($images as $image) {
             $urls[] = $image['urls']['small'];
