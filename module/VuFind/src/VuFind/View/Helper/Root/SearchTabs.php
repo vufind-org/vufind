@@ -130,14 +130,14 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
                 $newUrl = $this->remapBasicSearch(
                     $activeOptions, $class, $query, $handler, $filters
                 );
-                $retVal['tabs'][] =
-                    $this->createBasicTab($key, $class, $label, $newUrl);
+                $retVal['tabs'][]
+                    = $this->createBasicTab($key, $class, $label, $newUrl);
             } else if ($type == 'advanced') {
-                $retVal['tabs'][] =
-                    $this->createAdvancedTab($key, $class, $label, $filters);
+                $retVal['tabs'][]
+                    = $this->createAdvancedTab($key, $class, $label, $filters);
             } else {
-                $retVal['tabs'][] =
-                    $this->createHomeTab($key, $class, $label, $filters);
+                $retVal['tabs'][]
+                    = $this->createHomeTab($key, $class, $label, $filters);
             }
         }
         if (!$matchFound && !empty($retVal)) {
