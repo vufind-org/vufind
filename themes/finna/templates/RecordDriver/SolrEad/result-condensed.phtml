@@ -31,7 +31,7 @@
         <div class="resultHierarchyLinks">
           <? // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
           <? if (!$this->translationEmpty('Archive Repository')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><? endif; ?>
-          <?=implode(', ', array_map(function($str) { return $this->escapeHtml($this->translate("source_$str", [], $str)); }, $this->driver->getInstitutions())); ?>
+          <?= $this->organisationDisplayName($this->driver) ?>
         </div>
       </div>
     </div>

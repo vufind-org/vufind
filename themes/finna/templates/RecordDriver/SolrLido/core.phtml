@@ -165,11 +165,7 @@
       <? if ($results = $this->driver->getInstitutions()): ?>
       <tr class="recordInstitution">
         <th><?=$this->transEsc('Organisation')?>:</th>
-        <td>
-        <? foreach($results as $index => $institution): ?>
-          <?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", [], $this->translate($institution))?>
-        <? endforeach; ?>
-        </td>
+        <td><?=$this->organisationDisplayName($this->driver)?></td>
       </tr>
       <? endif; ?>
 

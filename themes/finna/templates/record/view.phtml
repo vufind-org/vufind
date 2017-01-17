@@ -27,8 +27,11 @@
   $this->headMeta()->appendName('format-detection', 'telephone=no');
 
   // Set page title.
-  $dataSource = $this->driver->tryMethod('getDataSource');
-  $headText = $this->driver->getBreadcrumb() . (isset($dataSource) ? ' | ' . $this->transEsc('default::source_'. $dataSource, null, $dataSource) : '');
+  $headText = $this->driver->getBreadcrumb();
+  $organisationName = $this->organisationDisplayName($this->driver);
+  if (!empty($organisationName)) {
+     $headText .= " | $organisationName";
+  }
   $this->headTitle($headText);
 
   // Add map css if necessary:

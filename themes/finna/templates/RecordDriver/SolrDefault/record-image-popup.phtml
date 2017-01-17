@@ -48,14 +48,9 @@
             <? endif; ?>
         <? endif; ?>
       </div>
-      <? $results = $this->driver->getInstitutions(); ?>
-      <? if (count($results)): ?>
-        <div class="building">
-        <? foreach($results as $index => $institution): ?>
-          <?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", [], $this->translate($institution))?>
-        <? endforeach; ?>
-        </div>
-      <? endif ?>
+      <div class="building">
+        <?= $this->organisationDisplayName($this->driver) ?>
+      </div>
       <div class="summary loading">
         <div data-rows="6" class="truncate-field">
         <? if ($recordType == 'marc'): ?>

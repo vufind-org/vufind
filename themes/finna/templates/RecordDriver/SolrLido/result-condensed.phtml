@@ -28,12 +28,7 @@
       </a>
       <div class="dateyeartype">
         <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
-        <? if ($results = $this->driver->getInstitutions()): ?>
-          <? foreach($results as $index => $institution): ?>
-          <?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", [], $this->translate($institution))?>
-          <? endforeach; ?>
-        <? endif; ?>
-
+        <?= $this->organisationDisplayName($this->driver) ?>
         <? if ($this->driver->isCollection()): ?>
           <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
         <? else: ?>

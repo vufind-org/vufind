@@ -13,7 +13,7 @@
     <? endif; ?>
   </h4>
   <ul class="<?=(!in_array($this->driver->getRecordType(), ['ead', 'lido', 'qdc', 'forward'])) ? 'list-group organisations' : 'record-type organisations'?>">
-    <li class="record-organisation"><span class="organisation-name"><?=$currentSourceTranslated?></span>
+    <li class="record-organisation"><span class="organisation-name"><?=$this->organisationDisplayName($this->driver) ?></span>
       <ul class="record-organisation-info">
       <? if (isset($currentSource['imageUrl'])): ?>
         <li><img src="<?=$currentSource['imageUrl']?>"/></li>

@@ -12,7 +12,7 @@
 
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>
 <? if (!$this->translationEmpty('Archive Repository')): ?><?= $this->transEsc('Archive Repository')?>:<? endif; ?>
-<?= implode(', ', array_map(function($str) { $this->escapeHtml($this->translate("source_$str", [], $str)); }, $this->driver->getInstitutions())); ?>
+<?= PHP_EOL . $this->organisationDisplayName($this->driver) ?>
 <? if ($origination = $this->driver->getOrigination()): ?>
 <?= PHP_EOL . $this->transEsc('Archive Origination')?>: <?=$this->escapeHtml($origination)?>
 <? endif; ?>

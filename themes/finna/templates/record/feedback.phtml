@@ -1,10 +1,5 @@
 <!-- START of: finna - record/feedback.phtml -->
 <?
-  $institutions = $this->driver->tryMethod('getInstitutions');
-  $institutionTranslated = reset($institutions);
-  $institutionTranslated = $this->transEsc("0/$institutionTranslated/", null, $institutionTranslated);
-  $currentSource = $this->driver->tryMethod('getDataSource');
-  $sourceTranslated = $this->transEsc("source_$currentSource", null, $currentSource);
   $user = $this->auth()->isLoggedIn();
 ?>
 <h2><?= $this->transEsc('Send feedback on record'); ?></h2>
@@ -21,7 +16,7 @@
       <div class="form-group col-xs-12">
         <div class="feedback-info">
           <label for="feedback_from" class="control-label">
-            <?= $this->TransEsc('Send feedback on record'); ?>: <?= $institutionTranslated; if ($sourceTranslated != $institutionTranslated): ?> / <?= $sourceTranslated ?><? endif; ?>
+            <?= $this->TransEsc('Send feedback on record'); ?>: <?= $this->organisationDisplayName($this->driver, true) ?>
           </label>
         </div>
       </div>
