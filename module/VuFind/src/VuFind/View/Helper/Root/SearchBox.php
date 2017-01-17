@@ -178,7 +178,9 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
         if (!empty($this->placeholders)) {
             return isset($this->placeholders[$activeSearchClass])
                 ? $this->placeholders[$activeSearchClass]
-                : null;
+                : (isset($this->placeholders['default'])
+                    ? $this->placeholders['default']
+                    : null);
         }
         return null;
     }
