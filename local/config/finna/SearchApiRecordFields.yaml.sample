@@ -260,7 +260,7 @@ images:
   items:
     type: string
 imagesExtended:
-  vufind.method: "Formatter::getImagesExtended"
+  vufind.method: "Formatter::getExtendedImages"
   description: >
     Record images, their descriptions and rights
   type: array
