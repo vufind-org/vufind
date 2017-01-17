@@ -467,7 +467,7 @@ finna.layout = (function() {
         $('.image-popup-trigger img').each(function() {
             $(this).one('load',function() {
                 // Don't hide anything if we have multiple images
-                var navi = this.closest('.image-popup-navi');
+                var navi = $(this).closest('.image-popup-navi');
                 if (navi && navi.length > 1) {
                     return;
                 }
