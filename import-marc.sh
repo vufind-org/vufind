@@ -97,7 +97,7 @@ fi
 ##################################################
 # Set Command Options
 ##################################################
-JAR_FILE="$VUFIND_HOME/import/solrmarc_core.jar"
+for i in $VUFIND_HOME/import/solrmarc_core_*.jar; do JAR_FILE="$i"; done
 
 #####################################################
 # Verify that JAR_FILE exists

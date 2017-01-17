@@ -99,7 +99,7 @@ set PROPERTIES_FILE=%VUFIND_HOME%\import\import.properties
 rem ##################################################
 rem # Set Command Options
 rem ##################################################
-set JAR_FILE=%VUFIND_HOME%\import\solrmarc_core.jar
+for %%a in (%VUFIND_HOME%\import\solrmarc_core_*.jar) do set JAR_FILE=%%a
 
 rem #####################################################
 rem # Execute Importer
