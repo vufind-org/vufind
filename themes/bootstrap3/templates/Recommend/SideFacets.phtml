@@ -7,23 +7,24 @@
 <? if ($results->getResultTotal() > 0): ?>
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
 <? endif; ?>
-<? $checkboxFilters = $results->getParams()->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
+<? $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
+<? if (count($checkboxFilters) > 0): ?>
 <?
-  $html = '';
   $shown = 0;
-  foreach ($checkboxFilters as $current) {
-    $html .= '<label class="checkbox';
-    if($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) {
-      $html .= ' hidden';
-    } else {
-      $shown ++;
-    }
-    $html .= '"><input type="checkbox" name="filter[]" value="'.$this->escapeHtmlAttr($current['filter']).'"
-      '. ($current['selected'] ? 'checked="checked"' : '') .' id="'.$this->escapeHtmlAttr(str_replace(' ', '', $current['desc'])).'"
-      onclick="document.location.href=\''.($current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])).'\';" />'.$this->transEsc($current['desc']).'</label>';
-  }
-?>
-  <div class="checkboxFilter<?if($shown == 0):?> hidden<? endif; ?>"><?=$html ?></div>
+  ob_start();
+  foreach ($checkboxFilters as $current): ?>
+    <label class="checkbox<? if($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']): ?> hidden<? else: $shown++; endif; ?>">
+      <input type="checkbox" name="filter[]"
+        value="<?=$this->escapeHtmlAttr($current['filter']) ?>"
+        <?=$current['selected'] ? ' checked="checked"' : '' ?>
+        id="<?=$this->escapeHtmlAttr(str_replace(' ', '', $current['desc'])) ?>"
+        onclick="document.location.href='<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter']);?>" />
+      <?=$this->transEsc($current['desc']) ?>
+    </label>
+  <?endforeach; ?>
+  <? $checkboxFilterHtml = ob_get_contents(); ?>
+  <? ob_end_clean(); ?>
+  <div class="checkboxFilter<?if($shown == 0):?> hidden<? endif; ?>"><?=$checkboxFilterHtml ?></div>
 <? endif; ?>
 <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
 <? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
@@ -72,40 +73,11 @@
           <?=$this->context($this)->renderInContext('SideFacets/range-slider.phtml', ['title' => $title, 'facet' => $rangeFacets[$title]]); ?>
         <? else: ?>
           <? if (in_array($title, $hierarchicalFacets)): ?>
-            <? $this->headScript()->appendFile('vendor/jsTree/jstree.min.js'); ?>
-            <? $sort = isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : ''; ?>
-            <? if (!in_array($title, $collapsedFacets)): ?>
-              <?
-              $script = <<<JS
-$(document).ready(function() {
-  initFacetTree($('#facet_{$this->escapeHtml($title)}'), true);
-});
-JS;
-              ?>
-              <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-            <? else: ?>
-              <?
-              $script = <<<JS
-$('#side-collapse-{$this->escapeHtmlAttr($title)}').on('show.bs.collapse', function() {
-  initFacetTree($('#facet_{$this->escapeHtml($title)}'), true);
-});
-JS;
-              ?>
-              <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-            <? endif; ?>
-            <li id="facet_<?=$this->escapeHtml($title)?>" class="jstree-facet"
-                  data-facet="<?=$this->escapeHtmlAttr($title)?>"
-                  data-path="<?=$this->currentPath()?>"
-                  data-exclude="<?=$allowExclude?>"
-                  data-operator="<?=$this->recommend->getFacetOperator($title)?>"
-                  data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
-                  data-sort="<?=isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : ''?>">
-            </li>
             <noscript>
           <? endif; ?>
-          <? foreach ($cluster['list'] as $i=>$thisFacet): ?>
+          <? foreach ($cluster['list'] as $i => $thisFacet): ?>
               <?
-                if(strlen($thisFacet['displayText']) == 0) {
+                if(empty($thisFacet['displayText'])) {
                   $thisFacet['displayText'] = "-";
                 }
               ?>
