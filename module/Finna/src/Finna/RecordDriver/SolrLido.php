@@ -169,6 +169,35 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             if (empty($resourceSet->resourceRepresentation->linkResource)) {
                 continue;
             }
+
+            // Process rights first since we may need to duplicate them if there
+            // are multiple images in the set (non-standard)
+            $rights = [];
+            if (!empty($resourceSet->rightsResource->rightsType->conceptID)) {
+                $conceptID = $resourceSet->rightsResource->rightsType
+                    ->conceptID;
+                $type = strtolower((string)$conceptID->attributes()->type);
+                if ($type == 'copyright') {
+                    $rights['copyright'] = (string)$conceptID;
+                    $link = $this->getRightsLink(
+                        $rights['copyright'], $language
+                    );
+                    if ($link) {
+                        $rights['link'] = $link;
+                    }
+                }
+            }
+            if (!empty($resourceSet->rightsResource->rightsType->term)) {
+                $term = (string)$resourceSet->rightsResource->rightsType->term;
+                if (!isset($rights['copyright']) || $rights['copyright'] !== $term) {
+                    $rights['description'][] = $term;
+                }
+            }
+
+            if (empty($rights)) {
+                $rights = $defaultRights;
+            }
+
             $urls = [];
             foreach ($resourceSet->resourceRepresentation as $representation) {
                 $attributes = $representation->attributes();
@@ -186,6 +215,16 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
 
                 $url = (string)$representation->linkResource;
                 if (!$size) {
+                    if ($urls) {
+                        // We already have URL's, store them in the results first.
+                        // This shouldn't happen unless there are multiple images
+                        // without type in the same set.
+                        $result[] = [
+                            'urls' => $urls,
+                            'description' => '',
+                            'rights' => $rights
+                        ];
+                    }
                     $urls['small'] = $urls['medium'] = $urls['large'] = $url;
                 } else {
                     $urls[$size] = $url;
@@ -201,25 +240,6 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                     : $urls['large'];
             }
 
-            $rights = [];
-            if (!empty($resourceSet->rightsResource->rightsType->conceptID)) {
-                $conceptID = $resourceSet->rightsResource->rightsType
-                    ->conceptID;
-                $type = strtolower((string)$conceptID->attributes()->type);
-                if ($type == 'copyright') {
-                    $rights['copyright'] = (string)$conceptID;
-                    $link = $this->getRightsLink(
-                        $rights['copyright'], $language
-                    );
-                    if ($link) {
-                        $rights['link'] = $link;
-                    }
-                }
-            }
-            if (!empty($resourceSet->rightsResource->rightsType->term)) {
-                $rights['description'][]
-                    = (string)$resourceSet->rightsResource->rightsType->term;
-            }
             $result[] = [
                 'urls' => $urls,
                 'description' => '',
