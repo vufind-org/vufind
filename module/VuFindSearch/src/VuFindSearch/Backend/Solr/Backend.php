@@ -241,6 +241,7 @@ class Backend extends AbstractBackend
         // Support alternate syntax with ParamBag as first parameter:
         if ($field instanceof ParamBag && $params === null) {
             $params = $field;
+            $field = null;
         }
 
         // Create empty ParamBag if none provided:
