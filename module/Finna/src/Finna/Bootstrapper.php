@@ -200,6 +200,9 @@ class Bootstrapper
             if (($language = $request->getPost()->get('mylang', false))
                 || ($language = $request->getQuery()->get('lng', false))
             ) {
+                $translator = $sm->get('VuFind\Translator');
+                $language = $translator->getLocale();
+
                 // Update finna_language of logged-in user
                 if (($user = $sm->get('VuFind\AuthManager')->isLoggedIn())
                     && $user->finna_language != $language
