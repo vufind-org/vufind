@@ -174,15 +174,23 @@ class ScheduledAlerts extends AbstractService
     {
         $this->collectScriptArguments($arguments);
 
-        if (!$this->localDir = getenv('VUFIND_LOCAL_DIR')) {
-            $this->msg('Switching to VuFind configuration');
-            $this->switchInstitution($this->baseDir);
-        } else if (!$this->scheduleBaseUrl) {
-            $this->processAlerts();
-            exit(0);
-        } else {
-            $this->processViewAlerts();
-            exit(0);
+        try {
+            if (!$this->localDir = getenv('VUFIND_LOCAL_DIR')) {
+                $this->msg('Switching to VuFind configuration');
+                $this->switchInstitution($this->baseDir);
+            } else if (!$this->scheduleBaseUrl) {
+                $this->processAlerts();
+                exit(0);
+            } else {
+                $this->processViewAlerts();
+                exit(0);
+            }
+        } catch (\Exception $e) {
+            $this->err("Exception: " . $e->getMessage());
+            while ($e = $e->getPrevious()) {
+                $this->err("  Previous exception: " . $e->getMessage());
+            }
+            exit(1);
         }
     }
 

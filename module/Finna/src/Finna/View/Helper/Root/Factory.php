@@ -188,9 +188,11 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $sm->getServiceLocator()->get('VuFind\RecordLoader'),
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
-        $helper->setCoverRouter(
-            $sm->getServiceLocator()->get('VuFind\Cover\Router')
-        );
+        if ('cli' !== php_sapi_name()) {
+            $helper->setCoverRouter(
+                $sm->getServiceLocator()->get('VuFind\Cover\Router')
+            );
+        }
         return $helper;
     }
 
