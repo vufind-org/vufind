@@ -74,6 +74,20 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     protected $defaultPickUpLocation;
 
     /**
+     * Default request group
+     *
+     * @var bool|string
+     */
+    protected $defaultRequestGroup;
+
+    /**
+     * Whether request groups are enabled
+     *
+     * @var bool
+     */
+    protected $requestGroupsEnabled;
+
+    /**
      * Regional hold
      *
      * @var Boolean
@@ -313,8 +327,22 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $this->defaultPickUpLocation = false;
         }
 
+        $this->defaultRequestGroup
+            = isset($this->config['Holds']['defaultRequestGroup'])
+            ? $this->config['Holds']['defaultRequestGroup'] : false;
+        if ($this->defaultRequestGroup === 'user-selected') {
+            $this->defaultRequestGroup = false;
+        }
+
         $this->regionalHold = isset($this->config['Holds']['regionalHold'])
           ? $this->config['Holds']['regionalHold'] : false;
+
+        $this->requestGroupsEnabled
+            = isset($this->config['Holds']['extraHoldFields'])
+        && in_array(
+            'requestGroup',
+            explode(':', $this->config['Holds']['extraHoldFields'])
+        );
 
         if (isset($this->config['Debug']['durationLogPrefix'])) {
             $this->durationLogPrefix = $this->config['Debug']['durationLogPrefix'];
@@ -375,6 +403,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         $id = !empty($holdDetails['item_id'])
             ? $holdDetails['item_id'] : $holdDetails['id'];
 
+        $holdType = $this->getHoldType($holdDetails);
+
         $function = 'getReservationBranches';
         $functionResult = 'getReservationBranchesResult';
         $conf = [
@@ -384,7 +414,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'language' => $this->getLanguage(),
             'country' => 'FI',
             'reservationEntities' => $id,
-            'reservationType' => $this->regionalHold ? 'regional' : 'normal'
+            'reservationType' => $holdType
         ];
 
         $result = $this->doSOAPRequest(
@@ -475,8 +505,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      */
     public function getDefaultRequestGroup($patron = false, $holdDetails = null)
     {
-        $requestGroups = $this->getRequestGroups(0, 0);
-        return $requestGroups[0]['id'];
+        return $this->defaultRequestGroup;
     }
 
     /**
@@ -495,8 +524,20 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      */
     public function getRequestGroups($bibId, $patronId, $holdDetails = null)
     {
-        // Request Groups are not used for reservations
-        return false;
+        if (!$this->requestGroupsEnabled) {
+            return false;
+        }
+        $requestGroups = [
+            [
+                'id'   => 'normal',
+                'name' => 'axiell_normal'
+            ],
+            [
+                'id'   => 'regional',
+                'name' => 'axiell_regional'
+            ]
+        ];
+        return $requestGroups;
     }
 
     /**
@@ -543,6 +584,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         $functionResult = 'addReservationResult';
         $functionParam = 'addReservationParam';
 
+        $holdType = $this->getHoldType($holdDetails);
+
         $conf = [
             'arenaMember'  => $this->arenaMember,
             'user'         => $username,
@@ -550,7 +593,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'language'     => 'en',
             'reservationEntities' => $entityId,
             'reservationSource' => $reservationSource,
-            'reservationType' => $this->regionalHold ? 'regional' : 'normal',
+            'reservationType' => $holdType,
             'organisationId' => $organisation,
             'pickUpBranchId' => $branch,
             'validFromDate' => $validFromDate,
@@ -2133,6 +2176,24 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         return mktime(
             0, 0, 0, date('m') + $m, date('d') + $d, date('Y') + $y
         );
+    }
+
+    /**
+     * Function for determining the type of Hold
+     *
+     * @param array $holdDetails Hold details
+     *
+     * @return string
+     */
+    protected function getHoldType($holdDetails)
+    {
+        if ($this->requestGroupsEnabled && !empty($holdDetails['requestGroupId'])
+        ) {
+            $holdType = $holdDetails['requestGroupId'];
+        } else {
+            $holdType = $this->regionalHold ? 'regional' : 'normal';
+        }
+        return $holdType;
     }
 
     /**
