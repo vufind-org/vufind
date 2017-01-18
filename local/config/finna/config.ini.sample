@@ -1281,7 +1281,7 @@ sender_name       = "Finna-palaute"
 ; Use * for all supported forms
 ;forms = changePassword, email, newAccount, passwordRecovery, sms
 ; Authentication methods which bypass Captcha
-;bypassCaptcha[email] = "Shibboleth,ILS"
+;bypassCaptcha[email] = "Shibboleth,ILS,MultiILS"
 
 ; This section allows configuration of VuFind's social features
 [Social]
