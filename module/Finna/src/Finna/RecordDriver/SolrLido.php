@@ -204,9 +204,11 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 $size = '';
                 switch ($attributes->type)
                 {
+                case 'image_thumb':
                 case 'thumb':
                     $size = 'small';
                     break;
+                case 'image_master':
                 case 'large':
                 case 'zoomview':
                     $size = 'large';
