@@ -54,6 +54,19 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
     }
 
     /**
+     * Remove a parameter from the object.
+     *
+     * @param string $name Name of parameter
+     *
+     * @return UrlQueryHelper
+     */
+    public function removeDefaultParameter($name)
+    {
+        unset($this->urlParams[$name]);
+        return $this;
+    }
+
+    /**
      * Remove any instance of the facet from the parameters and add a new one.
      *
      * @param string $field    Facet field

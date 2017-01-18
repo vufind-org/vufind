@@ -104,7 +104,7 @@
           if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
             $removeLink = $results->getUrlQuery()->replaceTerm($filter['value'], '');
           } else {
-            $removeLink = $results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], true, $filter['operator']);
+            $removeLink = $results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], $filter['operator']);
           }
           if ($filter['displayText'] == '[* TO *]') {
             $filter['displayText'] = $this->translate('filter_wildcard');
@@ -133,18 +133,17 @@
           if ($daterangeFacet) {
             $fromVal = $toVal = $type = null;
             $queryHelper = $results->getUrlQuery();
-            $paramArray = $queryHelper->getParamArray();
-            unset($paramArray["{$daterangeFacetField}_type"]);
-            $searchParams = $formParams = '?' . $queryHelper->buildQueryString($paramArray, false);
+            $queryHelper->removeDefaultParameter("{$daterangeFacetField}_type");
+            $searchParams = $formParams = $queryHelper->getParams(false);
             if ($dateRangeFilter) {
-              $formParams = $queryHelper->removeFacet($dateRangeFilter['field'], $dateRangeFilter['value'], false, 'AND', $paramArray);
+              $formParams = $queryHelper->removeFacet($dateRangeFilter['field'], $dateRangeFilter['value'], 'AND');
               $spatialFilter = $results->getParams()->parseDateRangeFilter($dateRangeFilter['value']);
               $from = isset($spatialFilter['from']) ? $spatialFilter['from'] : null;
               $to = isset($spatialFilter['to']) ? $spatialFilter['to'] : null;
               $fromVal = $from != '*' ? $from : '';
               $toVal = $to != '*' ? $to : '';
               if (isset($spatialFilter['type'])) {
-                $type =$spatialFilter['type'];
+                $type = $spatialFilter['type'];
               }
               if ($params->getSearchType() != 'advanced') {
                 $lookfor = $params->getQuery()->getString();
@@ -154,7 +153,7 @@
               }
             }
           }
-         ?>
+        ?>
       </div>
       <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<? if(!in_array($title, $collapsedFacets)): ?> in<? endif ?>">
         <? if (isset($newItemsFacets[$title])): ?>
@@ -209,17 +208,17 @@ echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
 
         <? elseif ($daterangeFacet): ?>
             <div class="list-group-item daterange">
-              <?= $this->partial('Recommend/DateRangeVisAjax.phtml', [
-              'submitLabel' => 'Update',
-              'from' => $fromVal,
-              'to' => $toVal,
-              'formAction' => $formParams,
-              'searchParams' => $searchParams,
-              'baseParams' => $formParams,
-              'type' => $type,
-              'backend' => (null === $module || $module == 'search') ? 'solr' : $module,
-              'daterangeFacet' => $daterangeFacetField,
-              'plotFrom' => $plotFrom
+              <?=$this->partial('Recommend/DateRangeVisAjax.phtml', [
+                'submitLabel' => 'Update',
+                'from' => $fromVal,
+                'to' => $toVal,
+                'formAction' => $formParams,
+                'searchParams' => $searchParams,
+                'baseParams' => $formParams,
+                'type' => $type,
+                'backend' => (null === $module || $module == 'search') ? 'solr' : $module,
+                'daterangeFacet' => $daterangeFacetField,
+                'plotFrom' => $plotFrom
               ]);
               ?>
             </div>
