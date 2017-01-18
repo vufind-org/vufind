@@ -322,6 +322,8 @@ class Demo extends AbstractBase
      *
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getRequestBlocks($patron)
     {
@@ -336,6 +338,8 @@ class Demo extends AbstractBase
      *
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getAccountBlocks($patron)
     {

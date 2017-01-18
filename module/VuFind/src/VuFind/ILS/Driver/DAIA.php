@@ -790,7 +790,6 @@ class DAIA extends AbstractBase implements
     protected function getItemStatus($item)
     {
         $availability = false;
-        $status = ''; // status cannot be null as this will crash the translator
         $duedate = null;
         $serviceLink = '';
         $queue = '';
