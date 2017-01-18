@@ -155,6 +155,11 @@ $config = [
             'listpage' => 'Finna\Controller\ListController',
         ],
     ],
+    'controller_plugins' => [
+        'factories' => [
+            'recaptcha' => 'Finna\Controller\Plugin\Factory::getRecaptcha',
+        ],
+    ],
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
