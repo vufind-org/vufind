@@ -608,6 +608,27 @@
         </tr>
       <? endif; ?>
 
+      <? if ($terms = $this->driver->tryMethod('getTermsOfUse')): ?>
+        <? $contentDisplayed = true; ?>
+        <tr class="extendedTermsOfUse">
+          <th><?=$this->transEsc('Terms of Use')?>: </th>
+          <td>
+            <? foreach ($terms as $field): ?>
+              <?=!empty($field['material']) ? $this->escapeHtml($field['material']) . ': ' : '' ?>
+              <?=!empty($field['terms']) ? $this->escapeHtml($field['terms']) : '' ?>
+              <? if (!empty($field['url'])): ?>
+                <a href="<?=$this->escapeHtmlAttr($field['url']) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($field['url']) ?>">
+              <? endif; ?>
+              <?=$this->escapeHtml(!empty($field['source']) ? $field['source'] : $this->truncateUrl($field['url'])) ?>
+              <? if (!empty($field['url'])): ?>
+                </a>
+              <? endif; ?>
+              <br/>
+            <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
       <? $findingAids = $this->driver->getFindingAids(); if (!empty($findingAids)): ?>
         <? $contentDisplayed = true; ?>
         <tr class="extendedFindingAids">

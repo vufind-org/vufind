@@ -8,7 +8,7 @@ finna.record = (function() {
             $.getJSON(url)
             .done(function(response) {
                 if (response.data.length > 0) {
-                    description.html(response.data);
+                    description.html(response.data.replace(/##/g, '<br>'));
                     description.wrapInner('<div class="truncate-field wide"><p class="summary"></p></div>');
                     finna.layout.initTruncate(description);
                     if (!$('.hide-details-button').hasClass('hidden')) {
@@ -45,15 +45,15 @@ finna.record = (function() {
         if (sessionStorage.getItem('finna_record_details')) {
           $('.show-details-button').click();
         } else {
-          $('.hide-details-button').click();  
+          $('.hide-details-button').click();
         }
       }
     };
-    
+
     getRequestLinkData = function(element, recordId) {
       var vars = {}, hash;
       var hashes = element.href.slice(element.href.indexOf('?') + 1).split('&');
-    
+
       for (var i = 0; i < hashes.length; i++) {
         hash = hashes[i].split('=');
         var x = hash[0];
@@ -63,19 +63,19 @@ finna.record = (function() {
       vars['id'] = recordId;
       return vars;
     }
-    
+
     checkRequestsAreValid = function(elements, requestType) {
       if (!elements[0]) {
         return;
       }
       var recordId = elements[0].href.match(/\/Record\/([^\/]+)\//)[1];
-      
+
       var vars = [];
       $.each(elements, function(idx, element) {
-        vars.push(getRequestLinkData(element, recordId));  
+        vars.push(getRequestLinkData(element, recordId));
       });
-      
-    
+
+
       var url = VuFind.path + '/AJAX/JSON?method=checkRequestsAreValid';
       $.ajax({
         dataType: 'json',
@@ -99,13 +99,13 @@ finna.record = (function() {
         console.log(response, textStatus);
       });
     }
-    
+
     var setUpCheckRequest = function() {
       checkRequestsAreValid($('.expandedCheckRequest').removeClass('expandedCheckRequest'), 'Hold');
       checkRequestsAreValid($('.expandedCheckStorageRetrievalRequest').removeClass('expandedCheckStorageRetrievalRequest'), 'StorageRetrievalRequest');
       checkRequestsAreValid($('.expandedCheckILLRequest').removeClass('expandedCheckILLRequest'), 'ILLRequest');
     }
-    
+
     var initHoldingsControls = function() {
         $('.holdings-container-heading').click(function (e) {
             if ($(e.target).hasClass('location-service') || $(e.target).parents().hasClass('location-service')) {
@@ -114,7 +114,7 @@ finna.record = (function() {
             $(this).nextUntil('.holdings-container-heading').toggleClass('collapsed');
             if ($('.location .fa', this).hasClass('fa-arrow-down')) {
                 $('.location .fa', this).removeClass('fa-arrow-down');
-                $('.location .fa', this).addClass('fa-arrow-right'); 
+                $('.location .fa', this).addClass('fa-arrow-right');
             }
             else {
                 $('.location .fa', this).removeClass('fa-arrow-right');
@@ -134,16 +134,16 @@ finna.record = (function() {
         finna.layout.initJumpMenus($('.holdings-tab'));
         VuFind.lightbox.bind($('.holdings-tab'));
     };
-    
+
     var initRecordNaviHashUpdate = function() {
         $(window).on('hashchange', function() {
             $('.record-view-header .pager a').each(function(i, a) {
                 a.hash = window.location.hash;
-            }); 
+            });
         });
         $(window).trigger('hashchange');
     }
-    
+
     var init = function() {
         initHideDetails();
         initDescription();

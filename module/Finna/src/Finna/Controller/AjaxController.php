@@ -587,7 +587,9 @@ class AjaxController extends \VuFind\Controller\AjaxController
                     return $this->output($content, self::STATUS_OK);
                 }
             }
-            if ($summary = $driver->getSummary()) {
+            $language = $this->getServiceLocator()->get('VuFind\Translator')
+                ->getLocale();
+            if ($summary = $driver->getSummary($language)) {
                 return $this->output(
                     implode('<br><br>', $summary), self::STATUS_OK
                 );

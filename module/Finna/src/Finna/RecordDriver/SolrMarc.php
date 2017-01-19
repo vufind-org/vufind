@@ -883,11 +883,99 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         $field001 = $this->getMarcRecord()->getField('001');
         $id = $field001 ? $field001->getData() : '';
         $field090 = $this->getMarcRecord()->getField('090');
-        $objectId = $field090 ? $field090->getSubfield('a')->getData() : '';
+        $objectId = $field090 ? $field090->getSubfield('a') : '';
+        if ($objectId) {
+            $objectId = $objectId->getData();
+        }
         if ($id == $objectId) {
             return $objectId;
         }
         return '';
+    }
+
+    /**
+     * Get an array of summary strings for the record.
+     *
+     * @param string $language Language to return, if available
+     *
+     * @return array
+     */
+    public function getSummary($language = '')
+    {
+        $languageMappings = ['fin' => 'fi', 'swe' => 'sv', 'eng' => 'en-gb'];
+        $languages = [];
+        $marc = $this->getMarcRecord();
+        foreach ($marc->getFields('886') as $field) {
+            $scope = $field->getSubfield('2');
+            if (!$scope || 'local' !== $scope->getData()) {
+                continue;
+            }
+            $item = $field->getSubfield('a');
+            if (!$item || !in_array($item->getData(), ['kieli', 'språk', 'language'])
+            ) {
+                continue;
+            }
+            $link = $field->getSubfield('8');
+            $lng = $field->getSubfield('l');
+            if ($link && $lng) {
+                $lng = $lng->getData();
+                if (isset($languageMappings[$lng])) {
+                    $lng = $languageMappings[$lng];
+                }
+                $languages[$link->getData()] = $lng;
+            }
+        }
+        $summaries = [];
+        foreach ($marc->getFields('520') as $field) {
+            $summary = $field->getSubfield('a');
+            if (!$summary) {
+                continue;
+            }
+            $link = $field->getSubfield('8');
+            if ($link) {
+                $link = $link->getData();
+            }
+            $lng = $link && isset($languages[$link]) ? $languages[$link] : '-';
+            $summaries[$lng][] = $summary->getData();
+        }
+        if ($language && isset($summaries[$language])) {
+            return $summaries[$language];
+        }
+        $result = [];
+        foreach ($summaries as $languageSummaries) {
+            $result = array_merge($result, $languageSummaries);
+        }
+        return $result;
+    }
+
+    /**
+     * Return terms governing use and reproduction as an array with the following
+     * keys:
+     * - material  Part of the material to which the field applies
+     * - terms     Terms as text
+     * - source    Source of authority for the restriction
+     * - url       URL to terms
+     *
+     * @return string
+     */
+    public function getTermsOfUse()
+    {
+        $result = [];
+        foreach ($this->getMarcRecord()->getFields('540') as $field) {
+            $material = $field->getSubfield('3');
+            $terms = $field->getSubfield('a');
+            $source = $field->getSubfield('c');
+            $url = $field->getSubfield('u');
+            if ($terms || $source || $url) {
+                $result[] = [
+                    'material' => $material ? $material->getData() : '',
+                    'terms' => $terms ? $terms->getData() : '',
+                    'source' => $source ? $source->getData() : '',
+                    'url' => $url ? $url->getData() : ''
+                ];
+            }
+        }
+        return $result;
     }
 
     /**
