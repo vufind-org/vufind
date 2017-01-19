@@ -28,11 +28,11 @@
   function createDiffManager() {
     var details = {$json};
     function showExtra(lang) {
-      VuFind.lightbox.update('<h2>Extra Lines</h2><pre>'+details[lang].notInL1.join('\\n')+'</pre>');
+      VuFind.lightbox.render('<h2>Extra Lines</h2><pre>'+details[lang].notInL1.join('\\n')+'</pre>');
       return false;
     }
     function showMissing(lang) {
-      VuFind.lightbox.update('<h2>Missing Lines</h2><pre>'+details[lang].notInL2.join('\\n')+'</pre>');
+      VuFind.lightbox.render('<h2>Missing Lines</h2><pre>'+details[lang].notInL2.join('\\n')+'</pre>');
       return false;
     }
     return {
