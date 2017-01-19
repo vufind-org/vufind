@@ -911,7 +911,8 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                 continue;
             }
             $item = $field->getSubfield('a');
-            if (!$item || !in_array($item->getData(), ['kieli', 'språk', 'language'])
+            if (!$item
+                || !in_array($item->getData(), ['kieli', 'språk', 'language'])
             ) {
                 continue;
             }
