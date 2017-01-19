@@ -220,7 +220,7 @@
     <if>
       <istrue value="${seleniumjar}" />
       <then>
-        <exec command="xvfb-run --server-args=&quot;-screen 0 1024x768x24&quot; java -jar ${seleniumjar} &amp;" passthru="true" checkreturn="true" />
+        <exec command="xvfb-run --server-args=&quot;-screen 0 1024x768x24&quot; java -jar ${seleniumjar}" passthru="true" spawn="true" checkreturn="true" />
       </then>
     </if>
 
