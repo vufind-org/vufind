@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -60,20 +60,13 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
         $url = $this->params()->fromPost('url');
         $captcha = $this->params()->fromPost('captcha');
 
+        // Support the old captcha mechanism for now
+        if ($captcha == $this->translate('feedback_captcha_answer')) {
+            $view->useRecaptcha = false;
+        }
+
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
-            if (empty($captcha)
-                || $captcha != $this->translate('feedback_captcha_answer')
-            ) {
-                $view->setTemplate('feedback/home');
-                $view->category = $category;
-                $view->name = $name;
-                $view->email = $users_email;
-                $view->comments = $comments;
-                $view->url = $url;
-                $this->flashMessenger()->addErrorMessage('feedback_captcha_error');
-                return $view;
-            }
             if (empty($comments)) {
                 throw new \Exception('Missing data.');
             }
@@ -119,7 +112,9 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             $mail->setEncoding('UTF-8');
             $mail->setBody($email_message);
             $mail->setFrom($sender_email, $sender_name);
-            $mail->setReplyTo($users_email, $name);
+            if (!empty($users_email)) {
+                $mail->setReplyTo($users_email, $name);
+            }
             $mail->addTo($recipient_email, $recipient_name);
             $mail->setSubject($email_subject);
             $headers = $mail->getHeaders();
