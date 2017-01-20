@@ -20,7 +20,16 @@
       </div>
 
       <div class="dateyeartype">
-        <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?> <?=$this->escapeHtml($this->driver->getType()) ?></div>
+        <div class="resultItemFormat">
+          <?=$this->record($this->driver)->getFormatList() ?>
+          <? $type = $this->driver->getType(); ?>
+          <? $country = $this->driver->getCountry(); ?>
+          <? if ($type && $country): ?>
+            <?=$this->escapeHtml($type) ?>, <?=$this->escapeHtml($country) ?>
+          <? else: ?>
+            <?=$this->escapeHtml($type) ?><?=$this->escapeHtml($country) ?>
+          <? endif; ?>
+        </div>
 
         <? if ($results = $this->driver->tryMethod('getOtherLinks')): ?>
           <div class="resultOtherLinks">

@@ -1,5 +1,17 @@
 <!-- START of: finna - RecordDriver/SolrForward/core.phtml -->
 <?
+  $primaryRoles = ['drt', 'aus'];
+  $nonPresenterAuthors = $this->driver->getNonPresenterAuthors();
+  $primaryAuthors = [];
+  $secondaryAuthors = [];
+  foreach ($nonPresenterAuthors as $author) {
+    if (isset($author['role']) && in_array($author['role'], $primaryRoles)) {
+      $primaryAuthors[] = $author;
+    } else {
+      $secondaryAuthors[] = $author;
+    }
+  }
+
   $img = $this->recordImage($this->record($this->driver));
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
@@ -55,8 +67,12 @@
   <div class="media-body col-sm-8 record-information">
     <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle())?><? if ($subtitle = $this->driver->getSubtitle()): ?>&nbsp;: <?=$this->escapeHtml($subtitle) ?><? endif; ?></h1>
     <? if ($results = $this->driver->getAlternativeTitles()): ?>
-      <div class="recordAltTitles record-alt-titles">
-        <?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?>
+      <div class="recordAltTitles record-alt-titles truncate-field" data-rows="2">
+        <? foreach ($results as $result): ?>
+          <div class="record-alt-title">
+            <?=$this->escapeHtml($result) ?>
+          </div>
+        <? endforeach; ?>
       </div>
     <? endif; ?>
     <? if ($uniformTitles = $this->driver->tryMethod('getUniformTitles')): ?>
@@ -117,17 +133,24 @@
     <div class="record-authors" property="author">
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
         <span class="recordFormat">
-          <?=$this->record($this->driver)->getFormatList() ?> <?=$this->escapeHtml($this->driver->getType()) ?><br>
+          <?=$this->record($this->driver)->getFormatList() ?>
         </span>
+        <? $type = $this->driver->getType(); ?>
+        <? $country = $this->driver->getCountry(); ?>
+        <? if ($type && $country): ?>
+          <?=$this->escapeHtml($type) ?>, <?=$this->escapeHtml($country) ?>
+        <? else: ?>
+          <?=$this->escapeHtml($type) ?><?=$this->escapeHtml($country) ?>
+        <? endif; ?>
       <? endif; ?>
-      <? $results = $this->driver->getNonPresenterAuthors(); $containerTitle = $this->driver->getContainerTitle(); ?>
-      <? if ($results || $containerTitle): ?>
+      <? $containerTitle = $this->driver->getContainerTitle(); ?>
+      <? if ($primaryAuthors || $containerTitle): ?>
         <div class="truncate-field">
-          <? if ($results): ?>
+          <? if ($primaryAuthors): ?>
             <span class="recordAuthors">
-            <? foreach($results as $index => $author): ?>
-              <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><? endif; ?><? if (!empty($author['role'])): ?><span class="author-role">, <?=mb_strtolower($this->transEsc('CreatorRoles::' . $author['role']), 'UTF-8') ?></span><? endif; ?>
-            <? endforeach; ?>
+              <? foreach ($primaryAuthors as $index => $author): ?>
+                <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><? endif; ?><? if (!empty($author['role'])): ?><span class="author-role">, <?=mb_strtolower($this->transEsc('CreatorRoles::' . $author['role']), 'UTF-8') ?></span><? endif; ?>
+              <? endforeach; ?>
             </span>
           <? endif; ?>
           <? if ($containerTitle): ?>
@@ -242,10 +265,16 @@
         <? endforeach; ?>
       <? endif; ?>
 
-      <? if ($result = $this->driver->getCountry()): ?>
-        <tr class="record-country">
-          <th><?=$this->transEsc('Country') ?>: </th>
-          <td><?=$this->escapeHtml($result) ?></td>
+      <? if ($secondaryAuthors): ?>
+        <tr class="recordAuthors">
+          <th><?=$this->transEsc('Contributors') ?>:</th>
+          <td property="author">
+            <div class="truncate-field">
+              <? foreach ($secondaryAuthors as $index => $author): ?>
+                <?=($index > 0 ? '<br/> ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><? endif; ?><? if (!empty($author['role'])): ?><span class="author-role">, <?=mb_strtolower($this->transEsc('CreatorRoles::' . $author['role']), 'UTF-8') ?></span><? endif; ?>
+              <? endforeach; ?>
+            </div>
+          </td>
         </tr>
       <? endif; ?>
 
@@ -313,9 +342,11 @@
         <tr class="recordDescription">
           <th><?=$this->transEsc('Item Description')?>: </th>
           <td>
-            <? foreach ($notes as $field): ?>
-              <?=$field // intentionally left unescaped due to embedded HTML?><br/>
-            <? endforeach; ?>
+            <div class="truncate-field">
+              <? foreach ($notes as $field): ?>
+                <?=$field // intentionally left unescaped due to embedded HTML?><br/>
+              <? endforeach; ?>
+            </div>
           </td>
         </tr>
       <? endif; ?>
@@ -324,7 +355,11 @@
         <? $contentDisplayed = true; ?>
         <tr class="recordDescription">
           <th><?=$this->transEsc('Description') ?>: </th>
-          <td><?=implode('<br/>', $result); // intentionally left unescaped due to embedded HTML ?></td>
+          <td>
+            <div class="truncate-field">
+              <?=implode('<br/>', $result); // intentionally left unescaped due to embedded HTML ?>
+            </div>
+          </td>
         </tr>
       <? endif; ?>
 
@@ -332,7 +367,11 @@
         <? $contentDisplayed = true; ?>
         <tr class="record-music">
           <th><?=$this->transEsc('Music') ?>: </th>
-          <td><?=$result // intentionally left unescaped due to embedded HTML ?></td>
+          <td>
+            <div class="truncate-field">
+              <?=$result // intentionally left unescaped due to embedded HTML ?>
+            </div>
+          </td>
         </tr>
       <? endif; ?>
 

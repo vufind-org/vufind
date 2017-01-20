@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -297,7 +297,29 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      */
     public function getAlternativeTitles()
     {
-        return isset($this->fields['title_alt']) ? $this->fields['title_alt'] : [];
+        $xml = $this->getRecordXML();
+        $identifyingTitle = (string)$xml->IdentifyingTitle;
+        $result = [];
+        foreach ($xml->Title as $title) {
+            $titleText = (string)$title->TitleText;
+            if ($titleText == $identifyingTitle) {
+                continue;
+            }
+            $rel = $title->TitleRelationship;
+            if ($rel && (string)$rel == 'translated') {
+                $lang = $title->TitleText->attributes()->lang;
+                if ($lang) {
+                    $lang = $this->translate($lang);
+                    $titleText .= " ($lang)";
+                }
+            } elseif ($rel
+                && $type = $rel->attributes()->{'elokuva-elonimi-tyyppi'}
+            ) {
+                $titleText .= " ($type)";
+            }
+            $result[] = $titleText;
+        }
+        return $result;
     }
 
     /**
@@ -392,9 +414,9 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     {
         list($locale) = explode('-', $this->getTranslatorLocale());
 
-        $result = $this->getDescriptionData('Synopsis', $locale);
+        $result = $this->getDescriptionData('Content description', $locale);
         if (empty($result)) {
-            $result = $this->getDescriptionData('Synopsis');
+            $result = $this->getDescriptionData('Content description');
         }
         return $result;
     }
@@ -605,9 +627,9 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     {
         list($locale) = explode('-', $this->getTranslatorLocale());
 
-        $result = $this->getDescriptionData('Content description', $locale);
+        $result = $this->getDescriptionData('Synopsis', $locale);
         if (empty($result)) {
-            $result = $this->getDescriptionData('Content description');
+            $result = $this->getDescriptionData('Synopsis');
         }
         return $result;
     }
@@ -697,12 +719,14 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     {
         $result = [];
         $xml = $this->getRecordXML();
+        $idx = 0;
         foreach ($xml->HasAgent as $agent) {
             $relator = (string)$agent->Activity;
             if (!in_array($relator, $relators)) {
                 continue;
             }
             $normalizedRelator = mb_strtoupper($relator, 'UTF-8');
+            $primary = $normalizedRelator == 'D02'; // Director
             $role = isset($this->roleMap[$normalizedRelator])
                     ? $this->roleMap[$normalizedRelator] : $relator;
 
@@ -747,13 +771,24 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 $name = (string)$nameAttrs->{'elokuva-elokreditoimatontekija-nimi'};
             }
 
+            ++$idx;
             $result[] = [
                 'name' => $name,
                 'role' => $role,
                 'roleName' => $roleName,
-                'uncredited' => $uncredited
+                'uncredited' => $uncredited,
+                'idx' => $primary ? $idx : 10000 * $idx
             ];
         }
+
+        // Sort the primary authors first using the idx
+        usort(
+            $result,
+            function ($a, $b) {
+                return $a['idx'] - $b['idx'];
+            }
+        );
+
         return $result;
     }
 
