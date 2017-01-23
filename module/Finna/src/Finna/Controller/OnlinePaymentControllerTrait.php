@@ -336,7 +336,7 @@ trait OnlinePaymentControllerTrait
                 = $userTable->select(
                     ['cat_username' => $t['cat_username'], 'id' => $t['user_id']]
                 )->current();
-            
+
             try {
                 $patron = $catalog->patronLogin(
                     $user['cat_username'], $user->getCatPassword()
@@ -394,7 +394,7 @@ trait OnlinePaymentControllerTrait
         }
 
         try {
-            $catalog->markFeesAsPaid($patron, $res['amount']);
+            $catalog->markFeesAsPaid($patron, $res['amount'], $tId);
             if (!$transactionTable->setTransactionRegistered($tId)) {
                 $this->handleError(
                     "Error updating transaction $transactionId status: registered"

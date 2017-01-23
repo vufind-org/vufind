@@ -534,6 +534,11 @@ trait VoyagerFinna
             }
             return $res;
         }
+        return [
+            'payable' => false,
+            'amount' => 0,
+            'reason' => 'online_payment_minimum_fee'
+        ];
     }
 
     /**
@@ -541,13 +546,14 @@ trait VoyagerFinna
      *
      * This is called after a successful online payment.
      *
-     * @param array $patron Patron.
-     * @param int   $amount Amount to be registered as paid.
+     * @param array  $patron        Patron.
+     * @param int    $amount        Amount to be registered as paid.
+     * @param string $transactionId Transaction ID.
      *
      * @throws ILSException
      * @return boolean success
      */
-    public function markFeesAsPaid($patron, $amount)
+    public function markFeesAsPaid($patron, $amount, $transactionId)
     {
         $params
             = isset($this->config['OnlinePayment']['registrationParams'])

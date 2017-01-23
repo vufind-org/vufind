@@ -123,6 +123,11 @@ class Demo extends \VuFind\ILS\Driver\Demo
             }
             return $res;
         }
+        return [
+            'payable' => false,
+            'amount' => 0,
+            'reason' => 'online_payment_minimum_fee'
+        ];
     }
 
     /**
@@ -162,13 +167,14 @@ class Demo extends \VuFind\ILS\Driver\Demo
      *
      * This is called after a successful online payment.
      *
-     * @param array $patron Patron.
-     * @param int   $amount Amount to be registered as paid.
+     * @param array  $patron        Patron.
+     * @param int    $amount        Amount to be registered as paid.
+     * @param string $transactionId Transaction ID.
      *
      * @throws ILSException
      * @return boolean success
      */
-    public function markFeesAsPaid($patron, $amount)
+    public function markFeesAsPaid($patron, $amount, $transactionId)
     {
         if ((rand() % 10) > 8) {
             throw new ILSException('online_payment_registration_failed');
