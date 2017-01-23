@@ -1,4 +1,4 @@
-package org.solrmarc.index;
+package org.vufind.index;
 /**
  * Class for managing record update dates.
  *
@@ -21,6 +21,9 @@ package org.solrmarc.index;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 
+/**
+ * Class for managing record update dates.
+ */
 public class UpdateDateTracker
 {
     private Connection db;
@@ -36,6 +39,25 @@ public class UpdateDateTracker
     PreparedStatement insertSql;
     PreparedStatement selectSql;
     PreparedStatement updateSql;
+
+    private static ThreadLocal<UpdateDateTracker> trackerCache = 
+        new ThreadLocal<UpdateDateTracker>()
+        {
+            @Override
+            protected UpdateDateTracker initialValue()
+            {
+                try {
+                    return new UpdateDateTracker(DatabaseManager.instance().getConnection());
+                } catch (SQLException e) {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        };
+
+    public static UpdateDateTracker instance()
+    {
+        return trackerCache.get();
+    }
 
     /* Private support method: create a row in the change_tracker table.
      */
