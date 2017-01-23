@@ -188,9 +188,9 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      *
      * This is called after a successful online payment.
      *
-     * @param array $patron Patron.
-     * @param int   $amount Amount to be registered as paid.
-     * @param string $transactionId Transaction ID
+     * @param array  $patron        Patron.
+     * @param int    $amount        Amount to be registered as paid.
+     * @param string $transactionId Transaction ID.
      *
      * @throws ILSException
      * @return boolean success
