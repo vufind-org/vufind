@@ -8,7 +8,11 @@ finna.record = (function() {
             $.getJSON(url)
             .done(function(response) {
                 if (response.data.length > 0) {
-                    description.html(response.data.replace(/##/g, '<br>'));
+                    description.html(response.data);
+
+                    // Make sure any links open in a new window
+                    description.find('a').attr('target', '_blank');
+
                     description.wrapInner('<div class="truncate-field wide"><p class="summary"></p></div>');
                     finna.layout.initTruncate(description);
                     if (!$('.hide-details-button').hasClass('hidden')) {
