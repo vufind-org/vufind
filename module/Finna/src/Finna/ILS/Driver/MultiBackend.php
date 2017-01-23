@@ -190,11 +190,12 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      *
      * @param array $patron Patron.
      * @param int   $amount Amount to be registered as paid.
+     * @param string $transactionId Transaction ID
      *
      * @throws ILSException
      * @return boolean success
      */
-    public function markFeesAsPaid($patron, $amount)
+    public function markFeesAsPaid($patron, $amount, $transactionId)
     {
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
@@ -202,7 +203,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
             && $this->methodSupported($driver, 'markFeesAsPaid')
         ) {
             return $driver->markFeesAsPaid(
-                $this->stripIdPrefixes($patron, $source), $amount
+                $this->stripIdPrefixes($patron, $source), $amount, $transactionId
             );
         }
         throw new ILSException('Online payment not supported');
