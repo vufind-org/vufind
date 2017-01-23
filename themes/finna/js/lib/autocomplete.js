@@ -86,8 +86,13 @@
                     // escape term for regex
                     // https://github.com/sindresorhus/escape-string-regexp/blob/master/index.js
                     var escapedTerm = input.val().replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+                    // Get the search terms as html
+                    escapedTerm = $('<div/>').text(escapedTerm).html();
                     var regex = new RegExp('('+escapedTerm+')', 'ig');
                     content = content.replace(regex, '<b>$1</b>');
+                } else {
+                    // Get the search terms as html
+                    content = $('<div/>').text(content).html();
                 }
                 var item = $('<div/>');
 
