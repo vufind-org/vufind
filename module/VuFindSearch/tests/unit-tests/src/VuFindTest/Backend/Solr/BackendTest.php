@@ -144,6 +144,29 @@ class BackendTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test terms component (using ParamBag as first param).
+     *
+     * @return void
+     */
+    public function testTermsWithParamBagAsFirstParameter()
+    {
+        $resp = $this->loadResponse('terms');
+        $conn = $this->getConnectorMock(['query']);
+        $conn->expects($this->once())
+            ->method('query')
+            ->will($this->returnValue($resp->getBody()));
+        $back = new Backend($conn);
+        $back->setIdentifier('test');
+        $bag = new ParamBag();
+        $bag->set('terms.fl', 'author');
+        $bag->set('terms.lower', '');
+        $bag->set('terms.limit', '-1');
+        $terms = $back->terms($bag);
+        $this->assertTrue($terms->hasFieldTerms('author'));
+        $this->assertCount(10, $terms->getFieldTerms('author'));
+    }
+
+    /**
      * Test handling of a bad JSON response.
      *
      * @return void

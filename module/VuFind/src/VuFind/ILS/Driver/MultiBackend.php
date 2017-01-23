@@ -701,21 +701,27 @@ class MultiBackend extends AbstractBase
     /**
      * Get request groups
      *
-     * @param int   $id     BIB ID
-     * @param array $patron Patron information returned by the patronLogin
+     * @param int   $id          BIB ID
+     * @param array $patron      Patron information returned by the patronLogin
      * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the request group
+     * options or may be ignored.
      *
      * @return array  An array of associative arrays with requestGroupId and
      * name keys
      */
-    public function getRequestGroups($id, $patron)
+    public function getRequestGroups($id, $patron, $holdDetails = null)
     {
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
         if ($driver) {
             if ($this->getSource($patron['cat_username']) != $source
                 || !$this->methodSupported(
-                    $driver, 'getRequestGroups', compact('id', 'patron')
+                    $driver,
+                    'getRequestGroups',
+                    compact('id', 'patron', 'holdDetails')
                 )
             ) {
                 // Return empty array since the sources don't match or the method
@@ -724,7 +730,8 @@ class MultiBackend extends AbstractBase
             }
             $groups = $driver->getRequestGroups(
                 $this->stripIdPrefixes($id, $source),
-                $this->stripIdPrefixes($patron, $source)
+                $this->stripIdPrefixes($patron, $source),
+                $this->stripIdPrefixes($holdDetails, $source)
             );
             return $groups;
         }
@@ -1158,6 +1165,56 @@ class MultiBackend extends AbstractBase
         ) {
             return $driver->changePassword(
                 $this->stripIdPrefixes($details, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Check whether the patron is blocked from placing requests (holds/ILL/SRR).
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getRequestBlocks($patron)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if (!$this->methodSupported(
+                $driver, 'getRequestBlocks', compact('patron')
+            )) {
+                return false;
+            }
+            return $driver->getRequestBlocks(
+                $this->stripIdPrefixes($patron, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getAccountBlocks($patron)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if (!$this->methodSupported(
+                $driver, 'getAccountBlocks', compact('patron')
+            )) {
+                return false;
+            }
+            return $driver->getAccountBlocks(
+                $this->stripIdPrefixes($patron, $source)
             );
         }
         throw new ILSException('No suitable backend driver found');

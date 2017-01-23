@@ -1,0 +1,15 @@
+<?
+  $formatRoles = function ($roles) {
+    if (count($roles) == 0) {
+      return '';
+    }
+    $that = $this;
+    $translate = function ($str) use ($that) {
+      return $that->transEsc('CreatorRoles::' . $str);
+    };
+    return ' (' . implode(', ', array_unique(array_map($translate, $roles))) . ')';
+  };
+?>
+<? if (isset($data[$type]) && !empty($data[$type])): ?>
+  <? $i = 0; foreach ($data[$type] as $author => $roles): ?><?=($i++ == 0)?'':', '?><span property="<?=$this->escapeHtml($schemaLabel)?>"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><?=$formatRoles($roles)?></span><? endforeach; ?>
+<? endif; ?>

@@ -23,6 +23,9 @@
 #   Home of Java installation (not directly used by this script, but passed along to
 #   the standard Solr control script).
 #
+# SOLR_ADDITIONAL_JVM_OPTIONS
+#   Additional options to pass to the JVM when launching Solr.
+#
 
 usage()
 {
@@ -64,5 +67,10 @@ then
   SOLR_PORT="8080"
 fi
 
+if [ -z "$SOLR_ADDITIONAL_JVM_OPTIONS" ]
+then
+  SOLR_ADDITIONAL_JVM_OPTIONS=""
+fi
+
 export SOLR_LOGS_DIR=$SOLR_LOGS_DIR
-"$SOLR_BIN/solr" "$1" -p "$SOLR_PORT" -s "$SOLR_HOME" -m "$SOLR_HEAP" -a "-Dsolr.log=$SOLR_LOGS_DIR"
+"$SOLR_BIN/solr" "$1" -p "$SOLR_PORT" -s "$SOLR_HOME" -m "$SOLR_HEAP" -a "-Dsolr.log=$SOLR_LOGS_DIR $SOLR_ADDITIONAL_JVM_OPTIONS"

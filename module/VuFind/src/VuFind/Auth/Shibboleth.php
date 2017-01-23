@@ -256,7 +256,10 @@ class Shibboleth extends AbstractBase
         if (isset($config->Shibboleth->logout)
             && !empty($config->Shibboleth->logout)
         ) {
-            $url = $config->Shibboleth->logout . '?return=' . urlencode($url);
+            $append = (strpos($config->Shibboleth->logout, '?') !== false) ? '&'
+                : '?';
+            $url = $config->Shibboleth->logout . $append . 'return='
+                . urlencode($url);
         }
 
         // Send back the redirect URL (possibly modified):
