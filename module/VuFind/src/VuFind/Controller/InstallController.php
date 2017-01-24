@@ -237,7 +237,7 @@ class InstallController extends AbstractBase
     {
         $requiredFunctionsExist
             = function_exists('mb_substr') && is_callable('imagecreatefromstring')
-              && function_exists('mcrypt_module_open')
+              && function_exists('openssl_encrypt')
               && class_exists('XSLTProcessor');
 
         return [
@@ -288,10 +288,10 @@ class InstallController extends AbstractBase
             $problems++;
         }
 
-        // Is the mcrypt library missing?
-        if (!function_exists('mcrypt_module_open')) {
+        // Is the openssl library missing?
+        if (!function_exists('openssl_encrypt')) {
             $msg
-                = "Your PHP installation appears to be missing the mcrypt plug-in."
+                = "Your PHP installation appears to be missing the openssl plug-in."
                 . " For better security support, it is recommended that you add"
                 . " this. For details on how to do this, see "
                 . "https://vufind.org/wiki/installation "
