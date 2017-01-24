@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2012-2016.
+ * Copyright (C) The National Library of Finland 2012-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -211,6 +211,10 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
         if ($driver) {
+            // Don't pass on patron information belonging to another source
+            if ($patron && $this->getSource($patron['cat_username']) !== $source) {
+                $patron = null;
+            }
             $holdings = $driver->getHolding(
                 $this->getLocalId($id),
                 $this->stripIdPrefixes($patron, $source)
