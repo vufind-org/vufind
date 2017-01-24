@@ -1,10 +1,10 @@
 <?php
 /**
- * Recaptcha service
+ * Recaptcha request wrapper for Zend\Http\Client
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2016.
+ * Copyright (C) Villanova University 2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,14 +21,16 @@
  *
  * @category VuFind
  * @package  Service
- * @author   Chris Hallberg <crhallberg@gmail.com>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Service;
+use LosReCaptcha\Service\Request\Parameters;
+use Zend\Http\Client;
 
 /**
- * Recaptcha service
+ * Recaptcha request wrapper for Zend\Http\Client
  *
  * @category VuFind
  * @package  View_Helpers
@@ -36,42 +38,38 @@ namespace VuFind\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ReCaptcha extends \LosReCaptcha\Service\ReCaptcha
+class ReCaptchaRequest implements \LosReCaptcha\Service\Request\RequestInterface
 {
     /**
-     * Get the HTML code for the captcha
+     * HTTP client
      *
-     * This method uses the public key to fetch a recaptcha form.
+     * @var Client
+     */
+    protected $client;
+
+    /**
+     * Constructor
      *
-     * @param null|string $name Base name for recaptcha form elements
+     * @param Client $client HTTP client
+     */
+    public function __construct(Client $client = null)
+    {
+        $this->client = $client ? $client : new Client();
+    }
+
+    /**
+     * Submit ReCaptcha API request, return response body.
+     *
+     * @param Parameters $params ReCaptcha parameters
      *
      * @return string
-     *
-     * @throws \ZendService\ReCaptcha\Exception
      */
-    public function getHtml($name = null)
+    public function send(Parameters $params)
     {
-        // Get standard HTML
-        $html = parent::getHtml($name);
-
-        // Override placeholder div with richer version:
-        $div = '<div class="g-recaptcha" data-sitekey="' . $this->siteKey . '"';
-        foreach ($this->options as $key => $option) {
-            if ($key == 'lang') {
-                continue;
-            }
-            $div .= ' data-' . $key . '="' . $option . '"';
-        }
-        $div .= '>';
-        $divregex = '/<div[^>]*id=[\'"]recaptcha_widget[\'"][^>]*>/';
-
-        $scriptRegex = '|<script[^>]*></script>|';
-        $scriptReplacement = ''; // remove
-
-        return preg_replace(
-            [$divregex, $scriptRegex],
-            [$div, $scriptReplacement],
-            $html
-        );
+        $this->client->setUri(ReCaptcha::VERIFY_SERVER);
+        $this->client->setRawBody($params->toQueryString());
+        $this->client->setEncType('application/x-www-form-urlencoded');
+        $result = $this->client->setMethod('POST')->send();
+        return $result ? $result->getBody() : null;
     }
 }
