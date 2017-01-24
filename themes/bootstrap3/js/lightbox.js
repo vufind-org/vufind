@@ -185,10 +185,10 @@ VuFind.register('lightbox', function Lightbox() {
     if ('function' === typeof window[callback]) {
       return window[callback](event, data);
     }
-    if (callback.substr(0, 7) === 'VuFind.') {
-      var parts = callback.substr(7).split('.');
-      var obj = VuFind;
-      for (var i = 0; i < parts.length; i++) {
+    var parts = callback.split('.');
+    if (typeof window[parts[0]] === 'object') {
+      var obj = window[parts[0]];
+      for (var i = 1; i < parts.length; i++) {
         if (typeof obj[parts[i]] === 'undefined') {
           obj = false;
           break;
