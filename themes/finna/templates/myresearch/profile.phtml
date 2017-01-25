@@ -14,9 +14,25 @@
     $user = $this->auth()->isLoggedIn();
     $cards = $user->getLibraryCards();
 
-    $updateAddress = $this->ils()->checkFunction('updateAddress');
-    $updatePhone = $this->ils()->checkFunction('updatePhone');
-    $updateEmail = $this->ils()->checkFunction('updateEmail');
+    $updateAddress = $this->ils()->checkFunction('updateAddress', compact($user));
+    $updatePhone = $this->ils()->checkFunction('updatePhone', compact($user));
+    $updateEmail = $this->ils()->checkFunction('updateEmail', compact($user));
+
+    $updateAddressLink = '';
+    if ($updateAddress) {
+      $linkText = $this->translate(($updatePhone || $updateEmail) ? 'request_address_change' : 'request_contact_information_change');
+      ob_start();
+?>
+        <? if ($updateAddress['method'] == 'email' || $updateAddress['method'] == 'driver'): ?>
+          <i class="fa fa-pen"></i>
+          <a class="profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->url('myresearch-changeprofileaddress')) ?>" data-lightbox title="<?=$this->escapeHtmlAttr($linkText) ?>"><?=$this->escapeHtml($linkText) ?></a>
+        <? elseif ($updateAddress['method'] == 'url'): ?>
+          <i class="fa fa-external-link"></i>
+          <a class="profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->translation()->getStringFromMixed($updateAddress['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($linkText) ?>"><?=$this->escapeHtml($linkText) ?></a>
+        <? endif; ?>
+<?
+      $updateAddressLink = trim(ob_get_clean());
+    }
 
     // Additional translations
     $this->jsTranslations()->addStrings(['new_password_success' => 'new_password_success']);
@@ -93,12 +109,9 @@
             <div class="col-sm-4 profile-text-value profile-long"><?=empty($this->profile['address1']) ? '' : $this->escapeHtml($this->profile['address1']) ?></div>
             <div class="clearfix visible-xs profile-xs"></div>
             <div class="col-sm-4 profile-long">
-              <i class="fa fa-info-big"></i> <?=$this->transEsc('request_address_change_title') ?>
-              <? if ($updateAddress['method'] == 'email'): ?>
-                <a class="profile-library-info-address-update" href="<?=$this->url('myresearch-changeprofileaddress') ?>" data-lightbox title="<?=$this->escapeHtmlAttr($this->translate('request_address_change')) ?>"><?=$this->transEsc('request_address_change') ?></a>.
-              <? elseif ($updateAddress['method'] == 'url'): ?>
-                <a class="profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->translation()->getStringFromMixed($updateAddress['url'])) ?>" target="_blank"><?=$this->transEsc('request_address_change') ?></a>.
-              <? endif; ?>
+              <i class="fa fa-info-big"></i> <?=$this->transEsc(($updatePhone || $updateEmail) ? 'request_address_change_title' : 'request_contact_information_change_title') ?>
+              <br/>
+              <?=$updateAddressLink ?>.
             </div>
             <div class="clearfix visible-xs  profile-xs"><br/></div>
           <? else: ?>
@@ -147,6 +160,10 @@
           <div class="col-sm-4 profile-title"><?=$this->transEsc('Group') ?>:</div>
           <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['group']) ?></div>
         <? endif; ?>
+        <? if (!empty($this->profile['expiration_date'])): ?>
+          <div class="col-sm-4 profile-title"><?=$this->transEsc('Expires') ?>:</div>
+          <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['expiration_date']) ?></div>
+        <? endif; ?>
         <? if ($updatePhone || $updateEmail): ?>
           <div class="col-xs-12">
             <input id="save-library-profile" name="saveLibraryProfile" type="submit" value="<?=$this->transEsc("save_my_profile") ?>" class="btn btn-primary" />
@@ -154,11 +171,7 @@
         <? endif; ?>
         <? if ($updateAddress): ?>
           <div class="col-xs-12">
-          <? if ($updateAddress['method'] == 'email'): ?>
-            <i class="fa fa-pen"></i> <a class="profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->url('myresearch-changeprofileaddress')) ?>" data-lightbox><?=$this->transEsc('request_address_change') ?></a>
-          <? elseif ($updateAddress['method'] == 'url'): ?>
-            <i class="fa fa-external-link"></i> <a class="profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->translation()->getStringFromMixed($updateAddress['url'])) ?>" target="_blank"><?=$this->transEsc('request_address_change') ?></a>
-          <? endif; ?>
+            <?=$updateAddressLink ?>
           </div>
         <? endif; ?>
       </form>

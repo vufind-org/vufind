@@ -1685,7 +1685,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     }
 
     /**
-     * Update patron phone number
+     * Update patron's phone number
      *
      * @param array  $patron Patron array
      * @param string $phone  Phone number
@@ -1759,10 +1759,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     }
 
     /**
-     * Set patron email address
+     * Update patron's email address
      *
      * @param array  $patron Patron array
-     * @param String $email  User Email
+     * @param String $email  Email address
      *
      * @throws ILSException
      *

@@ -1,14 +1,19 @@
 <!-- START of: finna - myresearch/change-address-settings.phtml -->
 <?
+    $user = $this->auth()->isLoggedIn();
+    $updatePhone = $this->ils()->checkFunction('updatePhone', compact($user));
+    $updateEmail = $this->ils()->checkFunction('updateEmail', compact($user));
+
     // Set up page title:
-    $this->headTitle($this->translate('request_address_change'));
+    $title = $this->translate(($updatePhone || $updateEmail) ? 'request_address_change' : 'request_contact_information_change');
+    $this->headTitle($title);
 
     // Set up myresearch menu
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile']);
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
 ?>
-<h2><?=$this->transEsc('request_address_change') ?></h2>
+<h2><?=$this->escapeHtml($title) ?></h2>
 <?=$this->flashmessages()?>
 <? if (!isset($this->requestCompleted) || !$this->requestCompleted): ?>
   <form  name="requestAddressChange" method="post" action="<?=$this->url('myresearch-changeprofileaddress')?>" class="form-horizontal address-form profile-form">

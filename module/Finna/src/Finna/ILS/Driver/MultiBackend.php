@@ -85,49 +85,71 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     }
 
     /**
-     * Update Phone
+     * Update patron's phone number
      *
-     * Attempts to update patron's phone number
+     * @param array  $patron Patron array
+     * @param string $phone  Phone number
      *
-     * @param array $patron  The patron array from patronLogin
-     * @param array $details New phone number
+     * @throws ILSException
      *
-     * @return mixed An array of data on the request including
-     * whether or not it was successful and a system message (if available)
+     * @return array Associative array of the results
      */
-    public function updatePhone($patron, $details)
+    public function updatePhone($patron, $phone)
     {
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver
-            && $this->methodSupported($driver, 'updatePhone', [$patron, $details])
+            && $this->methodSupported($driver, 'updatePhone', [$patron, $phone])
         ) {
             return $driver->updatePhone(
-                $this->stripIdPrefixes($patron, $source), $details
+                $this->stripIdPrefixes($patron, $source), $phone
             );
         }
         throw new ILSException('No suitable backend driver found');
     }
 
     /**
-     * Update Phone
+     * Update patron's email address
      *
-     * Attempts to update patron's email address
+     * @param array  $patron Patron array
+     * @param String $email  Email address
      *
-     * @param array $patron  The patron array from patronLogin
-     * @param array $details New email address
+     * @throws ILSException
      *
-     * @return mixed An array of data on the request including
-     * whether or not it was successful and a system message (if available)
+     * @return array Associative array of the results
      */
-    public function updateEmail($patron, $details)
+    public function updateEmail($patron, $email)
     {
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver
-            && $this->methodSupported($driver, 'updateEmail', [$patron, $details])
+            && $this->methodSupported($driver, 'updateEmail', [$patron, $email])
         ) {
             return $driver->updateEmail(
+                $this->stripIdPrefixes($patron, $source), $email
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Update patron contact information
+     *
+     * @param array $patron  Patron array
+     * @param array $details Associative array of patron contact information
+     *
+     * @throws ILSException
+     *
+     * @return array Associative array of the results
+     */
+    public function updateAddress($patron, $details)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver
+            && $this->methodSupported($driver, 'updateAddress', [$patron, $details])
+        ) {
+            return $driver->updateAddress(
                 $this->stripIdPrefixes($patron, $source), $details
             );
         }

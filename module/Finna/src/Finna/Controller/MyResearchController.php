@@ -455,20 +455,36 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $data = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
             $config = $this->getILS()->getConfig('updateAddress', $patron);
-            if (!isset($config['emailAddress'])) {
-                throw new \Exception(
-                    'Missing emailAddress in ILS updateAddress settings'
-                );
-            }
-            $recipient = $config['emailAddress'];
 
-            $this->sendChangeRequestEmail(
-                $patron, $profile, $data, $fields, $recipient,
-                'Osoitteenmuutospyyntö', 'change-address'
-            );
-            $this->flashMessenger()
-                ->addSuccessMessage('request_change_done');
-            $view->requestCompleted = true;
+            if (isset($config['method']) && 'driver' === $config['method']) {
+                if (false === $catalog->checkFunction('updateAddress', $patron)) {
+                    throw new \Exception(
+                        'ILS driver does not support updating contact information'
+                    );
+                }
+                $result = $catalog->updateAddress($patron, $data);
+                if ($result['success']) {
+                    $view->requestCompleted = true;
+                    $this->flashMessenger()->addSuccessMessage($result['status']);
+                } else {
+                    $this->flashMessenger()->addErrorMessage($result['status']);
+                }
+            } else {
+                if (!isset($config['emailAddress'])) {
+                    throw new \Exception(
+                        'Missing emailAddress in ILS updateAddress settings'
+                    );
+                }
+                $recipient = $config['emailAddress'];
+
+                $this->sendChangeRequestEmail(
+                    $patron, $profile, $data, $fields, $recipient,
+                    'Yhteystietojen muutospyyntö', 'change-address'
+                );
+                $this->flashMessenger()
+                    ->addSuccessMessage('request_change_done');
+                $view->requestCompleted = true;
+            }
         }
 
         $view->profile = $profile;
