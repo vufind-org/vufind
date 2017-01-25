@@ -859,100 +859,53 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             return false;
         }
 
-        if ($this->checkItemsExist) {
-            // First get hold information for the list of items Voyager
-            // thinks are holdable
-            $request = $this->determineHoldType($patron['id'], $bibId);
-            if ($request != 'hold' && $request != 'recall') {
-                return false;
-            }
+        $sqlExpressions = [
+            'rg.GROUP_ID',
+            'rg.GROUP_NAME',
+        ];
+        $sqlFrom = [
+            "$this->dbName.REQUEST_GROUP rg"
 
-            $hierarchy = [];
+        ];
+        $sqlWhere = [];
+        $sqlBind = [];
 
-            // Build Hierarchy
-            $hierarchy['record'] = $bibId;
-            $hierarchy[$request] = false;
-
-            // Add Required Params
-            $params = [
-                'patron' => $patron['id'],
-                'patron_homedb' => $this->ws_patronHomeUbId,
-                'view' => 'full'
-            ];
-
-            $results = $this->makeRequest($hierarchy, $params, 'GET', false);
-
-            if ($results === false) {
-                throw new ILSException('Could not fetch hold information');
-            }
-
-            $items = [];
-            foreach ($results->$request as $hold) {
-                foreach ($hold->items->item as $item) {
-                    $items[(string)$item->item_id] = 1;
-                }
-            }
+        if ($this->pickupLocationsInRequestGroup) {
+            // Limit to request groups that have valid pickup locations
+            $sqlWhere[] = <<<EOT
+rg.GROUP_ID IN (
+  SELECT rgl.GROUP_ID
+  FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
+  WHERE rgl.LOCATION_ID IN (
+    SELECT cpl.LOCATION_ID
+    FROM $this->dbName.CIRC_POLICY_LOCS cpl
+    WHERE cpl.PICKUP_LOCATION='Y'
+  )
+)
+EOT;
         }
 
-        // Find request groups (with items if item check is enabled)
         if ($this->checkItemsExist) {
-            $sqlExpressions = [
-                'rg.GROUP_ID',
-                'rg.GROUP_NAME',
-                'bi.ITEM_ID'
-            ];
-
-            $sqlFrom = [
-                "$this->dbName.BIB_ITEM bi",
-                "$this->dbName.MFHD_ITEM mi",
-                "$this->dbName.MFHD_MASTER mm",
-                "$this->dbName.REQUEST_GROUP rg",
-                "$this->dbName.REQUEST_GROUP_LOCATION rgl",
-            ];
-
-            $sqlWhere = [
-                'bi.BIB_ID=:bibId',
-                'mi.ITEM_ID=bi.ITEM_ID',
-                'mm.MFHD_ID=mi.MFHD_ID',
-                'rgl.LOCATION_ID=mm.LOCATION_ID',
-                'rg.GROUP_ID=rgl.GROUP_ID'
-            ];
-
-            $sqlBind = [
-                'bibId' => $bibId
-            ];
-        } else {
-            $sqlExpressions = [
-                'rg.GROUP_ID',
-                'rg.GROUP_NAME',
-            ];
-
-            $sqlFrom = [
-                "$this->dbName.REQUEST_GROUP rg",
-                "$this->dbName.REQUEST_GROUP_LOCATION rgl"
-            ];
-
-            $sqlWhere = [
-                'rg.GROUP_ID=rgl.GROUP_ID'
-            ];
-
-            $sqlBind = [
-            ];
-
-            if ($this->pickupLocationsInRequestGroup) {
-                // Limit to request groups that have valid pickup locations
-                $sqlFrom[] = "$this->dbName.REQUEST_GROUP_LOCATION rgl";
-                $sqlFrom[] = "$this->dbName.CIRC_POLICY_LOCS cpl";
-
-                $sqlWhere[] = "rgl.GROUP_ID=rg.GROUP_ID";
-                $sqlWhere[] = "cpl.LOCATION_ID=rgl.LOCATION_ID";
-                $sqlWhere[] = "cpl.PICKUP_LOCATION='Y'";
-            }
+            $sqlWhere[] = <<<EOT
+rg.GROUP_ID IN (
+  SELECT rgl.GROUP_ID
+  FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
+  WHERE rgl.LOCATION_ID IN (
+    SELECT mm.LOCATION_ID FROM $this->dbName.MFHD_MASTER mm
+    WHERE mm.MFHD_ID IN (
+      SELECT mi.MFHD_ID
+      FROM $this->dbName.MFHD_ITEM mi, $this->dbName.BIB_ITEM bi
+      WHERE mi.ITEM_ID = bi.ITEM_ID AND bi.BIB_ID=:bibId
+    )
+  )
+)
+EOT;
+            $sqlBind['bibId'] = $bibId;
         }
 
         if ($this->checkItemsNotAvailable) {
-
-            // Build inner query first
+            // Build first the inner query that return item statuses for all request
+            // groups
             $subExpressions = [
                 'sub_rgl.GROUP_ID',
                 'sub_i.ITEM_ID',
@@ -994,9 +947,28 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
             $subSql = $this->buildSqlFromArray($subArray);
 
-            $sqlWhere[] = "not exists (select status.GROUP_ID from " .
-                "({$subSql['string']}) status where status.status=1 " .
-                "and status.GROUP_ID = rgl.GROUP_ID)";
+            $itemWhere = <<<EOT
+rg.GROUP_ID NOT IN (
+  SELECT status.GROUP_ID
+  FROM ({$subSql['string']}) status
+  WHERE status.status=1
+)
+EOT;
+
+            $key = 'disableAvailabilityCheckForRequestGroups';
+            if (isset($this->config['Holds'][$key])) {
+                $disabledGroups = array_map(
+                    function ($s) {
+                        return preg_replace('/[^\d]*/', '', $s);
+                    },
+                    explode(':', $this->config['Holds'][$key])
+                );
+                if ($disabledGroups) {
+                    $itemWhere = "($itemWhere OR rg.GROUP_ID IN ("
+                        . implode(',', $disabledGroups) . '))';
+                }
+            }
+            $sqlWhere[] = $itemWhere;
         }
 
         $sqlArray = [
@@ -1014,16 +986,12 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             throw new ILSException($e->getMessage());
         }
 
-        $groups = [];
-        while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-            if (!$this->checkItemsExist || isset($items[$row['ITEM_ID']])) {
-                $groups[$row['GROUP_ID']] = utf8_encode($row['GROUP_NAME']);
-            }
-        }
-
         $results = [];
-        foreach ($groups as $groupId => $groupName) {
-            $results[] = ['id' => $groupId, 'name' => $groupName];
+        while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
+            $results[] = [
+                'id' => $row['GROUP_ID'],
+                'name' => utf8_encode($row['GROUP_NAME'])
+            ];
         }
 
         // Sort request groups
