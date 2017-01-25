@@ -540,17 +540,18 @@ class Factory
             : (isset($config->Captcha->privateKey)
                 ? $config->Captcha->privateKey
                 : '');
-        $recaptcha = new \VuFind\Service\ReCaptcha(
-            $siteKey, $secretKey, ['ssl' => true]
-        );
-        if (isset($config->Captcha->theme)) {
-            $recaptcha->setOption('theme', $config->Captcha->theme);
-        }
-        $translator = $sm->get('VuFind\Translator');
-        $recaptcha->setOption('lang', $translator->getLocale());
-
         $httpClient = $sm->get('VuFind\Http')->createClient();
-        $recaptcha->setHttpClient($httpClient);
+        $translator = $sm->get('VuFind\Translator');
+        $options = ['lang' => $translator->getLocale()];
+        if (isset($config->Captcha->theme)) {
+            $options['theme'] = $config->Captcha->theme;
+        }
+        $recaptcha = new \VuFind\Service\ReCaptcha(
+            $siteKey, $secretKey,
+            new \LosReCaptcha\Service\Request\ZendHttpClient($httpClient),
+            ['ssl' => true], $options
+        );
+
         return $recaptcha;
     }
 
