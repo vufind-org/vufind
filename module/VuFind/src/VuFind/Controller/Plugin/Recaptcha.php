@@ -124,7 +124,7 @@ class Recaptcha extends AbstractPlugin
         } catch (\ZendService\ReCaptcha\Exception $e) {
             $response = false;
         }
-        $captchaPassed = $response && $response->isValid();
+        $captchaPassed = $response && $response->isSuccess();
         if (!$captchaPassed && $this->errorMode != 'none') {
             if ($this->errorMode == 'flash') {
                 $this->getController()->flashMessenger()
