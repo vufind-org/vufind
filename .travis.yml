@@ -14,5 +14,10 @@ before_script:
   - composer install
   - npm install -g eslint@"<3.0.0"
 
+cache:
+  directories:
+    - downloads
+    - $HOME/.composer/cache
+
 script:
   - vendor/bin/phing phpunitfast phpcs-console php-cs-fixer-dryrun eslint
