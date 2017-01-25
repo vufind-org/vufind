@@ -547,7 +547,8 @@ class Factory
             $options['theme'] = $config->Captcha->theme;
         }
         $recaptcha = new \VuFind\Service\ReCaptcha(
-            $siteKey, $secretKey, new ReCaptchaRequest($httpClient),
+            $siteKey, $secretKey,
+            new \LosReCaptcha\Service\Request\ZendHttpClient($httpClient),
             ['ssl' => true], $options
         );
 
