@@ -184,9 +184,23 @@ VuFind.register('lightbox', function Lightbox() {
   function _evalCallback(callback, event, data) {
     if ('function' === typeof window[callback]) {
       return window[callback](event, data);
-    } else {
-      return eval('(function(event, data) {' + callback + '}())'); // inline code
     }
+    var parts = callback.split('.');
+    if (typeof window[parts[0]] === 'object') {
+      var obj = window[parts[0]];
+      for (var i = 1; i < parts.length; i++) {
+        if (typeof obj[parts[i]] === 'undefined') {
+          obj = false;
+          break;
+        }
+        obj = obj[parts[i]];
+      }
+      if ('function' === typeof obj) {
+        return obj(event, data);
+      }
+    }
+    console.error('Lightbox callback function not found.');
+    return null;
   }
 
   /**
@@ -198,7 +212,9 @@ VuFind.register('lightbox', function Lightbox() {
    * data-lightbox-title = Lightbox title (overrides any title the page provides)
    */
   _constrainLink = function constrainLink(event) {
-    if (typeof $(this).data('lightboxIgnore') != 'undefined' || this.attributes.href.value.charAt(0) === '#') {
+    if (typeof $(this).data('lightboxIgnore') != 'undefined'
+      || typeof this.attributes.href === 'undefined' || this.attributes.href.value.charAt(0) === '#'
+    ) {
       return true;
     }
     if (this.href.length > 1) {

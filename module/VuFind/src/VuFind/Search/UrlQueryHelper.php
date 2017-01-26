@@ -251,33 +251,29 @@ class UrlQueryHelper
     /**
      * Add a facet to the parameters.
      *
-     * @param string $field      Facet field
-     * @param string $value      Facet value
-     * @param string $operator   Facet type to add (AND, OR, NOT)
-     * @param array  $paramArray Optional array of parameters to use instead of
-     * internally stored values.
+     * @param string $field    Facet field
+     * @param string $value    Facet value
+     * @param string $operator Facet type to add (AND, OR, NOT)
      *
      * @return UrlQueryHelper
      */
-    public function addFacet($field, $value, $operator = 'AND', $paramArray = null)
+    public function addFacet($field, $value, $operator = 'AND')
     {
         // Facets are just a special case of filters:
         $prefix = ($operator == 'NOT') ? '-' : ($operator == 'OR' ? '~' : '');
-        return $this->addFilter($prefix . $field . ':"' . $value . '"', $paramArray);
+        return $this->addFilter($prefix . $field . ':"' . $value . '"');
     }
 
     /**
      * Add a filter to the parameters.
      *
-     * @param string $filter     Filter to add
-     * @param array  $paramArray Optional array of parameters to use instead of
-     * internally stored values.
+     * @param string $filter Filter to add
      *
      * @return UrlQueryHelper
      */
-    public function addFilter($filter, $paramArray = null)
+    public function addFilter($filter)
     {
-        $params = (null === $paramArray) ? $this->urlParams : $paramArray;
+        $params = $this->urlParams;
 
         // Add the filter:
         if (!isset($params['filter'])) {
@@ -361,19 +357,15 @@ class UrlQueryHelper
     /**
      * Remove a facet from the parameters.
      *
-     * @param string $field      Facet field
-     * @param string $value      Facet value
-     * @param bool   $escape     Should we escape the string for use in the view?
-     * @param string $operator   Facet type to add (AND, OR, NOT)
-     * @param array  $paramArray Optional array of parameters to use instead of
-     * internally stored values.
+     * @param string $field    Facet field
+     * @param string $value    Facet value
+     * @param string $operator Facet type to add (AND, OR, NOT)
      *
      * @return string
      */
-    public function removeFacet($field, $value, $escape = true, $operator = 'AND',
-        $paramArray = null
-    ) {
-        $params = (null === $paramArray) ? $this->urlParams : $paramArray;
+    public function removeFacet($field, $value, $operator = 'AND')
+    {
+        $params = $this->urlParams;
 
         // Account for operators:
         if ($operator == 'NOT') {
@@ -406,52 +398,47 @@ class UrlQueryHelper
         // Clear page:
         unset($params['page']);
 
-        $config = $this->config;
-        $config['escape'] = $escape;
-        return new static($params, $this->queryObject, $config, false);
+        return new static($params, $this->queryObject, $this->config, false);
     }
 
     /**
      * Remove a filter from the parameters.
      *
      * @param string $filter Filter to add
-     * @param bool   $escape Should we escape the string for use in the view?
      *
      * @return string
      */
-    public function removeFilter($filter, $escape = true)
+    public function removeFilter($filter)
     {
         // Treat this as a special case of removeFacet:
         list($field, $value) = $this->parseFilter($filter);
-        return $this->removeFacet($field, $value, $escape);
+        return $this->removeFacet($field, $value);
     }
 
     /**
      * Return HTTP parameters to render a different page of results.
      *
-     * @param string $p      New page parameter (null for NO page parameter)
-     * @param bool   $escape Should we escape the string for use in the view?
+     * @param string $p New page parameter (null for NO page parameter)
      *
      * @return string
      */
-    public function setPage($p, $escape = true)
+    public function setPage($p)
     {
-        return $this->updateQueryString('page', $p, 1, $escape);
+        return $this->updateQueryString('page', $p, 1);
     }
 
     /**
      * Return HTTP parameters to render the current page with a different sort
      * parameter.
      *
-     * @param string $s      New sort parameter (null for NO sort parameter)
-     * @param bool   $escape Should we escape the string for use in the view?
+     * @param string $s New sort parameter (null for NO sort parameter)
      *
      * @return string
      */
-    public function setSort($s, $escape = true)
+    public function setSort($s)
     {
         return $this->updateQueryString(
-            'sort', $s, $this->getDefault('sort'), $escape, true
+            'sort', $s, $this->getDefault('sort'), true
         );
     }
 
@@ -460,11 +447,10 @@ class UrlQueryHelper
      * handler.
      *
      * @param string $handler new Handler.
-     * @param bool   $escape  Should we escape the string for use in the view?
      *
      * @return string
      */
-    public function setHandler($handler, $escape = true)
+    public function setHandler($handler)
     {
         $query = clone($this->queryObject);
         // We can only set the handler on basic queries:
@@ -481,32 +467,30 @@ class UrlQueryHelper
      * Note: This is called setViewParam rather than setView to avoid confusion
      * with the \Zend\View\Helper\AbstractHelper interface.
      *
-     * @param string $v      New sort parameter (null for NO view parameter)
-     * @param bool   $escape Should we escape the string for use in the view?
+     * @param string $v New sort parameter (null for NO view parameter)
      *
      * @return string
      */
-    public function setViewParam($v, $escape = true)
+    public function setViewParam($v)
     {
         // Because of the way view settings are stored in the session, we always
         // want an explicit value here (hence null rather than default view in
         // third parameter below):
-        return $this->updateQueryString('view', $v, null, $escape);
+        return $this->updateQueryString('view', $v, null);
     }
 
     /**
      * Return HTTP parameters to render the current page with a different limit
      * parameter.
      *
-     * @param string $l      New limit parameter (null for NO limit parameter)
-     * @param bool   $escape Should we escape the string for use in the view?
+     * @param string $l New limit parameter (null for NO limit parameter)
      *
      * @return string
      */
-    public function setLimit($l, $escape = true)
+    public function setLimit($l)
     {
         return $this->updateQueryString(
-            'limit', $l, $this->getDefault('limit'), $escape, true
+            'limit', $l, $this->getDefault('limit'), true
         );
     }
 
@@ -515,11 +499,10 @@ class UrlQueryHelper
      * of search terms.
      *
      * @param string $lookfor New search terms
-     * @param bool   $escape  Should we escape the string for use in the view?
      *
      * @return string
      */
-    public function setSearchTerms($lookfor, $escape = true)
+    public function setSearchTerms($lookfor)
     {
         $query = new Query($lookfor);
         return new static($this->urlParams, $query, $this->config);
@@ -578,13 +561,12 @@ class UrlQueryHelper
      * @param string $value     Value to use (null to skip field entirely)
      * @param string $default   Default value (skip field if $value matches; null
      *                          for no default).
-     * @param bool   $escape    Should we escape the string for use in the view?
      * @param bool   $clearPage Should we clear the page number, if any?
      *
      * @return string
      */
     protected function updateQueryString($field, $value, $default = null,
-        $escape = true, $clearPage = false
+        $clearPage = false
     ) {
         $params = $this->urlParams;
         if (null === $value || $value == $default) {
@@ -595,9 +577,7 @@ class UrlQueryHelper
         if ($clearPage && isset($params['page'])) {
             unset($params['page']);
         }
-        $config = $this->config;
-        $config['escape'] = $escape;
-        return new static($params, $this->queryObject, $config, false);
+        return new static($params, $this->queryObject, $this->config, false);
     }
 
     /**

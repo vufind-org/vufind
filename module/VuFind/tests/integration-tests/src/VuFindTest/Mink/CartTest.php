@@ -138,14 +138,17 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Add the current page of results to the cart.
      *
-     * @param Element $page       Page element
-     * @param Element $updateCart Add to cart button
+     * @param Element $page        Page element
+     * @param Element $updateCart  Add to cart button
+     * @param string  $selectAllId ID of select all checkbox
      *
      * @return void
      */
-    protected function addCurrentPageToCart(Element $page, Element $updateCart)
+    protected function addCurrentPageToCart(Element $page, Element $updateCart,
+        $selectAllId = '#addFormCheckboxSelectAll'
+    )
     {
-        $selectAll = $page->find('css', '#addFormCheckboxSelectAll');
+        $selectAll = $page->find('css', $selectAllId);
         $selectAll->check();
         $updateCart->click();
     }
@@ -169,10 +172,14 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      * into the cart, then opening the lightbox so that additional actions may
      * be attempted.
      *
+     * @param array  $extraConfigs Extra config settings
+     * @param string $selectAllId  ID of select all checkbox
+     *
      * @return Element
      */
-    protected function setUpGenericCartTest($extraConfigs = [])
-    {
+    protected function setUpGenericCartTest($extraConfigs = [],
+        $selectAllId = '#addFormCheckboxSelectAll'
+    ) {
         // Activate the cart:
         $extraConfigs['config']['Site'] = ['showBookBag' => true];
         $this->changeConfigs($extraConfigs);
@@ -183,7 +190,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $updateCart = $this->findCss($page, '#updateCart');
 
         // Now actually select something:
-        $this->addCurrentPageToCart($page, $updateCart);
+        $this->addCurrentPageToCart($page, $updateCart, $selectAllId);
         $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
 
         // Open the cart and empty it:
@@ -421,6 +428,44 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Close the lightbox:
         $close = $this->findCss($page, 'button.close');
         $close->click();
+
+        // Confirm that the cart has truly been emptied:
+        $this->snooze(); // wait for display to update
+        $this->assertEquals('0', $this->findCss($page, '#cartItems strong')->getText());
+    }
+
+    /**
+     * Test that we can put items in the cart using the bottom checkbox.
+     *
+     * @return void
+     */
+    public function testFillCartUsingBottomCheckbox()
+    {
+        $this->setUpGenericCartTest([], '#bottom_addFormCheckboxSelectAll');
+    }
+
+    /**
+     * Test that we can put items in the cart and then remove them outside of
+     * the lightbox.
+     *
+     * @return void
+     */
+    public function testFillAndEmptyCartWithoutLightbox()
+    {
+        // Turn on limit by path setting; there used to be a bug where cookie
+        // paths were set inconsistently between JS and server-side code. This
+        // test should catch any regressions in that area.
+        $page = $this->setUpGenericCartTest(
+            ['config' => ['Cookies' => ['limit_by_path' => 1]]]
+        );
+
+        // Go to the cart page and activate the "empty" control:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Cart');
+        $empty = $this->findCss($page, '#cart-empty-label');
+        $empty->click();
+        $emptyConfirm = $this->findCss($page, '#cart-confirm-empty');
+        $emptyConfirm->click();
 
         // Confirm that the cart has truly been emptied:
         $this->snooze(); // wait for display to update
