@@ -123,9 +123,9 @@ class AbstractBase extends AbstractActionController
      */
     protected function createViewModel($params = null)
     {
-        if ('lightbox' === $this->params()->fromPost(
-            'layout', $this->params()->fromQuery('layout', false)
-        )) {
+        $layout = $this->params()
+            ->fromPost('layout', $this->params()->fromQuery('layout', false));
+        if ('lightbox' === $layout) {
             $this->layout()->setTemplate('layout/lightbox');
         }
         return new ViewModel($params);
