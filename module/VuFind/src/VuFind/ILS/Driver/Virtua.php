@@ -589,10 +589,10 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                         ) {
                             // ... can this user borrow on loan items at this
                             // location?
-                            if (in_array(
-                                $location, $unavailable_locs[$item_loc_code]
-                            )) {
-                                $can_req = true;
+                            if (!$can_req) {
+                                $can_req = in_array(
+                                    $location, $unavailable_locs[$item_loc_code]
+                                );
                             }
                         }
                     } else {
@@ -611,10 +611,10 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                             } else {
                                 // ... can the user borrow available items at this
                                 // location?
-                                if (in_array(
-                                    $location, $available_locs[$item_loc_code]
-                                )) {
-                                    $can_req = true;
+                                if (!$can_req) {
+                                    $can_req = in_array(
+                                        $location, $available_locs[$item_loc_code]
+                                    );
                                 }
                             }
                         }
