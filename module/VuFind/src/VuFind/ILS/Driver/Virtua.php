@@ -599,7 +599,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                         // ... and has a requestable status ...
                         if (in_array($item_stat_code, $status_list)) {
                             // ... can the user borrow status items at this location?
-                            $can_req = in_array($location, $status_locs[$item_loc_code]);
+                            $can_req
+                                = in_array($location, $status_locs[$item_loc_code]);
                         } else {
                             // ... and DOESN'T have a requestable status ...
                             if ($item_stat_code !== null) {
