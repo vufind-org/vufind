@@ -72,8 +72,15 @@ VuFind.register('lightbox', function Lightbox() {
     var htmlDiv = $('<div/>').html(content);
     var alerts = htmlDiv.find('.flash-message.alert-success');
     if (alerts.length > 0) {
-      showAlert(alerts[0].innerHTML, 'success');
-      return;
+        var href = alerts.find('.download').attr('href');
+        if (typeof href !== 'undefined') {
+            location.href = href;
+            _modal.modal('hide');
+            return;
+        } else {
+            showAlert(alerts[0].innerHTML, 'success');
+            return;
+        }
     }
     // Deframe HTML
     var finalHTML = content;
@@ -159,7 +166,17 @@ VuFind.register('lightbox', function Lightbox() {
           }
           _currentUrl = _originalUrl; // Now that we're logged in, where were we?
         }
-        _update(content);
+        
+        var testDiv = $('<div/>').html(content);
+        var error = testDiv.find('.flash-message.alert-danger');
+        if (!error.length && typeof(obj.target) !== 'undefined') {
+        	_modal.modal('hide');	
+            var newWindow =window.open('', obj.target);
+            newWindow.document.body.innerHTML = content;
+        } else {
+            _update(content);
+        }
+        
       })
       .fail(function lbAjaxFail(deferred, errorType, msg) {
         showAlert(VuFind.translate('error_occurred') + '<br/>' + msg, 'danger');
@@ -277,7 +294,8 @@ VuFind.register('lightbox', function Lightbox() {
     ajax({
       url: $(form).attr('action') || _currentUrl,
       method: $(form).attr('method') || 'GET',
-      data: data
+      data: data,
+      target: submit.data('lightboxTarget')
     }).done(function recaptchaReset() {
       if (typeof grecaptcha !== 'undefined') {
         grecaptcha.reset($(form).find('.g-recaptcha').data('captchaId'));
