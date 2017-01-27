@@ -75,6 +75,12 @@
               'VuFind.cart.setDomain("' . $domain . '");'
             );
           }
+          $cookiePath = $cart->getCookiePath();
+          if (!empty($cookiePath)) {
+            $this->headScript()->appendScript(
+              'VuFind.cart.setCookiePath("' . $cookiePath . '");'
+            );
+          }
           $this->jsTranslations()->addStrings(
             [
               'addBookBag' => 'Add to Book Bag',

@@ -130,16 +130,15 @@ class QueryBuilder implements QueryBuilderInterface
         }
 
         if ($query instanceof QueryGroup) {
-            $query = $this->reduceQueryGroup($query);
+            $finalQuery = $this->reduceQueryGroup($query);
         } else {
-            $query->setString(
-                $this->getLuceneHelper()->normalizeSearchString($query->getString())
-            );
+            // Clone the query to avoid modifying the original user-visible query
+            $finalQuery = clone($query);
+            $finalQuery->setString($this->getNormalizedQueryString($query));
         }
+        $string = $finalQuery->getString() ?: '*:*';
 
-        $string  = $query->getString() ?: '*:*';
-
-        if ($handler = $this->getSearchHandler($query->getHandler(), $string)) {
+        if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
             if (!$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
             ) {
@@ -155,13 +154,6 @@ class QueryBuilder implements QueryBuilderInterface
                     }
                 }
             } else if ($handler->hasDismax()) {
-                // If we're using extended dismax, we'll miss out on the question
-                // mark fix in createAdvancedInnerSearchString(), so we should
-                // apply it here. If other query munges arise that are valuable
-                // to both dismax and edismax, we should add a wrapper function
-                // around them and call it from here instead of this one very
-                // specific check.
-                $string = $this->fixTrailingQuestionMarks($string);
                 $params->set('qf', implode(' ', $handler->getDismaxFields()));
                 $params->set('qt', $handler->getDismaxHandler());
                 foreach ($handler->getDismaxParams() as $param) {
@@ -329,8 +321,7 @@ class QueryBuilder implements QueryBuilderInterface
                 );
             }
         } else {
-            $searchString  = $this->getLuceneHelper()
-                ->normalizeSearchString($component->getString());
+            $searchString = $this->getNormalizedQueryString($component);
             $searchHandler = $this->getSearchHandler(
                 $component->getHandler(),
                 $searchString
@@ -378,7 +369,9 @@ class QueryBuilder implements QueryBuilderInterface
      */
     protected function fixTrailingQuestionMarks($string)
     {
-        $multiword = preg_match('/[^\s]\s+[^\s]/', $string);
+        // Treat colon and whitespace as word separators -- in either case, we
+        // should add parentheses for accuracy.
+        $multiword = preg_match('/[^\s][\s:]+[^\s]/', $string);
         $callback = function ($matches) use ($multiword) {
             // Make sure all question marks are properly escaped (first unescape
             // any that are already escaped to prevent double-escapes, then escape
@@ -394,9 +387,25 @@ class QueryBuilder implements QueryBuilderInterface
         // Use a lookahead to skip matches found within quoted phrases.
         $lookahead = '(?=(?:[^\"]*+\"[^\"]*+\")*+[^\"]*+$)';
         $string = preg_replace_callback(
-            '/([^\s]+\?)(\s|$)' . $lookahead . '/', $callback, $string
+            '/([^\s:()]+\?)(\s|$)' . $lookahead . '/', $callback, $string
         );
         return rtrim($string);
+    }
+
+    /**
+     * Given a Query object, return a fully normalized version of the query string.
+     *
+     * @param Query $query Query object
+     *
+     * @return string
+     */
+    protected function getNormalizedQueryString($query)
+    {
+        return $this->fixTrailingQuestionMarks(
+            $this->getLuceneHelper()->normalizeSearchString(
+                $query->getString()
+            )
+        );
     }
 
     /**
@@ -422,9 +431,6 @@ class QueryBuilder implements QueryBuilderInterface
         if (strstr($string, ':')) {
             return $string;
         }
-
-        // Account for trailing question marks:
-        $string = $this->fixTrailingQuestionMarks($string);
 
         return $handler
             ? $handler->createAdvancedQueryString($string, false) : $string;

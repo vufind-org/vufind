@@ -118,7 +118,7 @@ class SpecBuilder
         if (null === $defaultPos) {
             $defaultPos = (max($lookup) + 2) * 100;
         }
-        foreach ($this->spec as $key => $options) {
+        foreach (array_keys($this->spec) as $key) {
             $this->spec[$key]['pos'] = isset($lookup[$key])
                 ? ($lookup[$key] + 1) * 100 : $defaultPos;
         }

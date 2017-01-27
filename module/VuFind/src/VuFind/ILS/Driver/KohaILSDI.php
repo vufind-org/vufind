@@ -274,7 +274,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $this->debug("XML is not valid, URL: $url");
 
             throw new ILSException(
-                "XML is not valid, URL: $url method: $method answer: $answer."
+                "XML is not valid, URL: $url method: $http_method answer: $answer."
             );
         }
         return $result;
@@ -428,7 +428,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $this->initDb();
             }
             if (!$this->pickupEnableBranchcodes) {
-                // No defaultPickupLocation is defined in config 
+                // No defaultPickupLocation is defined in config
                 // AND no pickupLocations are defined either
                 if (isset($holdDetails['item_id']) && (empty($holdDetails['level'])
                     || $holdDetails['level'] == 'item')
@@ -533,7 +533,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function placeHold($holdDetails)
     {
-        $rsvLst             = [];
         $patron             = $holdDetails['patron'];
         $patron_id          = $patron['id'];
         $request_location   = isset($patron['ip']) ? $patron['ip'] : "127.0.0.1";
@@ -667,8 +666,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $holding = [];
         $available = true;
         $duedate = $status = '';
-        $loc = $shelf = '';
-        $reserves = "N";
+        $loc = '';
 
         $sql = "select i.itemnumber as ITEMNO, i.location,
             COALESCE(av.lib_opac,av.lib,av.authorised_value,i.location) AS LOCATION,
@@ -706,7 +704,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $sqlStmtHoldings->execute([':id' => $id]);
         } catch (PDOException $e) {
             $this->debug('Connection failed: ' . $e->getMessage());
-            throw new ILSException($e->getMessage);
+            throw new ILSException($e->getMessage());
         }
 
         $this->debug("Rows count: " . $itemSqlStmt->rowCount());
@@ -1466,7 +1464,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-            $result = [];
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $deptList[$rowItem["abv"]] = $rowItem["DEPARTMENT"];
             }
@@ -1497,7 +1494,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-            $result = [];
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $instList[$rowItem["borrowernumber"]] = $rowItem["name"];
             }
@@ -1527,7 +1523,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-            $result = [];
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $courseList[$rowItem["course_id"]] = $rowItem["course"];
             }
@@ -1555,7 +1550,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function findReserves($course, $inst, $dept)
     {
-        $recordList = [];
         $reserveWhere = [];
         $bindParams = [];
         if ($course != '') {
@@ -1614,8 +1608,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function patronLogin($username, $password)
     {
-        $patron = [];
-
         //       $idObj = $this->makeRequest(
         //         "AuthenticatePatron" . "&username=" . $username
         //       . "&password=" . $password

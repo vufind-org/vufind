@@ -24,7 +24,7 @@
           if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
             $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($thisFacet['value'], '');
           } else {
-            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']);
+            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']);
           } ?>
           <a href="<?=$removeLink ?>" class="applied">
             <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check" aria-hidden="true"></i>

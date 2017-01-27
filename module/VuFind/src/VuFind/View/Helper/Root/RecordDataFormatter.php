@@ -248,6 +248,8 @@ class RecordDataFormatter extends AbstractHelper
      * @param array        $options Rendering options.
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function renderSimple(RecordDriver $driver, $data, array $options)
     {

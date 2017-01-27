@@ -201,10 +201,11 @@ class Oracle
     public function bindParam(
         $parsed, $place_holder, $data, $data_type = 'string', $length = -1
     ) {
-        if (@oci_bind_by_name(
+        $success = @oci_bind_by_name(
             $parsed, $place_holder, $data, $length,
             $this->getDataTypeConstant($data_type)
-        )) {
+        );
+        if ($success) {
             return true;
         } else {
             $this->handleError('binding', oci_error());
@@ -234,10 +235,11 @@ class Oracle
     public function returnParam(
         $parsed, $place_holder, &$data, $data_type = 'string', $length = -1
     ) {
-        if (@oci_bind_by_name(
+        $success = @oci_bind_by_name(
             $parsed, $place_holder, $data, $length,
             $this->getDataTypeConstant($data_type)
-        )) {
+        );
+        if ($success) {
             return true;
         } else {
             $this->handleError('binding', oci_error());
