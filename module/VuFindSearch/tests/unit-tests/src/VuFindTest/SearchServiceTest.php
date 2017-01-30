@@ -685,9 +685,7 @@ class SearchServiceTest extends TestCase
     protected function getService()
     {
         $em = $this->createMock('Zend\EventManager\EventManagerInterface');
-        $service = $this->createMock('VuFindSearch\Service', ['resolve']);
-        $service->expects($this->any())->method('resolve')
-            ->will($this->returnValue($this->getBackend()));
+        $service = new SearchServiceMock($this->getBackend());
         $service->setEventManager($em);
         return $service;
     }
@@ -727,4 +725,29 @@ abstract class TestBackendClassForSimilar
 abstract class TestClassForRandomInterface
 implements BackendInterface, RandomInterface
 {
+}
+
+class SearchServiceMock extends \VuFindSearch\Service
+{
+    protected $backend;
+
+    /**
+     * Constructor.
+     *
+     * @return void
+     */
+    public function __construct($backendMock)
+    {
+        $this->backend = $backendMock;
+    }
+
+    /**
+     * Generate a fake service.
+     *
+     * @return Service
+     */
+    public function resolve()
+    {
+        return $this->backend;
+    }
 }
