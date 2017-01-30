@@ -60,7 +60,8 @@ class Demo extends \VuFind\ILS\Driver\Demo
     public function getConfig($function, $params = null)
     {
         if ($function == 'onlinePayment') {
-            return $this->config['OnlinePayment'];
+            return isset($this->config['OnlinePayment'])
+                ? $this->config['OnlinePayment'] : [];
         }
 
         return parent::getConfig($function, $params);
@@ -143,7 +144,8 @@ class Demo extends \VuFind\ILS\Driver\Demo
     {
         $accruedType = 'Accrued Fine';
 
-        $config = $this->config['OnlinePayment'];
+        $config = isset($this->config['OnlinePayment'])
+            ? $this->config['OnlinePayment'] : [];
         $nonPayable = isset($config['nonPayable'])
             ? $config['nonPayable'] : []
         ;
