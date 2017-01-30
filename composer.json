@@ -27,7 +27,7 @@
         "vufind-org/vufindcode": "1.0.3",
         "vufind-org/vufindharvest": "2.2.0",
         "vufind-org/vufindhttp": "2.1.1",
-        "yajra/laravel-pdo-via-oci8": "1.1.1",
+        "yajra/laravel-pdo-via-oci8": "1.3.0",
         "zendframework/zend-cache": "2.7.2",
         "zendframework/zend-captcha": "2.6.0",
         "zendframework/zend-code": "2.6.3",
