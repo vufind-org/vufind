@@ -46,7 +46,7 @@ class WorldCatSimilarTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetResults()
     {
-        $driver = $this->getMock(
+        $driver = $this->createMock(
             'VuFind\RecordDriver\WorldCat',
             ['tryMethod', 'getPrimaryAuthor', 'getAllSubjectHeadings', 'getTitle', 'getUniqueId', 'getSourceIdentifier']
         );
@@ -69,9 +69,9 @@ class WorldCatSimilarTest extends \VuFindTest\Unit\TestCase
         $driver->expects($this->once())
             ->method('getSourceIdentifier')
             ->will($this->returnValue('WorldCat'));
-        $service = $this->getMock('VuFindSearch\Service', ['search']);
+        $service = $this->createMock('VuFindSearch\Service', ['search']);
         $expectedQuery = new Query('(srw.dd any "fakedc" or srw.au all "fakepa" or srw.su all "fakesh1a fakesh1b" or srw.su all "fakesh2" or srw.ti any "faketitle") not srw.no all "fakeid"');
-        $response = $this->getMock('VuFindSearch\Backend\WorldCat\Response\XML\RecordCollection', ['getRecords'], [['offset' => 0, 'total' => 0]]);
+        $response = $this->createMock('VuFindSearch\Backend\WorldCat\Response\XML\RecordCollection', ['getRecords'], [['offset' => 0, 'total' => 0]]);
         $response->expects($this->once())
             ->method('getRecords')
             ->will($this->returnValue(['fakeresponse']));

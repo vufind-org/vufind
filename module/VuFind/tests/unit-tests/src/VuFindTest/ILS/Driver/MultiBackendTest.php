@@ -80,7 +80,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $writer = new \Zend\Log\Writer\Mock();
         $logger->addWriter($writer);
 
-        $mockPM = $this->getMock('\VuFind\Config\PluginManager');
+        $mockPM = $this->createMock('\VuFind\Config\PluginManager');
         $mockPM->expects($this->any())
             ->method('get')
             ->will(
@@ -196,7 +196,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals($configData, $val);
 
         $config = new \Zend\Config\Config($configData);
-        $mockPM = $this->getMock('\VuFind\Config\PluginManager');
+        $mockPM = $this->createMock('\VuFind\Config\PluginManager');
         $mockPM->expects($this->any())
             ->method('get')
             ->will(
@@ -2339,7 +2339,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     {
         $configData = ['config' => 'values'];
         $config = new \Zend\Config\Config($configData);
-        $mockPM = $this->getMock('\VuFind\Config\PluginManager');
+        $mockPM = $this->createMock('\VuFind\Config\PluginManager');
         $mockPM->expects($this->any())
             ->method('get')
             ->will($this->returnValue($config));
@@ -2401,11 +2401,11 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     {
         $session = $this->getMockBuilder('Zend\Session\Container')
             ->disableOriginalConstructor()->getMock();
-        return $this->getMock(
+        return $this->createMock(
             "VuFind\ILS\Driver\Demo", $methods,
             [
                 new \VuFind\Date\Converter(),
-                $this->getMock('VuFindSearch\Service'),
+                $this->createMock('VuFindSearch\Service'),
                 function () use ($session) { return $session; }
             ]
         );
@@ -2426,13 +2426,13 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             if ($type == 'Demo') {
                 $mock = $this->getMockDemoDriver($methods);
             } else {
-                $mock = $this->getMock(
+                $mock = $this->createMock(
                     "VuFind\ILS\Driver\\$type", $methods,
                     [new \VuFind\Date\Converter()]
                 );
             }
         } catch(\Exception $e) {
-            $mock = $this->getMock(
+            $mock = $this->createMock(
                 "VuFind\ILS\Driver\\$type", $methods
             );
         }

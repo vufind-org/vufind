@@ -107,7 +107,7 @@ class AmazonTest extends \PHPUnit_Framework_TestCase
      */
     protected function getUrl($size, $isbn = '0739313126', $throw = false)
     {
-        $amazon = $this->getMock(
+        $amazon = $this->createMock(
             'VuFind\Content\Covers\Amazon', ['getAmazonService'],
             ['fake', 'fakesecret']
         );
@@ -134,7 +134,7 @@ class AmazonTest extends \PHPUnit_Framework_TestCase
      */
     protected function getFakeService($isbn, $expectedBehavior)
     {
-        $service = $this->getMock(
+        $service = $this->createMock(
             'ZendService\Amazon\Amazon', ['itemLookup'],
             ['fakekey', 'US', 'fakesecret']
         );

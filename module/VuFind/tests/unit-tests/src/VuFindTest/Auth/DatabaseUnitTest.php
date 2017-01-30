@@ -233,7 +233,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
     {
         $post = new Parameters($post);
         $request
-            = $this->getMock('Zend\Http\PhpEnvironment\Request', ['getPost']);
+            = $this->createMock('Zend\Http\PhpEnvironment\Request', ['getPost']);
         $request->expects($this->any())->method('getPost')
             ->will($this->returnValue($post));
         return $request;
@@ -249,7 +249,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
     protected function getDatabase($table)
     {
         $tableManager
-            = $this->getMock('VuFind\Db\Table\PluginManager', ['get']);
+            = $this->createMock('VuFind\Db\Table\PluginManager', ['get']);
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('User'))
             ->will($this->returnValue($table));

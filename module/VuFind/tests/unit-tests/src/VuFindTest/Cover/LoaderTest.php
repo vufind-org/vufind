@@ -59,7 +59,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testUtterFailure()
     {
-        $theme = $this->getMock('VuFindTheme\ThemeInfo', [], ['foo', 'bar']);
+        $theme = $this->createMock('VuFindTheme\ThemeInfo', [], ['foo', 'bar']);
         $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noCover2.gif']))->will($this->returnValue(false));
         $loader = $this->getLoader([], null, $theme);
         $loader->getImage();
@@ -141,7 +141,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
     {
         $config = new Config($config);
         if (null === $manager) {
-            $manager = $this->getMock('VuFind\Content\Covers\PluginManager');
+            $manager = $this->createMock('VuFind\Content\Covers\PluginManager');
         }
         if (null === $theme) {
             $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
@@ -152,7 +152,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
             $client->setAdapter($adapter);
         }
         if ($mock) {
-            return $this->getMock('VuFind\Cover\Loader', $mock, [$config, $manager, $theme, $client]);
+            return $this->createMock('VuFind\Cover\Loader', $mock, [$config, $manager, $theme, $client]);
         }
         return new Loader($config, $manager, $theme, $client);
     }

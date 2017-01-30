@@ -64,7 +64,7 @@
         "phpdocumentor/phpdocumentor": "2.9.0",
         "phploc/phploc": "2.0.6",
         "phpmd/phpmd": "2.4.2",
-        "phpunit/phpunit": "4.8.27",
+        "phpunit/phpunit": "5.7.9",
         "sebastian/phpcpd": "2.0.0",
         "squizlabs/php_codesniffer": "2.7.1"
     },

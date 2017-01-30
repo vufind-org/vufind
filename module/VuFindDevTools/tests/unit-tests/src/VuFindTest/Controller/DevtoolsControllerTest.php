@@ -84,7 +84,7 @@ class DevtoolsControllerTest extends \VuFindTest\Unit\TestCase
     protected function getMockController()
     {
         $config = new Config(['Languages' => ['en' => 'English']]);
-        $c = $this->getMock('VuFindDevTools\Controller\DevtoolsController', ['getConfig']);
+        $c = $this->createMock('VuFindDevTools\Controller\DevtoolsController', ['getConfig']);
         $c->expects($this->any())->method('getConfig')->will($this->returnValue($config));
         return $c;
     }

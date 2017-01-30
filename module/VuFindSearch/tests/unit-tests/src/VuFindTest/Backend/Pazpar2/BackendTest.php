@@ -51,13 +51,13 @@ class BackendTest extends TestCase
      */
     public function testGetConnector()
     {
-        $connector = $this->getMock(
+        $connector = $this->createMock(
             'VuFindSearch\Backend\Pazpar2\Connector', [],
-            ['http://fake', $this->getMock('Zend\Http\Client')]
+            ['http://fake', $this->createMock('Zend\Http\Client')]
         );
         $back = new Backend(
             $connector,
-            $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface')
+            $this->createMock('VuFindSearch\Response\RecordCollectionFactoryInterface')
         );
         $this->assertEquals($connector, $back->getConnector());
     }
@@ -150,8 +150,8 @@ class BackendTest extends TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->getMock('Zend\Http\Client');
-        return $this->getMock(
+        $client = $this->createMock('Zend\Http\Client');
+        return $this->createMock(
             'VuFindSearch\Backend\Pazpar2\Connector', $mock, ['fake', $client]
         );
     }

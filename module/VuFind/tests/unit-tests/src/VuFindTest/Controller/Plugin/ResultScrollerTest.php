@@ -328,7 +328,7 @@ class ResultScrollerTest extends TestCase
     protected function getMockResultScroller($results = null,
         $methods = ['restoreLastSearch', 'rememberSearch']
     ) {
-        $mock = $this->getMock(
+        $mock = $this->createMock(
             'VuFind\Controller\Plugin\ResultScroller', $methods, [new Container('test')]
         );
         if (in_array('restoreLastSearch', $methods) && null !== $results) {

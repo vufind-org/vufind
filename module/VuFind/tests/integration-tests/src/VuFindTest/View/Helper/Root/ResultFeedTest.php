@@ -59,7 +59,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected function getPlugins()
     {
-        $currentPath = $this->getMock('VuFind\View\Helper\Root\CurrentPath');
+        $currentPath = $this->createMock('VuFind\View\Helper\Root\CurrentPath');
         $currentPath->expects($this->any())->method('__invoke')
             ->will($this->returnValue('/test/path'));
 
@@ -74,7 +74,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $recordLink->expects($this->any())->method('getUrl')
             ->will($this->returnValue('test/url'));
 
-        $serverUrl = $this->getMock('Zend\View\Helper\ServerUrl');
+        $serverUrl = $this->createMock('Zend\View\Helper\ServerUrl');
         $serverUrl->expects($this->any())->method('__invoke')
             ->will($this->returnValue('http://server/url'));
 

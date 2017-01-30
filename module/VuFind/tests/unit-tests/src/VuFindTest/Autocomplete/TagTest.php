@@ -67,12 +67,12 @@ class TagTest extends \VuFindTest\Unit\DbTestCase
         ];
 
         // Fake services:
-        $tagTable = $this->getMock('VuFind\Db\Table\Tags', ['matchText']);
+        $tagTable = $this->createMock('VuFind\Db\Table\Tags', ['matchText']);
         $tagTable->expects($this->once())->method('matchText')
             ->with($this->equalTo('foo'))
             ->will($this->returnValue($tags));
         $tableManager
-            = $this->getMock('VuFind\Db\Table\PluginManager', ['get']);
+            = $this->createMock('VuFind\Db\Table\PluginManager', ['get']);
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('Tags'))
             ->will($this->returnValue($tagTable));

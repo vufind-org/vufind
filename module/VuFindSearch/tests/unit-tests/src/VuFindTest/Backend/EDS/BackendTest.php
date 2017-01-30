@@ -144,7 +144,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testConstructorSetters()
     {
-        $fact = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
+        $fact = $this->createMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
         $conn = $this->getConnectorMock();
         $config = [
             'EBSCO_Account' => [
@@ -191,8 +191,8 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->getMock('Zend\Http\Client');
-        return $this->getMock(
+        $client = $this->createMock('Zend\Http\Client');
+        return $this->createMock(
             'VuFindSearch\Backend\EDS\Zend2', $mock, [[], $client]
         );
     }
@@ -210,10 +210,10 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     protected function getBackend($connector, $factory = null, $cache = null, $container = null, $settings = [], $mock = null)
     {
         if (null === $factory) {
-            $factory = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
+            $factory = $this->createMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
         }
         if (null === $cache) {
-            $cache = $this->getMock('Zend\Cache\Storage\Adapter\Filesystem');
+            $cache = $this->createMock('Zend\Cache\Storage\Adapter\Filesystem');
         }
         if (null === $container) {
             $container = $this->getMockBuilder('Zend\Session\Container')
@@ -223,7 +223,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
             return new Backend($connector, $factory, $cache, $container, new \Zend\Config\Config($settings));
         } else {
             $params = [$connector, $factory, $cache, $container, new \Zend\Config\Config($settings)];
-            return $this->getMock('VuFindSearch\Backend\EDS\Backend', $mock, $params);
+            return $this->createMock('VuFindSearch\Backend\EDS\Backend', $mock, $params);
         }
     }
 
