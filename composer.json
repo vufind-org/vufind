@@ -10,7 +10,7 @@
     "license": "GPL-2.0",
     "require": {
         "aferrandini/phpqrcode": "1.0.1",
-        "jasig/phpcas": "1.3.3",
+        "jasig/phpcas": "1.3.4",
         "cap60552/php-sip2": "1.0.0",
         "los/losrecaptcha": "2.0.2",
         "ahand/mobileesp": "dev-master",
