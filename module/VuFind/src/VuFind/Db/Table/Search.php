@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -204,7 +204,7 @@ class Search extends Gateway
      * @param string                               $sessionId Current session ID
      * @param int|null                             $userId    Current user ID
      *
-     * @return void
+     * @return \VuFind\Db\Row\Search
      */
     public function saveSearch(\VuFind\Search\Results\PluginManager $manager,
         $newSearch, $sessionId, $userId
@@ -251,7 +251,7 @@ class Search extends Gateway
                 }
                 // Update the new search from the existing one
                 $newSearch->updateSaveStatus($oldSearch);
-                return;
+                return $oldSearch;
             }
         }
 
@@ -269,6 +269,7 @@ class Search extends Gateway
         $row->session_id = $sessionId;
         $row->search_object = serialize(new minSO($newSearch));
         $row->save();
+        return $row;
     }
 
     /**
