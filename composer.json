@@ -58,8 +58,8 @@
         "zf-commons/zfc-rbac": "2.5.3"
     },
     "require-dev": {
-        "behat/mink": "1.7.0",
-        "behat/mink-selenium2-driver": "1.3.0",
+        "behat/mink": "1.7.1",
+        "behat/mink-selenium2-driver": "1.3.1",
         "friendsofphp/php-cs-fixer": "1.11.6",
         "phpdocumentor/phpdocumentor": "2.9.0",
         "phploc/phploc": "2.0.6",
