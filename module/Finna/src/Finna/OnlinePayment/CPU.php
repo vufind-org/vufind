@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @package  OnlinePayment
  * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -39,6 +40,7 @@ require_once 'Cpu/Client/Product.class.php';
  * @package  OnlinePayment
  * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -64,7 +66,7 @@ class CPU extends BaseHandler
      * (excluding transaction fee)
      * @param int                $transactionFee Transaction fee
      * @param array              $fines          Fines data
-     * @param strin              $currency       Currency
+     * @param string             $currency       Currency
      * @param string             $statusParam    Payment status URL parameter
      *
      * @return false on error, otherwise redirects to payment handler.
@@ -85,8 +87,27 @@ class CPU extends BaseHandler
 
         $payment = new \Cpu_Client_Payment($orderNumber);
         $payment->Email = $user->email;
-        $payment->FirstName = $user->firstname;
-        $payment->LastName  = $user->lastname;
+        $lastname = $user->lastname;
+        if (!empty($user->firstname)) {
+            $payment->FirstName = $user->firstname;
+        } else {
+            // We don't have both names separately, try to extract first name from
+            // last name.
+            if (strpos($lastname, ',') > 0) {
+                // Lastname, Firstname
+                list($lastname, $firstname) = explode(',', $lastname, 2);
+            } else {
+                // First Middle Last
+                if (preg_match('/^(.*) (.*?)$/', $lastname, $matches)) {
+                    $firstname = $matches[1];
+                    $lastname = $matches[2];
+                }
+            }
+            $lastname = trim($lastname);
+            $firstname = trim($firstname);
+            $payment->FirstName = empty($firstname) ? 'ei tietoa' : $firstname;
+        }
+        $payment->LastName = empty($lastname) ? 'ei tietoa' : $lastname;
 
         $payment->Description
             = isset($this->config->paymentDescription)
@@ -100,23 +121,38 @@ class CPU extends BaseHandler
             return false;
         }
         $productCode = $this->config->productCode;
+        $productCodeMappings = [];
+        if (!empty($this->config->productCodeMappings)) {
+            foreach (explode(':', $this->config->productCodeMappings) as $item) {
+                $parts = explode('=', $item, 2);
+                if (count($parts) != 2) {
+                    continue;
+                }
+                $productCodeMappings[trim($parts[0])] = trim($parts[1]);
+            }
+        }
 
         foreach ($fines as $fine) {
+            $fineType = isset($fine['fine']) ? $fine['fine'] : '';
             $fineDesc = null;
-            if (!empty($fine['fine'])) {
-                $fineDesc = $fine['fine'];
+            if (!empty($fineType)) {
+                $fineDesc = $fineType;
             }
             if (!empty($fine['title'])) {
                 $fineDesc .= ' (' . $fine['title'] . ')';
             }
+            $code = isset($productCodeMappings[$fineType])
+                ? $productCodeMappings[$fineType] : $productCode;
             $product = new \Cpu_Client_Product(
-                $productCode, 1, $fine['amount'], $fineDesc
+                $code, 1, $fine['amount'], $fineDesc
             );
             $payment = $payment->addProduct($product);
         }
         if ($transactionFee) {
+            $code = isset($this->config->transactionFeeProductCode)
+                ? $this->config->transactionFeeProductCode : $productCode;
             $product = new \Cpu_Client_Product(
-                $productCode, 1, $transactionFee,
+                $code, 1, $transactionFee,
                 'Palvelumaksu / Serviceavgift / Transaction fee'
             );
             $payment = $payment->addProduct($product);
@@ -301,7 +337,7 @@ class CPU extends BaseHandler
     /**
      * Init CPU module with configured merchantId, secret and URL.
      *
-     * @return Cpu_Client.
+     * @return \Cpu_Client
      */
     protected function initCpu()
     {

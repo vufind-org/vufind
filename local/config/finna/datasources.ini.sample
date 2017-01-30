@@ -24,4 +24,9 @@ onlinePayment['secret'] = ''
 
 ; CPU specific
 onlinePayment['paymentDescription'] = 'Finna: verkkomaksuja'
+; Default product code
 onlinePayment['productCode'] = 'demo_001'
+; Product code for transaction fees
+onlinePayment['transactionFeeProductCode'] = 'demo_002'
+; Product code mappings from the fine types to
+onlinePayment['productCodeMappings'] = 'Overdue=demo_003:Long Overdue=demo_004'
