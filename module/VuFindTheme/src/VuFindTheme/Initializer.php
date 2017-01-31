@@ -310,7 +310,7 @@ class Initializer
     protected function setUpThemeViewHelpers($helpers)
     {
         // Grab the helper loader from the view manager:
-        $loader = $this->serviceManager->get('viewmanager')->getHelperManager();
+        $loader = $this->serviceManager->get('ViewHelperManager');
 
         // Register all the helpers:
         $config = new \Zend\ServiceManager\Config($helpers);
@@ -376,7 +376,7 @@ class Initializer
         }
 
         // Inject the path stack generated above into the view resolver:
-        $resolver = $this->serviceManager->get('viewmanager')->getResolver();
+        $resolver = $this->serviceManager->get('ViewResolver');
         if (!is_a($resolver, 'Zend\View\Resolver\AggregateResolver')) {
             throw new \Exception('Unexpected resolver: ' . get_class($resolver));
         }
