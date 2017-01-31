@@ -583,4 +583,66 @@ EOT;
         }
         return $result;
     }
+
+    /**
+     * Check if request is valid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The Bib ID
+     * @param array  $data   An Array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return bool True if request is valid, false if not
+     */
+    public function checkRequestIsValid($id, $data, $patron)
+    {
+        if (isset($data['level']) && 'title' === $data['level']) {
+            if ($this->checkItemsExist) {
+                $exist = $this->itemsExist(
+                    $id,
+                    isset($holdDetails['requestGroupId'])
+                    ? $holdDetails['requestGroupId'] : null
+                );
+                if (!$exist) {
+                    return false;
+                }
+            }
+
+            if ((!$this->requestGroupsEnabled || isset($data['requestGroupId']))
+                && $this->checkItemsNotAvailable
+            ) {
+                $disabledGroups = [];
+                $key = 'disableAvailabilityCheckForRequestGroups';
+                if (isset($this->config['Holds'][$key])) {
+                    $disabledGroups = explode(':', $this->config['Holds'][$key]);
+                }
+                if (!isset($data['requestGroupId'])
+                    || !in_array($data['requestGroupId'], $disabledGroups)
+                ) {
+                    $available = $this->itemsAvailable(
+                        $id,
+                        isset($data['requestGroupId'])
+                        ? $data['requestGroupId'] : null
+                    );
+                    if ($available) {
+                        return false;
+                    }
+                }
+
+                $available = $this->itemsAvailable($id, null);
+                if ($available) {
+                    return false;
+                }
+            }
+        }
+
+        // Optional check that the patron doesn't already have the bib on loan
+        if ($this->checkLoans) {
+            if ($this->isRecordOnLoan($patron['id'], $id)) {
+                return false;
+            }
+        }
+        return parent::checkRequestIsValid($id, $data, $patron);
+    }
 }
