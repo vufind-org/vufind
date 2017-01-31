@@ -69,7 +69,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingOnSingleRecord()
     {
         $results = $this->getMockResults(1, 10, 1);
-        $plugin = $this->getMockResultScroller($results);
+        $plugin = new ResultScrollerMock($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|1',
@@ -87,7 +87,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingInMiddleOfPage()
     {
         $results = $this->getMockResults(1, 10, 10);
-        $plugin = $this->getMockResultScroller($results);
+        $plugin = new ResultScrollerMock($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
@@ -105,7 +105,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingToFirstRecord()
     {
         $results = $this->getMockResults(5, 2, 10);
-        $plugin = $this->getMockResultScroller($results);
+        $plugin = new ResultScrollerMock($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
@@ -123,7 +123,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingToFirstRecordWithPageSize1()
     {
         $results = $this->getMockResults(10, 1, 10);
-        $plugin = $this->getMockResultScroller($results);
+        $plugin = new ResultScrollerMock($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
@@ -142,7 +142,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingToLastRecord()
     {
         $results = $this->getMockResults(1, 2, 10);
-        $plugin = $this->getMockResultScroller($results);
+        $plugin = new ResultScrollerMock($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
@@ -161,7 +161,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingToLastRecordAcrossPageBoundaries()
     {
         $results = $this->getMockResults(1, 2, 9);
-        $plugin = $this->getMockResultScroller($results);
+        $plugin = new ResultScrollerMock($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|9',
@@ -180,7 +180,7 @@ class ResultScrollerTest extends TestCase
     public function testDisabledFirstLast()
     {
         $results = $this->getMockResults(1, 10, 10, false);
-        $plugin = $this->getMockResultScroller($results);
+        $plugin = new ResultScrollerMock($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => null, 'lastRecord' => null,
@@ -198,7 +198,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingAtStartOfFirstPage()
     {
         $results = $this->getMockResults(1, 10, 10);
-        $plugin = $this->getMockResultScroller($results);
+        $plugin = new ResultScrollerMock($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
@@ -216,7 +216,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingAtEndOfLastPage()
     {
         $results = $this->getMockResults(1, 10, 10);
-        $plugin = $this->getMockResultScroller($results);
+        $plugin = new ResultScrollerMock($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
@@ -234,7 +234,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingAtEndOfLastPageInMultiPageScenario()
     {
         $results = $this->getMockResults(2, 10, 17);
-        $plugin = $this->getMockResultScroller($results);
+        $plugin = new ResultScrollerMock($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|17',
@@ -252,7 +252,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingAtStartOfMiddlePage()
     {
         $results = $this->getMockResults(2, 10, 30);
-        $plugin = $this->getMockResultScroller($results);
+        $plugin = new ResultScrollerMock($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|30',
@@ -280,7 +280,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingAtEndOfMiddlePage()
     {
         $results = $this->getMockResults(2, 10, 30);
-        $plugin = $this->getMockResultScroller($results);
+        $plugin = new ResultScrollerMock($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|30',
@@ -335,5 +335,46 @@ class ResultScrollerTest extends TestCase
             $mock->expects($this->any())->method('restoreLastSearch')->will($this->returnValue($results));
         }
         return $mock;
+    }
+}
+
+/**
+ * Mock class to stub search results
+ */
+class ResultScrollerMock extends \VuFind\Controller\Plugin\ResultScroller
+{
+    /**
+     * Search results to return
+     *
+     * @var \VuFind\Search\Base\Results
+     */
+    protected $testResults;
+
+    public function __construct($testResults)
+    {
+        parent::__construct(new Container('test'));
+        $this->testResults = $testResults;
+    }
+
+    /**
+     * Stubbed
+     *
+     * @return \VuFind\Search\Base\Results
+     */
+    protected function restoreLastSearch()
+    {
+        return $this->testResults;
+    }
+
+    /**
+     * Stubbed
+     *
+     * @param \VuFind\Search\Base\Results $search Search object to remember.
+     *
+     * @return void
+     */
+    protected function rememberSearch($search)
+    {
+        return null;
     }
 }
