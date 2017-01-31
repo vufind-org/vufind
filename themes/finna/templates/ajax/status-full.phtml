@@ -125,7 +125,14 @@ if ($groupBranches) {
     </span>
     <? if ($collapseLocations): ?><i class="fa fa-arrow-right arrow"></i><? endif; ?>
     <? if (!$journal): ?>
-    <span class="info"><?=sprintf('%s: %d, %s: %d', $this->transEsc('Requests'), $reservationsTotal, $this->transEsc('axiell_items'), $itemsTotal);?></span>
+    <span class="info">
+    <? if (!empty($reservationsTotal)): ?>
+      <?=sprintf('%s: %d', $this->transEsc('Requests'), $reservationsTotal);?>
+    <? endif; ?>
+    <? if (!empty($itemsTotal)): ?>
+      <?=sprintf('%s: %d', ucfirst($this->transEsc('axiell_items')), $itemsTotal);?>
+    <? endif; ?>
+    </span>
     <? endif; ?>
   </div>
   <div class="holdings<?=$collapseLocations ? ' collapsed' : ''?> root">

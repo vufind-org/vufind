@@ -61,6 +61,11 @@ defaultPickUpLocation = 1.001
 ; Uncomment this setting to enable regional holds.
 ;regionalHold = true
 
+; This setting is for organisations with a single reservation queue. 
+; By default multiple reservation queues are shown. Uncomment this setting to show only  
+; a single reservation queue. 
+;singleReservationQueue = true
+
 ; Optional help texts that can be displayed on the hold form
 ;helpText = "Help text for all languages."
 ;helpText[en-gb] = "Help text for English language."

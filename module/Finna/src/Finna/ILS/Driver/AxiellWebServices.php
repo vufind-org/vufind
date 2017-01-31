@@ -172,6 +172,13 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     protected $holdingsBranchOrder;
 
     /**
+     * Institution settings for single reservation queue
+     *
+     * @var Boolean
+     */
+    protected $singleReservationQueue = false;
+
+    /**
      * Message Settings
      *
      * The Variable method_none determines if "no notification" option is selectable
@@ -343,6 +350,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'requestGroup',
             explode(':', $this->config['Holds']['extraHoldFields'])
         );
+
+        $this->singleReservationQueue
+            = isset($this->config['Holds']['singleReservationQueue'])
+            ? $this->config['Holds']['singleReservationQueue'] : false;
 
         if (isset($this->config['Debug']['durationLogPrefix'])) {
             $this->durationLogPrefix = $this->config['Debug']['durationLogPrefix'];
@@ -1025,6 +1036,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                            'is_holdable'
                               => $branch->reservationButtonStatus == 'reservationOk',
                            'collapsed' => true,
+                           'requests_placed' => (!$this->singleReservationQueue
+                                   && isset($branch->nofReservations))
+                                   ? $branch->nofReservations : 0,
                            'reserve' => null
                         ];
                         if ($journalInfo) {
@@ -1064,11 +1078,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             if (isset($item['availabilityInfo']['ordered'])) {
                 $orderedTotal += $item['availabilityInfo']['ordered'];
             }
-            if (isset($item['availabilityInfo']['reservations'])) {
-                $reservations = max(
-                    $reservationsTotal,
-                    $item['availabilityInfo']['reservations']
-                );
+            if ($this->singleReservationQueue
+                && isset($item['availabilityInfo']['reservations'])
+            ) {
+                $reservationsTotal = $item['availabilityInfo']['reservations'];
             }
             $locations[$item['location']] = true;
             if (!$journal && $item['is_holdable']) {
@@ -1083,7 +1096,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
            'available' => $availableTotal,
            'ordered' => $orderedTotal,
            'total' => $itemsTotal,
-           'reservations' => $reservations,
+           'reservations' => $reservationsTotal,
            'locations' => count($locations),
            'holdable' => $holdable,
            'availability' => null,
