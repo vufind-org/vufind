@@ -727,12 +727,22 @@ implements BackendInterface, RandomInterface
 {
 }
 
+/**
+ * Mock class to stub 'resolve'
+ */
 class SearchServiceMock extends \VuFindSearch\Service
 {
+    /**
+     * Service backend
+     *
+     * @var Service
+     */
     protected $backend;
 
     /**
      * Constructor.
+     *
+     * @param Service $backendMock Return value for resolve
      *
      * @return void
      */
@@ -746,7 +756,7 @@ class SearchServiceMock extends \VuFindSearch\Service
      *
      * @return Service
      */
-    public function resolve()
+    protected function resolve()
     {
         return $this->backend;
     }
