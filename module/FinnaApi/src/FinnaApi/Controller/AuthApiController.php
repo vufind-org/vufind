@@ -82,7 +82,7 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
      *
      * @return \Zend\Http\Response
      */
-    public function getLoginBackendListAction()
+    public function getLoginBackendsAction()
     {
         $this->disableSessionWrites();
         $this->determineOutputMode();
@@ -96,10 +96,24 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
         if ($catalog->checkCapability('getLoginDrivers')) {
             $targets = $catalog->getLoginDrivers();
             foreach ($targets as $target) {
-                $backends[] = [
+                $config = [];
+                try {
+                    $config = $catalog->getConfig(
+                        'patronLogin', ['cat_username' => "$target.username"]
+                    );
+                } catch (\Exception $e) {
+                    // nevermindg
+                }
+
+                $backend = [
                     'id' => $target,
                     'name' => $this->translate("source_$target", null, $target)
                 ];
+                if (!empty($config['secondary_login_field_label'])) {
+                    $backend['secondary_login_field_label']
+                        = $this->translate($config['secondary_login_field_label']);
+                }
+                $backends[] = $backend;
             }
         }
 
@@ -122,9 +136,18 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
         }
 
         $request = $this->getRequest();
-        $username = $request->getPost('username', $request->getQuery('username'));
-        $password = $request->getPost('password', $request->getQuery('password'));
-        $target = $request->getPost('target', $request->getQuery('target'));
+        $target = trim(
+            $request->getPost('target', $request->getQuery('target'))
+        );
+        $username = trim(
+            $request->getPost('username', $request->getQuery('username'))
+        );
+        $password = trim(
+            $request->getPost('password', $request->getQuery('password'))
+        );
+        $secondary = trim(
+            $request->getPost('secondary', $request->getQuery('secondary'))
+        );
 
         if (empty($username) || empty($password)) {
             return $this->output(
@@ -147,7 +170,7 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
         }
 
         try {
-            $result = $catalog->patronLogin($username, $password);
+            $result = $catalog->patronLogin($username, $password, $secondary);
         } catch (ILSException $e) {
             $this->logError(
                 "$target login ILS exception: " . $e->getMessage()
