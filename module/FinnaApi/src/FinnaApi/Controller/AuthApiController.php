@@ -82,7 +82,7 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
      *
      * @return \Zend\Http\Response
      */
-    public function getLoginBackendsAction()
+    public function getLoginTargetsAction()
     {
         $this->disableSessionWrites();
         $this->determineOutputMode();
@@ -102,7 +102,7 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
                         'patronLogin', ['cat_username' => "$target.username"]
                     );
                 } catch (\Exception $e) {
-                    // nevermindg
+                    // nevermind
                 }
 
                 $backend = [
@@ -117,7 +117,7 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
             }
         }
 
-        return $this->output(['backends' => $backends], self::STATUS_OK);
+        return $this->output(['targets' => $backends], self::STATUS_OK);
     }
 
     /**
