@@ -29,8 +29,6 @@ namespace Finna\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Multiple Backend Driver.
