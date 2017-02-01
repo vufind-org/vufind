@@ -27,9 +27,10 @@
  */
 namespace Finna\ILS\Driver;
 
-use VuFind\Exception\ILS as ILSException,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Multiple Backend Driver.
@@ -44,7 +45,10 @@ use VuFind\Exception\ILS as ILSException,
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
+    implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Change Password
      *
@@ -63,6 +67,29 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
         $item = $this->putCachedData($cacheKey, null);
 
         return parent::changePassword($details);
+    }
+
+    /**
+     * Get available login targets (drivers enabled for login)
+     *
+     * @return string[] Source ID's
+     */
+    public function getLoginDrivers()
+    {
+        $drivers = parent::getLoginDrivers();
+        if (!isset($this->config['General']['sort_login_drivers'])
+            || $this->config['General']['sort_login_drivers']
+        ) {
+            usort(
+                $drivers,
+                function ($a, $b) {
+                    $at = $this->translate("source_$a", null, $a);
+                    $bt = $this->translate("source_$b", null, $b);
+                    return strcmp($at, $bt);
+                }
+            );
+        }
+        return $drivers;
     }
 
     /**

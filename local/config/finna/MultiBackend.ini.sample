@@ -4,6 +4,10 @@
 ; from the [Drivers] section below if set -- omit to have no default driver)
 default_driver = "NoILS"
 
+; (Optional) By default the login target list sorted by the translated name.
+; Sorting can be disabled by uncommenting this setting.
+sort_login_drivers = false
+
 ; This section is for declaring which driver to use for each institution.
 ; The key should be the Source ID of a specific institution, and the value
 ; should be the name of an ILS driver.
