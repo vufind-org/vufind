@@ -145,7 +145,7 @@ class AmazonServiceMock extends \ZendService\Amazon\Amazon
      *
      * @return AmazonService
      */
-    public function itemLookup($key)
+    public function itemLookup($asin, array $options = [])
     {
         if ($this->throwException) {
             throw new \Exception('kaboom');
