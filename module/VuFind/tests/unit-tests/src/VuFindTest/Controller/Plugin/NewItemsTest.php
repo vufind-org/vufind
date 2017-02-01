@@ -85,7 +85,7 @@ class NewItemsTest extends TestCase
     public function testGetFundList()
     {
         $catalog = $this->createMock(
-            'VuFind\ILS\Connection', ['checkCapability', 'getFunds'],
+            __NAMESPACE__ . '\MockILSConnection', ['checkCapability', 'getFunds'],
             [], '', false
         );
         $catalog->expects($this->once())->method('checkCapability')
@@ -209,7 +209,7 @@ class NewItemsTest extends TestCase
     protected function getMockCatalog()
     {
         $catalog = $this->createMock(
-            'VuFind\ILS\Connection', ['getNewItems'], [], '', false
+            __NAMESPACE__ . '\MockILSConnection', ['getNewItems'], [], '', false
         );
         $catalog->expects($this->once())->method('getNewItems')
             ->with(
@@ -240,5 +240,16 @@ class NewItemsTest extends TestCase
         $params->expects($this->once())->method('getQueryIDLimit')
             ->will($this->returnValue($idLimit));
         return $params;
+    }
+}
+
+class MockILSConnection extends \VuFind\ILS\Connection
+{
+    public function getFunds()
+    {
+    }
+
+    public function getNewItems()
+    {
     }
 }
