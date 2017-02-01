@@ -126,7 +126,7 @@ class Factory
     {
         $config = $sm->get('Config');
         return new \VuFind\Config\PluginManager(
-            new \Zend\ServiceManager\Config($config['vufind']['config_reader'])
+            $sm, $config['vufind']['config_reader']
         );
     }
 
@@ -215,7 +215,12 @@ class Factory
         $domain = isset($config->Cookies->domain)
             ? $config->Cookies->domain
             : null;
-        return new \VuFind\Cookie\CookieManager($_COOKIE, $path, $domain, $secure);
+        $session_name = isset($config->Cookies->session_name)
+            ? $config->Cookies->session_name
+            : null;
+        return new \VuFind\Cookie\CookieManager(
+            $_COOKIE, $path, $domain, $secure, $session_name
+        );
     }
 
     /**
@@ -535,17 +540,18 @@ class Factory
             : (isset($config->Captcha->privateKey)
                 ? $config->Captcha->privateKey
                 : '');
-        $recaptcha = new \VuFind\Service\ReCaptcha(
-            $siteKey, $secretKey, ['ssl' => true]
-        );
-        if (isset($config->Captcha->theme)) {
-            $recaptcha->setOption('theme', $config->Captcha->theme);
-        }
-        $translator = $sm->get('VuFind\Translator');
-        $recaptcha->setOption('lang', $translator->getLocale());
-
         $httpClient = $sm->get('VuFind\Http')->createClient();
-        $recaptcha->setHttpClient($httpClient);
+        $translator = $sm->get('VuFind\Translator');
+        $options = ['lang' => $translator->getLocale()];
+        if (isset($config->Captcha->theme)) {
+            $options['theme'] = $config->Captcha->theme;
+        }
+        $recaptcha = new \VuFind\Service\ReCaptcha(
+            $siteKey, $secretKey,
+            new \LosReCaptcha\Service\Request\ZendHttpClient($httpClient),
+            ['ssl' => true], $options
+        );
+
         return $recaptcha;
     }
 
@@ -617,22 +623,6 @@ class Factory
         return new \VuFind\Record\Router(
             $sm->get('VuFind\RecordLoader'),
             $sm->get('VuFind\Config')->get('config')
-        );
-    }
-
-    /**
-     * Construct the record stats helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Statistics\Record
-     */
-    public static function getRecordStats(ServiceManager $sm)
-    {
-        return new \VuFind\Statistics\Record(
-            $sm->get('VuFind\Config')->get('config'),
-            $sm->get('VuFind\StatisticsDriverPluginManager'),
-            $sm->get('VuFind\SessionManager')->getId()
         );
     }
 
@@ -771,22 +761,6 @@ class Factory
     }
 
     /**
-     * Construct the search stats helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Statistics\Search
-     */
-    public static function getSearchStats(ServiceManager $sm)
-    {
-        return new \VuFind\Statistics\Search(
-            $sm->get('VuFind\Config')->get('config'),
-            $sm->get('VuFind\StatisticsDriverPluginManager'),
-            $sm->get('VuFind\SessionManager')->getId()
-        );
-    }
-
-    /**
      * Construct the SearchTabs helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -832,18 +806,6 @@ class Factory
             $sm->get('VuFind\Search\BackendManager'),
             $sm->get('VuFind\DbTablePluginManager')->get('changetracker')
         );
-    }
-
-    /**
-     * Construct the Statistics\Driver Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Statistics\Driver\PluginManager
-     */
-    public static function getStatisticsDriverPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Statistics\Driver');
     }
 
     /**
@@ -930,6 +892,20 @@ class Factory
         return new \VuFind\Connection\WorldCatUtils(
             isset($config->WorldCat) ? $config->WorldCat : null,
             $client, true, $ip
+        );
+    }
+
+    /**
+     * Construct the YAML reader.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Config\YamlReader
+     */
+    public static function getYamlReader(ServiceManager $sm)
+    {
+        return new \VuFind\Config\YamlReader(
+            $sm->get('VuFind\CacheManager')
         );
     }
 }

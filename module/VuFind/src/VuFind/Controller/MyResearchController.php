@@ -372,6 +372,7 @@ class MyResearchController extends AbstractBase
 
         // Obtain user information from ILS:
         $catalog = $this->getILS();
+        $this->addAccountBlocksToFlashMessenger($catalog, $patron);
         $profile = $catalog->getMyProfile($patron);
         $profile['home_library'] = $user->home_library;
         $view->profile = $profile;
@@ -385,6 +386,29 @@ class MyResearchController extends AbstractBase
         }
 
         return $view;
+    }
+
+    /**
+     * Add account blocks to the flash messenger as errors.
+     * These messages are lightbox ignored.
+     *
+     * @param \VuFind\ILS\Connection $catalog Catalog connection
+     * @param array                  $patron  Patron details
+     *
+     * @return void
+     */
+    public function addAccountBlocksToFlashMessenger($catalog, $patron)
+    {
+        if ($catalog->checkCapability('getAccountBlocks', compact($patron))
+            && $blocks = $catalog->getAccountBlocks($patron)
+        ) {
+            foreach ($blocks as $block) {
+                $this->flashMessenger()->addMessage(
+                    [ 'msg' => $block, 'dataset' => [ 'lightbox-ignore' => '1' ] ],
+                    'error'
+                );
+            }
+        }
     }
 
     /**
@@ -1078,6 +1102,9 @@ class MyResearchController extends AbstractBase
 
         // Connect to the ILS:
         $catalog = $this->getILS();
+
+        // Display account blocks, if any:
+        $this->addAccountBlocksToFlashMessenger($catalog, $patron);
 
         // Get the current renewal status and process renewal form, if necessary:
         $renewStatus = $catalog->checkFunction('Renewals', compact('patron'));

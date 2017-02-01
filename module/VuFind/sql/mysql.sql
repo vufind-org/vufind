@@ -146,6 +146,23 @@ CREATE TABLE `session` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `external_session`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `external_session` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `session_id` varchar(128) NOT NULL,
+  `external_session_id` varchar(255) NOT NULL,
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `session_id` (`session_id`),
+  KEY `external_session_id` (`external_session_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `tags`
 --
 
@@ -224,39 +241,6 @@ CREATE TABLE `user_resource` (
   CONSTRAINT `user_resource_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
   CONSTRAINT `user_resource_ibfk_2` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`) ON DELETE CASCADE,
   CONSTRAINT `user_resource_ibfk_5` FOREIGN KEY (`list_id`) REFERENCES `user_list` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `user_stats`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_stats` (
-  `id` varchar(24) NOT NULL,
-  `datestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `browser` varchar(32) NOT NULL,
-  `browserVersion` varchar(8) NOT NULL,
-  `ipaddress` varchar(15) NOT NULL,
-  `referrer` varchar(512) NOT NULL,
-  `url` varchar(512) NOT NULL,
-  `session` varchar(64) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `user_stats_fields`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_stats_fields` (
-  `id` varchar(24) NOT NULL,
-  `field` varchar(32) NOT NULL,
-  `value` varchar(1024) NOT NULL,
-  PRIMARY KEY (`id`,`field`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

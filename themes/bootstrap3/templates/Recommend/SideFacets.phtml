@@ -25,7 +25,7 @@
 ?>
   <div class="checkboxFilter<?if($shown == 0):?> hidden<? endif; ?>"><?=$html ?></div>
 <? endif; ?>
-<? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
+<? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
 <? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
 <? $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <? $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
@@ -42,7 +42,7 @@
           if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
             $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($filter['value'], '');
           } else {
-            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], true, $filter['operator']);
+            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], $filter['operator']);
           }
           if ($filter['displayText'] == '[* TO *]') {
             $filter['displayText'] = $this->translate('filter_wildcard');
@@ -71,7 +71,7 @@
         <? if (isset($rangeFacets[$title])): ?>
           <div class="list-group-item">
             <form name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter">
-              <?=$results->getUrlQuery()->asHiddenFields(array('page' => "/./", 'filter' => "/^{$title}:.*/"))?>
+              <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./", 'filter' => "/^{$title}:.*/"])?>
               <input type="hidden" name="<?=$this->escapeHtmlAttr($rangeFacets[$title]['type'])?>range[]" value="<?=$this->escapeHtmlAttr($title)?>"/>
               <div class="row">
                 <? $extraInputAttribs = ($rangeFacets[$title]['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
@@ -95,7 +95,7 @@
             </form>
           </div>
           <? if ($rangeFacets[$title]['type'] == 'date'): ?>
-            <? $this->headScript()->appendFile('vendor/bootstrap-slider.js'); ?>
+            <? $this->headScript()->appendFile('vendor/bootstrap-slider.min.js'); ?>
             <? $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css'); ?>
             <?
               $min = !empty($rangeFacets[$title]['values'][0]) ? min($rangeFacets[$title]['values'][0], 1400) : 1400;
@@ -122,6 +122,19 @@ $(document).ready(function() {
   })
   .on('change', fillTexts)
   .data('slider');
+});
+
+$('#{$this->escapeHtmlAttr($title)}from, #{$this->escapeHtmlAttr($title)}to').change(function () {
+  var fromValue = Number($('#{$this->escapeHtmlAttr($title)}from').val());
+  var toValue = Number($('#{$this->escapeHtmlAttr($title)}to').val());
+  $('#{$this->escapeHtmlAttr($title)}dateSlider').slider(
+    'setValue',
+    [
+      isNaN(fromValue) || fromValue <= 0 ? {$min} : fromValue,
+      isNaN(toValue) || toValue <= 0 ? {$max} : toValue
+    ],
+    true
+  );
 });
 JS;
             ?>
@@ -182,7 +195,7 @@ JS;
               <? endif; ?>
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
-              <a class="list-group-item active<? if ($i >= $facets_before_more): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>" title="<?=$this->transEsc('applied_filter') ?>">
+              <a class="list-group-item active<? if ($i >= $facets_before_more): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']) ?>" title="<?=$this->transEsc('applied_filter') ?>">
                 <? if ($thisFacet['operator'] == 'OR'): ?>
                   <i class="fa fa-check-square-o" aria-hidden="true"></i>
                 <? else: ?>

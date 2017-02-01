@@ -189,6 +189,22 @@ UNIQUE (session_id)
 CREATE INDEX last_used_idx on session(last_used);
 
 --
+-- Table structure for table external_session
+--
+
+DROP TABLE IF EXISTS "external_session";
+
+CREATE TABLE external_session (
+id SERIAL,
+session_id varchar(128) NOT NULL,
+external_session_id varchar(255) NOT NULL,
+created timestamp NOT NULL default '1970-01-01 00:00:00',
+PRIMARY KEY (id),
+UNIQUE (session_id)
+);
+CREATE INDEX external_session_id on external_session(external_session_id);
+
+--
 -- Table structure for table change_tracker
 --
 
@@ -221,45 +237,6 @@ PRIMARY KEY (id)
 -- --------------------------------------------------------
 
 --
--- Statistics tables
---
-
---
--- Table structure for table statistics
---
-
-DROP TABLE IF EXISTS "user_stats_fields";
-
-CREATE TABLE user_stats_fields (
-id varchar(24) NOT NULL,
-field varchar(32) NOT NULL,
-value varchar(1024) NOT NULL,
-PRIMARY KEY (id, field)
-);
-
--- --------------------------------------------------------
-
---
--- Table structure for table user_stats
---
-
-DROP TABLE IF EXISTS "user_stats";
-
-CREATE TABLE user_stats (
-id varchar(24) NOT NULL,
-datestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-browser varchar(32) NOT NULL,
-browserVersion varchar(8) NOT NULL,
-ipaddress varchar(15) NOT NULL,
-referrer varchar(512) NOT NULL,
-url varchar(512) NOT NULL,
-session varchar(64) NOT NULL,
-PRIMARY KEY (id)
-);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table record
 --
 
@@ -278,7 +255,7 @@ CREATE TABLE record (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table user_card
 --
 
