@@ -135,7 +135,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      * @param \Zend\Http\Client                    $client  HTTP client (null to create TestAdapter)
      * @param array|bool                           $mock    Array of functions to mock, or false for real object
      *
-     * @return void
+     * @return Loader
      */
     protected function getLoader($config = [], $manager = null, $theme = null, $client = null, $mock = false)
     {
@@ -152,7 +152,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
             $client->setAdapter($adapter);
         }
         if ($mock) {
-            return $this->createMock('VuFind\Cover\Loader', $mock, [$config, $manager, $theme, $client]);
+            return $this->createMock(__NAMESPACE__ . '\MockLoader', $mock, [$config, $manager, $theme, $client]);
         }
         return new Loader($config, $manager, $theme, $client);
     }
@@ -165,5 +165,12 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
     protected function getThemeDir()
     {
         return realpath(__DIR__ . '/../../../../../../../themes');
+    }
+}
+
+class MockLoader extends \VuFind\Cover\Loader
+{
+    public function debug($msg, array $context = [], $prependClass = true)
+    {
     }
 }
