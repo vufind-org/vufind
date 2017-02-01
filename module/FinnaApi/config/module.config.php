@@ -5,6 +5,7 @@ $config = [
     'controllers' => [
         'factories' => [
             'api' => 'FinnaApi\Controller\Factory::getApiController',
+            'authapi' => 'FinnaApi\Controller\Factory::getAuthApiController',
             'searchapi' => 'FinnaApi\Controller\Factory::getSearchApiController'
         ],
         'invokables' => [
@@ -34,6 +35,16 @@ $config = [
                         'action'     => 'Index',
                     ]
                 ],
+            ],
+            'authApiv1' => [
+                'type' => 'Zend\Mvc\Router\Http\Segment',
+                'verb' => 'get,post,options',
+                'options' => [
+                    'route'    => '/api/v1/auth/[:action]',
+                    'defaults' => [
+                        'controller' => 'AuthApi'
+                    ]
+                ]
             ],
             'searchApiBareV1' => [
                 'type' => 'Zend\Mvc\Router\Http\Literal',
