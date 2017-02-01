@@ -128,6 +128,13 @@ permission = finna.cache
 ;require = ANY
 ;ipRange[] = 127.0.0.1
 ;ipRange[] = ::1
-;permission = finna.api
 ;permission = access.api.Search
 ;permission = access.api.Record
+
+; Acess to Finna Authentication API
+;[access.finna.api.auth]
+;require = ANY
+;ipRange[] = 127.0.0.1
+;ipRange[] = ::1
+;permission[] = access.finna.api.auth.backendlist
+;permission[] = access.finna.api.auth.librarycardlogin
