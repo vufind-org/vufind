@@ -49,7 +49,7 @@
         <? endif; ?>
       </div>
       <div class="building">
-        <?= $this->organisationDisplayName($this->driver) ?>
+        <?=$this->escapeHtml($this->organisationDisplayName($this->driver)) ?>
       </div>
       <div class="summary loading">
         <div data-rows="6" class="truncate-field">

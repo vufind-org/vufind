@@ -28,7 +28,7 @@
       </a>
       <div class="dateyeartype">
         <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
-        <?= $this->organisationDisplayName($this->driver) ?>
+        <?=$this->escapeHtml($this->organisationDisplayName($this->driver)) ?>
         <? if ($this->driver->isCollection()): ?>
           <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
         <? else: ?>

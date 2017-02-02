@@ -42,7 +42,7 @@
         <div class="resultHierarchyLinks">
           <? // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
           <? if (!$this->translationEmpty('Archive Repository')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><? endif; ?>
-          <?= $this->organisationDisplayName($this->driver) ?>
+          <?=$this->escapeHtml($this->organisationDisplayName($this->driver)) ?>
           <? if ($origination = $this->driver->getOrigination()): ?>
             <br/><span class="archive-label"><?=$this->transEsc('Archive Origination')?>:</span>
             <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($origination)?>%22&amp;type=Author"><?=$this->escapeHtml($origination)?></a>

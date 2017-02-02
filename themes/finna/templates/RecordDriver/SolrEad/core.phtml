@@ -57,7 +57,7 @@
   <? endif; ?>
   <div class="media-body col-sm-8 col-md-9">
     <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getTitle())?></h1>
-      <div class="recordInstitution"><?= $this->organisationDisplayName($this->driver) ?></div>
+      <div class="recordInstitution"><?=$this->escapeHtml($this->organisationDisplayName($this->driver)) ?></div>
       <? if ($serviceURLs = $this->driver->getServiceURLs()): ?>
         <div class="recordURLs">
           <? foreach ($serviceURLs as $current): ?>

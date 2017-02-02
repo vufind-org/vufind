@@ -49,15 +49,15 @@ class OrganisationDisplayName extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($record, $fullName = false)
     {
-        $translator = $this->getView()->plugin('TransEsc');
+        $translator = $this->getView()->plugin('translate');
 
         $institutions = $record->tryMethod('getInstitutions');
         $institution = reset($institutions);
 
         // Case 1: only one building level
         $buildings = $record->getBuilding();
-        $building = $buildings[0];
-        $displayName = $translator->__invoke($building, null, $building);
+        $building = isset($buildings[0]) ? $buildings[0] : '';
+        $displayName = $translator($building);
 
         if (!$fullName && count($buildings) === 1) {
             return $displayName;
@@ -65,10 +65,12 @@ class OrganisationDisplayName extends \Zend\View\Helper\AbstractHelper
 
         // Case 2: search for institution among building levels,
         // use the first one found
-        foreach ($buildings as $building) {
-            if (strpos($building, $institution) !== false) {
-                $displayName = $translator->__invoke($building, null, $building);
-                break;
+        if ($buildings) {
+            foreach ($buildings as $building) {
+                if (strpos($building, $institution) !== false) {
+                    $displayName = (string)$translator($building);
+                    break;
+                }
             }
         }
 

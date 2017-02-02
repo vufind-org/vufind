@@ -165,7 +165,7 @@
       <? if ($results = $this->driver->getInstitutions()): ?>
       <tr class="recordInstitution">
         <th><?=$this->transEsc('Organisation')?>:</th>
-        <td><?=$this->organisationDisplayName($this->driver)?></td>
+        <td><?=$this->escapeHtml($this->organisationDisplayName($this->driver))?></td>
       </tr>
       <? endif; ?>
 
