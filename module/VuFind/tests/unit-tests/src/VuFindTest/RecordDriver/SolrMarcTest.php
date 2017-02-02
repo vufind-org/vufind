@@ -94,6 +94,33 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test regular and extended subject heading support.
+     *
+     * @return void
+     */
+    public function testSubjectHeadings()
+    {
+        $config = new \Zend\Config\Config([]);
+        $record = new \VuFind\RecordDriver\SolrMarc($config);
+        $fixture = $this->loadRecordFixture('testbug1.json');
+        $record->setRawData($fixture['response']['docs'][0]);
+        $this->assertEquals(
+            [['Matematica', 'Periodici.']],
+            $record->getAllSubjectHeadings()
+        );
+        $this->assertEquals(
+            [
+                [
+                    'heading' => ['Matematica', 'Periodici.'],
+                    'type' => '',
+                    'source' => ''
+                ],
+            ],
+            $record->getAllSubjectHeadings(true)
+        );
+    }
+
+    /**
      * Load a fixture file.
      *
      * @param string $file File to load from fixture directory.

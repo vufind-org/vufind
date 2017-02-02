@@ -428,7 +428,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $this->initDb();
             }
             if (!$this->pickupEnableBranchcodes) {
-                // No defaultPickupLocation is defined in config 
+                // No defaultPickupLocation is defined in config
                 // AND no pickupLocations are defined either
                 if (isset($holdDetails['item_id']) && (empty($holdDetails['level'])
                     || $holdDetails['level'] == 'item')
@@ -704,7 +704,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $sqlStmtHoldings->execute([':id' => $id]);
         } catch (PDOException $e) {
             $this->debug('Connection failed: ' . $e->getMessage());
-            throw new ILSException($e->getMessage);
+            throw new ILSException($e->getMessage());
         }
 
         $this->debug("Rows count: " . $itemSqlStmt->rowCount());

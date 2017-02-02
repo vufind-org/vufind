@@ -654,7 +654,8 @@ class DAIA extends AbstractBase implements
                         || (in_array(
                             $domNode->nodeName,
                             ['storage', 'limitation', 'department', 'institution']
-                        ) && strlen($domNode->nodeValue))) {
+                        ) && strlen($domNode->nodeValue))
+                    ) {
                         if (trim($node->textContent)) {
                             $domNode->setAttribute('content', $node->textContent);
                             $node->nodeValue = '';
@@ -790,7 +791,6 @@ class DAIA extends AbstractBase implements
     protected function getItemStatus($item)
     {
         $availability = false;
-        $status = ''; // status cannot be null as this will crash the translator
         $duedate = null;
         $serviceLink = '';
         $queue = '';
