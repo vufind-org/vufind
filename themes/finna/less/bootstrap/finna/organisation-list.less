@@ -18,7 +18,7 @@
     & .loader {
         text-align: center;
         & .fa-spinner:before {
-            font-size: 30px;   
+            font-size: 30px;
         }
     }
     & .open {
@@ -36,7 +36,7 @@
     }
     & h4 {
         margin: 0;
-    } 
+    }
     & .organisation {
         margin-bottom: 5px;
         max-width: ~"-webkit-calc(100% - 70px)";
@@ -61,7 +61,7 @@
             &:hover {
                 cursor: pointer;
             }
-        }    
+        }
     }
     & .info {
         & .is-open {
@@ -105,7 +105,7 @@
                         margin-top: 1px;
                         font-size: .94em;
                         &:last-child {
-                            margin-bottom: 5px;  
+                            margin-bottom: 5px;
                         }
                     }
                     .date {
@@ -127,10 +127,10 @@
                         & .time-template {
                             margin-right: 0px;
                             & .period:after {
-                                content:',';   
+                                content:',';
                             }
                             &:last-child .period:after {
-                                content:'';   
+                                content:'';
                             }
                         }
                     }
@@ -175,10 +175,10 @@
     }
     & .info-element {
         @media (max-width: 375px) {
-            clear: both;   
+            clear: both;
         }
         @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-            clear: both; 
+            clear: both;
         }
     }
     & .schedules-info {
@@ -206,12 +206,6 @@
         }
         &:hover {
             background: darken(@link-color, 10%);
-        }
-        & i[class^='fa-'],[class*='fa-'] {
-            font-family: 'FontAwesome';
-            &.fa-print:before {
-                content: "\f02f";
-            }
         }
         &.btn-round {
             border-radius: 50px;
@@ -247,7 +241,7 @@
             box-shadow: 0 5px 15px -6px #464646;
         }
         & .tooltip-arrow {
-            border-bottom-color: @link-color;   
+            border-bottom-color: @link-color;
         }
     }
 }
