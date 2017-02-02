@@ -27,9 +27,10 @@
     }
     $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->searchClassId, $ignoreHiddenFilterMemory, '?');
 ?>
+<? $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 <? if ($this->searchType == 'advanced'): ?>
   <div class="navbar-form navbar-left flip">
-    <? $tabs = $this->context($this)->renderInContext('search/searchTabs', ['hiddenFilters' => $hiddenFilters]); ?>
+    <? $tabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs']]); ?>
     <? if (!empty($tabs)): ?><?=$tabs ?><div class="tab-content clearfix"><? endif; ?>
       <p class="adv_search_terms"><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
       <p class="adv_search_links">
@@ -41,8 +42,9 @@
   </div>
 <? else: ?>
   <form id="searchForm" class="searchForm navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
-    <?= $this->context($this)->renderInContext('search/searchTabs', ['hiddenFilters' => $hiddenFilters]); ?>
-    <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>" autofocus />
+    <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs']]); ?>
+    <? $placeholder = $this->searchbox()->getPlaceholderText($searchTabs['selected']['id']); ?>
+    <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<? if ($placeholder): ?> placeholder="<?=$placeholder ?>"<? endif ?> autofocus />
     <? if ($handlerCount > 1): ?>
       <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false">
         <? foreach ($handlers as $handler): ?>
