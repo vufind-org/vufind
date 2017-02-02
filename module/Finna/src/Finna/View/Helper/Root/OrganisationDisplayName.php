@@ -72,7 +72,7 @@ class OrganisationDisplayName extends \Zend\View\Helper\AbstractHelper
             }
         }
 
-        if (!$datasource = $record->getDataSource()) {
+        if (!$datasource = $record->tryMethod('getDataSource')) {
             return $displayName;
         }
 
@@ -91,7 +91,7 @@ class OrganisationDisplayName extends \Zend\View\Helper\AbstractHelper
         }
 
         // Building name is duplicated in datasource name.
-        // Use datasource name if building name begins with it. 
+        // Use datasource name if building name begins with it.
         return $pos === 0 ? $datasource : $displayName;
     }
 }
