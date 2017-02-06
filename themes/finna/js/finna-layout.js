@@ -727,7 +727,22 @@ finna.layout = (function() {
             e.preventDefault();
             return false;
         });
-    }
+    };
+
+    var initKeyboardNavigation = function () {
+        $(window).keyup(function(e) {
+            var $target = $(e.target);
+            // jsTree link target navigation
+            if ((e.which === 13 || e.which === 32)
+                && $target.hasClass('jstree-anchor') && $target.find('.main').length > 0
+            ) {
+                $target.find('.main').click();
+                e.preventDefault();
+                return false;
+            }
+            return true;
+        });
+    };
 
     var my = {
         getOrganisationPageLink: getOrganisationPageLink,
@@ -770,6 +785,7 @@ finna.layout = (function() {
             initOrganisationInfoWidgets();
             initOrganisationPageLinks();
             initIframeEmbed();
+            initKeyboardNavigation();
         }
     };
 

@@ -18,7 +18,7 @@
       <div class="col-sm-6 col-md-8">
         <i class="fa fa-arrow-right"></i>
           <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-            <?=$this->record($this->driver)->getTitleHtml()?>
+            <?=$this->record($this->driver)->getTitleHtml()?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
           </a>
           <div class="resultOtherLinks">
           <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>

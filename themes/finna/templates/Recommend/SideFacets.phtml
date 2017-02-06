@@ -43,11 +43,14 @@
     if($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) {
       $html .= ' hidden';
     } else {
-      $shown ++;
+      $shown++;
     }
-    $html .= '"><span class="badge cb-facet">' . $availableRecords . '</span><input type="checkbox" name="filter[]" value="'.$this->escapeHtmlAttr($current['filter']).'"
-      '. ($current['selected'] ? 'checked="checked"' : '') .' id="'.$this->escapeHtmlAttr(str_replace(' ', '', $current['desc'])).'"
-      onclick="document.location.href=\''. ($current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])).'\';" />'.(substr($current['desc'], -5) == '_html' ? $this->translate($current['desc']) : $this->transEsc($current['desc'])).'</label></div>';
+    $html .= '"><span class="badge cb-facet">' . $availableRecords . '</span><input type="checkbox" name="filter[]" value="'
+      . $this->escapeHtmlAttr($current['filter']) . '"' . ($current['selected'] ? 'checked="checked"' : '')
+      . ' id="' . $this->escapeHtmlAttr(str_replace(' ', '', $current['desc']))
+      . '"onclick="document.location.href=\'' . ($current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter']))
+      . '\';" />' . (substr($current['desc'], -5) == '_html' ? $this->translate($current['desc']) : $this->transEsc($current['desc']))
+      . '</label></div>';
   }
 ?>
   <div class="checkboxFilter<?if($shown == 0):?> hidden<? endif; ?>"><?=$html ?></div>
@@ -112,7 +115,7 @@
         ?>
         <a class="list-group-item active" href="<?=$removeLink?>">
           <span class="pull-right"><i class="fa fa-times" aria-hidden="true"></i></span>
-          <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><?=$this->transEsc($field)?><? if (!empty($filter['displayText'])): ?>: <?=$this->escapeHtml($filter['displayText'])?><? endif; ?>
+          <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><span class="sr-only"><?=$this->transEsc('Remove filter')?>: </span><?=$this->transEsc($field)?><? if (!empty($filter['displayText'])): ?>: <?=$this->escapeHtml($filter['displayText'])?><? endif; ?>
         </a>
       <? endforeach; ?>
     <? endforeach; ?>
@@ -127,34 +130,33 @@
     <? $showMoreInLightbox = $this->recommend->getShowInLightboxSetting($title); ?>
     <? $daterangeFacet = $title == $daterangeFacetField; ?>
     <div class="list-group facet<?= $daterangeFacet ? ' daterange-facet' : '' ?>" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
-      <div class="list-group-item title<? if(in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
-        <?=$this->transEsc($cluster['label'])?>
-        <?
-          if ($daterangeFacet) {
-            $fromVal = $toVal = $type = null;
-            $queryHelper = $results->getUrlQuery();
-            $queryHelper->removeDefaultParameter("{$daterangeFacetField}_type");
-            $searchParams = $formParams = $queryHelper->getParams(false);
-            if ($dateRangeFilter) {
-              $formParams = $queryHelper->removeFacet($dateRangeFilter['field'], $dateRangeFilter['value'], 'AND');
-              $spatialFilter = $results->getParams()->parseDateRangeFilter($dateRangeFilter['value']);
-              $from = isset($spatialFilter['from']) ? $spatialFilter['from'] : null;
-              $to = isset($spatialFilter['to']) ? $spatialFilter['to'] : null;
-              $fromVal = $from != '*' ? $from : '';
-              $toVal = $to != '*' ? $to : '';
-              if (isset($spatialFilter['type'])) {
-                $type = $spatialFilter['type'];
-              }
-              if ($params->getSearchType() != 'advanced') {
-                $lookfor = $params->getQuery()->getString();
-                if ($lookfor == '' && $fromVal === null && $toVal === null) {
-                  $plotFrom = 0;
-                }
+      <? // Use a with href and preventing js for keyboard navigation ?>
+      <button class="list-group-item title<? if (in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" href="#" onclick="return false;"><?=$this->transEsc($cluster['label'])?></button>
+      <?
+        if ($daterangeFacet) {
+          $fromVal = $toVal = $type = null;
+          $queryHelper = $results->getUrlQuery();
+          $queryHelper->removeDefaultParameter("{$daterangeFacetField}_type");
+          $searchParams = $formParams = $queryHelper->getParams(false);
+          if ($dateRangeFilter) {
+            $formParams = $queryHelper->removeFacet($dateRangeFilter['field'], $dateRangeFilter['value'], 'AND');
+            $spatialFilter = $results->getParams()->parseDateRangeFilter($dateRangeFilter['value']);
+            $from = isset($spatialFilter['from']) ? $spatialFilter['from'] : null;
+            $to = isset($spatialFilter['to']) ? $spatialFilter['to'] : null;
+            $fromVal = $from != '*' ? $from : '';
+            $toVal = $to != '*' ? $to : '';
+            if (isset($spatialFilter['type'])) {
+              $type = $spatialFilter['type'];
+            }
+            if ($params->getSearchType() != 'advanced') {
+              $lookfor = $params->getQuery()->getString();
+              if ($lookfor == '' && $fromVal === null && $toVal === null) {
+                $plotFrom = 0;
               }
             }
           }
-        ?>
-      </div>
+        }
+      ?>
       <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<? if(!in_array($title, $collapsedFacets)): ?> in<? endif ?>">
         <? if (isset($newItemsFacets[$title])): ?>
           <?

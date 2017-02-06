@@ -28,8 +28,8 @@
     <div class="media-body col-xs-9 <? if ($thumbnailAlignment == 'left'): ?><?= $combinedView ? 'col-sm-10 col-sm-push-2' : 'col-sm-8 col-sm-push-3 col-md-9 col-md-push-2' ?><? elseif ($thumbnailAlignment == 'right'): ?><?= $combinedView ? 'col-sm-10' : 'col-sm-8 col-md-9' ?><? endif; ?>">
       <div>
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title" data-view="<?=isset($this->params) ? $this->params->getOptions()->getListViewOption() : 'list' ?>">
-          <?=$this->record($this->driver)->getTitleHtml()?>
-        </a>
+          <?=$this->record($this->driver)->getTitleHtml()?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
+        </a><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
       </div>
 
       <div class="dateyeartype">

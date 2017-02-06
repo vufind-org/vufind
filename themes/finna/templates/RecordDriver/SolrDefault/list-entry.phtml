@@ -44,7 +44,7 @@
           <? $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
           <? if (!$missing): ?><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><? endif; ?>
             <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>
-          <? if (!$missing): ?></a><? endif; ?>
+          <? if (!$missing): ?><span class="sr-only"> <?=$this->transEsc('To the record')?></span></a><? endif; ?>
         </div>
 
         <div class="record-authors">
