@@ -126,7 +126,7 @@ class Factory
     {
         $config = $sm->get('Config');
         return new \VuFind\Config\PluginManager(
-            new \Zend\ServiceManager\Config($config['vufind']['config_reader'])
+            $sm, $config['vufind']['config_reader']
         );
     }
 
