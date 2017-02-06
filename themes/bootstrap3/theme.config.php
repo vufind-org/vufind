@@ -14,8 +14,9 @@ return array(
         'vendor/jquery.min.js',
         'vendor/bootstrap.min.js',
         'vendor/bootstrap-accessibility.min.js',
-        'autocomplete.js',
         'vendor/validator.min.js',
+        'lib/form-attr-polyfill.js', // input[form] polyfill, cannot load conditionally, since we need all versions of IE
+        'lib/autocomplete.js',
         'common.js',
         'lightbox.js',
     ),

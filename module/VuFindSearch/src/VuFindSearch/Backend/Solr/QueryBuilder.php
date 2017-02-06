@@ -130,16 +130,15 @@ class QueryBuilder implements QueryBuilderInterface
         }
 
         if ($query instanceof QueryGroup) {
-            $query = $this->reduceQueryGroup($query);
+            $finalQuery = $this->reduceQueryGroup($query);
         } else {
-            $query->setString(
-                $this->getLuceneHelper()->normalizeSearchString($query->getString())
-            );
+            // Clone the query to avoid modifying the original user-visible query
+            $finalQuery = clone($query);
+            $finalQuery->setString($this->getNormalizedQueryString($query));
         }
+        $string = $finalQuery->getString() ?: '*:*';
 
-        $string  = $query->getString() ?: '*:*';
-
-        if ($handler = $this->getSearchHandler($query->getHandler(), $string)) {
+        if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
             if (!$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
             ) {
@@ -154,19 +153,17 @@ class QueryBuilder implements QueryBuilderInterface
                         $params->set('hl.q', $oldString);
                     }
                 }
-            } else {
-                if ($handler->hasDismax()) {
-                    $params->set('qf', implode(' ', $handler->getDismaxFields()));
-                    $params->set('qt', $handler->getDismaxHandler());
-                    foreach ($handler->getDismaxParams() as $param) {
-                        $params->add(reset($param), next($param));
-                    }
-                    if ($handler->hasFilterQuery()) {
-                        $params->add('fq', $handler->getFilterQuery());
-                    }
-                } else {
-                    $string = $handler->createSimpleQueryString($string);
+            } else if ($handler->hasDismax()) {
+                $params->set('qf', implode(' ', $handler->getDismaxFields()));
+                $params->set('qt', $handler->getDismaxHandler());
+                foreach ($handler->getDismaxParams() as $param) {
+                    $params->add(reset($param), next($param));
                 }
+                if ($handler->hasFilterQuery()) {
+                    $params->add('fq', $handler->getFilterQuery());
+                }
+            } else {
+                $string = $handler->createSimpleQueryString($string);
             }
         }
         $params->set('q', $string);
@@ -324,8 +321,7 @@ class QueryBuilder implements QueryBuilderInterface
                 );
             }
         } else {
-            $searchString  = $this->getLuceneHelper()
-                ->normalizeSearchString($component->getString());
+            $searchString = $this->getNormalizedQueryString($component);
             $searchHandler = $this->getSearchHandler(
                 $component->getHandler(),
                 $searchString
@@ -363,6 +359,56 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * If the query ends in a non-escaped question mark, the user may not really
+     * intend to use the question mark as a wildcard -- let's account for that
+     * possibility.
+     *
+     * @param string $string Search query to adjust
+     *
+     * @return string
+     */
+    protected function fixTrailingQuestionMarks($string)
+    {
+        // Treat colon and whitespace as word separators -- in either case, we
+        // should add parentheses for accuracy.
+        $multiword = preg_match('/[^\s][\s:]+[^\s]/', $string);
+        $callback = function ($matches) use ($multiword) {
+            // Make sure all question marks are properly escaped (first unescape
+            // any that are already escaped to prevent double-escapes, then escape
+            // all of them):
+            $s = $matches[1];
+            $escaped = str_replace('?', '\?', str_replace('\?', '?', $s));
+            $s = "($s) OR ($escaped)";
+            if ($multiword) {
+                $s = "($s) ";
+            }
+            return $s;
+        };
+        // Use a lookahead to skip matches found within quoted phrases.
+        $lookahead = '(?=(?:[^\"]*+\"[^\"]*+\")*+[^\"]*+$)';
+        $string = preg_replace_callback(
+            '/([^\s:()]+\?)(\s|$)' . $lookahead . '/', $callback, $string
+        );
+        return rtrim($string);
+    }
+
+    /**
+     * Given a Query object, return a fully normalized version of the query string.
+     *
+     * @param Query $query Query object
+     *
+     * @return string
+     */
+    protected function getNormalizedQueryString($query)
+    {
+        return $this->fixTrailingQuestionMarks(
+            $this->getLuceneHelper()->normalizeSearchString(
+                $query->getString()
+            )
+        );
+    }
+
+    /**
      * Return advanced inner search string based on input and handler.
      *
      * @param string        $string  Input search string
@@ -384,18 +430,6 @@ class QueryBuilder implements QueryBuilderInterface
         // it as-is:
         if (strstr($string, ':')) {
             return $string;
-        }
-
-        // If the query ends in a non-escaped question mark, the user may not really
-        // intend to use the question mark as a wildcard -- let's account for that
-        // possibility
-        if (substr($string, -1) == '?' && substr($string, -2) != '\?') {
-            // Make sure all question marks are properly escaped (first unescape
-            // any that are already escaped to prevent double-escapes, then escape
-            // all of them):
-            $strippedQuery
-                = str_replace('?', '\?', str_replace('\?', '?', $string));
-            $string = "({$string}) OR (" . $strippedQuery . ")";
         }
 
         return $handler

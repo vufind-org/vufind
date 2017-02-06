@@ -89,9 +89,10 @@ class Manager
         $cacheBase = $this->getCacheDir();
 
         // Set up standard file-based caches:
-        foreach (['config', 'cover', 'language', 'object'] as $cache) {
+        foreach (['config', 'cover', 'language', 'object', 'yaml'] as $cache) {
             $this->createFileCache($cache, $cacheBase . $cache . 's');
         }
+        $this->createFileCache('public', $cacheBase . 'public');
 
         // Set up search specs cache based on config settings:
         $searchCacheType = isset($searchConfig->Cache->type)

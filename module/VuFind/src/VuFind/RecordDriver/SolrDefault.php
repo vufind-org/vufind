@@ -199,9 +199,15 @@ class SolrDefault extends AbstractBase
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
      * @return array
      */
-    public function getAllSubjectHeadings()
+    public function getAllSubjectHeadings($extended = false)
     {
         $headings = [];
         foreach (['topic', 'geographic', 'genre', 'era'] as $field) {
@@ -213,8 +219,10 @@ class SolrDefault extends AbstractBase
         // The Solr index doesn't currently store subject headings in a broken-down
         // format, so we'll just send each value as a single chunk.  Other record
         // drivers (i.e. MARC) can offer this data in a more granular format.
-        $callback = function ($i) {
-            return [$i];
+        $callback = function ($i) use ($extended) {
+            return $extended
+                ? ['heading' => [$i], 'type' => '', 'source' => '']
+                : [$i];
         };
         return array_map($callback, array_unique($headings));
     }
@@ -1797,14 +1805,14 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get longitude/latitude text (or false if not available).
+     * Get longitude/latitude values (or empty array if not available).
      *
-     * @return string|bool
+     * @return array
      */
     public function getLongLat()
     {
         return isset($this->fields['long_lat'])
-            ? $this->fields['long_lat'] : false;
+            ? $this->fields['long_lat'] : [];
     }
 
     /**
@@ -1913,5 +1921,38 @@ class SolrDefault extends AbstractBase
         return $this->containerLinking
             && !empty($this->fields['hierarchy_parent_id'])
             ? $this->fields['hierarchy_parent_id'][0] : '';
+    }
+
+    /**
+     * Get the bbox-geo variable.
+     *
+     * @return array
+     */
+    public function getGeoLocation()
+    {
+        return isset($this->fields['location_geo'])
+            ? $this->fields['location_geo'] : [];
+    }
+
+    /**
+     * Get the map display (lat/lon) coordinates
+     *
+     * @return array
+     */
+    public function getDisplayCoordinates()
+    {
+        return isset($this->fields['long_lat_display'])
+            ? $this->fields['long_lat_display'] : [];
+    }
+
+    /**
+     * Get the map display (lat/lon) labels
+     *
+     * @return array
+     */
+    public function getCoordinateLabels()
+    {
+        return isset($this->fields['long_lat_label'])
+            ? $this->fields['long_lat_label'] : [];
     }
 }

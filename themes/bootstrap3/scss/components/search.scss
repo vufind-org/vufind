@@ -1,0 +1,133 @@
+$thumbnail-width-small: 60px !default;
+$thumbnail-width-medium: 100px !default;
+$thumbnail-width-large: 160px !default;
+
+.searchForm {
+  margin: 0;
+  padding: 0;
+}
+
+header .container.navbar { margin-bottom: 0; }
+
+.bulkActionButtons label {display: inline-block;}
+.bulkActionButtons label input {margin-top: 2px;}
+.grid { @media (max-width: 767px) {min-height: 250px;} }
+.result {
+  padding-top: 1.5rem;
+  .checkbox {
+    float: left;
+    padding-right: .5rem;
+  }
+  .media,
+  .media-body { overflow: visible; }
+  .media-body .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .media {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    @include clearfix();
+  }
+  .media-left,
+  .media-right {
+    padding: 0;
+    text-align: center;
+    a {
+      display: inline-block;
+      text-align: center;
+    }
+    img {
+      max-width: none;
+      max-height: 300px;
+    }
+    &.small a,
+    &.small > img {
+      width: $thumbnail-width-small;
+      img { max-width: $thumbnail-width-small; }
+    }
+    &.medium a,
+    &.medium > img {
+      width: $thumbnail-width-medium;
+      img { max-width: $thumbnail-width-medium; }
+    }
+    &.large a,
+    &.large > img {
+      width: $thumbnail-width-large;
+      img { max-width: $thumbnail-width-large; }
+    }
+  }
+  .media-left { padding-left: 10px; }
+  .media-right { padding-right: 10px; }
+  .title {font-weight: bold;}
+  .list-tab-content.record .img-col { display: none; }
+  .list-tab-content.record .info-col { width: 100%; }
+
+  @media (max-width: 767px) {
+    a { text-decoration: underline; }
+  }
+  @media (max-width: 530px) {
+    .checkbox { padding: 0; }
+    .media-left { padding-right: 0; }
+  }
+
+  .format {
+    @extend .label;
+    @extend .label-info;
+  }
+}
+
+.result.embedded {
+  .getFull {
+    display: block;
+    margin-left: 1.5rem;
+    padding-right: 30px;
+    border-left: 1px solid transparent;
+  }
+  .getFull.expanded {
+    @extend .list-group-item;
+    margin-top: -11px;
+    margin-left: .75rem;
+    padding-left: .75rem;
+    border-top-left-radius: $border-radius-base;
+    border-top-right-radius: $border-radius-base;
+    &::before {
+      content: '\25BC';
+      position: absolute;
+      right: 15px;
+      color: $gray;
+    }
+  }
+  .loading {
+    @extend .list-group-item;
+    margin-left: .75rem;
+    padding: 1rem;
+    background: #fff;
+  }
+  .long-view {
+    margin-left: .75rem;
+    padding: .5rem;
+    border: 1px solid $list-group-border;
+    background-color: #fff;
+    border-bottom-left-radius: $border-radius-base;
+    border-bottom-right-radius: $border-radius-base;
+  }
+  .long-view .tab-content { padding: 0; }
+  .list-tabs { margin-bottom: 0; }
+  .list-tab-toggle { cursor: pointer; }
+  .list-tab-content { padding: 1rem; }
+}
+
+.search-controls .alert {margin-bottom: 0;}
+.searchtools a {padding: 0 .5em;}
+.title-in-heading {
+  font-size: inherit;
+  font-style: italic;
+}
+
+.wikipedia img { margin-right: 1rem; }
+
+.geoItem {
+    font-size: .9em;
+    margin: 0px 0px 10px;
+}

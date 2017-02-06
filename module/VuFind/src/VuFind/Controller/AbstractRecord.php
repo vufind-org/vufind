@@ -70,13 +70,6 @@ class AbstractRecord extends AbstractBase
     protected $searchClassId = 'Solr';
 
     /**
-     * Should we log statistics?
-     *
-     * @var bool
-     */
-    protected $logStatistics = true;
-
-    /**
      * Record driver
      *
      * @var AbstractRecordDriver
@@ -258,12 +251,6 @@ class AbstractRecord extends AbstractBase
      */
     public function homeAction()
     {
-        // Save statistics:
-        if ($this->logStatistics) {
-            $this->getServiceLocator()->get('VuFind\RecordStats')
-                ->log($this->loadRecord(), $this->getRequest());
-        }
-
         return $this->showTab(
             $this->params()->fromRoute('tab', $this->getDefaultTab())
         );
@@ -450,12 +437,28 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Is SMS enabled?
+     *
+     * @return bool
+     */
+    protected function smsEnabled()
+    {
+        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        return $check->getSmsSetting() !== 'disabled';
+    }
+
+    /**
      * SMS action - Allows the SMS form to appear.
      *
      * @return \Zend\View\Model\ViewModel
      */
     public function smsAction()
     {
+        // Make sure comments are enabled:
+        if (!$this->smsEnabled()) {
+            throw new ForbiddenException('SMS disabled');
+        }
+
         // Retrieve the record driver:
         $driver = $this->loadRecord();
 
@@ -601,27 +604,19 @@ class AbstractRecord extends AbstractBase
             ->getTabRouteDetails($this->loadRecord(), $tab);
         $target = $this->url()->fromRoute($details['route'], $details['params']);
 
-        // Special case: don't use anchors in jquerymobile theme, since they
-        // mess things up!
-        if (strlen($params) && substr($params, 0, 1) == '#') {
-            $themeInfo = $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
-            if ($themeInfo->getTheme() == 'jquerymobile') {
-                $params = '';
-            }
-        }
-
         return $this->redirect()->toUrl($target . $params);
     }
 
     /**
-     * Get the tab configuration for this controller.
+     * Alias to getRecordTabConfig for backward compatibility.
+     *
+     * @deprecated use getRecordTabConfig instead
      *
      * @return array
      */
     protected function getTabConfiguration()
     {
-        $cfg = $this->getServiceLocator()->get('Config');
-        return $cfg['vufind']['recorddriver_tabs'];
+        return $this->getRecordTabConfig();
     }
 
     /**
@@ -635,11 +630,14 @@ class AbstractRecord extends AbstractBase
         $request = $this->getRequest();
         $rtpm = $this->getServiceLocator()->get('VuFind\RecordTabPluginManager');
         $details = $rtpm->getTabDetailsForRecord(
-            $driver, $this->getTabConfiguration(), $request,
+            $driver, $this->getRecordTabConfig(), $request,
             $this->fallbackDefaultTab
         );
         $this->allTabs = $details['tabs'];
         $this->defaultTab = $details['default'] ? $details['default'] : false;
+        $this->backgroundTabs = $rtpm->getBackgroundTabNames(
+            $driver, $this->getRecordTabConfig()
+        );
     }
 
     /**
@@ -667,6 +665,19 @@ class AbstractRecord extends AbstractBase
             $this->loadTabDetails();
         }
         return $this->allTabs;
+    }
+
+    /**
+     * Get names of tabs to be loaded in the background.
+     *
+     * @return array
+     */
+    protected function getBackgroundTabs()
+    {
+        if (null === $this->backgroundTabs) {
+            $this->loadTabDetails();
+        }
+        return $this->backgroundTabs;
     }
 
     /**
@@ -709,6 +720,7 @@ class AbstractRecord extends AbstractBase
         $view->tabs = $this->getAllTabs();
         $view->activeTab = strtolower($tab);
         $view->defaultTab = strtolower($this->getDefaultTab());
+        $view->backgroundTabs = $this->getBackgroundTabs();
         $view->loadInitialTabWithAjax
             = isset($config->Site->loadInitialTabWithAjax)
             ? (bool) $config->Site->loadInitialTabWithAjax : false;

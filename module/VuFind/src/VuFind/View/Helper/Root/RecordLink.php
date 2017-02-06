@@ -119,7 +119,7 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
         $details = $this->router->getActionRouteDetails($driver, $action);
-        return $urlHelper($details['route'], $details['params']);
+        return $urlHelper($details['route'], $details['params'] ?: []);
     }
 
     /**

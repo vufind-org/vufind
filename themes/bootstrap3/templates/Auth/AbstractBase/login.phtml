@@ -13,7 +13,7 @@
         <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>">
         <? if ($account->supportsRecovery()): ?>
           <br/>
-          <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>" data-lightbox-ignore><?=$this->transEsc('Forgot Password')?></a>
+          <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
         <? endif; ?>
       </div>
     </div>

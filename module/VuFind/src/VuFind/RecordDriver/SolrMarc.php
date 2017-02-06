@@ -44,6 +44,8 @@ use VuFind\Exception\ILS as ILSException,
  */
 class SolrMarc extends SolrDefault
 {
+    use IlsAwareTrait;
+
     /**
      * MARC record. Access only via getMarcRecord() as this is initialized lazily.
      *
@@ -52,25 +54,40 @@ class SolrMarc extends SolrDefault
     protected $lazyMarcRecord = null;
 
     /**
-     * ILS connection
+     * Fields that may contain subject headings, and their descriptions
      *
-     * @var \VuFind\ILS\Connection
+     * @var array
      */
-    protected $ils = null;
+    protected $subjectFields = [
+        '600' => 'personal name',
+        '610' => 'corporate name',
+        '611' => 'meeting name',
+        '630' => 'uniform title',
+        '648' => 'chronological',
+        '650' => 'topic',
+        '651' => 'geographic',
+        '653' => '',
+        '655' => 'genre/form',
+        '656' => 'occupation'
+    ];
 
     /**
-     * Hold logic
+     * Mappings from subject source indicators (2nd indicator of subject fields in
+     * MARC 21) to the their codes.
      *
-     * @var \VuFind\ILS\Logic\Holds
+     * @var  array
+     * @link https://www.loc.gov/marc/bibliographic/bd6xx.html     Subject field docs
+     * @link https://www.loc.gov/standards/sourcelist/subject.html Code list
      */
-    protected $holdLogic;
-
-    /**
-     * Title hold logic
-     *
-     * @var \VuFind\ILS\Logic\TitleHolds
-     */
-    protected $titleHoldLogic;
+    protected $subjectSources = [
+        '0' => 'lcsh',
+        '1' => 'lcshac',
+        '2' => 'mesh',
+        '3' => 'nal',
+        '4' => 'unknown',
+        '5' => 'cash',
+        '6' => 'rvm'
+    ];
 
     /**
      * Get access restriction notes for the record.
@@ -87,20 +104,21 @@ class SolrMarc extends SolrDefault
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
      * @return array
      */
-    public function getAllSubjectHeadings()
+    public function getAllSubjectHeadings($extended = false)
     {
-        // These are the fields that may contain subject headings:
-        $fields = [
-            '600', '610', '611', '630', '648', '650', '651', '653', '655', '656'
-        ];
-
         // This is all the collected data:
         $retval = [];
 
         // Try each MARC field one at a time:
-        foreach ($fields as $field) {
+        foreach ($this->subjectFields as $field => $fieldType) {
             // Do we have any results for the current field?  If not, try the next.
             $results = $this->getMarcRecord()->getFields($field);
             if (!$results) {
@@ -124,7 +142,25 @@ class SolrMarc extends SolrDefault
                     }
                     // If we found at least one chunk, add a heading to our result:
                     if (!empty($current)) {
-                        $retval[] = $current;
+                        if ($extended) {
+                            $sourceIndicator = $result->getIndicator(2);
+                            $source = '';
+                            if (isset($this->subjectSources[$sourceIndicator])) {
+                                $source = $this->subjectSources[$sourceIndicator];
+                            } else {
+                                $source = $result->getSubfield('2');
+                                if ($source) {
+                                    $source = $source->getData();
+                                }
+                            }
+                            $retval[] = [
+                                'heading' => $current,
+                                'type' => $fieldType,
+                                'source' => $source ?: ''
+                            ];
+                        } else {
+                            $retval[] = $current;
+                        }
                     }
                 }
             }
@@ -224,6 +260,19 @@ class SolrMarc extends SolrDefault
         }
 
         return $matches;
+    }
+
+    /**
+     * Return full record as filtered XML for public APIs.
+     *
+     * @return string
+     */
+    public function getFilteredXML()
+    {
+        $record = clone($this->getMarcRecord());
+        // The default implementation does not filter out any fields
+        // $record->deleteFields('9', true);
+        return $record->toXML();
     }
 
     /**
@@ -509,7 +558,7 @@ class SolrMarc extends SolrDefault
         // Loop through all subfields, collecting results that match the whitelist;
         // note that it is important to retain the original MARC order here!
         $allSubfields = $currentField->getSubfields();
-        if (count($allSubfields) > 0) {
+        if (!empty($allSubfields)) {
             foreach ($allSubfields as $currentSubfield) {
                 if (in_array($currentSubfield->getCode(), $subfields)) {
                     // Grab the current subfield value and act on it if it is
@@ -523,7 +572,7 @@ class SolrMarc extends SolrDefault
         }
 
         // Send back the data in a different format depending on $concat mode:
-        return $concat ? [implode($separator, $matches)] : $matches;
+        return $concat && $matches ? [implode($separator, $matches)] : $matches;
     }
 
     /**
@@ -984,97 +1033,6 @@ class SolrMarc extends SolrDefault
 
         // Try the parent method:
         return parent::getXML($format, $baseUrl, $recordLink);
-    }
-
-    /**
-     * Attach an ILS connection and related logic to the driver
-     *
-     * @param \VuFind\ILS\Connection       $ils            ILS connection
-     * @param \VuFind\ILS\Logic\Holds      $holdLogic      Hold logic handler
-     * @param \VuFind\ILS\Logic\TitleHolds $titleHoldLogic Title hold logic handler
-     *
-     * @return void
-     */
-    public function attachILS(\VuFind\ILS\Connection $ils,
-        \VuFind\ILS\Logic\Holds $holdLogic,
-        \VuFind\ILS\Logic\TitleHolds $titleHoldLogic
-    ) {
-        $this->ils = $ils;
-        $this->holdLogic = $holdLogic;
-        $this->titleHoldLogic = $titleHoldLogic;
-    }
-
-    /**
-     * Do we have an attached ILS connection?
-     *
-     * @return bool
-     */
-    protected function hasILS()
-    {
-        return null !== $this->ils;
-    }
-
-    /**
-     * Get an array of information about record holdings, obtained in real-time
-     * from the ILS.
-     *
-     * @return array
-     */
-    public function getRealTimeHoldings()
-    {
-        return $this->hasILS() ? $this->holdLogic->getHoldings(
-            $this->getUniqueID(), $this->getConsortialIDs()
-        ) : [];
-    }
-
-    /**
-     * Get an array of information about record history, obtained in real-time
-     * from the ILS.
-     *
-     * @return array
-     */
-    public function getRealTimeHistory()
-    {
-        // Get Acquisitions Data
-        if (!$this->hasILS()) {
-            return [];
-        }
-        try {
-            return $this->ils->getPurchaseHistory($this->getUniqueID());
-        } catch (ILSException $e) {
-            return [];
-        }
-    }
-
-    /**
-     * Get a link for placing a title level hold.
-     *
-     * @return mixed A url if a hold is possible, boolean false if not
-     */
-    public function getRealTimeTitleHold()
-    {
-        if ($this->hasILS()) {
-            $biblioLevel = strtolower($this->getBibliographicLevel());
-            if ("monograph" == $biblioLevel || strstr($biblioLevel, "part")) {
-                if ($this->ils->getTitleHoldsMode() != "disabled") {
-                    return $this->titleHoldLogic->getHold($this->getUniqueID());
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns true if the record supports real-time AJAX status lookups.
-     *
-     * @return bool
-     */
-    public function supportsAjaxStatus()
-    {
-        // as AJAX status lookups are done via the ILS AJAX status lookup support is
-        // only given if the ILS is available for this record
-        return $this->hasILS();
     }
 
     /**

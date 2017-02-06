@@ -77,7 +77,7 @@ class Post extends \Zend\Log\Writer\AbstractWriter
     /**
      * Set verbosity
      *
-     * @param integer $type content type string
+     * @param int $type content type string
      *
      * @return void
      */
@@ -119,6 +119,6 @@ class Post extends \Zend\Log\Writer\AbstractWriter
         $this->client->setEncType($this->contentType);
         $this->client->setRawBody($this->getBody($this->applyVerbosity($event)));
         // Send
-        $response = $this->client->send();
+        $this->client->send();
     }
 }
