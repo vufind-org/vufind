@@ -65,7 +65,7 @@ VuFind.register('lightbox', function Lightbox() {
    */
   var _constrainLink; // function declarations to avoid style warnings
   var _formSubmit;    // about circular references
-  function render(content) {
+  function _update(content) {
     if (!content.match) {
       return;
     }
@@ -167,7 +167,7 @@ VuFind.register('lightbox', function Lightbox() {
           }
           _currentUrl = _originalUrl; // Now that we're logged in, where were we?
         }
-        render(content);
+        _update(content);
       })
       .fail(function lbAjaxFail(deferred, errorType, msg) {
         showAlert(VuFind.translate('error_occurred') + '<br/>' + msg, 'danger');
@@ -370,7 +370,6 @@ VuFind.register('lightbox', function Lightbox() {
     bind: bind,
     flashMessage: flashMessage,
     reload: reload,
-    render: render,
     // Reset
     reset: reset,
     // Init
