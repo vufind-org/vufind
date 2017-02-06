@@ -164,4 +164,18 @@ class Threesixtylink implements DriverInterface
         }
         return $records;
     }
+
+    /**
+     * Get Resolver Link
+     *
+     * Transform the OpenURL as needed to get a working link to the resolver.
+     *
+     * @param string $openURL openURL (url-encoded)
+     *
+     * @return mixed Returns either the updated link or false
+     */
+    public function getResolverLink($openURL)
+    {
+        return false;
+    }
 }

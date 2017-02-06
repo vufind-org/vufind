@@ -121,6 +121,20 @@ class Redi implements DriverInterface
     }
 
     /**
+     * Get Resolver Link
+     *
+     * Transform the OpenURL as needed to get a working link to the resolver.
+     *
+     * @param string $openURL openURL (url-encoded)
+     *
+     * @return mixed Returns either the updated link or false
+     */
+    public function getResolverLink($openURL)
+    {
+        return false;
+    }
+
+    /**
      * Parse the Redi XML response and return array with DOI information.
      *
      * @param DOMDocument $xml Loaded xml document
