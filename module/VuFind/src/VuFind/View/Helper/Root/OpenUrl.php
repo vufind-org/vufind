@@ -202,17 +202,14 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         }
 
         // instantiate the resolver plugin to get a proper resolver link
-        if (!$this->resolverPluginManager->has($resolver)) {
-            return $this->output(
-                $this->translate("Could not load driver for $resolver"),
-                self::STATUS_ERROR,
-                500
+        if ($this->resolverPluginManager->has($resolver)) {
+            $resolverObj = new \VuFind\Resolver\Connection(
+                $this->resolverPluginManager->get($resolver)
             );
+            $resolverLink = $resolverObj->getResolverLink($openurl);
+        } else {
+            $resolverLink = false;
         }
-        $resolverObj = new \VuFind\Resolver\Connection(
-            $this->resolverPluginManager->get($resolver)
-        );
-        $resolverLink = $resolverObj->getResolverLink($openurl);
 
         // Build parameters needed to display the control:
         $params = [
