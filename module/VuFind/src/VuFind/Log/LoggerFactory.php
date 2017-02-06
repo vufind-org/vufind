@@ -178,33 +178,40 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
     {
         $config = $sm->get('VuFind\Config')->get('config');
 
+        $hasWriter = false;
+
         // DEBUGGER
         if (!$config->System->debug == false) {
+            $hasWriter = true;
             $this->addDebugWriter($logger, $config->System->debug);
         }
 
         // Activate database logging, if applicable:
         if (isset($config->Logging->database)) {
+            $hasWriter = true;
             $this->addDbWriters($logger, $sm, $config->Logging->database);
         }
 
         // Activate file logging, if applicable:
         if (isset($config->Logging->file)) {
+            $hasWriter = true;
             $this->addFileWriters($logger, $config->Logging->file);
         }
 
         // Activate email logging, if applicable:
         if (isset($config->Logging->email)) {
-            $this->addEmailWriters$logger, ($sm, $config);
+            $hasWriter = true;
+            $this->addEmailWriters($logger, $sm, $config);
         }
 
         // Activate slack logging, if applicable:
         if (isset($config->Logging->slack) && isset($config->Logging->slackurl)) {
+            $hasWriter = true;
             $this->addSlackWriters($logger, $sm, $config);
         }
 
         // Null (no-op) writer to avoid errors
-        if (count($this->writers) == 0) {
+        if (!$hasWriter) {
             $logger->addWriter(new \Zend\Log\Writer\Noop());
         }
     }
@@ -268,20 +275,20 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
                 // Set static flag indicating that debug is turned on:
                 $logger->debugNeeded(true);
 
-                $max = BaseLogger::INFO;  // Informational: informational messages
-                $min = BaseLogger::DEBUG; // Debug: debug messages
+                $max = Logger::INFO;  // Informational: informational messages
+                $min = Logger::DEBUG; // Debug: debug messages
                 break;
             case 'notice':
-                $max = BaseLogger::WARN;  // Warning: warning conditions
-                $min = BaseLogger::NOTICE;// Notice: normal but significant condition
+                $max = Logger::WARN;  // Warning: warning conditions
+                $min = Logger::NOTICE;// Notice: normal but significant condition
                 break;
             case 'error':
-                $max = BaseLogger::CRIT;  // Critical: critical conditions
-                $min = BaseLogger::ERR;   // Error: error conditions
+                $max = Logger::CRIT;  // Critical: critical conditions
+                $min = Logger::ERR;   // Error: error conditions
                 break;
             case 'alert':
-                $max = BaseLogger::EMERG; // Emergency: system is unusable
-                $min = BaseLogger::ALERT; // Alert: action must be taken immediately
+                $max = Logger::EMERG; // Emergency: system is unusable
+                $min = Logger::ALERT; // Alert: action must be taken immediately
                 break;
             default:                    // INVALID FILTER
                 continue;
@@ -322,7 +329,7 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
      */
     public function createService(ServiceLocatorInterface $sm)
     {
-        $logger = new \VuFind\Log\Logger();
+        $logger = new Logger();
         $this->configureLogger($sm, $logger);
         return $logger;
     }
