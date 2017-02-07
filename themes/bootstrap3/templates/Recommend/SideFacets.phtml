@@ -8,8 +8,8 @@
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
 <? endif; ?>
 <? $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
+<? $checkboxesShown = false; ?>
 <? if (count($checkboxFilters) > 0):
-    $checkboxesShown = false;
     foreach ($checkboxFilters as &$current) {
       if ($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) {
         $current['shown'] = false;
@@ -70,12 +70,6 @@
 <? $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <? foreach ($sideFacetSet as $title => $cluster): ?>
-    <? $contextVars = [
-      'options' => $options,
-      'allowExclude' => $this->recommend->excludeAllowed($title),
-      'facets_before_more' => $this->recommend->getShowMoreSetting($title),
-      'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($title)
-    ]; ?>
     <div class="list-group facet" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
       <div class="list-group-item title<? if(in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
         <?=$this->transEsc($cluster['label'])?>
@@ -88,6 +82,12 @@
             <?=$this->context($this)->renderInContext('SideFacets/hierarchical-facets.phtml', ['title' => $title, 'sortOptions' => $hierarchicalFacetSortOptions[$title]]); ?>
             <noscript>
           <? endif; ?>
+          <? $contextVars = [
+            'options' => $options,
+            'allowExclude' => $this->recommend->excludeAllowed($title),
+            'facets_before_more' => $this->recommend->getShowMoreSetting($title),
+            'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($title)
+          ]; ?>
           <?=$this->context($this)->renderInContext('SideFacets/cluster-list.phtml', array_merge($contextVars, ['title' => $title, 'cluster' => $cluster])); ?>
           <? if (in_array($title, $hierarchicalFacets)): ?>
             </noscript>
