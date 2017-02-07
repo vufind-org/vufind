@@ -43,7 +43,7 @@
 <? else: ?>
   <form id="searchForm" class="searchForm navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
     <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs']]); ?>
-    <? $placeholder = $this->searchbox()->getPlaceholderText($searchTabs['selected']['id']); ?>
+    <? $placeholder = $this->searchbox()->getPlaceholderText(isset($searchTabs['selected']['id']) ? $searchTabs['selected']['id'] : null); ?>
     <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<? if ($placeholder): ?> placeholder="<?=$this->transEsc($placeholder) ?>"<? endif ?> autofocus />
     <? if ($handlerCount > 1): ?>
       <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false">

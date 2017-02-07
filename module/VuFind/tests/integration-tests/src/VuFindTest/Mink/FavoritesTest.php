@@ -509,6 +509,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // Do the export:
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
+        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
         $this->assertEquals('Download File', $result->getText());
     }

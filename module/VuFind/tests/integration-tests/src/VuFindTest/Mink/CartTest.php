@@ -498,6 +498,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         $this->fillInAccountForm($page);
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
 
         $this->findCss($page, '.modal #email_from')->setValue('asdf@asdf.com');
         $this->findCss($page, '.modal #email_message')->setValue('message');
@@ -524,6 +525,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
+        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now do it for real -- we should get a login prompt.

@@ -129,7 +129,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
     lightboxFacetSorting();
     $('.js-facet-next-page').click(function facetLightboxMore() {
       var button = $(this);
-      var page = parseInt(button.data('page'), 10);
+      var page = parseInt(button.attr('data-page'), 10);
       if (button.attr('disabled')) {
         return false;
       }
