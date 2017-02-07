@@ -209,7 +209,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             );
             $resolverUrl = $resolverObj->getResolverUrl($openurl);
         } else {
-            $resolverUrl = empty($base) ? '' : $base .
+            $resolverUrl = empty($base) ? '' : $base . '?' .
                 $this->recordDriver->getOpenUrl();
         }
 
