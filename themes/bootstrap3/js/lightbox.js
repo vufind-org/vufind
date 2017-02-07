@@ -76,7 +76,13 @@ VuFind.register('lightbox', function Lightbox() {
       var msgs = alerts.toArray().map(function getSuccessHtml(el) {
         return el.innerHTML;
       }).join('<br/>');
-      showAlert(msgs, 'success');
+      var href = alerts.find('.download').attr('href');
+      if (typeof href !== 'undefined') {
+        location.href = href;
+        _modal.modal('hide');
+      } else {
+        showAlert(msgs, 'success');
+      }
       return;
     }
     // Deframe HTML
