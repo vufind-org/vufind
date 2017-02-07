@@ -10,18 +10,15 @@
 <? $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
 <? $checkboxesShown = false; ?>
 <? if (count($checkboxFilters) > 0):
-    foreach ($checkboxFilters as &$current) {
-      if ($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) {
-        $current['shown'] = false;
-      } else {
+    ob_start();
+    foreach ($checkboxFilters as $current):
+      $shown = false;
+      if ($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible']) {
         $checkboxesShown = true;
-        $current['shown'] = true;
+        $shown = true;
       }
-    }
-  ?>
-  <div class="checkboxFilter<?if(!$checkboxesShown):?> hidden<? endif; ?>">
-    <? foreach ($checkboxFilters as $current): ?>
-      <label class="checkbox<? if(!$current['shown']): ?> hidden<? endif; ?>">
+    ?>
+      <label class="checkbox<? if(!$shown): ?> hidden<? endif; ?>">
         <input type="checkbox" name="filter[]"
           value="<?=$this->escapeHtmlAttr($current['filter']) ?>"
           <?=$current['selected'] ? ' checked="checked"' : '' ?>
@@ -29,7 +26,13 @@
           onclick="document.location.href='<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter']);?>'" />
         <?=$this->transEsc($current['desc']) ?>
       </label>
-    <? endforeach; ?>
+    <?
+    endforeach;
+    $checkboxFilterBuffer = ob_get_contents();
+    ob_end_clean();
+  ?>
+  <div class="checkboxFilter<?if(!$checkboxesShown):?> hidden<? endif; ?>">
+    <?=$checkboxFilterBuffer ?>
   </div>
 <? endif; ?>
 <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
