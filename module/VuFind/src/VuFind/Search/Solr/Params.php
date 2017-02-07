@@ -89,14 +89,25 @@ class Params extends \VuFind\Search\Base\Params
     protected $pivotFacets = null;
 
     /**
+     * Hierarchical Facet Helper
+     *
+     * @var HierarchicalFacetHelper
+     */
+    protected $facetHelper;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
      * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param HierarchicalFacetHelper      $facetHelper  Hierarchical facet helper
      */
-    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
-    {
+    public function __construct($options, \VuFind\Config\PluginManager $configLoader,
+        HierarchicalFacetHelper $facetHelper = null
+    ) {
         parent::__construct($options, $configLoader);
+        $this->facetHelper = $facetHelper;
+
         // Use basic facet limit by default, if set:
         $config = $configLoader->get($options->getFacetsIni());
         if (isset($config->Results_Settings->facet_limit)
@@ -589,11 +600,6 @@ class Params extends \VuFind\Search\Base\Params
         $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();
         $hierarchicalFacetSeparators
             = $this->getOptions()->getHierarchicalFacetSeparators();
-        $facetHelper = null;
-        if (!empty($hierarchicalFacets)) {
-            $facetHelper = $this->getServiceLocator()
-                ->get('VuFind\HierarchicalFacetHelper');
-        }
         // Convert range queries to a language-non-specific format:
         $caseInsensitiveRegex = '/^\(\[(.*) TO (.*)\] OR \[(.*) TO (.*)\]\)$/';
         if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
@@ -607,12 +613,12 @@ class Params extends \VuFind\Search\Base\Params
             ) {
                 $filter['displayText'] = $matches[1] . '-' . $matches[2];
             }
-        } else if (in_array($field, $hierarchicalFacets)) {
+        } else if ($this->facetHelper && in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely
             $separator = isset($hierarchicalFacetSeparators[$field])
                 ? $hierarchicalFacetSeparators[$field]
                 : '/';
-            $filter['displayText'] = $facetHelper->formatDisplayText(
+            $filter['displayText'] = $this->facetHelper->formatDisplayText(
                 $filter['displayText'], true, $separator
             );
             if ($translate) {
