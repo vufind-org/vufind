@@ -629,11 +629,6 @@ EOT;
                         return false;
                     }
                 }
-
-                $available = $this->itemsAvailable($id, null);
-                if ($available) {
-                    return false;
-                }
             }
         }
 
