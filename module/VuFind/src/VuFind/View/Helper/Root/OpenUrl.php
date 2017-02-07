@@ -206,15 +206,15 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             $resolverObj = new \VuFind\Resolver\Connection(
                 $this->resolverPluginManager->get($resolver)
             );
-            $resolverLink = $resolverObj->getResolverLink($openurl);
+            $resolverUrl = $resolverObj->getResolverUrl($openurl);
         } else {
-            $resolverLink = empty($base) ? '' : $base .
+            $resolverUrl = empty($base) ? '' : $base .
                 $this->recordDriver->getOpenUrl();
         }
 
         // Build parameters needed to display the control:
         $params = [
-            'resolverLink' => $resolverLink,
+            'resolverUrl' => $resolverUrl,
             'openUrl' => $this->recordDriver->getOpenUrl(),
             'openUrlBase' => empty($base) ? false : $base,
             'openUrlWindow' => empty($this->config->window_settings)

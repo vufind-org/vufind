@@ -1260,7 +1260,7 @@ class AjaxController extends AbstractBase
         }
 
         $moreOptionsLink = $resolver->supportsMoreOptionsLink()
-            ? $resolver->getResolverLink($openUrl) : '';
+            ? $resolver->getResolverUrl($openUrl) : '';
 
         // Render the links using the view:
         $view = [

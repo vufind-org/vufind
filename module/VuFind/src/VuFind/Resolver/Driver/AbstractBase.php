@@ -68,7 +68,7 @@ abstract class AbstractBase implements DriverInterface
     }
 
     /**
-     * Get Resolver Link
+     * Get Resolver Url
      *
      * Transform the OpenURL as needed to get a working link to the resolver.
      *
@@ -76,7 +76,7 @@ abstract class AbstractBase implements DriverInterface
      *
      * @return string Returns resolver specific url
      */
-    public function getResolverLink($openURL)
+    public function getResolverUrl($openURL)
     {
         return $this->baseUrl . '?' . $openURL;
     }

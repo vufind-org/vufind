@@ -61,7 +61,7 @@ class Ezb extends AbstractBase
     public function fetchLinks($openURL)
     {
         // Get the actual resolver url for the given openUrl
-        $url = $this->getResolverLink($openURL);
+        $url = $this->getResolverUrl($openURL);
 
         // Make the call to the EZB and load results
         $feed = $this->httpClient->setUri($url)->send()->getBody();
@@ -104,7 +104,7 @@ class Ezb extends AbstractBase
     }
 
     /**
-     * Get Resolver Link
+     * Get Resolver Url
      *
      * Transform the OpenURL as needed to get a working link to the resolver.
      *
@@ -112,7 +112,7 @@ class Ezb extends AbstractBase
      *
      * @return string Link
      */
-    public function getResolverLink($openURL)
+    public function getResolverUrl($openURL)
     {
         // Unfortunately the EZB-API only allows OpenURL V0.1 and
         // breaks when sending a non expected parameter (like an ISBN).

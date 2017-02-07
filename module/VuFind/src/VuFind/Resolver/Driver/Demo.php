@@ -97,7 +97,7 @@ class Demo extends AbstractBase
     }
 
     /**
-     * Get Resolver Link
+     * Get Resolver Url
      *
      * Transform the OpenURL as needed to get a working link to the resolver.
      *
@@ -105,7 +105,7 @@ class Demo extends AbstractBase
      *
      * @return mixed Returns either the updated link or false
      */
-    public function getResolverLink($openURL)
+    public function getResolverUrl($openURL)
     {
         return $openURL;
     }
