@@ -181,16 +181,23 @@ class Params implements ServiceLocatorAwareInterface
     protected $facetAliases = [];
 
     /**
+     * Config loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configLoader;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
      * @param \VuFind\Config\PluginManager $configLoader Config loader
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __construct($options, \VuFind\Config\PluginManager $configLoader)
     {
         $this->setOptions($options);
+
+        $this->configLoader = $configLoader;
 
         // Make sure we have some sort of query object:
         $this->query = new Query();
@@ -1732,7 +1739,7 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function initFacetList($facetList, $facetSettings, $cfgFile = 'facets')
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get($cfgFile);
+        $config = $this->configLoader->get($cfgFile);
         if (!isset($config->$facetList)) {
             return false;
         }
@@ -1772,7 +1779,7 @@ class Params implements ServiceLocatorAwareInterface
     protected function initCheckboxFacets($facetList = 'CheckboxFacets',
         $cfgFile = 'facets'
     ) {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get($cfgFile);
+        $config = $this->configLoader->get($cfgFile);
         if (empty($config->$facetList)) {
             return false;
         }
