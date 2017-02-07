@@ -39,7 +39,7 @@ use DOMDocument, DOMXpath;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
-class AbstractBase implements DriverInterface
+abstract class AbstractBase implements DriverInterface
 {
     /**
      * Base URL for link resolver
