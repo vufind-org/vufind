@@ -50,6 +50,13 @@ class Redi extends AbstractBase
     protected $httpClient;
 
     /**
+     * Parsed resolver links
+     *
+     * @var array
+     */
+    protected $links;
+
+    /**
      * Constructor
      *
      * @param string            $baseUrl    Base URL for link resolver
@@ -60,13 +67,6 @@ class Redi extends AbstractBase
         parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
     }
-
-    /**
-     * Parsed resolver links
-     *
-     * @var array
-     */
-    protected $links;
 
     /**
      * Fetch Links
