@@ -389,7 +389,9 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try deleting without selecting anything:
         $delete->click();
+        $this->snooze();
         $this->findCss($page, '#cart-confirm-delete')->click();
+        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now actually select the records to delete:
@@ -572,6 +574,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
+        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now do it for real -- we should get an export option list:
