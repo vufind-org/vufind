@@ -602,6 +602,9 @@ $config = [
             ],
             'search_params' => [
                 'abstract_factories' => ['VuFind\Search\Params\PluginFactory'],
+                'factories' => [
+                    'solr' => 'VuFind\Search\Params\Factory::getSolr',
+                ],
             ],
             'search_results' => [
                 'abstract_factories' => ['VuFind\Search\Results\PluginFactory'],
