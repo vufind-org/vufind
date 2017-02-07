@@ -49,22 +49,13 @@ abstract class AbstractBase implements DriverInterface
     protected $baseUrl;
 
     /**
-     * HTTP client
-     *
-     * @var \Zend\Http\Client
-     */
-    protected $httpClient;
-
-    /**
      * Constructor
      *
-     * @param string            $baseUrl    Base URL for link resolver
-     * @param \Zend\Http\Client $httpClient HTTP client
+     * @param string $baseUrl Base URL for link resolver
      */
-    public function __construct($baseUrl, \Zend\Http\Client $httpClient)
+    public function __construct($baseUrl)
     {
         $this->baseUrl = $baseUrl;
-        $this->httpClient = $httpClient;
     }
 
     /**

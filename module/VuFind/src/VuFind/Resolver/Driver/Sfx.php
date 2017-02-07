@@ -41,6 +41,24 @@ namespace VuFind\Resolver\Driver;
  */
 class Sfx extends AbstractBase
 {
+    /**
+     * HTTP client
+     *
+     * @var \Zend\Http\Client
+     */
+    protected $httpClient;
+
+    /**
+     * Constructor
+     *
+     * @param string            $baseUrl    Base URL for link resolver
+     * @param \Zend\Http\Client $httpClient HTTP client
+     */
+    public function __construct($baseUrl, \Zend\Http\Client $httpClient)
+    {
+        parent::__construct($baseUrl);
+        $this->httpClient = $httpClient;
+    }
 
     /**
      * Fetch Links
