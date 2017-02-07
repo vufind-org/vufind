@@ -188,7 +188,7 @@ class Params extends \VuFind\Search\Base\Params
         $backendParams->set('didYouMean', $options->spellcheckEnabled());
 
         // Get the language setting:
-        $lang = $this->getServiceLocator()->get('VuFind\Translator')->getLocale();
+        $lang = $this->getOptions()->getTranslator()->getLocale();
         $backendParams->set('language', substr($lang, 0, 2));
 
         if ($options->highlightEnabled()) {
