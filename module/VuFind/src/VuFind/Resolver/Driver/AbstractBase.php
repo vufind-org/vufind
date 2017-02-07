@@ -1,6 +1,6 @@
 <?php
 /**
- * Demo Link Resolver Driver
+ * AbstractBase for Resolver Driver
  *
  * PHP version 5
  *
@@ -31,7 +31,7 @@ namespace VuFind\Resolver\Driver;
 use DOMDocument, DOMXpath;
 
 /**
- * Demo Link Resolver Driver
+ * AbstractBase for Resolver Driver
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -39,61 +39,32 @@ use DOMDocument, DOMXpath;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
-class Demo extends AbstractBase
+class AbstractBase implements DriverInterface
 {
+    /**
+     * Base URL for link resolver
+     *
+     * @var string
+     */
+    protected $baseUrl;
+
+    /**
+     * HTTP client
+     *
+     * @var \Zend\Http\Client
+     */
+    protected $httpClient;
+
     /**
      * Constructor
      *
      * @param string            $baseUrl    Base URL for link resolver
      * @param \Zend\Http\Client $httpClient HTTP client
      */
-    public function __construct()
+    public function __construct($baseUrl, \Zend\Http\Client $httpClient)
     {
-        $this->baseUrl = 'http://localhost';
-    }
-
-    /**
-     * Fetch Links
-     *
-     * Fetches a set of links corresponding to an OpenURL
-     *
-     * @param string $openURL openURL (url-encoded)
-     *
-     * @return string
-     */
-    public function fetchLinks($openURL)
-    {
-        return $openURL;
-    }
-
-    /**
-     * Parse Links
-     *
-     * Parses data returned by a link resolver
-     * and converts it to a standardised format for display
-     *
-     * @param string $data Raw data
-     *
-     * @return array       Array of values
-     */
-    public function parseLinks($data)
-    {
-        return [
-            [
-                'href' => 'https://vufind.org/wiki?' . $data . '#print',
-                'title' => 'Print',
-                'coverage' => 'fake1',
-                'service_type' => 'getHolding',
-                'access' => 'unknown'
-            ],
-            [
-                'href' => 'https://vufind.org/wiki?' . $data . '#electronic',
-                'title' => 'Electronic',
-                'coverage' => 'fake2',
-                'service_type' => 'getFullTxt',
-                'access' => 'open'
-            ],
-        ];
+        $this->baseUrl = $baseUrl;
+        $this->httpClient = $httpClient;
     }
 
     /**
@@ -103,10 +74,10 @@ class Demo extends AbstractBase
      *
      * @param string $openURL openURL (url-encoded)
      *
-     * @return mixed Returns either the updated link or false
+     * @return string Returns resolver specific url
      */
     public function getResolverLink($openURL)
     {
-        return $openURL;
+        return $this->baseUrl . '?' . $openURL;
     }
 }

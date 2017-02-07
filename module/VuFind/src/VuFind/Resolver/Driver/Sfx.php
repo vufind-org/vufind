@@ -39,33 +39,8 @@ namespace VuFind\Resolver\Driver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
-class Sfx implements DriverInterface
+class Sfx extends AbstractBase
 {
-    /**
-     * Base URL for link resolver
-     *
-     * @var string
-     */
-    protected $baseUrl;
-
-    /**
-     * HTTP client
-     *
-     * @var \Zend\Http\Client
-     */
-    protected $httpClient;
-
-    /**
-     * Constructor
-     *
-     * @param string            $baseUrl    Base URL for link resolver
-     * @param \Zend\Http\Client $httpClient HTTP client
-     */
-    public function __construct($baseUrl, \Zend\Http\Client $httpClient)
-    {
-        $this->baseUrl = $baseUrl;
-        $this->httpClient = $httpClient;
-    }
 
     /**
      * Fetch Links
@@ -123,19 +98,5 @@ class Sfx implements DriverInterface
             array_push($records, $record);
         }
         return $records;
-    }
-
-    /**
-     * Get Resolver Link
-     *
-     * Transform the OpenURL as needed to get a working link to the resolver.
-     *
-     * @param string $openURL openURL (url-encoded)
-     *
-     * @return mixed Returns either the updated link or false
-     */
-    public function getResolverLink($openURL)
-    {
-        return false;
     }
 }

@@ -66,4 +66,15 @@ interface DriverInterface
      * @return array         Array of values
      */
     public function parseLinks($xmlstr);
+
+    /**
+     * Get Resolver Link
+     *
+     * Transform the OpenURL as needed to get a working link to the resolver.
+     *
+     * @param string $openURL openURL (url-encoded)
+     *
+     * @return string Returns resolver specific url
+     */
+    public function getResolverLink($openURL);
 }

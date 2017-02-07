@@ -40,40 +40,14 @@ use DOMDocument, Zend\Dom\DOMXPath;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
-class Redi implements DriverInterface
+class Redi extends AbstractBase
 {
-    /**
-     * HTTP client
-     *
-     * @var \Zend\Http\Client
-     */
-    protected $httpClient;
-
-    /**
-     * Base URL for link resolver
-     *
-     * @var string
-     */
-    protected $baseUrl;
-
     /**
      * Parsed resolver links
      *
      * @var array
      */
     protected $links;
-
-    /**
-     * Constructor
-     *
-     * @param string            $baseUrl    Base URL for link resolver
-     * @param \Zend\Http\Client $httpClient HTTP client
-     */
-    public function __construct($baseUrl, \Zend\Http\Client $httpClient)
-    {
-        $this->baseUrl = $baseUrl;
-        $this->httpClient = $httpClient;
-    }
 
     /**
      * Fetch Links
@@ -118,20 +92,6 @@ class Redi implements DriverInterface
         $this->postProcessing();
 
         return $this->links;
-    }
-
-    /**
-     * Get Resolver Link
-     *
-     * Transform the OpenURL as needed to get a working link to the resolver.
-     *
-     * @param string $openURL openURL (url-encoded)
-     *
-     * @return mixed Returns either the updated link or false
-     */
-    public function getResolverLink($openURL)
-    {
-        return false;
     }
 
     /**

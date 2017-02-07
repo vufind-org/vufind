@@ -47,34 +47,8 @@ use DOMDocument, DOMXpath;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
-class Ezb implements DriverInterface
+class Ezb extends AbstractBase
 {
-    /**
-     * Base URL for link resolver
-     *
-     * @var string
-     */
-    protected $baseUrl;
-
-    /**
-     * HTTP client
-     *
-     * @var \Zend\Http\Client
-     */
-    protected $httpClient;
-
-    /**
-     * Constructor
-     *
-     * @param string            $baseUrl    Base URL for link resolver
-     * @param \Zend\Http\Client $httpClient HTTP client
-     */
-    public function __construct($baseUrl, \Zend\Http\Client $httpClient)
-    {
-        $this->baseUrl = $baseUrl;
-        $this->httpClient = $httpClient;
-    }
-
     /**
      * Fetch Links
      *
