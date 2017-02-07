@@ -77,4 +77,16 @@ interface DriverInterface
      * @return string Returns resolver specific url
      */
     public function getResolverUrl($openURL);
+
+    /**
+     * This controls whether a "More options" link will be shown below the fetched
+     * resolver links eventually linking to the resolver page previously being
+     * parsed.
+     * This is especially useful for resolver such as the EZB resolver returning
+     * XML which would not be of any immediate use for the user.
+     *
+     * @return bool
+     */
+    public function supportsMoreOptionsLink();
+
 }
