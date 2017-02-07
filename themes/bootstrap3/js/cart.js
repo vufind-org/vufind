@@ -61,8 +61,13 @@ VuFind.register('cart', function Cart() {
     } else {
       $('#cartItems .full').addClass('hidden');
     }
+    _refreshToggles();
   }
 
+  function hasItem(id, _source) {
+    var source = _source || VuFind.defaultSearchBackend;
+    return _getItems().indexOf(String.fromCharCode(65 + _getSources().indexOf(source)) + id) > -1;
+  }
   function addItem(id, _source) {
     var source = _source || VuFind.defaultSearchBackend;
     var cartItems = _getItems();
@@ -175,8 +180,22 @@ VuFind.register('cart', function Cart() {
     });
   }
 
-  function init() {
-    // Record buttons
+  function _refreshToggles() {
+    var $toggleBtns = $('.btn-bookbag-toggle');
+    if ($toggleBtns.length > 0) {
+      $toggleBtns.each(function cartIdEach() {
+        var $this = $(this);
+        $this.find('.cart-add,.cart-remove').addClass('hidden');
+        if (hasItem($this.data('cart-id'), $this.data('cart-source'))) {
+          $this.find('.cart-remove').removeClass('hidden');
+        } else {
+          $this.find('.cart-add').removeClass('hidden');
+        }
+      });
+    }
+  }
+
+  function _registerToggles() {
     var $toggleBtns = $('.btn-bookbag-toggle');
     if ($toggleBtns.length > 0) {
       $toggleBtns.each(function cartIdEach() {
@@ -186,7 +205,8 @@ VuFind.register('cart', function Cart() {
         $this.find('.correct').removeClass('correct hidden');
         $this.find('.cart-add').click(function cartAddClick() {
           if (addItem(currentId, currentSource)) {
-            $this.find('.cart-add,.cart-remove').toggleClass('hidden');
+            $this.find('.cart-add').addClass('hidden');
+            $this.find('.cart-remove').removeClass('hidden');
           } else {
             $this.popover({content: VuFind.translate('bookbagFull')});
             setTimeout(function recordCartFullHide() {
@@ -196,13 +216,18 @@ VuFind.register('cart', function Cart() {
         });
         $this.find('.cart-remove').click(function cartRemoveClick() {
           removeItem(currentId, currentSource);
-          $this.find('.cart-add,.cart-remove').toggleClass('hidden');
+          $this.find('.cart-add').removeClass('hidden');
+          $this.find('.cart-remove').addClass('hidden');
         });
       });
-    } else {
-      // Search results
-      _registerUpdate();
     }
+  }
+
+  function init() {
+    // Record buttons
+    _registerToggles();
+    // Search results
+    _registerUpdate();
     $("#updateCart, #bottom_updateCart").popover({content: '', html: true, trigger: 'manual'});
     updateCount();
   }
@@ -211,11 +236,12 @@ VuFind.register('cart', function Cart() {
   return {
     // Methods
     addItem: addItem,
-    removeItem: removeItem,
     getFullItems: getFullItems,
-    updateCount: updateCount,
-    setDomain: setDomain,
+    hasItem: hasItem,
+    removeItem: removeItem,
     setCookiePath: setCookiePath,
+    setDomain: setDomain,
+    updateCount: updateCount,
     // Init
     init: init
   };
