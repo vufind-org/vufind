@@ -26,8 +26,6 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Base;
-use Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query,
     VuFindSearch\Query\QueryGroup;
 use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
@@ -43,12 +41,8 @@ use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Params implements ServiceLocatorAwareInterface
+class Params
 {
-    use \Zend\ServiceManager\ServiceLocatorAwareTrait {
-        setServiceLocator as setServiceLocatorThroughTrait;
-    }
-
     /**
      * Internal representation of user query.
      *
@@ -1658,22 +1652,6 @@ class Params implements ServiceLocatorAwareInterface
     public function getSelectedShards()
     {
         return $this->selectedShards;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Params
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        // If this isn't the top-level manager, get its parent:
-        if ($serviceLocator instanceof ServiceLocatorAwareInterface) {
-            $serviceLocator = $serviceLocator->getServiceLocator();
-        }
-        return $this->setServiceLocatorThroughTrait($serviceLocator);
     }
 
     /**
