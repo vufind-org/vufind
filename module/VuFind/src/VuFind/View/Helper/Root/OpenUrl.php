@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+use VuFind\Resolver\Driver\PluginManager;
 
 /**
  * OpenUrl view helper
@@ -62,7 +63,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Resolver plugin manager
      *
-     * @var \VuFind\ResolverDriverPluginManager
+     * @var PluginManager
      */
     protected $resolverPluginManager;
 
@@ -83,17 +84,17 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \VuFind\View\Helper\Root\Context    $context               Context helper
-     * @param array                               $openUrlRules          VuFind OpenURL rules
-     * @param \VuFind\ResolverDriverPluginManager $resolverPluginManager Resolver plugin manager
-     * @param \Zend\Config\Config                 $config                VuFind OpenURL config
+     * @param \VuFind\View\Helper\Root\Context $context       Context helper
+     * @param array                            $openUrlRules  VuFind OpenURL rules
+     * @param PluginManager                    $pluginManager Resolver plugin manager
+     * @param \Zend\Config\Config              $config        VuFind OpenURL config
      */
     public function __construct(\VuFind\View\Helper\Root\Context $context,
-        $openUrlRules, $resolverPluginManager, $config = null
+        $openUrlRules, PluginManager $pluginManager, $config = null
     ) {
         $this->context = $context;
         $this->openUrlRules = $openUrlRules;
-        $this->resolverPluginManager = $resolverPluginManager;
+        $this->resolverPluginManager = $pluginManager;
         $this->config = $config;
     }
 
