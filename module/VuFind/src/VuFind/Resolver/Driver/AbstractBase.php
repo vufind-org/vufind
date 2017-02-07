@@ -28,7 +28,6 @@
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
 namespace VuFind\Resolver\Driver;
-use DOMDocument, DOMXpath;
 
 /**
  * AbstractBase for Resolver Driver
