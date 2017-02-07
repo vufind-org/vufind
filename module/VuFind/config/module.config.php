@@ -608,6 +608,7 @@ $config = [
                 'factories' => [
                     'favorites' => 'VuFind\Search\Results\Factory::getFavorites',
                     'solr' => 'VuFind\Search\Results\Factory::getSolr',
+                    'tags' => 'VuFind\Search\Results\Factory::getTags',
                 ],
             ],
             'session' => [

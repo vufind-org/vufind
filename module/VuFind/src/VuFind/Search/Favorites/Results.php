@@ -26,11 +26,13 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Favorites;
-use VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Search\Base\Results as BaseResults,
-    VuFind\Record\Cache,
-    ZfcRbac\Service\AuthorizationServiceAwareInterface,
-    ZfcRbac\Service\AuthorizationServiceAwareTrait;
+use VuFind\Db\Table\Resource as ResourceTable;
+use VuFind\Db\Table\UserList as ListTable;
+use VuFind\Exception\ListPermission as ListPermissionException;
+use VuFind\Search\Base\Results as BaseResults;
+use VuFind\Record\Cache;
+use ZfcRbac\Service\AuthorizationServiceAwareInterface;
+use ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
  * Search Favorites Results
@@ -59,6 +61,36 @@ class Results extends BaseResults
      * @var \VuFind\Db\Row\UserList|bool
      */
     protected $list = false;
+
+    /**
+     * Resource table
+     *
+     * @var ResourceTable
+     */
+    protected $resourceTable;
+
+    /**
+     * UserList table
+     *
+     * @var ListTable
+     */
+    protected $listTable;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Base\Params $params        Object representing user
+     * search parameters.
+     * @param ResourceTable              $resourceTable Resource table
+     * @param ListTable                  $listTable     UserList table
+     */
+    public function __construct(\VuFind\Search\Base\Params $params,
+        ResourceTable $resourceTable, ListTable $listTable
+    ) {
+        parent::__construct($params);
+        $this->resourceTable = $resourceTable;
+        $this->listTable = $listTable;
+    }
 
     /**
      * Returns the stored list of facets for the last search
@@ -146,10 +178,9 @@ class Results extends BaseResults
         }
 
         // How many results were there?
-        $resource = $this->getTable('Resource');
         $userId = is_null($list) ? $this->user->id : $list->user_id;
         $listId = is_null($list) ? null : $list->id;
-        $rawResults = $resource->getFavorites(
+        $rawResults = $this->resourceTable->getFavorites(
             $userId, $listId, $this->getTagFilters(), $this->getParams()->getSort()
         );
         $this->resultTotal = count($rawResults);
@@ -157,7 +188,7 @@ class Results extends BaseResults
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
-            $rawResults = $resource->getFavorites(
+            $rawResults = $this->resourceTable->getFavorites(
                 $userId, $listId, $this->getTagFilters(),
                 $this->getParams()->getSort(), $this->getStartRecord() - 1, $limit
             );
@@ -204,12 +235,8 @@ class Results extends BaseResults
             // if one is found:
             $filters = $this->getParams()->getFilters();
             $listId = isset($filters['lists'][0]) ? $filters['lists'][0] : null;
-            if (null === $listId) {
-                $this->list = null;
-            } else {
-                $table = $this->getTable('UserList');
-                $this->list = $table->getExisting($listId);
-            }
+            $this->list = (null === $listId)
+                ? null : $this->listTable->getExisting($listId);
         }
         return $this->list;
     }
