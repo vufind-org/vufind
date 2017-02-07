@@ -486,6 +486,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
+        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now do it for real -- we should get a login prompt.
@@ -647,6 +648,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
+        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now do it for real -- we should get redirected.

@@ -196,6 +196,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#make-list')->click();
         $this->findCss($page, '#list_title')->setValue('Future List');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->assertEquals(
             $this->findCss($page, '#save_list option[selected]')->getHtml(),
             'Future List'
@@ -276,6 +277,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             $page, ['username' => 'username2', 'email' => 'username2@ignore.com']
         );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '#save_list');
         // Make list
         $this->findCss($page, '#make-list')->click();
