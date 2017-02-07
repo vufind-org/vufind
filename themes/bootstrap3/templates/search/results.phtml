@@ -33,7 +33,7 @@
   }
 
   // Enable cart if appropriate:
-  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive();
+  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive() && $this->showBulkOptions;
   // Enable bulk options if appropriate:
   $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
 
