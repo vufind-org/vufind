@@ -557,44 +557,6 @@ abstract class Results implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Restore the service locator (a cascading version of setServiceLocator()).
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Results
-     */
-    public function restoreServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->setServiceLocator($serviceLocator);
-        $params = $this->getParams();
-        if (method_exists($params, 'setServiceLocator')) {
-            $params->setServiceLocator($serviceLocator);
-        }
-        // Restore translator:
-        $this->getOptions()
-            ->setTranslator($serviceLocator->get('VuFind\Translator'));
-        $this->getOptions()
-            ->setConfigLoader($serviceLocator->get('VuFind\Config'));
-        return $this;
-    }
-
-    /**
-     * Sleep magic method -- the service locator can't be serialized, so we need to
-     * exclude it from serialization.  Since we can't obtain a new locator in the
-     * __wakeup() method, it needs to be re-injected from outside.
-     *
-     * @return array
-     */
-    public function __sleep()
-    {
-        $vars = get_object_vars($this);
-        unset($vars['serviceLocator']);
-        unset($vars['searchService']);
-        $vars = array_keys($vars);
-        return $vars;
-    }
-
-    /**
      * Return search service.
      *
      * @return SearchService
