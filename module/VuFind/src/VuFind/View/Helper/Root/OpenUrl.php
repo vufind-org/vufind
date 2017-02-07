@@ -312,6 +312,11 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     protected function checkIfRulesApply()
     {
+        // special case if no rules are defined at all assume that any record is
+        // valid for openUrls
+        if (!isset($this->openUrlRules) || count($this->openUrlRules) < 1) {
+            return true;
+        }
         foreach ($this->openUrlRules as $rules) {
             if (!$this->checkExcludedRecordsRules($rules)
                 && $this->checkSupportedRecordsRules($rules)
