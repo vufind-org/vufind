@@ -208,7 +208,8 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             );
             $resolverLink = $resolverObj->getResolverLink($openurl);
         } else {
-            $resolverLink = false;
+            $resolverLink = empty($base) ? '' : $base .
+                $this->recordDriver->getOpenUrl();
         }
 
         // Build parameters needed to display the control:
