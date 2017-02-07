@@ -299,7 +299,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function initFacetList($facetList, $facetSettings, $cfgFile = 'facets')
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('facets');
+        $config = $this->configLoader->get('facets');
         if (isset($config->$facetSettings->facet_limit)
             && is_numeric($config->$facetSettings->facet_limit)
         ) {
@@ -426,7 +426,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function getQueryIDLimit()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $this->configLoader->get('config');
         return isset($config->Index->maxBooleanClauses)
             ? $config->Index->maxBooleanClauses : 1024;
     }

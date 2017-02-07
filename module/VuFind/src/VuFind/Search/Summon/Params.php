@@ -212,7 +212,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function getBackendFacetParameters()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('Summon');
+        $config = $this->configLoader->get('Summon');
         $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
             ? $config->Facet_Settings->facet_limit : 30;
         $fieldSpecificLimits = isset($config->Facet_Settings->facet_limit_by_field)
