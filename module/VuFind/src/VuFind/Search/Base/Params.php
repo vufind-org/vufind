@@ -1685,19 +1685,6 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Get a database table object.
-     *
-     * @param string $table Name of table to retrieve
-     *
-     * @return \VuFind\Db\Table\Gateway
-     */
-    public function getTable($table)
-    {
-        return $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
-            ->get($table);
-    }
-
-    /**
      * Translate a string (or string-castable object)
      *
      * @param string|object|array $target  String to translate or an array of text
