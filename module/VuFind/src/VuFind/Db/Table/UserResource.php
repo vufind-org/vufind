@@ -101,7 +101,7 @@ class UserResource extends Gateway
      * @param string $list_id     ID of list to link up
      * @param string $notes       Notes to associate with link
      *
-     * @return void
+     * @return \VuFind\Db\Row\UserResource
      */
     public function createOrUpdateLink($resource_id, $user_id, $list_id,
         $notes = ''
@@ -123,6 +123,7 @@ class UserResource extends Gateway
         // Update the notes:
         $result->notes = $notes;
         $result->save();
+        return $result;
     }
 
     /**
