@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+use VuFind\Resolver\Driver\PluginManager;
 
 /**
  * OpenUrl view helper
@@ -60,6 +61,13 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     protected $openUrlRules;
 
     /**
+     * Resolver plugin manager
+     *
+     * @var PluginManager
+     */
+    protected $resolverPluginManager;
+
+    /**
      * Current RecordDriver
      *
      * @var \VuFind\RecordDriver
@@ -76,15 +84,17 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \VuFind\View\Helper\Root\Context $context      Context helper
-     * @param array                            $openUrlRules VuFind OpenURL rules
-     * @param \Zend\Config\Config              $config       VuFind OpenURL config
+     * @param \VuFind\View\Helper\Root\Context $context       Context helper
+     * @param array                            $openUrlRules  VuFind OpenURL rules
+     * @param PluginManager                    $pluginManager Resolver plugin manager
+     * @param \Zend\Config\Config              $config        VuFind OpenURL config
      */
     public function __construct(\VuFind\View\Helper\Root\Context $context,
-        $openUrlRules, $config = null
+        $openUrlRules, PluginManager $pluginManager, $config = null
     ) {
         $this->context = $context;
         $this->openUrlRules = $openUrlRules;
+        $this->resolverPluginManager = $pluginManager;
         $this->config = $config;
     }
 
@@ -192,8 +202,20 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             );
         }
 
+        // instantiate the resolver plugin to get a proper resolver link
+        if ($this->resolverPluginManager->has($resolver)) {
+            $resolverObj = new \VuFind\Resolver\Connection(
+                $this->resolverPluginManager->get($resolver)
+            );
+            $resolverUrl = $resolverObj->getResolverUrl($openurl);
+        } else {
+            $resolverUrl = empty($base) ? '' : $base . '?' .
+                $this->recordDriver->getOpenUrl();
+        }
+
         // Build parameters needed to display the control:
         $params = [
+            'resolverUrl' => $resolverUrl,
             'openUrl' => $this->recordDriver->getOpenUrl(),
             'openUrlBase' => empty($base) ? false : $base,
             'openUrlWindow' => empty($this->config->window_settings)
@@ -291,6 +313,11 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     protected function checkIfRulesApply()
     {
+        // special case if no rules are defined at all assume that any record is
+        // valid for openUrls
+        if (!isset($this->openUrlRules) || count($this->openUrlRules) < 1) {
+            return true;
+        }
         foreach ($this->openUrlRules as $rules) {
             if (!$this->checkExcludedRecordsRules($rules)
                 && $this->checkSupportedRecordsRules($rules)

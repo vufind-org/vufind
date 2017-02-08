@@ -178,7 +178,8 @@ class CollectionsController extends AbstractBase
         $result = $searchObject->getFullFieldFacets(
             [$browseField], false, 150000, 'index'
         );
-        $result = $result[$browseField]['data']['list'];
+        $result = isset($result[$browseField]['data']['list'])
+            ? $result[$browseField]['data']['list'] : [];
 
         $delimiter = $this->getBrowseDelimiter();
         foreach ($result as $rkey => $collection) {

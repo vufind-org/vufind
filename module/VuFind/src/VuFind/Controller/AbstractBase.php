@@ -59,6 +59,13 @@ class AbstractBase extends AbstractActionController
     protected $accessPermission = false;
 
     /**
+     * Behavior when access is denied. Valid values are 'promptLogin' and 'exception'
+     *
+     * @var string
+     */
+    protected $accessDeniedBehavior = 'promptLogin';
+
+    /**
      * Use preDispatch event to block access when appropriate.
      *
      * @param MvcEvent $e Event object
@@ -71,9 +78,11 @@ class AbstractBase extends AbstractActionController
         if ($this->accessPermission
             && !$this->getAuthorizationService()->isGranted($this->accessPermission)
         ) {
-            if (!$this->getUser()) {
-                $e->setResponse($this->forceLogin(null, [], false));
-                return;
+            if ($this->accessDeniedBehavior == 'promptLogin') {
+                if (!$this->getUser()) {
+                    $e->setResponse($this->forceLogin(null, [], false));
+                    return;
+                }
             }
             throw new ForbiddenException('Access denied.');
         }
@@ -114,9 +123,9 @@ class AbstractBase extends AbstractActionController
      */
     protected function createViewModel($params = null)
     {
-        if ('lightbox' === $this->params()->fromPost(
-            'layout', $this->params()->fromQuery('layout', false)
-        )) {
+        $layout = $this->params()
+            ->fromPost('layout', $this->params()->fromQuery('layout', false));
+        if ('lightbox' === $layout) {
             $this->layout()->setTemplate('layout/lightbox');
         }
         return new ViewModel($params);
@@ -243,7 +252,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function getViewRenderer()
     {
-        return $this->getServiceLocator()->get('viewmanager')->getRenderer();
+        return $this->getServiceLocator()->get('ViewRenderer');
     }
 
     /**

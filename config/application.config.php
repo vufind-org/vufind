@@ -2,7 +2,7 @@
 
 // Set up modules:
 $modules = array(
-    'ZfcRbac', 'VuFindTheme', 'VuFindSearch', 'VuFind', 'VuFindAdmin'
+    'ZfcRbac', 'VuFindTheme', 'VuFindSearch', 'VuFind', 'VuFindAdmin', 'VuFindApi'
 );
 if (PHP_SAPI == 'cli' && !defined('VUFIND_PHPUNIT_RUNNING')) {
     $modules[] = 'VuFindConsole';

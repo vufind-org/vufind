@@ -78,7 +78,7 @@ VuFind.register('embedded', function embedded() {
         }
       });
     }
-    if (click) {
+    if (click && !$tab.parent().hasClass('default')) {
       $tab.click();
     }
     return true;
