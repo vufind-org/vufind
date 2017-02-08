@@ -30,9 +30,13 @@
 
       <? if ($paginator): ?>
         <?
+          $end = min(
+            $paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage()),
+            $paginator->getTotalItemCount()
+          );
           $transParams = [
             '%%start%%' => $this->localizedNumber($paginator->getAbsoluteItemNumber(1)),
-            '%%end%%'   => $this->localizedNumber($paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage())),
+            '%%end%%'   => $this->localizedNumber($end),
             '%%total%%' => $this->localizedNumber($paginator->getTotalItemCount())
           ];
         ?>
