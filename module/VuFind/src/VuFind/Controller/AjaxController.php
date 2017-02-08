@@ -751,7 +751,7 @@ class AjaxController extends AbstractBase
             $tagList[] = [
                 'tag'   => $tag->tag,
                 'cnt'   => $tag->cnt,
-                'is_me' => $tag->is_me == 1 ? true : false
+                'is_me' => !empty($tag->is_me)
             ];
         }
 
@@ -784,7 +784,6 @@ class AjaxController extends AbstractBase
         );
         $request = $this->getRequest();
         $config = $this->getServiceLocator()->get('Config');
-        $sconfig = $this->getServiceLocator()->get('VuFind\Config')->get('searches');
 
         $recordTabPlugin = $this->getServiceLocator()
             ->get('VuFind\RecordTabPluginManager');
@@ -909,9 +908,8 @@ class AjaxController extends AbstractBase
             $facets[$field]['removalURL']
                 = $results->getUrlQuery()->removeFacet(
                     $field,
-                    isset($filters[$field][0]) ? $filters[$field][0] : null,
-                    false
-                );
+                    isset($filters[$field][0]) ? $filters[$field][0] : null
+                )->getParams(false);
         }
         return $this->output($facets, self::STATUS_OK);
     }
@@ -1261,11 +1259,15 @@ class AjaxController extends AbstractBase
             $base = false;
         }
 
+        $moreOptionsLink = $resolver->supportsMoreOptionsLink()
+            ? $resolver->getResolverUrl($openUrl) : '';
+
         // Render the links using the view:
         $view = [
             'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
             'electronic' => $electronic, 'services' => $services,
-            'searchClassId' => $searchClassId
+            'searchClassId' => $searchClassId,
+            'moreOptionsLink' => $moreOptionsLink
         ];
         $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml', $view);
 
@@ -1499,5 +1501,33 @@ class AjaxController extends AbstractBase
     protected function getResultsManager()
     {
         return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
+    }
+
+    /**
+     * Get Ils Status
+     *
+     * This will check the ILS for being online and will return the ils-offline
+     * template upon failure.
+     *
+     * @return \Zend\Http\Response
+     * @author André Lahmann <lahmann@ub.uni-leipzig.de>
+     */
+    protected function getIlsStatusAjax()
+    {
+        $this->disableSessionWrites();  // avoid session write timing bug
+        if ($this->getILS()->getOfflineMode(true) == 'ils-offline') {
+            $offlineModeMsg = $this->params()->fromPost(
+                'offlineModeMsg',
+                $this->params()->fromQuery('offlineModeMsg')
+            );
+            return $this->output(
+                $this->getViewRenderer()->render(
+                    'Helpers/ils-offline.phtml',
+                    compact('offlineModeMsg')
+                ),
+                self::STATUS_OK
+            );
+        }
+        return $this->output('', self::STATUS_OK);
     }
 }

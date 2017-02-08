@@ -77,6 +77,18 @@ class ParamBag
     }
 
     /**
+     * Return true if the bag contains any value(s) for the specified parameter.
+     *
+     * @param string $name Parameter name
+     *
+     * @return bool
+     */
+    public function hasParam($name)
+    {
+        return isset($this->params[$name]);
+    }
+
+    /**
      * Return true if the bag contains a parameter-value-pair.
      *
      * @param string $name  Parameter name

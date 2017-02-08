@@ -138,14 +138,17 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Add the current page of results to the cart.
      *
-     * @param Element $page       Page element
-     * @param Element $updateCart Add to cart button
+     * @param Element $page        Page element
+     * @param Element $updateCart  Add to cart button
+     * @param string  $selectAllId ID of select all checkbox
      *
      * @return void
      */
-    protected function addCurrentPageToCart(Element $page, Element $updateCart)
+    protected function addCurrentPageToCart(Element $page, Element $updateCart,
+        $selectAllId = '#addFormCheckboxSelectAll'
+    )
     {
-        $selectAll = $page->find('css', '#addFormCheckboxSelectAll');
+        $selectAll = $page->find('css', $selectAllId);
         $selectAll->check();
         $updateCart->click();
     }
@@ -169,10 +172,14 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      * into the cart, then opening the lightbox so that additional actions may
      * be attempted.
      *
+     * @param array  $extraConfigs Extra config settings
+     * @param string $selectAllId  ID of select all checkbox
+     *
      * @return Element
      */
-    protected function setUpGenericCartTest($extraConfigs = [])
-    {
+    protected function setUpGenericCartTest($extraConfigs = [],
+        $selectAllId = '#addFormCheckboxSelectAll'
+    ) {
         // Activate the cart:
         $extraConfigs['config']['Site'] = ['showBookBag' => true];
         $this->changeConfigs($extraConfigs);
@@ -183,7 +190,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $updateCart = $this->findCss($page, '#updateCart');
 
         // Now actually select something:
-        $this->addCurrentPageToCart($page, $updateCart);
+        $this->addCurrentPageToCart($page, $updateCart, $selectAllId);
         $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
 
         // Open the cart and empty it:
@@ -382,7 +389,9 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try deleting without selecting anything:
         $delete->click();
+        $this->snooze();
         $this->findCss($page, '#cart-confirm-delete')->click();
+        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now actually select the records to delete:
@@ -428,6 +437,44 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Test that we can put items in the cart using the bottom checkbox.
+     *
+     * @return void
+     */
+    public function testFillCartUsingBottomCheckbox()
+    {
+        $this->setUpGenericCartTest([], '#bottom_addFormCheckboxSelectAll');
+    }
+
+    /**
+     * Test that we can put items in the cart and then remove them outside of
+     * the lightbox.
+     *
+     * @return void
+     */
+    public function testFillAndEmptyCartWithoutLightbox()
+    {
+        // Turn on limit by path setting; there used to be a bug where cookie
+        // paths were set inconsistently between JS and server-side code. This
+        // test should catch any regressions in that area.
+        $page = $this->setUpGenericCartTest(
+            ['config' => ['Cookies' => ['limit_by_path' => 1]]]
+        );
+
+        // Go to the cart page and activate the "empty" control:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Cart');
+        $empty = $this->findCss($page, '#cart-empty-label');
+        $empty->click();
+        $emptyConfirm = $this->findCss($page, '#cart-confirm-empty');
+        $emptyConfirm->click();
+
+        // Confirm that the cart has truly been emptied:
+        $this->snooze(); // wait for display to update
+        $this->assertEquals('0', $this->findCss($page, '#cartItems strong')->getText());
+    }
+
+    /**
      * Test that the email control works.
      *
      * @return void
@@ -441,6 +488,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
+        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now do it for real -- we should get a login prompt.
@@ -453,6 +501,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         $this->fillInAccountForm($page);
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
 
         $this->findCss($page, '.modal #email_from')->setValue('asdf@asdf.com');
         $this->findCss($page, '.modal #email_message')->setValue('message');
@@ -479,6 +528,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
+        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now do it for real -- we should get a login prompt.
@@ -524,6 +574,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
+        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now do it for real -- we should get an export option list:
@@ -579,6 +630,9 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
         $this->snooze();
+        $windows = $this->getMinkSession()->getWindowNames();
+        $this->assertEquals(2, count($windows));
+        $this->getMinkSession()->switchToWindow($windows[1]);
         $this->assertEquals(
             'https://www.google.com/', $this->getMinkSession()->getCurrentUrl()
         );
@@ -597,6 +651,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
+        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now do it for real -- we should get redirected.

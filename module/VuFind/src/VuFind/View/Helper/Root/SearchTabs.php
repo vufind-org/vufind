@@ -110,8 +110,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     public function getTabConfig($activeSearchClass, $query, $handler,
         $type = 'basic', $hiddenFilters = []
     ) {
-        $retVal = [];
-        $matchFound = false;
+        $retVal = ['tabs' => []];
         $allFilters = $this->helper->getTabFilterConfig();
         $allPermissions = $this->helper->getTabPermissionConfig();
         foreach ($this->helper->getTabConfig() as $key => $label) {
@@ -124,10 +123,9 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
             if ($class == $activeSearchClass
                 && $this->helper->filtersMatch($class, $hiddenFilters, $filters)
             ) {
-                $matchFound = true;
-                $retVal[] = $this->createSelectedTab(
-                    $key, $class, $label, $permissionName
-                );
+                $retVal['selected'] = $this
+                    ->createSelectedTab($key, $class, $label, $permissionName);
+                $retVal['tabs'][] = $retVal['selected'];
             } else if ($type == 'basic') {
                 if (!isset($activeOptions)) {
                     $activeOptions
@@ -136,23 +134,24 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
                 $newUrl = $this->remapBasicSearch(
                     $activeOptions, $class, $query, $handler, $filters
                 );
-                $retVal[] = $this->createBasicTab(
+                $retVal['tabs'][] = $this->createBasicTab(
                     $key, $class, $label, $newUrl, $permissionName
                 );
             } else if ($type == 'advanced') {
-                $retVal[] = $this->createAdvancedTab(
+                $retVal['tabs'][] = $this->createAdvancedTab(
                     $key, $class, $label, $filters, $permissionName
                 );
             } else {
-                $retVal[] = $this->createHomeTab(
+                $retVal['tabs'][] = $this->createHomeTab(
                     $key, $class, $label, $filters, $permissionName
                 );
             }
         }
-        if (!$matchFound && !empty($retVal)) {
+        if (!isset($retVal['selected']) && !empty($retVal['tabs'])) {
             // Make the first tab for the given search class selected
-            foreach ($retVal as &$tab) {
+            foreach ($retVal['tabs'] as &$tab) {
                 if ($tab['class'] == $activeSearchClass) {
+                    $retVal['selected'] = $tab;
                     $tab['selected'] = true;
                     break;
                 }
@@ -171,11 +170,12 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
      */
     public function getTabConfigForParams($params)
     {
-        return $this->getTabConfig(
+        $tabConfig = $this->getTabConfig(
             $params->getSearchClassId(), $params->getDisplayQuery(),
             $params->getSearchHandler(), $params->getSearchType(),
             $params->getHiddenFilters()
         );
+        return $tabConfig['tabs'];
     }
 
     /**

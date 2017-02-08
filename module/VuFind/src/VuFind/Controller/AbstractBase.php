@@ -171,9 +171,9 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     protected function createViewModel($params = null)
     {
-        if ('lightbox' === $this->params()->fromPost(
-            'layout', $this->params()->fromQuery('layout', false)
-        )) {
+        $layout = $this->params()
+            ->fromPost('layout', $this->params()->fromQuery('layout', false));
+        if ('lightbox' === $layout) {
             $this->layout()->setTemplate('layout/lightbox');
         }
         return new ViewModel($params);
@@ -320,7 +320,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     protected function getViewRenderer()
     {
-        return $this->getServiceLocator()->get('viewmanager')->getRenderer();
+        return $this->getServiceLocator()->get('ViewRenderer');
     }
 
     /**

@@ -64,9 +64,10 @@ class ProxyUrl extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($url)
     {
-        if (isset($this->config->EZproxy->host)) {
-            $url = $this->config->EZproxy->host . '/login?qurl=' . urlencode($url);
-        }
-        return $url;
+        $usePrefix = !isset($this->config->EZproxy->prefixLinks)
+            || $this->config->EZproxy->prefixLinks;
+        return ($usePrefix && isset($this->config->EZproxy->host))
+            ? $this->config->EZproxy->host . '/login?qurl=' . urlencode($url)
+            : $url;
     }
 }

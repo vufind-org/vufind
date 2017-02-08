@@ -26,7 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Base;
-use VuFind\Search\UrlQueryHelper, Zend\Paginator\Paginator,
+use VuFind\Search\Factory\UrlQueryHelperFactory, Zend\Paginator\Paginator,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 use VuFindSearch\Service as SearchService;
@@ -197,15 +197,28 @@ abstract class Results implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Options for UrlQueryHelper
+     *
+     * @return array
+     */
+    protected function getUrlQueryHelperOptions()
+    {
+        return [];
+    }
+
+    /**
      * Get the URL helper for this object.
      *
-     * @return UrlHelper
+     * @return \VuFind\Search\UrlQueryHelper
      */
     public function getUrlQuery()
     {
         // Set up URL helper:
         if (!isset($this->helpers['urlQuery'])) {
-            $this->helpers['urlQuery'] = new UrlQueryHelper($this->getParams());
+            $factory = new UrlQueryHelperFactory();
+            $this->helpers['urlQuery'] = $factory->fromParams(
+                $this->getParams(), $this->getUrlQueryHelperOptions()
+            );
         }
         return $this->helpers['urlQuery'];
     }

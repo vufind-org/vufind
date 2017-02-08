@@ -73,7 +73,6 @@ class ShibbolethLogoutNotificationController extends AbstractBase
     public function postAction()
     {
         $this->disableSessionWrites();
-        list($uri) = explode('?', $this->getRequest()->getUriString());
         $soapServer = new \Zend\Soap\Server(
             'data://text/plain;base64,' . base64_encode($this->getWsdl())
         );
