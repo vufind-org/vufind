@@ -256,7 +256,8 @@ class CacheTest extends TestCase
             return false;
         };
 
-        $recordTable = $this->getMock('VuFind\Db\Table\Record');
+        $recordTable = $this->getMockBuilder('VuFind\Db\Table\Record')
+            ->disableOriginalConstructor()->getMock();
         $recordTable->method('findRecords')
             ->will($this->returnCallback($findRecordsCallback));
         $recordTable->method('findRecord')
