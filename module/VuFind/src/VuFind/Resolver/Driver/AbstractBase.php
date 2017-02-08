@@ -1,6 +1,6 @@
 <?php
 /**
- * Demo Link Resolver Driver
+ * AbstractBase for Resolver Driver
  *
  * PHP version 5
  *
@@ -28,10 +28,9 @@
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
 namespace VuFind\Resolver\Driver;
-use DOMDocument, DOMXpath;
 
 /**
- * Demo Link Resolver Driver
+ * AbstractBase for Resolver Driver
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -39,59 +38,50 @@ use DOMDocument, DOMXpath;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
-class Demo extends AbstractBase
+abstract class AbstractBase implements DriverInterface
 {
+    /**
+     * Base URL for link resolver
+     *
+     * @var string
+     */
+    protected $baseUrl;
+
     /**
      * Constructor
      *
      * @param string $baseUrl Base URL for link resolver
      */
-    public function __construct($baseUrl = 'http://localhost')
+    public function __construct($baseUrl)
     {
-        parent::__construct($baseUrl);
+        $this->baseUrl = $baseUrl;
     }
 
     /**
-     * Fetch Links
+     * Get Resolver Url
      *
-     * Fetches a set of links corresponding to an OpenURL
+     * Transform the OpenURL as needed to get a working link to the resolver.
      *
      * @param string $openURL openURL (url-encoded)
      *
-     * @return string
+     * @return string Returns resolver specific url
      */
-    public function fetchLinks($openURL)
+    public function getResolverUrl($openURL)
     {
-        return $openURL;
+        return $this->baseUrl . '?' . $openURL;
     }
 
     /**
-     * Parse Links
+     * This controls whether a "More options" link will be shown below the fetched
+     * resolver links eventually linking to the resolver page previously being
+     * parsed.
+     * This is especially useful for resolver such as the EZB resolver returning
+     * XML which would not be of any immediate use for the user.
      *
-     * Parses data returned by a link resolver
-     * and converts it to a standardised format for display
-     *
-     * @param string $data Raw data
-     *
-     * @return array       Array of values
+     * @return bool
      */
-    public function parseLinks($data)
+    public function supportsMoreOptionsLink()
     {
-        return [
-            [
-                'href' => 'https://vufind.org/wiki?' . $data . '#print',
-                'title' => 'Print',
-                'coverage' => 'fake1',
-                'service_type' => 'getHolding',
-                'access' => 'unknown'
-            ],
-            [
-                'href' => 'https://vufind.org/wiki?' . $data . '#electronic',
-                'title' => 'Electronic',
-                'coverage' => 'fake2',
-                'service_type' => 'getFullTxt',
-                'access' => 'open'
-            ],
-        ];
+        return true;
     }
 }

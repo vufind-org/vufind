@@ -39,15 +39,8 @@ use DOMDocument, DOMXpath;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
-class Threesixtylink implements DriverInterface
+class Threesixtylink extends AbstractBase
 {
-    /**
-     * Base URL for link resolver
-     *
-     * @var string
-     */
-    protected $baseUrl;
-
     /**
      * HTTP client
      *
@@ -63,7 +56,7 @@ class Threesixtylink implements DriverInterface
      */
     public function __construct($baseUrl, \Zend\Http\Client $httpClient)
     {
-        $this->baseUrl = $baseUrl;
+        parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
     }
 
