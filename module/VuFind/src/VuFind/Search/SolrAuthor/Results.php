@@ -27,6 +27,8 @@
  */
 namespace VuFind\Search\SolrAuthor;
 use VuFind\Search\Solr\Results as SolrResults;
+use VuFind\Record\Loader;
+use VuFindSearch\Service as SearchService;
 
 /**
  * Author Search Options
@@ -42,13 +44,15 @@ class Results extends SolrResults
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params $params Object representing user search
-     * parameters.
+     * @param \VuFind\Search\Base\Params $params        Object representing user
+     * search parameters.
+     * @param SearchService              $searchService Search service
+     * @param Loader                     $recordLoader  Record loader
      */
-    public function __construct($params)
-    {
-        // Call parent constructor:
-        parent::__construct($params);
+    public function __construct(\VuFind\Search\Base\Params $params,
+        SearchService $searchService, Loader $recordLoader
+    ) {
+        parent::__construct($params, $searchService, $recordLoader);
     }
 
     /**
