@@ -31,6 +31,8 @@ use VuFind\Db\Table\UserList as ListTable;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Search\Base\Results as BaseResults;
 use VuFind\Record\Cache;
+use VuFind\Record\Loader;
+use VuFindSearch\Service as SearchService;
 use ZfcRbac\Service\AuthorizationServiceAwareInterface;
 use ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
@@ -81,13 +83,16 @@ class Results extends BaseResults
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
      * search parameters.
+     * @param SearchService              $searchService Search service
+     * @param Loader                     $recordLoader  Record loader
      * @param ResourceTable              $resourceTable Resource table
      * @param ListTable                  $listTable     UserList table
      */
     public function __construct(\VuFind\Search\Base\Params $params,
+        SearchService $searchService, Loader $recordLoader,
         ResourceTable $resourceTable, ListTable $listTable
     ) {
-        parent::__construct($params);
+        parent::__construct($params, $searchService, $recordLoader);
         $this->resourceTable = $resourceTable;
         $this->listTable = $listTable;
     }
@@ -205,9 +210,8 @@ class Results extends BaseResults
             ];
         }
 
-        $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
-        $recordLoader->setCacheContext(Cache::CONTEXT_FAVORITE);
-        $this->results = $recordLoader->loadBatch($recordsToRequest);
+        $this->recordLoader->setCacheContext(Cache::CONTEXT_FAVORITE);
+        $this->results = $this->recordLoader->loadBatch($recordsToRequest);
     }
 
     /**

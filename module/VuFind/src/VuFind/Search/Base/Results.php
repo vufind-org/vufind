@@ -26,10 +26,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Base;
-use VuFind\Search\Factory\UrlQueryHelperFactory, Zend\Paginator\Paginator,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\Record\Loader;
+use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFindSearch\Service as SearchService;
+use Zend\Paginator\Paginator;
 
 /**
  * Abstract results search model.
@@ -42,12 +42,8 @@ use VuFindSearch\Service as SearchService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class Results implements ServiceLocatorAwareInterface
+abstract class Results
 {
-    use \Zend\ServiceManager\ServiceLocatorAwareTrait {
-        setServiceLocator as setServiceLocatorThroughTrait;
-    }
-
     /**
      * Search parameters
      *
@@ -141,14 +137,26 @@ abstract class Results implements ServiceLocatorAwareInterface
     protected $searchService;
 
     /**
+     * Record loader
+     *
+     * @var Loader
+     */
+    protected $recordLoader;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params $params Object representing user search
-     * parameters.
+     * @param \VuFind\Search\Base\Params $params        Object representing user
+     * search parameters.
+     * @param SearchService              $searchService Search service
+     * @param Loader                     $recordLoader  Record loader
      */
-    public function __construct(Params $params)
-    {
+    public function __construct(Params $params, SearchService $searchService,
+        Loader $recordLoader
+    ) {
         $this->setParams($params);
+        $this->searchService = $searchService;
+        $this->recordLoader = $recordLoader;
     }
 
     /**
@@ -541,22 +549,6 @@ abstract class Results implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Results
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        // If this isn't the top-level manager, get its parent:
-        if ($serviceLocator instanceof ServiceLocatorAwareInterface) {
-            $serviceLocator = $serviceLocator->getServiceLocator();
-        }
-        return $this->setServiceLocatorThroughTrait($serviceLocator);
-    }
-
-    /**
      * Return search service.
      *
      * @return SearchService
@@ -566,9 +558,6 @@ abstract class Results implements ServiceLocatorAwareInterface
      */
     protected function getSearchService()
     {
-        if (!$this->searchService) {
-            $this->searchService = $this->getServiceLocator()->get('VuFind\Search');
-        }
         return $this->searchService;
     }
 
