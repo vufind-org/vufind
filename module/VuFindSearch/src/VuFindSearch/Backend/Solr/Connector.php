@@ -35,12 +35,14 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\ParamBag;
 
 use VuFindSearch\Backend\Exception\HttpErrorException;
+use VuFindSearch\Backend\Exception\RequestErrorException;
 
 use VuFindSearch\Backend\Solr\Document\AbstractDocument;
 
 use Zend\Http\Request;
 use Zend\Http\Client as HttpClient;
 use Zend\Http\Client\Adapter\AdapterInterface;
+use Zend\Http\Client\Adapter\Exception\TimeoutException;
 
 use InvalidArgumentException;
 
@@ -388,6 +390,11 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             try {
                 return $this->send($client);
             } catch (\Exception $ex) {
+                if ($ex instanceof TimeoutException
+                    || $ex instanceof RequestErrorException
+                ) {
+                    throw $ex;
+                }
                 $exception = $ex;
             }
         }
