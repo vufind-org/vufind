@@ -1261,6 +1261,59 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
+     * Check status and return a status message for e.g. a load balancer.
+     *
+     * A simple OK as text/plain is returned if everything works properly.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function systemStatusAction()
+    {
+        $this->outputMode = 'plaintext';
+
+        // Check system status
+        $config = $this->getConfig();
+        if (!empty($config->System->healthCheckFile)
+            && file_exists($config->System->healthCheckFile)
+        ) {
+            return $this->output(
+                'Health check file exists', self::STATUS_ERROR, 503
+            );
+        }
+
+        // Test search index
+        if ($this->getRequest()->getQuery('index', 1)) {
+            try {
+                $results = $this->getResultsManager()->get('Solr');
+                $params = $results->getParams();
+                $params->setQueryIDs(['healthcheck']);
+                $results->performAndProcessSearch();
+            } catch (\Exception $e) {
+                return $this->output(
+                    'Search index error: ' . $e->getMessage(),
+                    self::STATUS_ERROR,
+                    500
+                );
+            }
+        }
+
+        // Test database connection
+        try {
+            $sessionTable = $this->getTable('Session');
+            $sessionTable->getBySessionId('healthcheck', false);
+        } catch (\Exception $e) {
+            return $this->output(
+                'Database error: ' . $e->getMessage(), self::STATUS_ERROR, 500
+            );
+        }
+
+        // This may be called frequently, don't leave sessions dangling
+        $this->getServiceLocator()->get('VuFind\SessionManager')->destroy();
+
+        return $this->output('', self::STATUS_OK);
+    }
+
+    /**
      * Register online paid fines to the ILS.
      *
      * @return \Zend\Http\Response
