@@ -5,7 +5,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,6 +28,7 @@
  */
 namespace FinnaSearch\Backend\Solr;
 use VuFindCode\ISBN;
+use VuFindSearch\Backend\Exception\BackendException;
 
 /**
  * Lucene query syntax helper class.
@@ -48,17 +49,28 @@ class LuceneSyntaxHelper extends \VuFindSearch\Backend\Solr\LuceneSyntaxHelper
     protected $unicodeNormalizationForm;
 
     /**
+     * Search filters
+     *
+     * @var string
+     */
+    protected $searchFilters;
+
+    /**
      * Constructor.
      *
      * @param bool|string $csBools                  Case sensitive Booleans setting
      * @param bool        $csRanges                 Case sensitive ranges setting
      * @param string      $unicodeNormalizationForm UNICODE normalization form
+     * @param array       $searchFilters            Regexp filters defined invalid
+     * searches
      */
     public function __construct(
-        $csBools = true, $csRanges = true, $unicodeNormalizationForm = 'NFKC'
+        $csBools = true, $csRanges = true, $unicodeNormalizationForm = 'NFKC',
+        $searchFilters = []
     ) {
         parent::__construct($csBools, $csRanges);
         $this->unicodeNormalizationForm = $unicodeNormalizationForm;
+        $this->searchFilters = $searchFilters;
     }
 
     /**
@@ -73,6 +85,14 @@ class LuceneSyntaxHelper extends \VuFindSearch\Backend\Solr\LuceneSyntaxHelper
         $searchString = parent::normalizeSearchString($searchString);
         $searchString = $this->normalizeUnicodeForm($searchString);
         $searchString = $this->normalizeISBN($searchString);
+
+        foreach ($this->searchFilters as $i => $filter) {
+            if (preg_match("/$filter/", $searchString)) {
+                throw new BackendException(
+                    "Search string '$searchString' matched filter '$filter'"
+                );
+            }
+        }
 
         return $searchString;
     }

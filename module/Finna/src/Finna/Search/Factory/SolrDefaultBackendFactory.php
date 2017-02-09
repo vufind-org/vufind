@@ -125,8 +125,14 @@ class SolrDefaultBackendFactory
         $unicodeNormalizationForm
             = isset($search->General->unicode_normalization_form)
             ? $search->General->unicode_normalization_form : 'NFKC';
+        $searchFilters
+            = isset($config->Index->search_filters)
+            ? $config->Index->search_filters : [];
         $helper = new LuceneSyntaxHelper(
-            $caseSensitiveBooleans, $caseSensitiveRanges, $unicodeNormalizationForm
+            $caseSensitiveBooleans,
+            $caseSensitiveRanges,
+            $unicodeNormalizationForm,
+            $searchFilters
         );
         $builder->setLuceneHelper($helper);
 
