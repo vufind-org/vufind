@@ -253,7 +253,9 @@ class Feed implements \Zend\Log\LoggerAwareInterface
         $maxAge = isset($this->mainConfig->Content->feedcachetime)
             ? $this->mainConfig->Content->feedcachetime : 10;
 
-        Reader::setHttpClient($this->http->createClient());
+        $httpClient = $this->http->createClient();
+        $httpClient->setOptions(['timeout' => 30]);
+        Reader::setHttpClient($httpClient);
 
         if ($maxAge) {
             if (is_readable($localFile)
