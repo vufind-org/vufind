@@ -391,6 +391,9 @@ maxBooleanClauses = 1024
 timeout = 30
 ; Whether to shuffle Solr URLs when an array of them is defined. Default is false.
 ;shuffle = true
+; List of regexp filters that block invalid searches
+;search_filters[] = "(.[,\s]){30,}"
+;search_filters[] = "[^\s,.\-]{100,}"
 
 ; Enable/Disable searching reserves using the "reserves" Solr core.  When enabling
 ; this feature, you also need to uncomment the relevant line in solr/solr.xml and
