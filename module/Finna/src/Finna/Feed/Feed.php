@@ -251,6 +251,7 @@ class Feed implements \Zend\Log\LoggerAwareInterface
 
         $localFile = "$cacheDir/" . md5(var_export($cacheKey, true)) . '.xml';
         $maxAge = isset($this->mainConfig->Content->feedcachetime)
+            && '' !== $this->mainConfig->Content->feedcachetime
             ? $this->mainConfig->Content->feedcachetime : 10;
 
         $httpClient = $this->http->createClient();
