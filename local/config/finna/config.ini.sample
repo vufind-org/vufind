@@ -583,7 +583,7 @@ noCoverAvailableImage = images/noCover2.gif
 summarycachetime = 1440
 
 ; How long feed content is cached locally in minutes.
-; Set this to false or comment out to disable caching.
+; Set this to 0 to disable caching.
 feedcachetime = 10
 
 ; You can select from Syndetics, SyndeticsPlus, Amazon Editorial, Amazon, Booksite
