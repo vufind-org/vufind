@@ -1259,11 +1259,15 @@ class AjaxController extends AbstractBase
             $base = false;
         }
 
+        $moreOptionsLink = $resolver->supportsMoreOptionsLink()
+            ? $resolver->getResolverUrl($openUrl) : '';
+
         // Render the links using the view:
         $view = [
             'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
             'electronic' => $electronic, 'services' => $services,
-            'searchClassId' => $searchClassId
+            'searchClassId' => $searchClassId,
+            'moreOptionsLink' => $moreOptionsLink
         ];
         $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml', $view);
 

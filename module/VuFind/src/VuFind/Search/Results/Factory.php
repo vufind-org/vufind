@@ -46,12 +46,16 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return Favorites
+     * @return \VuFind\Search\Favorites\Results
      */
     public static function getFavorites(ServiceManager $sm)
     {
         $factory = new PluginFactory();
-        $obj = $factory->createServiceWithName($sm, 'favorites', 'Favorites');
+        $tm = $sm->getServiceLocator()->get('VuFind\DbTablePluginManager');
+        $obj = $factory->createServiceWithName(
+            $sm, 'favorites', 'Favorites',
+            [$tm->get('Resource'), $tm->get('UserList')]
+        );
         $init = new \ZfcRbac\Initializer\AuthorizationServiceInitializer();
         $init->initialize($obj, $sm);
         return $obj;
@@ -62,7 +66,7 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return Solr
+     * @return \VuFind\Search\Solr\Results
      */
     public static function getSolr(ServiceManager $sm)
     {
@@ -76,5 +80,21 @@ class Factory
             new \VuFind\Search\Solr\SpellingProcessor($spellConfig)
         );
         return $solr;
+    }
+
+    /**
+     * Factory for Tags results object.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Search\Tags\Results
+     */
+    public static function getTags(ServiceManager $sm)
+    {
+        $factory = new PluginFactory();
+        $tm = $sm->getServiceLocator()->get('VuFind\DbTablePluginManager');
+        return $factory->createServiceWithName(
+            $sm, 'tags', 'Tags', [$tm->get('Tags')]
+        );
     }
 }

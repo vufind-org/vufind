@@ -29,6 +29,7 @@
  */
 namespace VuFind\Db\Table;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
+use Zend\Db\Adapter\Adapter;
 
 /**
  * Table Definition for session
@@ -46,10 +47,14 @@ class Session extends Gateway
 
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
      */
-    public function __construct()
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
     {
-        parent::__construct('session', 'VuFind\Db\Row\Session');
+        parent::__construct($adapter, $tm, $cfg, 'session', 'VuFind\Db\Row\Session');
     }
 
     /**
