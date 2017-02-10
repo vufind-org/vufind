@@ -67,7 +67,8 @@ class TagTest extends \VuFindTest\Unit\DbTestCase
         ];
 
         // Fake services:
-        $tagTable = $this->getMock('VuFind\Db\Table\Tags', ['matchText']);
+        $tagTable = $this->getMockBuilder('VuFind\Db\Table\Tags')
+            ->disableOriginalConstructor()->setMethods(['matchText'])->getMock();
         $tagTable->expects($this->once())->method('matchText')
             ->with($this->equalTo('foo'))
             ->will($this->returnValue($tags));
