@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "26bc887cf47530480ff4a8d30533e6d8",
+    "content-hash": "dd747cff06a16605819fc448a09d6732",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -8194,6 +8194,13 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "ext-gd": "*",
+        "ext-intl": "*",
+        "ext-ldap": "*",
+        "ext-mbstring": "*",
+        "ext-mcrypt": "*",
+        "ext-xsl": "*"
+    },
     "platform-dev": []
 }
