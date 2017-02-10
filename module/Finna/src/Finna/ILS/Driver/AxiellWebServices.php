@@ -1160,7 +1160,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         $firstname = implode(' ', $names);
 
         $user = [
-            'id' => $username,
+            'id' => $info->backendPatronId,
             'cat_username' => $username,
             'cat_password' => $password,
             'lastname' => $lastname,
@@ -1170,7 +1170,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         ];
 
         $userCached = [
-            'id' => $username,
+            'id' => $info->backendPatronId,
             'cat_username' => $username,
             'cat_password' => $password,
             'lastname' => $lastname,
@@ -1289,7 +1289,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
 
                 foreach ($sendMethods as $method) {
                     $methodType = isset($method->sendMethod->value)
-                        ? $method->sendMethod->value : 'none';
+                        ? $this->mapCode($method->sendMethod->value) : 'none';
                     $userCached['messagingServices'][$serviceType]['sendMethods']
                         [$methodType]['active']
                             = isset($method->sendMethod->isActive)
@@ -2263,6 +2263,27 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             return $statuses[$status];
         }
         return $status;
+    }
+
+    /**
+     * Map codes
+     *
+     * @param string $code as a string
+     *
+     * @return string Mapped code
+     */
+    protected function mapCode($code)
+    {
+        $statuses =  [
+            //Map messaging settings
+            'snailMail'             => 'letter',
+            'ilsDefined'            => 'none'
+        ];
+
+        if (isset($statuses[$code])) {
+            return $statuses[$code];
+        }
+        return $code;
     }
 
     /**
