@@ -27,15 +27,20 @@
   $script = <<<JS
   function createDiffManager() {
     var details = {$json};
-    function makeRow(opArray) {
-      return '<textarea class="form-control" rows="' + opArray.length + '" onClick="this.select()">' + opArray.join('\\n') + '</textarea>';
+    function makeRow(opArray, lang) {
+      var arr = [];
+      for (var i = 0; i < opArray.length; i++) {
+        console.log(details[lang].object[opArray[i]] || details.en.object[opArray[i]]);
+        arr.push(opArray[i] + ' = "' + (details[lang].object[opArray[i]] || details.en.object[opArray[i]]) + '"');
+      }
+      return '<textarea class="translation-output form-control" rows="' + Math.min(arr.length + 1, 25)+ '" onClick="this.select()">' + arr.join('\\n') + '</textarea>';
     }
     function showExtra(lang) {
-      VuFind.lightbox.render('<h2>Extra Lines</h2>'+makeRow(details[lang].notInL1));
+      VuFind.lightbox.render('<h2>Extra Lines</h2>'+makeRow(details[lang].notInL1, lang));
       return false;
     }
     function showMissing(lang) {
-      VuFind.lightbox.render('<h2>Missing Lines</h2>'+makeRow(details[lang].notInL2));
+      VuFind.lightbox.render('<h2>Missing Lines</h2>'+makeRow(details[lang].notInL2, lang));
       return false;
     }
     return {
