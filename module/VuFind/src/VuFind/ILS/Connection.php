@@ -642,9 +642,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     public function checkRequestIsValid($id, $data, $patron)
     {
         try {
-            if ($this->checkCapability(
-                'checkRequestIsValid', [$id, $data, $patron]
-            )) {
+            $params = [$id, $data, $patron];
+            if ($this->checkCapability('checkRequestIsValid', $params)) {
                 return $this->getDriver()->checkRequestIsValid($id, $data, $patron);
             }
         } catch (\Exception $e) {
@@ -674,9 +673,10 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
         try {
-            if ($this->checkCapability(
+            $check = $this->checkCapability(
                 'checkStorageRetrievalRequestIsValid', [$id, $data, $patron]
-            )) {
+            );
+            if ($check) {
                 return $this->getDriver()->checkStorageRetrievalRequestIsValid(
                     $id, $data, $patron
                 );
@@ -707,9 +707,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     public function checkILLRequestIsValid($id, $data, $patron)
     {
         try {
-            if ($this->checkCapability(
-                'checkILLRequestIsValid', [$id, $data, $patron]
-            )) {
+            $params = [$id, $data, $patron];
+            if ($this->checkCapability('checkILLRequestIsValid', $params)) {
                 return $this->getDriver()->checkILLRequestIsValid(
                     $id, $data, $patron
                 );

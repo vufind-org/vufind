@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,6 +29,7 @@
  */
 namespace VuFind\Db\Table;
 use minSO;
+use Zend\Db\Adapter\Adapter;
 use Zend\Db\Adapter\ParameterContainer;
 use Zend\Db\TableGateway\Feature;
 
@@ -48,23 +49,25 @@ class Search extends Gateway
 
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
      */
-    public function __construct()
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
     {
-        parent::__construct('search', 'VuFind\Db\Row\Search');
+        parent::__construct($adapter, $tm, $cfg, 'search', 'VuFind\Db\Row\Search');
     }
 
     /**
-     * Initialize
+     * Initialize features
+     *
+     * @param array $cfg Zend Framework configuration
      *
      * @return void
      */
-    public function initialize()
+    public function initializeFeatures($cfg)
     {
-        if ($this->isInitialized) {
-            return;
-        }
-
         // Special case for PostgreSQL inserts -- we need to provide an extra
         // clue so that the database knows how to write bytea data correctly:
         if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql") {
@@ -78,7 +81,7 @@ class Search extends Gateway
             $this->featureSet->addFeature($eventFeature);
         }
 
-        parent::initialize();
+        parent::initializeFeatures($cfg);
     }
 
     /**
@@ -204,7 +207,7 @@ class Search extends Gateway
      * @param string                               $sessionId Current session ID
      * @param int|null                             $userId    Current user ID
      *
-     * @return void
+     * @return \VuFind\Db\Row\Search
      */
     public function saveSearch(\VuFind\Search\Results\PluginManager $manager,
         $newSearch, $sessionId, $userId
@@ -251,7 +254,7 @@ class Search extends Gateway
                 }
                 // Update the new search from the existing one
                 $newSearch->updateSaveStatus($oldSearch);
-                return;
+                return $oldSearch;
             }
         }
 
@@ -269,6 +272,7 @@ class Search extends Gateway
         $row->session_id = $sessionId;
         $row->search_object = serialize(new minSO($newSearch));
         $row->save();
+        return $row;
     }
 
     /**

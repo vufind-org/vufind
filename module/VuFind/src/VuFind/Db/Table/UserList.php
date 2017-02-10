@@ -26,9 +26,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
-use VuFind\Exception\LoginRequired as LoginRequiredException,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Db\Sql\Expression;
+use VuFind\Exception\LoginRequired as LoginRequiredException;
+use VuFind\Exception\RecordMissing as RecordMissingException;
+use Zend\Db\Adapter\Adapter;
+use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for user_list
@@ -51,13 +52,19 @@ class UserList extends Gateway
     /**
      * Constructor
      *
+     * @param Adapter                 $adapter Database adapter
+     * @param PluginManager           $tm      Table manager
+     * @param array                   $cfg     Zend Framework configuration
      * @param \Zend\Session\Container $session Session container (must use same
      * namespace as container provided to \VuFind\View\Helper\Root\UserList).
      */
-    public function __construct(\Zend\Session\Container $session)
-    {
-        parent::__construct('user_list', 'VuFind\Db\Row\UserList');
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        \Zend\Session\Container $session
+    ) {
         $this->session = $session;
+        parent::__construct(
+            $adapter, $tm, $cfg, 'user_list', 'VuFind\Db\Row\UserList'
+        );
     }
 
     /**
@@ -142,11 +149,13 @@ class UserList extends Gateway
     /**
      * Construct the prototype for rows.
      *
+     * @param string $rowClass Name of row class to instantiate
+     *
      * @return object
      */
-    protected function initializeRowPrototype()
+    protected function initializeRowPrototype($rowClass)
     {
-        $prototype = parent::initializeRowPrototype();
+        $prototype = parent::initializeRowPrototype($rowClass);
         $prototype->setSession($this->session);
         return $prototype;
     }

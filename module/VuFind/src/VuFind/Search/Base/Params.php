@@ -26,8 +26,6 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Base;
-use Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query,
     VuFindSearch\Query\QueryGroup;
 use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
@@ -43,12 +41,8 @@ use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Params implements ServiceLocatorAwareInterface
+class Params
 {
-    use \Zend\ServiceManager\ServiceLocatorAwareTrait {
-        setServiceLocator as setServiceLocatorThroughTrait;
-    }
-
     /**
      * Internal representation of user query.
      *
@@ -181,16 +175,23 @@ class Params implements ServiceLocatorAwareInterface
     protected $facetAliases = [];
 
     /**
+     * Config loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configLoader;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
      * @param \VuFind\Config\PluginManager $configLoader Config loader
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __construct($options, \VuFind\Config\PluginManager $configLoader)
     {
         $this->setOptions($options);
+
+        $this->configLoader = $configLoader;
 
         // Make sure we have some sort of query object:
         $this->query = new Query();
@@ -1654,50 +1655,6 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Sleep magic method -- the service locator can't be serialized, so we need to
-     * exclude it from serialization.  Since we can't obtain a new locator in the
-     * __wakeup() method, it needs to be re-injected from outside.
-     *
-     * @return array
-     */
-    public function __sleep()
-    {
-        $vars = get_object_vars($this);
-        unset($vars['serviceLocator']);
-        $vars = array_keys($vars);
-        return $vars;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Params
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        // If this isn't the top-level manager, get its parent:
-        if ($serviceLocator instanceof ServiceLocatorAwareInterface) {
-            $serviceLocator = $serviceLocator->getServiceLocator();
-        }
-        return $this->setServiceLocatorThroughTrait($serviceLocator);
-    }
-
-    /**
-     * Get a database table object.
-     *
-     * @param string $table Name of table to retrieve
-     *
-     * @return \VuFind\Db\Table\Gateway
-     */
-    public function getTable($table)
-    {
-        return $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
-            ->get($table);
-    }
-
-    /**
      * Translate a string (or string-castable object)
      *
      * @param string|object|array $target  String to translate or an array of text
@@ -1760,7 +1717,7 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function initFacetList($facetList, $facetSettings, $cfgFile = 'facets')
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get($cfgFile);
+        $config = $this->configLoader->get($cfgFile);
         if (!isset($config->$facetList)) {
             return false;
         }
@@ -1800,7 +1757,7 @@ class Params implements ServiceLocatorAwareInterface
     protected function initCheckboxFacets($facetList = 'CheckboxFacets',
         $cfgFile = 'facets'
     ) {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get($cfgFile);
+        $config = $this->configLoader->get($cfgFile);
         if (empty($config->$facetList)) {
             return false;
         }

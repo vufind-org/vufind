@@ -554,9 +554,10 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if (!$this->methodSupported(
+            $supported = $this->methodSupported(
                 $driver, 'getMyStorageRetrievalRequests', compact('patron')
-            )) {
+            );
+            if (!$supported) {
                 // Return empty array if not supported by the driver
                 return [];
             }
@@ -1076,9 +1077,10 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if (!$this->methodSupported(
+            $supported = $this->methodSupported(
                 $driver, 'getMyILLRequests', compact('patron')
-            )) {
+            );
+            if (!$supported) {
                 // Return empty array if not supported by the driver
                 return [];
             }
@@ -1187,9 +1189,10 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if (!$this->methodSupported(
+            $supported = $this->methodSupported(
                 $driver, 'getRequestBlocks', compact('patron')
-            )) {
+            );
+            if (!$supported) {
                 return false;
             }
             return $driver->getRequestBlocks(
@@ -1212,9 +1215,10 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if (!$this->methodSupported(
+            $supported = $this->methodSupported(
                 $driver, 'getAccountBlocks', compact('patron')
-            )) {
+            );
+            if (!$supported) {
                 return false;
             }
             return $driver->getAccountBlocks(

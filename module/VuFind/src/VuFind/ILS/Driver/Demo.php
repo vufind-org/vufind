@@ -941,8 +941,8 @@ class Demo extends AbstractBase
                     $transList[$i]['title'] = 'Demo Title ' . $i;
                 }
             }
-            return $transList;
         }
+        return $transList;
     }
 
     /**

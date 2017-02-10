@@ -289,7 +289,9 @@ class AbstractRecord extends AbstractBase
         $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
         $post['mytags']
             = $tagParser->parse(isset($post['mytags']) ? $post['mytags'] : '');
-        $results = $driver->saveToFavorites($post, $user);
+        $favorites = $this->getServiceLocator()
+            ->get('VuFind\Favorites\FavoritesService');
+        $results = $favorites->save($post, $user, $driver);
 
         // Display a success status message:
         $listUrl = $this->url()->fromRoute('userList', ['id' => $results['listId']]);
