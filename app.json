@@ -1,0 +1,7 @@
+{
+  "name": "VuFind",
+  "description": "A barebones installation of VuFind",
+  "repository": "https://github.com/vufind-org/vufind",
+  "logo": "https://vufind.org/images/magnify.png",
+  "keywords": ["VuFind", "OPAC"]
+}
