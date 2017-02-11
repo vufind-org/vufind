@@ -8,8 +8,5 @@
     {
       "plan": "cleardb:ignite"
     }
-  ],
-  "scripts": {
-    "postdeploy": "mysql --version"
-  }
+  ]
 }
