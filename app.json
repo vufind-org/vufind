@@ -3,5 +3,13 @@
   "description": "A barebones installation of VuFind",
   "repository": "https://github.com/vufind-org/vufind",
   "logo": "https://vufind.org/images/magnify.png",
-  "keywords": ["VuFind", "OPAC"]
+  "keywords": ["VuFind", "OPAC"],
+  "addons": [
+    {
+      "plan": "cleardb:ignite"
+    }
+  ],
+  "scripts": {
+    "postdeploy": "mysql --version"
+  }
 }
