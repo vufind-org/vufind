@@ -113,8 +113,6 @@ quickAddToFavorites = true
 ;httpsPort = 8443
 ; Whether this is a development site (defaults to false)
 ;development = true
-; Whether facets are used on the home page (defaults to false). Turns on home page caching if enabled.
-;home_page_facets = true
 ; Institution code (a unique identifier of the institution the view belongs to)
 institution =
 ; Whether index is used for new items search instead of backend driver
