@@ -46,7 +46,12 @@ namespace FinnaSearch\Backend\Solr;
  */
 class Connector extends \VuFindSearch\Backend\Solr\Connector
 {
-    static $client = null;
+    /**
+     * Static client that can be reused
+     *
+     * @var HttpClient
+     */
+    protected static $client = null;
 
     /**
      * Create the HTTP client.
