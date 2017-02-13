@@ -337,8 +337,9 @@ class SearchController extends \VuFind\Controller\SearchController
                     }
                 }
 
-                // We only care about facet lists, so don't get any results (this helps
-                // prevent problems with serialized File_MARC objects in the cache):
+                // We only care about facet lists, so don't get any results (this
+                // helps prevent problems with serialized File_MARC objects in the
+                // cache):
                 $params->setLimit(0);
 
                 $results->getResults(); // force processing for cache
