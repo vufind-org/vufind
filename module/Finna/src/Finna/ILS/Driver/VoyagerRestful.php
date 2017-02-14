@@ -212,10 +212,16 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
             $blockReason = [];
 
             $blocks = $this->makeRequest($hierarchy, $params);
-            if ($blocks) {
-                $borrowingBlocks = $blocks->xpath(
-                    "//blocks/institution[@id='LOCAL']/borrowingBlock"
-                );
+            if ($blocks && isset($blocks->blocks->institution)) {
+                $borrowingBlocks = [];
+                foreach ($blocks->blocks->institution as $institution) {
+                    if (!$this->isLocalInst($institution->attributes()->id)) {
+                        continue;
+                    }
+                    foreach ($institution->borrowingBlock as $block) {
+                        $borrowingBlocks[] = $block;
+                    }
+                }
                 if (count($borrowingBlocks)) {
                     $blockReason[] = $this->translate('Borrowing Block Message');
                 }
