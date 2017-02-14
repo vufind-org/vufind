@@ -42,6 +42,22 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Construct the Favorites plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Zend\Mvc\Controller\Plugin\Favorites
+     */
+    public static function getFavorites(ServiceManager $sm)
+    {
+        return new Favorites(
+            $sm->getServiceLocator()->get('VuFind\RecordLoader'),
+            $sm->getServiceLocator()->get('VuFind\RecordCache'),
+            $sm->getServiceLocator()->get('VuFind\Tags')
+        );
+    }
+
+    /**
      * Construct the FlashMessenger plugin.
      *
      * @param ServiceManager $sm Service manager.
