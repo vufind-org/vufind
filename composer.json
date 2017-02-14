@@ -47,6 +47,7 @@
         "zendframework/zend-modulemanager": "2.7.2",
         "zendframework/zend-mvc": "2.6.3",
         "zendframework/zend-paginator": "2.7.0",
+        "zendframework/zend-serializer": "2.7.2",
         "zendframework/zend-servicemanager": "2.7.5",
         "zendframework/zend-session": "2.7.3",
         "zendframework/zend-soap": "2.6.0",
