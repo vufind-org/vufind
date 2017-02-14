@@ -312,7 +312,13 @@ class ResultScrollerTest extends TestCase
         $params = new \VuFindTest\Search\TestHarness\Params($options, $pm);
         $params->setPage($page);
         $params->setLimit($limit);
-        $results = new \VuFindTest\Search\TestHarness\Results($params, $total);
+        $ss = $this->getMockBuilder('VuFindSearch\Service')
+            ->disableOriginalConstructor()->getMock();
+        $rl = $this->getMockBuilder('VuFind\Record\Loader')
+            ->disableOriginalConstructor()->getMock();
+        $results = new \VuFindTest\Search\TestHarness\Results(
+            $params, $ss, $rl, $total
+        );
         return $results;
     }
 

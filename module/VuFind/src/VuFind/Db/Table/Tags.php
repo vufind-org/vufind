@@ -26,9 +26,10 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
-use Zend\Db\Sql\Expression,
-    Zend\Db\Sql\Predicate\Predicate,
-    Zend\Db\Sql\Select;
+use Zend\Db\Adapter\Adapter;
+use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Predicate\Predicate;
+use Zend\Db\Sql\Select;
 
 /**
  * Table Definition for tags
@@ -51,11 +52,15 @@ class Tags extends Gateway
     /**
      * Constructor
      *
-     * @param bool $caseSensitive Are tags case sensitive?
+     * @param Adapter       $adapter       Database adapter
+     * @param PluginManager $tm            Table manager
+     * @param array         $cfg           Zend Framework configuration
+     * @param bool          $caseSensitive Are tags case sensitive?
      */
-    public function __construct($caseSensitive = false)
-    {
-        parent::__construct('tags', 'VuFind\Db\Row\Tags');
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        $caseSensitive = false
+    ) {
+        parent::__construct($adapter, $tm, $cfg, 'tags', 'VuFind\Db\Row\Tags');
         $this->caseSensitive = $caseSensitive;
     }
 

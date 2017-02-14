@@ -120,13 +120,13 @@ class TitleHolds
             } else if ($mode == 'driver') {
                 try {
                     $patron = $this->ilsAuth->storedCatalogLogin();
+                    if (!$patron) {
+                        return false;
+                    }
+                    return $this->driverHold($id, $patron);
                 } catch (ILSException $e) {
                     return false;
                 }
-                if (!$patron) {
-                    return false;
-                }
-                return $this->driverHold($id, $patron);
             } else {
                 try {
                     $patron = $this->ilsAuth->storedCatalogLogin();
