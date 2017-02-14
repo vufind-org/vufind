@@ -29,6 +29,7 @@ namespace VuFind\Controller;
 
 use VuFind\Exception\Auth as AuthException,
     VuFind\Exception\Forbidden as ForbiddenException,
+    VuFind\Exception\ILS as ILSException,
     VuFind\Exception\Mail as MailException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
@@ -77,6 +78,24 @@ class MyResearchController extends AbstractBase
     protected function storeRefererForPostLoginRedirect()
     {
         $this->setFollowupUrlToReferer();
+    }
+
+    /**
+     * Execute the request
+     *
+     * @param \Zend\Mvc\MvcEvent $e Event
+     *
+     * @return mixed
+     * @throws Exception\DomainException
+     */
+    public function onDispatch(\Zend\Mvc\MvcEvent $e)
+    {
+        try {
+            return parent::onDispatch($e);
+        } catch (ILSException $e) {
+            $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+            return $this->createViewModel();
+        }
     }
 
     /**
