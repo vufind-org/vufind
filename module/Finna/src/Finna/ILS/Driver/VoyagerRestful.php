@@ -242,6 +242,7 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
                     }
                 }
             }
+            $blockReason = array_unique(array_map('trim', $blockReason));
             $this->putCachedData($cacheKey, $blockReason);
         }
         return empty($blockReason) ? false : $blockReason;
