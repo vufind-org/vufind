@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Web Controller
@@ -40,11 +41,13 @@ class WebController extends AbstractSearch
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         $this->searchClassId = 'SolrWeb';
-        parent::__construct();
+        parent::__construct($sm);
     }
 
     /**

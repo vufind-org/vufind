@@ -3,13 +3,13 @@ namespace VuFindConsole\Module\Configuration;
 
 $config = [
     'controllers' => [
-        'invokables' => [
-            'generate' => 'VuFindConsole\Controller\GenerateController',
-            'harvest' => 'VuFindConsole\Controller\HarvestController',
-            'import' => 'VuFindConsole\Controller\ImportController',
-            'language' => 'VuFindConsole\Controller\LanguageController',
-            'redirect' => 'VuFindConsole\Controller\RedirectController',
-            'util' => 'VuFindConsole\Controller\UtilController',
+        'factories' => [
+            'generate' => 'VuFindConsole\Controller\Factory::getGenerateController',
+            'harvest' => 'VuFindConsole\Controller\Factory::getHarvestController',
+            'import' => 'VuFindConsole\Controller\Factory::getImportController',
+            'language' => 'VuFindConsole\Controller\Factory::getLanguageController',
+            'redirect' => 'VuFindConsole\Controller\Factory::getRedirectController',
+            'util' => 'VuFindConsole\Controller\Factory::getUtilController',
         ],
     ],
     'console' => [
