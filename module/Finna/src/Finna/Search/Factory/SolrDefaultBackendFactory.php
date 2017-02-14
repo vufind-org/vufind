@@ -39,7 +39,6 @@ use FinnaSearch\Backend\Solr\QueryBuilder;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
-use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 
 /**
@@ -55,48 +54,6 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 class SolrDefaultBackendFactory
     extends \VuFind\Search\Factory\SolrDefaultBackendFactory
 {
-    /**
-     * Create the SOLR connector.
-     *
-     * Finna: Create Finna Connector
-     *
-     * @return Connector
-     */
-    protected function createConnector()
-    {
-        $config = $this->config->get('config');
-
-        $handlers = [
-            'select' => [
-                'fallback' => true,
-                'defaults' => ['fl' => '*,score'],
-                'appends'  => ['fq' => []],
-            ],
-            'term' => [
-                'functions' => ['terms'],
-            ],
-        ];
-
-        foreach ($this->getHiddenFilters() as $filter) {
-            array_push($handlers['select']['appends']['fq'], $filter);
-        }
-
-        $connector = new \FinnaSearch\Backend\Solr\Connector(
-            $this->getSolrUrl(), new HandlerMap($handlers), $this->uniqueKey
-        );
-        $connector->setTimeout(
-            isset($config->Index->timeout) ? $config->Index->timeout : 30
-        );
-
-        if ($this->logger) {
-            $connector->setLogger($this->logger);
-        }
-        if ($this->serviceLocator->has('VuFind\Http')) {
-            $connector->setProxy($this->serviceLocator->get('VuFind\Http'));
-        }
-        return $connector;
-    }
-
     /**
      * Create the SOLR backend.
      *
