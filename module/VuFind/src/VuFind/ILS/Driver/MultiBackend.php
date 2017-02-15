@@ -28,9 +28,7 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\ILS as ILSException,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Multiple Backend Driver.
@@ -44,14 +42,11 @@ use VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class MultiBackend extends AbstractBase
-    implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterface
+class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
-    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
-
     /**
      * The array of configured driver names.
      *
@@ -97,9 +92,16 @@ class MultiBackend extends AbstractBase
     /**
      * ILS authenticator
      *
-     * @param \VuFind\Auth\ILSAuthenticator
+     * @var \VuFind\Auth\ILSAuthenticator
      */
     protected $ilsAuth;
+
+    /**
+     * ILS driver manager
+     *
+     * @var PluginManager
+     */
+    protected $driverManager;
 
     /**
      * Constructor
@@ -108,10 +110,11 @@ class MultiBackend extends AbstractBase
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth      ILS authenticator
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader,
-        \VuFind\Auth\ILSAuthenticator $ilsAuth
+        \VuFind\Auth\ILSAuthenticator $ilsAuth, PluginManager $dm
     ) {
         $this->configLoader = $configLoader;
         $this->ilsAuth = $ilsAuth;
+        $this->driverManager = $dm;
     }
 
     /**
@@ -1415,7 +1418,7 @@ class MultiBackend extends AbstractBase
             $this->error("No configuration found for source '$source'");
             return null;
         }
-        $driverInst = clone($this->getServiceLocator()->get($driver));
+        $driverInst = clone($this->driverManager->get($driver));
         $driverInst->setConfig($config);
         $driverInst->init();
         return $driverInst;
