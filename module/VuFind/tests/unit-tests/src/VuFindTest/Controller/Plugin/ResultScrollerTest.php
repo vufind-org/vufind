@@ -50,7 +50,9 @@ class ResultScrollerTest extends TestCase
      */
     public function testDisabled()
     {
-        $plugin = new ResultScroller(new Container('test'), false);
+        $mockManager = $this->getMockBuilder('VuFind\Search\Results\PluginManager')
+            ->disableOriginalConstructor()->getMock();
+        $plugin = new ResultScroller(new Container('test'), $mockManager, false);
         $results = $this->getMockResults();
         $this->assertFalse($plugin->init($results));
         $expected = [
@@ -334,8 +336,11 @@ class ResultScrollerTest extends TestCase
     protected function getMockResultScroller($results = null,
         $methods = ['restoreLastSearch', 'rememberSearch']
     ) {
+        $mockManager = $this->getMockBuilder('VuFind\Search\Results\PluginManager')
+            ->disableOriginalConstructor()->getMock();
         $mock = $this->getMock(
-            'VuFind\Controller\Plugin\ResultScroller', $methods, [new Container('test')]
+            'VuFind\Controller\Plugin\ResultScroller', $methods,
+            [new Container('test'), $mockManager]
         );
         if (in_array('restoreLastSearch', $methods) && null !== $results) {
             $mock->expects($this->any())->method('restoreLastSearch')->will($this->returnValue($results));
