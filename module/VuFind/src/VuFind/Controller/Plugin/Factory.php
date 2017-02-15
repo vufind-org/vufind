@@ -178,7 +178,8 @@ class Factory
             new \Zend\Session\Container(
                 'ResultScroller',
                 $sm->getServiceLocator()->get('VuFind\SessionManager')
-            )
+            ),
+            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
         );
     }
 
