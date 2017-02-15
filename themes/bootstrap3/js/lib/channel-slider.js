@@ -121,7 +121,7 @@ function ChannelSlider(el) {
       }
       var x = e.clientX || e.originalEvent.touches[0].clientX;
       var diffX = _touchX - x;
-      if (Math.abs(diffX) > 150) {
+      if (Math.abs(diffX) > 100) {
         if (diffX < 0) {
           pageLeft();
         } else {
