@@ -11,13 +11,13 @@
 ?>
 <? $insideButton = false; ?>
 <? $channelLinkData = []; ?>
-<? foreach ($channels as $key=>$channel): ?>
+<? foreach ($channels as $key => $channel): ?>
   <?
     $groupId = isset($channel['groupId'])
       ? $channel['groupId']
       : $channel['providerId'];
   ?>
-  <? $channelID = 'channel-' . $key; ?>
+  <? $channelID = 'channel-' . $key . time(); ?>
   <? if (isset($channel['contents'])): ?>
     <? if ($insideButton): ?>
         </ul>
@@ -31,7 +31,7 @@
       <? endif; ?>
       </h2>
     </div>
-    <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>">
+    <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>" data-link-json='<?=json_encode($channel['links']) ?>'>
       <!-- Wrapper for slides -->
       <? foreach ($channel['contents'] as $item): ?>
         <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>" class="channel-record slide" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
@@ -54,12 +54,3 @@
     <li><a href="<?=current(explode('?', $this->serverUrl(true)))?>?<?=empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')?>channelProvider=<?=urlencode($channel['providerId']) ?>&amp;channelToken=<?=urlencode($channel['token']) ?>&amp;layout=lightbox" data-token="<?=$channel['token'] ?>"><?=$this->escapeHtml($channel['title'])?></a></li>
   <? endif; ?>
 <? endforeach; ?>
-<?
-$linksJson = json_encode($channelLinkData);
-$script = <<<JS
-  $(document).ready(function addLinkButtons() {
-    channelAddLinkButtons({$linksJson});
-  });
-JS;
-?>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>

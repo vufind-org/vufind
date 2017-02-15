@@ -8,6 +8,7 @@ function bindChannelAddMenu(scope) {
       $(e.target).closest('.channel').after(data);
       $('[data-token="' + e.target.dataset.token + '"]').parent().remove();
       $('.channel').each(setupChannelSlider);
+
       if (list.children().length === 0) {
         $('.channel-add-menu[data-group="' + list.closest('.channel-add-menu').data('group') + '"]').remove();
       }
@@ -22,23 +23,20 @@ function bindChannelAddMenu(scope) {
   });
 }
 
-function channelAddLinkButtons(linksJson) {
-  for (var elemId in linksJson) {
-    if (linksJson.hasOwnProperty(elemId)) {
-      var links = JSON.parse(linksJson[elemId]);
-      var $cont = $('<div class="channel-links pull-left"></div>');
-      for (var i = 0; i < links.length; i++) {
-        $cont.append(
-          $('<a/> ', {
-            href: links[i].url,
-            class: "btn btn-default",
-            html: '<i class="fa ' + links[i].icon + '"></i> ' + VuFind.translate(links[i].label)
-          })
-        );
-      }
-      $('#' + elemId + ' .slider-menu').append($cont);
-    }
+var channelLastLinksJson;
+function channelAddLinkButtons(elem) {
+  var links = JSON.parse(elem.dataset.linkJson);
+  var $cont = $('<div class="channel-links pull-left"></div>');
+  for (var i = 0; i < links.length; i++) {
+    $cont.append(
+      $('<a/> ', {
+        href: links[i].url,
+        class: "btn btn-default",
+        html: '<i class="fa ' + links[i].icon + '"></i> ' + VuFind.translate(links[i].label)
+      })
+    );
   }
+  $('#' + elem.id + ' .slider-menu').append($cont);
 }
 
 function setupChannelSlider(i, op) {
@@ -97,6 +95,7 @@ function setupChannelSlider(i, op) {
       return false;
     });
     // Channel add buttons
+    channelAddLinkButtons(op);
     $('.channel-add-menu[data-group="' + op.dataset.group + '"].hidden')
       .clone()
       .addClass('pull-right')
