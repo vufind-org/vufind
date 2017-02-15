@@ -72,6 +72,7 @@
         "squizlabs/php_codesniffer": "2.7.1"
     },
     "scripts": {
+        "post-install-cmd": "phing installsolr installswaggerui"
         "post-update-cmd": "phing installsolr installswaggerui"
     }
 }
