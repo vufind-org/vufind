@@ -892,7 +892,8 @@ rg.GROUP_ID IN (
   FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
   WHERE rgl.LOCATION_ID IN (
     SELECT mm.LOCATION_ID FROM $this->dbName.MFHD_MASTER mm
-    WHERE mm.MFHD_ID IN (
+    WHERE mm.SUPPRESS_IN_OPAC='N'
+    AND mm.MFHD_ID IN (
       SELECT mi.MFHD_ID
       FROM $this->dbName.MFHD_ITEM mi, $this->dbName.BIB_ITEM bi
       WHERE mi.ITEM_ID = bi.ITEM_ID AND bi.BIB_ID=:bibId
@@ -927,7 +928,8 @@ EOT;
                 'sub_ist.ITEM_ID=sub_i.ITEM_ID',
                 'sub_mi.ITEM_ID=sub_i.ITEM_ID',
                 'sub_mm.MFHD_ID=sub_mi.MFHD_ID',
-                'sub_rgl.LOCATION_ID=sub_mm.LOCATION_ID'
+                'sub_rgl.LOCATION_ID=sub_mm.LOCATION_ID',
+                "sub_mm.SUPPRESS_IN_OPAC='N'"
             ];
 
             $subGroup = [
@@ -1059,7 +1061,15 @@ EOT;
 
         // Send Request and Retrieve Response
         $startTime = microtime(true);
-        $result = $client->setMethod($mode)->send();
+        try {
+            $result = $client->setMethod($mode)->send();
+        } catch (\Exception $e) {
+            $this->error(
+                "$mode request for '$urlParams' with contents '$xml' failed: "
+                . $e->getMessage()
+            );
+            throw new ILSException('Problem with RESTful API.');
+        }
         if (!$result->isSuccess()) {
             $this->error(
                 "$mode request for '$urlParams' with contents '$xml' failed: "
@@ -1644,6 +1654,7 @@ EOT;
             $sqlWhere[] = 'mi.ITEM_ID=cta.ITEM_ID';
             $sqlWhere[] = 'mm.MFHD_ID=mi.MFHD_ID';
             $sqlWhere[] = 'rgl.LOCATION_ID=mm.LOCATION_ID';
+            $sqlWhere[] = "mm.SUPPRESS_IN_OPAC='N'";
         }
 
         $sqlBind = ['patronId' => $patronId, 'bibId' => $bibId];
@@ -1691,7 +1702,8 @@ EOT;
             'bi.BIB_ID=:bibId',
             'i.ITEM_ID=bi.ITEM_ID',
             'mi.ITEM_ID=i.ITEM_ID',
-            'mm.MFHD_ID=mi.MFHD_ID'
+            'mm.MFHD_ID=mi.MFHD_ID',
+            "mm.SUPPRESS_IN_OPAC='N'"
         ];
 
         if ($this->excludedItemLocations) {
@@ -1756,7 +1768,8 @@ EOT;
             'i.ITEM_ID=bi.ITEM_ID',
             'ist.ITEM_ID=i.ITEM_ID',
             'mi.ITEM_ID=i.ITEM_ID',
-            'mm.MFHD_ID=mi.MFHD_ID'
+            'mm.MFHD_ID=mi.MFHD_ID',
+            "mm.SUPPRESS_IN_OPAC='N'"
         ];
 
         if ($this->excludedItemLocations) {

@@ -26,8 +26,9 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Controller\Plugin;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin,
-    Zend\Session\Container as SessionContainer;
+use VuFind\Search\Results\PluginManager as ResultsManager;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Zend\Session\Container as SessionContainer;
 
 /**
  * Class for managing "next" and "previous" navigation within result sets.
@@ -55,17 +56,28 @@ class ResultScroller extends AbstractPlugin
     protected $data;
 
     /**
+     * Results manager
+     *
+     * @var ResultsManager
+     */
+    protected $resultsManager;
+
+    /**
      * Constructor. Create a new search result scroller.
      *
      * @param SessionContainer $session Session container
+     * @param ResultsManager   $rm      Results manager
      * @param bool             $enabled Is the scroller enabled?
      */
-    public function __construct(SessionContainer $session, $enabled = true)
-    {
+    public function __construct(SessionContainer $session, ResultsManager $rm,
+        $enabled = true
+    ) {
         $this->enabled = $enabled;
 
         // Set up session namespace for the class.
         $this->data = $session;
+
+        $this->resultsManager = $rm;
     }
 
     /**
@@ -552,9 +564,7 @@ class ResultScroller extends AbstractPlugin
             $row = $searchTable->getRowById($this->data->searchId, false);
             if (!empty($row)) {
                 $minSO = $row->getSearchObject();
-                $manager = $this->getController()->getServiceLocator()
-                    ->get('VuFind\SearchResultsPluginManager');
-                $search = $minSO->deminify($manager);
+                $search = $minSO->deminify($this->resultsManager);
                 // The saved search does not remember its original limit;
                 // we should reapply it from the session data:
                 $search->getParams()->setLimit($this->data->limit);

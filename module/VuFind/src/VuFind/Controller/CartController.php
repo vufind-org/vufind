@@ -339,7 +339,10 @@ class CartController extends AbstractBase
             $msg = [
                 'translate' => false, 'html' => true,
                 'msg' => $this->getViewRenderer()->render(
-                    'cart/export-success.phtml', ['url' => $url]
+                    'cart/export-success.phtml', [
+                        'url' => $url,
+                        'exportType' => $export->getBulkExportType($format)
+                    ]
                 )
             ];
             return $this->redirectToSource('success', $msg);
