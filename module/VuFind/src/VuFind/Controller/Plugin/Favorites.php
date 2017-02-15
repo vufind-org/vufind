@@ -66,6 +66,10 @@ class Favorites extends \Zend\Mvc\Controller\Plugin\AbstractPlugin
 
     /**
      * Constructor
+     *
+     * @param Loader $loader Record loader
+     * @param Cache  $cache  Record cache
+     * @param Tags   $tags   Tag parser
      */
     public function __construct(Loader $loader, Cache $cache, Tags $tags)
     {
