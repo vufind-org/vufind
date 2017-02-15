@@ -56,7 +56,7 @@ function setupChannelSlider(i, op) {
         }
       }
     });
-    $('.channel-record').click(function channelRecord(event) {
+    $('.channel-record').unbind('click').click(function channelRecord(event) {
       var record = $(event.delegateTarget);
       if (record.data('popover')) {
         if (record.attr('aria-describedby')) {
