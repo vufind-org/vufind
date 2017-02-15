@@ -23,7 +23,6 @@ function bindChannelAddMenu(scope) {
   });
 }
 
-var channelLastLinksJson;
 function channelAddLinkButtons(elem) {
   var links = JSON.parse(elem.dataset.linkJson);
   var $cont = $('<div class="channel-links pull-left"></div>');
