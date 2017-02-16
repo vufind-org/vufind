@@ -30,7 +30,6 @@ finna.StreetSearch = (function() {
         var errorString = 'street_search_geolocation_other_error';
         var additionalInfo = '';
         if (error) {
-            additionalInfo = error.message;
             switch(error.code) {
                 case error.POSITION_UNAVAILABLE:
                     errorString = 'street_search_geolocation_position_unavailable';
@@ -42,7 +41,7 @@ finna.StreetSearch = (function() {
                     errorString = 'street_search_timeout';
                     break;
                 default:
-                    // do nothing
+                    additionalInfo = error.message;
                     break;
             }
         }
