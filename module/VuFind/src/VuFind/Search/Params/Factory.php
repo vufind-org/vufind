@@ -1,10 +1,10 @@
 <?php
 /**
- * Table Definition for user_card
+ * Search Params Object Factory Class
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) Villanova University 2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,36 +20,38 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Table
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Search
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-namespace VuFind\Db\Table;
-use Zend\Db\Adapter\Adapter;
+namespace VuFind\Search\Params;
+use Zend\ServiceManager\ServiceManager;
 
 /**
- * Table Definition for user_card
+ * Search Params Object Factory Class
  *
  * @category VuFind
- * @package  Db_Table
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Search
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
+ *
+ * @codeCoverageIgnore
  */
-class UserCard extends Gateway
+class Factory
 {
     /**
-     * Constructor
+     * Factory for Solr results object.
      *
-     * @param Adapter       $adapter Database adapter
-     * @param PluginManager $tm      Table manager
-     * @param array         $cfg     Zend Framework configuration
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Search\Solr\Results
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
+    public static function getSolr(ServiceManager $sm)
     {
-        parent::__construct(
-            $adapter, $tm, $cfg, 'user_card', 'VuFind\Db\Row\UserCard'
-        );
+        $factory = new PluginFactory();
+        $helper = $sm->getServiceLocator()->get('VuFind\HierarchicalFacetHelper');
+        return $factory->createServiceWithName($sm, 'solr', 'Solr', [$helper]);
     }
 }

@@ -38,9 +38,11 @@
         <? endif; ?>
       </div>
 
-      <div class="pull-right flip">
-        <?=$this->render('search/controls/sort.phtml')?>
-      </div>
+      <? if ($recordTotal > 0): ?>
+        <div class="pull-right flip">
+          <?=$this->render('search/controls/sort.phtml')?>
+        </div>
+      <? endif; ?>
     </div>
     <? if ($recordTotal < 1): ?>
       <p class="error"><?=$this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($reservesLookfor)]) ?></p>

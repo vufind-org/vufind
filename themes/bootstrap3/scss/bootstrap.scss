@@ -93,6 +93,15 @@ img {max-width: 100%;}
   padding-right: 1em;
 }
 
+/* --- Devtools --- */
+.translation-output {
+  width: 100%;
+  max-width: none;
+  font-family: $font-family-monospace;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 /* --- PubDateVis --- */
 #dateVisColorSettings {
   background-color: #fff; // background of box
