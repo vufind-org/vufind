@@ -606,6 +606,10 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $conn->expects($this->any())->method('getScope')
             ->will($this->returnValue([
                 'write_items',
+                'change_password',
+                'read_fees',
+                'read_items',
+                'read_patron'
             ]));
         $conn->setHttpService($service);
         $conn->setConfig($this->validConfig);
