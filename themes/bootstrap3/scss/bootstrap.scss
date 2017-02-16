@@ -47,10 +47,6 @@ img {max-width: 100%;}
 }
 .tab-content {padding: 4px;}
 
-@media (max-width: 991px) {
-  header .container.navbar {margin-bottom: 0;}
-  .searchForm {margin-top: 0;}
-}
 @media (min-width: 768px) {
   h2 {
     font-size: 23px;
@@ -65,7 +61,6 @@ img {max-width: 100%;}
 @media (max-width: 767px) {
   h2 { font-size: 20px; }
   h3 { font-size: 16px; }
-  .searchForm {padding-top: 0;}
 }
 
 /* --- Form Errors --- */
@@ -96,6 +91,15 @@ img {max-width: 100%;}
 .cart-controls .checkbox {
   line-height: 2.5em;
   padding-right: 1em;
+}
+
+/* --- Devtools --- */
+.translation-output {
+  width: 100%;
+  max-width: none;
+  font-family: $font-family-monospace;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 /* --- PubDateVis --- */

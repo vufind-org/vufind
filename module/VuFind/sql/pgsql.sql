@@ -237,45 +237,6 @@ PRIMARY KEY (id)
 -- --------------------------------------------------------
 
 --
--- Statistics tables
---
-
---
--- Table structure for table statistics
---
-
-DROP TABLE IF EXISTS "user_stats_fields";
-
-CREATE TABLE user_stats_fields (
-id varchar(24) NOT NULL,
-field varchar(32) NOT NULL,
-value varchar(1024) NOT NULL,
-PRIMARY KEY (id, field)
-);
-
--- --------------------------------------------------------
-
---
--- Table structure for table user_stats
---
-
-DROP TABLE IF EXISTS "user_stats";
-
-CREATE TABLE user_stats (
-id varchar(24) NOT NULL,
-datestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-browser varchar(32) NOT NULL,
-browserVersion varchar(8) NOT NULL,
-ipaddress varchar(15) NOT NULL,
-referrer varchar(512) NOT NULL,
-url varchar(512) NOT NULL,
-session varchar(64) NOT NULL,
-PRIMARY KEY (id)
-);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table record
 --
 
@@ -294,7 +255,7 @@ CREATE TABLE record (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table user_card
 --
 

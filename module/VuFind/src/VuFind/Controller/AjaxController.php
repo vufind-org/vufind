@@ -784,7 +784,6 @@ class AjaxController extends AbstractBase
         );
         $request = $this->getRequest();
         $config = $this->getServiceLocator()->get('Config');
-        $sconfig = $this->getServiceLocator()->get('VuFind\Config')->get('searches');
 
         $recordTabPlugin = $this->getServiceLocator()
             ->get('VuFind\RecordTabPluginManager');
@@ -909,9 +908,8 @@ class AjaxController extends AbstractBase
             $facets[$field]['removalURL']
                 = $results->getUrlQuery()->removeFacet(
                     $field,
-                    isset($filters[$field][0]) ? $filters[$field][0] : null,
-                    false
-                );
+                    isset($filters[$field][0]) ? $filters[$field][0] : null
+                )->getParams(false);
         }
         return $this->output($facets, self::STATUS_OK);
     }
@@ -1261,11 +1259,15 @@ class AjaxController extends AbstractBase
             $base = false;
         }
 
+        $moreOptionsLink = $resolver->supportsMoreOptionsLink()
+            ? $resolver->getResolverUrl($openUrl) : '';
+
         // Render the links using the view:
         $view = [
             'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
             'electronic' => $electronic, 'services' => $services,
-            'searchClassId' => $searchClassId
+            'searchClassId' => $searchClassId,
+            'moreOptionsLink' => $moreOptionsLink
         ];
         $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml', $view);
 

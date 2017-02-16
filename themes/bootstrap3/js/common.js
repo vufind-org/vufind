@@ -1,5 +1,5 @@
 /*global grecaptcha, isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, recaptchaOnLoad, bulkFormHandler */
+/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler */
 
 // IE 9< console polyfill
 window.console = window.console || {log: function polyfillLog() {}};
@@ -170,6 +170,14 @@ function recaptchaOnLoad() {
     }
   }
 }
+function resetCaptcha($form) {
+  if (typeof grecaptcha !== 'undefined') {
+    var captcha = $form.find('.g-recaptcha');
+    if (captcha.length > 0) {
+      grecaptcha.reset(captcha.data('captchaId'));
+    }
+  }
+}
 
 function bulkFormHandler(event, data) {
   if ($('.checkbox-select-item:checked,checkbox-select-all:checked').length === 0) {
@@ -205,46 +213,43 @@ function setupOffcanvas() {
 
 function setupAutocomplete() {
   // Search autocomplete
-  $('.autocomplete').each(function autocompleteSetup(i, op) {
-    $(op).autocomplete({
-      maxResults: 10,
-      loadingString: VuFind.translate('loading') + '...',
-      handler: function vufindACHandler(input, cb) {
-        var query = input.val();
-        var searcher = extractClassParams(input);
-        var hiddenFilters = [];
-        $(input).closest('.searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
-          hiddenFilters.push($(this).val());
-        });
-        $.fn.autocomplete.ajax({
-          url: VuFind.path + '/AJAX/JSON',
-          data: {
-            q: query,
-            method: 'getACSuggestions',
-            searcher: searcher.searcher,
-            type: searcher.type ? searcher.type : $(input).closest('.searchForm').find('.searchForm_type').val(),
-            hiddenFilters: hiddenFilters
-          },
-          dataType: 'json',
-          success: function autocompleteJSON(json) {
-            if (json.data.length > 0) {
-              var datums = [];
-              for (var j = 0; j < json.data.length; j++) {
-                datums.push(json.data[j]);
-              }
-              cb(datums);
-            } else {
-              cb([]);
+  $('#searchForm_lookfor').autocomplete({
+    maxResults: 10,
+    loadingString: VuFind.translate('loading') + '...',
+    handler: function vufindACHandler(input, cb) {
+      var query = input.val();
+      var searcher = extractClassParams(input);
+      var hiddenFilters = [];
+      $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
+        hiddenFilters.push($(this).val());
+      });
+      $.fn.autocomplete.ajax({
+        url: VuFind.path + '/AJAX/JSON',
+        data: {
+          q: query,
+          method: 'getACSuggestions',
+          searcher: searcher.searcher,
+          type: searcher.type ? searcher.type : $('#searchForm_type').val(),
+          hiddenFilters: hiddenFilters
+        },
+        dataType: 'json',
+        success: function autocompleteJSON(json) {
+          if (json.data.length > 0) {
+            var datums = [];
+            for (var j = 0; j < json.data.length; j++) {
+              datums.push(json.data[j]);
             }
+            cb(datums);
+          } else {
+            cb([]);
           }
-        });
-      }
-    });
+        }
+      });
+    }
   });
   // Update autocomplete on type change
-  $('.searchForm_type').change(function searchTypeChange() {
-    var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
-    $lookfor.autocomplete('clear cache');
+  $('#searchForm_type').change(function searchTypeChange() {
+    $('#searchForm_lookfor').autocomplete('clear cache');
   });
 }
 
@@ -252,7 +257,7 @@ function setupAutocomplete() {
  * Handle arrow keys to jump to next record
  */
 function keyboardShortcuts() {
-  var $searchform = $('.searchForm_lookfor');
+  var $searchform = $('#searchForm_lookfor');
   if ($('.pager').length > 0) {
     $(window).keydown(function shortcutKeyDown(e) {
       if (!$searchform.is(':focus')) {
@@ -313,7 +318,7 @@ function setupFacets() {
           $(item).collapse('hide');
         }
       } finally {
-        $.support.transition = saveTransition;    
+        $.support.transition = saveTransition;
       }
     }
   });
@@ -346,10 +351,19 @@ $(document).ready(function commonDocReady() {
 
   // Checkbox select all
   $('.checkbox-select-all').change(function selectAllCheckboxes() {
-    $(this).closest('form').find('.checkbox-select-item').prop('checked', this.checked);
+    var $form = this.form ? $(this.form) : $(this).closest('form');
+    $form.find('.checkbox-select-item').prop('checked', this.checked);
+    $('[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
+    $form.find('.checkbox-select-all').prop('checked', this.checked);
+    $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
   });
   $('.checkbox-select-item').change(function selectAllDisable() {
-    $(this).closest('form').find('.checkbox-select-all').prop('checked', false);
+    var $form = this.form ? $(this.form) : $(this).closest('form');
+    if ($form.length === 0) {
+      return;
+    }
+    $form.find('.checkbox-select-all').prop('checked', false);
+    $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', false);
   });
 
   // handle QR code links
@@ -390,7 +404,7 @@ $(document).ready(function commonDocReady() {
   if (sessionStorage.getItem('vufind_retain_filters')) {
     var state = (sessionStorage.getItem('vufind_retain_filters') === 'true');
     $('.searchFormKeepFilters').prop('checked', state);
-    $('.applied-filter').prop('checked', state);
+    $('#applied-filter').prop('checked', state);
   }
 
   setupIeSupport();
