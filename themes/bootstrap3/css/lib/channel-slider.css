@@ -50,3 +50,14 @@
   border-top: 1px solid #aaa;
   background-color: #fff;
 }
+.slider-menu .scroll-bar {
+  position: absolute;
+  top: -5px;
+  left: 0;
+  z-index: 10;
+  width: 50px;
+  height: 3px;
+  background: #aaa;
+  color: transparent;
+  border-radius: 1px;
+}

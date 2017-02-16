@@ -5,9 +5,11 @@ function ChannelSlider(el) {
     var _slider;    // Moving, too-wide element
     var _leftbtn;
     var _rightbtn;
+    var _scrollbar;
     // Data
     var _slidePositions;
     var _xpos = 0;
+    var _maxpos = false;
     var _targetx = 0;
     var _current = 0;
 
@@ -23,9 +25,11 @@ function ChannelSlider(el) {
       var group = $('<div class="btn-group pull-left"></div>');
       _leftbtn = $('<button class="btn btn-default" disabled><i class="fa fa-arrow-left"></i></button>').click(pageLeft);
       _rightbtn = $('<button class="btn btn-default"><i class="fa fa-arrow-right"></i></button>').click(pageRight);
+      _scrollbar = $('<div class="scroll-bar"></div>');
       group.append(_leftbtn);
       group.append(_rightbtn);
       menu.append(group);
+      menu.append(_scrollbar);
       _container.append(menu);
     };
 
@@ -50,17 +54,18 @@ function ChannelSlider(el) {
       });
       // Reign it in
       _slider.css('width', _slidePositions[_slidePositions.length - 1].right + 100);
+      _scrollbar.css('width', _container.width() / _slidePositions.length);
+      _maxpos = _slidePositions[_slidePositions.length - 1].right - _container.width() + 10;
     };
     var _move = function _move(newpos) {
-      var maxpos = _slidePositions[_slidePositions.length - 1].right - _container.width() + 10;
-      _targetx = Math.max(0, Math.min(newpos, maxpos));
+      _targetx = Math.max(0, Math.min(newpos, _maxpos));
       _animate();
       // If we're running into the end, we need a new current
-      if (_targetx === maxpos) {
+      if (_targetx === _maxpos) {
         _leftbtn.removeAttr('disabled');
         _rightbtn.attr('disabled', 1);
         for (var i = 0; i < _slidePositions.length; i++) {
-          if (_slidePositions[i].left >= maxpos) {
+          if (_slidePositions[i].left >= _maxpos) {
             _current = i + 1;
             break;
           }
@@ -81,6 +86,7 @@ function ChannelSlider(el) {
         requestAnimationFrame(_animate);
       }
       _slider.css('left', 0 - Math.round(_xpos));
+      _scrollbar.css('left', (_xpos / _maxpos) * (_container.width() - _scrollbar.width()));
     };
     var _moveToClosest = function _moveToClosest(threshold) {
       for (var i = 0; i < _slidePositions.length; i++) {
