@@ -42,7 +42,9 @@ var VuFind = (function VuFind() {
     if (replacements) {
       var translation = _translations[op] || op;
       for (var key in replacements) {
-        translation = translation.replace(key, replacements[key]);
+        if (replacements.hasOwnProperty.call(key)) {
+          translation = translation.replace(key, replacements[key]);
+        }
       }
       return translation;
     }
