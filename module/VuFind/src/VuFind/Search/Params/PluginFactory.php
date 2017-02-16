@@ -54,19 +54,19 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
      * @param ServiceLocatorInterface $serviceLocator Service locator
      * @param string                  $name           Name of service
      * @param string                  $requestedName  Unfiltered name of service
+     * @param array                   $extraParams    Extra constructor parameters
+     * (to follow the Options object and config loader)
      *
      * @return object
      */
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
-        $name, $requestedName
+        $name, $requestedName, array $extraParams = []
     ) {
         $options = $serviceLocator->getServiceLocator()
             ->get('VuFind\SearchOptionsPluginManager')->get($requestedName);
         $class = $this->getClassName($name, $requestedName);
+        $configLoader = $serviceLocator->getServiceLocator()->get('VuFind\Config');
         // Clone the options instance in case caller modifies it:
-        return new $class(
-            clone($options),
-            $serviceLocator->getServiceLocator()->get('VuFind\Config')
-        );
+        return new $class(clone($options), $configLoader, ...$extraParams);
     }
 }

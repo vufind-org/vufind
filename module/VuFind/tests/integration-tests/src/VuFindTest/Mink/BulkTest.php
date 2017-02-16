@@ -61,7 +61,10 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $path = '/Search/Results?lookfor=id%3A(testsample1+OR+testsample2)';
         $session->visit($this->getVuFindUrl() . $path);
-        return $session->getPage();
+        $page = $session->getPage();
+        // Hide autocomplete menu
+        $this->findCss($page, '#side-panel-format .title')->click();
+        return $page;
     }
 
     /**
@@ -192,6 +195,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
 
         // Save the favorites.
         $this->findCss($page, '.modal-body input[name=submit]')->click();
+        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.', $result->getText()
@@ -237,6 +241,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         // Do the export:
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
+        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
         $this->assertEquals('Download File', $result->getText());
     }

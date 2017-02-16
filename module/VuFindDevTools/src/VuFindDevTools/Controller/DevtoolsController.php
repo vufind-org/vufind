@@ -43,6 +43,27 @@ use VuFindDevTools\LanguageHelper;
 class DevtoolsController extends \VuFind\Controller\AbstractBase
 {
     /**
+     * Fetch the query builder for the specified search backend. Return null if
+     * unavailable.
+     *
+     * @param string $id Backend ID
+     *
+     * @return object
+     */
+    protected function getQueryBuilder($id)
+    {
+        try {
+            $backend = $this->getServiceLocator()
+                ->get('VuFind\Search\BackendManager')
+                ->get($id);
+        } catch (\Exception $e) {
+            return null;
+        }
+        return is_callable([$backend, 'getQueryBuilder'])
+            ? $backend->getQueryBuilder() : null;
+    }
+
+    /**
      * Deminify action
      *
      * @return \Zend\View\Model\ViewModel
@@ -66,19 +87,21 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
                 $view->backendParams = $params->getBackendParameters()
                     ->getArrayCopy();
             }
-            try {
-                $backend = $this->getServiceLocator()
-                    ->get('VuFind\Search\BackendManager')
-                    ->get($params->getSearchClassId());
-            } catch (\Exception $e) {
-                $backend = false;
-            }
-            if ($backend && is_callable([$backend, 'getQueryBuilder'])) {
-                $builder = $backend->getQueryBuilder();
+            if ($builder = $this->getQueryBuilder($params->getSearchClassId())) {
                 $view->queryParams = $builder->build($view->query)->getArrayCopy();
             }
         }
         return $view;
+    }
+
+    /**
+     * Home action
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function homeAction()
+    {
+        return $this->createViewModel();
     }
 
     /**

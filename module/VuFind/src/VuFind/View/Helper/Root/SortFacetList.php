@@ -59,8 +59,8 @@ class SortFacetList extends AbstractHelper
         $results->getParams()->setLimit($results->getOptions()->getDefaultLimit());
         $urlHelper = $this->getView()->plugin('url');
         foreach ($list as $value) {
-            $url = $urlHelper($searchRoute)
-                . $results->getUrlQuery()->addFacet($field, $value['value']);
+            $url = $urlHelper($searchRoute) . $results->getUrlQuery()
+                ->addFacet($field, $value['value'])->getParams();
             $facets[$url] = $value['displayText'];
         }
         natcasesort($facets);

@@ -18,6 +18,19 @@ $config = [
                     ],
                 ],
             ],
+            'content-page' => [
+                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/Content/[:page]',
+                    'constraints' => [
+                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Content',
+                        'action'     => 'Content',
+                    ]
+                ],
+            ],
             'legacy-alphabrowse-results' => [
                 'type' => 'Zend\Mvc\Router\Http\Literal',
                 'options' => [
@@ -96,6 +109,7 @@ $config = [
             'cart' => 'VuFind\Controller\Factory::getCartController',
             'collection' => 'VuFind\Controller\Factory::getCollectionController',
             'collections' => 'VuFind\Controller\Factory::getCollectionsController',
+            'index' => 'VuFind\Controller\Factory::getIndexController',
             'record' => 'VuFind\Controller\Factory::getRecordController',
             'upgrade' => 'VuFind\Controller\Factory::getUpgradeController',
         ],
@@ -106,6 +120,7 @@ $config = [
             'authority' => 'VuFind\Controller\AuthorityController',
             'combined' => 'VuFind\Controller\CombinedController',
             'confirm' => 'VuFind\Controller\ConfirmController',
+            'content' => 'VuFind\Controller\ContentController',
             'cover' => 'VuFind\Controller\CoverController',
             'eds' => 'VuFind\Controller\EdsController',
             'edsrecord' => 'VuFind\Controller\EdsrecordController',
@@ -116,7 +131,6 @@ $config = [
             'feedback' => 'VuFind\Controller\FeedbackController',
             'help' => 'VuFind\Controller\HelpController',
             'hierarchy' => 'VuFind\Controller\HierarchyController',
-            'index' => 'VuFind\Controller\IndexController',
             'install' => 'VuFind\Controller\InstallController',
             'libguides' => 'VuFind\Controller\LibGuidesController',
             'librarycards' => 'VuFind\Controller\LibraryCardsController',
@@ -140,6 +154,7 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
+            'favorites' => 'VuFind\Controller\Plugin\Factory::getFavorites',
             'flashmessenger' => 'VuFind\Controller\Plugin\Factory::getFlashMessenger',
             'followup' => 'VuFind\Controller\Plugin\Factory::getFollowup',
             'holds' => 'VuFind\Controller\Plugin\Factory::getHolds',
@@ -152,7 +167,6 @@ $config = [
         ],
         'invokables' => [
             'db-upgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
-            'favorites' => 'VuFind\Controller\Plugin\Favorites',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
         ]
     ],
@@ -178,6 +192,7 @@ $config = [
             'VuFind\DbAdapterFactory' => 'VuFind\Service\Factory::getDbAdapterFactory',
             'VuFind\DbTablePluginManager' => 'VuFind\Service\Factory::getDbTablePluginManager',
             'VuFind\Export' => 'VuFind\Service\Factory::getExport',
+            'VuFind\Favorites\FavoritesService' => 'VuFind\Favorites\FavoritesServiceFactory',
             'VuFind\HierarchyDriverPluginManager' => 'VuFind\Service\Factory::getHierarchyDriverPluginManager',
             'VuFind\HierarchyTreeDataFormatterPluginManager' => 'VuFind\Service\Factory::getHierarchyTreeDataFormatterPluginManager',
             'VuFind\HierarchyTreeDataSourcePluginManager' => 'VuFind\Service\Factory::getHierarchyTreeDataSourcePluginManager',
@@ -190,7 +205,7 @@ $config = [
             'VuFind\ILSHoldLogic' => 'VuFind\Service\Factory::getILSHoldLogic',
             'VuFind\ILSHoldSettings' => 'VuFind\Service\Factory::getILSHoldSettings',
             'VuFind\ILSTitleHoldLogic' => 'VuFind\Service\Factory::getILSTitleHoldLogic',
-            'VuFind\Logger' => 'VuFind\Service\Factory::getLogger',
+            'VuFind\Logger' => 'VuFind\Log\LoggerFactory',
             'VuFind\Mailer' => 'VuFind\Mailer\Factory',
             'VuFind\ProxyConfig' => 'VuFind\Service\Factory::getProxyConfig',
             'VuFind\Recaptcha' => 'VuFind\Service\Factory::getRecaptcha',
@@ -199,7 +214,6 @@ $config = [
             'VuFind\RecordDriverPluginManager' => 'VuFind\Service\Factory::getRecordDriverPluginManager',
             'VuFind\RecordLoader' => 'VuFind\Service\Factory::getRecordLoader',
             'VuFind\RecordRouter' => 'VuFind\Service\Factory::getRecordRouter',
-            'VuFind\RecordStats' => 'VuFind\Service\Factory::getRecordStats',
             'VuFind\RecordTabPluginManager' => 'VuFind\Service\Factory::getRecordTabPluginManager',
             'VuFind\RelatedPluginManager' => 'VuFind\Service\Factory::getRelatedPluginManager',
             'VuFind\ResolverDriverPluginManager' => 'VuFind\Service\Factory::getResolverDriverPluginManager',
@@ -210,16 +224,15 @@ $config = [
             'VuFind\SearchResultsPluginManager' => 'VuFind\Service\Factory::getSearchResultsPluginManager',
             'VuFind\SearchRunner' => 'VuFind\Service\Factory::getSearchRunner',
             'VuFind\SearchSpecsReader' => 'VuFind\Service\Factory::getSearchSpecsReader',
-            'VuFind\SearchStats' => 'VuFind\Service\Factory::getSearchStats',
             'VuFind\SearchTabsHelper' => 'VuFind\Service\Factory::getSearchTabsHelper',
             'VuFind\SessionManager' => 'VuFind\Session\ManagerFactory',
             'VuFind\SessionPluginManager' => 'VuFind\Service\Factory::getSessionPluginManager',
             'VuFind\SMS' => 'VuFind\SMS\Factory',
             'VuFind\Solr\Writer' => 'VuFind\Service\Factory::getSolrWriter',
-            'VuFind\StatisticsDriverPluginManager' => 'VuFind\Service\Factory::getStatisticsDriverPluginManager',
             'VuFind\Tags' => 'VuFind\Service\Factory::getTags',
             'VuFind\Translator' => 'VuFind\Service\Factory::getTranslator',
             'VuFind\WorldCatUtils' => 'VuFind\Service\Factory::getWorldCatUtils',
+            'VuFind\YamlReader' => 'VuFind\Service\Factory::getYamlReader',
         ],
         'invokables' => [
             'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper',
@@ -368,23 +381,20 @@ $config = [
             'db_table' => [
                 'abstract_factories' => ['VuFind\Db\Table\PluginFactory'],
                 'factories' => [
+                    'changetracker' => 'VuFind\Db\Table\Factory::getChangeTracker',
+                    'comments' => 'VuFind\Db\Table\Factory::getComments',
+                    'externalsession' => 'VuFind\Db\Table\Factory::getExternalSession',
+                    'oairesumption' => 'VuFind\Db\Table\Factory::getOaiResumption',
+                    'record' => 'VuFind\Db\Table\Factory::getRecord',
                     'resource' => 'VuFind\Db\Table\Factory::getResource',
                     'resourcetags' => 'VuFind\Db\Table\Factory::getResourceTags',
+                    'search' => 'VuFind\Db\Table\Factory::getSearch',
+                    'session' => 'VuFind\Db\Table\Factory::getSession',
                     'tags' => 'VuFind\Db\Table\Factory::getTags',
                     'user' => 'VuFind\Db\Table\Factory::getUser',
+                    'usercard' => 'VuFind\Db\Table\Factory::getUserCard',
                     'userlist' => 'VuFind\Db\Table\Factory::getUserList',
-                ],
-                'invokables' => [
-                    'changetracker' => 'VuFind\Db\Table\ChangeTracker',
-                    'comments' => 'VuFind\Db\Table\Comments',
-                    'externalsession' => 'VuFind\Db\Table\ExternalSession',
-                    'oairesumption' => 'VuFind\Db\Table\OaiResumption',
-                    'record' => 'VuFind\Db\Table\Record',
-                    'search' => 'VuFind\Db\Table\Search',
-                    'session' => 'VuFind\Db\Table\Session',
-                    'userresource' => 'VuFind\Db\Table\UserResource',
-                    'userstats' => 'VuFind\Db\Table\UserStats',
-                    'userstatsfields' => 'VuFind\Db\Table\UserStatsFields',
+                    'userresource' => 'VuFind\Db\Table\Factory::getUserResource',
                 ],
             ],
             'hierarchy_driver' => [
@@ -570,7 +580,6 @@ $config = [
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
                     'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
                     'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
-                    'SolrStats' => 'VuFind\Search\Factory\SolrStatsBackendFactory',
                     'SolrWeb' => 'VuFind\Search\Factory\SolrWebBackendFactory',
                     'Summon' => 'VuFind\Search\Factory\SummonBackendFactory',
                     'WorldCat' => 'VuFind\Search\Factory\WorldCatBackendFactory',
@@ -580,7 +589,6 @@ $config = [
                     'authority' => 'SolrAuth',
                     'biblio' => 'Solr',
                     'reserves' => 'SolrReserves',
-                    'stats' => 'SolrStats',
                     // Legacy:
                     'VuFind' => 'Solr',
                 ]
@@ -593,12 +601,16 @@ $config = [
             ],
             'search_params' => [
                 'abstract_factories' => ['VuFind\Search\Params\PluginFactory'],
+                'factories' => [
+                    'solr' => 'VuFind\Search\Params\Factory::getSolr',
+                ],
             ],
             'search_results' => [
                 'abstract_factories' => ['VuFind\Search\Results\PluginFactory'],
                 'factories' => [
                     'favorites' => 'VuFind\Search\Results\Factory::getFavorites',
                     'solr' => 'VuFind\Search\Results\Factory::getSolr',
+                    'tags' => 'VuFind\Search\Results\Factory::getTags',
                 ],
             ],
             'session' => [
@@ -614,20 +626,7 @@ $config = [
                     'memcachesession' => 'Memcache',
                     'mysqlsession' => 'Database',
                 ],
-            ],
-            'statistics_driver' => [
-                'abstract_factories' => ['VuFind\Statistics\Driver\PluginFactory'],
-                'factories' => [
-                    'file' => 'VuFind\Statistics\Driver\Factory::getFile',
-                    'solr' => 'VuFind\Statistics\Driver\Factory::getSolr',
-                ],
-                'invokables' => [
-                    'db' => 'VuFind\Statistics\Driver\Db',
-                ],
-                'aliases' => [
-                    'database' => 'db',
-                ],
-            ],
+            ]
         ],
         // This section behaves just like recorddriver_tabs below, but is used for
         // the collection module instead of the standard record view.

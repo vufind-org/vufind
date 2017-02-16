@@ -42,6 +42,22 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Construct the Favorites plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Zend\Mvc\Controller\Plugin\Favorites
+     */
+    public static function getFavorites(ServiceManager $sm)
+    {
+        return new Favorites(
+            $sm->getServiceLocator()->get('VuFind\RecordLoader'),
+            $sm->getServiceLocator()->get('VuFind\RecordCache'),
+            $sm->getServiceLocator()->get('VuFind\Tags')
+        );
+    }
+
+    /**
      * Construct the FlashMessenger plugin.
      *
      * @param ServiceManager $sm Service manager.
@@ -145,7 +161,8 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $useIndex = isset($config->Reserves->search_enabled)
             && $config->Reserves->search_enabled;
-        return new Reserves($useIndex);
+        $ss = $useIndex ? $sm->getServiceLocator()->get('VuFind\Search') : null;
+        return new Reserves($useIndex, $ss);
     }
 
     /**
@@ -161,7 +178,8 @@ class Factory
             new \Zend\Session\Container(
                 'ResultScroller',
                 $sm->getServiceLocator()->get('VuFind\SessionManager')
-            )
+            ),
+            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
         );
     }
 

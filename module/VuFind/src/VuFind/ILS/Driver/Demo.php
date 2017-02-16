@@ -322,6 +322,8 @@ class Demo extends AbstractBase
      *
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getRequestBlocks($patron)
     {
@@ -336,6 +338,8 @@ class Demo extends AbstractBase
      *
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getAccountBlocks($patron)
     {
@@ -937,8 +941,8 @@ class Demo extends AbstractBase
                     $transList[$i]['title'] = 'Demo Title ' . $i;
                 }
             }
-            return $transList;
         }
+        return $transList;
     }
 
     /**
@@ -1072,17 +1076,22 @@ class Demo extends AbstractBase
     /**
      * Get request groups
      *
-     * @param int   $bibId  BIB ID
-     * @param array $patron Patron information returned by the patronLogin
+     * @param int   $bibId       BIB ID
+     * @param array $patron      Patron information returned by the patronLogin
      * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the request group
+     * options or may be ignored.
      *
      * @return array  False if request groups not in use or an array of
      * associative arrays with id and name keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getRequestGroups($bibId = null, $patron = null)
-    {
+    public function getRequestGroups($bibId = null, $patron = null,
+        $holdDetails = null
+    ) {
         $this->checkIntermittentFailure();
         return [
             [

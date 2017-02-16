@@ -307,6 +307,16 @@ class Cart
     }
 
     /**
+     * Get cookie path ('/' if unset).
+     *
+     * @return string
+     */
+    public function getCookiePath()
+    {
+        return $this->cookieManager->getPath();
+    }
+
+    /**
      * Process parameters and return the cart content.
      *
      * @return array $records The cart content

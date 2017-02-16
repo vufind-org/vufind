@@ -234,9 +234,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                     );
                     $this->selectedCoordinates = $reorder_coords;
                 }
-                $this->searchParams = $results->getUrlQuery()->removeFacet(
-                    $this->geoField, $value[0], false
-                );
+                $this->searchParams = $results->getUrlQuery()
+                    ->removeFacet($this->geoField, $value[0])->getParams(false);
             }
         }
         if ($this->searchParams == null) {

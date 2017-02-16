@@ -474,9 +474,10 @@ class Voyager extends AbstractBase
                         : PHP_INT_MAX
                 ];
             } else {
-                if (!in_array(
+                $statusFound = in_array(
                     $row['STATUS'], $data[$row['ITEM_ID']]['status_array']
-                )) {
+                );
+                if (!$statusFound) {
                     $data[$row['ITEM_ID']]['status_array'][] = $row['STATUS'];
                 }
             }
@@ -760,9 +761,7 @@ class Voyager extends AbstractBase
                 }
 
                 // If we've encountered a new status code, we should track it:
-                if (!in_array(
-                    $row['STATUS'], $record['STATUS_ARRAY']
-                )) {
+                if (!in_array($row['STATUS'], $record['STATUS_ARRAY'])) {
                     $record['STATUS_ARRAY'][] = $row['STATUS'];
                 }
             } else {
@@ -1226,6 +1225,20 @@ class Voyager extends AbstractBase
         $sql .= " FROM $this->dbName.PATRON, $this->dbName.PATRON_BARCODE " .
                "WHERE PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID AND " .
                "lower(PATRON_BARCODE.PATRON_BARCODE) = :barcode";
+
+        // Limit the barcode statuses that allow logging in. By default only
+        // 1 (active) and 4 (expired) are allowed.
+        $allowedStatuses = preg_replace(
+            '/[^:\d]*/',
+            '',
+            isset($this->config['Catalog']['allowed_barcode_statuses'])
+                ? $this->config['Catalog']['allowed_barcode_statuses']
+                : '1:4'
+        );
+        if ($allowedStatuses) {
+            $sql .= ' AND PATRON_BARCODE.BARCODE_STATUS IN ('
+                . str_replace(':', ',', $allowedStatuses) . ')';
+        }
 
         try {
             $bindBarcode = strtolower(utf8_decode($barcode));

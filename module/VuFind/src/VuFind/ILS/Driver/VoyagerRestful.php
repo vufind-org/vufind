@@ -840,113 +840,73 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     /**
      * Get request groups
      *
-     * @param int   $bibId  BIB ID
-     * @param array $patron Patron information returned by the patronLogin
+     * @param int   $bibId       BIB ID
+     * @param array $patron      Patron information returned by the patronLogin
      * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the request group
+     * options or may be ignored.
      *
      * @return array False if request groups not in use or an array of
      * associative arrays with id and name keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getRequestGroups($bibId, $patron)
+    public function getRequestGroups($bibId, $patron, $holdDetails = null)
     {
         if (!$this->requestGroupsEnabled) {
             return false;
         }
 
-        if ($this->checkItemsExist) {
-            // First get hold information for the list of items Voyager
-            // thinks are holdable
-            $request = $this->determineHoldType($patron['id'], $bibId);
-            if ($request != 'hold' && $request != 'recall') {
-                return false;
-            }
+        $sqlExpressions = [
+            'rg.GROUP_ID',
+            'rg.GROUP_NAME',
+        ];
+        $sqlFrom = [
+            "$this->dbName.REQUEST_GROUP rg"
 
-            $hierarchy = [];
+        ];
+        $sqlWhere = [];
+        $sqlBind = [];
 
-            // Build Hierarchy
-            $hierarchy['record'] = $bibId;
-            $hierarchy[$request] = false;
-
-            // Add Required Params
-            $params = [
-                'patron' => $patron['id'],
-                'patron_homedb' => $this->ws_patronHomeUbId,
-                'view' => 'full'
-            ];
-
-            $results = $this->makeRequest($hierarchy, $params, 'GET', false);
-
-            if ($results === false) {
-                throw new ILSException('Could not fetch hold information');
-            }
-
-            $items = [];
-            foreach ($results->$request as $hold) {
-                foreach ($hold->items->item as $item) {
-                    $items[(string)$item->item_id] = 1;
-                }
-            }
+        if ($this->pickupLocationsInRequestGroup) {
+            // Limit to request groups that have valid pickup locations
+            $sqlWhere[] = <<<EOT
+rg.GROUP_ID IN (
+  SELECT rgl.GROUP_ID
+  FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
+  WHERE rgl.LOCATION_ID IN (
+    SELECT cpl.LOCATION_ID
+    FROM $this->dbName.CIRC_POLICY_LOCS cpl
+    WHERE cpl.PICKUP_LOCATION='Y'
+  )
+)
+EOT;
         }
 
-        // Find request groups (with items if item check is enabled)
         if ($this->checkItemsExist) {
-            $sqlExpressions = [
-                'rg.GROUP_ID',
-                'rg.GROUP_NAME',
-                'bi.ITEM_ID'
-            ];
-
-            $sqlFrom = [
-                "$this->dbName.BIB_ITEM bi",
-                "$this->dbName.MFHD_ITEM mi",
-                "$this->dbName.MFHD_MASTER mm",
-                "$this->dbName.REQUEST_GROUP rg",
-                "$this->dbName.REQUEST_GROUP_LOCATION rgl",
-            ];
-
-            $sqlWhere = [
-                'bi.BIB_ID=:bibId',
-                'mi.ITEM_ID=bi.ITEM_ID',
-                'mm.MFHD_ID=mi.MFHD_ID',
-                'rgl.LOCATION_ID=mm.LOCATION_ID',
-                'rg.GROUP_ID=rgl.GROUP_ID'
-            ];
-
-            $sqlBind = [
-                'bibId' => $bibId
-            ];
-        } else {
-            $sqlExpressions = [
-                'rg.GROUP_ID',
-                'rg.GROUP_NAME',
-            ];
-
-            $sqlFrom = [
-                "$this->dbName.REQUEST_GROUP rg",
-                "$this->dbName.REQUEST_GROUP_LOCATION rgl"
-            ];
-
-            $sqlWhere = [
-                'rg.GROUP_ID=rgl.GROUP_ID'
-            ];
-
-            $sqlBind = [
-            ];
-
-            if ($this->pickupLocationsInRequestGroup) {
-                // Limit to request groups that have valid pickup locations
-                $sqlFrom[] = "$this->dbName.REQUEST_GROUP_LOCATION rgl";
-                $sqlFrom[] = "$this->dbName.CIRC_POLICY_LOCS cpl";
-
-                $sqlWhere[] = "rgl.GROUP_ID=rg.GROUP_ID";
-                $sqlWhere[] = "cpl.LOCATION_ID=rgl.LOCATION_ID";
-                $sqlWhere[] = "cpl.PICKUP_LOCATION='Y'";
-            }
+            $sqlWhere[] = <<<EOT
+rg.GROUP_ID IN (
+  SELECT rgl.GROUP_ID
+  FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
+  WHERE rgl.LOCATION_ID IN (
+    SELECT mm.LOCATION_ID FROM $this->dbName.MFHD_MASTER mm
+    WHERE mm.SUPPRESS_IN_OPAC='N'
+    AND mm.MFHD_ID IN (
+      SELECT mi.MFHD_ID
+      FROM $this->dbName.MFHD_ITEM mi, $this->dbName.BIB_ITEM bi
+      WHERE mi.ITEM_ID = bi.ITEM_ID AND bi.BIB_ID=:bibId
+    )
+  )
+)
+EOT;
+            $sqlBind['bibId'] = $bibId;
         }
 
         if ($this->checkItemsNotAvailable) {
-
-            // Build inner query first
+            // Build first the inner query that return item statuses for all request
+            // groups
             $subExpressions = [
                 'sub_rgl.GROUP_ID',
                 'sub_i.ITEM_ID',
@@ -968,7 +928,8 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 'sub_ist.ITEM_ID=sub_i.ITEM_ID',
                 'sub_mi.ITEM_ID=sub_i.ITEM_ID',
                 'sub_mm.MFHD_ID=sub_mi.MFHD_ID',
-                'sub_rgl.LOCATION_ID=sub_mm.LOCATION_ID'
+                'sub_rgl.LOCATION_ID=sub_mm.LOCATION_ID',
+                "sub_mm.SUPPRESS_IN_OPAC='N'"
             ];
 
             $subGroup = [
@@ -988,9 +949,28 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
             $subSql = $this->buildSqlFromArray($subArray);
 
-            $sqlWhere[] = "not exists (select status.GROUP_ID from " .
-                "({$subSql['string']}) status where status.status=1 " .
-                "and status.GROUP_ID = rgl.GROUP_ID)";
+            $itemWhere = <<<EOT
+rg.GROUP_ID NOT IN (
+  SELECT status.GROUP_ID
+  FROM ({$subSql['string']}) status
+  WHERE status.status=1
+)
+EOT;
+
+            $key = 'disableAvailabilityCheckForRequestGroups';
+            if (isset($this->config['Holds'][$key])) {
+                $disabledGroups = array_map(
+                    function ($s) {
+                        return preg_replace('/[^\d]*/', '', $s);
+                    },
+                    explode(':', $this->config['Holds'][$key])
+                );
+                if ($disabledGroups) {
+                    $itemWhere = "($itemWhere OR rg.GROUP_ID IN ("
+                        . implode(',', $disabledGroups) . '))';
+                }
+            }
+            $sqlWhere[] = $itemWhere;
         }
 
         $sqlArray = [
@@ -1008,16 +988,12 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             throw new ILSException($e->getMessage());
         }
 
-        $groups = [];
-        while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-            if (!$this->checkItemsExist || isset($items[$row['ITEM_ID']])) {
-                $groups[$row['GROUP_ID']] = utf8_encode($row['GROUP_NAME']);
-            }
-        }
-
         $results = [];
-        foreach ($groups as $groupId => $groupName) {
-            $results[] = ['id' => $groupId, 'name' => $groupName];
+        while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
+            $results[] = [
+                'id' => $row['GROUP_ID'],
+                'name' => utf8_encode($row['GROUP_NAME'])
+            ];
         }
 
         // Sort request groups
@@ -1085,7 +1061,15 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
         // Send Request and Retrieve Response
         $startTime = microtime(true);
-        $result = $client->setMethod($mode)->send();
+        try {
+            $result = $client->setMethod($mode)->send();
+        } catch (\Exception $e) {
+            $this->error(
+                "$mode request for '$urlParams' with contents '$xml' failed: "
+                . $e->getMessage()
+            );
+            throw new ILSException('Problem with RESTful API.');
+        }
         if (!$result->isSuccess()) {
             $this->error(
                 "$mode request for '$urlParams' with contents '$xml' failed: "
@@ -1670,6 +1654,7 @@ EOT;
             $sqlWhere[] = 'mi.ITEM_ID=cta.ITEM_ID';
             $sqlWhere[] = 'mm.MFHD_ID=mi.MFHD_ID';
             $sqlWhere[] = 'rgl.LOCATION_ID=mm.LOCATION_ID';
+            $sqlWhere[] = "mm.SUPPRESS_IN_OPAC='N'";
         }
 
         $sqlBind = ['patronId' => $patronId, 'bibId' => $bibId];
@@ -1717,7 +1702,8 @@ EOT;
             'bi.BIB_ID=:bibId',
             'i.ITEM_ID=bi.ITEM_ID',
             'mi.ITEM_ID=i.ITEM_ID',
-            'mm.MFHD_ID=mi.MFHD_ID'
+            'mm.MFHD_ID=mi.MFHD_ID',
+            "mm.SUPPRESS_IN_OPAC='N'"
         ];
 
         if ($this->excludedItemLocations) {
@@ -1782,7 +1768,8 @@ EOT;
             'i.ITEM_ID=bi.ITEM_ID',
             'ist.ITEM_ID=i.ITEM_ID',
             'mi.ITEM_ID=i.ITEM_ID',
-            'mm.MFHD_ID=mi.MFHD_ID'
+            'mm.MFHD_ID=mi.MFHD_ID',
+            "mm.SUPPRESS_IN_OPAC='N'"
         ];
 
         if ($this->excludedItemLocations) {
@@ -2366,14 +2353,17 @@ EOT;
     }
 
     /**
-     * Get Patron Remote Storage Retrieval Requests (Call Slips). Gets remote
-     * callslips via the API.
+     * Get Patron Storage Retrieval Requests (Call Slips). Gets callslips via
+     * the API. Returns only remote slips by default since more complete data
+     * can be retrieved directly from the local database; however, the $local
+     * parameter exists to support potential local customizations.
      *
      * @param array $patron The patron array from patronLogin
+     * @param bool  $local  Whether to include local callslips
      *
      * @return mixed        Array of the patron's storage retrieval requests.
      */
-    protected function getRemoteCallSlips($patron)
+    protected function getCallSlips($patron, $local = false)
     {
         // Build Hierarchy
         $hierarchy = [
@@ -2397,8 +2387,11 @@ EOT;
         $requests = [];
         if (isset($results->callslips->institution)) {
             foreach ($results->callslips->institution as $institution) {
-                if ($this->isLocalInst((string)$institution->attributes()->id)) {
-                    // Ignore local callslips, we have them already
+                if (!$local
+                    && $this->isLocalInst((string)$institution->attributes()->id)
+                ) {
+                    // Unless $local is set, ignore local callslips; we have them
+                    // already....
                     continue;
                 }
                 foreach ($institution->callslip as $callslip) {
@@ -3147,7 +3140,7 @@ EOT;
     {
         return array_merge(
             $this->getHoldsFromApi($patron, false),
-            $this->getRemoteCallSlips($patron)
+            $this->getCallSlips($patron, false) // remote only
         );
     }
 

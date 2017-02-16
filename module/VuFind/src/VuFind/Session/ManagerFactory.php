@@ -56,10 +56,17 @@ class ManagerFactory implements \Zend\ServiceManager\FactoryInterface
             'cookie_path' => $cookieManager->getPath(),
             'cookie_secure' => $cookieManager->isSecure()
         ];
+
         $domain = $cookieManager->getDomain();
         if (!empty($domain)) {
             $options['cookie_domain'] = $domain;
         }
+
+        $name = $cookieManager->getSessionName();
+        if (!empty($name)) {
+            $options['name'] = $name;
+        }
+
         return $options;
     }
 
@@ -127,6 +134,23 @@ class ManagerFactory implements \Zend\ServiceManager\FactoryInterface
 
         // Start up the session:
         $sessionManager->start();
+
+        // Verify that any existing session has the correct path to avoid using
+        // a cookie from a service higher up in the path hierarchy.
+        $storage = new \Zend\Session\Container('SessionState', $sessionManager);
+        if (null !== $storage->cookiePath) {
+            if ($storage->cookiePath != $sessionConfig->getCookiePath()) {
+                // Disable writes temporarily to keep the existing session intact
+                $sessionManager->getSaveHandler()->disableWrites();
+                // Regenerate session ID and reset the session data
+                $sessionManager->regenerateId(false);
+                session_unset();
+                $sessionManager->getSaveHandler()->enableWrites();
+                $storage->cookiePath = $sessionConfig->getCookiePath();
+            }
+        } else {
+            $storage->cookiePath = $sessionConfig->getCookiePath();
+        }
 
         // Check if we need to immediately stop it based on the settings object
         // (which may have been informed by a controller that sessions should not
