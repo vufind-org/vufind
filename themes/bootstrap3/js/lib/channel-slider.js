@@ -3,6 +3,7 @@ function ChannelSlider(el) {
     // Elements
     var _container; // Entire element
     var _slider;    // Moving, too-wide element
+    var _menu;
     var _leftbtn;
     var _rightbtn;
     var _scrollbar;
@@ -21,16 +22,16 @@ function ChannelSlider(el) {
       _container.append(bounds);
     };
     var _addMenu = function _addMenu() {
-      var menu = $('<nav class="slider-menu"></nav>');
+      _menu = $('<nav class="slider-menu"></nav>');
       var group = $('<div class="btn-group pull-left"></div>');
       _leftbtn = $('<button class="btn btn-default" disabled><i class="fa fa-arrow-left"></i></button>').click(pageLeft);
       _rightbtn = $('<button class="btn btn-default"><i class="fa fa-arrow-right"></i></button>').click(pageRight);
       _scrollbar = $('<div class="scroll-bar"></div>');
       group.append(_leftbtn);
       group.append(_rightbtn);
-      menu.append(group);
-      menu.append(_scrollbar);
-      _container.append(menu);
+      _menu.append(group);
+      _menu.append(_scrollbar);
+      _container.append(_menu);
     };
 
     var _adjustWidth = function _adjustWidth() {
@@ -86,7 +87,8 @@ function ChannelSlider(el) {
         requestAnimationFrame(_animate);
       }
       _slider.css('left', 0 - Math.round(_xpos));
-      _scrollbar.css('left', (_xpos / _maxpos) * (_container.width() - _scrollbar.width()));
+      var barMax =_container.width() - _scrollbar.width();
+      _scrollbar.css('left', Math.max(0, Math.min(barMax, (_xpos / _maxpos) * barMax)));
     };
     var _moveToClosest = function _moveToClosest(threshold) {
       for (var i = 0; i < _slidePositions.length; i++) {
@@ -118,30 +120,58 @@ function ChannelSlider(el) {
     _adjustWidth();
 
     var _touchX = null;
+    var _draggingScrollbar = false;
     var _sliderDragStart = function _sliderDragStart(e) {
       _touchX = e.clientX || e.originalEvent.touches[0].clientX;
+      _draggingScrollbar = false;
+    };
+    var _scrollbarDragStart = function _sliderDragStart(e) {
+      _touchX = e.clientX || e.originalEvent.touches[0].clientX;
+      _draggingScrollbar = true;
     };
     var _sliderDragMove = function _sliderDrag(e) {
       if (_touchX === null) {
         return;
       }
       var x = e.clientX || e.originalEvent.touches[0].clientX;
-      var diffX = _touchX - x;
-      if (Math.abs(diffX) > 100) {
-        if (diffX < 0) {
-          pageLeft();
-        } else {
-          pageRight();
+      if (_draggingScrollbar) {
+        _targetx = _maxpos * (x - _container.offset().left) / _container.width();
+        _animate();
+      } else {
+        var diffX = _touchX - x;
+        if (Math.abs(diffX) > 100) {
+          if (diffX < 0) {
+            pageLeft();
+          } else {
+            pageRight();
+          }
+          _touchX = null;
         }
-        _touchX = null;
+      }
+    };
+    var _dragEnd = function _dragEnd() {
+      _touchX = null;
+      // Move to true closest
+      if (_draggingScrollbar) {
+        var mindist = Math.abs(_slidePositions[0].left - _xpos);
+        var closest = 0;
+        for (var i = 1; i < _slidePositions.length; i++) {
+          var d = Math.abs(_slidePositions[i].left - _xpos);
+          if (d < mindist) {
+            mindist = d;
+            closest = i;
+          }
+        }
+        _move(_slidePositions[closest].left);
       }
     };
     _slider.on('mousedown', _sliderDragStart);
-    _slider.on('mousemove', _sliderDragMove);
-    _slider.on('mouseup', function mouseup() { _touchX = null });
+    _scrollbar.on('mousedown', _scrollbarDragStart);
     _slider.on('touchstart', _sliderDragStart);
     _slider.on('touchmove', _sliderDragMove);
-    _slider.on('touchend', function touchend() { _touchX = null });
+    _container.on('mousemove', _sliderDragMove);
+    $(document).on('mouseup', _dragEnd);
+    $(document).on('touchend', _dragEnd);
 
     return true;
   })();

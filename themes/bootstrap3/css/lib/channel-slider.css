@@ -52,11 +52,11 @@
 }
 .slider-menu .scroll-bar {
   position: absolute;
-  top: -5px;
+  top: -10px;
   left: 0;
   z-index: 10;
   width: 50px;
-  height: 3px;
+  height: 8px;
   background: #aaa;
   color: transparent;
   border-radius: 1px;
