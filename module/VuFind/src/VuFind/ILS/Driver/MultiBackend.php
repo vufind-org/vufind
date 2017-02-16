@@ -108,6 +108,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      *
      * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth      ILS authenticator
+     * @param PluginManager                 $dm           ILS driver manager
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader,
         \VuFind\Auth\ILSAuthenticator $ilsAuth, PluginManager $dm
