@@ -31,7 +31,8 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\Auth as AuthException,
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * PAIA ILS Driver for VuFind to get patron information
@@ -100,7 +101,21 @@ class PAIA extends DAIA
     ];
 
     /**
-     * PAIA constructor.
+     * PAIA scopes as defined in
+     * http://gbv.github.io/paia/paia.html#access-tokens-and-scopes
+     */
+    const SCOPE_READ_PATRON = 'read_patron';
+    const SCOPE_UPDATE_PATRON = 'update_patron';
+    const SCOPE_UPDATE_PATRON_NAME = 'update_patron_name';
+    const SCOPE_UPDATE_PATRON_EMAIL = 'update_patron_email';
+    const SCOPE_UPDATE_PATRON_ADDRESS = 'update_patron_address';
+    const SCOPE_READ_FEES = 'read_fees';
+    const SCOPE_READ_ITEMS = 'read_items';
+    const SCOPE_WRITE_ITEMS = 'write_items';
+    const SCOPE_CHANGE_PASSWORD = 'change_password';
+
+    /**
+     * Constructor
      *
      * @param \VuFind\Date\Converter       $converter      Date converter
      * @param \Zend\Session\SessionManager $sessionManager Session Manager
@@ -227,6 +242,11 @@ class PAIA extends DAIA
      */
     public function cancelHolds($cancelDetails)
     {
+        // check if user has appropriate scope
+        if (!$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)) {
+            throw new ILSException('You are not allowed to write items.');
+        }
+
         $it = $cancelDetails['details'];
         $items = [];
         foreach ($it as $item) {
@@ -239,7 +259,7 @@ class PAIA extends DAIA
             $array_response = $this->paiaPostAsArray(
                 'core/' . $patron['cat_username'] . '/cancel', $post_data
             );
-        } catch (ILSException $e) {
+        } catch (Exception $e) {
             $this->debug($e->getMessage());
             return [
                 'success' => false,
@@ -304,6 +324,11 @@ class PAIA extends DAIA
      */
     public function changePassword($details)
     {
+        // check if user has appropriate scope
+        if (!$this->paiaCheckScope(self::SCOPE_CHANGE_PASSWORD)) {
+            throw new ILSException('You are not allowed to change password.');
+        }
+
         $post_data = [
             "patron"       => $details['patron']['cat_username'],
             "username"     => $details['patron']['cat_username'],
@@ -315,7 +340,7 @@ class PAIA extends DAIA
             $array_response = $this->paiaPostAsArray(
                 'auth/change', $post_data
             );
-        } catch (ILSException $e) {
+        } catch (Exception $e) {
             $this->debug($e->getMessage());
             return [
                 'success' => false,
@@ -573,9 +598,20 @@ class PAIA extends DAIA
      */
     public function getMyFines($patron)
     {
+        // check if user has appropriate scope
+        if (!$this->paiaCheckScope(self::SCOPE_READ_FEES)) {
+            throw new ILSException('You are not allowed to read fees.');
+        }
+
+        try {
         $fees = $this->paiaGetAsArray(
             'core/' . $patron['cat_username'] . '/fees'
         );
+        } catch (Exception $e) {
+            // all error handling is done in paiaHandleErrors so pass on the
+            // exception
+            throw $e;
+        }
 
         // PAIA simple data type money: a monetary value with currency (format
         // [0-9]+\.[0-9][0-9] [A-Z][A-Z][A-Z]), for instance 0.80 USD.
@@ -695,7 +731,7 @@ class PAIA extends DAIA
                 'expires'    => isset($patron['expires'])
                     ? $this->convertDate($patron['expires']) : null,
                 'statuscode' => $patron['status'] ?? null,
-                'canWrite'   => in_array('write_items', $this->getScope()),
+                'canWrite'   => in_array(self::SCOPE_WRITE_ITEMS, $this->getScope()),
             ];
         }
         return [];
@@ -843,8 +879,11 @@ class PAIA extends DAIA
                     $this->paiaGetUserDetails($session->patron),
                     $password
                 );
-            } catch (ILSException $e) {
+            } catch (Exception $e) {
                 $this->debug('Session expired, login again', ['info' => 'info']);
+                // all error handling is done in paiaHandleErrors so pass on the
+                // exception
+                throw $e;
             }
         }
         try {
@@ -854,8 +893,96 @@ class PAIA extends DAIA
                     $password
                 );
             }
-        } catch (ILSException $e) {
-            throw new ILSException($e->getMessage());
+        } catch (Exception $e) {
+            // all error handling is done in paiaHandleErrors so pass on the
+            // exception
+            throw $e;
+        }
+    }
+
+    /**
+     * Handle PAIA request errors and throw appropriate exception.
+     *
+     * @param array $error Array containing error messages
+     * 
+     * @return void
+     * 
+     * @throws AuthException
+     * @throws ILSException
+     */
+    protected function paiaHandleErrors($array)
+    {
+        // TODO: also have exception contain content of 'error' as for at least
+        //       error code 403 two differing errors are possible
+        //       (cf.  http://gbv.github.io/paia/paia.html#request-errors)
+        if (isset($array['error'])) {
+            switch ($array['error']) {
+                // cf. http://gbv.github.io/paia/paia.html#request-errors
+                // error        code    error_description
+                // access_denied 	403 	Wrong or missing credentials to get an
+                //                          access token
+                case 'access_denied':
+                    throw new AuthException(
+                        isset($array['error_description'])
+                            ? $array['error_description'] : $array['error'],
+                        isset($array['code']) ? $array['code'] : ''
+                    );
+                // not_found 	404 	Unknown request URL or unknown patron.
+                //                      Implementations SHOULD first check
+                //                      authentication and prefer error invalid_grant
+                //                      or access_denied to prevent leaking patron
+                //                      identifiers.
+                case 'not_found':
+
+                // not_implemented 	501 	Known but unsupported request URL (for
+                //                          instance a PAIA auth server server may
+                //                          not implement
+                //                          http://example.org/core/change)
+                case 'not_implemented':
+
+                // invalid_request 	405 	Unexpected HTTP verb
+                // invalid_request 	400 	Malformed request (for instance error
+                //                          parsing JSON, unsupported request content
+                //                          type, etc.)
+                // invalid_request 	422 	The request parameters could be parsed
+                //                          but they don’t match the request method
+                //                          (for instance missing fields, invalid
+                //                          values, etc.)
+                case 'invalid_request':
+
+                // invalid_grant 	401 	The access token was missing, invalid, or
+                //                          expired
+                case 'invalid_grant':
+
+                // insufficient_scope 	403 	The access token was accepted but it
+                //                              lacks permission for the request
+                case 'insufficient_scope':
+
+                // internal_error 	500 	An unexpected error occurred. This error
+                //                          corresponds to a bug in the
+                //                          implementation of a PAIA auth/core server
+                case 'internal_error':
+
+                // service_unavailable 	503 	The request couldn’t be serviced
+                //                              because of a temporary failure
+                case 'service_unavailable':
+
+                // bad_gateway 	502 	The request couldn’t be serviced because of a
+                //                      backend failure (for instance the library
+                //                      system’s database)
+                case 'bad_gateway':
+
+                // gateway_timeout 	504 	The request couldn’t be serviced because
+                //                          of a backend failure
+                case 'gateway_timeout':
+
+                default:
+                    throw new ILSException(
+                        isset($array['error_description'])
+                            ? $array['error_description'] : $array['error'],
+                        isset($array['code']) ? $array['code'] : ''
+                    );
+            }
         }
     }
 
@@ -914,6 +1041,11 @@ class PAIA extends DAIA
      */
     public function placeHold($holdDetails)
     {
+        // check if user has appropriate scope
+        if (!$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)) {
+            throw new ILSException('You are not allowed to write items.');
+        }
+
         $item = $holdDetails['item_id'];
         $patron = $holdDetails['patron'];
 
@@ -928,7 +1060,7 @@ class PAIA extends DAIA
             $array_response = $this->paiaPostAsArray(
                 'core/' . $patron['cat_username'] . '/request', $post_data
             );
-        } catch (ILSException $e) {
+        } catch (Exception $e) {
             $this->debug($e->getMessage());
             return [
                 'success' => false,
@@ -1006,6 +1138,11 @@ class PAIA extends DAIA
      */
     public function renewMyItems($details)
     {
+        // check if user has appropriate scope
+        if (!$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)) {
+            throw new ILSException('You are not allowed to write items.');
+        }
+
         $it = $details['details'];
         $items = [];
         foreach ($it as $item) {
@@ -1018,7 +1155,7 @@ class PAIA extends DAIA
             $array_response = $this->paiaPostAsArray(
                 'core/' . $patron['cat_username'] . '/renew', $post_data
             );
-        } catch (ILSException $e) {
+        } catch (Exception $e) {
             $this->debug($e->getMessage());
             return [
                 'success' => false,
@@ -1107,15 +1244,26 @@ class PAIA extends DAIA
      */
     protected function paiaGetItems($patron, $filter = [])
     {
+        // check if user has appropriate scope
+        if (!$this->paiaCheckScope(self::SCOPE_READ_ITEMS)) {
+            throw new ILSException('You are not allowed to read items.');
+        }
+
         // check for existing data in cache
         if ($this->paiaCacheEnabled) {
             $itemsResponse = $this->getCachedData($patron['cat_username']);
         }
 
         if (!isset($itemsResponse) || $itemsResponse == null) {
+            try {
             $itemsResponse = $this->paiaGetAsArray(
                 'core/' . $patron['cat_username'] . '/items'
             );
+            } catch (Exception $e) {
+                // all error handling is done in paiaHandleErrors so pass on the
+                // exception
+                throw $e;
+            }
             if ($this->paiaCacheEnabled) {
                 $this->putCachedData($patron['cat_username'], $itemsResponse);
             }
@@ -1243,7 +1391,8 @@ class PAIA extends DAIA
         $result['item_id'] = ($doc['item'] ?? '');
 
         $result['cancel_details']
-            = (isset($doc['cancancel']) && $doc['cancancel'])
+            = (isset($doc['cancancel']) && $doc['cancancel']
+            && $this->paiaCheckScope(self::SCOPE_WRITE_ITEMS))
             ? $result['item_id'] : '';
 
         // edition (0..1) URI of a the document (no particular copy)
@@ -1373,13 +1522,16 @@ class PAIA extends DAIA
         foreach ($items as $doc) {
             $result = [];
             // canrenew (0..1) whether a document can be renewed (bool)
-            $result['renewable'] = ($doc['canrenew'] ?? false);
+            $result['renewable'] = (isset($doc['canrenew'])
+                && $this->paiaCheckScope(self::SCOPE_WRITE_ITEMS))
+                ? $doc['canrenew'] : false;
 
             // item (0..1) URI of a particular copy
             $result['item_id'] = ($doc['item'] ?? '');
 
             $result['renew_details']
-                = (isset($doc['canrenew']) && $doc['canrenew'])
+                = (isset($doc['canrenew']) && $doc['canrenew']
+                && $this->paiaCheckScope(self::SCOPE_WRITE_ITEMS))
                 ? $result['item_id'] : '';
 
             // edition (0..1)  URI of a the document (no particular copy)
@@ -1537,17 +1689,21 @@ class PAIA extends DAIA
      * @param string $file JSON data
      *
      * @return mixed
-     * @throws ILSException
+     * @throws Exception
      */
     protected function paiaParseJsonAsArray($file)
     {
         $responseArray = json_decode($file, true);
 
+        // if we have an error response handle it accordingly (any will throw an
+        // exception at the moment) and pass on the resulting exception
         if (isset($responseArray['error'])) {
-            throw new ILSException(
-                $responseArray['error'],
-                $responseArray['code']
-            );
+            try {
+                $this->paiaHandleErrors($responseArray);
+            } catch (Exception $e) {
+                // catch any exception from paiaHandleErrors and pass it on
+                throw $e;
+            }
         }
 
         return $responseArray;
@@ -1570,9 +1726,10 @@ class PAIA extends DAIA
 
         try {
             $responseArray = $this->paiaParseJsonAsArray($responseJson);
-        } catch (ILSException $e) {
-            $this->debug($e->getCode() . ':' . $e->getMessage());
-            return [];
+        } catch (Exception $e) {
+            // all error handling is done in paiaHandleErrors so pass on the
+            // exception
+            throw $e;
         }
 
         return $responseArray;
@@ -1597,10 +1754,10 @@ class PAIA extends DAIA
 
         try {
             $responseArray = $this->paiaParseJsonAsArray($responseJson);
-        } catch (ILSException $e) {
-            $this->debug($e->getCode() . ':' . $e->getMessage());
-            /* TODO: do not return empty array, this causes eventually confusion */
-            return [];
+        } catch (Exception $e) {
+            // all error handling is done in paiaHandleErrors so pass on the
+            // exception
+            throw $e;
         }
 
         return $responseArray;
@@ -1623,20 +1780,20 @@ class PAIA extends DAIA
             "username"   => $username,
             "password"   => $password,
             "grant_type" => "password",
-            "scope"      => "read_patron read_fees read_items write_items " .
-                "change_password"
+            "scope"      => self::SCOPE_READ_PATRON . " " .
+                self::SCOPE_READ_FEES . " " .
+                self::SCOPE_READ_ITEMS . " " .
+                self::SCOPE_WRITE_ITEMS . " " .
+                self::SCOPE_CHANGE_PASSWORD
         ];
         $responseJson = $this->paiaPostRequest('auth/login', $post_data);
 
         try {
             $responseArray = $this->paiaParseJsonAsArray($responseJson);
-        } catch (ILSException $e) {
-            if ($e->getMessage() === 'access_denied') {
-                return false;
-            }
-            throw new ILSException(
-                $e->getCode() . ':' . $e->getMessage()
-            );
+        } catch (Exception $e) {
+            // all error handling is done in paiaHandleErrors so pass on the
+            // exception
+            throw $e;
         }
 
         if (!isset($responseArray['access_token'])) {
@@ -1678,18 +1835,34 @@ class PAIA extends DAIA
      */
     protected function paiaGetUserDetails($patron)
     {
+        // check if user has appropriate scope
+        if (!$this->paiaCheckScope(self::SCOPE_READ_PATRON)) {
+            throw new ILSException('You are not allowed to read patron.');
+        }
+
         $responseJson = $this->paiaGetRequest(
             'core/' . $patron, $this->getSession()->access_token
         );
 
         try {
             $responseArray = $this->paiaParseJsonAsArray($responseJson);
-        } catch (ILSException $e) {
-            throw new ILSException(
-                $e->getMessage(), $e->getCode()
-            );
+        } catch (Exception $e) {
+            // all error handling is done in paiaHandleErrors so pass on the
+            // exception
+            throw $e;
         }
         return $this->paiaParseUserDetails($patron, $responseArray);
+    }
+
+    /**
+     * Checks if the current scope is set for active session.
+     *
+     * @return boolean
+     */
+    protected function paiaCheckScope($scope)
+    {
+        return (!empty($scope) && is_array($this->getScope()))
+            ? in_array($scope, $this->getScope()) : false;
     }
 
     /**
@@ -1728,7 +1901,7 @@ class PAIA extends DAIA
         // TODO: make this more configurable
         if (isset($patron['status']) && $patron['status'] == 0
             && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
-            && in_array('write_items', $this->getScope())
+            && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope())
         ) {
             return true;
         }
