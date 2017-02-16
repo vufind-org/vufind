@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
+use Zend\Db\Adapter\Adapter;
 
 /**
  * Table Definition for oai_resumption
@@ -40,10 +41,16 @@ class OaiResumption extends Gateway
 {
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
      */
-    public function __construct()
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
     {
-        parent::__construct('oai_resumption', 'VuFind\Db\Row\OaiResumption');
+        parent::__construct(
+            $adapter, $tm, $cfg, 'oai_resumption', 'VuFind\Db\Row\OaiResumption'
+        );
     }
 
     /**

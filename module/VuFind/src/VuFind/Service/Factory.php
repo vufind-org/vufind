@@ -487,21 +487,6 @@ class Factory
     }
 
     /**
-     * Construct the logger.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Log\Logger
-     */
-    public static function getLogger(ServiceManager $sm)
-    {
-        $logger = new \VuFind\Log\Logger();
-        $logger->setServiceLocator($sm);
-        $logger->setConfig($sm->get('VuFind\Config')->get('config'));
-        return $logger;
-    }
-
-    /**
      * Construct the ProxyManager configuration.
      *
      * @param ServiceManager $sm Service manager.
@@ -547,9 +532,7 @@ class Factory
             $options['theme'] = $config->Captcha->theme;
         }
         $recaptcha = new \VuFind\Service\ReCaptcha(
-            $siteKey, $secretKey,
-            new \LosReCaptcha\Service\Request\ZendHttpClient($httpClient),
-            ['ssl' => true], $options
+            $siteKey, $secretKey, ['ssl' => true], $options, null, $httpClient
         );
 
         return $recaptcha;
