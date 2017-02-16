@@ -474,9 +474,10 @@ class Voyager extends AbstractBase
                         : PHP_INT_MAX
                 ];
             } else {
-                if (!in_array(
+                $statusFound = in_array(
                     $row['STATUS'], $data[$row['ITEM_ID']]['status_array']
-                )) {
+                );
+                if (!$statusFound) {
                     $data[$row['ITEM_ID']]['status_array'][] = $row['STATUS'];
                 }
             }
@@ -760,9 +761,7 @@ class Voyager extends AbstractBase
                 }
 
                 // If we've encountered a new status code, we should track it:
-                if (!in_array(
-                    $row['STATUS'], $record['STATUS_ARRAY']
-                )) {
+                if (!in_array($row['STATUS'], $record['STATUS_ARRAY'])) {
                     $record['STATUS_ARRAY'][] = $row['STATUS'];
                 }
             } else {

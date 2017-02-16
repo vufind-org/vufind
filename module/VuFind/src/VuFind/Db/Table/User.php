@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
-use Zend\Config\Config, Zend\Session\Container;
+use Zend\Config\Config;
+use Zend\Db\Adapter\Adapter;
+use Zend\Session\Container;
 
 /**
  * Table Definition for user
@@ -56,17 +58,21 @@ class User extends Gateway
     /**
      * Constructor
      *
-     * @param Config    $config   VuFind configuration
-     * @param string    $rowClass Name of class for representing rows
-     * @param Container $session  Session container to inject into rows (optional;
-     * used for privacy mode)
+     * @param Adapter       $adapter  Database adapter
+     * @param PluginManager $tm       Table manager
+     * @param array         $cfg      Zend Framework configuration
+     * @param Config        $config   VuFind configuration
+     * @param string        $rowClass Name of class for representing rows
+     * @param Container     $session  Session container to inject into rows
+     * (optional; used for privacy mode)
      */
-    public function __construct(Config $config, $rowClass = 'VuFind\Db\Row\User',
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        Config $config, $rowClass = 'VuFind\Db\Row\User',
         Container $session = null
     ) {
-        parent::__construct('user', $rowClass);
         $this->config = $config;
         $this->session = $session;
+        parent::__construct($adapter, $tm, $cfg, 'user', $rowClass);
     }
 
     /**
@@ -131,11 +137,13 @@ class User extends Gateway
     /**
      * Construct the prototype for rows.
      *
+     * @param string $rowClass Name of row class to instantiate
+     *
      * @return object
      */
-    protected function initializeRowPrototype()
+    protected function initializeRowPrototype($rowClass)
     {
-        $prototype = parent::initializeRowPrototype();
+        $prototype = parent::initializeRowPrototype($rowClass);
         $prototype->setConfig($this->config);
         if (null !== $this->session && is_callable([$prototype, 'setSession'])) {
             $prototype->setSession($this->session);

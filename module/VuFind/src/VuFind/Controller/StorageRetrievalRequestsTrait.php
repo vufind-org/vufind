@@ -87,9 +87,10 @@ trait StorageRetrievalRequestsTrait
         }
 
         // Block invalid requests:
-        if (!$catalog->checkStorageRetrievalRequestIsValid(
+        $validRequest = $catalog->checkStorageRetrievalRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
-        )) {
+        );
+        if (!$validRequest) {
             return $this->blockedStorageRetrievalRequestAction();
         }
 
