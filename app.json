@@ -8,5 +8,11 @@
     {
       "plan": "cleardb:ignite"
     }
-  ]
+  ],
+  "env": {
+    "VUFIND_CONFIGURE_HEROKU_DEFAULTS": {
+      "description": "If true, directs composer to run the configure-heroku-defaults script post-install (see composer.json).",
+      "value": "true"
+    }
+  }
 }
