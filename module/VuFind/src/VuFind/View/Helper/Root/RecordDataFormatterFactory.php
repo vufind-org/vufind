@@ -75,10 +75,16 @@ class RecordDataFormatterFactory
             [
                 'useCache' => true,
                 'labelFunction' => function ($data) {
-                    return count($data['main']) > 1
+                    return count($data['primary']) > 1
                         ? 'Main Authors' : 'Main Author';
                 },
-                'context' => ['type' => 'main', 'schemaLabel' => 'author'],
+                'context' => [
+                    'type' => 'primary',
+                    'schemaLabel' => 'author',
+                    'requiredDataFields' => [
+                        ['name' => "role", 'prefix' => "CreatorRoles::"]
+                    ]
+                ]
             ]
         );
         $spec->setTemplateLine(
@@ -89,7 +95,13 @@ class RecordDataFormatterFactory
                     return count($data['corporate']) > 1
                         ? 'Corporate Authors' : 'Corporate Author';
                 },
-                'context' => ['type' => 'corporate', 'schemaLabel' => 'creator'],
+                'context' => [
+                    'type' => 'corporate',
+                    'schemaLabel' => 'creator',
+                    'requiredDataFields' => [
+                        ['name' => "role", 'prefix' => "CreatorRoles::"]
+                    ]
+                ]
             ]
         );
         $spec->setTemplateLine(
@@ -97,7 +109,11 @@ class RecordDataFormatterFactory
             [
                 'useCache' => true,
                 'context' => [
-                    'type' => 'secondary', 'schemaLabel' => 'contributor'
+                    'type' => 'secondary',
+                    'schemaLabel' => 'contributor',
+                    'requiredDataFields' => [
+                        ['name' => "role", 'prefix' => "CreatorRoles::"]
+                    ]
                 ],
             ]
         );

@@ -281,8 +281,8 @@ class SolrDefault extends AbstractBase
             
             foreach ($dataFieldValues as $field => $dataFieldValue) {
                 $data[$author][$field]
-                    = (isset($dataFieldValue[$i]) && !empty($dataFieldValue[$i]))
-                        ? $dataFieldValue[$i] : [];
+                    = !is_array($dataFieldValue)
+                        ? [$dataFieldValue] : $dataFieldValue;
             }
         }
         return $data;
@@ -487,7 +487,7 @@ class SolrDefault extends AbstractBase
         // deduplicate
         $dedup = function (&$array1, &$array2) {
             if (!empty($array1) && !empty($array2)) {
-                foreach ($array1 as $author => $roles) {
+                foreach ($array1 as $author => $properties) {
                     if (isset($array2[$author])) {
                         $array1[$author] = array_merge(
                             $array1[$author],

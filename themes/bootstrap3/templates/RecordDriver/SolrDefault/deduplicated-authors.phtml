@@ -1,7 +1,0 @@
-<? $i = 0; foreach ($authors as $author => $data): ?>
-  <?=($i++ == 0)?'':', '?>
-  <? if (false !== $property): ?><span property="<?=$property?>"><?endif;?>
-  <a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a>
-  <? if (false !== $property): ?></span><?endif;?>
-  <? if (isset($data['role']) && count($data['role']) > 0): ?> (<? $j = 0; foreach ($data['role'] as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?>
-<? endforeach; ?>
