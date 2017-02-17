@@ -487,7 +487,8 @@ class SolrDefault extends AbstractBase
         // deduplicate
         $dedup = function (&$array1, &$array2) {
             if (!empty($array1) && !empty($array2)) {
-                foreach ($array1 as $author => $properties) {
+                $keys = array_keys($array1);
+                foreach ($keys as $author) {
                     if (isset($array2[$author])) {
                         $array1[$author] = array_merge(
                             $array1[$author],
