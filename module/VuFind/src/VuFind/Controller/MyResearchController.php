@@ -390,6 +390,7 @@ class MyResearchController extends AbstractBase
 
     /**
      * Add account blocks to the flash messenger as errors.
+     * These messages are lightbox ignored.
      *
      * @param \VuFind\ILS\Connection $catalog Catalog connection
      * @param array                  $patron  Patron details
@@ -402,7 +403,10 @@ class MyResearchController extends AbstractBase
             && $blocks = $catalog->getAccountBlocks($patron)
         ) {
             foreach ($blocks as $block) {
-                $this->flashMessenger()->addMessage($block, 'error');
+                $this->flashMessenger()->addMessage(
+                    [ 'msg' => $block, 'dataset' => [ 'lightbox-ignore' => '1' ] ],
+                    'error'
+                );
             }
         }
     }
@@ -541,21 +545,23 @@ class MyResearchController extends AbstractBase
     {
         $lists = $this->params()->fromPost('lists');
         $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
+        $favorites = $this->getServiceLocator()
+            ->get('VuFind\Favorites\FavoritesService');
         foreach ($lists as $list) {
             $tags = $this->params()->fromPost('tags' . $list);
-            $driver->saveToFavorites(
+            $favorites->save(
                 [
                     'list'  => $list,
                     'mytags'  => $tagParser->parse($tags),
                     'notes' => $this->params()->fromPost('notes' . $list)
                 ],
-                $user
+                $user, $driver
             );
         }
         // add to a new list?
         $addToList = $this->params()->fromPost('addToList');
         if ($addToList > -1) {
-            $driver->saveToFavorites(['list' => $addToList], $user);
+            $favorites->save(['list' => $addToList], $user, $driver);
         }
         $this->flashMessenger()->addMessage('edit_list_success', 'success');
 

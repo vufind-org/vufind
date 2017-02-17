@@ -101,7 +101,7 @@ class SummonController extends AbstractSearch
 
         // Set up facet information:
         $view->facetList = $this->processAdvancedFacets(
-            $this->getAdvancedFacets()->getFacetList(), $view->saved
+            $this->getAdvancedFacets(), $view->saved
         );
         $specialFacets = $this->parseSpecialFacetsSetting(
             $view->options->getSpecialAdvancedFacets()
@@ -125,7 +125,10 @@ class SummonController extends AbstractSearch
     public function homeAction()
     {
         return $this->createViewModel(
-            ['results' => $this->getHomePageFacets()]
+            [
+                'results' => $this->getResultsManager()->get('Summon'),
+                'facetList' => $this->getHomePageFacets(),
+            ]
         );
     }
 
@@ -143,14 +146,14 @@ class SummonController extends AbstractSearch
      * Return a Search Results object containing advanced facet information.  This
      * data may come from the cache.
      *
-     * @return \VuFind\Search\Summon\Results
+     * @return array
      */
     protected function getAdvancedFacets()
     {
         // Check if we have facet results cached, and build them if we don't.
         $cache = $this->getServiceLocator()->get('VuFind\CacheManager')
             ->getCache('object');
-        if (!($results = $cache->getItem('summonSearchAdvancedFacets'))) {
+        if (!($list = $cache->getItem('summonSearchAdvancedFacetsList'))) {
             $config = $this->getServiceLocator()->get('VuFind\Config')
                 ->get('Summon');
             $limit = isset($config->Advanced_Facet_Settings->facet_limit)
@@ -179,22 +182,19 @@ class SummonController extends AbstractSearch
             $params->setLimit(0);
 
             // force processing for cache
-            $results->getResults();
+            $list = $results->getFacetList();
 
-            $cache->setItem('summonSearchAdvancedFacets', $results);
+            $cache->setItem('summonSearchAdvancedFacetsList', $list);
         }
 
-        // Restore the real service locator to the object (it was lost during
-        // serialization):
-        $results->restoreServiceLocator($this->getServiceLocator());
-        return $results;
+        return $list;
     }
 
     /**
      * Return a Search Results object containing homepage facet information.  This
      * data may come from the cache.
      *
-     * @return \VuFind\Search\Summon\Results
+     * @return array
      */
     protected function getHomePageFacets()
     {

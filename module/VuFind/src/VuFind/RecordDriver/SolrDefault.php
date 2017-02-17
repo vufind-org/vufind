@@ -199,9 +199,15 @@ class SolrDefault extends AbstractBase
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
      * @return array
      */
-    public function getAllSubjectHeadings()
+    public function getAllSubjectHeadings($extended = false)
     {
         $headings = [];
         foreach (['topic', 'geographic', 'genre', 'era'] as $field) {
@@ -213,8 +219,10 @@ class SolrDefault extends AbstractBase
         // The Solr index doesn't currently store subject headings in a broken-down
         // format, so we'll just send each value as a single chunk.  Other record
         // drivers (i.e. MARC) can offer this data in a more granular format.
-        $callback = function ($i) {
-            return [$i];
+        $callback = function ($i) use ($extended) {
+            return $extended
+                ? ['heading' => [$i], 'type' => '', 'source' => '']
+                : [$i];
         };
         return array_map($callback, array_unique($headings));
     }

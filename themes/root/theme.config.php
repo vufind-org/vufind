@@ -27,6 +27,7 @@ return array(
             'piwik' => 'VuFind\View\Helper\Root\Factory::getPiwik',
             'recaptcha' => 'VuFind\View\Helper\Root\Factory::getRecaptcha',
             'record' => 'VuFind\View\Helper\Root\Factory::getRecord',
+            'recorddataformatter' => 'VuFind\View\Helper\Root\RecordDataFormatterFactory',
             'recordlink' => 'VuFind\View\Helper\Root\Factory::getRecordLink',
             'related' => 'VuFind\View\Helper\Root\Factory::getRelated',
             'safemoneyformat' => 'VuFind\View\Helper\Root\Factory::getSafeMoneyFormat',

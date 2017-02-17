@@ -28,6 +28,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
+use Zend\Db\Adapter\Adapter;
 
 /**
  * Table Definition for external_session
@@ -45,10 +46,16 @@ class ExternalSession extends Gateway
 
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
      */
-    public function __construct()
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
     {
-        parent::__construct('external_session', 'VuFind\Db\Row\ExternalSession');
+        parent::__construct(
+            $adapter, $tm, $cfg, 'external_session', 'VuFind\Db\Row\ExternalSession'
+        );
     }
 
     /**

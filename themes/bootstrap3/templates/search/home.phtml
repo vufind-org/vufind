@@ -40,7 +40,6 @@ JS;
   </div>
 </div>
 
-<? $facetList = is_object($this->results) ? $this->results->getFacetList() : []; ?>
 <? if (isset($facetList) && is_array($facetList)): ?>
   <div class="row">
     <? foreach ($facetList as $field => $details): ?>

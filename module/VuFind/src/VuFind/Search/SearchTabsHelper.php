@@ -171,7 +171,7 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
         }
 
         $firstTab = null;
-        foreach ($this->tabConfig as $key => $label) {
+        foreach (array_keys($this->tabConfig) as $key) {
             $class = $this->extractClassName($key);
             if ($class == $searchClassId) {
                 if (null === $firstTab) {

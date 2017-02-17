@@ -70,13 +70,6 @@ class AbstractRecord extends AbstractBase
     protected $searchClassId = 'Solr';
 
     /**
-     * Should we log statistics?
-     *
-     * @var bool
-     */
-    protected $logStatistics = true;
-
-    /**
      * Record driver
      *
      * @var AbstractRecordDriver
@@ -258,12 +251,6 @@ class AbstractRecord extends AbstractBase
      */
     public function homeAction()
     {
-        // Save statistics:
-        if ($this->logStatistics) {
-            $this->getServiceLocator()->get('VuFind\RecordStats')
-                ->log($this->loadRecord(), $this->getRequest());
-        }
-
         return $this->showTab(
             $this->params()->fromRoute('tab', $this->getDefaultTab())
         );
@@ -302,7 +289,9 @@ class AbstractRecord extends AbstractBase
         $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
         $post['mytags']
             = $tagParser->parse(isset($post['mytags']) ? $post['mytags'] : '');
-        $results = $driver->saveToFavorites($post, $user);
+        $favorites = $this->getServiceLocator()
+            ->get('VuFind\Favorites\FavoritesService');
+        $results = $favorites->save($post, $user, $driver);
 
         // Display a success status message:
         $listUrl = $this->url()->fromRoute('userList', ['id' => $results['listId']]);

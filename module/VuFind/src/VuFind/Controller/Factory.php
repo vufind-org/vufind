@@ -101,6 +101,21 @@ class Factory
     }
 
     /**
+     * Construct the IndexController.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return RecordController
+     */
+    public static function getIndexController(ServiceManager $sm)
+    {
+        return new IndexController(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $sm->getServiceLocator()->get('VuFind\AuthManager')
+        );
+    }
+
+    /**
      * Construct the RecordController.
      *
      * @param ServiceManager $sm Service manager.
