@@ -154,6 +154,7 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
+            'favorites' => 'VuFind\Controller\Plugin\Factory::getFavorites',
             'flashmessenger' => 'VuFind\Controller\Plugin\Factory::getFlashMessenger',
             'followup' => 'VuFind\Controller\Plugin\Factory::getFollowup',
             'holds' => 'VuFind\Controller\Plugin\Factory::getHolds',
@@ -166,7 +167,6 @@ $config = [
         ],
         'invokables' => [
             'db-upgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
-            'favorites' => 'VuFind\Controller\Plugin\Favorites',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
         ]
     ],
