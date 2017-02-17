@@ -273,7 +273,7 @@ class SolrDefault extends AbstractBase
                 = $this->tryMethod($dataFieldMethod, [], []);
         }
 
-        foreach ($authors as $i => $author) {
+        foreach ($authors as $author) {
             
             if (!isset($data[$author])) {
                 $data[$author]  = [];
