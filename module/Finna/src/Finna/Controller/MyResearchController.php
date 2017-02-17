@@ -831,6 +831,50 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
+     * Creates a JSON file of logged in user's saved searches and lists and sends
+     * the file to the browser.
+     *
+     * @return mixed
+     */
+    public function exportAction()
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirect()->toRoute(
+                'default', ['controller' => 'MyResearch', 'action' => 'Login']
+            );
+        }
+
+        $exportData = [
+            'searches' => $this->exportSavedSearches($user->id),
+            'lists' => $this->exportUserLists($user->id)
+        ];
+        $json = json_encode($exportData);
+        $timestamp = strftime('%Y-%m-%d-%H%M');
+        $filename = "finna-export-$timestamp.json";
+        $response = $this->getResponse();
+        $response->setContent($json);
+        $headers = $response->getHeaders();
+        $headers->addHeaderLine('Content-Type', 'application/json')
+            ->addHeaderLine(
+                'Content-Disposition',
+                'attachment; filename="' . $filename . '"'
+            )
+            ->addHeaderLine('Content-Length', strlen($json));
+
+        return $this->response;
+    }
+
+    /**
+     * Display dialog for importing favorites.
+     *
+     * @return mixed
+     */
+    public function importAction()
+    {
+    }
+
+    /**
      * Add account blocks to the flash messenger as errors.
      *
      * @param \VuFind\ILS\Connection $catalog Catalog connection
@@ -1067,4 +1111,71 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         );
     }
 
+    /**
+     * Exports user's saved searches into an array.
+     *
+     * @param int $userId User id
+     *
+     * @return array Saved searches
+     */
+    protected function exportSavedSearches($userId)
+    {
+        $savedSearches = $this->getTable('Search')->getSavedSearches($userId);
+        $getSearchObject = function ($search) {
+            return $search['search_object'];
+        };
+        return array_map($getSearchObject, $savedSearches->toArray());
+    }
+
+    /**
+     * Exports user's saved lists into an array.
+     *
+     * @param int $userId User id
+     *
+     * @return array Saved user lists
+     */
+    protected function exportUserLists($userId)
+    {
+        $user = $this->getTable('User')->getById($userId);
+        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+
+        $getTag = function ($tag) {
+            return $tag['tag'];
+        };
+
+        $userLists = [];
+        foreach ($user->getLists() as $list) {
+            $listRecords = $runner->run(['id' => $list->id], 'Favorites');
+            $outputList = [
+                'title' => $list->title,
+                'description' => $list->description,
+                'public' => $list->public,
+                'records' => []
+            ];
+
+            foreach ($listRecords->getResults() as $record) {
+                $userResource = $user->getSavedData(
+                    $record->getUniqueID(),
+                    $list->id,
+                    $record->getSourceIdentifier()
+                )->current();
+
+                $notes = $record->getListNotes($list->id, $user->id);
+                $tags = $record->getTags($list->id, $user->id);
+                $outputList['records'][] = [
+                    'id' => $record->getUniqueID(),
+                    'source' => $record->getSourceIdentifier(),
+                    'notes' => !empty($notes) ? $notes[0] : null,
+                    'tags' => array_map($getTag, $tags->toArray()),
+                    'order' => $userResource
+                        ? $userResource->finna_custom_order_index
+                        : null
+                ];
+            }
+
+            $userLists[] = $outputList;
+        }
+
+        return $userLists;
+    }
 }

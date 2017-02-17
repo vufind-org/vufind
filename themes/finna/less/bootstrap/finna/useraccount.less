@@ -15,8 +15,11 @@
         font-weight: bold;
         font-size:@font-size-h2;   
     }
-    & #delete-account {
-        margin-bottom: 20px;   
+    & #account-actions {
+        margin-bottom: 20px;
+        & #import-export-buttons {
+            margin-right: 20px;
+        }
     }
     & .pickup-location {
         margin-top: 3px;
@@ -817,5 +820,14 @@
                 right: 32px;
             }
         }
+    }
+}
+
+#favorites-import-dialog {
+    #filename {
+        margin-right: 5px;
+    }
+    .alert {
+        margin-top: @modal-title-padding;
     }
 }

@@ -45,13 +45,16 @@ class UserResource extends \VuFind\Db\Table\UserResource
      * @param string $user_id     ID of user creating link
      * @param string $list_id     ID of list to link up
      * @param string $notes       Notes to associate with link
+     * @param int    $order       Custom order index for the resource in list
      *
      * @return void
      */
     public function createOrUpdateLink($resource_id, $user_id, $list_id,
-        $notes = ''
+        $notes = '', $order = null
     ) {
-        parent::createOrUpdateLink($resource_id, $user_id, $list_id, $notes);
+        $row = parent::createOrUpdateLink($resource_id, $user_id, $list_id, $notes);
+        $row->finna_custom_order_index = $order;
+        $row->save();
         $this->updateListDate($list_id, $user_id);
     }
 

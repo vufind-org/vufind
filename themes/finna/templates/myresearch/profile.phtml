@@ -181,8 +181,12 @@
 </div>
 <div class="row">
   <div class="col-md-10 col-lg-9">
-    <div id="delete-account" class="text-right">
-      <a class="btn btn-primary" href="<?=$this->url('myresearch-deleteaccount') ?>" data-lightbox><i class="fa fa-times"></i> <?=$this->transEsc('delete_account_title') ?></a>
+      <div id="account-actions" class="text-right">
+          <span id="import-export-buttons">
+              <a class="btn btn-primary" href="<?=$this->url('myresearch-export') ?>"><i class="fa fa-arrow-down"></i> <?=$this->transEsc('export_favorites') ?></a>
+              <a class="btn btn-primary" href="<?=$this->url('myresearch-import') ?>"  data-lightbox><i class="fa fa-arrow-up"></i> <?=$this->transEsc('import_favorites') ?> </a>
+          </span>
+          <a class="btn btn-primary" href="<?=$this->url('myresearch-deleteaccount') ?>" data-lightbox><i class="fa fa-times"></i> <?=$this->transEsc('delete_account_title') ?></a>
     </div>
   </div>
 </div>

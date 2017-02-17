@@ -111,6 +111,26 @@ $config = [
                     ]
                 ],
             ],
+            'myresearch-export' => [
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/MyResearch/Export',
+                    'defaults' => [
+                        'controller' => 'MyResearch',
+                        'action'     => 'Export',
+                    ]
+                ],
+            ],
+            'myresearch-import' => [
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/MyResearch/Import',
+                    'defaults' => [
+                        'controller' => 'MyResearch',
+                        'action'     => 'Import',
+                    ]
+                ],
+            ],
             'record-feedback' => [
                 'type'    => 'Zend\Mvc\Router\Http\Segment',
                 'options' => [

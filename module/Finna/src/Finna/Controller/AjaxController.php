@@ -27,6 +27,7 @@
  */
 namespace Finna\Controller;
 
+use VuFind\RecordDriver\Missing;
 use VuFindSearch\Query\Query as Query;
 use VuFind\Search\RecommendListener;
 use Finna\Search\Solr\Params;
@@ -1419,6 +1420,60 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
+     * Imports searches and lists from uploaded file as logged in user's favorites.
+     *
+     * @return mixed
+     */
+    public function importFavoritesAjax()
+    {
+        $request = $this->getRequest();
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH
+            );
+        }
+
+        $file = $request->getFiles('favorites-file');
+        $fileExists = !empty($file['tmp_name']) && file_exists($file['tmp_name']);
+        $error = false;
+
+        if ($fileExists) {
+            $data = json_decode(file_get_contents($file['tmp_name']), true);
+            if ($data) {
+                $searches = $this->importSearches($data['searches'], $user->id);
+                $lists = $this->importUserLists($data['lists'], $user->id);
+
+                $templateParams = [
+                    'searches' => $searches,
+                    'lists' => $lists['userLists'],
+                    'resources' => $lists['userResources']
+                ];
+            } else {
+                $error = true;
+                $templateParams = [
+                    'error' => $this->translate(
+                        'import_favorites_error_invalid_file'
+                    )
+                ];
+            }
+        } else {
+            $error = true;
+            $templateParams = [
+                'error' => $this->translate('import_favorites_error_no_file')
+            ];
+        }
+
+        $template = $error
+            ? 'myresearch/import-error.phtml'
+            : 'myresearch/import-success.phtml';
+        $html = $this->getViewRenderer()->partial($template, $templateParams);
+        return $this->output($html, self::STATUS_OK);
+    }
+
+    /**
      * Get Autocomplete suggestions.
      *
      * @return \Zend\Http\Response
@@ -1574,5 +1629,129 @@ class AjaxController extends \VuFind\Controller\AjaxController
         );
 
         return $this->output($outputMsg, self::STATUS_ERROR, $httpStatus);
+    }
+
+    /**
+     * Imports an array of serialized search objects as user's saved searches.
+     *
+     * @param array $searches Array of search objects
+     * @param int   $userId   User id
+     *
+     * @return int Number of searches saved
+     */
+    protected function importSearches($searches, $userId)
+    {
+        $searchTable = $this->getTable('Search');
+        $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
+        $resultsManager = $this->getServiceLocator()->get(
+            'VuFind\SearchResultsPluginManager'
+        );
+        $initialSearchCount = count($searchTable->getSavedSearches($userId));
+
+        foreach ($searches as $search) {
+            $minifiedSO = unserialize($search);
+
+            if ($minifiedSO) {
+                $row = $searchTable->saveSearch(
+                    $resultsManager,
+                    $minifiedSO->deminify($resultsManager),
+                    $sessId,
+                    $userId
+                );
+                $row->user_id = $userId;
+                $row->saved = 1;
+                $row->save();
+            }
+        }
+
+        return count($searchTable->getSavedSearches($userId)) - $initialSearchCount;
+    }
+
+    /**
+     * Imports an array of user lists into database. A single user list is expected
+     * to be in following format:
+     *
+     *   [
+     *     title: string
+     *     description: string
+     *     public: int (0|1)
+     *     records: array of [
+     *       notes: string
+     *       source: string
+     *       id: string
+     *     ]
+     *   ]
+     *
+     * @param array $lists  User lists
+     * @param int   $userId User id
+     *
+     * @return array [userLists => int, userResources => int], number of new user
+     * lists created and number of records to saved into user lists.
+     */
+    protected function importUserLists($lists, $userId)
+    {
+        $user = $this->getTable('User')->getById($userId);
+        $userListTable = $this->getTable('UserList');
+        $userResourceTable = $this->getTable('UserResource');
+        $recordLoader = $this->getRecordLoader();
+        $favoritesCount = 0;
+        $listCount = 0;
+
+        foreach ($lists as $list) {
+            $existingList = $userListTable->getByTitle($userId, $list['title']);
+
+            if (!$existingList) {
+                $existingList = $userListTable->getNew($user);
+                $existingList->title = $list['title'];
+                $existingList->description = $list['description'];
+                $existingList->public = $list['public'];
+                $existingList->save($user);
+                $listCount++;
+            }
+
+            foreach ($list['records'] as $record) {
+                $driver = $recordLoader->load(
+                    $record['id'],
+                    $record['source'],
+                    true
+                );
+
+                if ($driver instanceof Missing) {
+                    continue;
+                }
+
+                $params = [
+                    'notes' => $record['notes'],
+                    'list' => $existingList->id,
+                    'mytags' => $record['tags']
+                ];
+                $driver->saveToFavorites($params, $user);
+
+                if ($record['order'] !== null) {
+                    $userResource = $user->getSavedData(
+                        $record['id'],
+                        $existingList->id,
+                        $record['source']
+                    )->current();
+
+                    if ($userResource) {
+                        $userResourceTable->createOrUpdateLink(
+                            $userResource->resource_id,
+                            $userId,
+                            $existingList->id,
+                            $record['notes'],
+                            $record['order']
+                        );
+                    }
+                }
+
+                $favoritesCount++;
+            }
+        }
+
+        return [
+            'userLists' => $listCount,
+            'userResources' => $favoritesCount
+        ];
     }
 }
