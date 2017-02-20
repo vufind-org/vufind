@@ -45,7 +45,8 @@
               </ul>
             </div>
           <? endif; ?>
-        <? elseif ($recordTotal > 0): ?>
+        <? endif; ?>
+        <? if ($recordTotal > 0): ?>
           <?
             $transParams = [
               '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
