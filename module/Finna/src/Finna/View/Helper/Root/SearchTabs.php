@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\View\Helper\Root;
-use Finna\Search\Results\PluginManager;
+use VuFind\Search\Results\PluginManager;
 use VuFind\Search\SearchTabsHelper;
 use Zend\View\Helper\Url;
 
@@ -98,9 +98,10 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
     ) {
         $this->activeSearchClass = $activeSearchClass;
 
-        $tabs = parent::getTabConfig(
+        $tabConfig = parent::getTabConfig(
             $activeSearchClass, $query, $handler, $type, $hiddenFilters
         );
+        $tabs = &$tabConfig['tabs'];
         if ($type == 'advanced') {
             $tabs = array_filter(
                 $tabs,
@@ -189,7 +190,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                 $tab['url'] = $url;
             }
         }
-        return count($tabs) > 1 ? $tabs : [];
+        return $tabConfig;
     }
 
     /**

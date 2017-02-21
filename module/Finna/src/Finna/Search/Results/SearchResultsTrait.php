@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -35,11 +36,19 @@ use Finna\Search\Factory\UrlQueryHelperFactory;
  * @category VuFind
  * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 trait SearchResultsTrait
 {
+    /*
+     * Current request
+     *
+     * @var Request
+     */
+    protected $request = null;
+
     /**
      * Get backend ID
      *
@@ -53,7 +62,7 @@ trait SearchResultsTrait
     /**
      * Get the URL helper for this object.
      *
-     * N.B. Identical to the base class but creates a Finna version!
+     * Finna: Creates a Finna version and adds current search id.
      *
      * @return \VuFind\Search\UrlQueryHelper
      */
@@ -65,9 +74,10 @@ trait SearchResultsTrait
             $this->helpers['urlQuery'] = $factory->fromParams(
                 $this->getParams(), $this->getUrlQueryHelperOptions()
             );
-            if (is_callable([$this->helpers['urlQuery'], 'setSearchId'])) {
-                $savedSearches
-                    = $this->getServiceLocator()->get('Request')->getQuery('search');
+            if (null !== $this->request
+                && is_callable([$this->helpers['urlQuery'], 'setSearchId'])
+            ) {
+                $savedSearches = $this->request->getQuery('search');
                 if ($savedSearches) {
                     $this->helpers['urlQuery']
                         ->setDefaultParameter('search', $savedSearches);
@@ -75,5 +85,17 @@ trait SearchResultsTrait
             }
         }
         return $this->helpers['urlQuery'];
+    }
+
+    /**
+     * Set current request
+     *
+     * @param Request $request Current request
+     *
+     * @return void
+     */
+    public function setRequest($request)
+    {
+        $this->request = $request;
     }
 }

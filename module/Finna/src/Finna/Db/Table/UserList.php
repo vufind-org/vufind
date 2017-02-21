@@ -26,9 +26,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace Finna\Db\Table;
-use VuFind\Exception\LoginRequired as LoginRequiredException,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Db\Sql\Expression;
+use VuFind\Exception\LoginRequired as LoginRequiredException;
+use VuFind\Exception\RecordMissing as RecordMissingException;
+use Zend\Db\Adapter\Adapter;
+use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for user_list
@@ -44,13 +45,20 @@ class UserList extends \VuFind\Db\Table\UserList
     /**
      * Constructor
      *
+     * @param Adapter                 $adapter Database adapter
+     * @param PluginManager           $tm      Table manager
+     * @param array                   $cfg     Zend Framework configuration
      * @param \Zend\Session\Container $session Session container (must use same
      * namespace as container provided to \VuFind\View\Helper\Root\UserList).
      */
-    public function __construct(\Zend\Session\Container $session)
-    {
-        parent::__construct($session);
-        $this->rowClass = 'Finna\Db\Row\UserList';
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        \Zend\Session\Container $session
+    ) {
+        parent::__construct($adapter, $tm, $cfg, $session);
+        $resultSetPrototype = $this->getResultSetPrototype();
+        $resultSetPrototype->setArrayObjectPrototype(
+            $this->initializeRowPrototype('Finna\Db\Row\UserList')
+        );
     }
 
     /**

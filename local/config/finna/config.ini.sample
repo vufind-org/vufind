@@ -1284,6 +1284,21 @@ sender_name       = "Finna-palaute"
 ; Authentication methods which bypass Captcha
 ;bypassCaptcha[email] = "Shibboleth,ILS,MultiILS"
 
+; This section can be used to display default text inside the search boxes, useful
+; for instructions. Format:
+;
+; backend = Placeholder text
+;
+; You can use a "default" setting if you want a standard string displayed across
+; all backends not otherwise specified. You can qualify backend names with a
+; colon-delimited suffix if you wish to use special placeholders in combination
+; with filtered search tabs (see [SearchTabsFilters] above).
+[SearchPlaceholder]
+;default = "Enter search terms here..."
+;Solr = "Search the catalog"
+;Solr:filtered = "Search the filtered catalog"
+;Summon = "Search Summon"
+
 ; This section allows configuration of VuFind's social features
 [Social]
 ; Tags may be "enabled" or "disabled" (default = "enabled")

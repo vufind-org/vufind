@@ -26,8 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Db\Table;
-
 use VuFind\Db\Table\Gateway;
+use Zend\Db\Adapter\Adapter;
 
 /**
  * Table Definition for Comments-Record link table.
@@ -42,11 +42,20 @@ class CommentsRecord extends Gateway
 {
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
      */
-    public function __construct()
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
     {
-        parent::__construct('finna_comments_record', 'Finna\Db\Row\CommentsRecord');
-        $this->table = 'finna_comments_record';
+        parent::__construct(
+            $adapter,
+            $tm,
+            $cfg,
+            'finna_comments_record',
+            'Finna\Db\Row\CommentsRecord'
+        );
     }
 
     /**

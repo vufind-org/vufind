@@ -71,7 +71,8 @@ class Factory
     {
         $mb = new MultiBackend(
             $sm->getServiceLocator()->get('VuFind\Config'),
-            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator'),
+            $sm
         );
         $mb->setCacheStorage(
             $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')

@@ -90,12 +90,14 @@ class AjaxController extends \VuFind\Controller\AjaxController
             );
         }
 
+        $favorites = $this->getServiceLocator()
+            ->get('VuFind\Favorites\FavoritesService');
         foreach ($ids as $id) {
             $source = $id[0];
             $recId = $id[1];
             try {
                 $driver = $this->getRecordLoader()->load($recId, $source);
-                $driver->saveToFavorites(['list' => $listId], $user);
+                $favorites->save(['list' => $listId], $user, $driver);
             } catch (\Exception $e) {
                 return $this->output(
                     $this->translate('Failed'), self::STATUS_ERROR, 500
@@ -1696,6 +1698,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $recordLoader = $this->getRecordLoader();
         $favoritesCount = 0;
         $listCount = 0;
+        $favorites = $this->getServiceLocator()
+            ->get('VuFind\Favorites\FavoritesService');
 
         foreach ($lists as $list) {
             $existingList = $userListTable->getByTitle($userId, $list['title']);
@@ -1725,7 +1729,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                     'list' => $existingList->id,
                     'mytags' => $record['tags']
                 ];
-                $driver->saveToFavorites($params, $user);
+                $favorites->save($params, $user, $driver);
 
                 if ($record['order'] !== null) {
                     $userResource = $user->getSavedData(

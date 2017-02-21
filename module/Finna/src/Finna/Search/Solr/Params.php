@@ -80,12 +80,13 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @param \VuFind\Search\Base\Options  $options       Options to use
      * @param \VuFind\Config\PluginManager $configLoader  Config loader
+     * @param HierarchicalFacetHelper      $facetHelper   Hierarchical facet helper
      * @param \VuFind\Date\Converter       $dateConverter Date converter
      */
     public function __construct($options, \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Date\Converter $dateConverter
+        HierarchicalFacetHelper $facetHelper, \VuFind\Date\Converter $dateConverter
     ) {
-        parent::__construct($options, $configLoader);
+        parent::__construct($options, $configLoader, $facetHelper);
 
         $this->dateConverter = $dateConverter;
         $config = $configLoader->get($options->getFacetsIni());
