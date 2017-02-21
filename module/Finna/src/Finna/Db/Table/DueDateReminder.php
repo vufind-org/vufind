@@ -27,6 +27,7 @@
  */
 namespace Finna\Db\Table;
 use VuFind\Crypt\HMAC;
+use VuFind\Db\Table\PluginManager;
 use Zend\Db\Adapter\Adapter;
 
 /**

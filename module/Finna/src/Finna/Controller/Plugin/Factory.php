@@ -53,7 +53,8 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new Recaptcha(
             $sm->getServiceLocator()->get('VuFind\Recaptcha'),
-            $config
+            $config,
+            $sm->getServiceLocator()->get('VuFind\AuthManager')
         );
     }
 }

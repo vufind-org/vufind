@@ -83,6 +83,19 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the CheckboxFacetCounts helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return CheckboxFacetCounts
+     */
+    public static function getCheckboxFacetCounts(ServiceManager $sm)
+    {
+        $configReader = $sm->getServiceLocator()->get('VuFind\Config');
+        return new CheckboxFacetCounts($configReader);
+    }
+
+    /**
      * Construct the HeadLink helper.
      *
      * @param ServiceManager $sm Service manager.

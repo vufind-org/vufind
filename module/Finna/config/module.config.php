@@ -193,7 +193,6 @@ $config = [
             'VuFind\ILSAuthenticator' => 'Finna\Auth\Factory::getILSAuthenticator',
             'VuFind\ILSConnection' => 'Finna\Service\Factory::getILSConnection',
             'VuFind\ILSHoldLogic' => 'Finna\Service\Factory::getILSHoldLogic',
-            'VuFind\DbTablePluginManager' => 'Finna\Service\Factory::getDbTablePluginManager',
             'VuFind\AuthManager' => 'Finna\Auth\Factory::getManager',
             'VuFind\RecordLoader' => 'Finna\Service\Factory::getRecordLoader',
             'VuFind\SearchSpecsReader' => 'Finna\Service\Factory::getSearchSpecsReader',
