@@ -369,9 +369,10 @@ class Server
 
         // Retrieve the record from the index
         if ($record = $this->loadRecord($this->params['identifier'])) {
-            if (!$this->attachNonDeleted(
+            $success = $this->attachNonDeleted(
                 $xml, $record, $this->params['metadataPrefix']
-            )) {
+            );
+            if (!$success) {
                 return $this->showError('cannotDisseminateFormat', 'Unknown Format');
             }
         } else {

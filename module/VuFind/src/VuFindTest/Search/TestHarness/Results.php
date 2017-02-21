@@ -26,6 +26,8 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Search\TestHarness;
+use VuFind\Record\Loader;
+use VuFindSearch\Service as SearchService;
 use VuFindTest\RecordDriver\TestHarness as RecordDriver;
 
 /**
@@ -65,14 +67,19 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params $params Object representing user search
-     * parameters.
-     * @param int                        $total  Total result set size to simulate
-     * @param array                      $facets Facet response (optional)
+     * @param \VuFind\Search\Base\Params $params        Object representing user
+     * search parameters.
+     * @param SearchService              $searchService Search service
+     * @param Loader                     $recordLoader  Record loader
+     * @param int                        $total         Total result set size to
+     * simulate
+     * @param array                      $facets        Facet response (optional)
      */
-    public function __construct(Params $params, $total = 100, $facets = [])
-    {
-        parent::__construct($params);
+    public function __construct(\VuFind\Search\Base\Params $params,
+        SearchService $searchService, Loader $recordLoader,
+        $total = 100, $facets = []
+    ) {
+        parent::__construct($params, $searchService, $recordLoader);
         $this->fakeExpectedTotal = $total;
         $this->searchId = 'fake';   // fill a fake value here so we don't hit the DB
         $this->facets = $facets;

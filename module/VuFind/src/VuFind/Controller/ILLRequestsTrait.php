@@ -86,9 +86,10 @@ trait ILLRequestsTrait
         }
 
         // Block invalid requests:
-        if (!$catalog->checkILLRequestIsValid(
+        $validRequest = $catalog->checkILLRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
-        )) {
+        );
+        if (!$validRequest) {
             return $this->blockedILLRequestAction();
         }
 

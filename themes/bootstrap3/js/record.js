@@ -181,8 +181,12 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     type: 'POST',
     data: {tab: tabid}
   })
-  .done(function ajaxLoadTabDone(data) {
-    $newTab.html(data);
+  .always(function ajaxLoadTabDone(data) {
+    if (typeof data === 'object') {
+      $newTab.html(data.responseText ? data.responseText : VuFind.translate('error_occurred'));
+    } else {
+      $newTab.html(data);
+    }
     registerTabEvents();
     if (typeof syn_get_widget === "function") {
       syn_get_widget();

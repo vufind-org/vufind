@@ -125,33 +125,6 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set up facets based on VuFind settings.
-     *
-     * @return array
-     */
-    protected function getBackendFacetParameters()
-    {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EDS');
-        $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
-            ? $config->Facet_Settings->facet_limit : 30;
-
-        $finalFacets = [];
-        foreach ($this->getFullFacetSettings() as $facet) {
-            // See if parameters are included as part of the facet name;
-            // if not, override them with defaults.
-            $parts = explode(',', $facet);
-            $facetName = $parts[0];
-            $defaultMode = ($this->getFacetOperator($facet) == 'OR') ? 'or' : 'and';
-            $facetMode = isset($parts[1]) ? $parts[1] : $defaultMode;
-            $facetPage = isset($parts[2]) ? $parts[2] : 1;
-            $facetLimit = isset($parts[3]) ? $parts[3] : $defaultFacetLimit;
-            $facetParams = "{$facetMode},{$facetPage},{$facetLimit}";
-            $finalFacets[] = "{$facetName},{$facetParams}";
-        }
-        return $finalFacets;
-    }
-
-    /**
      * Set up filters based on VuFind settings.
      *
      * @param ParamBag $params  Parameter collection to update

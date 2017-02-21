@@ -87,9 +87,7 @@ class EdsController extends AbstractSearch
     public function homeAction()
     {
         $this->setUp();
-        return $this->createViewModel(
-            ['results' => $this->getHomePageFacets()]
-        );
+        return $this->createViewModel();
     }
 
     /**
@@ -106,7 +104,7 @@ class EdsController extends AbstractSearch
      * Return a Search Results object containing advanced facet information.  This
      * data may come from the cache.
      *
-     * @return \VuFind\Search\EDS\Results
+     * @return array
      */
     protected function getAdvancedFacets()
     {
@@ -127,18 +125,6 @@ class EdsController extends AbstractSearch
         }
 
         return $availableLimiters;
-    }
-
-    /**
-     * Return a Search Results object containing homepage facet information.  This
-     * data may come from the cache.
-     *
-     * @return \VuFind\Search\EDS\Results
-     */
-    protected function getHomePageFacets()
-    {
-        // For now, we'll use the same fields as the advanced search screen.
-        return $this->getAdvancedFacets();
     }
 
     /**

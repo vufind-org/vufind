@@ -26,6 +26,8 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
+use VuFind\Record\Loader;
+use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Expression;
 
 /**
@@ -47,14 +49,29 @@ class Resource extends Gateway
     protected $dateConverter;
 
     /**
+     * Record loader
+     *
+     * @var Loader
+     */
+    protected $recordLoader;
+
+    /**
      * Constructor
      *
+     * @param Adapter                $adapter   Database adapter
+     * @param PluginManager          $tm        Table manager
+     * @param array                  $cfg       Zend Framework configuration
      * @param \VuFind\Date\Converter $converter Date converter
+     * @param Loader                 $loader    Record loader
      */
-    public function __construct(\VuFind\Date\Converter $converter)
-    {
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        \VuFind\Date\Converter $converter, Loader $loader
+    ) {
         $this->dateConverter = $converter;
-        parent::__construct('resource', 'VuFind\Db\Row\Resource');
+        $this->recordLoader = $loader;
+        parent::__construct(
+            $adapter, $tm, $cfg, 'resource', 'VuFind\Db\Row\Resource'
+        );
     }
 
     /**
@@ -88,9 +105,8 @@ class Resource extends Gateway
             $result->source = $source;
 
             // Load record if it was not provided:
-            if (is_null($driver)) {
-                $driver = $this->getServiceLocator()->getServiceLocator()
-                    ->get('VuFind\RecordLoader')->load($id, $source);
+            if (null === $driver) {
+                $driver = $this->recordLoader->load($id, $source);
             }
 
             // Load metadata into the database for sorting/failback purposes:

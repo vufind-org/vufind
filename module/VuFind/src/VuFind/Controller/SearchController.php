@@ -52,7 +52,7 @@ class SearchController extends AbstractSearch
 
         // Set up facet information:
         $view->facetList = $this->processAdvancedFacets(
-            $this->getAdvancedFacets()->getFacetList(), $view->saved
+            $this->getAdvancedFacets(), $view->saved
         );
         $specialFacets = $this->parseSpecialFacetsSetting(
             $view->options->getSpecialAdvancedFacets()
@@ -284,7 +284,8 @@ class SearchController extends AbstractSearch
     {
         return $this->createViewModel(
             [
-                'results' => $this->getHomePageFacets(),
+                'results' => $this->getResultsObjectWithHiddenFilters('Solr'),
+                'facetList' => $this->getHomePageFacets(),
                 'hierarchicalFacets' => $this->getHierarchicalFacets(),
                 'hierarchicalFacetSortOptions'
                     => $this->getHierarchicalFacetSortSettings()
@@ -519,58 +520,83 @@ class SearchController extends AbstractSearch
     }
 
     /**
+     * Get active hidden filter settings.
+     *
+     * @return array
+     */
+    protected function getActiveHiddenFilters()
+    {
+        return $this->getServiceLocator()->get('VuFind\SearchTabsHelper')
+            ->getHiddenFilters($this->searchClassId);
+    }
+
+    /**
+     * Create a results object with hidden filters pre-populated.
+     *
+     * @param string $backend ID of results object to create
+     * @param array  $filters Hidden filter settings (null for defaults)
+     *
+     * @return \VuFind\Search\Base\Results
+     */
+    protected function getResultsObjectWithHiddenFilters($backend, $filters = null)
+    {
+        if (null === $filters) {
+            $filters = $this->getActiveHiddenFilters();
+        }
+        $results = $this->getResultsManager()->get($backend);
+        $params = $results->getParams();
+        foreach ($filters as $key => $subFilters) {
+            foreach ($subFilters as $filter) {
+                $params->addHiddenFilter("$key:$filter");
+            }
+        }
+        return $results;
+    }
+
+    /**
      * Return a Search Results object containing requested facet information.  This
      * data may come from the cache.
      *
      * @param string $initMethod Name of params method to use to request facets
      * @param string $cacheName  Cache key for facet data
      *
-     * @return \VuFind\Search\Solr\Results
+     * @return array
      */
     protected function getFacetResults($initMethod, $cacheName)
     {
         // Check if we have facet results cached, and build them if we don't.
         $cache = $this->getServiceLocator()->get('VuFind\CacheManager')
             ->getCache('object');
-        $searchTabsHelper = $this->getServiceLocator()
-            ->get('VuFind\SearchTabsHelper');
-        $hiddenFilters = $searchTabsHelper->getHiddenFilters($this->searchClassId);
+        $hiddenFilters = $this->getActiveHiddenFilters();
         $hiddenFiltersHash = md5(json_encode($hiddenFilters));
-        $cacheName .= "-$hiddenFiltersHash";
-        if (!($results = $cache->getItem($cacheName))) {
+        $cacheName .= "List-$hiddenFiltersHash";
+        if (!($list = $cache->getItem($cacheName))) {
             // Use advanced facet settings to get summary facets on the front page;
             // we may want to make this more flexible later.  Also keep in mind that
             // the template is currently looking for certain hard-coded fields; this
             // should also be made smarter.
-            $results = $this->getResultsManager()->get('Solr');
+            $results = $this->getResultsObjectWithHiddenFilters(
+                'Solr', $hiddenFilters
+            );
             $params = $results->getParams();
             $params->$initMethod();
-            foreach ($hiddenFilters as $key => $filters) {
-                foreach ($filters as $filter) {
-                    $params->addHiddenFilter("$key:$filter");
-                }
-            }
 
             // We only care about facet lists, so don't get any results (this helps
             // prevent problems with serialized File_MARC objects in the cache):
             $params->setLimit(0);
 
-            $results->getResults();                     // force processing for cache
-
-            $cache->setItem($cacheName, $results);
+            $list = $results->getFacetList();
+            $cache->setItem($cacheName, $list);
         }
 
-        // Restore the real service locator to the object (it was lost during
-        // serialization):
-        $results->restoreServiceLocator($this->getServiceLocator());
-        return $results;
+        return $list;
     }
 
     /**
      * Return a Search Results object containing advanced facet information.  This
      * data may come from the cache.
      *
-     * @return \VuFind\Search\Solr\Results
+     * @return array
      */
     protected function getAdvancedFacets()
     {
@@ -583,7 +609,7 @@ class SearchController extends AbstractSearch
      * Return a Search Results object containing homepage facet information.  This
      * data may come from the cache.
      *
-     * @return \VuFind\Search\Solr\Results
+     * @return array
      */
     protected function getHomePageFacets()
     {

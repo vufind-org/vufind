@@ -154,7 +154,7 @@
 # Note that you may create a "@parent_yaml" entry at the very top of the file to
 # inherit sections from another file. For example:
 #
-# @parent_yaml: "/path/to/my/file.yaml"
+# "@parent_yaml": "/path/to/my/file.yaml"
 #
 # Only sections not found in this file will be loaded in from the parent file.
 # In some complex scenarios, this can be a useful way of sharing settings
