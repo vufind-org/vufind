@@ -32,6 +32,9 @@ finna.organisationInfoPage = (function() {
                     // if theres only one service point, hide searchbox and ignore initSearch
                     if (cnt == 1) {
                         holder.find('.office-search .searchbox-office,.show-all').hide();
+                        var id = Object.keys(organisationList)[0];
+                        updateSelectedOrganisation(id);
+                        id = undefined;
                     } else {
                         // IE opens Delay initing autocomplete menu to prevent IE from opening it automatically at
                         initSearch();
