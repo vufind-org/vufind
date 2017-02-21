@@ -343,9 +343,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
              "newPassword" => "newsecret"
         ];
 
-        $conn = $this->createConnector('changePassword.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('changePassword.json');
         $result = $conn->changePassword($changePasswordTestdata);
         $this->assertEquals($this->pwchangeTestResult, $result);
     }
@@ -357,9 +355,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testFees()
     {
-        $conn = $this->createConnector('fees.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('fees.json');
         $result = $conn->getMyFines($this->patron);
 
         $this->assertEquals($this->feeTestResult, $result);
@@ -372,9 +368,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testHolds()
     {
-        $conn = $this->createConnector('items.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('items.json');
         $result = $conn->getMyHolds($this->patron);
 
         $this->assertEquals($this->holdsTestResult, $result);
@@ -387,9 +381,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testRequests()
     {
-        $conn = $this->createConnector('items.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('items.json');
         $result = $conn->getMyStorageRetrievalRequests($this->patron);
 
         $this->assertEquals($this->requestsTestResult, $result);
@@ -402,9 +394,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testTransactions()
     {
-        $conn = $this->createConnector('items.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('items.json');
         $result = $conn->getMyTransactions($this->patron);
 
         $this->assertEquals($this->transactionsTestResult, $result);
@@ -465,9 +455,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testRenewDetails()
     {
-        $conn = $this->createConnector('');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('');
         $result = $conn->getRenewDetails($this->transactionsTestResult[1]);
 
         $this->assertEquals('', $result);
@@ -487,9 +475,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             ]
         ];
 
-        $conn = $this->createConnector('storageretrieval.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('storageretrieval.json');
         $result = $conn->placeHold($sr_request);
         $this->assertEquals($this->storageRetrievalTestResult, $result);
     }
@@ -508,9 +494,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             ]
         ];
 
-        $conn = $this->createConnector('storageretrieval.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('storageretrieval.json');
         $result = $conn->placeStorageRetrievalRequest($sr_request);
         $this->assertEquals($this->storageRetrievalTestResult, $result);
     }
@@ -531,9 +515,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             ]
         ];
 
-        $conn = $this->createConnector('renew_ok.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('renew_ok.json');
         $result = $conn->renewMyItems($renew_request);
 
         $this->assertEquals($this->renewTestResult, $result);
