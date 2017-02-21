@@ -604,9 +604,9 @@ class PAIA extends DAIA
         }
 
         try {
-        $fees = $this->paiaGetAsArray(
-            'core/' . $patron['cat_username'] . '/fees'
-        );
+            $fees = $this->paiaGetAsArray(
+                'core/' . $patron['cat_username'] . '/fees'
+            );
         } catch (Exception $e) {
             // all error handling is done in paiaHandleErrors so pass on the
             // exception
@@ -903,7 +903,7 @@ class PAIA extends DAIA
     /**
      * Handle PAIA request errors and throw appropriate exception.
      *
-     * @param array $error Array containing error messages
+     * @param array $array Array containing error messages
      * 
      * @return void
      * 
@@ -921,24 +921,25 @@ class PAIA extends DAIA
                 // error        code    error_description
                 // access_denied 	403 	Wrong or missing credentials to get an
                 //                          access token
-                case 'access_denied':
-                    throw new AuthException(
-                        isset($array['error_description'])
-                            ? $array['error_description'] : $array['error'],
-                        isset($array['code']) ? $array['code'] : ''
-                    );
+            case 'access_denied':
+                throw new AuthException(
+                    isset($array['error_description'])
+                        ? $array['error_description'] : $array['error'],
+                    isset($array['code']) ? $array['code'] : ''
+                );
+
                 // not_found 	404 	Unknown request URL or unknown patron.
                 //                      Implementations SHOULD first check
                 //                      authentication and prefer error invalid_grant
                 //                      or access_denied to prevent leaking patron
                 //                      identifiers.
-                case 'not_found':
+            case 'not_found':
 
                 // not_implemented 	501 	Known but unsupported request URL (for
                 //                          instance a PAIA auth server server may
                 //                          not implement
                 //                          http://example.org/core/change)
-                case 'not_implemented':
+            case 'not_implemented':
 
                 // invalid_request 	405 	Unexpected HTTP verb
                 // invalid_request 	400 	Malformed request (for instance error
@@ -948,40 +949,40 @@ class PAIA extends DAIA
                 //                          but they don’t match the request method
                 //                          (for instance missing fields, invalid
                 //                          values, etc.)
-                case 'invalid_request':
+            case 'invalid_request':
 
                 // invalid_grant 	401 	The access token was missing, invalid, or
                 //                          expired
-                case 'invalid_grant':
+            case 'invalid_grant':
 
                 // insufficient_scope 	403 	The access token was accepted but it
                 //                              lacks permission for the request
-                case 'insufficient_scope':
+            case 'insufficient_scope':
 
                 // internal_error 	500 	An unexpected error occurred. This error
                 //                          corresponds to a bug in the
                 //                          implementation of a PAIA auth/core server
-                case 'internal_error':
+            case 'internal_error':
 
                 // service_unavailable 	503 	The request couldn’t be serviced
                 //                              because of a temporary failure
-                case 'service_unavailable':
+            case 'service_unavailable':
 
                 // bad_gateway 	502 	The request couldn’t be serviced because of a
                 //                      backend failure (for instance the library
                 //                      system’s database)
-                case 'bad_gateway':
+            case 'bad_gateway':
 
                 // gateway_timeout 	504 	The request couldn’t be serviced because
                 //                          of a backend failure
-                case 'gateway_timeout':
+            case 'gateway_timeout':
 
-                default:
-                    throw new ILSException(
-                        isset($array['error_description'])
-                            ? $array['error_description'] : $array['error'],
-                        isset($array['code']) ? $array['code'] : ''
-                    );
+            default:
+                throw new ILSException(
+                    isset($array['error_description'])
+                        ? $array['error_description'] : $array['error'],
+                    isset($array['code']) ? $array['code'] : ''
+                );
             }
         }
     }
@@ -1256,9 +1257,9 @@ class PAIA extends DAIA
 
         if (!isset($itemsResponse) || $itemsResponse == null) {
             try {
-            $itemsResponse = $this->paiaGetAsArray(
-                'core/' . $patron['cat_username'] . '/items'
-            );
+                $itemsResponse = $this->paiaGetAsArray(
+                    'core/' . $patron['cat_username'] . '/items'
+                );
             } catch (Exception $e) {
                 // all error handling is done in paiaHandleErrors so pass on the
                 // exception
@@ -1856,6 +1857,8 @@ class PAIA extends DAIA
 
     /**
      * Checks if the current scope is set for active session.
+     *
+     * @param string $scope The scope to test for with the current session scopes.
      *
      * @return boolean
      */
