@@ -1,8 +1,30 @@
-@include 'bootstrap';
+@import "bootstrap";
+
+@brand-primary: #333;
 
 body {
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; // native font stack
-  background-color: #eee;
+  background-color: #ddd;
 }
-
-
+.container { background-color: #fff; }
+.navbar { border-radius: 0; }
+.banner {
+  width: auto;
+  background-color: @brand-primary;
+  color: #fff;
+  a { color: #fff; }
+}
+.search { padding: 1rem; }
+.breadcrumbs { padding: 0; }
+.breadcrumb {
+  margin: 0;
+  border-top: 1px solid @gray-lighter;
+  border-bottom: 1px solid @gray-lighter;
+  font-size: 85%;
+  border-radius: 0;
+}
+.main .container {
+  padding-top: 1rem;
+  background-color: #fff;
+}
+h1, h2, h3, h4 { margin: 1rem 0; }
