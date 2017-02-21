@@ -1008,22 +1008,24 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                         ) {
                             $requests = $branch->nofReservations;
                         }
+                        $availabilityInfo = [
+                            'available' => $nofAvailableForLoan,
+                            'displayText' => $status,
+                            'reservations' => isset($branch->nofReservations)
+                                ? $branch->nofReservations : 0,
+                            'ordered' => $nofOrdered,
+                            'total' => $nofTotal,
+                        ];
+                        $callnumber = isset($department->shelfMark)
+                            ? ($department->shelfMark) : '';
 
                         $holding = [
                             'id' => $id,
                             'barcode' => $id,
                             'item_id' => $reservableId,
                             'holdings_id' => $group,
-                            'availability'
-                                => $available || $status == 'On Reference Desk',
-                            'availabilityInfo' => [
-                                'available' => $nofAvailableForLoan,
-                                'displayText' => $status,
-                                'reservations' => isset($branch->nofReservations)
-                                    ? $branch->nofReservations : 0,
-                                'ordered' => $nofOrdered,
-                                'total' => $nofTotal,
-                            ],
+                            'availability' => $available,
+                            'availabilityInfo' => $availabilityInfo,
                             'status' => $status,
                             'location' => $group,
                             'organisation_id' => $organisationId,
@@ -1032,8 +1034,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                             'department' => $departmentName,
                             'duedate' => $dueDate,
                             'addLink' => $journalInfo,
-                            'callnumber' => isset($department->shelfMark)
-                                ? ($department->shelfMark) : '',
+                            'callnumber' => $callnumber,
                             'is_holdable' => $holdable,
                             'collapsed' => true,
                             'requests_placed' => $requests,
