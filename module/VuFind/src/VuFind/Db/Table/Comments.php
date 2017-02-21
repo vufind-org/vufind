@@ -43,15 +43,16 @@ class Comments extends Gateway
     /**
      * Constructor
      *
-     * @param Adapter       $adapter Database adapter
-     * @param PluginManager $tm      Table manager
-     * @param array         $cfg     Zend Framework configuration
+     * @param Adapter       $adapter  Database adapter
+     * @param PluginManager $tm       Table manager
+     * @param array         $cfg      Zend Framework configuration
+     * @param string        $table    Name of database table to interface with
+     * @param string        $rowClass Name of class used to represent rows
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
-    {
-        parent::__construct(
-            $adapter, $tm, $cfg, 'comments', 'VuFind\Db\Row\Comments'
-        );
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        $table = 'comments', $rowClass = 'VuFind\Db\Row\Comments'
+    ) {
+        parent::__construct($adapter, $tm, $cfg, $table, $rowClass);
     }
 
     /**

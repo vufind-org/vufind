@@ -63,15 +63,17 @@ class Resource extends Gateway
      * @param array                  $cfg       Zend Framework configuration
      * @param \VuFind\Date\Converter $converter Date converter
      * @param Loader                 $loader    Record loader
+     * @param string                 $table     Name of database table to interface
+     * with
+     * @param string                 $rowClass  Name of class used to represent rows
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        \VuFind\Date\Converter $converter, Loader $loader
+        \VuFind\Date\Converter $converter, Loader $loader,
+        $table = 'resource', $rowClass = 'VuFind\Db\Row\Resource'
     ) {
         $this->dateConverter = $converter;
         $this->recordLoader = $loader;
-        parent::__construct(
-            $adapter, $tm, $cfg, 'resource', 'VuFind\Db\Row\Resource'
-        );
+        parent::__construct($adapter, $tm, $cfg, $table, $rowClass);
     }
 
     /**
