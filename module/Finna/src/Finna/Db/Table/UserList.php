@@ -27,10 +27,7 @@
  */
 namespace Finna\Db\Table;
 use VuFind\Db\Table\PluginManager;
-use VuFind\Exception\LoginRequired as LoginRequiredException;
-use VuFind\Exception\RecordMissing as RecordMissingException;
 use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for user_list

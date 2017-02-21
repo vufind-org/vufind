@@ -223,7 +223,7 @@ class CPU extends BaseHandler
         if ($status === self::STATUS_PENDING) {
             // Pending
 
-            if (!$this->createTransaction(
+            $success = $this->createTransaction(
                 $orderNumber,
                 $driver,
                 $user->id,
@@ -232,7 +232,8 @@ class CPU extends BaseHandler
                 $transactionFee,
                 $currency,
                 $fines
-            )) {
+            );
+            if (!$success) {
                 return false;
             }
             $this->redirectToPayment($response->PaymentAddress);

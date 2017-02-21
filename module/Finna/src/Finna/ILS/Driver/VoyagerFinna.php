@@ -79,9 +79,7 @@ trait VoyagerFinna
                 }
 
                 // If we've encountered a new status code, we should track it:
-                if (!in_array(
-                    $row['STATUS'], $record['STATUS_ARRAY']
-                )) {
+                if (!in_array($row['STATUS'], $record['STATUS_ARRAY'])) {
                     $record['STATUS_ARRAY'][] = $row['STATUS'];
                 }
             } else {

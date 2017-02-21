@@ -28,8 +28,6 @@
 namespace Finna\Db\Table;
 use Zend\Db\Sql\Select;
 use Zend\Config\Config;
-use Zend\Db\Adapter\Adapter;
-use Zend\Session\Container;
 
 /**
  * Table Definition for user

@@ -336,11 +336,12 @@ class Params extends \VuFind\Search\Solr\Params
         }
 
         // Convert simple coordinates to a polygon
-        if (preg_match(
+        $simple = preg_match(
             '/^([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)$/',
             $coordinates,
             $matches
-        )) {
+        );
+        if ($simple) {
             list(, $minX, $minY, $maxX, $maxY) = $matches;
             $coordinates = "POLYGON(($minX $maxY,$maxX $maxY,$maxX $minY"
                 . ",$minX $minY,$minX $maxY))";

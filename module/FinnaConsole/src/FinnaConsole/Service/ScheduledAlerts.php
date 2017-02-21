@@ -30,10 +30,6 @@ namespace FinnaConsole\Service;
 
 use Finna\Db\Row\User;
 use Finna\Db\Table\Search;
-use Finna\Search\Solr\Options;
-use Finna\Search\Solr\Params;
-use Finna\Search\Factory\UrlQueryHelperFactory;
-use VuFind\Date\Converter as DateConverter;
 use Zend\Config\Config;
 use Zend\Config\Reader\Ini as IniReader;
 use Zend\ServiceManager\ServiceManager;

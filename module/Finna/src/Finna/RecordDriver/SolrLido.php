@@ -82,10 +82,11 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     public function getAccessRestrictions()
     {
         $restrictions = [];
-        if ($rights = $this->getSimpleXML()->xpath(
+        $rights = $this->getSimpleXML()->xpath(
             'lido/administrativeMetadata/resourceWrap/resourceSet/rightsResource/'
             . 'rightsType'
-        )) {
+        );
+        if ($rights) {
             foreach ($rights as $right) {
                 if (!isset($right->conceptID)) {
                     continue;
@@ -114,10 +115,11 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
      */
     public function getAccessRestrictionsType($language)
     {
-        if ($rights = $this->getSimpleXML()->xpath(
+        $rights = $this->getSimpleXML()->xpath(
             'lido/administrativeMetadata/resourceWrap/resourceSet/rightsResource/'
             . 'rightsType'
-        )) {
+        );
+        if ($rights) {
             $rights = $rights[0];
 
             if ($conceptID = $rights->xpath('conceptID')) {
@@ -618,11 +620,12 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             $results = $this->fields['measurements'];
             $confParam = 'lido_augment_display_measurement_with_extent';
             if ($this->getDataSourceConfigurationValue($confParam)) {
-                if ($extent = $this->getSimpleXML()->xpath(
+                $extent = $this->getSimpleXML()->xpath(
                     'lido/descriptiveMetadata/objectIdentificationWrap/'
                     . 'objectMeasurementsWrap/objectMeasurementsSet/'
                     . 'objectMeasurements/extentMeasurements'
-                )) {
+                );
+                if ($extent) {
                     $results[0] = "$results[0] ($extent[0])";
                 }
             }
@@ -759,10 +762,11 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     {
         $urls = [];
         foreach (parent::getURLs() as $url) {
-            if (!$this->urlBlacklisted(
+            $blacklisted = $this->urlBlacklisted(
                 isset($url['url']) ? $url['url'] : '',
                 isset($url['desc']) ? $url['desc'] : ''
-            )) {
+            );
+            if (!$blacklisted) {
                 $urls[] = $url;
             }
         }

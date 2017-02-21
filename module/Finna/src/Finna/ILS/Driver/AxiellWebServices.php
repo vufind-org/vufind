@@ -1000,38 +1000,44 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                             );
                         }
 
+                        $holdable
+                            = $branch->reservationButtonStatus == 'reservationOk';
+                        $requests = 0;
+                        if (!$this->singleReservationQueue
+                            && isset($branch->nofReservations)
+                        ) {
+                            $requests = $branch->nofReservations;
+                        }
+
                         $holding = [
-                           'id' => $id,
-                           'barcode' => $id,
-                           'item_id' => $reservableId,
-                           'holdings_id' => $group,
-                           'availability'
-                              => $available || $status == 'On Reference Desk',
-                           'availabilityInfo' => [
-                               'available' => $nofAvailableForLoan,
-                               'displayText' => $status,
-                               'reservations' => isset($branch->nofReservations)
-                                   ? $branch->nofReservations : 0,
-                               'ordered' => $nofOrdered,
-                               'total' => $nofTotal,
+                            'id' => $id,
+                            'barcode' => $id,
+                            'item_id' => $reservableId,
+                            'holdings_id' => $group,
+                            'availability'
+                                => $available || $status == 'On Reference Desk',
+                            'availabilityInfo' => [
+                                'available' => $nofAvailableForLoan,
+                                'displayText' => $status,
+                                'reservations' => isset($branch->nofReservations)
+                                    ? $branch->nofReservations : 0,
+                                'ordered' => $nofOrdered,
+                                'total' => $nofTotal,
                             ],
-                           'status' => $status,
-                           'location' => $group,
-                           'organisation_id' => $organisationId,
-                           'branch' => $branchName,
-                           'branch_id' => $branchId,
-                           'department' => $departmentName,
-                           'duedate' => $dueDate,
-                           'addLink' => $journalInfo,
-                           'callnumber' => isset($department->shelfMark)
-                               ? ($department->shelfMark) : '',
-                           'is_holdable'
-                              => $branch->reservationButtonStatus == 'reservationOk',
-                           'collapsed' => true,
-                           'requests_placed' => (!$this->singleReservationQueue
-                                   && isset($branch->nofReservations))
-                                   ? $branch->nofReservations : 0,
-                           'reserve' => null
+                            'status' => $status,
+                            'location' => $group,
+                            'organisation_id' => $organisationId,
+                            'branch' => $branchName,
+                            'branch_id' => $branchId,
+                            'department' => $departmentName,
+                            'duedate' => $dueDate,
+                            'addLink' => $journalInfo,
+                            'callnumber' => isset($department->shelfMark)
+                                ? ($department->shelfMark) : '',
+                            'is_holdable' => $holdable,
+                            'collapsed' => true,
+                            'requests_placed' => $requests,
+                            'reserve' => null
                         ];
                         if ($journalInfo) {
                             $holding['journalInfo'] = $journalInfo;

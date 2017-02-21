@@ -802,9 +802,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 }
                 $user = $this->getTable('User')->getById($search->user_id);
 
-                if ($key !== $search->getUnsubscribeSecret(
+                $secret = $search->getUnsubscribeSecret(
                     $this->getServiceLocator()->get('VuFind\HMAC'), $user
-                )) {
+                );
+                if ($key !== $secret) {
                     throw new \Exception('Invalid parameters.');
                 }
                 $search->setSchedule(0);
@@ -814,9 +815,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     throw new \Exception('Invalid parameters.');
                 }
                 $dueDateTable = $this->getTable('due-date-reminder');
-                if ($key !== $dueDateTable->getUnsubscribeSecret(
+                $secret = $dueDateTable->getUnsubscribeSecret(
                     $this->getServiceLocator()->get('VuFind\HMAC'), $user, $user->id
-                )) {
+                );
+                if ($key !== $secret) {
                     throw new \Exception('Invalid parameters.');
                 }
                 $user->finna_due_date_reminder = 0;

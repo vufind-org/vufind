@@ -1296,10 +1296,11 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             // period
             $thirdLast = substr($str, -3, 1);
             if (substr($str, -1) == '.' && $thirdLast != ' ') {
-                if (!in_array(
+                $role = in_array(
                     substr($str, -4),
                     ['nid.', 'sid.', 'kuv.', 'ill.', 'säv.', 'col.']
-                )) {
+                );
+                if (!$role) {
                     $str = substr($str, 0, -1);
                 }
             }
