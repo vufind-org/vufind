@@ -196,6 +196,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#make-list')->click();
         $this->findCss($page, '#list_title')->setValue('Future List');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->assertEquals(
             $this->findCss($page, '#save_list option[selected]')->getHtml(),
             'Future List'
@@ -276,6 +277,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             $page, ['username' => 'username2', 'email' => 'username2@ignore.com']
         );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '#save_list');
         // Make list
         $this->findCss($page, '#make-list')->click();
@@ -325,6 +327,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoSearch();
 
         $this->findCss($page, '.save-record')->click();
+        $this->snooze();
         // Login
         // - empty
         $this->submitLoginForm($page);
@@ -338,21 +341,26 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // Make Two Lists
         // - One for the next test
         $this->findCss($page, '#make-list')->click();
+        $this->snooze();
         $this->findCss($page, '#list_title')->setValue('Future List');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->assertEquals(
             $this->findCss($page, '#save_list option[selected]')->getHtml(),
             'Future List'
         );
         // - One for now
         $this->findCss($page, '#make-list')->click();
+        $this->snooze();
         $this->findCss($page, '#list_title')->setValue('Login Test List');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->assertEquals(
             $this->findCss($page, '#save_list option[selected]')->getHtml(),
             'Login Test List'
         );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '.alert.alert-success');
     }
 
@@ -503,6 +511,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // Do the export:
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
+        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
         $this->assertEquals('Download File', $result->getText());
     }

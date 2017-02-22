@@ -26,7 +26,10 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Tags;
+use VuFind\Db\Table\Tags as TagsTable;
+use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
+use VuFindSearch\Service as SearchService;
 
 /**
  * Search Tags Results
@@ -39,6 +42,29 @@ use VuFind\Search\Base\Results as BaseResults;
  */
 class Results extends BaseResults
 {
+    /**
+     * Tags table
+     *
+     * @var TagsTable
+     */
+    protected $tagsTable;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Base\Params $params        Object representing user
+     * search parameters.
+     * @param SearchService              $searchService Search service
+     * @param Loader                     $recordLoader  Record loader
+     * @param TagsTable                  $tagsTable     Resource table
+     */
+    public function __construct(\VuFind\Search\Base\Params $params,
+        SearchService $searchService, Loader $recordLoader, TagsTable $tagsTable
+    ) {
+        parent::__construct($params, $searchService, $recordLoader);
+        $this->tagsTable = $tagsTable;
+    }
+
     /**
      * Process a fuzzy tag query.
      *
@@ -62,11 +88,10 @@ class Results extends BaseResults
      */
     protected function performTagSearch($fuzzy)
     {
-        $table = $this->getTable('Tags');
         $query = $fuzzy
             ? $this->formatFuzzyQuery($this->getParams()->getDisplayQuery())
             : $this->getParams()->getDisplayQuery();
-        $rawResults = $table->resourceSearch(
+        $rawResults = $this->tagsTable->resourceSearch(
             $query, null, $this->getParams()->getSort(), 0, null, $fuzzy
         );
 
@@ -76,7 +101,7 @@ class Results extends BaseResults
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
-            $rawResults = $table->resourceSearch(
+            $rawResults = $this->tagsTable->resourceSearch(
                 $query, null, $this->getParams()->getSort(),
                 $this->getStartRecord() - 1, $limit, $fuzzy
             );
@@ -103,7 +128,7 @@ class Results extends BaseResults
         $callback = function ($row) {
             return ['id' => $row['record_id'], 'source' => $row['source']];
         };
-        $this->results = $this->getServiceLocator()->get('VuFind\RecordLoader')
+        $this->results = $this->recordLoader
             ->loadBatch(array_map($callback, $results));
     }
 

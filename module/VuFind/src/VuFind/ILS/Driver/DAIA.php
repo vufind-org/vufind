@@ -654,7 +654,8 @@ class DAIA extends AbstractBase implements
                         || (in_array(
                             $domNode->nodeName,
                             ['storage', 'limitation', 'department', 'institution']
-                        ) && strlen($domNode->nodeValue))) {
+                        ) && strlen($domNode->nodeValue))
+                    ) {
                         if (trim($node->textContent)) {
                             $domNode->setAttribute('content', $node->textContent);
                             $node->nodeValue = '';

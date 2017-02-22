@@ -195,6 +195,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
 
         // Save the favorites.
         $this->findCss($page, '.modal-body input[name=submit]')->click();
+        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.', $result->getText()
@@ -240,6 +241,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         // Do the export:
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
+        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
         $this->assertEquals('Download File', $result->getText());
     }
