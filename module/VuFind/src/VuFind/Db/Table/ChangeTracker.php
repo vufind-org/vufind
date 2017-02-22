@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
+use Zend\Db\Adapter\Adapter;
 
 /**
  * Table Definition for change_tracker
@@ -47,10 +48,16 @@ class ChangeTracker extends Gateway
 
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
      */
-    public function __construct()
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
     {
-        parent::__construct('change_tracker', 'VuFind\Db\Row\ChangeTracker');
+        parent::__construct(
+            $adapter, $tm, $cfg, 'change_tracker', 'VuFind\Db\Row\ChangeTracker'
+        );
     }
 
     /**

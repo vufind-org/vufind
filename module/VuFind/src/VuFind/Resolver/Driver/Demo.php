@@ -39,8 +39,18 @@ use DOMDocument, DOMXpath;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
-class Demo implements DriverInterface
+class Demo extends AbstractBase
 {
+    /**
+     * Constructor
+     *
+     * @param string $baseUrl Base URL for link resolver
+     */
+    public function __construct($baseUrl = 'http://localhost')
+    {
+        parent::__construct($baseUrl);
+    }
+
     /**
      * Fetch Links
      *
