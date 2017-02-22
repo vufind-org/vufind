@@ -412,6 +412,17 @@ class SearchController extends AbstractSearch
     }
 
     /**
+     * Show facet list for Solr-driven reserves.
+     *
+     * @return mixed
+     */
+    public function reservesfacetlistAction()
+    {
+        $this->searchClassId = 'SolrReserves';
+        return $this->facetListAction();
+    }
+
+    /**
      * Show search form for Solr-driven reserves.
      *
      * @return mixed
