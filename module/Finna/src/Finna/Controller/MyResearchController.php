@@ -771,7 +771,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $view = parent::finesAction();
         $view->blocks = $this->getILS()->getAccountBlocks($patron);
         if (isset($patron['source'])) {
-            $result = $this->handleOnlinePayment($patron, $view->fines, $view);
+            $this->handleOnlinePayment($patron, $view->fines, $view);
         }
         return $view;
     }

@@ -191,7 +191,7 @@ trait OnlinePaymentControllerTrait
 
         $paymentParam = 'payment';
         $request = $this->getRequest();
-        $pay = $request->getQuery()->get('pay', $request->getPost('pay'));
+        $pay = $this->formWasSubmitted('pay-confirm');
         $payment = $request->getQuery()->get(
             $paymentParam, $request->getPost($paymentParam)
         );
@@ -277,8 +277,13 @@ trait OnlinePaymentControllerTrait
                     $this->flashMessenger()->addMessage(
                         strip_tags($paymentPermittedForUser), 'error'
                     );
-                } else if (!empty($payableOnline['reason'])) {
+                } elseif (!empty($payableOnline['reason'])) {
                     $view->nonPayableReason = $payableOnline['reason'];
+                } elseif ($this->formWasSubmitted('pay')) {
+                    $view->setTemplate(
+                        'Helpers/OnlinePayment/terms-' . $view->paymentHandler
+                        . '.phtml'
+                    );
                 }
             }
         }
