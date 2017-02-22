@@ -38,9 +38,9 @@ JS;
   <div class="well well-lg clearfix" role="search">
     <?=$this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => true])?>
   </div>
+  <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$("#searchForm_lookfor").focus();', 'SET'); ?>
 </div>
 
-<? $facetList = is_object($this->results) ? $this->results->getFacetList() : []; ?>
 <? if (isset($facetList) && is_array($facetList)): ?>
   <div class="row">
     <? foreach ($facetList as $field => $details): ?>

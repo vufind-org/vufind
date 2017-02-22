@@ -29,6 +29,7 @@
  */
 namespace VuFind\Db\Table;
 use minSO;
+use Zend\Db\Adapter\Adapter;
 use Zend\Db\Adapter\ParameterContainer;
 use Zend\Db\TableGateway\Feature;
 
@@ -48,23 +49,25 @@ class Search extends Gateway
 
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
      */
-    public function __construct()
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
     {
-        parent::__construct('search', 'VuFind\Db\Row\Search');
+        parent::__construct($adapter, $tm, $cfg, 'search', 'VuFind\Db\Row\Search');
     }
 
     /**
-     * Initialize
+     * Initialize features
+     *
+     * @param array $cfg Zend Framework configuration
      *
      * @return void
      */
-    public function initialize()
+    public function initializeFeatures($cfg)
     {
-        if ($this->isInitialized) {
-            return;
-        }
-
         // Special case for PostgreSQL inserts -- we need to provide an extra
         // clue so that the database knows how to write bytea data correctly:
         if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql") {
@@ -78,7 +81,7 @@ class Search extends Gateway
             $this->featureSet->addFeature($eventFeature);
         }
 
-        parent::initialize();
+        parent::initializeFeatures($cfg);
     }
 
     /**
