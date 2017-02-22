@@ -82,7 +82,7 @@
           <?=$this->context($this)->renderInContext('SideFacets/range-slider.phtml', ['title' => $title, 'facet' => $rangeFacets[$title]]); ?>
         <? else: ?>
           <? if (in_array($title, $hierarchicalFacets)): ?>
-            <?=$this->context($this)->renderInContext('SideFacets/hierarchical-facets.phtml', ['title' => $title, 'sortOptions' => $hierarchicalFacetSortOptions[$title]]); ?>
+            <?=$this->context($this)->renderInContext('SideFacets/hierarchical-facet.phtml', ['title' => $title, 'sortOptions' => $hierarchicalFacetSortOptions[$title]]); ?>
             <noscript>
           <? endif; ?>
           <? $contextVars = [
