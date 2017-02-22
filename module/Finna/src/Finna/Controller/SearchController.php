@@ -301,54 +301,6 @@ class SearchController extends \VuFind\Controller\SearchController
     }
 
     /**
-     * Return a Search Results object containing requested facet information or false
-     * if the init method doesn't request facets. This data may come from the cache.
-     *
-     * Finna: return false if no facets configured by the init method to avoid
-     * useless Solr call.
-     *
-     * @param string $initMethod Name of params method to use to request facets
-     * @param string $cacheName  Cache key for facet data
-     *
-     * @return array
-     */
-    protected function getFacetResults($initMethod, $cacheName)
-    {
-        // Check if we have facet results cached, and build them if we don't.
-        $cache = $this->getServiceLocator()->get('VuFind\CacheManager')
-            ->getCache('object');
-        $hiddenFilters = $this->getActiveHiddenFilters();
-        $hiddenFiltersHash = md5(json_encode($hiddenFilters));
-        $cacheName .= "List-$hiddenFiltersHash";
-        if (!($list = $cache->getItem($cacheName))) {
-            // Use advanced facet settings to get summary facets on the front page;
-            // we may want to make this more flexible later.  Also keep in mind that
-            // the template is currently looking for certain hard-coded fields; this
-            // should also be made smarter.
-            $results = $this->getResultsObjectWithHiddenFilters(
-                'Solr', $hiddenFilters
-            );
-            $params = $results->getParams();
-            $params->$initMethod();
-
-            // Avoid a backend request if there are no facets configured by the given
-            // init method.
-            if (!empty($params->getFacetConfig())) {
-                // We only care about facet lists, so don't get any results (this
-                // helps prevent problems with serialized File_MARC objects in the
-                // cache):
-                $params->setLimit(0);
-                $list = $results->getFacetList();
-            } else {
-                $list = [];
-            }
-            $cache->setItem($cacheName, $list);
-        }
-
-        return $list;
-    }
-
-    /**
      * Parse OpenURL and return a keyed array
      *
      * @return array
