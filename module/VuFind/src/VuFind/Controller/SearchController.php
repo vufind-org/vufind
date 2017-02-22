@@ -413,6 +413,17 @@ class SearchController extends AbstractSearch
     }
 
     /**
+     * Show facet list for Solr-driven reserves.
+     *
+     * @return mixed
+     */
+    public function reservesfacetlistAction()
+    {
+        $this->searchClassId = 'SolrReserves';
+        return $this->facetListAction();
+    }
+
+    /**
      * Show search form for Solr-driven reserves.
      *
      * @return mixed
@@ -581,11 +592,17 @@ class SearchController extends AbstractSearch
             $params = $results->getParams();
             $params->$initMethod();
 
-            // We only care about facet lists, so don't get any results (this helps
-            // prevent problems with serialized File_MARC objects in the cache):
-            $params->setLimit(0);
-
-            $list = $results->getFacetList();
+            // Avoid a backend request if there are no facets configured by the given
+            // init method.
+            if (!empty($params->getFacetConfig())) {
+                // We only care about facet lists, so don't get any results (this
+                // helps prevent problems with serialized File_MARC objects in the
+                // cache):
+                $params->setLimit(0);
+                $list = $results->getFacetList();
+            } else {
+                $list = [];
+            }
             $cache->setItem($cacheName, $list);
         }
 

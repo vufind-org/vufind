@@ -55,7 +55,7 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
      * @param string                  $name           Name of service
      * @param string                  $requestedName  Unfiltered name of service
      * @param array                   $extraParams    Extra constructor parameters
-     * (to follow the Params object)
+     * (to follow the Params, Search and RecordLoader objects)
      *
      * @return object
      */
