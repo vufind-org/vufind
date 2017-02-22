@@ -122,8 +122,7 @@ class ImportController extends AbstractBase
     protected function performImport($xml, $properties, $index = 'Solr',
         $testMode = false
     ) {
-        $importer = new Importer();
-        $importer->setServiceLocator($this->getServiceLocator());
+        $importer = new Importer($this->getServiceLocator());
         $importer->save($xml, $properties, $index, $testMode);
     }
 
