@@ -733,10 +733,10 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Return the route name for the search results action.
-     * false to cover unimplemented drivers
+     * Return the route name for the facet list action. Returns false to cover
+     * unimplemented support.
      *
-     * @return false
+     * @return string|bool
      */
     public function getFacetListAction()
     {
