@@ -83,6 +83,19 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the CheckboxFacetCounts helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return CheckboxFacetCounts
+     */
+    public static function getCheckboxFacetCounts(ServiceManager $sm)
+    {
+        $configReader = $sm->getServiceLocator()->get('VuFind\Config');
+        return new CheckboxFacetCounts($configReader);
+    }
+
+    /**
      * Construct the HeadLink helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -263,6 +276,36 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the OpenUrl helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return OpenUrl
+     */
+    public static function getOpenUrl(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $file = \VuFind\Config\Locator::getLocalConfigPath('OpenUrlRules.json');
+        if ($file === null) {
+            $file = \VuFind\Config\Locator::getLocalConfigPath(
+                'OpenUrlRules.json', 'config/finna'
+            );
+            if ($file === null) {
+                $file = \VuFind\Config\Locator::getConfigPath('OpenUrlRules.json');
+            }
+        }
+        $openUrlRules = json_decode(file_get_contents($file), true);
+        $resolverPluginManager = $sm->getServiceLocator()
+            ->get('VuFind\ResolverDriverPluginManager');
+        return new OpenUrl(
+            $sm->get('context'),
+            $openUrlRules,
+            $resolverPluginManager,
+            isset($config->OpenURL) ? $config->OpenURL : null
+        );
+    }
+
+    /**
      * Construct Primo view helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -348,33 +391,6 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         $recommendationConfig = isset($config->SearchTabsRecommendations)
             ? $config->SearchTabsRecommendations->toArray() : [];
         return new SearchTabsRecommendations($recommendationConfig);
-    }
-
-    /**
-     * Construct the OpenUrl helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return OpenUrl
-     */
-    public static function getOpenUrl(ServiceManager $sm)
-    {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $file = \VuFind\Config\Locator::getLocalConfigPath('OpenUrlRules.json');
-        if ($file === null) {
-            $file = \VuFind\Config\Locator::getLocalConfigPath(
-                'OpenUrlRules.json', 'config/finna'
-            );
-            if ($file === null) {
-                $file = \VuFind\Config\Locator::getConfigPath('OpenUrlRules.json');
-            }
-        }
-        $openUrlRules = json_decode(file_get_contents($file), true);
-        return new OpenUrl(
-            $sm->get('context'),
-            $openUrlRules,
-            isset($config->OpenURL) ? $config->OpenURL : null
-        );
     }
 
     /**
@@ -528,9 +544,12 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     public static function getSearchBox(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config');
+        $mainConfig = $config->get('config');
         $searchbox = new SearchBox(
             $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager'),
-            $config->get('searchbox')->toArray()
+            $config->get('searchbox')->toArray(),
+            isset($mainConfig->SearchPlaceholder)
+                ? $mainConfig->SearchPlaceholder->toArray() : []
         );
         $searchbox->setTabConfig($config->get('config'));
         return $searchbox;

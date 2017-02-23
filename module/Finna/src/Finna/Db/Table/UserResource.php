@@ -104,13 +104,14 @@ class UserResource extends \VuFind\Db\Table\UserResource
         };
 
         foreach ($this->select($callback) as $row) {
-            if ($rowToUpdate = $this->select(
+            $rowToUpdate = $this->select(
                 [
                     'user_id' => $userId,
                     'list_id' => $listId,
                     'resource_id' => $row->resource_id
                 ]
-            )->current()) {
+            )->current();
+            if ($rowToUpdate) {
                 $rowToUpdate->finna_custom_order_index
                     = isset($resourceIndex[$row->record_id])
                     ? $resourceIndex[$row->record_id] : 0;

@@ -142,13 +142,8 @@
            $browse = isset($browse) ? $browse : false;
            if (!$browse) {
              $activeTab = isset($this->searchClassId) ? $this->searchClassId : DEFAULT_SEARCH_BACKEND;
-             if (isset($searchTabs)) {
-               foreach ($searchTabs as $tab) {
-                 if ($tab['selected']) {
-                   $activeTab = $tab['id'];
-                   break;
-                 }
-               }
+             if (isset($searchTabs['selected'])) {
+               $activeTab = $searchTabs['selected']['id'];
              }
 
              foreach (['suggestion','facet','handler', 'filter', 'phrase'] as $section) {

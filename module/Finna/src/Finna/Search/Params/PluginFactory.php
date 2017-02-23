@@ -40,71 +40,29 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class PluginFactory extends \VuFind\Search\Params\PluginFactory
 {
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->defaultNamespace = 'Finna\Search';
-    }
-
-    /**
      * Create a service for the specified name.
      *
      * @param ServiceLocatorInterface $serviceLocator Service locator
      * @param string                  $name           Name of service
      * @param string                  $requestedName  Unfiltered name of service
+     * @param array                   $extraParams    Extra constructor parameters
+     * (to follow the Options object and config loader)
      *
      * @return object
      */
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
-        $name, $requestedName
+        $name, $requestedName, array $extraParams = []
     ) {
         $options = $serviceLocator->getServiceLocator()
             ->get('VuFind\SearchOptionsPluginManager')->get($requestedName);
 
-        if ($name === 'solr' || $name == 'solrauthor') {
-            // Clone the options instance in case caller modifies it:
-            return new \Finna\Search\Solr\Params(
-                clone($options),
-                $serviceLocator->getServiceLocator()->get('VuFind\Config'),
-                $serviceLocator->getServiceLocator()->get('VuFind\DateConverter')
-            );
-        } elseif ($name === 'primo') {
-            // Clone the options instance in case caller modifies it:
-            return new \Finna\Search\Primo\Params(
-                clone($options),
-                $serviceLocator->getServiceLocator()->get('VuFind\Config')
-            );
-        } elseif ($name === 'combined') {
-            // Clone the options instance in case caller modifies it:
-            return new \Finna\Search\Combined\Params(
-                clone($options),
-                $serviceLocator->getServiceLocator()->get('VuFind\Config'),
-                $serviceLocator->getServiceLocator()->get('VuFind\DateConverter')
-            );
-        } elseif ($name === 'mixedlist') {
-            // Clone the options instance in case caller modifies it:
-            return new \Finna\Search\MixedList\Params(
-                clone($options),
-                $serviceLocator->getServiceLocator()->get('VuFind\Config')
-            );
-        } elseif ($name === 'favorites') {
-            // Clone the options instance in case caller modifies it:
-            return new \Finna\Search\Favorites\Params(
-                clone($options),
-                $serviceLocator->getServiceLocator()->get('VuFind\Config')
-            );
-        } elseif ($name === 'emptyset') {
-            // Clone the options instance in case caller modifies it:
-            return new \Finna\Search\EmptySet\Params(
-                clone($options),
-                $serviceLocator->getServiceLocator()->get('VuFind\Config')
-            );
+        $class = '\Finna\Search\\' . $requestedName . $this->classSuffix;
+        if (!class_exists($class)) {
+            $class = $this->getClassName($name, $requestedName);
         }
 
-        return parent::createServiceWithName(
-            $serviceLocator, $name, $requestedName
-        );
+        $configLoader = $serviceLocator->getServiceLocator()->get('VuFind\Config');
+        // Clone the options instance in case caller modifies it:
+        return new $class(clone($options), $configLoader, ...$extraParams);
     }
 }

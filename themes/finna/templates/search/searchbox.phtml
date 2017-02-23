@@ -32,31 +32,27 @@
         }
     }
 
+    $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters, $this->layout()->savedTabs);
+
     // Set up Finna Main Tabs:
     if (!$browse) {
       if (($module === 'search' && $action === 'results' && $this->searchType != 'advanced')
          || ($module === 'primo' && $action === 'search' && $this->searchType != 'advanced')
          || ($module == 'combined' && $action == 'results')
       ) {
-         $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters, $this->layout()->savedTabs);
-         $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs, 'hiddenFilters' => $hiddenFilters]);
+         $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs'], 'hiddenFilters' => $hiddenFilters]);
          $this->layout()->searchTabs = $searchTabs;
       }
     }
 ?>
 <? if ($this->searchType != 'advanced'): ?>
   <?
-     if($this->searchbox()->autocompleteEnabled($this->searchClassId)) {
+     if ($this->searchbox()->autocompleteEnabled($this->searchClassId)) {
       $phrase = $this->autocomplete()->getPhraseSearch();
       if (!$browse) {
         $activeTab = $this->searchClassId;
-        if (isset($searchTabs)) {
-           foreach ($searchTabs as $tab) {
-              if ($tab['selected']) {
-                 $activeTab = $tab['id'];
-                 break;
-              }
-           }
+        if (isset($searchTabs['selected'])) {
+          $activeTab = $searchTabs['selected']['id'];
         }
 
         $acFilters = [];
@@ -71,10 +67,18 @@
         $acHandlers = $this->autocomplete()->getHandlers($activeTab);
       }
      }
+
+     $placeholder = $this->searchbox()->getPlaceholderText(isset($searchTabs['selected']['id']) ? $searchTabs['selected']['id'] : null);
+     if ($placeholder) {
+       $placeholder = $this->translate($placeholder);
+     } else {
+       $placeholder = $this->translate('Find') . '...';
+     }
   ?>
 
   <form id="searchForm" role="search" class="searchForm navbar-form navbar-left col-xs-12 col-sm-10 col-md-8 col-lg-7  <?=$handlerCount < 2 ? 'input-field-only' :''; ?>" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
-    <label for="searchForm_lookfor" class="sr-only" hidden><?=$this->transEsc("Find")?></label><input class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete-finna searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?= !empty($activeTab) ? ' tab:' . $this->escapeHtmlAttr(str_replace(':', '###', $activeTab)) : ''?><?=!empty($browse) || $activeTab == 'Combined' ? ' onlySuggestions:1' : ''?><?= !$browse && in_array($activeTab, ['Combined','Primo']) ? ' suggestions:0' : ''?><?= !empty($acHandlers) ? ' handlers:' . implode('|', array_map(function($h) { return $h['handler']; }, $acHandlers)) : ''?><?= !empty($phrase) ? ' phrase:' . $this->escapeHtmlAttr($phrase) : ''?><?= !empty($acFilters) ? ' filters:' . $this->escapeHtmlAttr(implode('||', array_map(function($k, $v) { return $k . '|' . $v; }, array_keys($acFilters), $acFilters))) : ''?><? endif ?>" placeholder="<?=$this->transEsc("Find")?>..." id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
+    <label for="searchForm_lookfor" class="sr-only" hidden><?=$this->transEsc("Find")?></label>
+    <input class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete-finna searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?= !empty($activeTab) ? ' tab:' . $this->escapeHtmlAttr(str_replace(':', '###', $activeTab)) : ''?><?=!empty($browse) || $activeTab == 'Combined' ? ' onlySuggestions:1' : ''?><?= !$browse && in_array($activeTab, ['Combined','Primo']) ? ' suggestions:0' : ''?><?= !empty($acHandlers) ? ' handlers:' . implode('|', array_map(function($h) { return $h['handler']; }, $acHandlers)) : ''?><?= !empty($phrase) ? ' phrase:' . $this->escapeHtmlAttr($phrase) : ''?><?= !empty($acFilters) ? ' filters:' . $this->escapeHtmlAttr(implode('||', array_map(function($k, $v) { return $k . '|' . $v; }, array_keys($acFilters), $acFilters))) : ''?><? endif ?>" placeholder="<?=$this->escapeHtmlAttr($placeholder)?>" id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
     <span class="clear-button<?=$this->lookfor ? '' : ' hidden'?>"></span>
     <? if ($handlerCount > 1): ?>
       <span class="hidden sr-only"><?=$this->transEsc("Narrow Search")?></span>

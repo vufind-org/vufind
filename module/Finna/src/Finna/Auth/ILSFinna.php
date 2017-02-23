@@ -49,9 +49,10 @@ trait ILSFinna
     public function getSecondaryLoginFieldLabel($target)
     {
         $catalog = $this->getCatalog();
-        if (!$catalog->checkCapability(
+        $check = $catalog->checkCapability(
             'getConfig', ['cat_username' => "$target.login"]
-        )) {
+        );
+        if (!check) {
             return '';
         }
         $config = $this->getCatalog()->getConfig(

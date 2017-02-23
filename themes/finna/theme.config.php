@@ -7,6 +7,7 @@ return [
             'autocomplete' => 'Finna\View\Helper\Root\Factory::getAutocomplete',
             'browse' => 'Finna\View\Helper\Root\Factory::getBrowse',
             'callnumber' => 'Finna\View\Helper\Root\Factory::getCallnumber',
+            'checkboxFacetCounts' => 'Finna\View\Helper\Root\Factory::getCheckboxFacetCounts',
             'combined' => 'Finna\View\Helper\Root\Factory::getCombined',
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
             'feed' => 'Finna\View\Helper\Root\Factory::getFeed',
@@ -41,8 +42,6 @@ return [
             'proxyurl' => 'Finna\View\Helper\Root\Factory::getProxyUrl',
         ],
         'invokables' => [
-            'checkboxFacetCounts' =>
-                'Finna\View\Helper\Root\CheckboxFacetCounts',
             'markdown' => 'Finna\View\Helper\Root\Markdown',
             'personaAuth' => 'Finna\View\Helper\Root\PersonaAuth',
             'resultfeed' => 'Finna\View\Helper\Root\ResultFeed',

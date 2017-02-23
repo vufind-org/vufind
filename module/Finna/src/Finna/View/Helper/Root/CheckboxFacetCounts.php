@@ -41,6 +41,23 @@ namespace Finna\View\Helper\Root;
 class CheckboxFacetCounts extends \Zend\View\Helper\AbstractHelper
 {
     /**
+     * Config Reader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configReader;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configReader Config Reader
+     */
+    public function __construct(\VuFind\Config\PluginManager $configReader)
+    {
+        $this->configReader = $configReader;
+    }
+
+    /**
      * Return the count of records when checkbox filter is activated.
      *
      * @param array                       $checkboxFilter Checkbox filter
@@ -76,9 +93,7 @@ class CheckboxFacetCounts extends \Zend\View\Helper\AbstractHelper
             $params = $results->getParams();
             $options = $results->getOptions();
 
-            $searchConfig = $this->getView()->getHelperPluginManager()
-                ->getServiceLocator()->get('VuFind\Config')
-                ->get($options->getSearchIni());
+            $searchConfig = $this->configReader->get($options->getSearchIni());
             if (!empty($searchConfig->Records->sources)) {
                 $sources = explode(',', $searchConfig->Records->sources);
                 $sources = array_map(

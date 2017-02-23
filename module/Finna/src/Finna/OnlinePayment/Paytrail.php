@@ -137,7 +137,7 @@ class Paytrail extends BaseHandler
             exit();
         }
 
-        if (!$this->createTransaction(
+        $success = $this->createTransaction(
             $orderNumber,
             $driver,
             $user->id,
@@ -146,7 +146,8 @@ class Paytrail extends BaseHandler
             $transactionFee,
             $currency,
             $fines
-        )) {
+        );
+        if (!$success) {
             return false;
         }
 
@@ -184,13 +185,14 @@ class Paytrail extends BaseHandler
             if (!$module = $this->initPaytrail()) {
                 return 'online_payment_failed';
             }
-            if (!$module->confirmPayment(
+            $success = $module->confirmPayment(
                 $params["ORDER_NUMBER"],
                 $params["TIMESTAMP"],
                 $params["PAID"],
                 $params["METHOD"],
                 $params["RETURN_AUTHCODE"]
-            )) {
+            );
+            if (!$success) {
                 $this->logger->err(
                     'Paytrail: error processing response: invalid checksum'
                 );

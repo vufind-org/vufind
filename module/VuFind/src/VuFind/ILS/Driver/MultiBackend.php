@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2012-2016.
+ * Copyright (C) The National Library of Finland 2012-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,9 +28,7 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\ILS as ILSException,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Multiple Backend Driver.
@@ -44,14 +42,11 @@ use VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class MultiBackend extends AbstractBase
-    implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterface
+class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
-    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
-
     /**
      * The array of configured driver names.
      *
@@ -97,21 +92,30 @@ class MultiBackend extends AbstractBase
     /**
      * ILS authenticator
      *
-     * @param \VuFind\Auth\ILSAuthenticator
+     * @var \VuFind\Auth\ILSAuthenticator
      */
     protected $ilsAuth;
+
+    /**
+     * ILS driver manager
+     *
+     * @var PluginManager
+     */
+    protected $driverManager;
 
     /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth      ILS authenticator
+     * @param PluginManager                 $dm           ILS driver manager
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader,
-        \VuFind\Auth\ILSAuthenticator $ilsAuth
+        \VuFind\Auth\ILSAuthenticator $ilsAuth, PluginManager $dm
     ) {
         $this->configLoader = $configLoader;
         $this->ilsAuth = $ilsAuth;
+        $this->driverManager = $dm;
     }
 
     /**
@@ -211,6 +215,10 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
         if ($driver) {
+            // Don't pass on patron information belonging to another source
+            if ($patron && $this->getSource($patron['cat_username']) !== $source) {
+                $patron = null;
+            }
             $holdings = $driver->getHolding(
                 $this->getLocalId($id),
                 $this->stripIdPrefixes($patron, $source)
@@ -550,9 +558,10 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if (!$this->methodSupported(
+            $supported = $this->methodSupported(
                 $driver, 'getMyStorageRetrievalRequests', compact('patron')
-            )) {
+            );
+            if (!$supported) {
                 // Return empty array if not supported by the driver
                 return [];
             }
@@ -1072,9 +1081,10 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if (!$this->methodSupported(
+            $supported = $this->methodSupported(
                 $driver, 'getMyILLRequests', compact('patron')
-            )) {
+            );
+            if (!$supported) {
                 // Return empty array if not supported by the driver
                 return [];
             }
@@ -1183,9 +1193,10 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if (!$this->methodSupported(
+            $supported = $this->methodSupported(
                 $driver, 'getRequestBlocks', compact('patron')
-            )) {
+            );
+            if (!$supported) {
                 return false;
             }
             return $driver->getRequestBlocks(
@@ -1208,9 +1219,10 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if (!$this->methodSupported(
+            $supported = $this->methodSupported(
                 $driver, 'getAccountBlocks', compact('patron')
-            )) {
+            );
+            if (!$supported) {
                 return false;
             }
             return $driver->getAccountBlocks(
@@ -1407,7 +1419,7 @@ class MultiBackend extends AbstractBase
             $this->error("No configuration found for source '$source'");
             return null;
         }
-        $driverInst = clone($this->getServiceLocator()->get($driver));
+        $driverInst = clone($this->driverManager->get($driver));
         $driverInst->setConfig($config);
         $driverInst->init();
         return $driverInst;

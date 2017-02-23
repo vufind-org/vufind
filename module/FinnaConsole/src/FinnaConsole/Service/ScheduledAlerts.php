@@ -30,10 +30,6 @@ namespace FinnaConsole\Service;
 
 use Finna\Db\Row\User;
 use Finna\Db\Table\Search;
-use Finna\Search\Solr\Options;
-use Finna\Search\Solr\Params;
-use Finna\Search\Factory\UrlQueryHelperFactory;
-use VuFind\Date\Converter as DateConverter;
 use Zend\Config\Config;
 use Zend\Config\Reader\Ini as IniReader;
 use Zend\ServiceManager\ServiceManager;
@@ -316,6 +312,9 @@ class ScheduledAlerts extends AbstractService
         $emailer = $this->serviceManager->get('VuFind\Mailer');
         $translator = $renderer->plugin('translate');
         $urlHelper = $renderer->plugin('url');
+        $resultsManager = $this->serviceManager->get(
+            'VuFind\SearchResultsPluginManager'
+        );
 
         $todayTime = new \DateTime();
         $user = false;
@@ -392,7 +391,8 @@ class ScheduledAlerts extends AbstractService
                 && in_array(
                     $user->finna_language,
                     array_keys($this->mainConfig->Languages->toArray())
-                )) {
+                )
+            ) {
                 $language = $user->finna_language;
             }
 
@@ -405,43 +405,37 @@ class ScheduledAlerts extends AbstractService
             $limit = 50;
 
             // Prepare query
-            $searchService = $this->serviceManager->get('VuFind\Search');
+            $minSO = $s->getSearchObject();
 
-            $searchObject = $s->getSearchObject();
-            if ($searchObject->cl != 'Solr') {
+            $searchObject = $minSO->deminify($resultsManager);
+
+            if ($searchObject->getBackendId() !== 'Solr') {
                 $this->err(
-                    'Unsupported search class ' . $s->cl . ' for search ' . $s->id
+                    'Unsupported search backend ' . $searchObject->getBackendId()
+                    . ' for search ' . $searchObject->getSearchId()
                 );
                 continue;
             }
 
-            $options = new Options($configLoader);
-            $dateConverter = new DateConverter();
-            $params = new Params($options, $configLoader, $dateConverter);
-            $params->deminify($searchObject);
-
+            $params = $searchObject->getParams();
             $params->setLimit($limit);
-            $params->setSort('first_indexed+desc');
+            $params->setSort('first_indexed desc', true);
 
-            $query = $params->getQuery();
-            $searchParams = $params->getBackendParameters();
             $searchTime = date('Y-m-d H:i:s');
+            $searchId = $searchObject->getSearchId();
 
             try {
-                $collection = $searchService
-                    ->search('Solr', $query, 0, $limit, $searchParams);
-
-                $resultsTotal = $collection->getTotal();
-                if ($resultsTotal < 1) {
-                    $this->msg('      No results found for search ' . $s->id);
-                    continue;
-                }
-
-                $records = $collection->getRecords();
+                $records = $searchObject->getResults();
             } catch (\Exception $e) {
                 $this->err(
-                    'Error processing search ' . $s->id . ': ' . $e->getMessage()
+                    "Error processing search $searchId: " . $e->getMessage()
                 );
+            }
+            if (empty($records)) {
+                $this->msg(
+                    "      No results found for search $searchId"
+                );
+                continue;
             }
 
             $newestRecordDate
@@ -449,35 +443,32 @@ class ScheduledAlerts extends AbstractService
             $lastExecutionDate = $lastTime->format($iso8601);
             if ($newestRecordDate < $lastExecutionDate) {
                 $this->msg(
-                    '      No new results for search ' . $s->id
-                    . ": $newestRecordDate < $lastExecutionDate"
+                    "      No new results for search $searchId: "
+                    . "$newestRecordDate < $lastExecutionDate"
                 );
                 continue;
             }
 
             $this->msg(
-                '      New results for search ' . $s->id
-                . ": $newestRecordDate >= $lastExecutionDate"
+                "      New results for search $searchId: "
+                . "$newestRecordDate >= $lastExecutionDate"
             );
 
             // Collect records that have been indexed (for the first time)
             // after previous scheduled alert run
             $newRecords = [];
-            foreach ($collection->getRecords() as $rec) {
-                $recDate = date($iso8601, strtotime($rec->getFirstIndexed()));
+            foreach ($records as $record) {
+                $recDate = date($iso8601, strtotime($record->getFirstIndexed()));
                 if ($recDate < $lastExecutionDate) {
                     break;
                 }
-                $newRecords[] = $rec;
+                $newRecords[] = $record;
             }
 
             // Prepare email content
             $viewBaseUrl = $searchUrl = $s->finna_schedule_base_url;
-            $searchUrl .= $urlHelper->__invoke($options->getSearchAction());
-
-            $urlQueryHelperFactory = new UrlQueryHelperFactory();
-            $urlQueryHelper = $urlQueryHelperFactory->fromParams($params);
-            $searchUrl .= $urlQueryHelper->getParams(false);
+            $searchUrl .= $urlHelper($searchObject->getOptions()->getSearchAction())
+                . $searchObject->getUrlQuery()->getParams(false);
 
             $secret = $s->getUnsubscribeSecret($hmac, $user);
 
@@ -486,7 +477,6 @@ class ScheduledAlerts extends AbstractService
                 $urlHelper->__invoke('myresearch-unsubscribe')
                 . "?id={$s->id}&key=$secret";
 
-            $params->setServiceLocator($this->serviceManager);
             $filters = $this->processFilters($params->getFilterList());
             $params = [
                 'records' => $newRecords,
@@ -519,7 +509,7 @@ class ScheduledAlerts extends AbstractService
             }
 
             if ($s->setLastExecuted($searchTime) === 0) {
-                $this->msg('Error updating last_executed date for search ' . $s->id);
+                $this->msg("Error updating last_executed date for search $searchId");
             }
         }
         $this->msg('    Done processing searches');

@@ -26,8 +26,9 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Db\Table;
-
 use VuFind\Db\Table\Gateway;
+use VuFind\Db\Table\PluginManager;
+use Zend\Db\Adapter\Adapter;
 
 /**
  * Table Definition for inappropriate comments.
@@ -42,11 +43,19 @@ class CommentsInappropriate extends Gateway
 {
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
      */
-    public function __construct()
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
     {
         parent::__construct(
-            'finna_comments_inappropriate', 'Finna\Db\Row\CommentsInappropriate'
+            $adapter,
+            $tm,
+            $cfg,
+            'finna_comments_inappropriate',
+            'Finna\Db\Row\CommentsInappropriate'
         );
     }
 

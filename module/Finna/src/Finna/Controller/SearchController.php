@@ -301,64 +301,6 @@ class SearchController extends \VuFind\Controller\SearchController
     }
 
     /**
-     * Return a Search Results object containing requested facet information or false
-     * if the init method doesn't request facets. This data may come from the cache.
-     *
-     * Finna: return false if no facets configured by the init method to avoid
-     * useless Solr call.
-     *
-     * @param string $initMethod Name of params method to use to request facets
-     * @param string $cacheName  Cache key for facet data
-     *
-     * @return bool|\VuFind\Search\Solr\Results
-     */
-    protected function getFacetResults($initMethod, $cacheName)
-    {
-        // Check if we have facet results cached, and build them if we don't.
-        $cache = $this->getServiceLocator()->get('VuFind\CacheManager')
-            ->getCache('object');
-        $searchTabsHelper = $this->getServiceLocator()
-            ->get('VuFind\SearchTabsHelper');
-        $hiddenFilters = $searchTabsHelper->getHiddenFilters($this->searchClassId);
-        $hiddenFiltersHash = md5(json_encode($hiddenFilters));
-        $cacheName .= "-$hiddenFiltersHash";
-        if (null === ($results = $cache->getItem($cacheName))) {
-            // Use advanced facet settings to get summary facets on the front page;
-            // we may want to make this more flexible later.  Also keep in mind that
-            // the template is currently looking for certain hard-coded fields; this
-            // should also be made smarter.
-            $results = $this->getResultsManager()->get('Solr');
-            $params = $results->getParams();
-            $params->$initMethod();
-            if (!empty($params->getFacetConfig())) {
-                foreach ($hiddenFilters as $key => $filters) {
-                    foreach ($filters as $filter) {
-                        $params->addHiddenFilter("$key:$filter");
-                    }
-                }
-
-                // We only care about facet lists, so don't get any results (this
-                // helps prevent problems with serialized File_MARC objects in the
-                // cache):
-                $params->setLimit(0);
-
-                $results->getResults(); // force processing for cache
-            } else {
-                $results = false;
-            }
-
-            $cache->setItem($cacheName, $results);
-        }
-
-        // Restore the real service locator to the object (it was lost during
-        // serialization):
-        if (is_object($results)) {
-            $results->restoreServiceLocator($this->getServiceLocator());
-        }
-        return $results;
-    }
-
-    /**
      * Parse OpenURL and return a keyed array
      *
      * @return array

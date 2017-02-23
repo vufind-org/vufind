@@ -47,7 +47,7 @@ class DueDateReminders extends AbstractService
     /**
      * Date format for due dates in database.
      */
-    const DUE_DATE_FORMAT = 'Y-m-d\TH:i:s\Z';
+    const DUE_DATE_FORMAT = 'Y-m-d H:i:s';
 
     /**
      * Current view local configuration directory.
@@ -450,7 +450,7 @@ class DueDateReminders extends AbstractService
 
             $dueDate = new \DateTime($loan['dueDate']);
             $params['due_date'] = $dueDate->format($this::DUE_DATE_FORMAT);
-            $params['notification_date'] = gmdate($this::DUE_DATE_FORMAT, time());
+            $params['notification_date'] = date($this::DUE_DATE_FORMAT, time());
 
             $this->dueDateReminderTable->insert($params);
         }

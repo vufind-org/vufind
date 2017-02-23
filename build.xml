@@ -29,7 +29,7 @@
   <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use,eof_ending" />
 
 
-  <property name="version" value="3.1.1" />
+  <property name="version" value="3.1.2" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -220,7 +220,7 @@
     <if>
       <istrue value="${seleniumjar}" />
       <then>
-        <exec command="xvfb-run --server-args=&quot;-screen 0 1024x768x24&quot; java -jar ${seleniumjar} > /dev/null &amp;" />
+        <exec command="xvfb-run --server-args=&quot;-screen 0 1024x768x24&quot; java -jar ${seleniumjar}" passthru="true" spawn="true" checkreturn="true" />
       </then>
     </if>
 
@@ -344,7 +344,6 @@
     <!-- delete the configuration, sample index, logs and cache data -->
     <delete file="${srcdir}/import/solrmarc.log" failonerror="true" />
     <delete dir="${srcdir}/solr" includeemptydirs="true" failonerror="true" />
-    <delete file="${srcdir}/composer.lock" failonerror="false" />
     <delete file="${srcdir}/composer.phar" failonerror="false" />
     <delete file="${srcdir}/vufind-exception.log" failonerror="false" />
     <delete dir="${srcdir}/vendor" includeemptydirs="true" failonerror="false" />

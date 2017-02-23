@@ -201,8 +201,8 @@ class Bootstrapper
     {
         $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
-            $renderer = $serviceManager->get('viewmanager')->getRenderer();
-            $headTitle = $renderer->plugin('headtitle');
+            $helperManager = $serviceManager->get('ViewHelperManager');
+            $headTitle = $helperManager->get('headtitle');
             $headTitle->setDefaultAttachOrder(
                 \Zend\View\Helper\Placeholder\Container\AbstractContainer::SET
             );

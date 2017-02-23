@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace Finna\Controller\Plugin;
+use Zend\ServiceManager\ServiceManager;
 
 /**
  * Recaptcha controller plugin.
@@ -46,16 +47,25 @@ class Recaptcha extends \VuFind\Controller\Plugin\Recaptcha
     protected $bypassCaptcha = [];
 
     /**
+     * Authentication manager
+     *
+     * @var ServiceManager
+     */
+    protected $authManager;
+
+    /**
      * Recaptcha constructor.
      *
-     * @param \ZendService\ReCaptcha\ReCaptcha $r      ReCaptcha object
-     * @param \VuFind\Config                   $config Config file
+     * @param \ZendService\ReCaptcha\ReCaptcha $r           ReCaptcha object
+     * @param \VuFind\Config                   $config      Config file
+     * @param ServiceManager                   $authManager Authentication Manager
      *
      * @return Recaptcha
      */
-    public function __construct($r, $config)
+    public function __construct($r, $config, $authManager)
     {
         parent::__construct($r, $config);
+        $this->authManager = $authManager;
         if (!empty($config->Captcha->bypassCaptcha)) {
             $trimLowercase = function ($str) {
                 return strtolower(trim($str));
@@ -85,10 +95,7 @@ class Recaptcha extends \VuFind\Controller\Plugin\Recaptcha
             return parent::active($domain);
         }
 
-        $authManager = $this->getController()
-            ->getServiceLocator()
-            ->get('VuFind\AuthManager');
-        $user = $authManager->isLoggedIn();
+        $user = $this->authManager->isLoggedIn();
 
         $bypassCaptcha = $user && in_array(
             strtolower($user->finna_auth_method),

@@ -19,7 +19,7 @@
   $moreUrl = '';
   if (isset($this->layout()->searchTabs)) {
     $fallbackUrl = '';
-    foreach ($this->layout()->searchTabs as $tab) {
+    foreach ($this->layout()->searchTabs['tabs'] as $tab) {
       if ($tab['id'] == $searchClassId) {
         $moreUrl = $tab['url'];
         break;

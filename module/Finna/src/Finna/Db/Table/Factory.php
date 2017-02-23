@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -40,8 +40,22 @@ use Zend\ServiceManager\ServiceManager;
  *
  * @codeCoverageIgnore
  */
-class Factory
+class Factory extends \VuFind\Db\Table\Factory
 {
+    /**
+     * Construct a generic table object.
+     *
+     * @param string $name Name of table to construct (fully qualified class name,
+     * or else a class name within the current namespace)
+     * @param array  $args Extra constructor arguments
+     *
+     * @return object
+     */
+    public static function getGenericTable($name, $args)
+    {
+        return parent::getGenericTable("\\Finna\\Db\\Table\\$name", $args);
+    }
+
     /**
      * Construct the Resource table.
      *
@@ -51,7 +65,9 @@ class Factory
      */
     public static function getResource(ServiceManager $sm)
     {
-        return new Resource($sm->getServiceLocator()->get('VuFind\DateConverter'));
+        $converter = $sm->getServiceLocator()->get('VuFind\DateConverter');
+        $loader = $sm->getServiceLocator()->get('VuFind\RecordLoader');
+        return static::getGenericTable('Resource', [$sm, $converter, $loader]);
     }
 
     /**
@@ -73,7 +89,7 @@ class Factory
             $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
             $session = new \Zend\Session\Container('Account', $sessionManager);
         }
-        return new User($config, $rowClass, $session);
+        return static::getGenericTable('User', [$sm, $config, $rowClass, $session]);
     }
 
     /**
@@ -92,6 +108,6 @@ class Factory
             $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
             $session = new \Zend\Session\Container('List', $sessionManager);
         }
-        return new UserList($session);
+        return static::getGenericTable('UserList', [$sm, $session]);
     }
 }

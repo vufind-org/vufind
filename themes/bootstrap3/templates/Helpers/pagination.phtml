@@ -4,10 +4,10 @@
     <li<? if (isset($this->previous)): ?>>
       <? $newParams = $this->params; $newParams['page'] = $this->previous; ?>
       <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
-        &laquo; <?=$this->translate('Previous')?>
+        &laquo; <?=$this->translate('Prev')?>
       </a>
     <? else: ?>
-       class="disabled"> <span>&laquo; <?=$this->translate('Previous')?></span>
+       class="disabled"> <span>&laquo; <?=$this->translate('Prev')?></span>
     <? endif; ?>
     </li>
 

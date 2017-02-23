@@ -215,7 +215,7 @@ trait OnlinePaymentControllerTrait
             }
 
             // Start payment
-            if (!($paymentHandler->startPayment(
+            $result = $paymentHandler->startPayment(
                 $finesUrl,
                 $ajaxUrl,
                 $user,
@@ -226,7 +226,8 @@ trait OnlinePaymentControllerTrait
                 $payableFines,
                 $paymentConfig['currency'],
                 $paymentParam
-            ))) {
+            );
+            if (!$result) {
                 $this->flashMessenger()->addMessage(
                     'online_payment_failed', 'error'
                 );
@@ -424,9 +425,10 @@ trait OnlinePaymentControllerTrait
             );
             $this->handleException($e);
 
-            if (!$transactionTable->setTransactionRegistrationFailed(
+            $result = $transactionTable->setTransactionRegistrationFailed(
                 $tId, $e->getMessage()
-            )) {
+            );
+            if (!$result) {
                 $this->handleError(
                     "Error updating transaction $transactionId status: "
                     . 'registering failed'

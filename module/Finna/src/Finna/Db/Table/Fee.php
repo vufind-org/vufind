@@ -26,6 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Db\Table;
+use VuFind\Db\Table\PluginManager;
+use Zend\Db\Adapter\Adapter;
 
 /**
  * Table Definition for online payment fee
@@ -40,10 +42,16 @@ class Fee extends \VuFind\Db\Table\Gateway
 {
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
      */
-    public function __construct()
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
     {
-        parent::__construct('finna_fee', 'Finna\Db\Row\Fee');
+        parent::__construct(
+            $adapter, $tm, $cfg, 'finna_fee', 'Finna\Db\Row\Fee'
+        );
     }
 
     /**

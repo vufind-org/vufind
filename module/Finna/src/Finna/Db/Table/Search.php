@@ -27,6 +27,8 @@
  * @link     https://vufind.org Main Page
  */
 namespace Finna\Db\Table;
+use VuFind\Db\Table\PluginManager;
+use Zend\Db\Adapter\Adapter;
 
 /**
  * Table Definition for search
@@ -42,11 +44,18 @@ class Search extends \VuFind\Db\Table\Search
 {
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
      */
-    public function __construct()
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
     {
-        parent::__construct();
-        $this->rowClass = 'Finna\Db\Row\Search';
+        parent::__construct($adapter, $tm, $cfg, 'search');
+        $resultSetPrototype = $this->getResultSetPrototype();
+        $resultSetPrototype->setArrayObjectPrototype(
+            $this->initializeRowPrototype('Finna\Db\Row\Search')
+        );
     }
 
     /**

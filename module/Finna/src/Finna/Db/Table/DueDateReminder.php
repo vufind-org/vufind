@@ -27,6 +27,8 @@
  */
 namespace Finna\Db\Table;
 use VuFind\Crypt\HMAC;
+use VuFind\Db\Table\PluginManager;
+use Zend\Db\Adapter\Adapter;
 
 /**
  * Table Definition for due date reminders.
@@ -41,11 +43,19 @@ class DueDateReminder extends \VuFind\Db\Table\Gateway
 {
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
      */
-    public function __construct()
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
     {
         parent::__construct(
-            'finna_due_date_reminder', 'Finna\Db\Row\DueDateReminder'
+            $adapter,
+            $tm,
+            $cfg,
+            'finna_due_date_reminder',
+            'Finna\Db\Row\DueDateReminder'
         );
     }
 
