@@ -272,9 +272,10 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Return the route name for the search results action.
+     * Return the route name for the facet list action. Returns false to cover
+     * unimplemented support.
      *
-     * @return string
+     * @return string|bool
      */
     public function getFacetListAction()
     {
