@@ -26,6 +26,7 @@ Thumbs.db
 .buildpath
 .ExternalToolBuilders
 .idea
+.vscode
 
 # Local VuFind files
 local/cache/covers/large/*
