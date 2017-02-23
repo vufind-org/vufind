@@ -33,7 +33,7 @@
       <?
         $this->searchType = 'advanced';
         $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters, []);
-        $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs, 'hiddenFilters' => $hiddenFilters]);
+        $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs'], 'hiddenFilters' => $hiddenFilters]);
         $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h3>' . $this->transEsc('Advanced Search from Primo') . '</h3></div>';
       ?>
       <? /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>

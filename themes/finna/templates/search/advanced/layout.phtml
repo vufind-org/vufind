@@ -39,7 +39,7 @@
   $this->searchType = 'advanced';
   $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">' . $this->translate('Advanced Search') . '</h1></div>';
   $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters, []);
-  $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs, 'hiddenFilters' => $hiddenFilters]);
+  $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs'], 'hiddenFilters' => $hiddenFilters]);
 
   // Step 1: Load the javascript
   $this->headScript()->appendFile(
