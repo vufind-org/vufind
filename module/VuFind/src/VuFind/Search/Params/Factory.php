@@ -42,11 +42,11 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Factory for Solr results object.
+     * Factory for Solr params object.
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \VuFind\Search\Solr\Results
+     * @return \VuFind\Search\Solr\Params
      */
     public static function getSolr(ServiceManager $sm)
     {
