@@ -78,7 +78,10 @@ class Factory
     public static function __callStatic($name, $args)
     {
         // Strip "get" off method name, and use the remainder as the table name:
-        return static::getGenericTable(substr($name, 3), $args);
+        $name = substr($name, 3);
+        // Take only the first parameter (service manager) from args:
+        $args = array_splice($args, 0, 1);
+        return static::getGenericTable($name, $args);
     }
 
     /**
@@ -144,7 +147,9 @@ class Factory
             $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
             $session = new \Zend\Session\Container('Account', $sessionManager);
         }
-        return static::getGenericTable('User', [$sm, $config, $rowClass, $session]);
+        return static::getGenericTable(
+            'User', [$sm, $config, $session, 'user', $rowClass]
+        );
     }
 
     /**

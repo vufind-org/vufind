@@ -56,11 +56,13 @@ class Tags extends Gateway
      * @param PluginManager $tm            Table manager
      * @param array         $cfg           Zend Framework configuration
      * @param bool          $caseSensitive Are tags case sensitive?
+     * @param string        $table         Name of database table to interface with
+     * @param string        $rowClass      Name of class used to represent rows
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        $caseSensitive = false
+        $caseSensitive = false, $table = 'tags', $rowClass = 'VuFind\Db\Row\Tags'
     ) {
-        parent::__construct($adapter, $tm, $cfg, 'tags', 'VuFind\Db\Row\Tags');
+        parent::__construct($adapter, $tm, $cfg, $table, $rowClass);
         $this->caseSensitive = $caseSensitive;
     }
 

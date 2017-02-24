@@ -62,17 +62,18 @@ class User extends Gateway
      * @param PluginManager $tm       Table manager
      * @param array         $cfg      Zend Framework configuration
      * @param Config        $config   VuFind configuration
-     * @param string        $rowClass Name of class for representing rows
      * @param Container     $session  Session container to inject into rows
      * (optional; used for privacy mode)
+     * @param string        $table    Name of database table to interface with
+     * @param string        $rowClass Name of class used to represent rows
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        Config $config, $rowClass = 'VuFind\Db\Row\User',
-        Container $session = null
+        Config $config, Container $session = null, $table = 'user',
+        $rowClass = 'VuFind\Db\Row\User'
     ) {
         $this->config = $config;
         $this->session = $session;
-        parent::__construct($adapter, $tm, $cfg, 'user', $rowClass);
+        parent::__construct($adapter, $tm, $cfg, $table, $rowClass);
     }
 
     /**
