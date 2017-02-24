@@ -100,9 +100,6 @@
             <? else: ?>
               <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
             <? endif; ?>
-          <? elseif (!empty($summDate)): ?>
-            <?=!empty($summAuthor) ? '' : ' '?>
-            <span class="publish-year"><?=$this->escapeHtml($summDate[0])?></span>
           <? endif; ?>
           <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
             <div class="resultClassification">

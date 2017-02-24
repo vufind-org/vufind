@@ -46,7 +46,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      * @var array
      */
     protected $nonPresenterAuthorRelators = [
-        'A00', 'A03', 'A06', 'A50', 'A99', 'D01', 'D02', 'E10', 'F01', 'F02',
+        'A00', 'A03', 'A06', 'A50', 'A99', 'D01', 'D02', 'F01', 'F02',
         'anm', 'aud', 'chr', 'cnd', 'cst', 'exp', 'fds', 'lgd', 'oth', 'pmn', 'prn',
         'sds', 'std', 'trl', 'wst'
     ];
@@ -74,7 +74,6 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
         'D01' => 'fmp',
         'D02' => 'drt',
         'E01' => 'act',
-        'E10' => 'fmp',
         'F01' => 'cng',
         'F02' => 'flm'
     ];
@@ -316,6 +315,8 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 && $type = $rel->attributes()->{'elokuva-elonimi-tyyppi'}
             ) {
                 $titleText .= " ($type)";
+            } elseif ((string)$rel === 'working') {
+                $titleText .= ' (' . $this->translate('working title') . ')';
             }
             $result[] = $titleText;
         }
@@ -454,8 +455,11 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     public function getFunders()
     {
         return $this->getAgentsWithActivityAttribute(
-            'elokuva-elorahoitusyhtio',
-            ['amount' => 'elokuva-elorahoitusyhtio-summa']
+            'finna-activity-code=fnd',
+            [
+                'amount' => 'elokuva-elorahoitusyhtio-summa',
+                'type' => 'elokuva-elorahoitusyhtio-rahoitustapa'
+            ]
         );
     }
 
@@ -589,13 +593,33 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Return press review
+     *
+     * @return string
+     */
+    public function getPressReview()
+    {
+        $result = $this->getProductionEventElement('elokuva_lehdistoarvio');
+        $result = reset($result);
+        if (!$result) {
+            return '';
+        }
+        return $result;
+    }
+
+    /**
      * Get producers
      *
      * @return array
      */
     public function getProducers()
     {
-        return $this->getAgentsWithActivityAttribute('elokuva-elotuotantoyhtio');
+        $result = $this->getAgentsWithActivityAttribute('elokuva-elotuotantoyhtio');
+        $result = array_merge(
+            $result,
+            $this->getAgentsWithActivityAttribute('finna-activity-code=E10')
+        );
+        return $result;
     }
 
     /**
@@ -665,17 +689,54 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     /**
      * Get all agents that have the given attribute in Activity element
      *
-     * @param string $attribute    Attribute to look for
+     * @param string $attribute    Attribute (and option value) to look for
      * @param array  $includeAttrs Attributes to include from AgentName
      *
      * @return array
      */
     protected function getAgentsWithActivityAttribute($attribute, $includeAttrs = [])
     {
+        if (strpos($attribute, '=') > 0) {
+            list($attribute, $requiredValue) = explode('=', $attribute, 2);
+        }
         $result = [];
         $xml = $this->getRecordXML();
         foreach ($xml->HasAgent as $agent) {
             $attributes = $agent->Activity->attributes();
+            if (!empty($attributes->{$attribute})
+                && (empty($requiredValue)
+                || $attributes->{$attribute} == $requiredValue)
+            ) {
+                $item = [
+                    'name' => (string)$agent->AgentName
+                ];
+                $agentAttrs = $agent->AgentName->attributes();
+                foreach ($includeAttrs as $key => $attr) {
+                    if (!empty($agentAttrs{$attr})) {
+                        $item[$key] = (string)$agentAttrs{$attr};
+                    }
+                }
+                $result[] = $item;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get all agents that have the given attribute in AgentName element
+     *
+     * @param string $attribute    Attribute to look for
+     * @param array  $includeAttrs Attributes to include from AgentName
+     *
+     * @return array
+     */
+    protected function getAgentsWithNameAttribute($attribute, $includeAttrs = [])
+    {
+        $result = [];
+        $xml = $this->getRecordXML();
+        foreach ($xml->HasAgent as $agent) {
+            $attributes = $agent->AgentName->attributes();
+            error_log((string)$agent->AgentName . ': '. print_r($attributes, true));
             if (!empty($attributes->{$attribute})) {
                 $item = [
                     'name' => (string)$agent->AgentName

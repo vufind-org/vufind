@@ -363,6 +363,18 @@
         </tr>
       <? endif; ?>
 
+      <? if ($result = $this->driver->getPressReview()): ?>
+        <? $contentDisplayed = true; ?>
+        <tr class="record-press-review">
+          <th><?=$this->transEsc('Press Reviews') ?>: </th>
+          <td>
+            <div class="truncate-field">
+              <?=$result // intentionally left unescaped due to embedded HTML ?>
+            </div>
+          </td>
+        </tr>
+      <? endif; ?>
+
       <? if ($result = $this->driver->getMusicInfo()): ?>
         <? $contentDisplayed = true; ?>
         <tr class="record-music">
@@ -493,13 +505,29 @@
       </tr>
       <? endif; ?>
 
+      <? if ($result = $this->driver->getProducers()): ?>
+        <tr class="record-producers">
+          <th><?=$this->transEsc('Producers') ?>: </th>
+          <td>
+            <div class="truncate-field" data-rows="3">
+              <? foreach ($result as $index => $item): ?>
+                <?=$index > 0 ? '<br/>' : '' ?><?=$this->escapeHtml($item['name']) ?>
+              <? endforeach; ?>
+            </div>
+          </td>
+        </tr>
+      <? endif; ?>
+
       <? if ($result = $this->driver->getFunders()): ?>
         <tr class="record-funders">
           <th><?=$this->transEsc('Funders') ?>: </th>
           <td>
-            <? foreach ($result as $index => $item): ?>
-              <?=$index > 0 ? ' ; ' : '' ?><?=$this->escapeHtml($item['name']) ?><? if (!empty($item['amount'])): ?>, <?=$this->escapeHtml($item['amount']) ?><? endif; ?>
-            <? endforeach; ?>
+            <div class="truncate-field" data-rows="3">
+              <? foreach ($result as $index => $item): ?>
+                <?=$index > 0 ? '<br/>' : '' ?><?=$this->escapeHtml($item['name']) ?><? if (!empty($item['amount'])): ?>, <?=$this->escapeHtml($item['amount']) ?><? endif; ?>
+                <? if (!empty($item['type'])): ?> (<?=$this->escapeHtml($item['type']) ?>)<? endif; ?>
+              <? endforeach; ?>
+            </div>
           </td>
         </tr>
       <? endif; ?>
