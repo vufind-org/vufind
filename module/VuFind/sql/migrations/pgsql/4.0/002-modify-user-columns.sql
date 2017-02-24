@@ -3,6 +3,6 @@
 --
 
 ALTER TABLE "user"
-  ADD COLUMN cat_id TYPE varchar(255);
+  ADD COLUMN cat_id varchar(255);
 
 CREATE UNIQUE INDEX cat_id ON "user" (cat_id);
