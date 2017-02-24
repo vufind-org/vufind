@@ -154,6 +154,7 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
+            'favorites' => 'VuFind\Controller\Plugin\Factory::getFavorites',
             'flashmessenger' => 'VuFind\Controller\Plugin\Factory::getFlashMessenger',
             'followup' => 'VuFind\Controller\Plugin\Factory::getFollowup',
             'holds' => 'VuFind\Controller\Plugin\Factory::getHolds',
@@ -166,7 +167,6 @@ $config = [
         ],
         'invokables' => [
             'db-upgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
-            'favorites' => 'VuFind\Controller\Plugin\Favorites',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
         ]
     ],
@@ -192,6 +192,7 @@ $config = [
             'VuFind\DbAdapterFactory' => 'VuFind\Service\Factory::getDbAdapterFactory',
             'VuFind\DbTablePluginManager' => 'VuFind\Service\Factory::getDbTablePluginManager',
             'VuFind\Export' => 'VuFind\Service\Factory::getExport',
+            'VuFind\Favorites\FavoritesService' => 'VuFind\Favorites\FavoritesServiceFactory',
             'VuFind\HierarchyDriverPluginManager' => 'VuFind\Service\Factory::getHierarchyDriverPluginManager',
             'VuFind\HierarchyTreeDataFormatterPluginManager' => 'VuFind\Service\Factory::getHierarchyTreeDataFormatterPluginManager',
             'VuFind\HierarchyTreeDataSourcePluginManager' => 'VuFind\Service\Factory::getHierarchyTreeDataSourcePluginManager',
@@ -204,7 +205,7 @@ $config = [
             'VuFind\ILSHoldLogic' => 'VuFind\Service\Factory::getILSHoldLogic',
             'VuFind\ILSHoldSettings' => 'VuFind\Service\Factory::getILSHoldSettings',
             'VuFind\ILSTitleHoldLogic' => 'VuFind\Service\Factory::getILSTitleHoldLogic',
-            'VuFind\Logger' => 'VuFind\Service\Factory::getLogger',
+            'VuFind\Logger' => 'VuFind\Log\LoggerFactory',
             'VuFind\Mailer' => 'VuFind\Mailer\Factory',
             'VuFind\ProxyConfig' => 'VuFind\Service\Factory::getProxyConfig',
             'VuFind\Recaptcha' => 'VuFind\Service\Factory::getRecaptcha',
@@ -380,21 +381,20 @@ $config = [
             'db_table' => [
                 'abstract_factories' => ['VuFind\Db\Table\PluginFactory'],
                 'factories' => [
+                    'changetracker' => 'VuFind\Db\Table\Factory::getChangeTracker',
+                    'comments' => 'VuFind\Db\Table\Factory::getComments',
+                    'externalsession' => 'VuFind\Db\Table\Factory::getExternalSession',
+                    'oairesumption' => 'VuFind\Db\Table\Factory::getOaiResumption',
+                    'record' => 'VuFind\Db\Table\Factory::getRecord',
                     'resource' => 'VuFind\Db\Table\Factory::getResource',
                     'resourcetags' => 'VuFind\Db\Table\Factory::getResourceTags',
+                    'search' => 'VuFind\Db\Table\Factory::getSearch',
+                    'session' => 'VuFind\Db\Table\Factory::getSession',
                     'tags' => 'VuFind\Db\Table\Factory::getTags',
                     'user' => 'VuFind\Db\Table\Factory::getUser',
+                    'usercard' => 'VuFind\Db\Table\Factory::getUserCard',
                     'userlist' => 'VuFind\Db\Table\Factory::getUserList',
-                ],
-                'invokables' => [
-                    'changetracker' => 'VuFind\Db\Table\ChangeTracker',
-                    'comments' => 'VuFind\Db\Table\Comments',
-                    'externalsession' => 'VuFind\Db\Table\ExternalSession',
-                    'oairesumption' => 'VuFind\Db\Table\OaiResumption',
-                    'record' => 'VuFind\Db\Table\Record',
-                    'search' => 'VuFind\Db\Table\Search',
-                    'session' => 'VuFind\Db\Table\Session',
-                    'userresource' => 'VuFind\Db\Table\UserResource',
+                    'userresource' => 'VuFind\Db\Table\Factory::getUserResource',
                 ],
             ],
             'hierarchy_driver' => [
@@ -435,6 +435,7 @@ $config = [
                     'noils' => 'VuFind\ILS\Driver\Factory::getNoILS',
                     'paia' => 'VuFind\ILS\Driver\Factory::getPAIA',
                     'kohailsdi' => 'VuFind\ILS\Driver\Factory::getKohaILSDI',
+                    'symphony' => 'VuFind\ILS\Driver\Factory::getSymphony',
                     'unicorn' => 'VuFind\ILS\Driver\Factory::getUnicorn',
                     'voyager' => 'VuFind\ILS\Driver\Factory::getVoyager',
                     'voyagerrestful' => 'VuFind\ILS\Driver\Factory::getVoyagerRestful',
@@ -449,7 +450,6 @@ $config = [
                     'polaris' => 'VuFind\ILS\Driver\Polaris',
                     'sample' => 'VuFind\ILS\Driver\Sample',
                     'sierra' => 'VuFind\ILS\Driver\Sierra',
-                    'symphony' => 'VuFind\ILS\Driver\Symphony',
                     'virtua' => 'VuFind\ILS\Driver\Virtua',
                     'xcncip2' => 'VuFind\ILS\Driver\XCNCIP2',
                 ],
@@ -601,12 +601,16 @@ $config = [
             ],
             'search_params' => [
                 'abstract_factories' => ['VuFind\Search\Params\PluginFactory'],
+                'factories' => [
+                    'solr' => 'VuFind\Search\Params\Factory::getSolr',
+                ],
             ],
             'search_results' => [
                 'abstract_factories' => ['VuFind\Search\Results\PluginFactory'],
                 'factories' => [
                     'favorites' => 'VuFind\Search\Results\Factory::getFavorites',
                     'solr' => 'VuFind\Search\Results\Factory::getSolr',
+                    'tags' => 'VuFind\Search\Results\Factory::getTags',
                 ],
             ],
             'session' => [
@@ -776,8 +780,8 @@ $dynamicRoutes = [
 
 // Define static routes -- Controller/Action strings
 $staticRoutes = [
-    'Alphabrowse/Home', 'Author/Home', 'Author/Search',
-    'Authority/Home', 'Authority/Record', 'Authority/Search',
+    'Alphabrowse/Home', 'Author/FacetList', 'Author/Home', 'Author/Search',
+    'Authority/FacetList', 'Authority/Home', 'Authority/Record', 'Authority/Search',
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic', 'Cart/doExport',
     'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk',
@@ -808,7 +812,7 @@ $staticRoutes = [
     'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search', 'Records/Home',
     'Search/Advanced', 'Search/Email', 'Search/FacetList', 'Search/History',
     'Search/Home', 'Search/NewItem', 'Search/OpenSearch', 'Search/Reserves',
-    'Search/Results', 'Search/Suggest',
+    'Search/ReservesFacetList', 'Search/Results', 'Search/Suggest',
     'Summon/Advanced', 'Summon/FacetList', 'Summon/Home', 'Summon/Search',
     'Tag/Home',
     'Upgrade/Home', 'Upgrade/FixAnonymousTags', 'Upgrade/FixDuplicateTags',
@@ -816,7 +820,7 @@ $staticRoutes = [
     'Upgrade/GetDBCredentials', 'Upgrade/GetDbEncodingPreference',
     'Upgrade/GetSourceDir', 'Upgrade/GetSourceVersion', 'Upgrade/Reset',
     'Upgrade/ShowSQL',
-    'Web/Home', 'Web/Results',
+    'Web/Home', 'Web/FacetList', 'Web/Results',
     'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
 ];
 
