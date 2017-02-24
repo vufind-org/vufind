@@ -103,6 +103,20 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Save ILS ID.
+     *
+     * @param string $catId Catalog ID to save.
+     *
+     * @return mixed        The output of the save method.
+     * @throws \VuFind\Exception\PasswordSecurity
+     */
+    public function saveCatalogId($catId)
+    {
+        $this->cat_id = $catId;
+        return $this->save();
+    }
+
+    /**
      * Save ILS login credentials.
      *
      * @param string $username Username to save
