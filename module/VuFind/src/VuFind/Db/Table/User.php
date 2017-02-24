@@ -94,11 +94,10 @@ class User extends Gateway
      * Retrieve a user object from the database based on catalog ID.
      *
      * @param string $catId  Catalog ID.
-     * @param bool   $create Should we create users that don't already exist?
      *
      * @return UserRow
      */
-    public function getByCatalogId($catId, $create = true)
+    public function getByCatalogId($catId)
     {
         return $this->select(['cat_id' => $catId])->current();
     }

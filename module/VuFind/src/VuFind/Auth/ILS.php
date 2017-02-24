@@ -229,7 +229,7 @@ class ILS extends AbstractBase
         // Check to see if we already have an account for this user:
         $userTable = $this->getUserTable();
         if (!empty($info['id'])) {
-            $user = $userTable->getByCatalogId($info['id'], false);
+            $user = $userTable->getByCatalogId($info['id']);
             if (empty($user)) {
                 $user = $userTable->getByUsername($info[$usernameField]);
                 $user->saveCatalogId($info['id']);
