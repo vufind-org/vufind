@@ -736,7 +736,6 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
         $xml = $this->getRecordXML();
         foreach ($xml->HasAgent as $agent) {
             $attributes = $agent->AgentName->attributes();
-            error_log((string)$agent->AgentName . ': '. print_r($attributes, true));
             if (!empty($attributes->{$attribute})) {
                 $item = [
                     'name' => (string)$agent->AgentName
