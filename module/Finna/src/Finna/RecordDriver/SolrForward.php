@@ -47,7 +47,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      */
     protected $nonPresenterAuthorRelators = [
         'A00', 'A03', 'A06', 'A50', 'A99', 'D01', 'D02', 'F01', 'F02',
-        'anm', 'aud', 'chr', 'cnd', 'cst', 'exp', 'fds', 'lgd', 'oth', 'pmn', 'prn',
+        'anm', 'aud', 'chr', 'cnd', 'cst', 'exp', 'lgd', 'oth', 'pmn', 'prn',
         'sds', 'std', 'trl', 'wst'
     ];
 
@@ -305,18 +305,16 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 continue;
             }
             $rel = $title->TitleRelationship;
-            if ($rel && (string)$rel == 'translated') {
+            if ($rel && $type = $rel->attributes()->{'elokuva-elonimi-tyyppi'}) {
+                $titleText .= " ($type)";
+            } elseif ((string)$rel === 'working') {
+                $titleText .= ' (' . $this->translate('working title') . ')';
+            } elseif ($rel && (string)$rel == 'translated') {
                 $lang = $title->TitleText->attributes()->lang;
                 if ($lang) {
                     $lang = $this->translate($lang);
                     $titleText .= " ($lang)";
                 }
-            } elseif ($rel
-                && $type = $rel->attributes()->{'elokuva-elonimi-tyyppi'}
-            ) {
-                $titleText .= " ($type)";
-            } elseif ((string)$rel === 'working') {
-                $titleText .= ' (' . $this->translate('working title') . ')';
             }
             $result[] = $titleText;
         }
@@ -429,22 +427,13 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      */
     public function getDistributors()
     {
-        $result = [];
-        $xml = $this->getRecordXML();
-        foreach ($xml->HasAgent as $agent) {
-            if ((string)$agent->Activity == 'A99'
-                && !empty($agent->Activity->attributes()->{'elokuva-elolevittaja'})
-            ) {
-                $attributes = $agent->AgentName->attributes();
-                $result[] = [
-                    'name' => (string)$agent->AgentName,
-                    'date' => (string)$attributes->{'elokuva-elolevittaja-vuosi'},
-                    'method'
-                        => (string)$attributes->{'elokuva-elolevittaja-levitystapa'}
-                ];
-            }
-        }
-        return $result;
+        return $this->getAgentsWithActivityAttribute(
+            'finna-activity-code=fds',
+            [
+                'date' => 'elokuva-elolevittaja-vuosi',
+                'method' => 'elokuva-elolevittaja-levitystapa'
+            ]
+        );
     }
 
     /**
@@ -816,11 +805,11 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
             $uncredited = false;
             $uncreditedRole = 'elokuva-elokreditoimatonnayttelija-rooli';
             if (!empty($nameAttrs->{'elokuva-elotekija-rooli'})) {
-                $roleName = $nameAttrs->{'elokuva-elotekija-rooli'};
+                $roleName = (string)$nameAttrs->{'elokuva-elotekija-rooli'};
             } elseif (!empty($nameAttrs->{'elokuva-elonayttelija-rooli'})) {
-                $roleName = $nameAttrs->{'elokuva-elonayttelija-rooli'};
+                $roleName = (string)$nameAttrs->{'elokuva-elonayttelija-rooli'};
             } elseif (!empty($nameAttrs->{$uncreditedRole})) {
-                $roleName = $nameAttrs->{$uncreditedRole};
+                $roleName = (string)$nameAttrs->{$uncreditedRole};
                 $uncredited = true;
             }
 

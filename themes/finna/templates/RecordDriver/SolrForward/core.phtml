@@ -11,6 +11,16 @@
       $secondaryAuthors[] = $author;
     }
   }
+  $creditedActors = [];
+  $uncreditedActors = [];
+  $presenters = $this->driver->getPresenters();
+  foreach ($presenters['presenters'] as $presenter) {
+    if (isset($presenter['uncredited']) && $presenter['uncredited']) {
+      $uncreditedActors[] = $presenter;
+    } else {
+      $creditedActors[] = $presenter;
+    }
+  }
 
   $img = $this->recordImage($this->record($this->driver));
   $thumbnail = false;
@@ -212,6 +222,17 @@
     <?/* Display Main Details */?>
     <table class="table table-finna-record record-details record-details-more" style="table-layout:initial;">
       <tbody>
+      <? $playTime = $this->driver->getPlayingTimes(); if (!empty($playTime)): ?>
+        <tr class="extendedPlayTime">
+          <th><?=$this->transEsc('Playing Time')?>: </th>
+          <td>
+            <? foreach ($playTime as $field): ?>
+              <?=$this->escapeHtml($field)?><br/>
+            <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
       <? if ($originalWork = $this->driver->getOriginalWork()): ?>
       <tr class="recordOriginalWork">
         <th><?=$this->transEsc('Original Work')?>: </th>
@@ -278,22 +299,27 @@
         </tr>
       <? endif; ?>
 
-      <? if (($results = $this->driver->getPresenters()) && (!empty($results['presenters']) || !empty($results['details']))): ?>
+      <? if ($creditedActors): ?>
       <tr class="recordPresenters">
         <th><?=$this->transEsc('Actors')?>:</th>
-        <td property="author">
+        <td>
           <div class="truncate-field">
-          <? if (!empty($results['presenters'])): ?>
-            <? foreach($results['presenters'] as $index => $author): ?>
-              <?=($index > 0 ? '<br/> ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['roleName'])): ?><span class="author-rolename">, <?=$this->escapeHtml($author['roleName']) ?></span><? endif; ?><? if ($author['uncredited']): ?> (<?=$this->transEsc('uncredited') ?>)<? endif; ?>
+            <? foreach($creditedActors as $index => $author): ?>
+              <?=($index > 0 ? '<br/> ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['roleName'])): ?><span class="author-rolename">, <?=$this->escapeHtml($author['roleName']) ?></span><? endif; ?>
             <? endforeach; ?>
-          <? endif; ?>
-          <? if (!empty($results['details'])): ?>
-            <br/>
-            <? foreach($results['details'] as $detail): ?>
-              <?=($index > 0 || !empty($results['presenters']) ? '' : '')?><?=$this->escapeHtml($detail)?>
+          </div>
+        </td>
+      </tr>
+      <? endif; ?>
+
+      <? if ($uncreditedActors): ?>
+      <tr class="recordPresenters">
+        <th><?=$this->transEsc('Uncredited Actors')?>:</th>
+        <td>
+          <div class="truncate-field">
+            <? foreach($uncreditedActors as $index => $author): ?>
+              <?=($index > 0 ? '<br/> ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['roleName'])): ?><span class="author-rolename">, <?=$this->escapeHtml($author['roleName']) ?></span><? endif; ?>
             <? endforeach; ?>
-          <? endif; ?>
           </div>
         </td>
       </tr>
@@ -338,7 +364,6 @@
       <? endif; ?>
 
       <? $notes = $this->driver->getGeneralNotes(); if (!empty($notes)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="recordDescription">
           <th><?=$this->transEsc('Item Description')?>: </th>
           <td>
@@ -352,7 +377,6 @@
       <? endif; ?>
 
       <? if ($result = $this->driver->getDescription()): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="recordDescription">
           <th><?=$this->transEsc('Description') ?>: </th>
           <td>
@@ -364,7 +388,6 @@
       <? endif; ?>
 
       <? if ($result = $this->driver->getPressReview()): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="record-press-review">
           <th><?=$this->transEsc('Press Reviews') ?>: </th>
           <td>
@@ -376,7 +399,6 @@
       <? endif; ?>
 
       <? if ($result = $this->driver->getMusicInfo()): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="record-music">
           <th><?=$this->transEsc('Music') ?>: </th>
           <td>
@@ -507,9 +529,9 @@
 
       <? if ($result = $this->driver->getProducers()): ?>
         <tr class="record-producers">
-          <th><?=$this->transEsc('Producers') ?>: </th>
+          <th><?=$this->transEsc('Production') ?>: </th>
           <td>
-            <div class="truncate-field" data-rows="3">
+            <div class="truncate-field">
               <? foreach ($result as $index => $item): ?>
                 <?=$index > 0 ? '<br/>' : '' ?><?=$this->escapeHtml($item['name']) ?>
               <? endforeach; ?>
@@ -520,12 +542,42 @@
 
       <? if ($result = $this->driver->getFunders()): ?>
         <tr class="record-funders">
-          <th><?=$this->transEsc('Funders') ?>: </th>
+          <th><?=$this->transEsc('Funding') ?>: </th>
           <td>
-            <div class="truncate-field" data-rows="3">
+            <div class="truncate-field">
               <? foreach ($result as $index => $item): ?>
-                <?=$index > 0 ? '<br/>' : '' ?><?=$this->escapeHtml($item['name']) ?><? if (!empty($item['amount'])): ?>, <?=$this->escapeHtml($item['amount']) ?><? endif; ?>
-                <? if (!empty($item['type'])): ?> (<?=$this->escapeHtml($item['type']) ?>)<? endif; ?>
+                <?
+                  $additional = [];
+                  if (!empty($item['type'])) {
+                    $additional[] = $this->escapeHtml($item['type']);
+                  }
+                  if (!empty($item['amount'])) {
+                    $additional[] = $this->escapeHtml($item['amount']);
+                  }
+                ?>
+                <?=$index > 0 ? '<br/>' : '' ?><?=$this->escapeHtml($item['name']) ?><? if (!empty($additional)): ?>, <?=implode(' ', $additional) ?><? endif; ?>
+              <? endforeach; ?>
+            </div>
+          </td>
+        </tr>
+      <? endif; ?>
+
+      <? if ($results = $this->driver->getDistributors()): ?>
+        <tr class="record-distributors">
+          <th><?=$this->transEsc('Distribution')?>: </th>
+          <td>
+            <div class="truncate-field">
+              <? foreach($results as $index => $item): ?>
+                <?
+                  $additional = [];
+                  if (!empty($item['method'])) {
+                    $additional[] = $this->escapeHtml($item['method']);
+                  }
+                  if (!empty($item['date'])) {
+                    $additional[] = $this->escapeHtml($item['date']);
+                  }
+                ?>
+                <?=($index > 0 ? '<br/>' : '')?><?=$this->escapeHtml($item['name'])?><? if (!empty($additional)): ?> (<?=implode(', ', $additional) ?>)<? endif; ?>
               <? endforeach; ?>
             </div>
           </td>
@@ -589,7 +641,6 @@
       <? endif; ?>
 
       <? $dateSpan = $this->driver->getDateSpan(); if (!empty($dateSpan)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="extendedDateSpan">
           <th><?=$this->transEsc('Published')?>: </th>
           <td>
@@ -601,23 +652,10 @@
       <? endif; ?>
 
       <? $freq = $this->driver->getPublicationFrequency(); if (!empty($freq)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="extendedFrequency">
           <th><?=$this->transEsc('Publication Frequency')?>: </th>
           <td>
             <? foreach ($freq as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $playTime = $this->driver->getPlayingTimes(); if (!empty($playTime)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedPlayTime">
-          <th><?=$this->transEsc('Playing Time')?>: </th>
-          <td>
-            <? foreach ($playTime as $field): ?>
               <?=$this->escapeHtml($field)?><br/>
             <? endforeach; ?>
           </td>
@@ -648,7 +686,6 @@
       <? endif; ?>
 
       <? $system = $this->driver->getSystemDetails(); if (!empty($system)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="extendedSystem">
           <th><?=$this->transEsc('Format')?>: </th>
           <td>
@@ -660,7 +697,6 @@
       <? endif; ?>
 
       <? $audience = $this->driver->getTargetAudienceNotes(); if (!empty($audience)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="extendedAudience">
           <th><?=$this->transEsc('Audience')?>: </th>
           <td>
@@ -672,7 +708,6 @@
       <? endif; ?>
 
       <? $awards = $this->driver->getAwards(); if (!empty($awards)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="extendedAwards">
           <th><?=$this->transEsc('Awards')?>: </th>
           <td>
@@ -684,7 +719,6 @@
       <? endif; ?>
 
       <? $credits = $this->driver->getProductionCredits(); if (!empty($credits)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="extendedCredits">
           <th><?=$this->transEsc('Production Credits')?>: </th>
           <td>
@@ -696,7 +730,6 @@
       <? endif; ?>
 
       <? $bib = $this->driver->getBibliographyNotes(); if (!empty($bib)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="extendedBibliography">
           <th><?=$this->transEsc('Bibliography')?>: </th>
           <td>
@@ -708,7 +741,6 @@
       <? endif; ?>
 
       <? $isbns = $this->driver->getISBNs(); if (!empty($isbns)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="extendedISBNs">
           <th><?=$this->transEsc('ISBN')?>: </th>
           <td>
@@ -720,7 +752,6 @@
       <? endif; ?>
 
       <? $issns = $this->driver->getISSNs(); if (!empty($issns)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="extendedISSNs">
           <th><?=$this->transEsc('ISSN')?>: </th>
           <td>
@@ -732,7 +763,6 @@
       <? endif; ?>
 
       <? $doi = $this->driver->tryMethod('getCleanDOI'); if (!empty($doi)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="extended-doi">
           <th><?=$this->transEsc('DOI')?>: </th>
           <td><?=$this->escapeHtml($doi)?></td>
@@ -740,7 +770,6 @@
       <? endif; ?>
 
       <? $related = $this->driver->getRelationshipNotes(); if (!empty($related)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="extendedRelatedItems">
           <th><?=$this->transEsc('Related Items')?>: </th>
           <td>
@@ -752,7 +781,6 @@
       <? endif; ?>
 
       <? $access = $this->driver->getAccessRestrictions(); if (!empty($access)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="extendedAccess">
           <th><?=$this->transEsc('Access')?>: </th>
           <td>
@@ -764,7 +792,6 @@
       <? endif; ?>
 
       <? $findingAids = $this->driver->getFindingAids(); if (!empty($findingAids)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="extendedFindingAids">
           <th><?=$this->transEsc('Finding Aid')?>: </th>
           <td>
@@ -776,7 +803,6 @@
       <? endif; ?>
 
       <? $publicationPlaces = $this->driver->getHierarchicalPlaceNames(); if (!empty($publicationPlaces)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="publicationPlace">
           <th><?=$this->transEsc('Publication_Place')?>: </th>
           <td>
@@ -788,7 +814,6 @@
       <? endif; ?>
 
       <? $authorNotes = empty($isbn) ? [] : $this->authorNotes($isbn); if (!empty($authorNotes)): ?>
-        <? $contentDisplayed = true; ?>
         <tr class="extendedAuthorNotes">
           <th><?=$this->transEsc('Author Notes')?>: </th>
           <td>
@@ -797,20 +822,6 @@
                 <?=$field['Content']?><br/>
               <? endforeach; ?>
             <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? if ($results = $this->driver->getDistributors()): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="record-distributors">
-          <th><?=$this->transEsc('Distributors')?>: </th>
-          <td>
-            <div class="truncate-field">
-              <? foreach($results as $index => $distributor): ?>
-                <?=($index > 0 ? '<br/>' : '')?><?=$this->escapeHtml($distributor['name'])?><? if (!empty($distributor['date'])): ?><span class="distributor-date">, <?=$this->escapeHtml($distributor['date']) ?></span><? endif; ?><? if (!empty($distributor['method'])): ?><span class="distribution-method">, <?=$this->escapeHtml($distributor['method']) ?></span><? endif; ?>
-              <? endforeach; ?>
-            </div>
           </td>
         </tr>
       <? endif; ?>
