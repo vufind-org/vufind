@@ -93,7 +93,7 @@ class User extends Gateway
     /**
      * Retrieve a user object from the database based on catalog ID.
      *
-     * @param string $catId  Catalog ID.
+     * @param string $catId Catalog ID.
      *
      * @return UserRow
      */
