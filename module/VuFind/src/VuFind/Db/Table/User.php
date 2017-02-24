@@ -58,21 +58,21 @@ class User extends Gateway
     /**
      * Constructor
      *
-     * @param Adapter       $adapter  Database adapter
-     * @param PluginManager $tm       Table manager
-     * @param array         $cfg      Zend Framework configuration
-     * @param Config        $config   VuFind configuration
-     * @param string        $rowClass Name of class for representing rows
-     * @param Container     $session  Session container to inject into rows
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
+     * @param string        $rowObj  Row prototype object (null for default)
+     * @param Config        $config  VuFind configuration
+     * @param Container     $session Session container to inject into rows
      * (optional; used for privacy mode)
+     * @param string        $table   Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        Config $config, $rowClass = 'VuFind\Db\Row\User',
-        Container $session = null
+        $rowObj, Config $config, Container $session = null, $table = 'user'
     ) {
         $this->config = $config;
         $this->session = $session;
-        parent::__construct($adapter, $tm, $cfg, 'user', $rowClass);
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**
@@ -144,23 +144,6 @@ class User extends Gateway
                 ->OR->isNotNull('cat_password');
         };
         return $this->select($callback);
-    }
-
-    /**
-     * Construct the prototype for rows.
-     *
-     * @param string $rowClass Name of row class to instantiate
-     *
-     * @return object
-     */
-    protected function initializeRowPrototype($rowClass)
-    {
-        $prototype = parent::initializeRowPrototype($rowClass);
-        $prototype->setConfig($this->config);
-        if (null !== $this->session && is_callable([$prototype, 'setSession'])) {
-            $prototype->setSession($this->session);
-        }
-        return $prototype;
     }
 
     /**
