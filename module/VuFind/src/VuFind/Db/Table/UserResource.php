@@ -46,12 +46,13 @@ class UserResource extends Gateway
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
      * @param array         $cfg     Zend Framework configuration
+     * @param string        $rowObj  Row prototype object (null for default)
+     * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
-    {
-        parent::__construct(
-            $adapter, $tm, $cfg, 'user_resource', 'VuFind\Db\Row\UserResource'
-        );
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        $rowObj = null, $table = 'user_resource'
+    ) {
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**
