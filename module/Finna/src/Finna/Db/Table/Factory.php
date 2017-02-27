@@ -45,29 +45,16 @@ class Factory extends \VuFind\Db\Table\Factory
     /**
      * Construct a generic table object.
      *
-     * @param string $name Name of table to construct (fully qualified class name,
-     * or else a class name within the current namespace)
-     * @param array  $args Extra constructor arguments
+     * @param string         $name Name of table to construct (fully qualified
+     * class name, or else a class name within the current namespace)
+     * @param ServiceManager $sm   Service manager
+     * @param array          $args Extra constructor arguments for table object
      *
      * @return object
      */
-    public static function getGenericTable($name, $args)
+    public static function getGenericTable($name, ServiceManager $sm, $args = [])
     {
-        return parent::getGenericTable("\\Finna\\Db\\Table\\$name", $args);
-    }
-
-    /**
-     * Construct the Resource table.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Resource
-     */
-    public static function getResource(ServiceManager $sm)
-    {
-        $converter = $sm->getServiceLocator()->get('VuFind\DateConverter');
-        $loader = $sm->getServiceLocator()->get('VuFind\RecordLoader');
-        return static::getGenericTable('Resource', [$sm, $converter, $loader]);
+        return parent::getGenericTable("\\Finna\\Db\\Table\\$name", $sm, $args);
     }
 
     /**
@@ -89,7 +76,7 @@ class Factory extends \VuFind\Db\Table\Factory
             $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
             $session = new \Zend\Session\Container('Account', $sessionManager);
         }
-        return static::getGenericTable('User', [$sm, $config, $rowClass, $session]);
+        return static::getGenericTable('User', $sm, [$config, $rowClass, $session]);
     }
 
     /**
@@ -108,6 +95,6 @@ class Factory extends \VuFind\Db\Table\Factory
             $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
             $session = new \Zend\Session\Container('List', $sessionManager);
         }
-        return static::getGenericTable('UserList', [$sm, $session]);
+        return static::getGenericTable('UserList', $sm, [$session]);
     }
 }
