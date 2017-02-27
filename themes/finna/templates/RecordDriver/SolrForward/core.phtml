@@ -222,17 +222,6 @@
     <?/* Display Main Details */?>
     <table class="table table-finna-record record-details record-details-more" style="table-layout:initial;">
       <tbody>
-      <? $playTime = $this->driver->getPlayingTimes(); if (!empty($playTime)): ?>
-        <tr class="extendedPlayTime">
-          <th><?=$this->transEsc('Playing Time')?>: </th>
-          <td>
-            <? foreach ($playTime as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
       <? if ($originalWork = $this->driver->getOriginalWork()): ?>
       <tr class="recordOriginalWork">
         <th><?=$this->transEsc('Original Work')?>: </th>
@@ -656,6 +645,17 @@
           <th><?=$this->transEsc('Publication Frequency')?>: </th>
           <td>
             <? foreach ($freq as $field): ?>
+              <?=$this->escapeHtml($field)?><br/>
+            <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
+      <? $playTime = $this->driver->getPlayingTimes(); if (!empty($playTime)): ?>
+        <tr class="extendedPlayTime">
+          <th><?=$this->transEsc('Playing Time')?>: </th>
+          <td>
+            <? foreach ($playTime as $field): ?>
               <?=$this->escapeHtml($field)?><br/>
             <? endforeach; ?>
           </td>
