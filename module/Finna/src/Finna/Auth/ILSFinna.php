@@ -52,7 +52,7 @@ trait ILSFinna
         $check = $catalog->checkCapability(
             'getConfig', ['cat_username' => "$target.login"]
         );
-        if (!check) {
+        if (!$check) {
             return '';
         }
         $config = $this->getCatalog()->getConfig(
