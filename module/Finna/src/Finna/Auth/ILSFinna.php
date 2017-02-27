@@ -104,7 +104,16 @@ trait ILSFinna
         }
 
         // Check to see if we already have an account for this user:
-        $user = $this->getUserTable()->getByUsername($info[$usernameField]);
+        $userTable = $this->getUserTable();
+        if (!empty($info['id'])) {
+            $user = $userTable->getByCatalogId($info['id'], false);
+            if (empty($user)) {
+                $user = $userTable->getByUsername($info[$usernameField]);
+                $user->saveCatalogId($info['id']);
+            }
+        } else {
+            $user = $userTable->getByUsername($info[$usernameField]);
+        }
 
         // No need to store the ILS password in VuFind's main password field:
         $user->password = '';

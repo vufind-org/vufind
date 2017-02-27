@@ -59,6 +59,21 @@ class User extends \VuFind\Db\Table\User
     }
 
     /**
+     * Retrieve a user object from the database based on catalog ID.
+     *
+     * @param string $catId Catalog ID.
+     *
+     * @return UserRow
+     */
+    public function getByCatalogId($catId)
+    {
+        if (isset($this->config->Site->institution)) {
+            $catId = $this->config->Site->institution . ":$catId";
+        }
+        return parent::getByCatalogId($catId);
+    }
+
+    /**
      * Retrieve a user object from the database based on email.
      *
      * @param string $email email to use for retrieval.

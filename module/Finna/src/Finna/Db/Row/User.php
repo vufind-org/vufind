@@ -143,6 +143,22 @@ class User extends \VuFind\Db\Row\User
     }
 
     /**
+     * Save ILS ID.
+     *
+     * @param string $catId Catalog ID to save.
+     *
+     * @return mixed        The output of the save method.
+     * @throws \VuFind\Exception\PasswordSecurity
+     */
+    public function saveCatalogId($catId)
+    {
+        if (isset($this->config->Site->institution)) {
+            $catId = $this->config->Site->institution . ":$catId";
+        }
+        return parent::saveCatalogId($catId);
+    }
+
+    /**
      * Updated saved language
      *
      * @param string $language New language
