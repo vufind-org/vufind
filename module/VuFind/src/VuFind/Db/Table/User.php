@@ -78,7 +78,7 @@ class User extends Gateway
     /**
      * Create a row for the specified username.
      *
-     * @param string $username Username to use for retrieval.
+     * @param string $username Username
      *
      * @return UserRow
      */
@@ -88,6 +88,18 @@ class User extends Gateway
         $row->username = $username;
         $row->created = date('Y-m-d H:i:s');
         return $row;
+    }
+
+    /**
+     * Retrieve a user object from the database based on catalog ID.
+     *
+     * @param string $catId Catalog ID.
+     *
+     * @return UserRow
+     */
+    public function getByCatalogId($catId)
+    {
+        return $this->select(['cat_id' => $catId])->current();
     }
 
     /**

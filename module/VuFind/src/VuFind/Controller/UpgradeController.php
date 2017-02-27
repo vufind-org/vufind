@@ -284,17 +284,6 @@ class UpgradeController extends AbstractBase
                 . ' legacy "VuFind" source value(s) in resource table'
             );
         }
-
-        $userStatsFields = $this->getTable('userstatsfields');
-        $usfWhere = ['field' => 'recordSource', 'value' => 'VuFind'];
-        $usfRows = $userStatsFields->select($usfWhere);
-        if (count($usfRows) > 0) {
-            $userStatsFields->update(['value' => 'Solr'], $usfWhere);
-            $this->session->warnings->append(
-                'Converted ' . count($usfRows)
-                . ' legacy "VuFind" source value(s) in user_stats_fields table'
-            );
-        }
     }
 
     /**
