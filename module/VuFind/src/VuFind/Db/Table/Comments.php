@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
+use VuFind\Db\Row\RowGateway;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Expression;
 
@@ -46,12 +47,13 @@ class Comments extends Gateway
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
      * @param array         $cfg     Zend Framework configuration
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
-    {
-        parent::__construct(
-            $adapter, $tm, $cfg, 'comments', 'VuFind\Db\Row\Comments'
-        );
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj = null, $table = 'comments'
+    ) {
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**
