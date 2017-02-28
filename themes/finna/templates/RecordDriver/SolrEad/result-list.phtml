@@ -65,7 +65,14 @@
             <br/><span class="archive-label"><?=$this->transEsc('Archive Series')?>:</span>
             <? $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
             <? foreach ($parentIds as $index => $parentId): ?>
-              <a href="<?=$this->recordLink()->getUrl("$parentSource|$parentId")?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
+              <?
+                try {
+                  $parentUrl = $this->recordLink()->getUrl("$parentSource|$parentId");
+                } catch (\Exception $e) {
+                  $parentUrl = '';
+                }
+              ?>
+              <a href="<?=$parentUrl?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
             <? endforeach; ?>
           <? endif; ?>
         </div>

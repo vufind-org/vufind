@@ -130,7 +130,14 @@
             <th><?=$this->transEsc('Archive')?>:</th>
             <td>
             <? foreach ($topIds as $index => $parentId): ?>
-              <?=($index > 0 ? ', ' : '')?><a href="<?=$this->recordLink()->getUrl("$parentSource|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
+              <?
+                try {
+                  $parentUrl = $this->recordLink()->getUrl("$parentSource|$parentId");
+                } catch (\Exception $e) {
+                  $parentUrl = '';
+                }
+              ?>
+              <?=($index > 0 ? ', ' : '')?><a href="<?=$parentUrl?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
             <? endforeach; ?>
             </td>
           </tr>
@@ -143,7 +150,14 @@
           <td>
           <? $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
           <? foreach ($parentIds as $index => $parentId): ?>
-            <?=($index > 0 ? ', ' : '')?><a href="<?=$this->recordLink()->getUrl("$parentSource|$parentId")?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a>
+            <?
+              try {
+                $parentUrl = $this->recordLink()->getUrl("$parentSource|$parentId");
+              } catch (\Exception $e) {
+                $parentUrl = '';
+              }
+            ?>
+            <?=($index > 0 ? ', ' : '')?><a href="<?=$parentUrl?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a>
           <? endforeach; ?>
           </td>
         </tr>
