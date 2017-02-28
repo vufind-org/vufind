@@ -27,6 +27,7 @@
  */
 namespace VuFind\Db\Table;
 use VuFind\Date\Converter as DateConverter;
+use VuFind\Db\Row\RowGateway;
 use VuFind\Record\Loader;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Expression;

@@ -29,6 +29,7 @@
  */
 namespace VuFind\Db\Table;
 use minSO;
+use VuFind\Db\Row\RowGateway;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Adapter\ParameterContainer;
 use Zend\Db\TableGateway\Feature;

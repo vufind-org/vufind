@@ -30,6 +30,7 @@
  */
 namespace VuFind\Db\Table;
 
+use VuFind\Db\Row\RowGateway;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Predicate\Expression;
 use Zend\Db\Sql\Where;
