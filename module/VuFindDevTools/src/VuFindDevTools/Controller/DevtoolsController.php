@@ -53,7 +53,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     protected function getQueryBuilder($id)
     {
         try {
-            $backend = $this->getServiceLocator()
+            $backend = $this->serviceLocator
                 ->get('VuFind\Search\BackendManager')
                 ->get($id);
         } catch (\Exception $e) {
@@ -77,7 +77,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         }
         if (isset($view->min) && $view->min) {
             $view->results = $view->min->deminify(
-                $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                $this->serviceLocator->get('VuFind\SearchResultsPluginManager')
             );
         }
         if (isset($view->results) && $view->results) {

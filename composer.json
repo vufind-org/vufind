@@ -45,7 +45,7 @@
         "zendframework/zend-log": "2.9.1",
         "zendframework/zend-mail": "2.7.2",
         "zendframework/zend-modulemanager": "2.7.2",
-        "zendframework/zend-mvc": "2.6.3",
+        "zendframework/zend-mvc": "2.7.8",
         "zendframework/zend-paginator": "2.7.0",
         "zendframework/zend-serializer": "2.7.2",
         "zendframework/zend-servicemanager": "2.7.5",
