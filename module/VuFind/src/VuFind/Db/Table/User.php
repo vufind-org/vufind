@@ -61,14 +61,15 @@ class User extends Gateway
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
      * @param array         $cfg     Zend Framework configuration
-     * @param string        $rowObj  Row prototype object (null for default)
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param Config        $config  VuFind configuration
      * @param Container     $session Session container to inject into rows
      * (optional; used for privacy mode)
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        $rowObj, Config $config, Container $session = null, $table = 'user'
+        RowGateway $rowObj, Config $config, Container $session = null,
+        $table = 'user'
     ) {
         $this->config = $config;
         $this->session = $session;

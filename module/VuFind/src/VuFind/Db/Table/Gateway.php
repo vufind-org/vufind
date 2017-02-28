@@ -54,11 +54,11 @@ class Gateway extends AbstractTableGateway
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
      * @param array         $cfg     Zend Framework configuration
-     * @param string        $rowObj  Row prototype object (null for default)
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg, $rowObj,
-        $table
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj, $table
     ) {
         $this->adapter = $adapter;
         $this->tableManager = $tm;

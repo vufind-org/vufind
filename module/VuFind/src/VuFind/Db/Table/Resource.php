@@ -62,13 +62,14 @@ class Resource extends Gateway
      * @param Adapter       $adapter   Database adapter
      * @param PluginManager $tm        Table manager
      * @param array         $cfg       Zend Framework configuration
-     * @param string        $rowObj    Row prototype object (null for default)
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param DateConverter $converter Date converter
      * @param Loader        $loader    Record loader
      * @param string        $table     Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        $rowObj, DateConverter $converter, Loader $loader, $table = 'resource'
+        RowGateway $rowObj, DateConverter $converter, Loader $loader,
+        $table = 'resource'
     ) {
         $this->dateConverter = $converter;
         $this->recordLoader = $loader;
