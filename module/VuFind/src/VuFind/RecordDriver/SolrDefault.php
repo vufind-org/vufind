@@ -249,40 +249,33 @@ class SolrDefault extends AbstractBase
     {
         return null;
     }
-    
+
     /**
      * Get Author Data Fields
      *
      * @param string $index      The author index [primary, corporate, or secondary]
-     * @param array  $authors    An array of authors
      * @param array  $dataFields An array of fields to used to construct method
      *                           names
      *
      * @return array
      */
-    public function getAuthorDataFields($index, $authors, $dataFields = [])
+    public function getAuthorDataFields($index, $dataFields = [])
     {
-        $data            = [];
-        $dataFieldValues = [];
+        $data = $dataFieldValues = [];
 
-        foreach ($dataFields as $dataField) {
-            $dataFieldMethod = sprintf(
-                "get%sAuthors%ss", ucfirst($index), ucfirst($dataField)
-            );
-            $dataFieldValues[$dataField]
-                = $this->tryMethod($dataFieldMethod, [], []);
+        $authorMethod = sprintf("get%sAuthors", ucfirst($index));
+        foreach ($dataFields as $field) {
+            $fieldMethod = sprintf($authorMethod . "%ss", ucfirst($field));
+            $dataFieldValues[$field] = $this->tryMethod($fieldMethod, [], []);
         }
 
-        foreach ($authors as $author) {
-            
+        foreach ($this->tryMethod($authorMethod, [], []) as $i => $author) {
             if (!isset($data[$author])) {
-                $data[$author]  = [];
+                $data[$author] = [];
             }
-            
+
             foreach ($dataFieldValues as $field => $dataFieldValue) {
-                $data[$author][$field]
-                    = !is_array($dataFieldValue)
-                        ? [$dataFieldValue] : $dataFieldValue;
+                $data[$author][$field][] = $dataFieldValue[$i];
             }
         }
         return $data;
@@ -473,16 +466,9 @@ class SolrDefault extends AbstractBase
     public function getDeduplicatedAuthors($dataFields = ['role'])
     {
         $authors = [];
-        
-        $authors['primary'] = $this->getAuthorDataFields(
-            "primary", $this->getPrimaryAuthors(), $dataFields
-        );
-        $authors['secondary'] = $this->getAuthorDataFields(
-            "secondary", $this->getSecondaryAuthors(), $dataFields
-        );
-        $authors['corporate'] = $this->getAuthorDataFields(
-            "corporate", $this->getCorporateAuthors(), $dataFields
-        );
+        foreach (['primary', 'secondary', 'corporate'] as $type) {
+            $authors[$type] = $this->getAuthorDataFields($type, $dataFields);
+        };
 
         // deduplicate
         $dedup = function (&$array1, &$array2) {
