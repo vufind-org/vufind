@@ -636,7 +636,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             [
                 'limit' => 10000,
                 'fields' => 'id,record,frozen,placed,location,pickupLocation'
-                    . ',status,recordType,priority'
+                    . ',status,recordType,priority,priorityQueueLength'
             ],
             'GET',
             $patron
@@ -675,6 +675,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     : '';
             }
             $available = in_array($entry['status']['code'], ['b', 'j', 'i']);
+            $position = ($entry['priority'] + 1) . ' / '
+                . $entry['priorityQueueLength'];
             $holds[] = [
                 'id' => $bibId,
                 'item_id' => $this->extractId($entry['id']),
@@ -682,7 +684,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'create' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['placed']
                 ),
-                'position' => $entry['priority'],
+                'position' => $position,
                 'available' => $available,
                 'in_transit' => $entry['status']['code'] == 't',
                 'volume' => $volume,
