@@ -1402,8 +1402,6 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function getItemStatusesForBib($id)
     {
-        $availableStatuses = ['-'];
-
         $bib = $this->getBibRecord($id, 'bibLevel');
         $result = $this->makeRequest(
             ['v3', 'items'],
@@ -1424,9 +1422,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $statuses = [];
         foreach ($result['entries'] as $i => $item) {
             $location = $this->translateLocation($item['location']);
-            $available = in_array(trim($item['status']['code']), $availableStatuses)
-                && !isset($item['status']['duedate']);
             list($status, $duedate, $notes) = $this->getItemStatus($item);
+            $available = $status == 'On Shelf';
             // OPAC message
             if (isset($item['fixedFields']['108'])) {
                 $opacMsg = $item['fixedFields']['108'];
