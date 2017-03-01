@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Primo Central Controller
@@ -40,11 +41,13 @@ class PrimoController extends AbstractSearch
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         $this->searchClassId = 'Primo';
-        parent::__construct();
+        parent::__construct($sm);
     }
 
     /**
@@ -64,7 +67,7 @@ class PrimoController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('Primo');
+        $config = $this->serviceLocator->get('VuFind\Config')->get('Primo');
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
     }

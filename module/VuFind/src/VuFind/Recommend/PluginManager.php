@@ -26,7 +26,6 @@
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use Zend\ServiceManager\ConfigInterface;
 
 /**
  * Recommendation module plugin manager
@@ -42,16 +41,20 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Constructor
      *
-     * @param ConfigInterface $configuration Configuration settings (optional)
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
      */
-    public function __construct(ConfigInterface $configuration = null)
-    {
-        // These plugins are not meant to be shared -- the same module may be used
-        // multiple times with different configurations, so we need to build a new
-        // copy each time the plugin is retrieved.
+    public function __construct($configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        // These objects are not meant to be shared -- every time we retrieve one,
+        // we are building a brand new object.
         $this->setShareByDefault(false);
 
-        parent::__construct($configuration);
+        parent::__construct($configOrContainerInstance, $v3config);
     }
 
     /**
