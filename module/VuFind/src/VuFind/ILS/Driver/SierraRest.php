@@ -595,9 +595,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $patron
             );
             if (!empty($result['code'])) {
-                $msg = preg_replace(
-                    '/WebPAC Error\s*:\s*/', '', $result['description']
-                );
+                $msg = $this->formatErrorMessage($result['description']);
                 $finalResult['details'][$itemId] = [
                     'item_id' => $itemId,
                     'success' => false,
@@ -735,9 +733,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             );
 
             if (!empty($result['code'])) {
-                $msg = preg_replace(
-                    '/WebPAC Error\s*:\s*/', '', $result['description']
-                );
+                $msg = $this->formatErrorMessage($result['description']);
                 $response[$holdId] = [
                     'item_id' => $holdId,
                     'success' => false,
@@ -1053,7 +1049,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         if (isset($result['code']) && $result['code'] != 0) {
             return [
-                'success' => false, 'status' => $result['description']
+                'success' => false,
+                'status' => $this->formatErrorMessage($result['description'])
             ];
         }
         return ['success' => true, 'status' => 'change_password_ok'];
@@ -1689,12 +1686,36 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function holdError($msg)
     {
-        // Remove prefix like "WebPAC Error" or "XCirc error"
-        $msg = preg_replace('/.* [eE]rror\s*:\s*/', '', $msg);
+        $msg = $this->formatErrorMessage($msg);
         return [
             'success' => false,
             'sysMessage' => $msg
         ];
+    }
+
+    /**
+     * Format an error message received from Sierra
+     *
+     * @param string $msg An error message string
+     *
+     * @return string
+     */
+    protected function formatErrorMessage($msg)
+    {
+        // Remove prefix like "WebPAC Error" or "XCirc error"
+        $msg = preg_replace('/.* [eE]rror\s*:\s*/', '', $msg);
+        // Handle non-ascii characters that are returned in a wrongly encoded format
+        // (e.g. {u00E4} instead of \u00E4)
+        $msg = preg_replace_callback(
+            '/\{u([0-9a-fA-F]{4})\}/',
+            function ($matches) {
+                return mb_convert_encoding(
+                    pack('H*', $matches[1]), 'UTF-8', 'UCS-2BE'
+                );
+            },
+            $msg
+        );
+        return $msg;
     }
 
     /**
