@@ -75,20 +75,36 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
             . "[Section2]\n"
             . "d=4\ne=5\nf=6\n"
             . "[Section3]\n"
-            . "g=7\nh=8\ni=9\n";
+            . "g=7\nh=8\ni=9\n"
+            . "[Section4]\n"
+            . "j[] = 1\nj[] = 2\nk[a] = 1\nk[b] = 2\n";
         $childPath = Locator::getLocalConfigPath('unit-test-child.ini', null, true);
         $child = "[Section1]\n"
             . "j=10\nk=11\nl=12\n"
             . "[Section2]\n"
             . "m=13\nn=14\no=15\n"
+            . "[Section4]\n"
+            . "j[] = 3\nk[c] = 3\n"
             . "[Parent_Config]\n"
             . "path=\"{$parentPath}\"\n"
             . "override_full_sections=Section1\n";
+        $child2Path = Locator::getLocalConfigPath('unit-test-child2.ini', null, true);
+        $child2 = "[Section1]\n"
+            . "j=10\nk=11\nl=12\n"
+            . "[Section2]\n"
+            . "m=13\nn=14\no=15\n"
+            . "[Section4]\n"
+            . "j[] = 3\nk[c] = 3\n"
+            . "[Parent_Config]\n"
+            . "path=\"{$parentPath}\"\n"
+            . "override_full_sections=Section1\n"
+            . "merge_array_settings=true\n";
 
         // Fail if we are unable to write files:
-        if (null === $parentPath || null === $childPath
+        if (null === $parentPath || null === $childPath || null === $child2Path
             || !file_put_contents($parentPath, $parent)
             || !file_put_contents($childPath, $child)
+            || !file_put_contents($child2Path, $child2)
         ) {
             self::$writeFailed = true;
             return;
@@ -175,6 +191,45 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
 
         // Make sure Section 3 was inherited; values from parent should exist.
         $this->assertEquals('7', $config->Section3->g);
+
+        // Make sure Section 4 arrays were overwritten.
+        $this->assertEquals([3], $config->Section4->j->toArray());
+        $this->assertEquals(['c' => 3], $config->Section4->k->toArray());
+    }
+
+    /**
+     * Test inheritance features with array merging turned on.
+     *
+     * @return void
+     */
+    public function testInheritanceWithArrayMerging()
+    {
+        if (self::$writeFailed) {
+            $this->markTestSkipped('Could not write test configurations.');
+        }
+
+        // Make sure load succeeds:
+        $config = $this->getConfig('unit-test-child2');
+        $this->assertTrue(is_object($config));
+
+        // Make sure Section 1 was overridden; values from parent should not be
+        // present.
+        $this->assertTrue(!isset($config->Section1->a));
+        $this->assertEquals('10', $config->Section1->j);
+
+        // Make sure Section 2 was merged; values from parent and child should
+        // both be present.
+        $this->assertEquals('4', $config->Section2->d);
+        $this->assertEquals('13', $config->Section2->m);
+
+        // Make sure Section 3 was inherited; values from parent should exist.
+        $this->assertEquals('7', $config->Section3->g);
+
+        // Make sure Section 4 arrays were overwritten.
+        $this->assertEquals([1, 2, 3], $config->Section4->j->toArray());
+        $this->assertEquals(
+            ['a' => 1, 'b' => 2, 'c' => 3], $config->Section4->k->toArray()
+        );
     }
 
     /**
