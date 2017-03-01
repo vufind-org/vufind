@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -118,6 +118,34 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
         $qb = new QueryBuilder(
             [
                 'test' => []
+            ]
+        );
+        foreach ($tests as $test) {
+            list($input, $output) = $test;
+            $q = new Query($input, 'test');
+            $response = $qb->build($q);
+            $processedQ = $response->get('q');
+            $this->assertEquals($output, $processedQ[0]);
+        }
+    }
+
+    /**
+     * Test generation with a query handler with edismax
+     *
+     * @return void
+     */
+    public function testQueryHandlerWithEdismax()
+    {
+        // Set up an array of expected inputs and outputs:
+        // @codingStandardsIgnoreStart
+        $tests = [
+            ['this?', '(this?) OR (this\?)'],// trailing question mark
+        ];
+        // @codingStandardsIgnoreEnd
+
+        $qb = new QueryBuilder(
+            [
+                'test' => ['DismaxHandler' => 'edismax', 'DismaxFields' => ['foo']]
             ]
         );
         foreach ($tests as $test) {

@@ -20,30 +20,59 @@ org.solrmarc.index.SolrIndexer indexer = null;
 public Boolean authorHasAppropriateRelator(DataField authorField,
     String[] noRelatorAllowed, String relatorConfig
 ) {
+    return getValidRelators(authorField, noRelatorAllowed, relatorConfig).size() > 0;
+}
+
+/**
+ * Extract all valid relator terms from a list of subfields using a whitelist.
+ * @param subfields      List of subfields to check
+ * @param permittedRoles Whitelist to check against
+ * @return Set of valid relator terms
+ */
+public Set getValidRelatorsFromSubfields(List subfields, List permittedRoles)
+{
+    Set relators = new LinkedHashSet();
+    for (int j = 0; j < subfields.size(); j++) {
+        String current = normalizeRelatorString(subfields.get(j).getData());
+        if (permittedRoles.contains(current)) {
+            relators.add(current);
+        }
+    }
+    return relators;
+}
+
+/**
+ * Extract all values that meet the specified relator requirements.
+ * @param authorField      Field to analyze
+ * @param noRelatorAllowed Array of tag names which are allowed to be used with
+ * no declared relator.
+ * @param relatorConfig    The setting in author-classification.ini which
+ * defines which relator terms are acceptable (or a colon-delimited list)
+ * @return Set
+ */
+public Set getValidRelators(DataField authorField,
+    String[] noRelatorAllowed, String relatorConfig
+) {
     // get tag number from Field
     String tag = authorField.getTag();
-    List subfieldE = normalizeRelatorSubfieldList(authorField.getSubfields('e'));
-    List subfield4 = normalizeRelatorSubfieldList(authorField.getSubfields('4'));
+    List subfieldE = authorField.getSubfields('e');
+    List subfield4 = authorField.getSubfields('4');
+
+    Set relators = new LinkedHashSet();
 
     // if no relator is found, check to see if the current tag is in the "no
     // relator allowed" list.
     if (subfieldE.size() == 0 && subfield4.size() == 0) {
-        return Arrays.asList(noRelatorAllowed).contains(tag);
-    }
-
-    // If we got this far, we need to figure out what type of relation they have
-    List permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
-    for (int j = 0; j < subfield4.size(); j++) {
-        if (permittedRoles.contains(subfield4.get(j).getData())) {
-            return true;
+        if (Arrays.asList(noRelatorAllowed).contains(tag)) {
+            relators.add("");
         }
+    } else {
+        // If we got this far, we need to figure out what type of relation they have
+        List permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
+        relators.addAll(getValidRelatorsFromSubfields(subfieldE, permittedRoles));
+        relators.addAll(getValidRelatorsFromSubfields(subfield4, permittedRoles));
     }
-    for (int j = 0; j < subfieldE.size(); j++) {
-        if (permittedRoles.contains(subfieldE.get(j).getData())) {
-            return true;
-        }
-    }
-    return false;
+    return relators;
 }
 
 /**
@@ -99,8 +128,8 @@ public List getAuthorsFilteredByRelator(Record record, String tagList,
         DataField authorField;
         while (fieldsIter.hasNext()){
             authorField = (DataField) fieldsIter.next();
-            //add all author types to the result set
-            if (authorHasAppropriateRelator(authorField, noRelatorAllowed, relatorConfig)) {
+            // add all author types to the result set; if we have multiple relators, repeat the authors
+            for (String iterator: getValidRelators(authorField, noRelatorAllowed, relatorConfig)) {
                 for (String subfields : parsedTagList.get(authorField.getTag())) {
                     String current = indexer.getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
                     // TODO: we may eventually be able to use this line instead,
@@ -194,30 +223,7 @@ public List getRelatorsFilteredByRelator(Record record, String tagList,
         while (fieldsIter.hasNext()){
             authorField = (DataField) fieldsIter.next();
             //add all author types to the result set
-            if (authorHasAppropriateRelator(authorField, noRelatorAllowed, relatorConfig)) {
-                List subfieldE = normalizeRelatorSubfieldList(authorField.getSubfields('e'));
-                List subfield4 = normalizeRelatorSubfieldList(authorField.getSubfields('4'));
-    
-                // get the first non-empty subfield
-                String relator = defaultRelator;
-
-                // try subfield E first
-                for (int j = 0; j < subfieldE.size(); j++) {
-                    if (!subfieldE.get(j).getData().isEmpty()) {
-                        relator = subfieldE.get(j).getData();
-                        continue;
-                    }
-                }
-                // try subfield 4 now and overwrite relator as subfield 4 is most important
-                for (int j = 0; j < subfield4.size(); j++) {
-                    if (!subfield4.get(j).getData().isEmpty()) {
-                        relator = subfield4.get(j).getData();
-                        continue;
-                    }
-                }
-
-                result.add(relator);
-            }
+            result.addAll(getValidRelators(authorField, noRelatorAllowed, relatorConfig));
         }
     }
     return result;
@@ -290,22 +296,6 @@ public List normalizeRelatorStringList(List stringList)
         );
     }
     return stringList;
-}
-
-/**
- * Normalizes the strings in a list of subfields.
- *
- * @param subfieldList List of subfields to be normalized
- * @return subfieldList Normalized List of subfields
- */
-public List normalizeRelatorSubfieldList(List subfieldList)
-{
-    for (int j = 0; j < subfieldList.size(); j++) {
-        subfieldList.get(j).setData(
-            normalizeRelatorString(subfieldList.get(j).getData())
-        );
-    }
-    return subfieldList;
 }
 
 /**

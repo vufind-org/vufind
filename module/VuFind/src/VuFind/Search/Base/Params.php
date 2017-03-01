@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Base
@@ -1687,15 +1687,20 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Translate a string if a translator is available.
+     * Translate a string (or string-castable object)
      *
-     * @param string $msg Message to translate
+     * @param string|object|array $target  String to translate or an array of text
+     * domain and string to translate
+     * @param array               $tokens  Tokens to inject into the translated
+     * string
+     * @param string              $default Default value to use if no translation is
+     * found (null for no default).
      *
      * @return string
      */
-    public function translate($msg)
+    public function translate($target, $tokens = [], $default = null)
     {
-        return $this->getOptions()->translate($msg);
+        return $this->getOptions()->translate($target, $tokens, $default);
     }
 
     /**

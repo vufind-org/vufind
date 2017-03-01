@@ -1,0 +1,30 @@
+HTTP/1.1 200 OK
+Server: vzg-paia/2.2-RC3 (Wed Jun 01 17:38:24 CEST 2016)
+Date: Mon, 20 Jun 2016 11:23:46 GMT
+Cache-Control: no-cache
+Access-Control-Allow-Origin: *
+Access-Control-Expose-Headers: X-OAuth-Scopes, X-Accepted-OAuth-Scopes
+Access-Control-Allow-Headers: Content-Type, Authorization
+Pragma: no-cache
+X-OAuth-Scopes: read_availability change_password write_items read_items read_fees read_patron
+X-Accepted-OAuth-Scopes: write_items
+Content-Type: application/json; charset=UTF-8
+
+{
+  "doc": [{
+    "requested": "http://uri.gbv.de/document/opac-de-830:bar:830$22061137",
+    "queue": 0,
+    "cancancel": false,
+    "storageid": "de-830:desk:1",
+    "label": "22:2206-1137",
+    "reminder": 0,
+    "edition": "http://uri.gbv.de/document/opac-de-830:ppn:048430196",
+    "endtime": "2016-07-18",
+    "status": 3,
+    "starttime": "2016-06-07",
+    "storage": "Ausleihe",
+    "about": "Verteilte Datenbanken /  (1991)",
+    "renewals": 1,
+    "item": "http://uri.gbv.de/document/opac-de-830:bar:830$22061137"
+  }]
+}

@@ -148,6 +148,19 @@
 # [uppercase] - Convert string to uppercase
 #
 # See the CallNumber search below for an example of custom munging in action.
+#
+#-----------------------------------------------------------------------------------
+#
+# Note that you may create a "@parent_yaml" entry at the very top of the file to
+# inherit sections from another file. For example:
+#
+# @parent_yaml: "/path/to/my/file.yaml"
+#
+# Only sections not found in this file will be loaded in from the parent file.
+# In some complex scenarios, this can be a useful way of sharing settings
+# between multiple configured VuFind instances. You can create a chain of parent
+# files if necessary.
+#
 #-----------------------------------------------------------------------------------
 
 # These searches use Dismax when possible:
@@ -161,51 +174,13 @@ Author:
     - author_corporate
     - author_variant
     - author2_variant
-  QueryFields:
-    author:
-      - [onephrase, 350]
-      - [and, 200]
-      - [or, 100]
-    author_fuller:
-      - [onephrase, 200]
-      - [and, 100]
-      - [or, 50]
-    author2:
-      - [onephrase, 100]
-      - [and, 50]
-      - [or, ~]
-    author2_fuller:
-      - [onephrase, 100]
-      - [and, 50]
-      - [or, ~]
-    author_additional:
-      - [onephrase, 100]
-      - [and, 50]
-      - [or, ~]
-    author_corporate:
-      - [onephrase, 100]
-      - [and, 50]
-      - [or, ~]
-    author_variant:
-      - [onephrase, 100]
-      - [and, 50]
-      - [or, ~]
-    author2_variant:
-      - [onephrase, 100]
-      - [and, 50]
-      - [or, ~]
+  DismaxHandler: edismax
 
 ISN:
   DismaxFields:
     - isbn
     - issn
-  QueryFields:
-    issn:
-      - [and, 100]
-      - [or, ~]
-    isbn:
-      - [and, 100]
-      - [or, ~]
+  DismaxHandler: edismax
 
 Subject:
   DismaxFields:
@@ -214,34 +189,10 @@ Subject:
     - geographic^50
     - genre^50
     - era
-  QueryFields:
-    topic_unstemmed:
-      - [onephrase, 350]
-      - [and, 150]
-      - [or, ~]
-    topic:
-      - [onephrase, 300]
-      - [and, 100]
-      - [or, ~]
-    geographic:
-      - [onephrase, 300]
-      - [and, 100]
-      - [or, ~]
-    genre:
-      - [onephrase, 300]
-      - [and, 100]
-      - [or, ~]
-    era:
-      - [and, 100]
-      - [or, ~]
+  DismaxHandler: edismax
 #  ExactSettings:
 #    DismaxFields:
 #      - topic_unstemmed^150
-#    QueryFields:
-#      - topic_unstemmed:
-#        - [onephrase, 350]
-#        - [and, 150]
-#        - [or, ~]
 
 # This field definition is a compromise that supports both journal-level and
 # article-level data.  The disadvantage is that hits in article titles will
@@ -260,40 +211,11 @@ JournalTitle:
     - title_old
     - series^100
     - series2
-  QueryFields:
-    title_short:
-      - [onephrase, 500]
-    title_full_unstemmed:
-      - [onephrase, 450]
-      - [and, 400]
-    title_full:
-      - [onephrase, 400]
-    title:
-      - [onephrase, 300]
-      - [and, 250]
-    container_title:
-      - [onephrase, 275]
-      - [and, 225]
-    title_alt:
-      - [and, 200]
-    title_new:
-      - [and, 100]
-    title_old:
-      - [and, ~]
-    series:
-      - [onephrase, 100]
-      - [and, 50]
-    series2:
-      - [onephrase, 50]
-      - [and , ~]
+  DismaxHandler: edismax
   FilterQuery: "format:Journal OR format:Article"
 #  ExactSettings:
 #    DismaxFields:
 #      - title_full_unstemmed^450
-#    QueryFields:
-#      - title_full_unstemmed:
-#        - [onephrase, 450]
-#        - [and, 400]
 #    FilterQuery: "format:Journal OR format:Article"
 
 Title:
@@ -307,50 +229,16 @@ Title:
     - title_old
     - series^100
     - series2
-  QueryFields:
-    title_short:
-      - [onephrase, 500]
-    title_full_unstemmed:
-      - [onephrase, 450]
-      - [and, 400]
-    title_full:
-      - [onephrase, 400]
-    title:
-      - [onephrase, 300]
-      - [and, 250]
-    title_alt:
-      - [and, 200]
-    title_new:
-      - [and, 100]
-    title_old:
-      - [and, ~]
-    series:
-      - [onephrase, 100]
-      - [and, 50]
-    series2:
-      - [onephrase, 50]
-      - [and , ~]
+  DismaxHandler: edismax
 #  ExactSettings:
 #    DismaxFields:
 #      - title_full_unstemmed^450
-#    QueryFields:
-#      - title_full_unstemmed:
-#        - [onephrase, 450]
-#        - [and, 400]
 
 Series:
   DismaxFields:
     - series^100
     - series2
-  QueryFields:
-    series:
-      - [onephrase, 500]
-      - [and, 200]
-      - [or, 100]
-    series2:
-      - [onephrase, 50]
-      - [and, 50]
-      - [or, ~]
+  DismaxHandler: edismax
 
 AllFields:
   DismaxFields:
@@ -376,64 +264,7 @@ AllFields:
     - description
     - isbn
     - issn
-  QueryFields:
-    0:
-      0:
-        - OR
-        - 50
-      title_short:
-        - [onephrase, 750]
-      title_full_unstemmed:
-        - [onephrase, 600]
-        - [and, 500]
-      title_full:
-        - [onephrase, 400]
-      title:
-        - [onephrase, 300]
-        - [and, 250]
-      title_alt:
-        - [and, 200]
-      title_new:
-        - [and, 100]
-    series:
-      - [and, 50]
-    series2:
-      - [and, 30]
-    author:
-      - [onephrase, 300]
-      - [and, 250]
-    author_fuller:
-      - [onephrase, 150]
-      - [and, 125]
-    author2:
-      - [and, 50]
-    author_additional:
-      - [and, 50]
-    contents:
-      - [and, 10]
-    topic_unstemmed:
-      - [onephrase, 550]
-      - [and, 500]
-    topic:
-      - [onephrase, 500]
-    geographic:
-      - [onephrase, 300]
-    genre:
-      - [onephrase, 300]
-    allfields_unstemmed:
-      - [or, 10]
-    fulltext_unstemmed:
-      - [or, 10]
-    allfields:
-      - [or, ~]
-    fulltext:
-      - [or, ~]
-    description:
-      - [or, ~]
-    isbn:
-      - [onephrase, ~]
-    issn:
-      - [onephrase, ~]
+  DismaxHandler: edismax
 #  ExactSettings:
 #    DismaxFields:
 #      - title_full_unstemmed^600
@@ -442,21 +273,6 @@ AllFields:
 #      - fulltext_unstemmed^10
 #      - isbn
 #      - issn
-#    QueryFields:
-#      title_full_unstemmed:
-#        - [onephrase, 600]
-#        - [and, 500]
-#      topic_unstemmed:
-#        - [onephrase, 550]
-#        - [and, 500]
-#      allfields_unstemmed:
-#        - [or, 10]
-#      fulltext_unstemmed:
-#        - [or, 10]
-#      isbn:
-#        - [onephrase, ~]
-#      issn:
-#        - [onephrase, ~]
 
 # These are advanced searches that never use Dismax:
 id:
