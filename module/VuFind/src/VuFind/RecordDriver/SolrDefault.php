@@ -263,9 +263,9 @@ class SolrDefault extends AbstractBase
     {
         $data = $dataFieldValues = [];
 
-        $authorMethod = sprintf("get%sAuthors", ucfirst($index));
+        $authorMethod = sprintf('get%sAuthors', ucfirst($index));
         foreach ($dataFields as $field) {
-            $fieldMethod = sprintf($authorMethod . "%ss", ucfirst($field));
+            $fieldMethod = $authorMethod . ucfirst($field) . 's';
             $dataFieldValues[$field] = $this->tryMethod($fieldMethod, [], []);
         }
 
