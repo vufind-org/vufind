@@ -673,7 +673,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     : '';
             }
             $available = in_array($entry['status']['code'], ['b', 'j', 'i']);
-            $position = ($entry['priority'] + 1) . ' / '
+            $position = ($entry['priority'] ?: 1) . ' / '
                 . $entry['priorityQueueLength'];
             $holds[] = [
                 'id' => $bibId,
