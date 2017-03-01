@@ -115,10 +115,8 @@ class PluginFactory implements AbstractFactoryInterface
             foreach ($child as $section => $contents) {
                 // Check if arrays in the current config file should be merged with
                 // preceding arrays from config files defined as Parent_Config.
-                $mergeArraySettings =
-                    isset($child->Parent_Config->merge_array_settings)
-                    && $child->Parent_Config->merge_array_settings == true
-                        ? true : false;
+                $mergeArraySettings
+                    = !empty($child->Parent_Config->merge_array_settings);
 
                 // Omit Parent_Config from the returned configuration; it is only
                 // needed during loading, and its presence will cause problems in
