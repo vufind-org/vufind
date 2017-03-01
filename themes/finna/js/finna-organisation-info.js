@@ -24,7 +24,7 @@ organisationInfo: function() {
         });
     };
 
-    var getOrganisations = function(target, parent, buildings, callback) {
+    var getOrganisations = function(target, parent, buildings, callbackParams, callback) {
         if (typeof parent == 'undefined') {
             return;
         }
@@ -35,7 +35,7 @@ organisationInfo: function() {
 
         query(parent, {action: 'consortium', target: target, buildings: buildings}, function(success, response) {
             if (!success) {
-                callback(false);
+                callback(false, callbackParams);
                 return;
             }
             consortium = getField(response, 'consortium');
@@ -46,7 +46,7 @@ organisationInfo: function() {
                 organisationList[obj.id]['details'] = {};
                 cacheSchedules(obj.id, obj);
             });
-            callback(response);
+            callback(response, callbackParams);
         });
     };
 
@@ -70,14 +70,14 @@ organisationInfo: function() {
             details['openNow'] = openNow;
         }
 
-        $(['name', 'email', 'homepage', 'routeUrl', 'mapUrl', 'openToday', 
+        $(['name', 'email', 'homepage', 'routeUrl', 'mapUrl', 'openToday',
            'buildingYear', 'openTimes', 'schedule-descriptions']
          ).each(function(ind, field) {
             if (val = getField(data, field)) {
                 details[field] = val;
             }
         });
-        
+
         var address = '';
         if (street = getField(data.address, 'street')) {
             address += street;
@@ -88,7 +88,7 @@ organisationInfo: function() {
         if (city = getField(data.address, 'city')) {
             address += ' ' + city;
         }
-        
+
         details['address'] = address;
 
         if (cached = getCachedDetails(id)) {
@@ -99,8 +99,8 @@ organisationInfo: function() {
 
     var getSchedules = function(target, parent, id, periodStart, dir, fullDetails, allServices, callback) {
         var params = {
-            target: target, action: 'details', id: id, 
-            fullDetails: fullDetails ? 1 : 0, 
+            target: target, action: 'details', id: id,
+            fullDetails: fullDetails ? 1 : 0,
             allServices: allServices ? 1 : 0
         };
 
@@ -123,7 +123,7 @@ organisationInfo: function() {
             cacheSchedules(id, obj);
 
             var result = {};
-            $(['openTimes', 'scheduleDescriptions', 'periodStart', 'weekNum', 'currentWeek', 'phone', 
+            $(['openTimes', 'scheduleDescriptions', 'periodStart', 'weekNum', 'currentWeek', 'phone',
                'links', 'facility-image', 'services', 'pictures', 'rss']
              ).each(function(ind, field) {
                     if (val = getField(obj, field, id)) {
@@ -160,7 +160,7 @@ organisationInfo: function() {
     var cacheDetails = function(id, details) {
         if (!('openTimes' in details) && 'openTimes' in organisationList[id]) {
             details['openTimes'] = organisationList[id]['openTimes'];
-        }  
+        }
         organisationList[id]['details'] = details;
     };
 
