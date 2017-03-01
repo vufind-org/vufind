@@ -441,8 +441,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function tryMethod($method, $params = [], $default = null)
     {
-        return is_callable([$this, $method])
-            ? call_user_func_array([$this, $method], $params)
-            : $default;
+        return is_callable([$this, $method]) ? $this->$method(...$params) : $default;
     }
 }
