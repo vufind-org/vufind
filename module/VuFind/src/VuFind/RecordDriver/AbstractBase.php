@@ -435,7 +435,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * @param string $method  Name of method to call.
      * @param array  $params  Array of parameters to pass to method.
      * @param mixed  $default A default value to return if the method is not
-     *                        callable
+     * callable
      *
      * @return mixed
      */
