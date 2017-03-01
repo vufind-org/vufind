@@ -270,7 +270,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     public function testAddingNothing()
     {
         // Activate the cart:
-        $this->changeConfigs(['config' => ['Site' => ['showBookBag' => true]]]);
+        $this->changeConfigs(['config' => ['Site' => ['showBookBag' => true, 'showBulkOptions' => true]]]);
 
         $page = $this->getSearchResultsPage();
 
