@@ -181,7 +181,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $selectAllId = '#addFormCheckboxSelectAll'
     ) {
         // Activate the cart:
-        $extraConfigs['config']['Site'] = ['showBookBag' => true];
+        $extraConfigs['config']['Site'] = ['showBookBag' => true, 'showBulkOptions' => true];
         $this->changeConfigs($extraConfigs);
 
         $page = $this->getSearchResultsPage();
@@ -288,7 +288,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     public function testAddingDuplicates()
     {
          // Activate the cart:
-        $this->changeConfigs(['config' => ['Site' => ['showBookBag' => true]]]);
+        $this->changeConfigs(['config' => ['Site' => ['showBookBag' => true, 'showBulkOptions' => true]]]);
 
         $page = $this->getSearchResultsPage();
 
@@ -309,7 +309,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     {
          // Activate the cart:
         $this->changeConfigs(
-            ['config' => ['Site' => ['showBookBag' => true, 'bookBagMaxSize' => 1]]]
+            ['config' => ['Site' => ['showBookBag' => true, 'bookBagMaxSize' => 1, 'showBulkOptions' => true]]]
         );
 
         $page = $this->getSearchResultsPage();
