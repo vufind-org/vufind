@@ -100,7 +100,10 @@ class Results extends \VuFind\Search\Base\Results
             if ($i > $this->resultTotal) {
                 break;
             }
-            $this->results[] = $this->getMockRecordDriver($i);
+            // Append sort type to ID to simulate sort order; default sort is
+            // null, so most tests will just get numbers.
+            $sort = $this->getParams()->getSort();
+            $this->results[] = $this->getMockRecordDriver($sort . $i);
         }
     }
 
