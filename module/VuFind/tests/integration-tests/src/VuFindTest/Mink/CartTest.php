@@ -665,6 +665,68 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         );
     }
 
+    protected function runConfigCombo($page, $combo) {
+        $this->changeConfigs(['config' => ['Site' => $combo]]);
+        $this->getMinkSession()->reload();
+        $this->snooze();
+        $elements = [
+            'bulkEmail'  => $page->find('css', '#ribbon-email') !== null,
+            'cartBtns'   => $page->find('css', '.result .btn-bookbag-toggle') !== null,
+            'cartItems'  => $page->find('css', '#cartItems') !== null,
+            'updateCart' => $page->find('css', '#updateCart') !== null,
+        ];
+        // Make sure there are checkboxes when there is a toolbar visible
+        $this->assertEquals(
+            $page->find('css', '.checkbox-select-item') !== null,
+            $elements['bulkEmail']
+        );
+        // Expected
+        $this->assertEquals($elements['bulkEmail'], $combo['showBulkOptions']);
+        $this->assertEquals($elements['cartBtns'], $combo['showBookBag'] && $combo['bookbagTogglesInSearch']);
+        $this->assertEquals($elements['cartItems'], $combo['showBookBag']);
+        $this->assertEquals($elements['updateCart'], $combo['showBookBag'] && $combo['showBulkOptions']);
+        return $elements;
+    }
+
+    public function testToolbarVisibilityConfigCombinations() {
+        $page = $this->getSearchResultsPage();
+        $elements = $this->runConfigCombo($page, [
+            'showBookBag' => true,
+            'bookbagTogglesInSearch' => false,
+            'showBulkOptions' => false,
+        ]);
+        $elements = $this->runConfigCombo($page, [
+            'showBookBag' => false,
+            'bookbagTogglesInSearch' => true,
+            'showBulkOptions' => false,
+        ]);
+        $elements = $this->runConfigCombo($page, [
+            'showBookBag' => false,
+            'bookbagTogglesInSearch' => false,
+            'showBulkOptions' => true,
+        ]);
+        $elements = $this->runConfigCombo($page, [
+            'showBookBag' => true,
+            'bookbagTogglesInSearch' => true,
+            'showBulkOptions' => false,
+        ]);
+        $elements = $this->runConfigCombo($page, [
+            'showBookBag' => true,
+            'bookbagTogglesInSearch' => false,
+            'showBulkOptions' => true,
+        ]);
+        $elements = $this->runConfigCombo($page, [
+            'showBookBag' => false,
+            'bookbagTogglesInSearch' => true,
+            'showBulkOptions' => true,
+        ]);
+        $elements = $this->runConfigCombo($page, [
+            'showBookBag' => true,
+            'bookbagTogglesInSearch' => true,
+            'showBulkOptions' => true,
+        ]);
+    }
+
     /**
      * Standard teardown method.
      *
