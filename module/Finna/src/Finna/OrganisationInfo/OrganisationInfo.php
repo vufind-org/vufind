@@ -963,7 +963,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             // Staff times
             foreach ($day['times'] as $time) {
                 $res = $this->extractDayTime($now, $time, $today);
-                if (isset($res['openNow'])) {
+                if (null === $openNow || !empty($res['openNow'])) {
                     $openNow = $res['openNow'];
                 }
                 if (!empty($info)) {
@@ -1007,9 +1007,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
         }
 
         $result = compact('schedules', 'openToday', 'currentWeek');
-        if ($openNow !== null) {
-            $result['openNow'] = $openNow;
-        }
+        $result['openNow'] = $openNow ?: false;
         return $result;
     }
 
