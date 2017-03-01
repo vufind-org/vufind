@@ -92,7 +92,8 @@ class NewItemsTest extends TestCase
             ->with($this->equalTo('getFunds'))->will($this->returnValue(true));
         $catalog->expects($this->once())->method('getFunds')
             ->will($this->returnValue(['a', 'b', 'c']));
-        $controller = $this->getMock('VuFind\Controller\SearchController');
+        $controller = $this->getMockBuilder('VuFind\Controller\SearchController')
+            ->disableOriginalConstructor()->getMock();
         $controller->expects($this->once())->method('getILS')
             ->will($this->returnValue($catalog));
         $newItems = new NewItems(new Config([]));

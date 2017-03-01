@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * WorldCat Record Controller
@@ -40,14 +41,16 @@ class WorldcatrecordController extends AbstractRecord
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         // Override some defaults:
         $this->searchClassId = 'WorldCat';
 
         // Call standard record controller initialization:
-        parent::__construct();
+        parent::__construct($sm);
     }
 
     /**
@@ -57,7 +60,7 @@ class WorldcatrecordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('WorldCat');
+        $config = $this->serviceLocator->get('VuFind\Config')->get('WorldCat');
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
     }

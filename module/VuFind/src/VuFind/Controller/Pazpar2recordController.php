@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Pazpar2 Record Controller
@@ -40,8 +41,10 @@ class Pazpar2recordController extends AbstractRecord
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         throw new \Exception('Pazpar2 record view not supported.');
 
@@ -49,6 +52,6 @@ class Pazpar2recordController extends AbstractRecord
         $this->searchClassId = 'Pazpar2';
 
         // Call standard record controller initialization:
-        parent::__construct();
+        parent::__construct($sm);
     }
 }

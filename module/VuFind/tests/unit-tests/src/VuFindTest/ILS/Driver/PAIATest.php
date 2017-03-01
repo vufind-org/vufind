@@ -120,7 +120,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'createdate' => '06-07-2016',
                 'duedate' => '',
                 'id' => '',
-                'title' => null,
+                'title' => 'Open source licensing : software freedom and intellectual property law ; [open source licensees are free to: use open source software for any purpose, make and distribute copies, create and distribute derivative works, access and use the source code, com / Rosen, Lawrence (c 2005)',
                 'feeid' => null,
                 'about' => 'Open source licensing : software freedom and intellectual property law ; [open source licensees are free to: use open source software for any purpose, make and distribute copies, create and distribute derivative works, access and use the source code, com / Rosen, Lawrence (c 2005)',
                 'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$28295402'
@@ -134,7 +134,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'createdate' => '05-23-2016',
                 'duedate' => '',
                 'id' => '',
-                'title' => null,
+                'title' => 'Zend framework in action / Allen, Rob (2009)',
                 'feeid' => null,
                 'about' => 'Zend framework in action / Allen, Rob (2009)',
                 'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$28323471'
@@ -148,7 +148,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'createdate' => '05-23-2016',
                 'duedate' => '',
                 'id' => '',
-                'title' => null,
+                'title' => 'Unsere historischen Gärten / Lutze, Margot (1986)',
                 'feeid' => null,
                 'about' => 'Unsere historischen Gärten / Lutze, Margot (1986)',
                 'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$24476416'
@@ -162,7 +162,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'createdate' => '06-16-2016',
                 'duedate' => '',
                 'id' => '',
-                'title' => null,
+                'title' => 'Triumphe des Backsteins = Triumphs of brick / (1992)',
                 'feeid' => null,
                 'about' => 'Triumphe des Backsteins = Triumphs of brick / (1992)',
                 'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$33204941'
@@ -176,7 +176,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'createdate' => '05-23-2016',
                 'duedate' => '',
                 'id' => '',
-                'title' => null,
+                'title' => 'Lehrbuch der Botanik / Strasburger, Eduard (2008)',
                 'feeid' => null,
                 'about' => 'Lehrbuch der Botanik / Strasburger, Eduard (2008)',
                 'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$26461872'

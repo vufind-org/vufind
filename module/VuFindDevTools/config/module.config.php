@@ -3,8 +3,8 @@ namespace VuFindLocalTemplate\Module\Configuration;
 
 $config = [
     'controllers' => [
-        'invokables' => [
-            'devtools' => 'VuFindDevTools\Controller\DevtoolsController',
+        'factories' => [
+            'devtools' => 'VuFindDevTools\Controller\Factory::getDevtoolsController',
         ],
     ],
     'router' => [
