@@ -30,7 +30,6 @@ namespace VuFind\Search;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-use Zend\EventManager\SharedListenerAggregateInterface;
 use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
 
@@ -48,7 +47,7 @@ use UnexpectedValueException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class BackendManager implements SharedListenerAggregateInterface
+class BackendManager
 {
     /**
      * Backend registry.
