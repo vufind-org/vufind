@@ -282,7 +282,9 @@ class SolrDefault extends AbstractBase
             }
 
             foreach ($dataFieldValues as $field => $dataFieldValue) {
-                $data[$author][$field][] = $dataFieldValue[$i];
+                if (!empty($dataFieldValue[$i])) {
+                    $data[$author][$field][] = $dataFieldValue[$i];
+                }
             }
         }
 
