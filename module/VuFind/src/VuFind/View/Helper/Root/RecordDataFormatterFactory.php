@@ -48,9 +48,77 @@ class RecordDataFormatterFactory
     public function __invoke()
     {
         $helper = new RecordDataFormatter();
+        $helper->setDefaults('collection-info', $this->getDefaultCollectionInfoSpecs());
         $helper->setDefaults('core', $this->getDefaultCoreSpecs());
         $helper->setDefaults('description', $this->getDefaultDescriptionSpecs());
         return $helper;
+    }
+
+    /**
+     * Get default specifications for displaying data in collection-info metadata.
+     *
+     * @return array
+     */
+    public function getDefaultCollectionInfoSpecs()
+    {
+        $spec = new RecordDataFormatter\SpecBuilder();
+        $spec->setTemplateLine(
+            'Main Authors', 'getDeduplicatedAuthors', 'data-authors.phtml',
+            [
+                'useCache' => true,
+                'labelFunction' => function ($data) {
+                    return count($data['main']) > 1
+                        ? 'Main Authors' : 'Main Author';
+                },
+                'context' => ['type' => 'main', 'schemaLabel' => 'author'],
+            ]
+        );
+        $spec->setTemplateLine(
+            'Corporate Authors', 'getDeduplicatedAuthors', 'data-authors.phtml',
+            [
+                'useCache' => true,
+                'labelFunction' => function ($data) {
+                    return count($data['corporate']) > 1
+                        ? 'Corporate Authors' : 'Corporate Author';
+                },
+                'context' => ['type' => 'corporate', 'schemaLabel' => 'creator'],
+            ]
+        );
+        $spec->setTemplateLine(
+            'Other Authors', 'getDeduplicatedAuthors', 'data-authors.phtml',
+            [
+                'useCache' => true,
+                'context' => [
+                    'type' => 'secondary', 'schemaLabel' => 'contributor'
+                ],
+            ]
+        );
+        $spec->setLine('Summary', 'getSummary');
+        $spec->setLine(
+            'Format', 'getFormats', 'RecordHelper',
+            ['helperMethod' => 'getFormatList']
+        );
+        $spec->setLine('Language', 'getLanguages');
+        $spec->setTemplateLine(
+            'Published', 'getPublicationDetails', 'data-publicationDetails.phtml'
+        );
+        $spec->setLine(
+            'Edition', 'getEdition', null,
+            ['prefix' => '<span property="bookEdition">', 'suffix' => '</span>']
+        );
+        $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
+        $spec->setTemplateLine(
+            'Subjects', 'getAllSubjectHeadings', 'data-allSubjectHeadings.phtml'
+        );
+        $spec->setTemplateLine('Online Access', true, 'data-onlineAccess.phtml');
+        $spec->setTemplateLine(
+            'Related Items', 'getAllRecordLinks', 'data-allRecordLinks.phtml'
+        );
+        $spec->setLine('Notes', 'getGeneralNotes');
+        $spec->setLine('Production Credits', 'getProductionCredits');
+        $spec->setLine('ISBN', 'getISBNs');
+        $spec->setLine('ISSN', 'getISSNs');
+        return $spec->getArray();
     }
 
     /**
