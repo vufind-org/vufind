@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
+use VuFind\Db\Row\RowGateway;
 use Zend\Db\Adapter\Adapter;
 
 /**
@@ -45,11 +46,12 @@ class UserCard extends Gateway
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
      * @param array         $cfg     Zend Framework configuration
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
-    {
-        parent::__construct(
-            $adapter, $tm, $cfg, 'user_card', 'VuFind\Db\Row\UserCard'
-        );
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj = null, $table = 'user_card'
+    ) {
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 }

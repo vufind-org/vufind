@@ -165,7 +165,7 @@ class InstallController extends AbstractBase
      */
     protected function checkCache()
     {
-        $cache = $this->getServiceLocator()->get('VuFind\CacheManager');
+        $cache = $this->serviceLocator->get('VuFind\CacheManager');
         return [
             'title' => 'Cache',
             'status' => !$cache->hasDirectoryCreationError(),
@@ -180,7 +180,7 @@ class InstallController extends AbstractBase
      */
     public function fixcacheAction()
     {
-        $cache = $this->getServiceLocator()->get('VuFind\CacheManager');
+        $cache = $this->serviceLocator->get('VuFind\CacheManager');
         $view = $this->createViewModel();
         $view->cacheDir = $cache->getCacheDir();
         if (function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {
@@ -354,7 +354,7 @@ class InstallController extends AbstractBase
                 try {
                     $dbName = ($view->driver == 'pgsql')
                         ? 'template1' : $view->driver;
-                    $db = $this->getServiceLocator()->get('VuFind\DbAdapterFactory')
+                    $db = $this->serviceLocator->get('VuFind\DbAdapterFactory')
                         ->getAdapterFromConnectionString("{$connection}/{$dbName}");
                 } catch (\Exception $e) {
                     $this->flashMessenger()
@@ -390,7 +390,7 @@ class InstallController extends AbstractBase
                         foreach ($preCommands as $query) {
                             $db->query($query, $db::QUERY_MODE_EXECUTE);
                         }
-                        $dbFactory = $this->getServiceLocator()
+                        $dbFactory = $this->serviceLocator
                             ->get('VuFind\DbAdapterFactory');
                         $db = $dbFactory->getAdapterFromConnectionString(
                             $connection . '/' . $view->dbname
@@ -582,7 +582,7 @@ class InstallController extends AbstractBase
     protected function testSearchService()
     {
         // Try to retrieve an arbitrary ID -- this will fail if Solr is down:
-        $searchService = $this->getServiceLocator()->get('VuFind\Search');
+        $searchService = $this->serviceLocator->get('VuFind\Search');
         $searchService->retrieve('Solr', '1');
     }
 
@@ -797,7 +797,7 @@ class InstallController extends AbstractBase
     {
         // Try to retrieve an SSL URL; if we're misconfigured, it will fail.
         try {
-            $this->getServiceLocator()->get('VuFind\Http')
+            $this->serviceLocator->get('VuFind\Http')
                 ->get('https://google.com');
             $status = true;
         } catch (\VuFindHttp\Exception\RuntimeException $e) {

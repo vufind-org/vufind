@@ -189,6 +189,7 @@ CREATE TABLE `user` (
   `firstname` varchar(50) NOT NULL DEFAULT '',
   `lastname` varchar(50) NOT NULL DEFAULT '',
   `email` varchar(255) NOT NULL DEFAULT '',
+  `cat_id` varchar(255) DEFAULT NULL,
   `cat_username` varchar(50) DEFAULT NULL,
   `cat_password` varchar(70) DEFAULT NULL,
   `cat_pass_enc` varchar(170) DEFAULT NULL,
@@ -198,7 +199,8 @@ CREATE TABLE `user` (
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `verify_hash` varchar(42) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`)
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `cat_id` (`cat_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

@@ -146,7 +146,8 @@ class Factory
     {
         return new MultiBackend(
             $sm->getServiceLocator()->get('VuFind\Config'),
-            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator'),
+            $sm
         );
     }
 
@@ -193,6 +194,21 @@ class Factory
     public static function getKohaILSDI(ServiceManager $sm)
     {
         return new KohaILSDI($sm->getServiceLocator()->get('VuFind\DateConverter'));
+    }
+
+    /**
+     * Factory for Symphony driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Symphony
+     */
+    public static function getSymphony(ServiceManager $sm)
+    {
+        return new Symphony(
+            $sm->getServiceLocator()->get('VuFind\RecordLoader'),
+            $sm->getServiceLocator()->get('VuFind\CacheManager')
+        );
     }
 
     /**
