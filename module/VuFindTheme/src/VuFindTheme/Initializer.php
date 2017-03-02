@@ -28,7 +28,7 @@
 namespace VuFindTheme;
 use Zend\Config\Config;
 use Zend\Mvc\MvcEvent;
-use Zend\Mvc\View\Http\InjectTemplateListener;
+use Zend\Mvc\View\Http\InjectTemplateListener as BaseInjectTemplateListener;
 use Zend\Stdlib\RequestInterface as Request;
 
 /**
@@ -145,7 +145,7 @@ class Initializer
         );
         foreach ($listeners as $priority => $priorityGroup) {
             foreach ($priorityGroup as $callback) {
-                if ($callback[0] instanceof InjectTemplateListener) {
+                if ($callback[0] instanceof BaseInjectTemplateListener) {
                     $injectTemplatePriority = $priority;
                     $sharedEvents->detach(
                         $callback, 'Zend\Stdlib\DispatchableInterface'
