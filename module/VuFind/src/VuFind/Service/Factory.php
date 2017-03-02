@@ -670,7 +670,7 @@ class Factory
         );
         $registry = $sm->createScopedServiceManager();
         $smConfig->configureServiceManager($registry);
-        $manager  = new \VuFind\Search\BackendManager($registry);
+        $manager = new \VuFind\Search\BackendManager($registry);
 
         return $manager;
     }
@@ -736,6 +736,20 @@ class Factory
     {
         return new \VuFind\Search\SearchRunner(
             $sm->get('VuFind\SearchResultsPluginManager'),
+            new \Zend\EventManager\EventManager($sm->get('SharedEventManager'))
+        );
+    }
+
+    /**
+     * Construct the search service.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFindSearch\Service
+     */
+    public static function getSearchService(ServiceManager $sm)
+    {
+        return new \VuFindSearch\Service(
             new \Zend\EventManager\EventManager($sm->get('SharedEventManager'))
         );
     }
