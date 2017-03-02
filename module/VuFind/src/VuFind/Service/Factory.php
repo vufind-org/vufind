@@ -735,7 +735,8 @@ class Factory
     public static function getSearchRunner(ServiceManager $sm)
     {
         return new \VuFind\Search\SearchRunner(
-            $sm->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\SearchResultsPluginManager'),
+            new \Zend\EventManager\EventManager($sm->get('SharedEventManager'))
         );
     }
 
