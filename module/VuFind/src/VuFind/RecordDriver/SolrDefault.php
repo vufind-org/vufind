@@ -263,13 +263,20 @@ class SolrDefault extends AbstractBase
     {
         $data = $dataFieldValues = [];
 
+        // Collect author data
         $authorMethod = sprintf('get%sAuthors', ucfirst($index));
+        $authors = $this->tryMethod($authorMethod, [], []);
+
+        // Collect attribute data
         foreach ($dataFields as $field) {
             $fieldMethod = $authorMethod . ucfirst($field) . 's';
             $dataFieldValues[$field] = $this->tryMethod($fieldMethod, [], []);
         }
 
-        foreach ($this->tryMethod($authorMethod, [], []) as $i => $author) {
+        // Match up author and attribute data (this assumes that the attribute
+        // arrays have the same indices as the author array; i.e. $author[$i]
+        // has $dataFieldValue[$attribute][$i].
+        foreach ($authors as $i => $author) {
             if (!isset($data[$author])) {
                 $data[$author] = [];
             }
@@ -278,6 +285,7 @@ class SolrDefault extends AbstractBase
                 $data[$author][$field][] = $dataFieldValue[$i];
             }
         }
+
         return $data;
     }
 
