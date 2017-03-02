@@ -275,7 +275,7 @@ class SolrDefault extends AbstractBase
 
         // Match up author and attribute data (this assumes that the attribute
         // arrays have the same indices as the author array; i.e. $author[$i]
-        // has $dataFieldValue[$attribute][$i].
+        // has $dataFieldValues[$attribute][$i].
         foreach ($authors as $i => $author) {
             if (!isset($data[$author])) {
                 $data[$author] = [];
