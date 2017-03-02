@@ -234,12 +234,22 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getRCFactory()
     {
-        $callback = function ($data) {
+        return $this->createMock(__NAMESPACE__ . '\RecordCollectionFactoryMock');
+    }
+
+}
+
+class RecordCollectionFactoryMock extends \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
+{
+    public function __construct() {
+        parent::__construct(function ($data) {
             $driver = new \VuFind\RecordDriver\EDS();
             $driver->setRawData($data);
             return $driver;
-        };
-        return new \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory($callback);
+        });
     }
 
+    public function getAuthenticationToken()
+    {
+    }
 }

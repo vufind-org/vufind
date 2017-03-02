@@ -293,7 +293,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
         // Test that random proxies search; stub out injectResponseWriter() to prevent it
         // from injecting unwanted extra parameters into $params:
         $back = $this->createMock(
-            'VuFindSearch\Backend\Solr\Backend', ['search', 'injectResponseWriter'],
+            __NAMESPACE__ . '\BackendMock', ['search', 'injectResponseWriter'],
             [$this->getConnectorMock()]
         );
         $back->expects($this->once())->method('injectResponseWriter');
@@ -351,5 +351,12 @@ class BackendTest extends PHPUnit_Framework_TestCase
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
         return $this->createMock('VuFindSearch\Backend\Solr\Connector', $mock, ['http://example.org/', $map]);
+    }
+}
+
+class BackendMock extends \VuFindSearch\Backend\Solr\Backend
+{
+    public function injectResponseWriter()
+    {
     }
 }

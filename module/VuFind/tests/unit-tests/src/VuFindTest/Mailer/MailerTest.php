@@ -228,7 +228,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && $in['from'] == 'from@example.com'
                 && $in['message'] == 'message';
         };
-        $view = $this->createMock('Zend\View\Renderer\PhpRenderer', ['partial']);
+        $view = $this->createMock(__NAMESPACE__ . '\MockEmailRenderer', ['partial']);
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
@@ -269,7 +269,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && $in['from'] == 'from@example.com'
                 && $in['message'] == 'message';
         };
-        $view = $this->createMock('Zend\View\Renderer\PhpRenderer', ['partial']);
+        $view = $this->createMock(__NAMESPACE__ . '\MockEmailRenderer', ['partial']);
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/record.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
@@ -284,5 +284,11 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $mailer = new Mailer($transport);
         $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver, $view);
+    }
+}
+
+class MockEmailRenderer extends \Zend\View\Renderer\PhpRenderer
+{
+    public function partial($template, $driver) {
     }
 }

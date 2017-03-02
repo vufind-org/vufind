@@ -166,7 +166,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     {
         $client = $this->createMock('Zend\Http\Client');
         return $this->createMock(
-            'VuFindSearch\Backend\EIT\Connector', $mock,
+            __NAMESPACE__ . '\Connector', $mock,
             ['http://fake', $client, 'profile', 'pwd', 'dbs']
         );
     }
@@ -184,5 +184,12 @@ class BackendTest extends \VuFindTest\Unit\TestCase
             return $driver;
         };
         return new \VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory($callback);
+    }
+}
+
+class ConnectorMock extends \VuFindSearch\Backend\EIT\Connector
+{
+    public function call($method = 'GET', $params = null)
+    {
     }
 }

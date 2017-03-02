@@ -2534,13 +2534,28 @@ trait ILSMockTrait
     public function cancelHolds($cancelDetails)
     {
     }
+    public function cancelILLRequests($cancelDetails)
+    {
+    }
+    public function cancelStorageRetrievalRequests($cancelDetails)
+    {
+    }
     public function checkRequestIsValid($id, $data, $patron)
+    {
+    }
+    public function checkILLRequestIsValid($id, $data, $patron)
     {
     }
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
     }
     public function getCancelHoldDetails($holdDetails)
+    {
+    }
+    public function getCancelILLRequestDetails($holdDetails)
+    {
+    }
+    public function getCancelStorageRetrievalRequestDetails($holdDetails)
     {
     }
     public function getConfig($function, $params = null)
@@ -2555,6 +2570,12 @@ trait ILSMockTrait
     public function getMyILLRequests($patron)
     {
     }
+    public function getILLPickUpLibraries($patron = false, $holdDetails = null)
+    {
+    }
+    public function getILLPickUpLocations($id, $pickupLib, $patron)
+    {
+    }
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
     }
@@ -2565,6 +2586,9 @@ trait ILSMockTrait
     {
     }
     public function placeHold($holdDetails)
+    {
+    }
+    public function placeILLRequest($holdDetails)
     {
     }
     public function placeStorageRetrievalRequest($details)
