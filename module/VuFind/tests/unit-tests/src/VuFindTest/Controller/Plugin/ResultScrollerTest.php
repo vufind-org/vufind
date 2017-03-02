@@ -71,7 +71,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingOnSingleRecord()
     {
         $results = $this->getMockResults(1, 10, 1);
-        $plugin = new ResultScrollerMock($results);
+        $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|1',
@@ -89,7 +89,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingInMiddleOfPage()
     {
         $results = $this->getMockResults(1, 10, 10);
-        $plugin = new ResultScrollerMock($results);
+        $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
@@ -107,7 +107,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingToFirstRecord()
     {
         $results = $this->getMockResults(5, 2, 10);
-        $plugin = new ResultScrollerMock($results);
+        $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
@@ -125,7 +125,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingToFirstRecordWithPageSize1()
     {
         $results = $this->getMockResults(10, 1, 10);
-        $plugin = new ResultScrollerMock($results);
+        $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
@@ -144,7 +144,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingToLastRecord()
     {
         $results = $this->getMockResults(1, 2, 10);
-        $plugin = new ResultScrollerMock($results);
+        $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
@@ -163,7 +163,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingToLastRecordAcrossPageBoundaries()
     {
         $results = $this->getMockResults(1, 2, 9);
-        $plugin = new ResultScrollerMock($results);
+        $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|9',
@@ -182,7 +182,7 @@ class ResultScrollerTest extends TestCase
     public function testDisabledFirstLast()
     {
         $results = $this->getMockResults(1, 10, 10, false);
-        $plugin = new ResultScrollerMock($results);
+        $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => null, 'lastRecord' => null,
@@ -200,7 +200,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingAtStartOfFirstPage()
     {
         $results = $this->getMockResults(1, 10, 10);
-        $plugin = new ResultScrollerMock($results);
+        $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
@@ -218,7 +218,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingAtEndOfLastPage()
     {
         $results = $this->getMockResults(1, 10, 10);
-        $plugin = new ResultScrollerMock($results);
+        $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
@@ -236,7 +236,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingAtEndOfLastPageInMultiPageScenario()
     {
         $results = $this->getMockResults(2, 10, 17);
-        $plugin = new ResultScrollerMock($results);
+        $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|17',
@@ -254,7 +254,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingAtStartOfMiddlePage()
     {
         $results = $this->getMockResults(2, 10, 30);
-        $plugin = new ResultScrollerMock($results);
+        $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|30',
@@ -282,7 +282,7 @@ class ResultScrollerTest extends TestCase
     public function testScrollingAtEndOfMiddlePage()
     {
         $results = $this->getMockResults(2, 10, 30);
-        $plugin = new ResultScrollerMock($results);
+        $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|30',
@@ -357,19 +357,10 @@ class ResultScrollerTest extends TestCase
      *
      * @return ResultScroller
      */
-    protected function getMockResultScroller($results = null,
-        $methods = ['restoreLastSearch', 'rememberSearch']
-    ) {
+    protected function getMockResultScroller($results) {
         $mockManager = $this->getMockBuilder('VuFind\Search\Results\PluginManager')
             ->disableOriginalConstructor()->getMock();
-        $mock = $this->getMock(
-            'VuFind\Controller\Plugin\ResultScroller', $methods,
-            [new Container('test'), $mockManager]
-        );
-        if (in_array('restoreLastSearch', $methods) && null !== $results) {
-            $mock->expects($this->any())->method('restoreLastSearch')->will($this->returnValue($results));
-        }
-        return $mock;
+        return new ResultScrollerMock($mockManager, $results);
     }
 }
 
@@ -385,9 +376,9 @@ class ResultScrollerMock extends \VuFind\Controller\Plugin\ResultScroller
      */
     protected $testResults;
 
-    public function __construct($testResults)
+    public function __construct($mockManager, $testResults)
     {
-        parent::__construct(new Container('test'));
+        parent::__construct(new Container('test'), $mockManager);
         $this->testResults = $testResults;
     }
 
