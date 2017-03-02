@@ -158,11 +158,8 @@ class BackendManager
     public function attachShared(SharedEventManagerInterface $events)
     {
         if (!$this->listeners->offsetExists($events)) {
-            $listener = $events->attach(
-                'VuFind\Search',
-                'resolve',
-                [$this, 'onResolve']
-            );
+            $listener = [$this, 'onResolve'];
+            $events->attach('VuFind\Search', 'resolve', $listener);
             $this->listeners->attach($events, $listener);
         }
     }
@@ -178,7 +175,7 @@ class BackendManager
     {
         if ($this->listeners->offsetExists($events)) {
             $listener = $this->listeners->offsetGet($events);
-            $events->detach('VuFind\Search', $listener);
+            $events->detach($listener, 'VuFind\Search');
             $this->listeners->detach($events);
         }
     }
