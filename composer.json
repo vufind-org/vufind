@@ -37,7 +37,7 @@
         "zendframework/zend-db": "2.8.2",
         "zendframework/zend-dom": "2.6.0",
         "zendframework/zend-escaper": "2.5.2",
-        "zendframework/zend-eventmanager": "2.6.3",
+        "zendframework/zend-eventmanager": "3.1.0",
         "zendframework/zend-feed": "2.5.2",
         "zendframework/zend-http": "2.6.0",
         "zendframework/zend-i18n": "2.7.3",
