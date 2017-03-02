@@ -166,7 +166,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     {
         $client = $this->createMock('Zend\Http\Client');
         return $this->createMock(
-            __NAMESPACE__ . '\Connector', $mock,
+            __NAMESPACE__ . '\ConnectorMock', $mock,
             ['http://fake', $client, 'profile', 'pwd', 'dbs']
         );
     }

@@ -2431,6 +2431,12 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
                 ->method('init')
                 ->will($this->returnValue(null));
         }
+        if ($methods && in_array('supportsMethod', $methods)) {
+            $mock = $this->createMock(
+                __NAMESPACE__ . '\\' . $type . 'NoSupportMock',
+                $methods, [new \VuFind\Date\Converter()]
+            );
+        }
         $mock->setConfig(['dummy_config' => true]);
         return $mock;
     }
@@ -2597,9 +2603,6 @@ trait ILSMockTrait
     public function renewMyItems($renewDetails)
     {
     }
-    public function supportsMethod(...$args)
-    {
-    }
 }
 class DemoMock extends \VuFind\ILS\Driver\Demo
 {
@@ -2608,6 +2611,13 @@ class DemoMock extends \VuFind\ILS\Driver\Demo
 class VoyagerMock extends \VuFind\ILS\Driver\Voyager
 {
     use ILSMockTrait;
+}
+class VoyagerNoSupportMock extends \VuFind\ILS\Driver\Voyager
+{
+    use ILSMockTrait;
+    public function supportsMethod(...$args) {
+        return false;
+    }
 }
 class UnicornMock extends \VuFind\ILS\Driver\Unicorn
 {

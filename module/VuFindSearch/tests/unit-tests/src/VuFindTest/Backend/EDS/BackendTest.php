@@ -223,7 +223,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
             return new Backend($connector, $factory, $cache, $container, new \Zend\Config\Config($settings));
         } else {
             $params = [$connector, $factory, $cache, $container, new \Zend\Config\Config($settings)];
-            return $this->createMock('VuFindSearch\Backend\EDS\Backend', $mock, $params);
+            return $this->createMock(__NAMESPACE__ . '\BackendMock', $mock, $params);
         }
     }
 
@@ -234,21 +234,18 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getRCFactory()
     {
-        return $this->createMock(__NAMESPACE__ . '\RecordCollectionFactoryMock');
+        $callback = function ($data) {
+            $driver = new \VuFind\RecordDriver\EDS();
+            $driver->setRawData($data);
+            return $driver;
+        };
+        return new \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory($callback);
     }
 
 }
 
-class RecordCollectionFactoryMock extends \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
+class BackendMock extends \VuFindSearch\Backend\EDS\Backend
 {
-    public function __construct() {
-        parent::__construct(function ($data) {
-            $driver = new \VuFind\RecordDriver\EDS();
-            $driver->setRawData($data);
-            return $driver;
-        });
-    }
-
     public function getAuthenticationToken()
     {
     }
