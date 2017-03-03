@@ -50,6 +50,9 @@ class RecordDataFormatterFactory
         $helper = new RecordDataFormatter();
         $helper
             ->setDefaults('collection-info', $this->getDefaultCollectionInfoSpecs());
+        $helper->setDefaults(
+            'collection-record', $this->getDefaultCollectionRecordSpecs()
+        );
         $helper->setDefaults('core', $this->getDefaultCoreSpecs());
         $helper->setDefaults('description', $this->getDefaultDescriptionSpecs());
         return $helper;
@@ -119,6 +122,56 @@ class RecordDataFormatterFactory
         $spec->setLine('Production Credits', 'getProductionCredits');
         $spec->setLine('ISBN', 'getISBNs');
         $spec->setLine('ISSN', 'getISSNs');
+        return $spec->getArray();
+    }
+
+    /**
+     * Get default specifications for displaying data in collection-record metadata.
+     *
+     * @return array
+     */
+    public function getDefaultCollectionRecordSpecs()
+    {
+        $spec = new RecordDataFormatter\SpecBuilder();
+        $spec->setLine('Summary', 'getSummary');
+        $spec->setTemplateLine(
+            'Main Authors', 'getDeduplicatedAuthors', 'data-authors.phtml',
+            [
+                'useCache' => true,
+                'labelFunction' => function ($data) {
+                    return count($data['main']) > 1
+                        ? 'Main Authors' : 'Main Author';
+                },
+                'context' => ['type' => 'main', 'schemaLabel' => 'author'],
+            ]
+        );
+        $spec->setTemplateLine(
+            'Corporate Authors', 'getDeduplicatedAuthors', 'data-authors.phtml',
+            [
+                'useCache' => true,
+                'labelFunction' => function ($data) {
+                    return count($data['corporate']) > 1
+                        ? 'Corporate Authors' : 'Corporate Author';
+                },
+                'context' => ['type' => 'corporate', 'schemaLabel' => 'creator'],
+            ]
+        );
+        $spec->setTemplateLine(
+            'Other Authors', 'getDeduplicatedAuthors', 'data-authors.phtml',
+            [
+                'useCache' => true,
+                'context' => [
+                    'type' => 'secondary', 'schemaLabel' => 'contributor'
+                ],
+            ]
+        );
+        $spec->setLine('Language', 'getLanguages');
+        $spec->setLine(
+            'Format', 'getFormats', 'RecordHelper',
+            ['helperMethod' => 'getFormatList']
+        );
+        $spec->setLine('Access', 'getAccessRestrictions');
+        $spec->setLine('Related Items', 'getRelationshipNotes');
         return $spec->getArray();
     }
 
