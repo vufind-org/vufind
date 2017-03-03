@@ -49,12 +49,12 @@ class RecordDataFormatterFactory
     {
         $helper = new RecordDataFormatter();
         $helper
-            ->setDefaults('collection-info', $this->getDefaultCollectionInfoSpecs());
+            ->setDefaults('collection-info', [$this, 'getDefaultCollectionInfoSpecs']);
         $helper->setDefaults(
-            'collection-record', $this->getDefaultCollectionRecordSpecs()
+            'collection-record', [$this, 'getDefaultCollectionRecordSpecs']
         );
-        $helper->setDefaults('core', $this->getDefaultCoreSpecs());
-        $helper->setDefaults('description', $this->getDefaultDescriptionSpecs());
+        $helper->setDefaults('core', [$this, 'getDefaultCoreSpecs']);
+        $helper->setDefaults('description', [$this, 'getDefaultDescriptionSpecs']);
         return $helper;
     }
 
