@@ -48,8 +48,9 @@ class RecordDataFormatterFactory
     public function __invoke()
     {
         $helper = new RecordDataFormatter();
-        $helper
-            ->setDefaults('collection-info', [$this, 'getDefaultCollectionInfoSpecs']);
+        $helper->setDefaults(
+            'collection-info', [$this, 'getDefaultCollectionInfoSpecs']
+        );
         $helper->setDefaults(
             'collection-record', [$this, 'getDefaultCollectionRecordSpecs']
         );
