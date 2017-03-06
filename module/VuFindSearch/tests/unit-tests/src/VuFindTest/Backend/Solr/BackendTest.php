@@ -292,10 +292,10 @@ class BackendTest extends PHPUnit_Framework_TestCase
 
         // Test that random proxies search; stub out injectResponseWriter() to prevent it
         // from injecting unwanted extra parameters into $params:
-        $back = $this->createMock(
-            __NAMESPACE__ . '\BackendMock', ['search', 'injectResponseWriter'],
-            [$this->getConnectorMock()]
-        );
+        $back = $this->getMockBuilder(__NAMESPACE__ . '\BackendMock')
+            ->setMethods(['search', 'injectResponseWriter'])
+            ->setConstructorArgs([$this->getConnectorMock()])
+            ->getMock();
         $back->expects($this->once())->method('injectResponseWriter');
         $back->expects($this->once())->method('search')
             ->will($this->returnValue('dummy'));
