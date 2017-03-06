@@ -126,7 +126,7 @@ class Factory
     {
         $config = $sm->get('Config');
         return new \VuFind\Config\PluginManager(
-            new \Zend\ServiceManager\Config($config['vufind']['config_reader'])
+            $sm, $config['vufind']['config_reader']
         );
     }
 
@@ -278,6 +278,18 @@ class Factory
     }
 
     /**
+     * Construct the Db\Row Plugin Manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Db\Row\PluginManager
+     */
+    public static function getDbRowPluginManager(ServiceManager $sm)
+    {
+        return static::getGenericPluginManager($sm, 'Db\Row');
+    }
+
+    /**
      * Construct the Db\Table Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.
@@ -318,9 +330,7 @@ class Factory
         $configKey = strtolower(str_replace('\\', '_', $ns));
         $config = $sm->get('Config');
         return new $className(
-            new \Zend\ServiceManager\Config(
-                $config['vufind']['plugin_managers'][$configKey]
-            )
+            $sm, $config['vufind']['plugin_managers'][$configKey]
         );
     }
 
@@ -487,21 +497,6 @@ class Factory
     }
 
     /**
-     * Construct the logger.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Log\Logger
-     */
-    public static function getLogger(ServiceManager $sm)
-    {
-        $logger = new \VuFind\Log\Logger();
-        $logger->setServiceLocator($sm);
-        $logger->setConfig($sm->get('VuFind\Config')->get('config'));
-        return $logger;
-    }
-
-    /**
      * Construct the ProxyManager configuration.
      *
      * @param ServiceManager $sm Service manager.
@@ -540,17 +535,16 @@ class Factory
             : (isset($config->Captcha->privateKey)
                 ? $config->Captcha->privateKey
                 : '');
-        $recaptcha = new \VuFind\Service\ReCaptcha(
-            $siteKey, $secretKey, ['ssl' => true]
-        );
-        if (isset($config->Captcha->theme)) {
-            $recaptcha->setOption('theme', $config->Captcha->theme);
-        }
-        $translator = $sm->get('VuFind\Translator');
-        $recaptcha->setOption('lang', $translator->getLocale());
-
         $httpClient = $sm->get('VuFind\Http')->createClient();
-        $recaptcha->setHttpClient($httpClient);
+        $translator = $sm->get('VuFind\Translator');
+        $options = ['lang' => $translator->getLocale()];
+        if (isset($config->Captcha->theme)) {
+            $options['theme'] = $config->Captcha->theme;
+        }
+        $recaptcha = new \VuFind\Service\ReCaptcha(
+            $siteKey, $secretKey, ['ssl' => true], $options, null, $httpClient
+        );
+
         return $recaptcha;
     }
 

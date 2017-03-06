@@ -86,9 +86,10 @@ trait ILLRequestsTrait
         }
 
         // Block invalid requests:
-        if (!$catalog->checkILLRequestIsValid(
+        $validRequest = $catalog->checkILLRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
-        )) {
+        );
+        if (!$validRequest) {
             return $this->blockedILLRequestAction();
         }
 
@@ -138,7 +139,7 @@ trait ILLRequestsTrait
         // Find and format the default required date:
         $defaultRequired = $this->ILLRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->getServiceLocator()->get('VuFind\DateConverter')
+        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
             ->convertToDisplayDate("U", $defaultRequired);
 
         // Get pickup libraries

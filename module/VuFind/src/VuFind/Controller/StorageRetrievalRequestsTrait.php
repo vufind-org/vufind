@@ -87,9 +87,10 @@ trait StorageRetrievalRequestsTrait
         }
 
         // Block invalid requests:
-        if (!$catalog->checkStorageRetrievalRequestIsValid(
+        $validRequest = $catalog->checkStorageRetrievalRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
-        )) {
+        );
+        if (!$validRequest) {
             return $this->blockedStorageRetrievalRequestAction();
         }
 
@@ -138,7 +139,7 @@ trait StorageRetrievalRequestsTrait
         // Find and format the default required date:
         $defaultRequired = $this->storageRetrievalRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->getServiceLocator()->get('VuFind\DateConverter')
+        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
             ->convertToDisplayDate("U", $defaultRequired);
         try {
             $defaultPickup
