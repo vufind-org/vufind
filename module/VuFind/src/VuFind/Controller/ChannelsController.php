@@ -49,7 +49,7 @@ class ChannelsController extends AbstractBase
     public function homeAction()
     {
         $view = $this->createViewModel();
-        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
 
         // Send both GET and POST variables to search class:
         $request = [];
@@ -115,7 +115,7 @@ class ChannelsController extends AbstractBase
     {
         $view = $this->createViewModel();
 
-        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
 
         // Send both GET and POST variables to search class:
         $request = $this->getRequest()->getQuery()->toArray()
@@ -192,7 +192,7 @@ class ChannelsController extends AbstractBase
             ? $config->{$configSection}->toArray() : [];
 
         // Load the service, and configure appropriately:
-        $provider = $this->getServiceLocator()
+        $provider = $this->serviceLocator
             ->get('VuFind\ChannelProviderPluginManager')->get($serviceName);
         $provider->setProviderId($providerId);
         $provider->setOptions($options);
