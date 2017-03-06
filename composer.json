@@ -69,7 +69,8 @@
         "phpmd/phpmd": "2.6.0",
         "phpunit/phpunit": "4.8.27",
         "sebastian/phpcpd": "2.0.4",
-        "squizlabs/php_codesniffer": "2.8.0"
+        "squizlabs/php_codesniffer": "2.8.0",
+        "twig/twig": "1.27"
     },
     "scripts": {
         "post-install-cmd": "phing installsolr installswaggerui",
