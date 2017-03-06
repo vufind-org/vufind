@@ -260,7 +260,7 @@ class BackendTest extends TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        return $this->createMock('SerialsSolutions\Summon\Zend2')
+        return $this->getMockBuilder('SerialsSolutions\Summon\Zend2')
             ->setMethods($mock)
             ->setConstructorArgs(['id', 'key'])
             ->getMock();
