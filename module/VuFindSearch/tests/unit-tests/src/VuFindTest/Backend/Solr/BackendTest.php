@@ -359,7 +359,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
 
 class BackendMock extends \VuFindSearch\Backend\Solr\Backend
 {
-    public function injectResponseWriter()
+    public function injectResponseWriter(\VuFindSearch\ParamBag $params)
     {
     }
 }

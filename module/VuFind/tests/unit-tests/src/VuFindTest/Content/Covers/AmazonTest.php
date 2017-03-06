@@ -107,24 +107,44 @@ class AmazonTest extends \PHPUnit_Framework_TestCase
      */
     protected function getUrl($size, $isbn = '0739313126', $throw = false)
     {
-        $amazon = new AmazonCoverMock();
+        $amazon = $this->getMockBuilder(__NAMESPACE__ . '\CoverAmazonMock')
+            ->setMethods(['getAmazonService'])
+            ->setConstructorArgs(['fake', 'fakesecret'])
+            ->getMock();
         $params = [];
         if (!empty($isbn)) {
-            $amazon->setAmazonService(new AmazonServiceMock($throw));
+            $behavior = $throw
+                ? $this->throwException(new \Exception('kaboom'))
+                : $this->returnValue($this->loadFixture());
+            $amazon->expects($this->once())
+                ->method('getAmazonService')->with($this->equalTo('fakekey'))
+                ->will($this->returnValue($this->getFakeService($isbn, $behavior)));
             $params['isbn'] = new ISBN($isbn);
         }
         return $amazon->getUrl('fakekey', $size, $params);
     }
-}
 
-class AmazonServiceMock extends \ZendService\Amazon\Amazon
-{
-    protected $throwException;
-
-    public function __construct($throw)
+    /**
+     * Create fake Amazon service
+     *
+     * @param string $isbn             ISBN to retrieve (empty for none)
+     * @param mixed  $expectedBehavior Behavior of the itemLookup method
+     *
+     * @return \ZendService\Amazon\Amazon
+     */
+    protected function getFakeService($isbn, $expectedBehavior)
     {
-        parent::__construct('fakekey', 'US', 'fakesecret');
-        $this->throwException = $throw;
+        $service = $this->createMock(
+            __NAMESPACE__ . '\ZendAmazonMock', ['itemLookup'],
+            ['fakekey', 'US', 'fakesecret']
+        );
+        if (!empty($isbn)) {
+            $service->expects($this->once())
+                ->method('itemLookup')
+                ->with($this->equalTo($isbn), $this->equalTo($this->params))
+                ->will($expectedBehavior);
+        }
+        return $service;
     }
 
     /**
@@ -137,47 +157,18 @@ class AmazonServiceMock extends \ZendService\Amazon\Amazon
         $file = realpath(__DIR__ . '/../../../../../fixtures/content/amazon-cover');
         return unserialize(file_get_contents($file));
     }
+}
 
-    /**
-     * Get an AmazonService object for the specified key.
-     *
-     * @param string $key API key
-     *
-     * @return AmazonService
-     */
-    public function itemLookup($asin, array $options = [])
+class CoverAmazonMock extends \VuFind\Content\Covers\Amazon
+{
+    public function getAmazonService($key)
     {
-        if ($this->throwException) {
-            throw new \Exception('kaboom');
-        } else {
-            return $this->loadFixture();
-        }
     }
 }
 
-class AmazonCoverMock extends \VuFind\Content\Covers\Amazon
+class ZendAmazonMock extends \ZendService\Amazon\Amazon
 {
-    protected $service;
-
-    public function __construct()
+    public function itemLookup($asin, array $options = [])
     {
-        parent::__construct('fake', 'fakekey');
-    }
-
-    public function setAmazonService($service)
-    {
-        $this->service = $service;
-    }
-
-    /**
-     * Get an AmazonService object for the specified key.
-     *
-     * @param string $key API key
-     *
-     * @return AmazonService
-     */
-    protected function getAmazonService($key)
-    {
-        return $service;
     }
 }

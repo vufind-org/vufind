@@ -250,7 +250,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
 
 class BackendMock extends \VuFindSearch\Backend\EDS\Backend
 {
-    public function getAuthenticationToken()
+    public function getAuthenticationToken($isInvalid = false)
     {
     }
 }
