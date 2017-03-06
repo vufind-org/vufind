@@ -136,6 +136,7 @@ class ChannelsController extends AbstractBase
         $view->results = $runner->run($request, $searchClassId, $callback);
 
         $view->channels = [];
+        $view->lookfor = $this->params()->fromQuery('lookfor');
         $view->token = $this->params()->fromQuery('channelToken');
         foreach ($providers as $provider) {
             $view->channels = array_merge(
