@@ -150,7 +150,7 @@ class BackendTest extends TestCase
     protected function getConnectorMock(array $mock = [])
     {
         $client = $this->createMock('Zend\Http\Client');
-        return $this->createMock('VuFindSearch\Backend\Pazpar2\Connector')
+        return $this->getMockBuilder('VuFindSearch\Backend\Pazpar2\Connector')
             ->setMethods($mock)
             ->setConstructorArgs(['fake', $client])
             ->getMock();
