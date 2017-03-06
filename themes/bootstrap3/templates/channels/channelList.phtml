@@ -12,13 +12,13 @@
 ?>
 <? $insideButton = false; ?>
 <? $channelLinkData = []; ?>
-<? foreach ($channels as $key => $channel): ?>
+<? foreach ($channels as $channel): ?>
   <?
     $groupId = isset($channel['groupId'])
       ? $channel['groupId']
       : $channel['providerId'];
   ?>
-  <? $channelID = 'channel-' . $key . time(); ?>
+  <? $channelID = 'channel-' . md5(serialize($channel)); ?>
   <? if (isset($channel['contents'])): ?>
     <? if ($insideButton): ?>
         </ul>
