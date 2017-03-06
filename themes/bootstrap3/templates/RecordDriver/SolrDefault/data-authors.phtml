@@ -12,22 +12,25 @@ $formatProperty = function ($datafield, $name, $label) {
 ?>
 <? if (isset($data[$type]) && !empty($data[$type])): ?>
   <? $i = 0; foreach ($data[$type] as $author => $dataFields): ?>
-<?ob_start()?>
-    <?=($i++ == 0)?'':', '?><div class="author-data" property="<?=$this->escapeHtml($schemaLabel)?>">
+<? ob_start() ?>
+    <?=($i++ == 0) ? '' : ', '?><div class="author-data" property="<?=$this->escapeHtml($schemaLabel)?>">
       <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
         <?=$this->escapeHtml($author)?>
       </a>
-      <?foreach ($requiredDataFields as $field):
+      <? foreach ($requiredDataFields as $field):
         $name = $field['name'];
         $prefix = isset($field['prefix']) ? $field['prefix'] : '';
       ?>
-        <?if (isset($dataFields[$name])):?>
+        <? if (isset($dataFields[$name])): ?>
           <?=$formatProperty($dataFields[$name], $name, $prefix)?>
-        <?endif;?>
-      <?endforeach;?>
+        <? endif; ?>
+      <? endforeach; ?>
     </div>
-    <?$output .= trim(preg_replace('/\s+<\//', '</', ob_get_contents()))?>
-<?ob_end_clean()?>
+    <?
+      // Strip whitespace before close tags to avoid spaces in front of commas:
+      $output .= trim(preg_replace('/\s+<\//', '</', ob_get_contents()))
+    ?>
+<? ob_end_clean() ?>
   <? endforeach; ?>
 <? endif; ?>
 <?=$output ?>
