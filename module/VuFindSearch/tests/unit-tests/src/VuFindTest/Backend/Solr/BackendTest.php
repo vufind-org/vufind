@@ -350,7 +350,10 @@ class BackendTest extends PHPUnit_Framework_TestCase
     protected function getConnectorMock(array $mock = [])
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
-        return $this->createMock('VuFindSearch\Backend\Solr\Connector', $mock, ['http://example.org/', $map]);
+        return $this->getMockBuilder('VuFindSearch\Backend\Solr\Connector')
+            ->setMethods($mock)
+            ->setConstructorArgs(['http://example.org/', $map])
+            ->getMock();
     }
 }
 

@@ -192,9 +192,10 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     protected function getConnectorMock(array $mock = [])
     {
         $client = $this->createMock('Zend\Http\Client');
-        return $this->createMock(
-            'VuFindSearch\Backend\EDS\Zend2', $mock, [[], $client]
-        );
+        return $this->getMockBuilder('VuFindSearch\Backend\EDS\Zend2')
+            ->setMethods($mock)
+            ->setConstructorArgs([[], $client])
+            ->getMock();
     }
 
     /**
@@ -223,7 +224,10 @@ class BackendTest extends \VuFindTest\Unit\TestCase
             return new Backend($connector, $factory, $cache, $container, new \Zend\Config\Config($settings));
         } else {
             $params = [$connector, $factory, $cache, $container, new \Zend\Config\Config($settings)];
-            return $this->createMock(__NAMESPACE__ . '\BackendMock', $mock, $params);
+            return $this->getMockBuilder(__NAMESPACE__ . '\BackendMock')
+                ->setMethods($mock)
+                ->setConstructorArgs($params)
+                ->getMock();
         }
     }
 
