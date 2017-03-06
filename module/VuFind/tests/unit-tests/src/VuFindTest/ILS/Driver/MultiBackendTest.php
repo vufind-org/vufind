@@ -2391,14 +2391,15 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     {
         $session = $this->getMockBuilder('Zend\Session\Container')
             ->disableOriginalConstructor()->getMock();
-        return $this->createMock(
-            __NAMESPACE__ . '\DemoMock', $methods,
-            [
-                new \VuFind\Date\Converter(),
-                $this->createMock('VuFindSearch\Service'),
-                function () use ($session) { return $session; }
-            ]
-        );
+        return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock')
+            ->setMethods($methods)
+            ->setConstructorArgs(
+                [
+                    new \VuFind\Date\Converter(),
+                    $this->createMock('VuFindSearch\Service'),
+                    function () use ($session) { return $session; }
+                ]
+            )->getMock();
     }
 
     /**
@@ -2416,15 +2417,14 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             if ($type == 'Demo') {
                 $mock = $this->getMockDemoDriver($methods);
             } else {
-                $mock = $this->createMock(
-                    __NAMESPACE__ . '\\' . $type . 'Mock',
-                    $methods, [new \VuFind\Date\Converter()]
-                );
+                $mock = $this->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'Mock')
+                    ->setMethods($methods)
+                    ->setConstructorArgs([new \VuFind\Date\Converter()])
+                    ->getMock();
             }
         } catch(\Exception $e) {
-            $mock = $this->createMock(
-                __NAMESPACE__ . '\\' . $type . 'Mock', $methods
-            );
+            $mock = $this->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'Mock')
+                ->setMethods($methods)->getMock();
         }
         if ($methods && in_array('init', $methods)) {
             $mock->expects($this->any())
@@ -2432,10 +2432,11 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
                 ->will($this->returnValue(null));
         }
         if ($methods && in_array('supportsMethod', $methods)) {
-            $mock = $this->createMock(
-                __NAMESPACE__ . '\\' . $type . 'NoSupportMock',
-                $methods, [new \VuFind\Date\Converter()]
-            );
+            $mock = $this
+                ->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'NoSupportMock')
+                ->setMethods($methods)
+                ->setConstructorArgs([new \VuFind\Date\Converter()])
+                ->getMock();
         }
         $mock->setConfig(['dummy_config' => true]);
         return $mock;

@@ -59,7 +59,8 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testUtterFailure()
     {
-        $theme = $this->createMock('VuFindTheme\ThemeInfo', [], ['foo', 'bar']);
+        $theme = $this->getMockBuilder('VuFindTheme\ThemeInfo')
+            ->setConstructorArgs(['foo', 'bar'])->getMock();
         $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noCover2.gif']))->will($this->returnValue(false));
         $loader = $this->getLoader([], null, $theme);
         $loader->getImage();

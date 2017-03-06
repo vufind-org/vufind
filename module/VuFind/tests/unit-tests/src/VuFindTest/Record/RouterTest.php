@@ -195,13 +195,13 @@ class RouterTest extends TestCase
         if (null === $record) {
             $record = $this->getDriver();
         }
-        $loader = $this->createMock(
-            'VuFind\Record\Loader', [],
-            [
-                $this->createMock('VuFindSearch\Service'),
-                $this->createMock('VuFind\RecordDriver\PluginManager')
-            ]
-        );
+        $loader = $this->getMockBuilder('VuFind\Record\Loader')
+            ->setConstructorArgs(
+                [
+                    $this->createMock('VuFindSearch\Service'),
+                    $this->createMock('VuFind\RecordDriver\PluginManager')
+                ]
+            )->getMock();
         $loader->expects($this->any())->method('load')
             ->will($this->returnValue($record));
 

@@ -134,10 +134,10 @@ class AmazonTest extends \PHPUnit_Framework_TestCase
      */
     protected function getFakeService($isbn, $expectedBehavior)
     {
-        $service = $this->createMock(
-            __NAMESPACE__ . '\ZendAmazonMock', ['itemLookup'],
-            ['fakekey', 'US', 'fakesecret']
-        );
+        $service = $this->getMockBuilder(__NAMESPACE__ . '\ZendAmazonMock')
+            ->setMethods(['itemLookup'])
+            ->setConstructorArgs(['fakekey', 'US', 'fakesecret'])
+            ->getMock();
         if (!empty($isbn)) {
             $service->expects($this->once())
                 ->method('itemLookup')

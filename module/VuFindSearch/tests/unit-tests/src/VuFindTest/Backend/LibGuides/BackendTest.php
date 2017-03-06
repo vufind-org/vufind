@@ -244,10 +244,10 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     protected function getConnectorMock(array $mock = [])
     {
         $client = $this->createMock('Zend\Http\Client');
-        return $this->createMock(
-            'VuFindSearch\Backend\LibGuides\Connector', $mock,
-            ['fakeid', $client]
-        );
+        return $this->getMockBuilder('VuFindSearch\Backend\LibGuides\Connector')
+            ->setParams($mock)
+            ->setConstructorArgs(['fakeid', $client])
+            ->getMock();
     }
 
     /**

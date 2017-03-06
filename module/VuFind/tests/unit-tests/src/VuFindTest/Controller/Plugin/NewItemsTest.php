@@ -84,10 +84,10 @@ class NewItemsTest extends TestCase
      */
     public function testGetFundList()
     {
-        $catalog = $this->createMock(
-            __NAMESPACE__ . '\MockILSConnection', ['checkCapability', 'getFunds'],
-            [], '', false
-        );
+        $catalog = $this->getMockBuilder(__NAMESPACE__ . '\MockILSConnection')
+            ->setMethods(['checkCapability', 'getFunds'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $catalog->expects($this->once())->method('checkCapability')
             ->with($this->equalTo('getFunds'))->will($this->returnValue(true));
         $catalog->expects($this->once())->method('getFunds')
@@ -209,9 +209,10 @@ class NewItemsTest extends TestCase
      */
     protected function getMockCatalog()
     {
-        $catalog = $this->createMock(
-            __NAMESPACE__ . '\MockILSConnection', ['getNewItems'], [], '', false
-        );
+        $catalog = $this->getMockBuilder(__NAMESPACE__ . '\MockILSConnection')
+            ->setMethods(['getNewItems'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $catalog->expects($this->once())->method('getNewItems')
             ->with(
                 $this->equalTo(1), $this->equalTo(200),
@@ -234,8 +235,8 @@ class NewItemsTest extends TestCase
      */
     protected function getMockParams($idLimit = 1024)
     {
-        $params = $this
-            ->createMock('VuFind\Search\Solr\Params', [], [], '', false);
+        $params = $this->getMockBuilder('VuFind\Search\Solr\Params')
+            ->disableOriginalConstructor()->getMock();
         $params->expects($this->once())->method('getLimit')
             ->will($this->returnValue(20));
         $params->expects($this->once())->method('getQueryIDLimit')

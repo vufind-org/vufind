@@ -150,9 +150,9 @@ class BackendTest extends PHPUnit_Framework_TestCase
     protected function getConnectorMock(array $mock = [])
     {
         $client = $this->createMock('Zend\Http\Client');
-        return $this->createMock(
-            'VuFindSearch\Backend\WorldCat\Connector',
-            $mock, ['fake', $client]
-        );
+        return $this->getMockBuilder('VuFindSearch\Backend\WorldCat\Connector')
+            ->setMethods($mock)
+            ->setConstructorArgs(['fake', $client])
+            ->getMock();
     }
 }

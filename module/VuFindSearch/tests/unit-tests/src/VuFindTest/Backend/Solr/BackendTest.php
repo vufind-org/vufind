@@ -286,7 +286,8 @@ class BackendTest extends PHPUnit_Framework_TestCase
     public function testRandom()
     {
         // Test that random sort parameter is added:
-        $params = $this->createMock('VuFindSearch\ParamBag', ['set']);
+        $params = $this->getMockBuilder('VuFindSearch\ParamBag')
+            ->setMethods(['set'])->getMock();
         $params->expects($this->once())->method('set')
             ->with($this->equalTo('sort'), $this->matchesRegularExpression('/[0-9]+_random asc/'));
 
