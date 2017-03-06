@@ -121,19 +121,35 @@ class RecordDataFormatter extends AbstractHelper
      */
     public function getDefaults($key)
     {
-        return isset($this->defaults[$key]) ? $this->defaults[$key] : [];
+        // No value stored? Return empty array:
+        if (!isset($this->defaults[$key])) {
+            return [];
+        }
+        // Callback stored? Resolve to array on demand:
+        if (is_callable($this->defaults[$key])) {
+            $this->defaults[$key] = $this->defaults[$key]();
+            if (!is_array($this->defaults[$key])) {
+                throw new \Exception('Callback for ' . $key . ' must return array');
+            }
+        }
+        // Send back array:
+        return $this->defaults[$key];
     }
 
     /**
      * Set default configuration.
      *
-     * @param string $key    Key for configuration to set.
-     * @param array  $values Defaults to store.
+     * @param string         $key    Key for configuration to set.
+     * @param array|Callable $values Defaults to store (either an array, or a
+     * Callable returning an array).
      *
      * @return void
      */
-    public function setDefaults($key, array $values)
+    public function setDefaults($key, $values)
     {
+        if (!is_array($values) && !is_callable($values)) {
+            throw new \Exception('$values must be array or Callable');
+        }
         $this->defaults[$key] = $values;
     }
 

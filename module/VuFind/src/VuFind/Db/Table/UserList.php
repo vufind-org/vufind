@@ -26,10 +26,12 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
+use VuFind\Db\Row\RowGateway;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Expression;
+use Zend\Session\Container;
 
 /**
  * Table Definition for user_list
@@ -45,26 +47,26 @@ class UserList extends Gateway
     /**
      * Session container for last list information.
      *
-     * @var \Zend\Session\Container
+     * @var Container
      */
     protected $session;
 
     /**
      * Constructor
      *
-     * @param Adapter                 $adapter Database adapter
-     * @param PluginManager           $tm      Table manager
-     * @param array                   $cfg     Zend Framework configuration
-     * @param \Zend\Session\Container $session Session container (must use same
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param Container     $session Session container (must use same
      * namespace as container provided to \VuFind\View\Helper\Root\UserList).
+     * @param string        $table   Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        \Zend\Session\Container $session
+        RowGateway $rowObj = null, Container $session = null, $table = 'user_list'
     ) {
         $this->session = $session;
-        parent::__construct(
-            $adapter, $tm, $cfg, 'user_list', 'VuFind\Db\Row\UserList'
-        );
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**
@@ -144,19 +146,5 @@ class UserList extends Gateway
             }
         };
         return $this->select($callback);
-    }
-
-    /**
-     * Construct the prototype for rows.
-     *
-     * @param string $rowClass Name of row class to instantiate
-     *
-     * @return object
-     */
-    protected function initializeRowPrototype($rowClass)
-    {
-        $prototype = parent::initializeRowPrototype($rowClass);
-        $prototype->setSession($this->session);
-        return $prototype;
     }
 }

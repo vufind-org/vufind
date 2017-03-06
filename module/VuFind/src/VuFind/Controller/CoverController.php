@@ -60,7 +60,7 @@ class CoverController extends AbstractBase
      */
     protected function getCacheDir()
     {
-        return $this->getServiceLocator()->get('VuFind\CacheManager')
+        return $this->serviceLocator->get('VuFind\CacheManager')
             ->getCache('cover')->getOptions()->getCacheDir();
     }
 
@@ -76,13 +76,13 @@ class CoverController extends AbstractBase
             $cacheDir = $this->getCacheDir();
             $this->loader = new Loader(
                 $this->getConfig(),
-                $this->getServiceLocator()->get('VuFind\ContentCoversPluginManager'),
-                $this->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
-                $this->getServiceLocator()->get('VuFind\Http')->createClient(),
+                $this->serviceLocator->get('VuFind\ContentCoversPluginManager'),
+                $this->serviceLocator->get('VuFindTheme\ThemeInfo'),
+                $this->serviceLocator->get('VuFind\Http')->createClient(),
                 $cacheDir
             );
             \VuFind\ServiceManager\Initializer::initInstance(
-                $this->loader, $this->getServiceLocator()
+                $this->loader, $this->serviceLocator
             );
         }
         return $this->loader;
@@ -96,7 +96,7 @@ class CoverController extends AbstractBase
     protected function getProxy()
     {
         if (!$this->proxy) {
-            $client = $this->getServiceLocator()->get('VuFind\Http')->createClient();
+            $client = $this->serviceLocator->get('VuFind\Http')->createClient();
             $cacheDir = $this->getCacheDir() . '/proxy';
             $config = $this->getConfig()->toArray();
             $whitelist = isset($config['Content']['coverproxyCache'])
