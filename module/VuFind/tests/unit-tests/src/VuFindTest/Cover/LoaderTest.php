@@ -152,7 +152,10 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
             $client->setAdapter($adapter);
         }
         if ($mock) {
-            return $this->createMock(__NAMESPACE__ . '\MockLoader', $mock, [$config, $manager, $theme, $client]);
+            return $this->getMockBuilder(__NAMESPACE__ . '\MockLoader')
+                ->setMethods($mock)
+                ->setConstructorArgs([$config, $manager, $theme, $client])
+                ->getMock();
         }
         return new Loader($config, $manager, $theme, $client);
     }
