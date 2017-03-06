@@ -13,7 +13,7 @@ $formatProperty = function ($datafield, $name, $label) {
 <? if (isset($data[$type]) && !empty($data[$type])): ?>
   <? $i = 0; foreach ($data[$type] as $author => $dataFields): ?>
 <? ob_start() ?>
-    <?=($i++ == 0) ? '' : ', '?><div class="author-data" property="<?=$this->escapeHtml($schemaLabel)?>">
+    <?=($i++ == 0) ? '' : ', '?><span class="author-data" property="<?=$this->escapeHtml($schemaLabel)?>">
       <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
         <?=$this->escapeHtml($author)?>
       </a>
@@ -25,7 +25,7 @@ $formatProperty = function ($datafield, $name, $label) {
           <?=$formatProperty($dataFields[$name], $name, $prefix)?>
         <? endif; ?>
       <? endforeach; ?>
-    </div>
+    </span>
     <?
       // Strip whitespace before close tags to avoid spaces in front of commas:
       $output .= trim(preg_replace('/\s+<\//', '</', ob_get_contents()))
