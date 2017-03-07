@@ -63,14 +63,15 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $currentPath->expects($this->any())->method('__invoke')
             ->will($this->returnValue('/test/path'));
 
-        $recordLink = $this->getMock(
-            'VuFind\View\Helper\Root\RecordLink', [],
-            [new \VuFind\Record\Router(
-                $this->getServiceManager()->get('VuFind\RecordLoader'),
-                new \Zend\Config\Config([])
-            )
-            ]
-        );
+        $recordLink = $this->getMockBuilder('VuFind\View\Helper\Root\RecordLink')
+            ->setConstructorArgs(
+                [
+                    new \VuFind\Record\Router(
+                        $this->getServiceManager()->get('VuFind\RecordLoader'),
+                        new \Zend\Config\Config([])
+                    )
+                ]
+            )->getMock();
         $recordLink->expects($this->any())->method('getUrl')
             ->will($this->returnValue('test/url'));
 
