@@ -1080,6 +1080,27 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
 
     /**
+     * Helper method to determine whether or not a certain method can be
+     * called on this driver.  Required method for any smart drivers.
+     *
+     * @param string $method The name of the called method.
+     * @param array  $params Array of passed parameters
+     *
+     * @return bool True if the method can be called with the given parameters,
+     * false otherwise.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function supportsMethod($method, $params)
+    {
+        // Special case: change password is only available if properly configured.
+        if ($method == 'changePassword') {
+            return isset($this->config['changePassword']);
+        }
+        return is_callable([$this, $method]);
+    }
+
+    /**
      * Extract an ID from a URL (last number)
      *
      * @param string $url URL containing the ID
