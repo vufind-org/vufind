@@ -673,8 +673,14 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     : '';
             }
             $available = in_array($entry['status']['code'], ['b', 'j', 'i']);
-            $position = ($entry['priority'] ?: 1) . ' / '
-                . $entry['priorityQueueLength'];
+            if ($entry['priority'] >= $entry['priorityQueueLength']) {
+                // This can happen, no idea why
+                $position = $entry['priorityQueueLength'] . ' / '
+                    . $entry['priorityQueueLength'];
+            } else {
+                $position = ($entry['priority'] + 1) . ' / '
+                    . $entry['priorityQueueLength'];
+            }
             $holds[] = [
                 'id' => $bibId,
                 'item_id' => $this->extractId($entry['id']),
@@ -1189,7 +1195,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         $this->debug(
             '[' . round(microtime(true) - $startTime, 4) . 's]'
-            . " GET request $apiUrl" . PHP_EOL . 'response: ' . PHP_EOL
+            . " $method request $apiUrl" . PHP_EOL . 'response: ' . PHP_EOL
             . $result
         );
 
