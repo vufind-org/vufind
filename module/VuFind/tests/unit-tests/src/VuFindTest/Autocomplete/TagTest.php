@@ -72,8 +72,8 @@ class TagTest extends \VuFindTest\Unit\DbTestCase
         $tagTable->expects($this->once())->method('matchText')
             ->with($this->equalTo('foo'))
             ->will($this->returnValue($tags));
-        $tableManager
-            = $this->getMock('VuFind\Db\Table\PluginManager', ['get']);
+        $tableManager = $this->getMockBuilder('VuFind\Db\Table\PluginManager')
+            ->setMethods(['get'])->getMock();
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('Tags'))
             ->will($this->returnValue($tagTable));

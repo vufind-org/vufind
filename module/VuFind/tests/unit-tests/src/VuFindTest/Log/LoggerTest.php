@@ -77,7 +77,9 @@ CONTEXT;
                 && false !== strpos($a[5], 'function =')
                 && count($a) == 5;
         };
-        $logger = $this->getMock('VuFind\Log\Logger', ['log']);
+        $logger = $this->getMockBuilder('VuFind\Log\Logger')
+            ->setMethods(['log'])
+            ->getMock();
         $logger->expects($this->once())->method('log')->with($this->equalTo(Logger::CRIT), $this->callback($callback));
         try {
             throw new \Exception('test');
