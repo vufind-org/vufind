@@ -103,6 +103,13 @@ class PAIA extends DAIA
     /**
      * PAIA scopes as defined in
      * http://gbv.github.io/paia/paia.html#access-tokens-and-scopes
+     *
+     * Notice: logged in users should ALWAYS have scope read_patron as the PAIA
+     * driver performs paiaGetUserDetails() upon each call of VuFind's patronLogin().
+     * That means if paiaGetUserDetails() fails (which is the case if the patron has
+     * NOT the scope read_patron) the patronLogin() will fail as well even though
+     * paiaLogin() might have succeeded. Any other scope not being available for the
+     * patron will be handled more or less gracefully through exception handling.
      */
     const SCOPE_READ_PATRON = 'read_patron';
     const SCOPE_UPDATE_PATRON = 'update_patron';
@@ -242,9 +249,10 @@ class PAIA extends DAIA
      */
     public function cancelHolds($cancelDetails)
     {
-        // check if user has appropriate scope
+        // check if user has appropriate scope (refer to scope declaration above for
+        // further details)
         if (!$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)) {
-            throw new ILSException('You are not allowed to write items.');
+            throw new ILSException('Exception::paia_missing_scope_write_items');
         }
 
         $it = $cancelDetails['details'];
@@ -324,9 +332,10 @@ class PAIA extends DAIA
      */
     public function changePassword($details)
     {
-        // check if user has appropriate scope
+        // check if user has appropriate scope (refer to scope declaration above for
+        // further details)
         if (!$this->paiaCheckScope(self::SCOPE_CHANGE_PASSWORD)) {
-            throw new ILSException('You are not allowed to change password.');
+            throw new ILSException('Exception::paia_missing_scope_change_password');
         }
 
         $post_data = [
@@ -598,9 +607,10 @@ class PAIA extends DAIA
      */
     public function getMyFines($patron)
     {
-        // check if user has appropriate scope
+        // check if user has appropriate scope (refer to scope declaration above for
+        // further details)
         if (!$this->paiaCheckScope(self::SCOPE_READ_FEES)) {
-            throw new ILSException('You are not allowed to read fees.');
+            throw new ILSException('Exception::paia_missing_scope_read_fees');
         }
 
         try {
@@ -698,7 +708,11 @@ class PAIA extends DAIA
         //          4 - provided (the document is ready to be used by the patron)
         $filter = ['status' => [1, 4]];
         // get items-docs for given filters
-        $items = $this->paiaGetItems($patron, $filter);
+        try {
+            $items = $this->paiaGetItems($patron, $filter);
+        } catch (ILSException $e) {
+            throw $e;
+        }
 
         return $this->mapPaiaItems($items, 'myHoldsMapping');
     }
@@ -753,7 +767,11 @@ class PAIA extends DAIA
         // status = 3 - held (the document is on loan by the patron)
         $filter = ['status' => [3]];
         // get items-docs for given filters
-        $items = $this->paiaGetItems($patron, $filter);
+        try {
+            $items = $this->paiaGetItems($patron, $filter);
+        } catch (ILSException $e) {
+            throw $e;
+        }
 
         return $this->mapPaiaItems($items, 'myTransactionsMapping');
     }
@@ -774,7 +792,11 @@ class PAIA extends DAIA
         // status = 2 - ordered (the document is ordered by the patron)
         $filter = ['status' => [2]];
         // get items-docs for given filters
-        $items = $this->paiaGetItems($patron, $filter);
+        try {
+            $items = $this->paiaGetItems($patron, $filter);
+        } catch (ILSException $e) {
+            throw $e;
+        }
 
         return $this->mapPaiaItems($items, 'myStorageRetrievalRequestsMapping');
     }
@@ -1042,9 +1064,10 @@ class PAIA extends DAIA
      */
     public function placeHold($holdDetails)
     {
-        // check if user has appropriate scope
+        // check if user has appropriate scope (refer to scope declaration above for
+        // further details)
         if (!$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)) {
-            throw new ILSException('You are not allowed to write items.');
+            throw new ILSException('Exception::paia_missing_scope_write_items');
         }
 
         $item = $holdDetails['item_id'];
@@ -1139,9 +1162,10 @@ class PAIA extends DAIA
      */
     public function renewMyItems($details)
     {
-        // check if user has appropriate scope
+        // check if user has appropriate scope (refer to scope declaration above for
+        // further details)
         if (!$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)) {
-            throw new ILSException('You are not allowed to write items.');
+            throw new ILSException('Exception::paia_missing_scope_write_items');
         }
 
         $it = $details['details'];
@@ -1245,9 +1269,10 @@ class PAIA extends DAIA
      */
     protected function paiaGetItems($patron, $filter = [])
     {
-        // check if user has appropriate scope
+        // check if user has appropriate scope (refer to scope declaration above for
+        // further details)
         if (!$this->paiaCheckScope(self::SCOPE_READ_ITEMS)) {
-            throw new ILSException('You are not allowed to read items.');
+            throw new ILSException('Exception::paia_missing_scope_read_items');
         }
 
         // check for existing data in cache
@@ -1836,9 +1861,10 @@ class PAIA extends DAIA
      */
     protected function paiaGetUserDetails($patron)
     {
-        // check if user has appropriate scope
+        // check if user has appropriate scope (refer to scope declaration above for
+        // further details)
         if (!$this->paiaCheckScope(self::SCOPE_READ_PATRON)) {
-            throw new ILSException('You are not allowed to read patron.');
+            throw new ILSException('Exception::paia_missing_scope_read_patron');
         }
 
         $responseJson = $this->paiaGetRequest(
