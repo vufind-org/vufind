@@ -69,7 +69,7 @@
         "phpmd/phpmd": "2.6.0",
         "phpunit/phpunit": "5.7.9",
         "sebastian/phpcpd": "2.0.4",
-        "squizlabs/php_codesniffer": "2.8.0",
+        "squizlabs/php_codesniffer": "2.8.1",
         "twig/twig": "1.27"
     },
     "scripts": {
