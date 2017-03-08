@@ -20,7 +20,7 @@
               $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
             }
           ?>
-          <? $selectedCard = (!isset($this->displaySelected) || $this->displaySelected) && ($card->cat_username === $this->user->cat_username); ?>
+          <? $selectedCard = (!isset($this->displaySelected) || $this->displaySelected) && (strcasecmp($card->cat_username, $this->user->cat_username) === 0); ?>
           <a href="<?=$this->url('librarycards-selectcard')?>?cardID=<?=$this->escapeHtmlAttr($card->id)?>"><?=$selectedCard ? '<i class="fa fa-check"></i><span class="sr-only">(' . $this->transEsc("selected") . ')</span> ' : '' ?><?=$display ?></a>
         <? endforeach; ?>
       </li>
@@ -32,7 +32,7 @@
             $display = null;
             if (!isset($this->displaySelected) || $this->displaySelected) {
               foreach ($cards as $card) {
-                if ($card->cat_username != $this->user->cat_username) {
+                if (strcasecmp($card->cat_username, $this->user->cat_username) !== 0) {
                     continue;
                 }
                 $target = '';

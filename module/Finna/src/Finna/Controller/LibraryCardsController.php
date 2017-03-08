@@ -291,7 +291,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         $user->saveLibraryCard(
             $card->id, $card->card_name, $card->cat_username, $password
         );
-        if ($user->cat_username === $card->cat_username) {
+        if (strcasecmp($user->cat_username, $card->cat_username) === 0) {
             $user->saveCredentials($card->cat_username, $password);
         }
         $user->updateHash();
