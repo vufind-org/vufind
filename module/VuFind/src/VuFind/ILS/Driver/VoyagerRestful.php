@@ -2028,7 +2028,8 @@ EOT;
 
         // Optional check that the patron doesn't already have the bib on loan
         if ($this->checkLoans) {
-            $checkItemId = $level == 'copy' && $itemId ? $itemId : null;
+            $checkItemId = $this->checkLoans === 'same-item' && $level == 'copy'
+                && $itemId ? $itemId : null;
             if ($this->isRecordOnLoan($patron['id'], $bibId, $checkItemId)) {
                 return $this->holdError('hold_record_already_on_loan');
             }
