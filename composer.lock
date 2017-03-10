@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b46d7d357c4ef87625274592ffaf7326",
+    "content-hash": "a64da06bca4e0dc6582bbbeafe239be2",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -3670,16 +3670,16 @@
         },
         {
             "name": "zendframework/zendservice-amazon",
-            "version": "dev-master",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendService_Amazon.git",
-                "reference": "a8167bfca0ba0a3f54212d3250bfaf2079acd059"
+                "reference": "cb54705ce81a3790ca6bbf4b87e2fef84e255dc7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/ZendService_Amazon/zipball/a8167bfca0ba0a3f54212d3250bfaf2079acd059",
-                "reference": "a8167bfca0ba0a3f54212d3250bfaf2079acd059",
+                "url": "https://api.github.com/repos/zendframework/ZendService_Amazon/zipball/cb54705ce81a3790ca6bbf4b87e2fef84e255dc7",
+                "reference": "cb54705ce81a3790ca6bbf4b87e2fef84e255dc7",
                 "shasum": ""
             },
             "require": {
@@ -3710,36 +3710,7 @@
                     "ZendService\\Amazon\\": "library/"
                 }
             },
-            "autoload-dev": {
-                "psr-0": {
-                    "ZendServiceTest\\Amazon\\": "tests/ZendServiceTest/Amazon/"
-                }
-            },
-            "scripts": {
-                "check": [
-                    "@license-check",
-                    "@cs-check",
-                    "@test"
-                ],
-                "upload-coverage": [
-                    "coveralls -v"
-                ],
-                "cs-check": [
-                    "php-cs-fixer fix -v --diff --dry-run"
-                ],
-                "cs-fix": [
-                    "php-cs-fixer fix -v --diff"
-                ],
-                "test": [
-                    "phpunit --colors=always"
-                ],
-                "test-coverage": [
-                    "phpunit --coverage-clover clover.xml"
-                ],
-                "license-check": [
-                    "true"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -3753,11 +3724,7 @@
                 "sqs",
                 "zf2"
             ],
-            "support": {
-                "source": "https://github.com/zendframework/ZendService_Amazon/tree/master",
-                "issues": "https://github.com/zendframework/ZendService_Amazon/issues"
-            },
-            "time": "2017-03-09 23:44:14"
+            "time": "2017-03-09T23:32:09+00:00"
         },
         {
             "name": "zendframework/zendservice-recaptcha",
@@ -7886,8 +7853,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "ahand/mobileesp": 20,
-        "pear/validate_ispn": 20,
-        "zendframework/zendservice-amazon": 20
+        "pear/validate_ispn": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

@@ -7,12 +7,6 @@
             "email": "demian.katz@villanova.edu"
         }
     ],
-    "repositories": [
-      {
-        "type": "vcs",
-        "url": "https://github.com/zendframework/ZendService_Amazon"
-      }
-    ],
     "license": "GPL-2.0",
     "require": {
         "php": ">=5.6",
@@ -63,7 +57,7 @@
         "zendframework/zend-version": "2.5.1",
         "zendframework/zend-view": "2.8.1",
         "zendframework/zendrest": "2.0.2",
-        "zendframework/zendservice-amazon": "dev-master",
+        "zendframework/zendservice-amazon": "2.1.0",
         "zendframework/zendservice-recaptcha": "3.0.0",
         "zf-commons/zfc-rbac": "2.6.2"
     },
