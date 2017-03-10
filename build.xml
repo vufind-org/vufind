@@ -248,7 +248,7 @@
         <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
 
         <!-- configure VuFind -->
-        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini.tmp" />
+        <property name="db_connection_string" value="pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}" />
       </then>
       <else>
         <!-- build database -->
@@ -259,13 +259,19 @@
         <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
 
         <!-- configure VuFind -->
-        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini.tmp" />
+        <property name="db_connection_string" value="mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}" />
       </else>
     </if>
 
-    <!-- Turn on exception logging -->
-    <exec command="sed -e &quot;s!;file           = /var/log/vufind.log:alert,error,notice,debug!file = ${srcdir}/vufind-exception.log:alert-5,error-5!&quot; ${srcdir}/local/config/vufind/config.ini.tmp &gt; ${srcdir}/local/config/vufind/config.ini" />
-    <delete file="${srcdir}/local/config/vufind/config.ini.tmp" />
+    <!-- Update config.ini to activate DB connection and exception logging -->
+    <copy file="${srcdir}/config/vufind/config.ini" tofile="${srcdir}/local/config/vufind/config.ini">
+      <filterchain>
+        <replaceregexp>
+          <regexp pattern="mysql://root@localhost/vufind" replace="${db_connection_string}" />
+          <regexp pattern=";file\s+= /var/log/vufind.log:alert,error,notice,debug" replace="file = ${srcdir}/vufind-exception.log:alert-5,error-5" />
+        </replaceregexp>
+      </filterchain>
+    </copy>
     <exec command="touch ${srcdir}/vufind-exception.log" />
     <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
