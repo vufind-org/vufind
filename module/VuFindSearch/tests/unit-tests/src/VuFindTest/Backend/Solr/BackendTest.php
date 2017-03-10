@@ -286,16 +286,17 @@ class BackendTest extends PHPUnit_Framework_TestCase
     public function testRandom()
     {
         // Test that random sort parameter is added:
-        $params = $this->getMock('VuFindSearch\ParamBag', ['set']);
+        $params = $this->getMockBuilder('VuFindSearch\ParamBag')
+            ->setMethods(['set'])->getMock();
         $params->expects($this->once())->method('set')
             ->with($this->equalTo('sort'), $this->matchesRegularExpression('/[0-9]+_random asc/'));
 
         // Test that random proxies search; stub out injectResponseWriter() to prevent it
         // from injecting unwanted extra parameters into $params:
-        $back = $this->getMock(
-            'VuFindSearch\Backend\Solr\Backend', ['search', 'injectResponseWriter'],
-            [$this->getConnectorMock()]
-        );
+        $back = $this->getMockBuilder(__NAMESPACE__ . '\BackendMock')
+            ->setMethods(['search', 'injectResponseWriter'])
+            ->setConstructorArgs([$this->getConnectorMock()])
+            ->getMock();
         $back->expects($this->once())->method('injectResponseWriter');
         $back->expects($this->once())->method('search')
             ->will($this->returnValue('dummy'));
@@ -350,6 +351,16 @@ class BackendTest extends PHPUnit_Framework_TestCase
     protected function getConnectorMock(array $mock = [])
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
-        return $this->getMock('VuFindSearch\Backend\Solr\Connector', $mock, ['http://example.org/', $map]);
+        return $this->getMockBuilder('VuFindSearch\Backend\Solr\Connector')
+            ->setMethods($mock)
+            ->setConstructorArgs(['http://example.org/', $map])
+            ->getMock();
+    }
+}
+
+class BackendMock extends \VuFindSearch\Backend\Solr\Backend
+{
+    public function injectResponseWriter(\VuFindSearch\ParamBag $params)
+    {
     }
 }

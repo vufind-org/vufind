@@ -64,7 +64,7 @@ class ExternalAuthController extends AbstractBase
         $user = $this->getUser();
         if ($user) {
             // Logged in, check for authorization
-            $authService = $this->getServiceLocator()
+            $authService = $this->serviceLocator
                 ->get('ZfcRbac\Service\AuthorizationService');
             if (!$authService->isGranted($this->ezproxyRequiredPermission)) {
                 $view = $this->createViewModel();

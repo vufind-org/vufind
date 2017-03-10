@@ -81,7 +81,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $writer = new \Zend\Log\Writer\Mock();
         $logger->addWriter($writer);
 
-        $mockPM = $this->getMock('\VuFind\Config\PluginManager');
+        $mockPM = $this->createMock('\VuFind\Config\PluginManager');
         $mockPM->expects($this->any())
             ->method('get')
             ->will(
@@ -199,7 +199,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals($configData, $val);
 
         $config = new \Zend\Config\Config($configData);
-        $mockPM = $this->getMock('\VuFind\Config\PluginManager');
+        $mockPM = $this->createMock('\VuFind\Config\PluginManager');
         $mockPM->expects($this->any())
             ->method('get')
             ->will(
@@ -2330,7 +2330,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     {
         $configData = ['config' => 'values'];
         $config = new \Zend\Config\Config($configData);
-        $mockPM = $this->getMock('\VuFind\Config\PluginManager');
+        $mockPM = $this->createMock('\VuFind\Config\PluginManager');
         $mockPM->expects($this->any())
             ->method('get')
             ->will($this->returnValue($config));
@@ -2349,14 +2349,14 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     {
         $cat_username = $instance ? $instance . '.' . $username : $username;
         return [
-                    'id' => 1,
-                    'firstname' => 'JANE',
-                    'lastname' => 'DOE',
-                    'cat_username' => $cat_username,
-                    'cat_password' => 'password',
-                    'email' => '',
-                    'major' => '',
-                    'college' => ''
+            'id' => 1,
+            'firstname' => 'JANE',
+            'lastname' => 'DOE',
+            'cat_username' => $cat_username,
+            'cat_password' => 'password',
+            'email' => '',
+            'major' => '',
+            'college' => ''
         ];
     }
 
@@ -2391,14 +2391,15 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     {
         $session = $this->getMockBuilder('Zend\Session\Container')
             ->disableOriginalConstructor()->getMock();
-        return $this->getMock(
-            "VuFind\ILS\Driver\Demo", $methods,
-            [
-                new \VuFind\Date\Converter(),
-                $this->getMock('VuFindSearch\Service'),
-                function () use ($session) { return $session; }
-            ]
-        );
+        return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock')
+            ->setMethods($methods)
+            ->setConstructorArgs(
+                [
+                    new \VuFind\Date\Converter(),
+                    $this->createMock('VuFindSearch\Service'),
+                    function () use ($session) { return $session; }
+                ]
+            )->getMock();
     }
 
     /**
@@ -2416,20 +2417,26 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             if ($type == 'Demo') {
                 $mock = $this->getMockDemoDriver($methods);
             } else {
-                $mock = $this->getMock(
-                    "VuFind\ILS\Driver\\$type", $methods,
-                    [new \VuFind\Date\Converter()]
-                );
+                $mock = $this->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'Mock')
+                    ->setMethods($methods)
+                    ->setConstructorArgs([new \VuFind\Date\Converter()])
+                    ->getMock();
             }
         } catch(\Exception $e) {
-            $mock = $this->getMock(
-                "VuFind\ILS\Driver\\$type", $methods
-            );
+            $mock = $this->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'Mock')
+                ->setMethods($methods)->getMock();
         }
         if ($methods && in_array('init', $methods)) {
             $mock->expects($this->any())
                 ->method('init')
                 ->will($this->returnValue(null));
+        }
+        if ($methods && in_array('supportsMethod', $methods)) {
+            $mock = $this
+                ->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'NoSupportMock')
+                ->setMethods($methods)
+                ->setConstructorArgs([new \VuFind\Date\Converter()])
+                ->getMock();
         }
         $mock->setConfig(['dummy_config' => true]);
         return $mock;
@@ -2527,4 +2534,93 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
     {
         return [];
     }
+}
+
+trait ILSMockTrait
+{
+    public function cancelHolds($cancelDetails)
+    {
+    }
+    public function cancelILLRequests($cancelDetails)
+    {
+    }
+    public function cancelStorageRetrievalRequests($cancelDetails)
+    {
+    }
+    public function checkRequestIsValid($id, $data, $patron)
+    {
+    }
+    public function checkILLRequestIsValid($id, $data, $patron)
+    {
+    }
+    public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
+    {
+    }
+    public function getCancelHoldDetails($holdDetails)
+    {
+    }
+    public function getCancelILLRequestDetails($holdDetails)
+    {
+    }
+    public function getCancelStorageRetrievalRequestDetails($holdDetails)
+    {
+    }
+    public function getConfig($function, $params = null)
+    {
+    }
+    public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
+    {
+    }
+    public function getDefaultRequestGroup($patron = false, $holdDetails = null)
+    {
+    }
+    public function getMyILLRequests($patron)
+    {
+    }
+    public function getILLPickUpLibraries($patron = false, $holdDetails = null)
+    {
+    }
+    public function getILLPickUpLocations($id, $pickupLib, $patron)
+    {
+    }
+    public function getPickUpLocations($patron = false, $holdDetails = null)
+    {
+    }
+    public function getRenewDetails($checkoutDetails)
+    {
+    }
+    public function getRequestGroups($bibId = null, $patron = null, $holdDetails = null)
+    {
+    }
+    public function placeHold($holdDetails)
+    {
+    }
+    public function placeILLRequest($holdDetails)
+    {
+    }
+    public function placeStorageRetrievalRequest($details)
+    {
+    }
+    public function renewMyItems($renewDetails)
+    {
+    }
+}
+class DemoMock extends \VuFind\ILS\Driver\Demo
+{
+    use ILSMockTrait;
+}
+class VoyagerMock extends \VuFind\ILS\Driver\Voyager
+{
+    use ILSMockTrait;
+}
+class VoyagerNoSupportMock extends \VuFind\ILS\Driver\Voyager
+{
+    use ILSMockTrait;
+    public function supportsMethod(...$args) {
+        return false;
+    }
+}
+class UnicornMock extends \VuFind\ILS\Driver\Unicorn
+{
+    use ILSMockTrait;
 }
