@@ -36,7 +36,7 @@ $config = [
                     ]
                 ],
             ],
-            'authApiv1' => [
+            'authApiV1' => [
                 'type' => 'Zend\Mvc\Router\Http\Segment',
                 'verb' => 'get,post,options',
                 'options' => [

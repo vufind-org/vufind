@@ -431,48 +431,4 @@ $routeGenerator->addRecordRoutes($config, $recordRoutes);
 $routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);
 
-// API routes
-/*$config['router']['routes']['searchApi'] = [
-    'type' => 'Zend\Mvc\Router\Http\Literal',
-    'verb' => 'get,post,options',
-    'options' => [
-        'route'    => '/api/search',
-        'defaults' => [
-            'controller' => 'SearchApi',
-            'action'     => 'search',
-        ]
-    ],
-];
-$config['router']['routes']['searchApiv1'] = [
-    'type' => 'Zend\Mvc\Router\Http\Literal',
-    'verb' => 'get,post,options',
-    'options' => [
-        'route'    => '/v1/search',
-        'defaults' => [
-            'controller' => 'SearchApi',
-            'action'     => 'search',
-        ]
-    ]
-];
-$config['router']['routes']['searchApiRecord'] = [
-    'type' => 'Zend\Mvc\Router\Http\Literal',
-    'options' => [
-        'route'    => '/api/record',
-        'defaults' => [
-            'controller' => 'SearchApi',
-            'action'     => 'record',
-        ]
-    ]
-];
-$config['router']['routes']['searchApiRecordv1'] = [
-    'type' => 'Zend\Mvc\Router\Http\Literal',
-    'options' => [
-        'route'    => '/v1/record',
-        'defaults' => [
-            'controller' => 'SearchApi',
-            'action'     => 'record',
-        ]
-    ]
-];*/
-
 return $config;

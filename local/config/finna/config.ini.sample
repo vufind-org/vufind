@@ -324,6 +324,11 @@ maximum_password_length = 32
 ; patterns have translated default hints.
 ;password_hint = "local_login_password_hint"
 
+; Include only the listed ILS drivers in the authentication API
+;include_api_targets = ils1,ils2
+; Exclude the listed ILS drivers from the authentication API
+;exclude_api_targets = ils3,ils4
+
 [ChoiceAuth]
 choice_order = Database,Shibboleth,MultiILS
 
