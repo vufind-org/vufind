@@ -78,6 +78,13 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
     protected $count = 5;
 
     /**
+     * Boost multiplier for full string match when using the MoreLikeThis Handler
+     *
+     * @var string
+     */
+    protected $fullMatchBoostMultiplier = 10;
+
+    /**
      * Constructor.
      *
      * @param \Zend\Config\Config $searchConfig Search config
@@ -101,6 +108,9 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
             if (isset($mlt->count)) {
                 $this->count = $mlt->count;
             }
+            if (isset($mlt->fullMatchBoostMultiplier)) {
+                $this->fullMatchBoostMultiplier = $mlt->fullMatchBoostMultiplier;
+            }
         }
     }
 
@@ -109,11 +119,11 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
     /**
      * Return SOLR search parameters based on interesting terms.
      *
-     * @param array $interestingTerms Interesting terms to use in the query
+     * @param array $record Interesting terms to use in the query
      *
      * @return ParamBag
      */
-    public function buildInterestingTermQuery($interestingTerms)
+    public function buildInterestingTermQuery($record)
     {
         $params = new ParamBag();
 
@@ -138,11 +148,21 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
             }
         }
         $query = [];
-        foreach ($interestingTerms as $term) {
-            list($field, $value) = explode(':', $term[0], 2);
-            if (isset($settings[$field])) {
-                $boostValue = round($settings[$field] * $term[1]);
-                $query[] = "$field:($value)^$boostValue";
+        foreach ($settings as $field => $boostValue) {
+            if (isset($record[$field])) {
+                $count = 0;
+                foreach ((array)$record[$field] as $values) {
+                    $escaped = addcslashes($values, '":');
+                    $fullBoost = $this->fullMatchBoostMultiplier * $boostValue;
+                    $query[] = "$field:($escaped)^$fullBoost";
+                    foreach (explode(' ', $values) as $value) {
+                        $escaped = addcslashes($value, '":');
+                        $query[] = "$field:($escaped)^$boostValue";
+                        if (++$count > 15) {
+                            break;
+                        }
+                    }
+                }
             }
         }
         $params->set('q', implode(' OR ', $query));

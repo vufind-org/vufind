@@ -59,22 +59,19 @@ class Backend extends \VuFindSearch\Backend\Solr\Backend
     {
         // Hack to work around Solr bugs in the MLT Handlers
         if ($this->getSimilarBuilder()->mltHandlerActive()) {
-            // Find interesting terms first
-            $params = $defaultParams ? clone($defaultParams) : new ParamBag();
+            // Fetch record first
+            $params = new ParamBag();
             $this->injectResponseWriter($params);
-            $params->set('q', sprintf('id:"%s"', addcslashes($id, '"')));
-            $params->set('qt', 'morelikethis');
-            $params->set('mlt.interestingTerms', 'details');
-            $params->set('rows', 0);
-            $response = $this->connector->similar($id, $params);
+            $response = $this->connector->retrieve($id, $params);
             $results = json_decode($response, true);
-            if (isset($results['interestingTerms'])) {
+            if (!empty($results['response']['docs'][0])) {
                 $params = $defaultParams ? clone($defaultParams) : new ParamBag();
                 $this->injectResponseWriter($params);
                 $params->mergeWith(
                     $this->getSimilarBuilder()
-                        ->buildInterestingTermQuery($results['interestingTerms'])
+                        ->buildInterestingTermQuery($results['response']['docs'][0])
                 );
+                $params->add('fq', sprintf('-id:"%s"', addcslashes($id, '"')));
                 $response = $this->connector->search($params);
             }
         } else {
