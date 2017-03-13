@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -40,11 +41,13 @@ class CombinedController extends AbstractSearch
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         $this->searchClassId = 'Combined';
-        parent::__construct();
+        parent::__construct($sm);
     }
 
     /**
@@ -71,7 +74,7 @@ class CombinedController extends AbstractSearch
 
         // Validate configuration:
         $sectionId = $this->params()->fromQuery('id');
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
+        $config = $this->serviceLocator->get('VuFind\Config')->get('combined')
             ->toArray();
         $tabConfig = $this->getTabConfig($config);
         if (!isset($tabConfig[$sectionId])) {
@@ -80,7 +83,7 @@ class CombinedController extends AbstractSearch
         list($searchClassId) = explode(':', $sectionId);
 
         // Retrieve results:
-        $options = $this->getServiceLocator()
+        $options = $this->serviceLocator
             ->get('VuFind\SearchOptionsPluginManager');
         $currentOptions = $options->get($searchClassId);
         list($controller, $action)
@@ -103,8 +106,8 @@ class CombinedController extends AbstractSearch
         ) {
             $html = '';
         } else {
-            $cart = $this->getServiceLocator()->get('VuFind\Cart');
-            $general = $this->getServiceLocator()->get('VuFind\Config')
+            $cart = $this->serviceLocator->get('VuFind\Cart');
+            $general = $this->serviceLocator->get('VuFind\Config')
                 ->get('config');
             $viewParams = [
                 'searchClassId' => $searchClassId,
@@ -134,7 +137,7 @@ class CombinedController extends AbstractSearch
         // Set up current request context:
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
-        $results = $this->getServiceLocator()->get('VuFind\SearchRunner')->run(
+        $results = $this->serviceLocator->get('VuFind\SearchRunner')->run(
             $request, 'Combined', $this->getSearchSetupCallback()
         );
 
@@ -145,9 +148,9 @@ class CombinedController extends AbstractSearch
 
         // Gather combined results:
         $combinedResults = [];
-        $options = $this->getServiceLocator()
+        $options = $this->serviceLocator
             ->get('VuFind\SearchOptionsPluginManager');
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
+        $config = $this->serviceLocator->get('VuFind\Config')->get('combined')
             ->toArray();
         $supportsCart = false;
         $supportsCartOptions = [];
@@ -195,7 +198,7 @@ class CombinedController extends AbstractSearch
         }
 
         // Get default config for showBulkOptions
-        $settings = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $settings = $this->serviceLocator->get('VuFind\Config')->get('config');
 
         // Build view model:
         return $this->createViewModel(
@@ -235,7 +238,7 @@ class CombinedController extends AbstractSearch
             }
             unset($params['activeSearchClassId']); // don't need to pass this forward
 
-            $route = $this->getServiceLocator()
+            $route = $this->serviceLocator
                 ->get('VuFind\SearchOptionsPluginManager')
                 ->get($searchClassId)->getSearchAction();
             $base = $this->url()->fromRoute($route);
