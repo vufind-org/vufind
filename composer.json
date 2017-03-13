@@ -84,6 +84,6 @@
             "if [ \"$VUFIND_CONFIGURE_HEROKU_DEFAULTS\" = \"true\" ]; then composer configure-heroku-defaults; fi"
         ],
         "post-update-cmd": "phing installsolr installswaggerui",
-        "configure-heroku-defaults": "php install.php --basepath=/ --non-interactive"
+        "configure-heroku-defaults": "php install.php --basepath=/ --platform=heroku --non-interactive"
     }
 }
