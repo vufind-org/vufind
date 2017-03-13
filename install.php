@@ -57,10 +57,10 @@ try {
            'What base path should be used in VuFind\'s URL? [/vufind]',
         'multisite-w' => 
            'Specify we are going to setup a multisite. Options: directory and host',
-        'platform-w' => 
-           'Specify we are going to setup using a platform. Options: heroku',
         'hostname=s' => 
             'Specify the hostname for the VuFind Site, When multisite=host',
+        'platform-w' => 
+           'Specify we are going to setup using a platform. Options: heroku',
         'non-interactive' =>
             'Use settings if provided via arguments, otherwise use defaults',
       )
@@ -122,7 +122,7 @@ if (!$opts->getOption('use-defaults')) {
     if ($opts->getOption('platform')) {
         if ($opts->getOption('platform') === 'heroku') {
             $platform = PLATFORM_HEROKU;
-        } else if (($bad = $opts->getOption('multisite')) && $bad !== true) {
+        } else if (($bad = $opts->getOption('platform')) && $bad !== true) {
             die('Unexpected platform: ' . $bad . "\n");
         } else if ($interactive) {
             $userInputNeeded['platform'] = true;
@@ -143,9 +143,6 @@ if (!$opts->getOption('use-defaults')) {
     if (isset($userInputNeeded['multisiteMode'])) {
         $multisiteMode = getMultisiteMode();
     }
-    if (isset($userInputNeeded['platform'])) {
-        $platform = getPlatform();
-    }
 
     // Load supplemental multisite parameters:
     if ($multisiteMode == MULTISITE_HOST_BASED) {
@@ -154,6 +151,10 @@ if (!$opts->getOption('use-defaults')) {
         } else if ($interactive) {
              $host = getHost();
         }
+    }
+
+    if (isset($userInputNeeded['platform'])) {
+        $platform = getPlatform();
     }
 }
 
@@ -178,7 +179,7 @@ if (!empty($module)) {
 }
 
 // Build the final configuration:
-buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multisiteMode, $platform, $host);
+buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multisiteMode, $host, $platform);
 
 // Report success:
 echo "Apache configuration written to {$overrideDir}/httpd-vufind.conf.\n\n";
@@ -533,10 +534,11 @@ function getInput($prompt)
  * @param string $module      The VuFind custom module name (or empty for none)
  * @param int    $multi       Multisite mode preference
  * @param string $host        Virtual host name (or empty for none)
+ * @param int    $platform    Platform preference
  *
  * @return void
  */
-function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $platform, $host)
+function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $host, $platform)
 {
     $baseConfig = $baseDir . '/config/vufind/httpd-vufind.conf';
     $config = @file_get_contents($baseConfig);
@@ -561,17 +563,6 @@ function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $
         );
     }
 
-    // Special cases for platform deployments
-    switch ($platform) {
-    case PLATFORM_HEROKU:
-        $config = str_replace(
-            'php_value short_open_tag',
-            '#php_value short_open_tag',
-            $config
-        );
-        break;
-    }
-
     // In multisite mode, we need to make environment variables conditional:
     switch ($multi) {
     case MULTISITE_DIR_BASED:
@@ -588,6 +579,17 @@ function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $
         $config = preg_replace(
             '/SetEnv\s+(\w+)\s+(.*)/',
             'SetEnvIfNoCase Host ' . str_replace('.', '\.', $host) . ' $1=$2',
+            $config
+        );
+        break;
+    }
+
+    // Special cases for platform deployments
+    switch ($platform) {
+    case PLATFORM_HEROKU:
+        $config = str_replace(
+            'php_value short_open_tag',
+            '#php_value short_open_tag',
             $config
         );
         break;
