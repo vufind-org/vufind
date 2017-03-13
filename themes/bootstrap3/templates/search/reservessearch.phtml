@@ -7,6 +7,8 @@
 
     // Convenience variables:
     $reservesLookfor = $this->params->getDisplayQuery();
+
+    $this->searchClassId = 'SolrReserves';
 ?>
 
 <div class="row">
@@ -26,15 +28,17 @@
           <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
           <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
           <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($reservesLookfor)?>'</strong>,
-        <? endif; ?>
-        <? if ($qtime = $this->results->getQuerySpeed()): ?>
-          <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
+          <? if ($qtime = $this->results->getQuerySpeed()): ?>
+            <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
+          <? endif; ?>
         <? endif; ?>
       </div>
 
-      <div class="pull-right flip">
-        <?=$this->render('search/controls/sort.phtml')?>
-      </div>
+      <? if ($recordTotal > 0): ?>
+        <div class="pull-right flip">
+          <?=$this->render('search/controls/sort.phtml')?>
+        </div>
+      <? endif; ?>
     </div>
     <? if ($recordTotal < 1): ?>
       <p class="error"><?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($reservesLookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?></p>
