@@ -40,6 +40,7 @@ define('PLATFORM_HEROKU', 1);
 $baseDir = str_replace('\\', '/', dirname(__FILE__));
 $overrideDir = $baseDir . '/local';
 $host = $module = '';
+$platform = PLATFORM_NONE;
 $multisiteMode = MULTISITE_NONE;
 $basePath = '/vufind';
 
@@ -56,6 +57,8 @@ try {
            'What base path should be used in VuFind\'s URL? [/vufind]',
         'multisite-w' => 
            'Specify we are going to setup a multisite. Options: directory and host',
+        'platform-w' => 
+           'Specify we are going to setup using a platform. Options: heroku',
         'hostname=s' => 
             'Specify the hostname for the VuFind Site, When multisite=host',
         'non-interactive' =>
@@ -115,6 +118,17 @@ if (!$opts->getOption('use-defaults')) {
         }
     }
 
+    // We assume platform is "none" unless the --platform switch is set:
+    if ($opts->getOption('platform')) {
+        if ($opts->getOption('platform') === 'heroku') {
+            $platform = PLATFORM_HEROKU;
+        } else if (($bad = $opts->getOption('multisite')) && $bad !== true) {
+            die('Unexpected platform: ' . $bad . "\n");
+        } else if ($interactive) {
+            $userInputNeeded['platform'] = true;
+        }
+    }
+
     // Now that we've validated as many parameters as possible, retrieve
     // user input where needed.
     if (isset($userInputNeeded['overrideDir'])) {
@@ -128,6 +142,9 @@ if (!$opts->getOption('use-defaults')) {
     }
     if (isset($userInputNeeded['multisiteMode'])) {
         $multisiteMode = getMultisiteMode();
+    }
+    if (isset($userInputNeeded['platform'])) {
+        $platform = getPlatform();
     }
 
     // Load supplemental multisite parameters:
@@ -159,8 +176,6 @@ buildImportConfig($baseDir, $overrideDir, 'import_auth.properties');
 if (!empty($module)) {
     buildModules($baseDir, $module);
 }
-
-$platform=PLATFORM_NONE;
 
 // Build the final configuration:
 buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multisiteMode, $platform, $host);
@@ -430,6 +445,28 @@ function getMultisiteMode()
         . ".) Host-based (i.e. http://vufind1.server vs. http://vufind2.server)"
         . "\n\nor enter " . MULTISITE_NONE . " to disable multisite mode.\n";
     $legal = array(MULTISITE_NONE, MULTISITE_DIR_BASED, MULTISITE_HOST_BASED);
+    while (true) {
+        $input = getInput("\nWhich option do you want? ");
+        if (!is_numeric($input) || !in_array(intval($input), $legal)) {
+            echo "Invalid selection.";
+        } else {
+            return intval($input);
+        }
+    }
+}
+
+/**
+ * Get the user's platform.
+ *
+ * @return int
+ */
+function getPlatform()
+{
+    echo "\nWhen running VuFind in a platform, you need to specify which one it is so the"
+        . " best configuration\nis used.  Choose an option:\n" . PLATFORM_HEROKU
+        . ".) Heroku platform.\n\nor enter " . PLATFORM_NONE . " to disable platform"
+        . " mode (typical installation).\n";
+    $legal = array(PLATFORM_NONE, PLATFORM_HEROKU);
     while (true) {
         $input = getInput("\nWhich option do you want? ");
         if (!is_numeric($input) || !in_array(intval($input), $legal)) {
