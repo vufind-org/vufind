@@ -8,7 +8,7 @@ url = "https://api.kirjastot.fi/v3"
 ; Language settings.
 ; Language codes are given in Kirjastohakemisto format (fi, sv, en...)
 
-; Language version used for translated strings. 
+; Language version used for translated strings.
 ; If defined, this overrides the current user language.
 ; language = fi
 
@@ -32,7 +32,8 @@ languages[] = en
 cachetime = 1
 
 ; URL patterns for map and route instructions
-routeUrl = "http://www.matka.fi/fi/?keya=&keyb={street},%20{city}"
+;routeUrl = "http://www.matka.fi/fi/?keya=&keyb={street},%20{city}"
+routeUrl = ""
 mapUrl = "http://maps.google.com/?q={street}%20{city}"
 
 
