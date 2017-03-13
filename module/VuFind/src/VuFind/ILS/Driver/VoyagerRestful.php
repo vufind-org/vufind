@@ -1622,14 +1622,15 @@ EOT;
     }
 
     /**
-     * Check whether the given patron has the given bib record on loan.
+     * Check whether the given patron has the given bib record or its item on loan.
      *
      * @param int $patronId Patron ID
-     * @param int $bibId    BIB ID
+     * @param int $bibId    Bib ID
+     * @param int $itemId   Item ID (optional)
      *
      * @return bool
      */
-    protected function isRecordOnLoan($patronId, $bibId)
+    protected function isRecordOnLoan($patronId, $bibId, $itemId = null)
     {
         $sqlExpressions = [
             'count(cta.ITEM_ID) CNT'
@@ -1658,6 +1659,11 @@ EOT;
         }
 
         $sqlBind = ['patronId' => $patronId, 'bibId' => $bibId];
+
+        if (null !== $itemId) {
+            $sqlWhere[] = 'cta.ITEM_ID=:itemId';
+            $sqlBind['itemId'] = $itemId;
+        }
 
         $sqlArray = [
             'expressions' => $sqlExpressions,
@@ -2022,7 +2028,9 @@ EOT;
 
         // Optional check that the patron doesn't already have the bib on loan
         if ($this->checkLoans) {
-            if ($this->isRecordOnLoan($patron['id'], $bibId)) {
+            $checkItemId = $this->checkLoans === 'same-item' && $level == 'copy'
+                && $itemId ? $itemId : null;
+            if ($this->isRecordOnLoan($patron['id'], $bibId, $checkItemId)) {
                 return $this->holdError('hold_record_already_on_loan');
             }
         }
