@@ -34,6 +34,9 @@ define('MULTISITE_NONE', 0);
 define('MULTISITE_DIR_BASED', 1);
 define('MULTISITE_HOST_BASED', 2);
 
+define('PLATFORM_NONE', 0);
+define('PLATFORM_HEROKU', 1);
+
 $baseDir = str_replace('\\', '/', dirname(__FILE__));
 $overrideDir = $baseDir . '/local';
 $host = $module = '';
@@ -157,8 +160,10 @@ if (!empty($module)) {
     buildModules($baseDir, $module);
 }
 
+$platform=PLATFORM_NONE;
+
 // Build the final configuration:
-buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multisiteMode, $host);
+buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multisiteMode, $platform, $host);
 
 // Report success:
 echo "Apache configuration written to {$overrideDir}/httpd-vufind.conf.\n\n";
@@ -494,7 +499,7 @@ function getInput($prompt)
  *
  * @return void
  */
-function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $host)
+function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $platform, $host)
 {
     $baseConfig = $baseDir . '/config/vufind/httpd-vufind.conf';
     $config = @file_get_contents($baseConfig);
@@ -517,6 +522,17 @@ function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $
             "#SetEnv VUFIND_LOCAL_MODULES VuFindLocalTemplate",
             "SetEnv VUFIND_LOCAL_MODULES {$module}", $config
         );
+    }
+
+    // Special cases for platform deployments
+    switch ($platform) {
+    case PLATFORM_HEROKU:
+        $config = str_replace(
+            'php_value short_open_tag',
+            '#php_value short_open_tag',
+            $config
+        );
+        break;
     }
 
     // In multisite mode, we need to make environment variables conditional:
