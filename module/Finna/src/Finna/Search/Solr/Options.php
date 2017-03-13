@@ -40,6 +40,8 @@ namespace Finna\Search\Solr;
  */
 class Options extends \VuFind\Search\Solr\Options
 {
+    use \Finna\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Browse route
      *
