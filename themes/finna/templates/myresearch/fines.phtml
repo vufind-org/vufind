@@ -147,18 +147,6 @@
           <div class="col-sm-6 col-sm-pull-6 online-payment-note"><?=$this->render($template)?></div>
           <? endif; ?>
         <? endif; ?>
-        <? if (isset($this->registerPayment) && $this->registerPayment): ?>
-          <? $this->headScript()->appendFile("finna-online-payment.js"); ?>
-          <?=
-          $this->inlineScript(
-            \Zend\View\Helper\HeadScript::SCRIPT,
-            '$(document).ready(function() {'
-                . "finna.onlinePayment.registerPayment('" . $this->json($registerPaymentParams) . "');" . '
-            });',
-            'SET'
-          );
-          ?>
-        <? endif; ?>
         <? if ($template = $this->content()->findTemplateForLng("content/Additions/fines-post-list")): ?>
           <div class="fines-post-list"><?=$this->render($template)?></div>
         <? endif; ?>
@@ -167,4 +155,14 @@
     <? endif; ?>
   </div>
 </div>
+<? if (isset($this->registerPayment) && $this->registerPayment): ?>
+  <? $this->headScript()->appendFile('finna-online-payment.js'); ?>
+  <?=$this->inlineScript(
+    \Zend\View\Helper\HeadScript::SCRIPT,
+    '$(document).ready(function() {'
+        . "finna.onlinePayment.registerPayment('" . $this->json($registerPaymentParams) . "');" . '
+    });',
+    'SET'
+  ); ?>
+<? endif; ?>
 <!-- END of: finna - myresearch/fines.phtml -->
