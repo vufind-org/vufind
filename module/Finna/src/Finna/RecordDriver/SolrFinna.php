@@ -667,6 +667,39 @@ trait SolrFinna
                 'id' => $id
             ];
         }
+        if (!empty($this->recordConfig->Record->sort_sources)) {
+            usort(
+                $results,
+                function ($a, $b) {
+                    return strcasecmp(
+                        $this->translate('source_' . $a['source']),
+                        $this->translate('source_' . $b['source'])
+                    );
+                }
+            );
+        }
+        return $results;
+    }
+
+    /**
+     * Get information on records deduplicated with this one
+     *
+     * @return array Array keyed by source id containing record id
+     */
+    public function getDedupData()
+    {
+        $results = parent::getDedupData();
+        if (!empty($this->recordConfig->Record->sort_sources)) {
+            uksort(
+                $results,
+                function ($a, $b) {
+                    return strcasecmp(
+                        $this->translate("source_$a"),
+                        $this->translate("source_$b")
+                    );
+                }
+            );
+        }
         return $results;
     }
 
