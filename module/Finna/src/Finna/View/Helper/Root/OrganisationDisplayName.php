@@ -49,7 +49,7 @@ class OrganisationDisplayName extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($record, $fullName = false)
     {
-        $translator = $this->getView()->plugin('translate');
+        $translate = $this->getView()->plugin('translate');
 
         $institutions = $record->tryMethod('getInstitutions');
         $institution = reset($institutions);
@@ -57,7 +57,7 @@ class OrganisationDisplayName extends \Zend\View\Helper\AbstractHelper
         // Case 1: only one building level
         $buildings = $record->getBuilding();
         $building = isset($buildings[0]) ? $buildings[0] : '';
-        $displayName = $translator($building);
+        $displayName = $translate($building);
 
         if (!$fullName && count($buildings) === 1) {
             return $displayName;
@@ -68,7 +68,7 @@ class OrganisationDisplayName extends \Zend\View\Helper\AbstractHelper
         if ($buildings) {
             foreach ($buildings as $building) {
                 if (strpos($building, $institution) !== false) {
-                    $displayName = (string)$translator($building);
+                    $displayName = (string)$translate($building);
                     break;
                 }
             }
@@ -78,11 +78,14 @@ class OrganisationDisplayName extends \Zend\View\Helper\AbstractHelper
             return $displayName;
         }
 
-        $datasource
-            = $translator->__invoke("source_$datasource", null, $datasource);
+        $datasource = $translate("source_$datasource", null, $datasource);
 
         if ($datasource === $displayName) {
             return $displayName;
+        }
+
+        if (empty($displayName)) {
+            return $datasource;
         }
 
         $pos = strpos($datasource, $displayName);
