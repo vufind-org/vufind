@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="asd">
+    <serverData>
+      <paths name="asd">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="ubffm.hds2.dev" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
