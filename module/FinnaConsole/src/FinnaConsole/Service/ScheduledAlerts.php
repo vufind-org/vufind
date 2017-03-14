@@ -443,14 +443,14 @@ class ScheduledAlerts extends AbstractService
             $lastExecutionDate = $lastTime->format($iso8601);
             if ($newestRecordDate < $lastExecutionDate) {
                 $this->msg(
-                    "      No new results for search $searchId: "
+                    "      No new results for search {$s->id} ($searchId): "
                     . "$newestRecordDate < $lastExecutionDate"
                 );
                 continue;
             }
 
             $this->msg(
-                "      New results for search $searchId: "
+                "      New results for search {$s->id} ($searchId): "
                 . "$newestRecordDate >= $lastExecutionDate"
             );
 
