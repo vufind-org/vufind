@@ -27,6 +27,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Search\Solr;
+use Zend\EventManager\EventInterface;
 
 /**
  * Solr merged record handling listener.
@@ -39,6 +40,78 @@ namespace Finna\Search\Solr;
  */
 class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
 {
+    /**
+     * Set up filter for excluding merge children.
+     *
+     * @param EventInterface $event Event
+     *
+     * @return EventInterface
+     */
+    public function onSearchPre(EventInterface $event)
+    {
+        $saveEnabled = $this->enabled;
+        $backend = $event->getTarget();
+        if ($backend === $this->backend) {
+            $params = $event->getParam('params');
+            $context = $event->getParam('context');
+            if (($context == 'search' || $context == 'similar') && $params) {
+                // Check for a special filter that enables deduplication
+                $fq = $params->get('fq');
+                if ($fq) {
+                    $key = array_search('finna.deduplication:"1"', $fq);
+                    if (false !== $key) {
+                        $this->enabled = true;
+                        $params->set('finna.deduplication', '1');
+                        unset($fq[$key]);
+                    } else {
+                        $key = array_search('finna.deduplication:"0"', $fq);
+                        if (false !== $key) {
+                            $this->enabled = false;
+                            $params->set('finna.deduplication', '0');
+                        }
+                    }
+                    if (false !== $key) {
+                        unset($fq[$key]);
+                        $params->set('fq', $fq);
+                    }
+                }
+            }
+        }
+        $result = parent::onSearchPre($event);
+        $this->enabled = $saveEnabled;
+        return $result;
+    }
+
+    /**
+     * Fetch appropriate dedup child
+     *
+     * @param EventInterface $event Event
+     *
+     * @return EventInterface
+     */
+    public function onSearchPost(EventInterface $event)
+    {
+        $saveEnabled = $this->enabled;
+
+        $backend = $event->getParam('backend');
+        if ($backend != $this->backend->getIdentifier()) {
+            return $event;
+        }
+        $context = $event->getParam('context');
+        $params = $event->getParam('params');
+        if ($params && ($context == 'search' || $context == 'similar')) {
+            if ($params->contains('finna.deduplication', '1')) {
+                $this->enabled = true;
+            } elseif ($params->contains('finna.deduplication', '0')) {
+                $this->enabled = false;
+            }
+        }
+
+        $result = parent::onSearchPost($event);
+        $this->enabled = $saveEnabled;
+        return $result;
+    }
+
     /**
      * Append fields from dedup record to the selected local record
      *
