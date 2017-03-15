@@ -1,0 +1,99 @@
+[Catalog]
+host = "http://koha-server/api"
+
+[Holds]
+; HMACKeys - A list of hold form element names that will be analyzed for consistency
+; during hold form processing. Most users should not need to change this setting.
+HMACKeys = item_id:holdtype:level
+
+; defaultRequiredDate - A colon-separated list used to set the default "not required
+; after" date for holds in the format days:months:years
+; e.g. 0:1:0 will set a "not required after" date of 1 month from the current date
+defaultRequiredDate = 0:0:2
+
+; extraHoldFields - A colon-separated list used to display extra visible fields in the
+; place holds form. Supported values are "requiredByDate" and "pickUpLocation"
+extraHoldFields = requiredByDate:pickUpLocation
+
+; A Pick Up Location Code used to pre-select the pick up location drop down list and
+; provide a default option if others are not available. Must be one of the following:
+; 1) empty string to indicate that the first location is default (default setting)
+; 2) "user-selected" to indicate that the user always has to choose the location
+; 3) a value within the Location IDs returned by getPickUpLocations()
+defaultPickUpLocation = ""
+
+; By default the pick up location list is sorted alphabetically. This setting can be
+; used to manually set the order by entering location IDs as a colon-separated list.
+; You can also disable sorting by setting this to false.
+;pickUpLocationOrder = 158:155
+
+; This setting can be used to exclude locations from the pickup location list
+excludePickupLocations = 1:6:10:15:29:32:34:37:38:39:53:79:87:88
+
+; Uncomment the following lines to enable password (PIN) change
+[changePassword]
+; PIN change parameters. The default limits are taken from the interface documentation.
+minLength = 4
+maxLength = 4
+; See the password_pattern/password_hint settings in the [Authentication] section
+; of config.ini for notes on these settings. When set here, these will override the
+; config.ini defaults when Voyager is used for authentication.
+pattern = "numeric"
+;hint = "Your optional custom hint can go here."
+
+; Uncomment the following lines to enable updating of address information.
+; Choose a method on how to update the address information (driver, email or url).
+[updateAddress]
+;method = driver
+; emailAddress is required for the email method
+;emailAddress =
+; Uncomment the following lines to change which fields are included in the form
+; when using the email method. Format for the fields is label:profile_field
+; Default is address, zip, city and country. Email and phone are included unless
+; they have their own sections [updateEmail] or [updatePhone] defined. Also custom
+; fields can be defined.
+;fields[] = Address:address
+;fields[] = Zip:zipcode
+;fields[] = City:city
+;fields[] = Country:country
+;fields[] = Phone:mobile
+;fields[] = Email:email
+; url is required for the url method. url can be a single address or an array of
+; language-specific addresses. First example is a single one:
+;url = http://address.of.change.form
+; Alternatively different links can be specified for each language:
+;url[fi] = http://address.of.change.form/finnish
+;url[sv] = http://address.of.change.form/swedish
+;url[en-gb] = http://address.of.change.form/english
+
+; Uncomment the following lines to enable updating of email address.
+; Choose a method on how to update the email address.
+; Only 'driver' is currently supported.
+[updateEmail]
+;method = driver
+
+; Uncomment the following lines to enable updating of phone number.
+; Choose a method on how to update the phone number.
+; Only 'driver' is currently supported.
+[updatePhone]
+;method = driver
+
+[onlinePayment]
+; Whether online payment is enabled. Default is false.
+enabled = true
+; Transaction fee (in cents) added to each payment
+transactionFee = 50
+; Minimum fee (in cents) allowed to be paid online
+minimumFee = 60
+; Email address for transactions that could not be registered.
+;errorEmail = ''
+; Payment processing operator card ID in Koha
+userId = 'admin'
+; Payment processing operator password in Koha
+userPassword = ''
+; Maximum duration (in minutes) for a transaction.
+transactionMaxDuration = 15
+; Currency
+currency = 'EUR'
+; Payment handler
+handler = 'CPU'

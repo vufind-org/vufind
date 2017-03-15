@@ -431,6 +431,7 @@ $config = [
                     'demo' => 'VuFind\ILS\Driver\Factory::getDemo',
                     'horizon' => 'VuFind\ILS\Driver\Factory::getHorizon',
                     'horizonxmlapi' => 'VuFind\ILS\Driver\Factory::getHorizonXMLAPI',
+                    'koharest' => 'VuFind\ILS\Driver\Factory::getKohaRest',
                     'lbs4' => 'VuFind\ILS\Driver\Factory::getLBS4',
                     'multibackend' => 'VuFind\ILS\Driver\Factory::getMultiBackend',
                     'noils' => 'VuFind\ILS\Driver\Factory::getNoILS',
