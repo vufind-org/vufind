@@ -1321,9 +1321,9 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
     /**
      * Extract source from the given ID
      *
-     * @param string $id    The id to be split
+     * @param string $id The id to be split
      *
-     * @return string  Source
+     * @return string Source
      */
     protected function getSource($id)
     {
