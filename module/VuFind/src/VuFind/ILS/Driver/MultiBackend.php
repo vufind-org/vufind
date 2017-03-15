@@ -1321,7 +1321,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
     /**
      * Extract source from the given ID
      *
-     * @param string $id The id to be split
+     * @param string $id    The id to be split
      *
      * @return string  Source
      */
@@ -1332,7 +1332,6 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
             return substr($id, 0, $pos);
         }
 
-        $this->debug("Could not find source id in '$id'");
         return '';
     }
 
@@ -1365,9 +1364,6 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
                 return $source;
             }
         }
-        $this->debug(
-            'Could not find source id in params: ' . print_r($params, true)
-        );
         return '';
     }
 
