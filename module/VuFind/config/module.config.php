@@ -216,6 +216,7 @@ $config = [
             'VuFind\RecordTabPluginManager' => 'VuFind\Service\Factory::getRecordTabPluginManager',
             'VuFind\RelatedPluginManager' => 'VuFind\Service\Factory::getRelatedPluginManager',
             'VuFind\ResolverDriverPluginManager' => 'VuFind\Service\Factory::getResolverDriverPluginManager',
+            'VuFind\Search' => 'VuFind\Service\Factory::getSearchService',
             'VuFind\Search\BackendManager' => 'VuFind\Service\Factory::getSearchBackendManager',
             'VuFind\Search\Memory' => 'VuFind\Service\Factory::getSearchMemory',
             'VuFind\SearchOptionsPluginManager' => 'VuFind\Service\Factory::getSearchOptionsPluginManager',
@@ -236,7 +237,6 @@ $config = [
         'invokables' => [
             'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper',
             'VuFind\IpAddressUtils' => 'VuFind\Net\IpAddressUtils',
-            'VuFind\Search' => 'VuFindSearch\Service',
             'VuFind\Session\Settings' => 'VuFind\Session\Settings',
         ],
         'initializers' => [

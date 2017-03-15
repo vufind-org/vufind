@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7713f46c9d0c08afd51e8d33eea810b5",
+    "content-hash": "6b28ba78c0ed1a34882d7b7025c5bef7",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -1886,33 +1886,37 @@
         },
         {
             "name": "zendframework/zend-eventmanager",
-            "version": "2.6.3",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-eventmanager.git",
-                "reference": "3d41b6129fb4916d483671cea9f77e4f90ae85d3"
+                "reference": "c3bce7b7d47c54040b9ae51bc55491c72513b75d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-eventmanager/zipball/3d41b6129fb4916d483671cea9f77e4f90ae85d3",
-                "reference": "3d41b6129fb4916d483671cea9f77e4f90ae85d3",
+                "url": "https://api.github.com/repos/zendframework/zend-eventmanager/zipball/c3bce7b7d47c54040b9ae51bc55491c72513b75d",
+                "reference": "c3bce7b7d47c54040b9ae51bc55491c72513b75d",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5 || ^7.0",
-                "zendframework/zend-stdlib": "^2.7"
+                "php": "^5.6 || ^7.0"
             },
             "require-dev": {
-                "athletic/athletic": "dev-master",
-                "fabpot/php-cs-fixer": "1.7.*",
-                "phpunit/phpunit": "~4.0"
+                "athletic/athletic": "^0.1",
+                "container-interop/container-interop": "^1.1.0",
+                "phpunit/phpunit": "^5.6",
+                "zendframework/zend-coding-standard": "~1.0.0",
+                "zendframework/zend-stdlib": "^2.7.3 || ^3.0"
+            },
+            "suggest": {
+                "container-interop/container-interop": "^1.1.0, to use the lazy listeners feature",
+                "zendframework/zend-stdlib": "^2.7.3 || ^3.0, to use the FilterChain feature"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-release-2.6": "2.6-dev",
-                    "dev-master": "3.0-dev",
-                    "dev-develop": "3.1-dev"
+                    "dev-master": "3.1-dev",
+                    "dev-develop": "3.2-dev"
                 }
             },
             "autoload": {
@@ -1924,12 +1928,15 @@
             "license": [
                 "BSD-3-Clause"
             ],
+            "description": "Trigger and listen to events within a PHP application",
             "homepage": "https://github.com/zendframework/zend-eventmanager",
             "keywords": [
+                "event",
                 "eventmanager",
+                "events",
                 "zf2"
             ],
-            "time": "2016-02-18T20:49:05+00:00"
+            "time": "2016-12-19T21:47:12+00:00"
         },
         {
             "name": "zendframework/zend-feed",
@@ -6910,16 +6917,16 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v3.2.4",
+            "version": "v3.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
-                "reference": "f0e628f04fc055c934b3211cfabdb1c59eefbfaa"
+                "reference": "a48f13dc83c168f1253a5d2a5a4fb46c36244c4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/css-selector/zipball/f0e628f04fc055c934b3211cfabdb1c59eefbfaa",
-                "reference": "f0e628f04fc055c934b3211cfabdb1c59eefbfaa",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/a48f13dc83c168f1253a5d2a5a4fb46c36244c4c",
+                "reference": "a48f13dc83c168f1253a5d2a5a4fb46c36244c4c",
                 "shasum": ""
             },
             "require": {
@@ -6959,7 +6966,7 @@
             ],
             "description": "Symfony CssSelector Component",
             "homepage": "https://symfony.com",
-            "time": "2017-01-02T20:32:22+00:00"
+            "time": "2017-02-21T09:12:04+00:00"
         },
         {
             "name": "symfony/debug",
@@ -7020,16 +7027,16 @@
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v3.2.4",
+            "version": "v3.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dependency-injection.git",
-                "reference": "130aa55b8ed7e6d0d75b0ed37256cec687a22f41"
+                "reference": "74e0935e414ad33d5e82074212c0eedb4681a691"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/130aa55b8ed7e6d0d75b0ed37256cec687a22f41",
-                "reference": "130aa55b8ed7e6d0d75b0ed37256cec687a22f41",
+                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/74e0935e414ad33d5e82074212c0eedb4681a691",
+                "reference": "74e0935e414ad33d5e82074212c0eedb4681a691",
                 "shasum": ""
             },
             "require": {
@@ -7079,7 +7086,7 @@
             ],
             "description": "Symfony DependencyInjection Component",
             "homepage": "https://symfony.com",
-            "time": "2017-02-16T22:46:52+00:00"
+            "time": "2017-03-05T00:06:55+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
