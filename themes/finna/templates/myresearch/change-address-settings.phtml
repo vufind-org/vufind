@@ -21,7 +21,13 @@
       <div class="form-group">
         <label class="col-sm-3 control-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
         <div class="col-sm-9">
-          <input id="<?=$this->escapeHtmlAttr($field)?>" name="<?=$this->escapeHtmlAttr($field)?>" type="text" value="<?=$this->escapeHtmlAttr(isset($this->profile[$field]) ? $this->profile[$field] : '') ?>" class="form-control"/>
+          <?
+            $value = isset($this->profile[$field]) ? $this->profile[$field] : '';
+            if (!$value) {
+              $value = isset($this->profile['full_data'][$field]) ? $this->profile['full_data'][$field] : '';
+            }
+          ?>
+          <input id="<?=$this->escapeHtmlAttr($field)?>" name="<?=$this->escapeHtmlAttr($field)?>" type="text" value="<?=$this->escapeHtmlAttr($value) ?>" class="form-control"/>
         </div>
       </div>
     <? endforeach; ?>
