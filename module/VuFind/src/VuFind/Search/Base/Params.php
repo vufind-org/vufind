@@ -1483,7 +1483,7 @@ class Params
         if (!$this->hasHiddenFilter($newFilter)) {
             // Extract field and value from filter string:
             list($field, $value) = $this->parseFilter($newFilter);
-            if (!empty($field) && !empty($value)) {
+            if (!empty($field) && '' !== $value) {
                 $this->hiddenFilters[$field][] = $value;
             }
         }
