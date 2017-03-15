@@ -647,9 +647,16 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                         $field, ['a', 'b', 'c']
                     );
                     $dates = $this->getSubfieldArray($field, ['d']);
+
+                    $altSubfields = $this->getLinkedMarcFieldContents(
+                        $field, ['a', 'b', 'c']
+                    );
+                    $altSubfields = $this->stripTrailingPunctuation($altSubfields);
+
                     if (!empty($subfields)) {
                         $result[] = [
                             'name' => $this->stripTrailingPunctuation($subfields[0]),
+                            'name_alt' => $altSubfields,
                             'date' => !empty($dates) ? $dates[0] : '',
                             'role' => $role
                         ];
@@ -891,6 +898,30 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             return $objectId;
         }
         return '';
+    }
+
+    /**
+     * Get the short (pre-subtitle) title of the record in alternative script.
+     *
+     * @return string
+     */
+    public function getShortTitleAltScript()
+    {
+        if (!($title = $this->getLinkedMarcFieldContents('245', ['a']))) {
+            $title = $this->getLinkedMarcFieldContents('240', ['a', 'n', 'p']);
+        }
+        return $this->stripTrailingPunctuation($title);
+    }
+
+    /**
+     * Get the subtitle of the record in alternative script.
+     *
+     * @return string
+     */
+    public function getSubtitleAltScript()
+    {
+        $title = $this->getLinkedMarcFieldContents('245', ['b', 'n', 'p']);
+        return $this->stripTrailingPunctuation($title);
     }
 
     /**
@@ -1221,6 +1252,60 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
+     * Get selected subfields from a MARC field
+     *
+     * @param \File_MARC_Data_Field $field     Field
+     * @param array                 $subfields Subfields
+     *
+     * @return string
+     */
+    protected function getFieldSubfields(\File_MARC_Data_Field $field, $subfields)
+    {
+        $result = [];
+        foreach ($field->getSubfields() as $code => $content) {
+            if (in_array($code, $subfields)) {
+                $result[] = $content->getData();
+            }
+        }
+        return implode(' ', $result);
+    }
+
+    /**
+     * Get linked MARC field contents
+     *
+     * @param string|\File_MARC_Field $field     Field tag or actual field
+     * @param array                   $subfields Subfields
+     *
+     * @return string
+     */
+    protected function getLinkedMarcFieldContents($field, $subfields)
+    {
+        $marc = $this->getMarcRecord();
+        if (is_string($field)) {
+            $field = $marc->getField($field);
+        }
+        if (!$field) {
+            return '';
+        }
+        $link = $field->getSubfield('6');
+        if (!$link) {
+            return '';
+        }
+        $parts = explode('-', $link->getData());
+        if (count($parts) != 2) {
+            return '';
+        }
+        $linkedFieldCode = $parts[0];
+        $linkedFieldNum = (int)$parts[1] - 1;
+        $linkedFields = $marc->getFields($linkedFieldCode);
+        if (!isset($linkedFields[$linkedFieldNum])) {
+            return '';
+        }
+        $data = $this->getFieldSubfields($linkedFields[$linkedFieldNum], $subfields);
+        return $data;
+    }
+
+    /**
      * Support method for getSeries() -- given a field specification, look for
      * series information in the MARC record.
      *
@@ -1291,7 +1376,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             $input = [$input];
         }
         foreach ($input as &$str) {
-            $str = preg_replace("/[\s\/:;\,=\($additional]+\$/", '', $str);
+            $str = mb_ereg_replace("[\s\/:;\,=\($additional]+\$", '', $str);
             // Don't replace an initial letter (e.g. string "Smith, A.") followed by
             // period
             $thirdLast = substr($str, -3, 1);
