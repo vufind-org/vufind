@@ -151,6 +151,7 @@ $config = [
         'factories' => [
             'browse' => 'Finna\Controller\Factory::getBrowseController',
             'record' => 'Finna\Controller\Factory::getRecordController',
+            'cart' => 'Finna\Controller\Factory::getCartController',
         ],
         'invokables' => [
             'ajax' => 'Finna\Controller\AjaxController',
@@ -198,6 +199,8 @@ $config = [
             'VuFind\SearchSpecsReader' => 'Finna\Service\Factory::getSearchSpecsReader',
             'VuFind\SearchTabsHelper' => 'Finna\Service\Factory::getSearchTabsHelper',
             'VuFind\YamlReader' => 'Finna\Service\Factory::getYamlReader',
+            'VuFind\Cart' => 'Finna\Service\Factory::getCart',
+            'VuFind\Mailer' => 'Finna\Mailer\Factory',
         ],
         'invokables' => [
             'VuFind\HierarchicalFacetHelper' => 'Finna\Search\Solr\HierarchicalFacetHelper',

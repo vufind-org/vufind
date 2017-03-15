@@ -68,4 +68,21 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }
+
+    /**
+     * Construct the CartController.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return BrowseController
+     */
+    public static function getCartController(ServiceManager $sm)
+    {
+        return new CartController(
+            new \Zend\Session\Container(
+                'cart_followup',
+                $sm->getServiceLocator()->get('VuFind\SessionManager')
+            )
+        );
+    }
 }
