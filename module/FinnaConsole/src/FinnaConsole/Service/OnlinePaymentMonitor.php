@@ -443,14 +443,17 @@ class OnlinePaymentMonitor extends AbstractService
 // @codingStandardsIgnoreStart
         return <<<EOT
 Usage:
-  php index.php util online_payment_monitor <expire_hours> <from_email> <report_interval_hours> [minimum_paid_age]
+  php index.php util online_payment_monitor <expire_hours> <from_email>
+    <report_interval_hours> [minimum_paid_age]
 
   Validates unregistered online payment transactions.
     expire_hours          Number of hours before considering unregistered
                           transaction to be expired.
-    from_email            Sender email address for notification of expired transactions
+    from_email            Sender email address for notification of expired
+                          transactions
     report_interval_hours Interval when to re-send report of unresolved transactions
-    minimum_paid_age      Minimum age of transactions in 'paid' status until they are considered failed (seconds, default 120)
+    minimum_paid_age      Minimum age of transactions in 'paid' status until they are
+                          considered failed (seconds, default 120)
 
 EOT;
 // @codingStandardsIgnoreEnd

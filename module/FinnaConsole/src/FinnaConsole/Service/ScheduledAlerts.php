@@ -562,7 +562,11 @@ class ScheduledAlerts extends AbstractService
         $appPath = APPLICATION_PATH;
         return <<<EOT
 Usage:
-  php $appPath/util/scheduled_alerts.php <view base directory> <VuFind local configuration directory>
+  php $appPath/util/scheduled_alerts.php <view_base> <local_conf>
+
+  Sends scheduled alerts.
+    view_base  View base directory
+    local_conf VuFind local configuration directory
 
 For example:
   php $appPath/util/scheduled_alerts.php /tmp/finna /tmp/NDL-VuFind2/local
