@@ -166,11 +166,11 @@ class Transaction extends \VuFind\Db\Table\Gateway
         $callback = function ($select) use ($minimumPaidAge) {
             $select->where->nest
                 ->equalTo('complete', self::STATUS_REGISTRATION_FAILED)
-                ->greaterThan('paid', 0)
+                ->greaterThan('paid', '2000-01-01 00:00:00')
                 ->unnest
                 ->or->nest
                 ->equalTo('complete', self::STATUS_PAID)
-                ->greaterThan('paid', 0)
+                ->greaterThan('paid', '2000-01-01 00:00:00')
                 ->lessThan(
                     'paid', date('Y-m-d H:i:s', time() - $minimumPaidAge)
                 );
