@@ -118,7 +118,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     protected function runService($service)
     {
         $arguments = $this->getRequest()->getParams()->toArray();
-        $arguments = array_splice($arguments, 2);
+        $arguments = array_splice($arguments, 2, -2);
         $sl = $this->getServiceLocator();
         // Disable sharing of mailer so that every time an instance is requested a
         // new one is created. This avoids sharing an SMTP connection that might time
