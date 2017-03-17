@@ -562,13 +562,9 @@ class ScheduledAlerts extends AbstractService
         $appPath = APPLICATION_PATH;
         return <<<EOT
 Usage:
-  VUFIND_LOCAL_MODULES='FinnaTheme,FinnaSearch,Finna,FinnaConsole'
-  php $appPath/util/scheduled_alerts.php
-    <view base directory>
-    <VuFind local configuration directory>
+  php $appPath/util/scheduled_alerts.php <view base directory> <VuFind local configuration directory>
 
-            For example:
-  VUFIND_LOCAL_MODULES='FinnaTheme,FinnaSearch,Finna,FinnaConsole'
+For example:
   php $appPath/util/scheduled_alerts.php /tmp/finna /tmp/NDL-VuFind2/local
 
 EOT;
