@@ -1080,7 +1080,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             if ($this->singleReservationQueue
                 && isset($item['availabilityInfo']['reservations'])
             ) {
-                $reservationsTotal = $item['availabilityInfo']['reservations'];
+                $reservationsTotal
+                    = max(
+                        $reservationsTotal, $item['availabilityInfo']['reservations']
+                    );
             }
             $locations[$item['location']] = true;
             if (!$journal && $item['is_holdable']) {
