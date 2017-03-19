@@ -1,1 +1,1 @@
-web: vendor/bin/heroku-php-apache2 -C config/vufind/httpd-vufind-heroku.conf public/
+web: vendor/bin/heroku-php-apache2 -C local/httpd-vufind.conf public/
