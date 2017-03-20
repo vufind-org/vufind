@@ -588,18 +588,22 @@ function buildApacheConfig($currentDir, $overrideDir, $basePath, $module, $multi
     // Special cases for platform deployments
     switch ($platform) {
     case PLATFORM_HEROKU:
+        $templateBaseDir = '/app';
+        $templateOverrideDir = '/app/local';
+
         $config = str_replace(
             'php_value short_open_tag',
             '#php_value short_open_tag',
             $config
         );
-        $config = str_replace('%base-dir%', '/app', $config);
-        $config = str_replace('%override-dir%', '/app/local', $config);
         break;
     default:
-        $config = str_replace('%base-dir%', $currentDir, $config);
-        $config = str_replace('%override-dir%', $overrideDir, $config);
+        $templateBaseDir = $currentDir;
+        $templateOverrideDir = $overrideDir;
     }
+
+    $config = str_replace('%base-dir%', $templateBaseDir, $config);
+    $config = str_replace('%override-dir%', $templateOverrideDir, $config);
 
     $target = $overrideDir . '/httpd-vufind.conf';
     if (file_exists($target)) {
