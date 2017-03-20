@@ -1,0 +1,56 @@
+/* Bootstrap variable changes */
+@brand-primary: @dark-blue;
+
+@btn-default-bg:              @light-gray;
+@btn-default-color:           @near-black;
+@btn-primary-bg:              @dark-blue;
+
+@input-border-radius:         .125rem;
+@input-border-radius-large:   .25rem;
+
+@autocomplete-hover-bg:     @lightest-blue;
+@dropdown-link-hover-bg:    @lightest-blue;
+@dropdown-link-hover-color: @black;
+@table-bg-hover:            @lightest-blue;
+
+/* Common element changes */
+h1, h2, h3, h4 { margin: 1rem 0; }
+
+/* Bootstrap class overrides */
+.btn {
+  height: 34px;
+  border: 0;
+}
+.btn:hover,
+.btn:focus { color: @white; }
+
+.form-control,
+.search select.form-control {
+  padding-bottom: (@padding-base-vertical - 3px);
+  border: 0;
+  border-bottom: 3px solid transparent;
+}
+.form-control:focus {
+  border-bottom-color: @gold;
+  box-shadow: none;
+}
+select.form-control {
+  padding-bottom: @padding-base-vertical;
+  border: 1px solid @light-silver;
+}
+.alert {
+  border: 0;
+  color: @black;
+}
+.alert-info {
+  background-color: @lightest-blue;
+  color: @navy;
+}
+.alert-success {
+  background-color: @light-green;
+  color: @dark-green;
+}
+.alert-danger {
+  background-color: @red;
+  color: @white;
+}

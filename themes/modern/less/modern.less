@@ -1,59 +1,60 @@
 @import "vendor/tachyons-colors.less";
 @import "bootstrap";
-
-@brand-primary: @dark-blue;
-
-@btn-primary-bg:                 @near-black;
-@btn-border-radius-base:         .125rem;
-@btn-border-radius-large:        .25rem;
-
-@input-border-radius:         .125rem;
-@input-border-radius-large:        .25rem;
+@import "common";
 
 body {
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; // native font stack
   color: @near-black;
 }
 header {
-  background-color: @brand-primary;
+  background-color: @blue;
   color: @white;
   a,
   .btn-link {
     color: @white;
     &:hover { color: @lightest-blue; }
   }
+  .nav>li>a:hover,
+  .nav>li>a:focus {
+    background-color: @light-blue;
+    color: @black;
+  }
 }
 .navbar { border-radius: 0; }
 .banner {
   width: auto;
-  background-color: @brand-primary;
   color: #fff;
   a { color: #fff; }
 }
-.search { padding: 1rem; }
+.search {
+  padding: 1rem;
+  padding-top: 0;
+}
 .breadcrumbs {
-  background-color: @near-white;
-  border-bottom: 1px solid @silver;
+  background-color: @lightest-blue;
+  border-bottom: 1px solid @light-blue;
 }
 .breadcrumb {
   margin: 0;
   padding-left: 0;
   padding-right: 0;
   font-size: 85%;
+  color: @gray;
   background-color: transparent;
   border-radius: 0;
+  &>.active { color: @dark-gray; }
 }
 .main .container {
   padding-top: 1rem;
   background-color: @white;
 }
-h1, h2, h3, h4 { margin: 1rem 0; }
-.form-control {
-  padding-bottom: (@padding-base-vertical - 3px);
-  border: 0;
-  border-bottom: 3px solid transparent;
-}
-.form-control:focus {
-  border-bottom-color: @gold;
-  box-shadow: none;
+
+/* --- Cart --- */
+#cartSummary strong { font-weight: normal; }
+
+/* --- Search --- */
+.list-group-item.title { color: @dark-gray; }
+.search-controls {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }

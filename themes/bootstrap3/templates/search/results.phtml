@@ -81,7 +81,6 @@
       <? if ($recordTotal > 0): ?>
         <div class="col-sm-6 text-right">
           <?=$this->render('search/controls/limit.phtml')?>
-          <?=$this->render('search/controls/sort.phtml')?>
           <?=$this->render('search/controls/view.phtml')?>
         </div>
       <? endif; ?>
@@ -110,7 +109,14 @@
       <? endforeach; ?>
     <? else: ?>
       <form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
-        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
+        <div class="clearfix">
+          <div class="pull-left">
+            <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
+          </div>
+          <div class="pull-right">
+            <?=$this->render('search/controls/sort.phtml')?>
+          </div>
+        </div>
       </form>
       <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_', 'formAttr' => 'search-cart-form'])?>
