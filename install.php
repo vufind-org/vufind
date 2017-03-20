@@ -118,14 +118,15 @@ if (!$opts->getOption('use-defaults')) {
         }
     }
 
-    // We assume platform is "none" unless the --platform switch is set:
+    // We assume platform is "none" unless the --platform switch is set
+    // and require non-interactive mode:
     if ($opts->getOption('platform')) {
-        if ($opts->getOption('platform') === 'heroku') {
+        if ($interactive) {
+            die("Missing option: The --non-interactive option must be used when specifying a platform.\n");
+        } else if ($opts->getOption('platform') === 'heroku') {
             $platform = PLATFORM_HEROKU;
         } else if (($bad = $opts->getOption('platform')) && $bad !== true) {
             die('Unexpected platform: ' . $bad . "\n");
-        } else if ($interactive) {
-            $userInputNeeded['platform'] = true;
         }
     }
 
@@ -183,30 +184,31 @@ buildApacheConfig($currentDir, $overrideDir, $basePath, $module, $multisiteMode,
 
 // Report success:
 echo "Apache configuration written to {$overrideDir}/httpd-vufind.conf.\n\n";
-echo "You now need to load this configuration into Apache.\n";
-getApacheLocation($overrideDir);
-if (!empty($host)) {
-    echo "Since you are using a host-based multisite configuration, you will also" .
-        "\nneed to do some virtual host configuration. See\n" .
-        "     http://httpd.apache.org/docs/2.2/vhosts/\n\n";
+if(empty($platform)) {
+    echo "You now need to load this configuration into Apache.\n";
+    getApacheLocation($overrideDir);
+    if (!empty($host)) {
+        echo "Since you are using a host-based multisite configuration, you will also" .
+            "\nneed to do some virtual host configuration. See\n" .
+            "     http://httpd.apache.org/docs/2.2/vhosts/\n\n";
+    }
+    if ('/' == $basePath) {
+        echo "Since you are installing VuFind at the root of your domain, you will also"
+            . "\nneed to edit your Apache configuration to change DocumentRoot to:\n"
+            . $currentDir . "/public\n\n";
+    }
+    echo "Once the configuration is linked, restart Apache.  You should now be able\n";
+    echo "to access VuFind at http://localhost{$basePath}\n\n";
+    echo "For proper use of command line tools, you should also ensure that your\n";
+    if (empty($module)) {
+        echo "VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to\n";
+        echo "{$currentDir} and {$overrideDir} respectively.\n\n";
+    } else {
+        echo "VUFIND_HOME, VUFIND_LOCAL_MODULES and VUFIND_LOCAL_DIR environment\n";
+        echo "variables are set to {$currentDir}, {$module} and {$overrideDir} ";
+        echo "respectively.\n\n";
+    }
 }
-if ('/' == $basePath) {
-    echo "Since you are installing VuFind at the root of your domain, you will also"
-        . "\nneed to edit your Apache configuration to change DocumentRoot to:\n"
-        . $currentDir . "/public\n\n";
-}
-echo "Once the configuration is linked, restart Apache.  You should now be able\n";
-echo "to access VuFind at http://localhost{$basePath}\n\n";
-echo "For proper use of command line tools, you should also ensure that your\n";
-if (empty($module)) {
-    echo "VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to\n";
-    echo "{$currentDir} and {$overrideDir} respectively.\n\n";
-} else {
-    echo "VUFIND_HOME, VUFIND_LOCAL_MODULES and VUFIND_LOCAL_DIR environment\n";
-    echo "variables are set to {$currentDir}, {$module} and {$overrideDir} ";
-    echo "respectively.\n\n";
-}
-
 /**
  * Display system-specific information for where configuration files are found and/or
  * symbolic links should be created.
