@@ -74,7 +74,7 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return BrowseController
+     * @return CartController
      */
     public static function getCartController(ServiceManager $sm)
     {
