@@ -1610,6 +1610,11 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'publication_year' =>
                    isset($reservation->catalogueRecord->publicationYear)
                        ? $reservation->catalogueRecord->publicationYear : '',
+                'requestGroup' =>
+                   isset($reservation->reservationType)
+                   && $this->requestGroupsEnabled
+                   ? "axiell_$reservation->reservationType"
+                   : '',
                 'title' => $title
             ];
             $holdsList[] = $hold;
