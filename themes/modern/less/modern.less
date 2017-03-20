@@ -1,12 +1,28 @@
+@import "vendor/tachyons-colors.less";
 @import "bootstrap";
 
-@brand-primary: #333;
+@brand-primary: @dark-blue;
+
+@btn-primary-bg:                 @near-black;
+@btn-border-radius-base:         .125rem;
+@btn-border-radius-large:        .25rem;
+
+@input-border-radius:         .125rem;
+@input-border-radius-large:        .25rem;
 
 body {
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; // native font stack
-  background-color: #ddd;
+  color: @near-black;
 }
-.container { background-color: #fff; }
+header {
+  background-color: @brand-primary;
+  color: @white;
+  a,
+  .btn-link {
+    color: @white;
+    &:hover { color: @lightest-blue; }
+  }
+}
 .navbar { border-radius: 0; }
 .banner {
   width: auto;
@@ -15,16 +31,29 @@ body {
   a { color: #fff; }
 }
 .search { padding: 1rem; }
-.breadcrumbs { padding: 0; }
+.breadcrumbs {
+  background-color: @near-white;
+  border-bottom: 1px solid @silver;
+}
 .breadcrumb {
   margin: 0;
-  border-top: 1px solid @gray-lighter;
-  border-bottom: 1px solid @gray-lighter;
+  padding-left: 0;
+  padding-right: 0;
   font-size: 85%;
+  background-color: transparent;
   border-radius: 0;
 }
 .main .container {
   padding-top: 1rem;
-  background-color: #fff;
+  background-color: @white;
 }
 h1, h2, h3, h4 { margin: 1rem 0; }
+.form-control {
+  padding-bottom: (@padding-base-vertical - 3px);
+  border: 0;
+  border-bottom: 3px solid transparent;
+}
+.form-control:focus {
+  border-bottom-color: @gold;
+  box-shadow: none;
+}
