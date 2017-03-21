@@ -92,6 +92,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             'zip' => $result['zipcode'],
             'city' => $result['city'],
             'expiration_date' => $expirationDate,
+            'hold_identifier' => $result['othernames'],
             'full_data' => $result
         ];
     }

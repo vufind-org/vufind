@@ -156,6 +156,10 @@
             <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['email']) ?></div>
           <? endif; ?>
         <? endif; ?>
+        <? if (!empty($this->profile['hold_identifier'])): ?>
+          <div class="col-sm-4 profile-title"><?=$this->transEsc('Hold Identifier') ?>:</div>
+          <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['hold_identifier']) ?></div>
+        <? endif; ?>
         <? if (!empty($this->profile['group'])): ?>
           <div class="col-sm-4 profile-title"><?=$this->transEsc('Group') ?>:</div>
           <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['group']) ?></div>
