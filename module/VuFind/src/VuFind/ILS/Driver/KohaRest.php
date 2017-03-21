@@ -1258,7 +1258,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if ($patron && $this->itemHoldAllowed($item)) {
                 $entry['is_holdable'] = true;
                 $entry['level'] = 'copy';
-                $entry['addLink'] = 'check';
+                $entry['addLink'] = true;
             } else {
                 $entry['is_holdable'] = false;
             }
