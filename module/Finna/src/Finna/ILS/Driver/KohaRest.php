@@ -210,7 +210,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             $patron,
             true
         );
-        if ($code != 202 && $code != 204) {
+        if (!in_array($code, [200, 202, 204])) {
             return  [
                 'success' => false,
                 'status' => 'Changing the contact information failed',
