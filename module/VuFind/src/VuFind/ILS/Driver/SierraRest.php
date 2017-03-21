@@ -1443,6 +1443,13 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             'GET'
         );
         if (empty($result['entries'])) {
+            if (!empty($result['httpStatus'])) {
+                $msg = "Item status request failed: {$result['httpStatus']}";
+                if (!empty($result['description'])) {
+                    $msg .= " ({$result['description']})";
+                }
+                throw new ILSException($msg);
+            }
             return [];
         }
 
@@ -1456,7 +1463,6 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $opacMsg = $item['fixedFields']['108'];
                 if (trim($opacMsg['value']) != '-') {
                     $notes[] = $this->translateOpacMessage(trim($opacMsg['value']));
-                    break;
                 }
             }
 
