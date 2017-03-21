@@ -1430,69 +1430,84 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function getItemStatusesForBib($id)
     {
         $bib = $this->getBibRecord($id, 'bibLevel');
-        $result = $this->makeRequest(
-            ['v3', 'items'],
-            [
-                'bibIds' => $id,
-                'deleted' => 'false',
-                'suppressed' => 'false',
-                'fields' => 'location,status,barcode,callNumber,fixedFields'
-                    . ',varFields',
-                'limit' => 1000
-            ],
-            'GET'
-        );
-        if (empty($result['entries'])) {
-            if (!empty($result['httpStatus'])) {
-                $msg = "Item status request failed: {$result['httpStatus']}";
-                if (!empty($result['description'])) {
-                    $msg .= " ({$result['description']})";
-                }
-                throw new ILSException($msg);
-            }
-            return [];
+        $offset = 0;
+        $limit = 50;
+        $fields = 'location,status,barcode,callNumber,fixedFields';
+        if ('m' !== $bib['bibLevel']['code']) {
+            // Fetch varFields for volume information
+            $fields .= ',varFields';
         }
-
         $statuses = [];
-        foreach ($result['entries'] as $i => $item) {
-            $location = $this->translateLocation($item['location']);
-            list($status, $duedate, $notes) = $this->getItemStatus($item);
-            $available = $status == 'On Shelf';
-            // OPAC message
-            if (isset($item['fixedFields']['108'])) {
-                $opacMsg = $item['fixedFields']['108'];
-                if (trim($opacMsg['value']) != '-') {
-                    $notes[] = $this->translateOpacMessage(trim($opacMsg['value']));
+        while (!isset($result) || $limit === $result['total']) {
+            $result = $this->makeRequest(
+                ['v3', 'items'],
+                [
+                    'bibIds' => $id,
+                    'deleted' => 'false',
+                    'suppressed' => 'false',
+                    'fields' => $fields,
+                    'limit' => $limit,
+                    'offset' => $offset
+                ],
+                'GET'
+            );
+            if (empty($result['entries'])) {
+                if (!empty($result['httpStatus']) && 404 !== $result['httpStatus']) {
+                    $msg = "Item status request failed: {$result['httpStatus']}";
+                    if (!empty($result['description'])) {
+                        $msg .= " ({$result['description']})";
+                    }
+                    throw new ILSException($msg);
                 }
+                return $statuses;
             }
 
-            $entry = [
-                'id' => $id,
-                'item_id' => $item['id'],
-                'location' => $location,
-                'availability' => $available,
-                'status' => $status,
-                'reserve' => 'N',
-                'callnumber' => isset($item['callNumber'])
-                    ? preg_replace('/^\|a/', '', $item['callNumber']) : '',
-                'duedate' => $duedate,
-                'number' => $this->extractVolume($item),
-                'barcode' => $item['barcode'],
-                'sort' => $i
-            ];
-            if ($notes) {
-                $entry['item_notes'] = $notes;
-            }
+            foreach ($result['entries'] as $i => $item) {
+                $location = $this->translateLocation($item['location']);
+                list($status, $duedate, $notes) = $this->getItemStatus($item);
+                $available = $status == 'On Shelf';
+                // OPAC message
+                if (isset($item['fixedFields']['108'])) {
+                    $opacMsg = $item['fixedFields']['108'];
+                    if (trim($opacMsg['value']) != '-') {
+                        $notes[] = $this->translateOpacMessage(
+                            trim($opacMsg['value'])
+                        );
+                    }
+                }
+                $volume = isset($item['varFields']) ? $this->extractVolume($item)
+                    : '';
 
-            if ($this->isHoldable($item) && $this->itemHoldAllowed($item, $bib)) {
-                $entry['is_holdable'] = true;
-                $entry['level'] = 'copy';
-                $entry['addLink'] = true;
-            } else {
-                $entry['is_holdable'] = false;
-            }
+                $entry = [
+                    'id' => $id,
+                    'item_id' => $item['id'],
+                    'location' => $location,
+                    'availability' => $available,
+                    'status' => $status,
+                    'reserve' => 'N',
+                    'callnumber' => isset($item['callNumber'])
+                        ? preg_replace('/^\|a/', '', $item['callNumber']) : '',
+                    'duedate' => $duedate,
+                    'number' => $volume,
+                    'barcode' => $item['barcode'],
+                    'sort' => $i
+                ];
+                if ($notes) {
+                    $entry['item_notes'] = $notes;
+                }
 
-            $statuses[] = $entry;
+                if ($this->isHoldable($item) && $this->itemHoldAllowed($item, $bib)
+                ) {
+                    $entry['is_holdable'] = true;
+                    $entry['level'] = 'copy';
+                    $entry['addLink'] = true;
+                } else {
+                    $entry['is_holdable'] = false;
+                }
+
+                $statuses[] = $entry;
+            }
+            $offset += $limit;
         }
 
         usort($statuses, [$this, 'statusSortFunction']);
