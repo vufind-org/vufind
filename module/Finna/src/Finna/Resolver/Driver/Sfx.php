@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Royal Holloway, University of London
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -63,6 +63,11 @@ class Sfx extends \VuFind\Resolver\Driver\Sfx
         $root = $xml->xpath("//ctx_obj_targets");
         $xml = $root[0];
         foreach ($xml->children() as $target) {
+            if ('getMessageNoFullTxt' === (string)$target->service_type
+                || 'MESSAGE_NO_FULLTXT' === (string)$target->target_name
+            ) {
+                continue;
+            }
             $record = [];
             $record['title'] = (string)$target->target_public_name;
             $record['href'] = (string)$target->target_url;
