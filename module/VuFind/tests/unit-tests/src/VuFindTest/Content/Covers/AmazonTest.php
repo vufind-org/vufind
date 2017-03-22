@@ -107,10 +107,10 @@ class AmazonTest extends \PHPUnit_Framework_TestCase
      */
     protected function getUrl($size, $isbn = '0739313126', $throw = false)
     {
-        $amazon = $this->getMock(
-            'VuFind\Content\Covers\Amazon', ['getAmazonService'],
-            ['fake', 'fakesecret']
-        );
+        $amazon = $this->getMockBuilder(__NAMESPACE__ . '\CoverAmazonMock')
+            ->setMethods(['getAmazonService'])
+            ->setConstructorArgs(['fake', 'fakesecret'])
+            ->getMock();
         $params = [];
         if (!empty($isbn)) {
             $behavior = $throw
@@ -134,10 +134,10 @@ class AmazonTest extends \PHPUnit_Framework_TestCase
      */
     protected function getFakeService($isbn, $expectedBehavior)
     {
-        $service = $this->getMock(
-            'ZendService\Amazon\Amazon', ['itemLookup'],
-            ['fakekey', 'US', 'fakesecret']
-        );
+        $service = $this->getMockBuilder(__NAMESPACE__ . '\ZendAmazonMock')
+            ->setMethods(['itemLookup'])
+            ->setConstructorArgs(['fakekey', 'US', 'fakesecret'])
+            ->getMock();
         if (!empty($isbn)) {
             $service->expects($this->once())
                 ->method('itemLookup')
@@ -156,5 +156,19 @@ class AmazonTest extends \PHPUnit_Framework_TestCase
     {
         $file = realpath(__DIR__ . '/../../../../../fixtures/content/amazon-cover');
         return unserialize(file_get_contents($file));
+    }
+}
+
+class CoverAmazonMock extends \VuFind\Content\Covers\Amazon
+{
+    public function getAmazonService($key)
+    {
+    }
+}
+
+class ZendAmazonMock extends \ZendService\Amazon\Amazon
+{
+    public function itemLookup($asin, array $options = [])
+    {
     }
 }
