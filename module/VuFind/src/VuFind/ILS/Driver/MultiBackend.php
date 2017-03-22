@@ -215,9 +215,11 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
         if ($driver) {
-            // Don't pass on patron information belonging to another source
+            // If the patron belongs to another source, just pass on an empty array
+            // to indicate that the patron has logged in but is not available for the
+            // current catalog.
             if ($patron && $this->getSource($patron['cat_username']) !== $source) {
-                $patron = null;
+                $patron = [];
             }
             $holdings = $driver->getHolding(
                 $this->getLocalId($id),
