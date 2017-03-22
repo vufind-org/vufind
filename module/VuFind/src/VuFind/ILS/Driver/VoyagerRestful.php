@@ -477,11 +477,11 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      *
      * @param array  $data   Item Data
      * @param string $id     The BIB record id
-     * @param mixed  $patron Patron Data or boolean false
+     * @param array  $patron Patron Data
      *
      * @return array Keyed data
      */
-    protected function processHoldingData($data, $id, $patron = false)
+    protected function processHoldingData($data, $id, $patron = null)
     {
         $holding = parent::processHoldingData($data, $id, $patron);
 
@@ -551,7 +551,8 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
             $ILLRequest = '';
             $addILLRequestLink = false;
-            if ($patron && $isILLRequestAllowed) {
+            // Check only that a patron has logged in
+            if (null !== $patron && $isILLRequestAllowed) {
                 $ILLRequest = 'auto';
                 $addILLRequestLink = 'check';
             }
