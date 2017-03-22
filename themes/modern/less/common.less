@@ -5,8 +5,7 @@
 @btn-default-color:           @near-black;
 @btn-primary-bg:              @dark-blue;
 
-@input-border-radius:         .125rem;
-@input-border-radius-large:   .25rem;
+@input-border-radius:         .25rem;
 
 @autocomplete-hover-bg:     @lightest-blue;
 @dropdown-link-hover-bg:    @lightest-blue;
@@ -20,18 +19,19 @@ h1, h2, h3, h4 { margin: 1rem 0; }
 .btn {
   height: 34px;
   border: 0;
+  border-radius: .25rem;
 }
 .btn:hover,
 .btn:focus { color: @white; }
 
 .form-control,
 .search select.form-control {
-  padding-bottom: (@padding-base-vertical - 3px);
-  border: 0;
-  border-bottom: 3px solid transparent;
+  border: 1px solid @light-silver;
+  box-shadow: none;
 }
 .form-control:focus {
-  border-bottom-color: @gold;
+  padding-bottom: (@padding-base-vertical - 3px);
+  border-bottom: 3px solid @gold;
   box-shadow: none;
 }
 select.form-control {
@@ -42,15 +42,21 @@ select.form-control {
   border: 0;
   color: @black;
 }
-.alert-info {
-  background-color: @lightest-blue;
+.alert-info,
+.alert-info:hover {
   color: @navy;
+  background-color: @lightest-blue;
+  a { color: @blue; }
 }
-.alert-success {
-  background-color: @light-green;
+.alert-success,
+.alert-success:hover {
   color: @dark-green;
+  background-color: @light-green;
+  a { color: @green; }
 }
-.alert-danger {
-  background-color: @red;
+.alert-danger,
+.alert-danger:hover {
   color: @white;
+  background-color: @red;
+  a { color: @washed-red; }
 }
