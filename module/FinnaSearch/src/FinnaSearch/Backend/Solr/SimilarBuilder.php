@@ -152,11 +152,17 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
             if (isset($record[$field])) {
                 $count = 0;
                 foreach ((array)$record[$field] as $values) {
-                    $escaped = addcslashes($values, '":');
+                    if (strlen($values) < 3) {
+                        continue;
+                    }
+                    $escaped = addcslashes($values, '":-()');
                     $fullBoost = $this->fullMatchBoostMultiplier * $boostValue;
                     $query[] = "$field:($escaped)^$fullBoost";
                     foreach (explode(' ', $values) as $value) {
-                        $escaped = addcslashes($value, '":');
+                        if (strlen($value) < 3) {
+                            continue;
+                        }
+                        $escaped = addcslashes($value, '":-()');
                         $query[] = "$field:($escaped)^$boostValue";
                         if (++$count > 15) {
                             break;
@@ -164,6 +170,9 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
                     }
                 }
             }
+        }
+        if (!$query) {
+            $query[] = 'noproperinterestingtermsfound';
         }
         $params->set('q', implode(' OR ', $query));
 
