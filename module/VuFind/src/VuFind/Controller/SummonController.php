@@ -27,6 +27,7 @@
  */
 namespace VuFind\Controller;
 use Zend\Mvc\MvcEvent;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Summon Controller
@@ -41,11 +42,13 @@ class SummonController extends AbstractSearch
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         $this->searchClassId = 'Summon';
-        parent::__construct();
+        parent::__construct($sm);
     }
 
     /**
@@ -55,7 +58,7 @@ class SummonController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('Summon');
+        $config = $this->serviceLocator->get('VuFind\Config')->get('Summon');
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
     }
@@ -151,10 +154,10 @@ class SummonController extends AbstractSearch
     protected function getAdvancedFacets()
     {
         // Check if we have facet results cached, and build them if we don't.
-        $cache = $this->getServiceLocator()->get('VuFind\CacheManager')
+        $cache = $this->serviceLocator->get('VuFind\CacheManager')
             ->getCache('object');
         if (!($list = $cache->getItem('summonSearchAdvancedFacetsList'))) {
-            $config = $this->getServiceLocator()->get('VuFind\Config')
+            $config = $this->serviceLocator->get('VuFind\Config')
                 ->get('Summon');
             $limit = isset($config->Advanced_Facet_Settings->facet_limit)
                 ? $config->Advanced_Facet_Settings->facet_limit : 100;
