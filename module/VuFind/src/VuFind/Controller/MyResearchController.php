@@ -83,16 +83,16 @@ class MyResearchController extends AbstractBase
     /**
      * Execute the request
      *
-     * @param \Zend\Mvc\MvcEvent $e Event
+     * @param \Zend\Mvc\MvcEvent $event Event
      *
      * @return mixed
      * @throws Exception\DomainException
      */
-    public function onDispatch(\Zend\Mvc\MvcEvent $e)
+    public function onDispatch(\Zend\Mvc\MvcEvent $event)
     {
         try {
-            return parent::onDispatch($e);
-        } catch (ILSException $e) {
+            return parent::onDispatch($event);
+        } catch (ILSException $event) {
             $this->flashMessenger()->addErrorMessage('ils_connection_failed');
             return $this->createViewModel();
         }
