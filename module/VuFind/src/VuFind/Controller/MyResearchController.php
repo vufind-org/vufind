@@ -92,7 +92,7 @@ class MyResearchController extends AbstractBase
     {
         try {
             return parent::onDispatch($event);
-        } catch (ILSException $event) {
+        } catch (ILSException $exception) {
             $this->flashMessenger()->addErrorMessage('ils_connection_failed');
             return $this->createViewModel();
         }
