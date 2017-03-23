@@ -33,7 +33,7 @@
         "zendframework/zend-code": "2.6.3",
         "zendframework/zend-config": "2.6.0",
         "zendframework/zend-console": "2.6.0",
-        "zendframework/zend-crypt": "2.6.0",
+        "zendframework/zend-crypt": "3.2.0",
         "zendframework/zend-db": "2.8.2",
         "zendframework/zend-dom": "2.6.0",
         "zendframework/zend-escaper": "2.5.2",
@@ -56,7 +56,7 @@
         "zendframework/zend-validator": "2.8.2",
         "zendframework/zend-view": "2.8.1",
         "zendframework/zendrest": "2.0.2",
-        "zendframework/zendservice-amazon": "2.0.4",
+        "zendframework/zendservice-amazon": "2.2.0",
         "zendframework/zendservice-recaptcha": "3.0.0",
         "zf-commons/zfc-rbac": "2.6.2"
     },
