@@ -26,9 +26,10 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFindTheme;
-use Zend\Config\Config,
-    Zend\Mvc\MvcEvent,
-    Zend\Stdlib\RequestInterface as Request;
+use Zend\Config\Config;
+use Zend\Mvc\MvcEvent;
+use Zend\Mvc\View\Http\InjectTemplateListener as BaseInjectTemplateListener;
+use Zend\Stdlib\RequestInterface as Request;
 
 /**
  * VuFind Theme Initializer
@@ -140,23 +141,23 @@ class Initializer
 
         // Detach the default listener:
         $listeners = $sharedEvents->getListeners(
-            'Zend\Stdlib\DispatchableInterface', MvcEvent::EVENT_DISPATCH
+            ['Zend\Stdlib\DispatchableInterface'], MvcEvent::EVENT_DISPATCH
         );
-        foreach ($listeners as $listener) {
-            $metadata = $listener->getMetadata();
-            $callback = $listener->getCallback();
-            if (is_a($callback[0], 'Zend\Mvc\View\Http\InjectTemplateListener')) {
-                $priority = $metadata['priority'];
-                $sharedEvents->detach(
-                    'Zend\Stdlib\DispatchableInterface', $listener
-                );
-                break;
+        foreach ($listeners as $priority => $priorityGroup) {
+            foreach ($priorityGroup as $callback) {
+                if ($callback[0] instanceof BaseInjectTemplateListener) {
+                    $injectTemplatePriority = $priority;
+                    $sharedEvents->detach(
+                        $callback, 'Zend\Stdlib\DispatchableInterface'
+                    );
+                    break 2;
+                }
             }
         }
 
         // If we didn't successfully detach a listener above, priority will not be
         // set.  This is an unexpected situation, so we should throw an exception.
-        if (!isset($priority)) {
+        if (!isset($injectTemplatePriority)) {
             throw new \Exception('Unable to detach InjectTemplateListener');
         }
 
@@ -164,7 +165,7 @@ class Initializer
         $injectTemplateListener  = new InjectTemplateListener();
         $sharedEvents->attach(
             'Zend\Stdlib\DispatchableInterface', MvcEvent::EVENT_DISPATCH,
-            [$injectTemplateListener, 'injectTemplate'], $priority
+            [$injectTemplateListener, 'injectTemplate'], $injectTemplatePriority
         );
     }
 
