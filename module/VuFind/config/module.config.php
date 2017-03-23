@@ -444,6 +444,7 @@ $config = [
                 'abstract_factories' => ['VuFind\ILS\Driver\PluginFactory'],
                 'factories' => [
                     'aleph' => 'VuFind\ILS\Driver\Factory::getAleph',
+                    'alma' => 'VuFind\ILS\Driver\Factory::getAlma',
                     'daia' => 'VuFind\ILS\Driver\Factory::getDAIA',
                     'demo' => 'VuFind\ILS\Driver\Factory::getDemo',
                     'horizon' => 'VuFind\ILS\Driver\Factory::getHorizon',

@@ -57,6 +57,26 @@ class Factory
     }
 
     /**
+     * Factory for Alma driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Alma
+     */
+    public static function getAlma(ServiceManager $sm)
+    {
+        // TODO: fix this when Alma is no longer a subclass of Demo
+        $sessionFactory = function () use ($sm) {
+            $manager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            return new \Zend\Session\Container('DemoDriver', $manager);
+        };
+        return new Alma(
+            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+            $sm->getServiceLocator()->get('VuFind\Search'), $sessionFactory
+        );
+    }
+
+    /**
      * Factory for DAIA driver.
      *
      * @param ServiceManager $sm Service manager.
