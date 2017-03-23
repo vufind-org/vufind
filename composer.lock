@@ -7811,7 +7811,13 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.6"
+        "php": ">=5.6",
+        "ext-gd": "*",
+        "ext-intl": "*",
+        "ext-ldap": "*",
+        "ext-mbstring": "*",
+        "ext-mcrypt": "*",
+        "ext-xsl": "*"
     },
     "platform-dev": []
 }

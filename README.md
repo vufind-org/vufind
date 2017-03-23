@@ -14,6 +14,7 @@ See our [online installation documentation](https://vufind.org/wiki/installation
 
 VuFind's [packaged releases](http://vufind-org.github.io/vufind/downloads.html) have all dependencies included. If you are installing directly from a Git checkout, you will need to load these dependencies manually using the [Composer](https://getcomposer.org) tool by running `composer install` from the VuFind home directory.
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 Documentation and Support
 -------------------------

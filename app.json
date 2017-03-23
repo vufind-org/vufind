@@ -1,0 +1,18 @@
+{
+  "name": "VuFind",
+  "description": "A barebones installation of VuFind",
+  "repository": "https://github.com/vufind-org/vufind",
+  "logo": "https://vufind.org/images/magnify.png",
+  "keywords": ["VuFind", "OPAC"],
+  "addons": [
+    {
+      "plan": "cleardb:ignite"
+    }
+  ],
+  "env": {
+    "VUFIND_CONFIGURE_HEROKU_DEFAULTS": {
+      "description": "If true, directs composer to run the configure-heroku-defaults script post-install (see composer.json).",
+      "value": "true"
+    }
+  }
+}

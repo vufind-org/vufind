@@ -34,9 +34,13 @@ define('MULTISITE_NONE', 0);
 define('MULTISITE_DIR_BASED', 1);
 define('MULTISITE_HOST_BASED', 2);
 
-$baseDir = str_replace('\\', '/', dirname(__FILE__));
-$overrideDir = $baseDir . '/local';
+define('PLATFORM_NONE', 0);
+define('PLATFORM_HEROKU', 1);
+
+$currentDir = str_replace('\\', '/', dirname(__FILE__));
+$overrideDir = $currentDir . '/local';
 $host = $module = '';
+$platform = PLATFORM_NONE;
 $multisiteMode = MULTISITE_NONE;
 $basePath = '/vufind';
 
@@ -46,7 +50,7 @@ try {
         'use-defaults' => 
            'Use VuFind Defaults to Configure (ignores any other arguments passed)',
         'overridedir=s' => 
-           "Where would you like to store your local settings? [{$baseDir}/local]",
+           "Where would you like to store your local settings? [{$currentDir}/local]",
         'module-name=s' => 
            'What module name would you like to use? Use disabled, to not use',
         'basepath=s' => 
@@ -55,6 +59,8 @@ try {
            'Specify we are going to setup a multisite. Options: directory and host',
         'hostname=s' => 
             'Specify the hostname for the VuFind Site, When multisite=host',
+        'platform-w' => 
+           'Specify we are going to setup using a platform. Options: heroku',
         'non-interactive' =>
             'Use settings if provided via arguments, otherwise use defaults',
       )
@@ -66,7 +72,7 @@ try {
     exit;
 }
 
-echo "VuFind has been found in {$baseDir}.\n\n";
+echo "VuFind has been found in {$currentDir}.\n\n";
 
 // Are we allowing user interaction?
 $interactive = !$opts->getOption('non-interactive');
@@ -112,6 +118,18 @@ if (!$opts->getOption('use-defaults')) {
         }
     }
 
+    // We assume platform is "none" unless the --platform switch is set
+    // and require non-interactive mode:
+    if ($opts->getOption('platform')) {
+        if ($interactive) {
+            die("Missing option: The --non-interactive option must be used when specifying a platform.\n");
+        } else if ($opts->getOption('platform') === 'heroku') {
+            $platform = PLATFORM_HEROKU;
+        } else if (($bad = $opts->getOption('platform')) && $bad !== true) {
+            die('Unexpected platform: ' . $bad . "\n");
+        }
+    }
+
     // Now that we've validated as many parameters as possible, retrieve
     // user input where needed.
     if (isset($userInputNeeded['overrideDir'])) {
@@ -135,6 +153,10 @@ if (!$opts->getOption('use-defaults')) {
              $host = getHost();
         }
     }
+
+    if (isset($userInputNeeded['platform'])) {
+        $platform = getPlatform();
+    }
 }
 
 // Make sure the override directory is initialized (using defaults or CLI
@@ -146,46 +168,47 @@ initializeOverrideDir($overrideDir, true);
 $module = preg_replace('/\s/', '', $module);
 
 // Build the Windows start file in case we need it:
-buildWindowsConfig($baseDir, $overrideDir, $module);
+buildWindowsConfig($currentDir, $overrideDir, $module);
 
 // Build the import configuration:
-buildImportConfig($baseDir, $overrideDir, 'import.properties');
-buildImportConfig($baseDir, $overrideDir, 'import_auth.properties');
+buildImportConfig($currentDir, $overrideDir, 'import.properties');
+buildImportConfig($currentDir, $overrideDir, 'import_auth.properties');
 
 // Build the custom module, if necessary:
 if (!empty($module)) {
-    buildModules($baseDir, $module);
+    buildModules($currentDir, $module);
 }
 
 // Build the final configuration:
-buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multisiteMode, $host);
+buildApacheConfig($currentDir, $overrideDir, $basePath, $module, $multisiteMode, $host, $platform);
 
 // Report success:
 echo "Apache configuration written to {$overrideDir}/httpd-vufind.conf.\n\n";
-echo "You now need to load this configuration into Apache.\n";
-getApacheLocation($overrideDir);
-if (!empty($host)) {
-    echo "Since you are using a host-based multisite configuration, you will also" .
-        "\nneed to do some virtual host configuration. See\n" .
-        "     http://httpd.apache.org/docs/2.2/vhosts/\n\n";
+if(empty($platform)) {
+    echo "You now need to load this configuration into Apache.\n";
+    getApacheLocation($overrideDir);
+    if (!empty($host)) {
+        echo "Since you are using a host-based multisite configuration, you will also" .
+            "\nneed to do some virtual host configuration. See\n" .
+            "     http://httpd.apache.org/docs/2.2/vhosts/\n\n";
+    }
+    if ('/' == $basePath) {
+        echo "Since you are installing VuFind at the root of your domain, you will also"
+            . "\nneed to edit your Apache configuration to change DocumentRoot to:\n"
+            . $currentDir . "/public\n\n";
+    }
+    echo "Once the configuration is linked, restart Apache.  You should now be able\n";
+    echo "to access VuFind at http://localhost{$basePath}\n\n";
+    echo "For proper use of command line tools, you should also ensure that your\n";
+    if (empty($module)) {
+        echo "VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to\n";
+        echo "{$currentDir} and {$overrideDir} respectively.\n\n";
+    } else {
+        echo "VUFIND_HOME, VUFIND_LOCAL_MODULES and VUFIND_LOCAL_DIR environment\n";
+        echo "variables are set to {$currentDir}, {$module} and {$overrideDir} ";
+        echo "respectively.\n\n";
+    }
 }
-if ('/' == $basePath) {
-    echo "Since you are installing VuFind at the root of your domain, you will also"
-        . "\nneed to edit your Apache configuration to change DocumentRoot to:\n"
-        . $baseDir . "/public\n\n";
-}
-echo "Once the configuration is linked, restart Apache.  You should now be able\n";
-echo "to access VuFind at http://localhost{$basePath}\n\n";
-echo "For proper use of command line tools, you should also ensure that your\n";
-if (empty($module)) {
-    echo "VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to\n";
-    echo "{$baseDir} and {$overrideDir} respectively.\n\n";
-} else {
-    echo "VUFIND_HOME, VUFIND_LOCAL_MODULES and VUFIND_LOCAL_DIR environment\n";
-    echo "variables are set to {$baseDir}, {$module} and {$overrideDir} ";
-    echo "respectively.\n\n";
-}
-
 /**
  * Display system-specific information for where configuration files are found and/or
  * symbolic links should be created.
@@ -436,6 +459,28 @@ function getMultisiteMode()
 }
 
 /**
+ * Get the user's platform.
+ *
+ * @return int
+ */
+function getPlatform()
+{
+    echo "\nWhen running VuFind in a platform, you need to specify which one it is so the"
+        . " best configuration\nis used.  Choose an option:\n" . PLATFORM_HEROKU
+        . ".) Heroku platform.\n\nor enter " . PLATFORM_NONE . " to disable platform"
+        . " mode (typical installation).\n";
+    $legal = array(PLATFORM_NONE, PLATFORM_HEROKU);
+    while (true) {
+        $input = getInput("\nWhich option do you want? ");
+        if (!is_numeric($input) || !in_array(intval($input), $legal)) {
+            echo "Invalid selection.";
+        } else {
+            return intval($input);
+        }
+    }
+}
+
+/**
  * Validate the user's hostname input. Returns true on success, message on failure.
  *
  * @param string $host String to check
@@ -485,27 +530,29 @@ function getInput($prompt)
 /**
  * Generate the Apache configuration.
  *
- * @param string $baseDir     The VuFind base directory
+ * @param string $currentDir  The current VuFind directory
  * @param string $overrideDir The VuFind override directory
  * @param string $basePath    The VuFind URL base path
  * @param string $module      The VuFind custom module name (or empty for none)
  * @param int    $multi       Multisite mode preference
  * @param string $host        Virtual host name (or empty for none)
+ * @param int    $platform    Platform preference
  *
  * @return void
  */
-function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $host)
+function buildApacheConfig($currentDir, $overrideDir, $basePath, $module, $multi, $host, $platform)
 {
-    $baseConfig = $baseDir . '/config/vufind/httpd-vufind.conf';
+    $baseConfig = $currentDir . '/config/vufind/httpd-vufind.conf';
     $config = @file_get_contents($baseConfig);
     if (empty($config)) {
         die("Problem reading {$baseConfig}.\n\n");
     }
+
+    // Replace defaults with templating variables.
     $config = str_replace('/usr/local/vufind/local', '%override-dir%', $config);
     $config = str_replace('/usr/local/vufind', '%base-dir%', $config);
     $config = preg_replace('|([^/])\/vufind|', '$1%base-path%', $config);
-    $config = str_replace('%override-dir%', $overrideDir, $config);
-    $config = str_replace('%base-dir%', $baseDir, $config);
+
     $config = str_replace('%base-path%', $basePath, $config);
     // Special cases for root basePath:
     if ('/' == $basePath) {
@@ -540,6 +587,26 @@ function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $
         break;
     }
 
+    // Special cases for platform deployments
+    switch ($platform) {
+    case PLATFORM_HEROKU:
+        $templateBaseDir = '/app';
+        $templateOverrideDir = '/app/local';
+
+        $config = str_replace(
+            'php_value short_open_tag',
+            '#php_value short_open_tag',
+            $config
+        );
+        break;
+    default:
+        $templateBaseDir = $currentDir;
+        $templateOverrideDir = $overrideDir;
+    }
+
+    $config = str_replace('%base-dir%', $templateBaseDir, $config);
+    $config = str_replace('%override-dir%', $templateOverrideDir, $config);
+
     $target = $overrideDir . '/httpd-vufind.conf';
     if (file_exists($target)) {
         $bak = $target . '.bak.' . time();
@@ -554,42 +621,42 @@ function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $
 /**
  * Build the Windows-specific startup configuration.
  *
- * @param string $baseDir     The VuFind base directory
+ * @param string $currentDir  The current VuFind directory
  * @param string $overrideDir The VuFind override directory
  * @param string $module      The VuFind custom module name (or empty for none)
  *
  * @return void
  */
-function buildWindowsConfig($baseDir, $overrideDir, $module)
+function buildWindowsConfig($currentDir, $overrideDir, $module)
 {
-    $batch = "@set VUFIND_HOME={$baseDir}\n" .
+    $batch = "@set VUFIND_HOME={$currentDir}\n" .
         "@set VUFIND_LOCAL_DIR={$overrideDir}\n" .
         (empty($module) ? '' : "@set VUFIND_LOCAL_MODULES={$module}\n");
-    if (!@file_put_contents($baseDir . '/env.bat', $batch)) {
-        die("Problem writing {$baseDir}/env.bat.\n\n");
+    if (!@file_put_contents($currentDir . '/env.bat', $batch)) {
+        die("Problem writing {$currentDir}/env.bat.\n\n");
     }
 }
 
 /**
  * Configure a SolrMarc properties file.
  *
- * @param string $baseDir     The VuFind base directory
+ * @param string $currentDir  The current VuFind directory
  * @param string $overrideDir The VuFind override directory
  * @param string $filename    The properties file to configure
  *
  * @return void
  */
-function buildImportConfig($baseDir, $overrideDir, $filename)
+function buildImportConfig($currentDir, $overrideDir, $filename)
 {
     $target = $overrideDir . '/import/' . $filename;
     if (file_exists($target)) {
         echo "Warning: $target already exists; skipping file creation.\n";
     } else {
-        $import = @file_get_contents($baseDir . '/import/' . $filename);
-        $import = str_replace("/usr/local/vufind", $baseDir, $import);
+        $import = @file_get_contents($currentDir . '/import/' . $filename);
+        $import = str_replace("/usr/local/vufind", $currentDir, $import);
         $import = preg_replace(
             "/^\s*solrmarc.path\s*=.*$/m",
-            "solrmarc.path = {$overrideDir}/import|{$baseDir}/import", $import
+            "solrmarc.path = {$overrideDir}/import|{$currentDir}/import", $import
         );
         if (!@file_put_contents($target, $import)) {
             die("Problem writing {$overrideDir}/import/{$filename}.\n\n");
@@ -617,18 +684,18 @@ function buildDirs($dirs)
 /**
  * Make sure all modules exist (and create them if they do not.
  *
- * @param string $baseDir The VuFind base directory
- * @param string $modules The comma-separated list of modules (assumed valid!)
+ * @param string $currentDir The current VuFind directory
+ * @param string $modules    The comma-separated list of modules (assumed valid!)
  *
  * @return void
  */
-function buildModules($baseDir, $modules)
+function buildModules($currentDir, $modules)
 {
     foreach (explode(',', $modules) as $module) {
-        $moduleDir = $baseDir . '/module/' . $module;
+        $moduleDir = $currentDir . '/module/' . $module;
         // Is module missing? If so, create it from the template:
         if (!file_exists($moduleDir . '/Module.php')) {
-            buildModule($baseDir, $module);
+            buildModule($currentDir, $module);
         }
     }
 }
@@ -636,15 +703,15 @@ function buildModules($baseDir, $modules)
 /**
  * Build the module for storing local code changes.
  *
- * @param string $baseDir The VuFind base directory
- * @param string $module  The name of the new module (assumed valid!)
+ * @param string $currentDir The current VuFind directory
+ * @param string $module     The name of the new module (assumed valid!)
  *
  * @return void
  */
-function buildModule($baseDir, $module)
+function buildModule($currentDir, $module)
 {
     // Create directories:
-    $moduleDir = $baseDir . '/module/' . $module;
+    $moduleDir = $currentDir . '/module/' . $module;
     $dirStatus = buildDirs(
         array(
             $moduleDir,
@@ -658,7 +725,7 @@ function buildModule($baseDir, $module)
     }
 
     // Copy configuration:
-    $configFile = $baseDir . '/module/VuFindLocalTemplate/config/module.config.php';
+    $configFile = $currentDir . '/module/VuFindLocalTemplate/config/module.config.php';
     $config = @file_get_contents($configFile);
     if (!$config) {
         die("Problem reading {$configFile}.\n");
@@ -672,7 +739,7 @@ function buildModule($baseDir, $module)
     }
 
     // Copy PHP code:
-    $moduleFile = $baseDir . '/module/VuFindLocalTemplate/Module.php';
+    $moduleFile = $currentDir . '/module/VuFindLocalTemplate/Module.php';
     $contents = @file_get_contents($moduleFile);
     if (!$contents) {
         die("Problem reading {$moduleFile}.\n");
