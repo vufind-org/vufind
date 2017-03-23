@@ -27,6 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\OnlinePayment;
+use Zend\I18n\Translator\TranslatorInterface;
 
 /**
  * Online payment service
@@ -71,7 +72,7 @@ class OnlinePayment
     /**
      * Translator
      *
-     * @var \Zend\I18n\Translator\TranslatorInterface
+     * @var TranslatorInterface
      */
     protected $translator;
 
@@ -82,11 +83,12 @@ class OnlinePayment
      * @param DbTablePluginManager $tableManager Table manager
      * @param Logger               $logger       Logger
      * @param Config               $config       Configuration
+     * @param TranslatorInterface  $translator   Translator
      */
     public function __construct(\VuFindHttp\HttpService $http,
         \VuFind\Db\Table\PluginManager $tableManager,
         \VuFind\Log\Logger $logger, \Zend\Config\Config $config,
-        \Zend\I18n\Translator\TranslatorInterface $translator
+        TranslatorInterface $translator
     ) {
         $this->http = $http;
         $this->tableManager = $tableManager;

@@ -29,10 +29,8 @@
  */
 namespace Finna\OnlinePayment;
 use Finna\Db\Row\Transaction;
-use Finna\OnlinePayment\OnlinePaymentHanderInterface;
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Log\LoggerAwareInterface;
-use Zend\Log\LoggerInterface;
 
 /**
  * Payment base handler
