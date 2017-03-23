@@ -95,8 +95,9 @@ class MyResearchController extends AbstractBase
         // screen). This offers a slightly more forgiving experience when there is
         // an unexpected ILS issue. Note that most ILS exceptions are handled at a
         // lower level in the code (see \VuFind\ILS\Connection and the config.ini
-        // loadNoILSOnFailure setting), but there are some edge cases (particularly
-        // when the MultiBackend driver is used) that could lead here.
+        // loadNoILSOnFailure setting), but there are some rare edge cases (for
+        // example, when the MultiBackend driver fails over to NoILS while used in
+        // combination with MultiILS authentication) that could lead here.
         try {
             return parent::onDispatch($event);
         } catch (ILSException $exception) {
