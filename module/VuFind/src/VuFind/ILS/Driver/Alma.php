@@ -77,6 +77,8 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Make an HTTP request against Alma
      *
+     * @param string $path Path to retrieve from API (excluding base URL/API key)
+     *
      * @return \SimpleXMLElement
      */
     protected function makeRequest($path)
@@ -150,4 +152,4 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
         }
         return $results;
     }
-  }
+}
