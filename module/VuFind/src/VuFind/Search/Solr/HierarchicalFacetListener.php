@@ -176,6 +176,8 @@ class HierarchicalFacetListener
                 if (!isset($fields[$facetName])) {
                     continue;
                 }
+                // Keep the original data too
+                $fields["__unprocessed_$facetName"] = $fields[$facetName];
                 if (is_array($fields[$facetName])) {
                     $lastElem = end($fields[$facetName]);
                     foreach ($fields[$facetName] as &$value) {
