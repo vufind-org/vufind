@@ -29,6 +29,7 @@ namespace VuFind\Controller;
 
 use VuFind\Exception\Auth as AuthException,
     VuFind\Exception\Forbidden as ForbiddenException,
+    VuFind\Exception\ILS as ILSException,
     VuFind\Exception\Mail as MailException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
@@ -77,6 +78,37 @@ class MyResearchController extends AbstractBase
     protected function storeRefererForPostLoginRedirect()
     {
         $this->setFollowupUrlToReferer();
+    }
+
+    /**
+     * Execute the request
+     *
+     * @param \Zend\Mvc\MvcEvent $event Event
+     *
+     * @return mixed
+     * @throws Exception\DomainException
+     */
+    public function onDispatch(\Zend\Mvc\MvcEvent $event)
+    {
+        // Catch any ILSExceptions thrown during processing and display a generic
+        // failure message to the user (instead of going to the fatal exception
+        // screen). This offers a slightly more forgiving experience when there is
+        // an unexpected ILS issue. Note that most ILS exceptions are handled at a
+        // lower level in the code (see \VuFind\ILS\Connection and the config.ini
+        // loadNoILSOnFailure setting), but there are some rare edge cases (for
+        // example, when the MultiBackend driver fails over to NoILS while used in
+        // combination with MultiILS authentication) that could lead here.
+        try {
+            return parent::onDispatch($event);
+        } catch (ILSException $exception) {
+            // Always display generic message:
+            $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+            // In development mode, also show technical failure message:
+            if ('development' == APPLICATION_ENV) {
+                $this->flashMessenger()->addErrorMessage($exception->getMessage());
+            }
+            return $this->createViewModel();
+        }
     }
 
     /**
