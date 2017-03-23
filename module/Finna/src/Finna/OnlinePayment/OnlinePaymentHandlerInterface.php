@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,10 +23,12 @@
  * @package  OnlinePayment
  * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\OnlinePayment;
+use Zend\I18n\Translator\TranslatorInterface;
 
 /**
  * OnlinePayment handler interface.
@@ -35,6 +37,7 @@ namespace Finna\OnlinePayment;
  * @package  OnlinePayment
  * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -43,10 +46,13 @@ interface OnlinePaymentHandlerInterface
     /**
      * Constructor
      *
-     * @param array        $config Configuration
-     * @param \VuFind\Http $http   HTTP service.
+     * @param \Zend\Config\Config     $config     Configuration as key-value pairs.
+     * @param \VuFindHttp\HttpService $http       HTTP service
+     * @param TranslatorInterface     $translator Translator
      */
-    public function __construct($config, $http);
+    public function __construct(\Zend\Config\Config $config,
+        \VuFindHttp\HttpService $http, TranslatorInterface $translator
+    );
 
     /**
      * Return payment response parameters.

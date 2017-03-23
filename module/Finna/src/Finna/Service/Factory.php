@@ -208,7 +208,8 @@ class Factory extends \VuFind\Service\Factory
             $sm->get('VuFind\Http'),
             $sm->get('VuFind\DbTablePluginManager'),
             $sm->get('VuFind\Logger'),
-            $sm->get('VuFind\Config')->get('datasources')
+            $sm->get('VuFind\Config')->get('datasources'),
+            $sm->get('VuFind\Translator')
         );
     }
 
