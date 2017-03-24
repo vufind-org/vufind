@@ -655,9 +655,11 @@ class SearchServiceTest extends TestCase
         $mockResponse->expects($this->any())->method('stopped')->will($this->returnValue(false));
         $em = $this->createMock('Zend\EventManager\EventManagerInterface');
         $service = new Service();
-        $em->expects($this->any())->method('trigger')
-            ->with($this->equalTo('resolve'), $this->equalTo($service))
-            ->will($this->returnValue($mockResponse));
+        $em->expects($this->any())->method('triggerUntil')
+            ->with(
+                $this->anything(), $this->equalTo('resolve'),
+                $this->equalTo($service)
+            )->will($this->returnValue($mockResponse));
         $service->setEventManager($em);
         $service->retrieve('junk', 'foo');
     }
