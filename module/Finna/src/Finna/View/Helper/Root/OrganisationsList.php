@@ -120,7 +120,7 @@ class OrganisationsList extends \Zend\View\Helper\AbstractHelper implements
 
                     foreach ($collection as $item) {
                         $link = $emptyResults->getUrlQuery()
-                            ->addFacet('building', $item['value']);
+                            ->addFacet('building', $item['value'])->getParams();
                         $displayText = $item['displayText'];
                         if ($displayText == $item['value']) {
                             $displayText = $this->facetHelper
