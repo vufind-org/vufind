@@ -73,7 +73,8 @@
         "twig/twig": "1.27"
     },
     "scripts": {
-        "post-install-cmd": "phing installsolr installswaggerui",
-        "post-update-cmd": "phing installsolr installswaggerui"
+        "phing-install-dependencies": "phing installsolr installswaggerui",
+        "post-install-cmd": "@phing-install-dependencies",
+        "post-update-cmd": "@phing-install-dependencies"
     }
 }
