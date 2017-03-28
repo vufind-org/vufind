@@ -31,7 +31,9 @@
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Exception\Auth as AuthException,
+    VuFind\Exception\Forbidden as ForbiddenException,
     VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\Forbidden;
 
 /**
  * PAIA ILS Driver for VuFind to get patron information
@@ -251,7 +253,9 @@ class PAIA extends DAIA
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)) {
-            throw new ILSException('Exception::paia_missing_scope_write_items');
+            throw new ForbiddenException(
+                'Exception::paia_missing_scope_write_items'
+            );
         }
 
         $it = $cancelDetails['details'];
@@ -334,7 +338,9 @@ class PAIA extends DAIA
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_CHANGE_PASSWORD)) {
-            throw new ILSException('Exception::paia_missing_scope_change_password');
+            throw new ForbiddenException(
+                'Exception::paia_missing_scope_change_password'
+            );
         }
 
         $post_data = [
@@ -610,7 +616,7 @@ class PAIA extends DAIA
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_READ_FEES)) {
-            throw new ILSException('Exception::paia_missing_scope_read_fees');
+            throw new ForbiddenException('Exception::paia_missing_scope_read_fees');
         }
 
         try {
@@ -713,7 +719,7 @@ class PAIA extends DAIA
         // get items-docs for given filters
         try {
             $items = $this->paiaGetItems($patron, $filter);
-        } catch (ILSException $e) {
+        } catch (ForbiddenException $e) {
             throw $e;
         }
 
@@ -772,7 +778,7 @@ class PAIA extends DAIA
         // get items-docs for given filters
         try {
             $items = $this->paiaGetItems($patron, $filter);
-        } catch (ILSException $e) {
+        } catch (ForbiddenException $e) {
             throw $e;
         }
 
@@ -797,7 +803,7 @@ class PAIA extends DAIA
         // get items-docs for given filters
         try {
             $items = $this->paiaGetItems($patron, $filter);
-        } catch (ILSException $e) {
+        } catch (ForbiddenException $e) {
             throw $e;
         }
 
@@ -953,6 +959,19 @@ class PAIA extends DAIA
                     isset($array['code']) ? $array['code'] : ''
                 );
 
+                // invalid_grant 	401 	The access token was missing, invalid, or
+                //                          expired
+            case 'invalid_grant':
+
+                // insufficient_scope 	403 	The access token was accepted but it
+                //                              lacks permission for the request
+            case 'insufficient_scope':
+                throw new ForbiddenException(
+                    isset($array['error_description'])
+                        ? $array['error_description'] : $array['error'],
+                    isset($array['code']) ? $array['code'] : ''
+                );
+
                 // not_found 	404 	Unknown request URL or unknown patron.
                 //                      Implementations SHOULD first check
                 //                      authentication and prefer error invalid_grant
@@ -975,14 +994,6 @@ class PAIA extends DAIA
                 //                          (for instance missing fields, invalid
                 //                          values, etc.)
             case 'invalid_request':
-
-                // invalid_grant 	401 	The access token was missing, invalid, or
-                //                          expired
-            case 'invalid_grant':
-
-                // insufficient_scope 	403 	The access token was accepted but it
-                //                              lacks permission for the request
-            case 'insufficient_scope':
 
                 // internal_error 	500 	An unexpected error occurred. This error
                 //                          corresponds to a bug in the
@@ -1070,7 +1081,9 @@ class PAIA extends DAIA
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)) {
-            throw new ILSException('Exception::paia_missing_scope_write_items');
+            throw new ForbiddenException(
+                'Exception::paia_missing_scope_write_items'
+            );
         }
 
         $item = $holdDetails['item_id'];
@@ -1168,7 +1181,9 @@ class PAIA extends DAIA
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)) {
-            throw new ILSException('Exception::paia_missing_scope_write_items');
+            throw new ForbiddenException(
+                'Exception::paia_missing_scope_write_items'
+            );
         }
 
         $it = $details['details'];
@@ -1275,7 +1290,7 @@ class PAIA extends DAIA
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_READ_ITEMS)) {
-            throw new ILSException('Exception::paia_missing_scope_read_items');
+            throw new ForbiddenException('Exception::paia_missing_scope_read_items');
         }
 
         // check for existing data in cache
@@ -1700,7 +1715,7 @@ class PAIA extends DAIA
                 $this->paiaURL . $file,
                 [], $this->paiaTimeout, $http_headers
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new ILSException($e->getMessage());
         }
 
@@ -1872,7 +1887,9 @@ class PAIA extends DAIA
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_READ_PATRON)) {
-            throw new ILSException('Exception::paia_missing_scope_read_patron');
+            throw new ForbiddenException(
+                'Exception::paia_missing_scope_read_patron'
+            );
         }
 
         $responseJson = $this->paiaGetRequest(
