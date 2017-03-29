@@ -393,7 +393,7 @@ class SolrMarc extends SolrDefault
             if (strcmp($field->getIndicator(1), '0') == 0 &&
                     strcmp($field->getIndicator(2), '7') !== 0) {
                 foreach ($field->getSubFields('a') as $sf) {
-                    $languages[] = $sf->getData();
+                    $languages[] = $this->translate($sf->getData());
                 }
             }
         }
