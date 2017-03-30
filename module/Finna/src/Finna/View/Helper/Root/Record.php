@@ -143,6 +143,20 @@ class Record extends \VuFind\View\Helper\Root\Record
     }
 
     /**
+     * Get record format in the requested export format.  For legal values, see
+     * the export helper's getFormatsForRecord() method.
+     *
+     * @param string $format Export format to display
+     *
+     * @return string        Exported data
+     */
+    public function getExportFormat($format)
+    {
+        $format = strtolower($format);
+        return $this->renderTemplate('export-' . $format . '-format.phtml');
+    }
+
+    /**
      * Render the link of the specified type.
      *
      * @param string $type    Link type
@@ -259,6 +273,9 @@ class Record extends \VuFind\View\Helper\Root\Record
         $sizes = ['small', 'medium', 'large'];
         $recordId = $this->driver->getUniqueID();
         $images = $this->driver->tryMethod('getAllImages', [$language]);
+        if (null === $images) {
+            $images = [];
+        }
         if (empty($images) && $thumbnails) {
             $urls = [];
             foreach ($sizes as $size) {
@@ -271,11 +288,13 @@ class Record extends \VuFind\View\Helper\Root\Record
                     $urls[$size] = $params;
                 }
             }
-            $images[] = [
-                'urls' => $urls,
-                'description' => '',
-                'rights' => []
-            ];
+            if ($urls) {
+                $images[] = [
+                    'urls' => $urls,
+                    'description' => '',
+                    'rights' => []
+                ];
+            }
         } else {
             foreach ($images as $idx => &$image) {
                 foreach ($sizes as $size) {

@@ -230,7 +230,9 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
             $this->activeSearchClass,
             $currentParams->getHiddenFilters()
         );
-        $currentParams->removeHiddenFilters();
+        if (is_callable([$currentParams, 'removeHiddenFilters'])) {
+            $currentParams->removeHiddenFilters();
+        }
         $currentParams->removeAllFilters();
 
         // Add filters to the new params

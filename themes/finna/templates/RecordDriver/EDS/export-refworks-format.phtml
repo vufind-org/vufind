@@ -1,0 +1,43 @@
+<?
+$formats = $this->driver->tryMethod('getFormats');
+$format = '';
+if (is_array($formats) && !empty($formats[0])) {
+    $format = $formats[0];
+}
+$refworksFormat = 'Generic';
+switch ($format) {
+case 'academic journal':
+case 'review':
+    $refworksFormat = 'Journal Article';
+    break;
+case 'audio':
+    $refworksFormat = 'Sound Recording';
+    break;
+case 'book':
+case 'e-book':
+    $refworksFormat = 'Book, Whole';
+    break;
+case 'conference material':
+    $refworksFormat = 'Conference Proceedings';
+    break;
+case 'dissertation':
+    $refworksFormat = 'Dissertation/Thesis';
+    break;
+case 'magazine':
+    $refworksFormat = 'Magazine Article';
+    break;
+case 'news':
+    $refworksFormat = 'Newspaper Article';
+    break;
+case 'periodical':
+    $refworksFormat = 'Journal Article';
+    break;
+case 'report':
+    $refworksFormat = 'Report';
+    break;
+case 'video recording':
+    $refworksFormat = 'Video/ DVD';
+    break;
+}
+
+echo "RT $refworksFormat\n";

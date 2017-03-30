@@ -55,7 +55,7 @@ class OrganisationDisplayName extends \Zend\View\Helper\AbstractHelper
         $institution = reset($institutions);
 
         // Case 1: only one building level
-        $buildings = $record->getBuilding();
+        $buildings = $record->tryMethod('getBuilding');
         $building = isset($buildings[0]) ? $buildings[0] : '';
         $displayName = $translate($building);
 

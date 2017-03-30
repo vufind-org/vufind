@@ -301,6 +301,7 @@ $config = [
             ],
             'recorddriver' => [
                 'factories' => [
+                    'eds' => 'Finna\RecordDriver\Factory::getEDS',
                     'solrdefault' => 'Finna\RecordDriver\Factory::getSolrDefault',
                     'solrmarc' => 'Finna\RecordDriver\Factory::getSolrMarc',
                     'solread' => 'Finna\RecordDriver\Factory::getSolrEad',
@@ -326,6 +327,15 @@ $config = [
             ],
         ],
         'recorddriver_tabs' => [
+            'Finna\RecordDriver\EDS' => [
+                'tabs' => [
+                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
+                    'Details' => 'StaffViewArray',
+                ],
+                'defaultTab' => null,
+            ],
             'Finna\RecordDriver\SolrDefault' => [
                 'tabs' => [
                     'Holdings' => 'HoldingsILS',

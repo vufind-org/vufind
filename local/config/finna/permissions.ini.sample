@@ -113,7 +113,8 @@
 ;authenticationStrategy[] = Shibboleth
 ;authenticationStrategy[] = ILS
 ;authenticationStrategy[] = ILS-statCode
-;permission = finna.authorized
+;permission[] = finna.authorized
+;permission[] = access.EDSExtendedResults
 
 ; Admin access to finna cache clearing function. Normally no local configuration
 ; override needed.

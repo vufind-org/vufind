@@ -96,6 +96,19 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct EDS view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return EDS
+     */
+    public static function getEDS(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('EDS');
+        return new EDS($config);
+    }
+
+    /**
      * Construct the HeadLink helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -347,6 +360,19 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $locator->get('VuFind\SessionManager'),
             $locator->get('VuFind\DbTablePluginManager')
         );
+    }
+
+    /**
+     * Construct Summon view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Summon
+     */
+    public static function getSummon(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('Summon');
+        return new Summon($config);
     }
 
     /**

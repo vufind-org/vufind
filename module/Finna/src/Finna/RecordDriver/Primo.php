@@ -371,7 +371,7 @@ class Primo extends \VuFind\RecordDriver\Primo
 
     /**
      * Returns an array of parameter to send to Finna's cover generator.
-     * Fallbacks to VuFind's getThumbnail if no record image with the
+     * Falls back to VuFind's getThumbnail if no record image with the
      * given index was found.
      *
      * @param string $size  Size of thumbnail

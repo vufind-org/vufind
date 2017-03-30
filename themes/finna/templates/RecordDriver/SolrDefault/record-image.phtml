@@ -16,7 +16,10 @@
          <? endif; ?>
       </a>
     <? else: ?>
-      <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+      <a class="image-popup-trigger no-image" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image" title="<?=$this->transEsc('Open Preview')?>">
+        <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
+        <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+      </a>
     <? endif; ?>
   </div>
   <? if ($type != 'list' && $type != 'list grid'): ?>

@@ -28,7 +28,6 @@
     ?>
 
     <? if (!empty($urls) || $openUrlActive): ?>
-      <? $formats = $this->driver->getFormats(); ?>
       <div class="primo-available-online-record">
         <?=$this->partial('RecordDriver/Primo/online-url-list.phtml', ['driver' => $this->driver, 'urls' => $urls])?>
         <? if ($openUrlActive): ?>

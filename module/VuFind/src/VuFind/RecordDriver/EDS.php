@@ -269,7 +269,7 @@ class EDS extends SolrDefault
     {
         if (isset($this->fields['FullText']['Links'])) {
             foreach ($this->fields['FullText']['Links'] as $link) {
-                if (isset($link['Type'])
+                if (!empty($link['Type']) && !empty($link['Url'])
                     && in_array($link['Type'], $this->pdfTypes)
                 ) {
                     return $link['Url']; // return PDF link
