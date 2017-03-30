@@ -190,6 +190,26 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
      */
     protected function determineSourcePriority($recordSources)
     {
+        $config = $this->serviceLocator->get('VuFind\Config');
+        $mainConfig = $config->get('config');
+        // Sort sources alphabetically if necessary
+        if (!empty($mainConfig->Record->sort_sources)) {
+            $translator = $this->serviceLocator->get('VuFind\Translator');
+            usort(
+                $recordSources,
+                function ($a, $b) use ($translator) {
+                    $ta = $translator->translate("source_$a");
+                    if ("source_$a" === $ta) {
+                        $ta = $a;
+                    }
+                    $tb = $translator->translate("source_$b");
+                    if ("source_$b" === $tb) {
+                        $tb = $b;
+                    }
+                    return strcasecmp($ta, $tb);
+                }
+            );
+        }
         $cookieManager = $this->serviceLocator->get('VuFind\CookieManager');
         if ($cookieManager) {
             if (!($preferred = $cookieManager->get('preferredRecordSource'))) {
@@ -211,7 +231,6 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
         // If handling an API call, remove excluded sources so that they don't get
         // become preferred (they will get filtered out of the dedup data later)
         if (isset($_ENV['VUFIND_API_CALL']) && $_ENV['VUFIND_API_CALL']) {
-            $config = $this->serviceLocator->get('VuFind\Config');
             $searchConfig = $config->get($this->searchConfig);
             if (isset($searchConfig->Records->apiExcludedSources)) {
                 $excluded = explode(',', $searchConfig->Records->apiExcludedSources);
