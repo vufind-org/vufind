@@ -416,6 +416,12 @@ mark, .highlight {
         color: darken(@link-color, 5%);
     }
 }
+// fix truncate links 1px cutoff on the left
+.available-online-links, .recordURLs {
+    & .truncate-field.truncate-done, & .resolver {
+        padding-left: 1px;
+    }
+}
 .add-to-favorite-col {
     @media(max-width: @screen-xs-max) {
         margin-top: 10px;
