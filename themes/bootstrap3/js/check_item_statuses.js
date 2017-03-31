@@ -85,9 +85,11 @@ function checkItemStatus(el) {
 }
 
 function checkItemStatuses(_container) {
-  var container = _container || $('body');
+  var container = _container instanceof Element
+    ? _container
+    : document.body;
 
-  $.map(container.find('.ajaxItem'), checkItemStatus);
+  $.map($(container).find('.ajaxItem'), checkItemStatus);
 }
 
 $(document).ready(function checkItemStatusReady() {

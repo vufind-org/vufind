@@ -604,6 +604,46 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
+    protected function getSingleSaveStatusAjax()
+    {
+        $this->disableSessionWrites();  // avoid session write timing bug
+        // check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH,
+                401
+            );
+        }
+
+        // loop through each ID check if it is saved to any of the user's lists
+        $id = $this->params()->fromPost('id', $this->params()->fromQuery('id', []));
+        $source = $this->params()->fromPost(
+            'source', $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
+        );
+        $data = $user->getSavedData($id, null, $source);
+        $lists = [];
+        if ($data && count($data) > 0) {
+            // if this item was saved, add it to the list of saved items.
+            foreach ($data as $list) {
+                $lists[] = [
+                    'list_url' => $this->url()->fromRoute(
+                        'userList',
+                        ['id' => $list->list_id]
+                    ),
+                    'list_title' => $list->list_title
+                ];
+            }
+        }
+        return $this->output($lists, self::STATUS_OK);
+    }
+
+    /**
+     * Check one or more records to see if they are saved in one of the user's list.
+     *
+     * @return \Zend\Http\Response
+     */
     protected function getSaveStatusesAjax()
     {
         $this->disableSessionWrites();  // avoid session write timing bug

@@ -1,60 +1,49 @@
 /*global htmlEncode, userIsLoggedIn, VuFind */
 
+function checkSaveStatus(el) {
+  if (!userIsLoggedIn) {
+    return;
+  }
+  var $item = $(el);
+
+  if ($item.find('.hiddenId').length === 0 || $item.find('.hiddenSource').length === 0) {
+    return null;
+  }
+  $.ajax({
+    dataType: 'json',
+    method: 'POST',
+    url: VuFind.path + '/AJAX/JSON?method=getSingleSaveStatus',
+    data: {
+      id: $item.find('.hiddenId').val(),
+      source: $item.find('.hiddenSource').val()
+    }
+  })
+  .done(function checkSaveStatusDone(response) {
+    if (response.data.length > 0) {
+      var html = '<ul>' + response.data.map(function convertToLi(l) {
+        return '<li><a href="' + l.list_url + '">' + htmlEncode(l.list_title) + '</a></li>';
+      }).join('') + '</ul>';
+      $item.find('.savedLists').html($item.find('.savedLists strong')[0].outerHTML + html).removeClass('hidden');
+    }
+  });
+}
+
 function checkSaveStatuses(_container) {
   if (!userIsLoggedIn) {
     return;
   }
-  var container = _container || $('body');
 
-  var elements = {};
-  var data = $.map(container.find('.result,.record'), function checkSaveRecordMap(record) {
-    if ($(record).find('.hiddenId').length === 0 || $(record).find('.hiddenSource').length === 0) {
-      return null;
-    }
-    var datum = {
-      id: $(record).find('.hiddenId').val(),
-      source: $(record).find('.hiddenSource')[0].value
-    };
-    var key = datum.source + '|' + datum.id;
-    if (typeof elements[key] === 'undefined') {
-      elements[key] = $();
-    }
-    elements[key] = elements[key].add($(record).find('.savedLists'));
-    return datum;
-  });
-  if (data.length) {
-    var ids = [];
-    var srcs = [];
-    for (var d = 0; d < data.length; d++) {
-      ids.push(data[d].id);
-      srcs.push(data[d].source);
-    }
-    $.ajax({
-      dataType: 'json',
-      method: 'POST',
-      url: VuFind.path + '/AJAX/JSON?method=getSaveStatuses',
-      data: {id: ids, source: srcs}
-    })
-    .done(function checkSaveStatusDone(response) {
-      for (var sel in response.data) {
-        if (response.data.hasOwnProperty(sel)) {
-          var list = elements[sel];
-          if (!list) {
-            list = $('.savedLists');
-          }
-          var html = list.find('strong')[0].outerHTML + '<ul>';
-          for (var i = 0; i < response.data[sel].length; i++) {
-            html += '<li><a href="' + response.data[sel][i].list_url + '">'
-              + htmlEncode(response.data[sel][i].list_title) + '</a></li>';
-          }
-          html += '</ul>';
-          list.html(html).removeClass('hidden');
-        }
-      }
-    });
-  }
+  var container = _container instanceof Element
+    ? _container
+    : document.body;
+
+  $.map($(container).find('.result,.record').toArray(), checkSaveStatus);
 }
 
 $(document).ready(function checkSaveStatusFail() {
-  checkSaveStatuses();
+  hunt($('.result,.record').toArray(), {
+    enter: function huntEnter() {
+      checkSaveStatus(this);
+    }
+  });
 });
