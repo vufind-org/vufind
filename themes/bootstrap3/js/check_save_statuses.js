@@ -16,7 +16,9 @@ function checkSaveStatus(el) {
   }
   var $item = $(el);
 
-  if ($item.find('.hiddenId').length === 0 || $item.find('.hiddenSource').length === 0) {
+  var $id = $item.find('.hiddenId');
+  var $source = $item.find('.hiddenSource');
+  if ($id.length === 0 || $source.length === 0) {
     return null;
   }
   $.ajax({
@@ -24,8 +26,8 @@ function checkSaveStatus(el) {
     method: 'POST',
     url: VuFind.path + '/AJAX/JSON?method=getSingleSaveStatus',
     data: {
-      id: $item.find('.hiddenId').val(),
-      source: $item.find('.hiddenSource').val()
+      id: $id.val(),
+      source: $source.val()
     }
   })
   .done(function checkSaveStatusDone(response) {
@@ -47,12 +49,13 @@ function checkSaveStatuses(_container) {
   var ids = [];
   var sources = [];
   for (var i = 0; i < ajaxItems.length; i++) {
-    var id = $(ajaxItems[i]).find('.hiddenId').val();
-    var source = $(ajaxItems[i]).find('.hiddenSource').val();
-    if (!!id && !!source) {
+    var $id = $(ajaxItems[i]).find('.hiddenId').val();
+    var $source = $(ajaxItems[i]).find('.hiddenSource').val();
+    if ($id.length === 0 || $source.length === 0) {
+      var id = $id.val();
       elements[id] = $(ajaxItems[i]);
       ids.push(id);
-      sources.push(source);
+      sources.push($source,val());
     }
   }
 
@@ -78,13 +81,15 @@ function checkSaveStatuses(_container) {
     // display the error message on each of the ajax status place holder
     $(container).find('.ajax-availability').append(response.responseJSON.data).addClass('text-danger');
   });
-  $.map($(container).find('.result,.record').toArray(), checkSaveStatus);
+  // Stop looking for a scroll loader
+  if (saveStatusObserver) {
+    saveStatusObserver.disconnect();
+  }
 }
-
+var saveStatusObserver = null;
 $(document).ready(function checkSaveStatusFail() {
-  hunt($('.result,.record').toArray(), {
-    enter: function huntEnter() {
-      checkSaveStatus(this);
-    }
+  saveStatusObserver = new Hunt(
+    $('.result,.record').toArray(), {
+    enter: checkSaveStatus
   });
 });

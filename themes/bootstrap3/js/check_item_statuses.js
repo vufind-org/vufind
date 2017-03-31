@@ -1,4 +1,4 @@
-/*global hunt, VuFind */
+/*global Hunt, VuFind */
 /*exported checkItemStatuses */
 
 function linkCallnumbers(callnumber, callnumber_handler) {
@@ -118,12 +118,15 @@ function checkItemStatuses(_container) {
     // display the error message on each of the ajax status place holder
     $(container).find('.ajax-availability').append(response.responseJSON.data).addClass('text-danger');
   });
+  // Stop looking for a scroll loader
+  if (itemStatusObserver) {
+    itemStatusObserver.disconnect();
+  }
 }
-
+var itemStatusObserver = null;
 $(document).ready(function checkItemStatusReady() {
-  hunt($('.ajaxItem').toArray(), {
-    enter: function huntEnter() {
-      checkItemStatus(this);
-    }
+  itemStatusObserver = new Hunt(
+    $('.ajaxItem').toArray(), {
+    enter: checkItemStatus
   });
 });
