@@ -1,4 +1,5 @@
-/*global htmlEncode, userIsLoggedIn, VuFind */
+/*global hunt, htmlEncode, userIsLoggedIn, VuFind */
+/*exported checkSaveStatuses */
 
 function checkSaveStatus(el) {
   if (!userIsLoggedIn) {

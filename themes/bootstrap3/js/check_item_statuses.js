@@ -1,4 +1,6 @@
-/*global VuFind */
+/*global hunt, VuFind */
+/*exported checkItemStatuses */
+
 function linkCallnumbers(callnumber, callnumber_handler) {
   if (callnumber_handler) {
     var cns = callnumber.split(',\t');
