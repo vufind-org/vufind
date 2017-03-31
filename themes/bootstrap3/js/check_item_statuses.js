@@ -1,5 +1,5 @@
 /*global Hunt, VuFind */
-/*exported checkItemStatuses */
+/*exported checkItemStatuses, itemStatusFail */
 
 function linkCallnumbers(callnumber, callnumber_handler) {
   if (callnumber_handler) {
@@ -63,6 +63,13 @@ function displayItemStatus(result, $item) {
     );
   }
 }
+function itemStatusFail(container, response, textStatus) {
+  $(container).find('.ajax-availability').empty();
+  if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
+  // display the error message on each of the ajax status place holder
+  $(container).find('.ajax-availability').append(response.responseJSON.data).addClass('text-danger');
+}
+
 function checkItemStatus(el) {
   var $item = $(el);
   if ($item.find('.hiddenId').length === 0) {
@@ -80,10 +87,7 @@ function checkItemStatus(el) {
     displayItemStatus(response.data, $item);
   })
   .fail(function checkItemStatusFail(response, textStatus) {
-    $('.ajax-availability').empty();
-    if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
-    // display the error message on each of the ajax status place holder
-    $('.ajax-availability').append(response.responseJSON.data).addClass('text-danger');
+    itemStatusFail(el, response, textStatus);
   });
 }
 
@@ -113,10 +117,7 @@ function checkItemStatuses(_container) {
     }
   })
   .fail(function checkItemStatusFail(response, textStatus) {
-    $(container).find('.ajax-availability').empty();
-    if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
-    // display the error message on each of the ajax status place holder
-    $(container).find('.ajax-availability').append(response.responseJSON.data).addClass('text-danger');
+    itemStatusFail(container, response, textStatus);
   });
   // Stop looking for a scroll loader
   if (itemStatusObserver) {
@@ -127,6 +128,6 @@ var itemStatusObserver = null;
 $(document).ready(function checkItemStatusReady() {
   itemStatusObserver = new Hunt(
     $('.ajaxItem').toArray(), {
-      enter: checkItemStatus
-    });
+    enter: checkItemStatus
+  });
 });

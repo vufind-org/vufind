@@ -1,4 +1,4 @@
-/*global htmlEncode, userIsLoggedIn, Hunt, VuFind */
+/*global htmlEncode, itemStatusFail, userIsLoggedIn, Hunt, VuFind */
 /*exported checkSaveStatuses */
 
 function displaySaveStatus(itemLists, $item) {
@@ -8,6 +8,8 @@ function displaySaveStatus(itemLists, $item) {
     }).join('') + '</ul>';
     $item.find('.savedLists').html($item.find('.savedLists strong')[0].outerHTML + html).removeClass('hidden');
   }
+}
+function saveStatusFail(container, response, textStatus) {
 }
 
 function checkSaveStatus(el) {
@@ -32,6 +34,9 @@ function checkSaveStatus(el) {
   })
   .done(function checkSaveStatusDone(response) {
     displaySaveStatus(response.data, $item);
+  })
+  .fail(function checkItemStatusFail(response, textStatus) {
+    itemStatusFail(el, response, textStatus);
   });
 }
 
@@ -68,7 +73,7 @@ function checkSaveStatuses(_container) {
       'sources': sources
     }
   })
-  .done(function checkItemStatusDone(response) {
+  .done(function checkSaveStatusDone(response) {
     for (var id in response.data) {
       if (response.data.hasOwnProperty(id)) {
         displaySaveStatus(response.data[id], elements[id]);
@@ -76,10 +81,7 @@ function checkSaveStatuses(_container) {
     }
   })
   .fail(function checkItemStatusFail(response, textStatus) {
-    $(container).find('.ajax-availability').empty();
-    if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
-    // display the error message on each of the ajax status place holder
-    $(container).find('.ajax-availability').append(response.responseJSON.data).addClass('text-danger');
+    itemStatusFail(container, response, textStatus);
   });
   // Stop looking for a scroll loader
   if (saveStatusObserver) {
@@ -90,6 +92,6 @@ var saveStatusObserver = null;
 $(document).ready(function checkSaveStatusFail() {
   saveStatusObserver = new Hunt(
     $('.result,.record').toArray(), {
-      enter: checkSaveStatus
-    });
+    enter: checkSaveStatus
+  });
 });
