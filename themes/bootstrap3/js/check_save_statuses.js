@@ -9,8 +9,6 @@ function displaySaveStatus(itemLists, $item) {
     $item.find('.savedLists').html($item.find('.savedLists strong')[0].outerHTML + html).removeClass('hidden');
   }
 }
-function saveStatusFail(container, response, textStatus) {
-}
 
 function checkSaveStatus(el) {
   if (!userIsLoggedIn) {
@@ -92,6 +90,6 @@ var saveStatusObserver = null;
 $(document).ready(function checkSaveStatusFail() {
   saveStatusObserver = new Hunt(
     $('.result,.record').toArray(), {
-    enter: checkSaveStatus
-  });
+      enter: checkSaveStatus
+    });
 });

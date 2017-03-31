@@ -128,6 +128,6 @@ var itemStatusObserver = null;
 $(document).ready(function checkItemStatusReady() {
   itemStatusObserver = new Hunt(
     $('.ajaxItem').toArray(), {
-    enter: checkItemStatus
-  });
+      enter: checkItemStatus
+    });
 });
