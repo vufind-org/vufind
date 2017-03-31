@@ -20,11 +20,11 @@ function checkItemStatus(el) {
   $.ajax({
     dataType: 'json',
     method: 'POST',
-    url: VuFind.path + '/AJAX/JSON?method=getItemStatus',
+    url: VuFind.path + '/AJAX/JSON?method=getSingleItemStatus',
     data: { 'id': datum }
   })
   .done(function checkItemStatusDone(response) {
-    var result = response.data[0];
+    var result = response.data;
     $item.find('.status').empty().append(result.availability_message);
     if (typeof(result.full_status) != 'undefined'
       && result.full_status.length > 0

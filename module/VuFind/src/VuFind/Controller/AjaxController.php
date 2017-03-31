@@ -361,6 +361,82 @@ class AjaxController extends AbstractBase
     }
 
     /**
+     * Get Item Statuses
+     *
+     * This is responsible for printing the holdings information for a
+     * collection of records in JSON format.
+     *
+     * @return \Zend\Http\Response
+     * @author Chris Delis <cedelis@uillinois.edu>
+     * @author Tuan Nguyen <tuan@yorku.ca>
+     */
+    protected function getSingleItemStatusAjax()
+    {
+        $this->disableSessionWrites();  // avoid session write timing bug
+        $catalog = $this->getILS();
+
+        // Load messages for response:
+        $messages = [
+            'available' => 'ajax/status-available.phtml',
+            'unavailable' => 'ajax/status-unavailable.phtml',
+            'unknown' => 'ajax/status-unknown.phtml'
+        ];
+
+        // Load callnumber and location settings:
+        $config = $this->getConfig();
+        $callnumberSetting = isset($config->Item_Status->multiple_call_nos)
+            ? $config->Item_Status->multiple_call_nos : 'msg';
+        $locationSetting = isset($config->Item_Status->multiple_locations)
+            ? $config->Item_Status->multiple_locations : 'msg';
+        $showFullStatus = isset($config->Item_Status->show_full_status)
+            ? $config->Item_Status->show_full_status : false;
+
+        // Get result
+        $ids = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
+        $result = $catalog->getStatus($ids);
+
+        // Filter out suppressed locations:
+        $record = $this->filterSuppressedLocations($result);
+
+        // Loop through all the status information that came back
+        $status = null;
+        if (count($record)) {
+            if ($locationSetting == "group") {
+                $status = $this->getItemStatusGroup(
+                    $record, $messages, $callnumberSetting
+                );
+            } else {
+                $status = $this->getItemStatus(
+                    $record, $messages, $locationSetting, $callnumberSetting
+                );
+            }
+            // If a full status display has been requested, append the HTML:
+            if ($showFullStatus) {
+                $status['full_status'] = $renderer->render(
+                    'ajax/status-full.phtml', [
+                        'statusItems' => $record,
+                        'callnumberHandler' => $this->getCallnumberHandler()
+                     ]
+                );
+            }
+        } else {
+            $status = [
+                'availability'         => 'false',
+                'availability_message' => $messages['unavailable'],
+                'location'             => $this->translate('Unknown'),
+                'locationList'         => false,
+                'reserve'              => 'false',
+                'reserve_message'      => $this->translate('Not On Reserve'),
+                'callnumber'           => '',
+                'missing_data'         => true,
+            ];
+        }
+
+        // Done
+        return $this->output($status, self::STATUS_OK);
+    }
+
+    /**
      * Support method for getItemStatuses() -- process a single bibliographic record
      * for location settings other than "group".
      *
