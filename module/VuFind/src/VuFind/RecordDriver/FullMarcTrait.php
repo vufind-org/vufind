@@ -50,6 +50,17 @@ use VuFind\Exception\ILS as ILSException,
  */
 trait FullMarcTrait
 {
+
+    /**
+     * Return the list of "source records" for this consortial record.
+     *
+     * @return array
+     */
+    public function getConsortialIDs()
+    {
+        return $this->getFieldArray('035', 'a', true);
+    }
+
     /**
      * Get the date coverage for a record which spans a period of time (i.e. a
      * journal).  Use getPublicationDates for publication dates of particular
@@ -79,6 +90,7 @@ trait FullMarcTrait
      */
     public function getISBNs()
     {
+        // ToDo: remove duplex entries; with or without slash
         $isbn = array_merge(
            $this->getFieldArray('020', ['a', 'z', '9'], false), $this->getFieldArray('773', ['z'])
         );
@@ -181,6 +193,16 @@ trait FullMarcTrait
     }
 
     /**
+     * Get the main authors of the record.
+     *
+     * @return string
+     */
+    public function getPrimaryAuthors()
+    {
+        return $this->getFieldArray('100', 'a', true);
+    }
+
+    /**
      * Get the publishers of the record.
      *
      * @return array
@@ -277,4 +299,46 @@ trait FullMarcTrait
         }
         return trim($title);
     }
+
+
+// maybe in a DefaultTrait
+
+    /**
+     * Get highlighted author data, if available.
+     *
+     * @return array
+     */
+    public function getRawAuthorHighlights()
+    {
+        // Don't check for highlighted values if highlighting is disabled:
+        return ($this->highlight && isset($this->highlightDetails['author']))
+            ? $this->highlightDetails['author'] : [];
+    }
+
+    /**
+     * Get primary author information with highlights applied (if applicable)
+     *
+     * @return array
+     */
+    public function getPrimaryAuthorsWithHighlighting()
+    {
+        $highlights = [];
+        // Create a map of de-highlighted valeus => highlighted values.
+        foreach ($this->getRawAuthorHighlights() as $current) {
+            $dehighlighted = str_replace(
+                ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $current
+            );
+            $highlights[$dehighlighted] = $current;
+        }
+
+        // replace unhighlighted authors with highlighted versions where
+        // applicable:
+        $authors = [];
+        foreach ($this->getPrimaryAuthors() as $author) {
+            $authors[] = isset($highlights[$author])
+                ? $highlights[$author] : $author;
+        }
+        return $authors;
+    }
+
 }
