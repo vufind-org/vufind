@@ -108,8 +108,8 @@ function checkItemStatuses(_container) {
     data: { 'id': ids }
   })
   .done(function checkItemStatusDone(response) {
-    for (var i = 0; i < response.data.length; i++) {
-      displayItemStatus(response.data[i], elements[response.data[i].id]);
+    for (var j = 0; j < response.data.length; j++) {
+      displayItemStatus(response.data[j], elements[response.data[j].id]);
     }
   })
   .fail(function checkItemStatusFail(response, textStatus) {
@@ -127,6 +127,6 @@ var itemStatusObserver = null;
 $(document).ready(function checkItemStatusReady() {
   itemStatusObserver = new Hunt(
     $('.ajaxItem').toArray(), {
-    enter: checkItemStatus
-  });
+      enter: checkItemStatus
+    });
 });

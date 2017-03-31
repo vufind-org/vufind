@@ -1,4 +1,4 @@
-/*global hunt, htmlEncode, userIsLoggedIn, VuFind */
+/*global htmlEncode, userIsLoggedIn, Hunt, VuFind */
 /*exported checkSaveStatuses */
 
 function displaySaveStatus(itemLists, $item) {
@@ -52,10 +52,10 @@ function checkSaveStatuses(_container) {
     var $id = $(ajaxItems[i]).find('.hiddenId').val();
     var $source = $(ajaxItems[i]).find('.hiddenSource').val();
     if ($id.length === 0 || $source.length === 0) {
-      var id = $id.val();
-      elements[id] = $(ajaxItems[i]);
-      ids.push(id);
-      sources.push($source,val());
+      var idval = $id.val();
+      elements[idval] = $(ajaxItems[i]);
+      ids.push(idval);
+      sources.push($source.val());
     }
   }
 
@@ -90,6 +90,6 @@ var saveStatusObserver = null;
 $(document).ready(function checkSaveStatusFail() {
   saveStatusObserver = new Hunt(
     $('.result,.record').toArray(), {
-    enter: checkSaveStatus
-  });
+      enter: checkSaveStatus
+    });
 });
