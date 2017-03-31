@@ -2,6 +2,7 @@
 <? $currentSource = $this->driver->tryMethod('getDataSource');
    $currentSourceTranslated = $this->transEsc("source_$currentSource", null, $currentSource);
    $mergedData = $this->driver->tryMethod('getMergedRecordData');
+   $recordType = $this->driver->getRecordType();
 ?>
 <? $dedupData = $this->driver->getDedupData(); ?>
 <div class="recordProvidedBy">
@@ -12,8 +13,13 @@
       <?=$this->transEsc('material_provided_by_single')?>
     <? endif; ?>
   </h4>
-  <ul class="<?=(!in_array($this->driver->getRecordType(), ['ead', 'lido', 'qdc', 'forward'])) ? 'list-group organisations' : 'record-type organisations'?>">
-    <li class="record-organisation"><span class="organisation-name"><?=$this->escapeHtml($this->organisationDisplayName($this->driver)) ?></span>
+   <ul class="<?=(!in_array($recordType, ['ead', 'lido', 'qdc', 'forward'])) ? 'list-group organisations' : 'record-type organisations'?>">
+      <? if ($currentSource == "narc" && $recordType == 'ead'): ?>
+         <? $building = $this->driver->tryMethod('getBuilding'); ?>
+        <li class="record-organisation"><span class="organisation-name"><?=$this->transEsc($building[0])?></span>
+      <? else: ?>
+        <li class="record-organisation"><span class="organisation-name"><?=$this->escapeHtml($this->organisationDisplayName($this->driver)) ?></span>
+      <? endif; ?>
       <ul class="record-organisation-info">
       <? if (isset($currentSource['imageUrl'])): ?>
         <li><img src="<?=$currentSource['imageUrl']?>"/></li>
