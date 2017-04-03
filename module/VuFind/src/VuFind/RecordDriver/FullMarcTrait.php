@@ -94,6 +94,10 @@ trait FullMarcTrait
         $isbn = array_merge(
            $this->getFieldArray('020', ['a', 'z', '9'], false), $this->getFieldArray('773', ['z'])
         );
+        foreach ($isbn as $key => $num) {
+           $isbn[$key] = str_replace("-","",$num);
+        }
+        $isbn = array_unique($isbn);
         return $isbn;
     }
 
@@ -111,6 +115,10 @@ trait FullMarcTrait
                 $this->getFieldArray('776', ['x']), $this->getFieldArray('780', ['x']), 
                 $this->getFieldArray('785', ['x'])
         );
+        foreach ($issn as $key => $num) {
+           $issn[$key] = str_replace("-","",$num);
+        }
+        $issn = array_unique($issn);
         return $issn;
     }
 
