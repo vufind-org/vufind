@@ -6287,6 +6287,11 @@ iframe {
   background: #FFF;
   text-align: center;
 }
+@media (min-width: 1015px) {
+  .header .header-break {
+    display: none;
+  }
+}
 .header img {
   display: inline-block;
   margin: 5px;
