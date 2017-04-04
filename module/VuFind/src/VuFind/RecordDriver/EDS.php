@@ -242,9 +242,7 @@ class EDS extends SolrDefault
                     'Data'  => isset($item['Data'])
                         ? $this->toHTML($item['Data'], $item['Group']) : ''
                 ];
-                if (null === $label) {
-                    $items[] = $tmp;
-                } elseif ($item['Label'] == $label) {
+                if (null === $label || $item['Label'] == $label) {
                     $items[] = $tmp;
                 }
             }
