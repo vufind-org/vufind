@@ -236,14 +236,13 @@ class EDS extends SolrDefault
         $items = [];
         if (isset($this->fields['Items']) && !empty($this->fields['Items'])) {
             foreach ($this->fields['Items'] as $item) {
-                $tmp = [
-                    'Label' => isset($item['Label']) ? $item['Label'] : '',
-                    'Group' => isset($item['Group']) ? $item['Group'] : '',
-                    'Data'  => isset($item['Data'])
-                        ? $this->toHTML($item['Data'], $item['Group']) : ''
-                ];
                 if (null === $label || $item['Label'] == $label) {
-                    $items[] = $tmp;
+                    $items[] = [
+                        'Label' => isset($item['Label']) ? $item['Label'] : '',
+                        'Group' => isset($item['Group']) ? $item['Group'] : '',
+                        'Data'  => isset($item['Data'])
+                            ? $this->toHTML($item['Data'], $item['Group']) : ''
+                    ];
                 }
             }
         }
