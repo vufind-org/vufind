@@ -1,6 +1,6 @@
 <!-- START of: finna - RecordDriver/SolrForward/core.phtml -->
 <?
-  $primaryRoles = ['drt', 'aus'];
+  $primaryRoles = ['drt'];
   $nonPresenterAuthors = $this->driver->getNonPresenterAuthors();
   $primaryAuthors = [];
   $secondaryAuthors = [];
@@ -282,6 +282,9 @@
             <div class="truncate-field">
               <? foreach ($secondaryAuthors as $index => $author): ?>
                 <?=($index > 0 ? '<br/> ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><? endif; ?><? if (!empty($author['role'])): ?><span class="author-role">, <?=mb_strtolower($this->transEsc('CreatorRoles::' . $author['role']), 'UTF-8') ?></span><? endif; ?>
+                <? if (!empty($author['description'])): ?>
+                  <span class="author-description"> (<?=$this->escapeHtml($author['description'])?>)</span>
+                <? endif; ?>
               <? endforeach; ?>
             </div>
           </td>
@@ -397,29 +400,6 @@
           </td>
         </tr>
       <? endif; ?>
-
-      <? /*
-      <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
-          <tr class="recordPublications">
-            <th><?=$this->transEsc('Publisher')?>: </th>
-            <td>
-            <? foreach ($publications as $field): ?>
-              <span property="publisher" typeof="Organization">
-                <? $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
-                <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
-                <? endif; ?>
-                <? $pubName = $field->getName(); if (!empty($pubName)): ?>
-                <span property="name"><?=$this->escapeHtml($pubName)?></span>
-                <? endif; ?>
-                <? $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
-                <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
-                <? endif; ?>
-              </span>
-            <? endforeach; ?>
-            </td>
-          </tr>
-      <? endif; ?>
-      */ ?>
 
       <? $projectedDate = $this->driver->tryMethod('getProjectedPublicationDate'); if (!empty($projectedDate)): ?>
         <tr class="coreProjectedPublicationDate">

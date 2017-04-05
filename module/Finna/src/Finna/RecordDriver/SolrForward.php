@@ -813,6 +813,11 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 $uncredited = true;
             }
 
+            $description = '';
+            if (!empty($nameAttrs->{'elokuva-elotekija-selitys'})) {
+                $description = (string)$nameAttrs->{'elokuva-elotekija-selitys'};
+            }
+
             $name = (string)$agent->AgentName;
             if (empty($name)
                 && !empty($nameAttrs->{'elokuva-elokreditoimatontekija-nimi'})
@@ -825,6 +830,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 'name' => $name,
                 'role' => $role,
                 'roleName' => $roleName,
+                'description' => $description,
                 'uncredited' => $uncredited,
                 'idx' => $primary ? $idx : 10000 * $idx
             ];
