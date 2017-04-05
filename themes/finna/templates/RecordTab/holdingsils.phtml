@@ -144,10 +144,10 @@
       <div class="headers reservations-container col-sm-4 col-xs-5">
         <? if ($showSummary): ?>
           <? if (!empty($reservationsTotal)): ?>
-            <span class="reservations"><?=sprintf('%s: %d', $this->transEsc('Requests'), $reservationsTotal);?></span>
+            <span class="reservations"><?=$this->translate('status_requests_html', ['%%count%%' => $reservationsTotal]);?></span>
           <? endif; ?>
           <? if (!empty($itemsTotal)): ?>
-            <span class="total"><?=sprintf('%s: %d', ucfirst($this->transEsc('axiell_items')), $itemsTotal);?></span>
+            <span class="total"><?=$this->translate('status_items_total_html', ['%%count%%' => $itemsTotal]);?></span>
           <? endif; ?>
         <? endif; ?>
       </div>
@@ -165,6 +165,8 @@
     $firstDueDate = '';
     $firstDueStr = '';
     $statuses = [];
+    $requests = 0;
+    $branches = false;
     foreach ($holding['items'] as $row) {
       if ($row['availability']) {
         ++$available;
@@ -177,15 +179,33 @@
         }
       }
       $statuses[$this->translate('status_' . $row['status'], null, $row['status'])] = 1;
+      if (isset($row['branch'])) {
+        $branches = true;
+      } else {
+        if (isset($row['requests_placed']) && $row['requests_placed'] > $requests) {
+          $requests = $row['requests_placed'];
+        }
+      }
     }
     if ($available) {
-      $holdingSummary = '<span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> ' . $this->transEsc('available_count', ['%%count%%' => $available]) . '</span>';
+      $holdingSummary = '<span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> ' . $this->translate('status_items_available_html', ['%%count%%' => $available]) . '</span>';
     } else if ($firstDueStr) {
       $holdingSummary = '<span class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> ' . $this->transEsc('closest_due_date', ['%%date%%' => $firstDueStr]) . '</span>';
     } else if ($statuses) {
       $holdingSummary = '<span class="text-danger"> ' . $this->escapeHtml(implode(' ', array_flip($statuses))) . '</span>';
     } else {
       $holdingSummary = '<span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> ' . $this->transEsc('Available') . '</span>';
+    }
+
+    $additionalSummary = [];
+    if (!$branches && ($itemCount = count($holding['items']))) {
+      $additionalSummary[] = $this->translate('status_items_total_html', ['%%count%%' => $itemCount]);
+    }
+    if ($requests) {
+      $additionalSummary[] = $this->translate('status_requests_html', ['%%count%%' => $requests]);
+    }
+    foreach ($additionalSummary as $i => $summaryItem) {
+      $holdingSummary .= '<span class="small"> &ndash;&nbsp;' . $summaryItem . '</span>';
     }
 
     // N.B. $holdingsDetails also affects request checks in finna-record
@@ -303,7 +323,7 @@
             <? /* Begin Available Items (Holds) */ ?>
             <span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> <?=$this->transEsc(isset($row['availabilityInfo']['displayText']) ? 'status_' . $row['availabilityInfo']['displayText'] : 'Available')?><link property="availability" href="http://schema.org/InStock" /></span>
             <? if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
-              &ndash; <span class="small"><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
+              &ndash;&nbsp;<span class="small"><?=$this->translate('status_requests_html', ['%%count%%' => $this->escapeHtml($row['requests_placed'])])?></span>
             <? endif; ?>
             <div class="pull-right">
             <? if (!$journal): ?>
@@ -323,10 +343,10 @@
             <span class="text-danger"><?=$row['status'] == 'Ordered' ? '' : '<i class="fa fa-remove" aria-hidden="true"></i>';?> <?=$this->transEsc('status_' . $row['status'], null, $row['status'])?><link property="availability" href="http://schema.org/OutOfStock" /> </span>
             <? if (isset($row['returnDate']) && $row['returnDate']): ?>&ndash; <span class="small"><?=$this->escapeHtml($row['returnDate'])?></span><? endif; ?>
             <? if (isset($row['duedate']) && $row['duedate']): ?>
-              &ndash; <span class="small"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($row['duedate'])?></span>
+              &ndash;&nbsp;<span class="small"><?=$this->transEsc('Due')?>:&nbsp;<?=$this->escapeHtml($row['duedate'])?></span>
             <? endif; ?>
             <? if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
-              &ndash; <span class="small"><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
+              &ndash;&nbsp;<span class="small"><?=$this->translate('status_requests_html', ['%%count%%' => $this->escapeHtml($row['requests_placed'])])?></span>
             <? endif; ?>
             <? if (!$journal && !$block && isset($row['link']) && $row['link'] && $holdsAllowed): ?>
               <div class="pull-right">
