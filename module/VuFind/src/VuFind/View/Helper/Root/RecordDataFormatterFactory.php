@@ -205,7 +205,7 @@ class RecordDataFormatterFactory
                     'type' => 'primary',
                     'schemaLabel' => 'author',
                     'requiredDataFields' => [
-                        ['name' => "role", 'prefix' => "CreatorRoles::"]
+                        ['name' => 'role', 'prefix' => 'CreatorRoles::']
                     ]
                 ]
             ]
@@ -222,7 +222,7 @@ class RecordDataFormatterFactory
                     'type' => 'corporate',
                     'schemaLabel' => 'creator',
                     'requiredDataFields' => [
-                        ['name' => "role", 'prefix' => "CreatorRoles::"]
+                        ['name' => 'role', 'prefix' => 'CreatorRoles::']
                     ]
                 ]
             ]
@@ -235,7 +235,7 @@ class RecordDataFormatterFactory
                     'type' => 'secondary',
                     'schemaLabel' => 'contributor',
                     'requiredDataFields' => [
-                        ['name' => "role", 'prefix' => "CreatorRoles::"]
+                        ['name' => 'role', 'prefix' => 'CreatorRoles::']
                     ]
                 ],
             ]
