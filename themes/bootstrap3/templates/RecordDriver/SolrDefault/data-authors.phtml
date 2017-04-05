@@ -1,15 +1,40 @@
 <?
-  $formatRoles = function ($roles) {
-    if (count($roles) == 0) {
-      return '';
+$formatProperty = function ($datafield, $name, $label) {
+    if (count($datafield) == 0) {
+        return '';
     }
     $that = $this;
-    $translate = function ($str) use ($that) {
-      return $that->transEsc('CreatorRoles::' . $str);
+    $translate = function ($str) use ($that, $label) {
+        return $that->transEsc($label . $str);
     };
-    return ' (' . implode(', ', array_unique(array_map($translate, $roles))) . ')';
-  };
+    return '<span class="author-property-' . $name . '">(' . implode(', ', array_unique(array_map($translate, $datafield))) . ')</span>';
+};
+$formattedAuthors = [];
 ?>
-<? if (isset($data[$type]) && !empty($data[$type])): ?>
-  <? $i = 0; foreach ($data[$type] as $author => $roles): ?><?=($i++ == 0)?'':', '?><span property="<?=$this->escapeHtml($schemaLabel)?>"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><?=$formatRoles($roles)?></span><? endforeach; ?>
+<? if (!empty($data[$type])): ?>
+  <? foreach ($data[$type] as $author => $dataFields): ?>
+    <? ob_start(); ?>
+    <span class="author-data" property="<?=$this->escapeHtml($schemaLabel)?>">
+      <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
+        <?=$this->escapeHtml($author)?>
+      </a>
+      <?
+        // Display additional data using the appropriate translation prefix
+        // (for example, to render author roles correctly):
+        foreach ($requiredDataFields as $field) {
+            $name = $field['name'];
+            $prefix = isset($field['prefix']) ? $field['prefix'] : '';
+            if (isset($dataFields[$name])) {
+                echo $formatProperty($dataFields[$name], $name, $prefix);
+            }
+        }
+      ?>
+    </span>
+    <?
+      // Strip whitespace before close tags to avoid spaces in front of commas:
+      $formattedAuthors[] = trim(preg_replace('/\s+<\//', '</', ob_get_contents()));
+      ob_end_clean();
+    ?>
+  <? endforeach; ?>
 <? endif; ?>
+<?=implode(', ', $formattedAuthors)?>
