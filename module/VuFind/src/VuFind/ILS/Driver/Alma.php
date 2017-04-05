@@ -83,12 +83,17 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
      */
     protected function makeRequest($path)
     {
+        // TODO: Support requests of different methods
         $client = $this->httpService->createClient(
             $this->baseUrl . $path . '?apiKey=' . urlencode($this->apiKey)
         );
         $result = $client->send();
         if ($result->isSuccess()) {
             return simplexml_load_string($result->getBody());
+        } else {
+            // TODO: Throw an error
+            error_log($this->baseUrl . $path . '?apiKey=' . urlencode($this->apiKey));
+            error_log($result->getBody());
         }
         return null;
     }
@@ -151,5 +156,74 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
             }
         }
         return $results;
+    }
+
+    /**
+     * Patron Login
+     *
+     * This is responsible for authenticating a patron against the catalog.
+     *
+     * @param string $barcode  The patron barcode
+     * @param string $password The patron password
+     *
+     * @throws ILSException
+     * @return mixed           Associative array of patron info on successful login,
+     * null on unsuccessful login.
+     */
+    public function patronLogin($barcode, $password)
+    {
+        $client = $this->httpService->createClient(
+            $this->baseUrl . '/users/' . $barcode
+            . '?apiKey=' . urlencode($this->apiKey)
+        );
+        $client->setMethod(\Zend\Http\Request::METHOD_POST);
+        $client->setParameterPost(array(
+            'op' => 'auth',
+            'password' => trim($password)
+        ));
+        $response = $client->send();
+        // TODO: DO NOT FAKE SUCCESS
+        if (true || $response->isSuccess()) {
+            return [
+                'cat_username' => trim($barcode),
+                'cat_password' => trim($password)
+            ];
+        }
+        return null;
+    }
+
+    /**
+     * Get Patron Profile
+     *
+     * This is responsible for retrieving the profile for a specific patron.
+     *
+     * @param array $patron The patron array
+     *
+     * @return array        Array of the patron's profile data on success.
+     */
+    public function getMyProfile($patron)
+    {
+        $xml = $this->makeRequest('/users/' . $patron['cat_username']);
+        $profile = [
+            'firstname' => $xml->first_name,
+            'lastname'  => $xml->last_name,
+            'group'     => $xml->user_group['desc']
+        ];
+        $contact = $xml->contact_info;
+        if ($contact) {
+            if ($contact->addresses) {
+                $address = $contact->addresses[0]->address;
+                $profile['address1'] = $address->line1;
+                $profile['address2'] = $address->line2;
+                $profile['address3'] = $address->line3;
+                $profile['zip']      = $address->postal_code;
+                $profile['city']     = $address->city;
+                $profile['country']  = $address->country;
+            }
+            if ($contact->phones) {
+                $profile['phone'] = $contact->phones[0]->phone->phone_number;
+            }
+        }
+        return $profile;
     }
 }
