@@ -92,7 +92,7 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
             return simplexml_load_string($result->getBody());
         } else {
             // TODO: Throw an error
-            error_log($this->baseUrl . $path . '?apiKey=' . urlencode($this->apiKey));
+            error_log($this->baseUrl . $path);
             error_log($result->getBody());
         }
         return null;
@@ -177,10 +177,7 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
             . '?apiKey=' . urlencode($this->apiKey)
         );
         $client->setMethod(\Zend\Http\Request::METHOD_POST);
-        $client->setParameterPost(array(
-            'op' => 'auth',
-            'password' => trim($password)
-        ));
+        $client->setParameterPost(['op' => 'auth', 'password' => trim($password)]);
         $response = $client->send();
         // TODO: DO NOT FAKE SUCCESS
         if (true || $response->isSuccess()) {
