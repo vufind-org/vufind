@@ -50,7 +50,7 @@ class NewItemsTest extends TestCase
      */
     public function testGetBibIDsFromCatalog()
     {
-        $flash = $this->getMock('Zend\Mvc\Controller\Plugin\FlashMessenger');
+        $flash = $this->createMock('Zend\Mvc\Controller\Plugin\FlashMessenger');
         $config = new Config(['result_pages' => 10]);
         $newItems = new NewItems($config);
         $bibs = $newItems->getBibIDsFromCatalog(
@@ -66,7 +66,7 @@ class NewItemsTest extends TestCase
      */
     public function testGetBibIDsFromCatalogWithIDLimit()
     {
-        $flash = $this->getMock('Zend\Mvc\Controller\Plugin\FlashMessenger');
+        $flash = $this->createMock('Zend\Mvc\Controller\Plugin\FlashMessenger');
         $flash->expects($this->once())->method('addMessage')
             ->with($this->equalTo('too_many_new_items'), $this->equalTo('info'));
         $config = new Config(['result_pages' => 10]);
@@ -84,10 +84,10 @@ class NewItemsTest extends TestCase
      */
     public function testGetFundList()
     {
-        $catalog = $this->getMock(
-            'VuFind\ILS\Connection', ['checkCapability', 'getFunds'],
-            [], '', false
-        );
+        $catalog = $this->getMockBuilder(__NAMESPACE__ . '\MockILSConnection')
+            ->setMethods(['checkCapability', 'getFunds'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $catalog->expects($this->once())->method('checkCapability')
             ->with($this->equalTo('getFunds'))->will($this->returnValue(true));
         $catalog->expects($this->once())->method('getFunds')
@@ -209,9 +209,10 @@ class NewItemsTest extends TestCase
      */
     protected function getMockCatalog()
     {
-        $catalog = $this->getMock(
-            'VuFind\ILS\Connection', ['getNewItems'], [], '', false
-        );
+        $catalog = $this->getMockBuilder(__NAMESPACE__ . '\MockILSConnection')
+            ->setMethods(['getNewItems'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $catalog->expects($this->once())->method('getNewItems')
             ->with(
                 $this->equalTo(1), $this->equalTo(200),
@@ -234,12 +235,23 @@ class NewItemsTest extends TestCase
      */
     protected function getMockParams($idLimit = 1024)
     {
-        $params = $this
-            ->getMock('VuFind\Search\Solr\Params', [], [], '', false);
+        $params = $this->getMockBuilder('VuFind\Search\Solr\Params')
+            ->disableOriginalConstructor()->getMock();
         $params->expects($this->once())->method('getLimit')
             ->will($this->returnValue(20));
         $params->expects($this->once())->method('getQueryIDLimit')
             ->will($this->returnValue($idLimit));
         return $params;
+    }
+}
+
+class MockILSConnection extends \VuFind\ILS\Connection
+{
+    public function getFunds()
+    {
+    }
+
+    public function getNewItems()
+    {
     }
 }
