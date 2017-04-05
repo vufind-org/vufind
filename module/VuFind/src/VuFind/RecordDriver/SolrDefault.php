@@ -251,11 +251,15 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get Author Data Fields
+     * Get Author Information with Associated Data Fields
      *
      * @param string $index      The author index [primary, corporate, or secondary]
+     * used to construct a method name for retrieving author data (e.g.
+     * getPrimaryAuthors).
      * @param array  $dataFields An array of fields to used to construct method
-     *                           names
+     * names for retrieving author-related data (e.g., if you pass 'role' the
+     * data method will be similar to getPrimaryAuthorsRoles). This value will also
+     * be used as a key associated with each author in the resulting data array.
      *
      * @return array
      */
