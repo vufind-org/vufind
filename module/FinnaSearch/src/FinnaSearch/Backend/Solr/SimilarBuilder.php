@@ -129,8 +129,14 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
 
         $boost = true;
         $settings = [];
-        $specs = 'title^75,title_short^100,callnumber-label^400,topic^300'
-            . ',language^30,author^75,publishDate';
+        $specs = [
+            'title^75',
+            'title_short^100',
+            'callnumber-label^400',
+            'topic^300',
+            'language^30',
+            'author^75','publishDate'
+        ];
         if ($this->handlerParams) {
             if (preg_match('/boost=([^\s]+)/', $this->handlerParams, $matches)) {
                 $boost = $matches[1] === 'true';
