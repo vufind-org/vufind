@@ -135,7 +135,7 @@ if ($groupBranches) {
       <div class="col-xs-12">
       <? if (!empty($availableTotal)): ?>
         <i class="fa fa-ok"></i> <span><?=$this->translate('status_items_available_html', ['%%count%%' => $availableTotal])?></span>
-      <? else: ?>
+      <? elseif (isset($availableTotal)): ?>
         <i class="fa fa-remove"></i> <span><?=$this->translate('status_items_not_available_html')?></span>
       <? endif; ?>
       <span class="info">
