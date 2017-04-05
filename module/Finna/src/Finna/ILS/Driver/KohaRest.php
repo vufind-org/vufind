@@ -43,6 +43,52 @@ use VuFind\Exception\ILS as ILSException;
 class KohaRest extends \VuFind\ILS\Driver\KohaRest
 {
     /**
+     * Get Holding
+     *
+     * This is responsible for retrieving the holding information of a certain
+     * record.
+     *
+     * @param string $id     The record id to retrieve the holdings for
+     * @param array  $patron Patron data
+     *
+     * @return mixed     On success, an associative array with the following keys:
+     * id, availability (boolean), status, location, reserve, callnumber, duedate,
+     * number, barcode.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getHolding($id, array $patron = null)
+    {
+        $data = parent::getHolding($id, $patron);
+        if (!empty($data)) {
+            $summary = $this->getHoldingsSummary($data);
+            $data[] = $summary;
+        }
+        return $data;
+    }
+
+    /**
+     * Get Status
+     *
+     * This is responsible for retrieving the status information of a certain
+     * record.
+     *
+     * @param string $id The record id to retrieve the holdings for
+     *
+     * @return array An associative array with the following keys:
+     * id, availability (boolean), status, location, reserve, callnumber.
+     */
+    public function getStatus($id)
+    {
+        $data = parent::getStatus($id);
+        if (!empty($data)) {
+            $summary = $this->getHoldingsSummary($data);
+            $data[] = $summary;
+        }
+        return $data;
+    }
+
+    /**
      * Get Patron Fines
      *
      * This is responsible for retrieving all fines by a specific patron.
@@ -309,5 +355,38 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         $cacheId = 'blocks|' . $patron['id'];
         $this->removeCachedData($cacheId);
         return true;
+    }
+
+    /**
+     * Return summary of holdings items.
+     *
+     * @param array $holdings Parsed holdings items
+     *
+     * @return array summary
+     */
+    protected function getHoldingsSummary($holdings)
+    {
+        $availableTotal = $itemsTotal = $reservationsTotal = 0;
+        $locations = [];
+
+        foreach ($holdings as $item) {
+            if (!empty($item['availability'])) {
+                $availableTotal++;
+            }
+            $locations[$item['location']] = true;
+        }
+
+        // Since summary data is appended to the holdings array as a fake item,
+        // we need to add a few dummy-fields that VuFind expects to be
+        // defined for all elements.
+
+        return [
+           'available' => $availableTotal,
+           'total' => count($holdings),
+           'locations' => count($locations),
+           'availability' => null,
+           'callnumber' => null,
+           'location' => null
+        ];
     }
 }
