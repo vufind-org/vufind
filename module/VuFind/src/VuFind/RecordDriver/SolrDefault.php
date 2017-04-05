@@ -473,7 +473,8 @@ class SolrDefault extends AbstractBase
      * Deduplicate author information into associative array with main/corporate/
      * secondary keys.
      *
-     * @param array $dataFields An array of datafields to retrieve
+     * @param array $dataFields An array of extra data fields to retrieve (see
+     * getAuthorDataFields)
      *
      * @return array
      */
