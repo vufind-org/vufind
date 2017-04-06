@@ -237,24 +237,86 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getMyFines($patron)
     {
-        $session = $this->getSession();
-        if (true || !isset($session->fines)) {
-            $xml = $this->makeRequest(
-                '/users/' . $patron['cat_username'] . '/fees'
-            );
-            $fineList = [];
-            for ($i = 0; $i < count($xml->fees); $i++) {
-                $fineList[] = [
-                    "amount"   => $xml->fees[$i]->original_amount,
-                    "balance"  => $xml->fees[$i]->balance,
-                    "checkout" => $this->dateConverter->convertToDisplayDate(
-                        'U', $checkout
-                    ),
-                    "fine"     => $xml->fees[$i]->type['desc']
-                ];
-            }
-            $session->fines = $fineList;
+        $xml = $this->makeRequest(
+            '/users/' . $patron['cat_username'] . '/fees'
+        );
+        $fineList = [];
+        for ($i = 0; $i < count($xml->fees); $i++) {
+            $fineList[] = [
+                "amount"   => $xml->fees[$i]->original_amount,
+                "balance"  => $xml->fees[$i]->balance,
+                "checkout" => $this->dateConverter->convertToDisplayDate(
+                    'U', $checkout
+                ),
+                "fine"     => $xml->fees[$i]->type['desc']
+            ];
         }
-        return $session->fines;
+        return $fineList;
     }
+
+    /**
+     * Get Patron Holds
+     *
+     * This is responsible for retrieving all holds by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed        Array of the patron's holds on success.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getMyHolds($patron)
+    {
+        $xml = $this->makeRequest(
+            '/users/' . $patron['cat_username'] . '/requests'
+        );
+        $holdList = [];
+        for ($i = 0; $i < count($xml->user_requests); $i++) {
+            $request = $xml->user_requests[$i];
+            $holdList[] = [
+                'create' => $request->request_date,
+                'expire' => $request->last_interest_date,
+                'id' => $request->request_id,
+                'in_transit' => $request->request_status !== 'IN_PROCESS',
+                'item_id' => $request->mms_id,
+                'location' => $request->pickup_location,
+                'processed' => $request->item_policy === 'InterlibraryLoan'
+                    && $request->request_status !== 'NOT_STARTED',
+                'title' => $request->title,
+                /*
+                'available'         => $request->,
+                'canceled'          => $request->,
+                'institution_dbkey' => $request->,
+                'institution_id'    => $request->,
+                'institution_name'  => $request->,
+                'position'          => $request->,
+                'reqnum'            => $request->,
+                'requestGroup'      => $request->,
+                'source'            => $request->,
+
+                "author": null,
+                "comment": null,
+                "desc": "Book"
+                "description": null,
+                "material_type": {
+                "pickup_location": "Burns",
+                "pickup_location_library": "BURNS",
+                "pickup_location_type": "LIBRARY",
+                "place_in_queue": 1,
+                "request_date": "2013-11-12Z"
+                "request_id": "83013520000121",
+                "request_status": "NOT_STARTED",
+                "request_type": "HOLD",
+                "title": "Test title",
+                "value": "BK",
+                */
+            ];
+        }
+        return $holdList;
+    }
+
+    /*
+            $currentItem = [
+            }
+            */
 }
