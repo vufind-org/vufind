@@ -32,7 +32,7 @@ use VuFind\Config\Writer as ConfigWriter;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 use Zend\Console\Console;
-use Zend\Crypt\Symmetric\Mcrypt,
+use Zend\Crypt\Symmetric\Openssl,
     Zend\Crypt\BlockCipher as BlockCipher;
 
 /**
@@ -785,13 +785,13 @@ class UtilController extends AbstractBase
             return $this->getSuccessResponse();
         }
 
-        // Initialize Mcrypt first, so we can catch any illegal algorithms before
+        // Initialize Openssl first, so we can catch any illegal algorithms before
         // making any changes:
         try {
             if ($oldhash != 'none') {
-                $oldCrypt = new Mcrypt(['algorithm' => $oldhash]);
+                $oldCrypt = new Openssl(['algorithm' => $oldhash]);
             }
-            $newCrypt = new Mcrypt(['algorithm' => $newhash]);
+            $newCrypt = new Openssl(['algorithm' => $newhash]);
         } catch (\Exception $e) {
             Console::writeLine($e->getMessage());
             return $this->getFailureResponse();
