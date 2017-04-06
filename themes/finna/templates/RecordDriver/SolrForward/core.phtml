@@ -691,9 +691,11 @@
         <tr class="extendedAwards">
           <th><?=$this->transEsc('Awards')?>: </th>
           <td>
-            <? foreach ($awards as $field): ?>
-              <?=$field // intentionally left unescaped due to embedded HTML ?><br/>
-            <? endforeach; ?>
+            <div class="truncate-field">
+              <? foreach ($awards as $field): ?>
+                <?=$field // intentionally left unescaped due to embedded HTML ?><br/>
+              <? endforeach; ?>
+            </div>
           </td>
         </tr>
       <? endif; ?>
@@ -702,9 +704,11 @@
         <tr class="extendedCredits">
           <th><?=$this->transEsc('Production Credits')?>: </th>
           <td>
-            <? foreach ($credits as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
+            <div class="truncate-field">
+              <? foreach ($credits as $field): ?>
+                <?=$this->escapeHtml($field)?><br/>
+              <? endforeach; ?>
+            </div>
           </td>
         </tr>
       <? endif; ?>
