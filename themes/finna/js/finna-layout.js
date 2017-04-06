@@ -102,72 +102,75 @@ finna.layout = (function() {
     };
 
     var initTruncate = function(holder) {
-      if (typeof holder === 'undefined') {
-          holder = $(document);
-      }
-
-      var notifyTruncateChange = function(field) {
-          field.find('.truncate-change span').each(function(ind, e) {
-              var visible = $(e).position().top <= field.height();
-              $(e).trigger('truncate-change', [visible]);
-          });
-      };
-
-      var truncation = [];
-      var rowHeight = [];
-      holder.find('.truncate-field').not('.truncate-done').each(function(index) {
-        var self = $(this);
-        self.addClass('truncate-done');
-        // check that truncate-field has children, where we can count line-height
-        if (self.children().length > 0) {
-          var rowCount = 3;
-          if (self.data('rows')) {
-            rowCount = self.data('rows');
-          }
-
-          if (typeof(self.data('row-height')) !== 'undefined') {
-              rowHeight[index] = self.data('row-height');
-          } else {
-            if (self.children().first().is('div')) {
-              rowHeight[index] = parseFloat(self.children().first().height());
-            }
-            else {
-              rowHeight[index] = parseFloat(self.children().first().css('line-height').replace('px', ''));
-            }
-          }
-
-          // get the line-height of first element to determine each text line height
-          truncation[index] = rowHeight[index] * rowCount;
-          // truncate only if there's more than one line to hide
-          if (self.height() > (truncation[index] + rowHeight[index] + 1)) {
-            self.css('height', truncation[index] - 1 + 'px');
-            if (self.hasClass('wide')) { // generate different truncate styles according to class
-              self.after('<div class="more-link wide"><i class="fa fa-handle-open"></i></div><div class="less-link wide"> <i class="fa fa-handle-close"></i></div>');
-            }
-            else {
-              self.after('<div class="more-link">' + VuFind.translate('show_more') + ' <i class="fa fa-arrow-down"></i></div><div class="less-link">' + VuFind.translate('show_less') + ' <i class="fa fa-arrow-up"></i></div>');
-            }
-            $('.less-link').hide();
-
-            self.nextAll('.more-link').first().click(function(event) {
-              $(this).hide();
-              $(this).next('.less-link').show();
-              $(this).prev('.truncate-field').css('height', 'auto');
-              notifyTruncateChange(self);
-            });
-
-            self.nextAll('.less-link').first().click(function(event) {
-              $(this).hide();
-              $(this).prev('.more-link').show();
-              $(this).prevAll('.truncate-field').first().css('height', truncation[index]-1+'px');
-              notifyTruncateChange(self);
-            });
-            self.addClass('truncated');
-          }
-          notifyTruncateChange(self);
+        if (typeof holder === 'undefined') {
+            holder = $(document);
         }
-        self.trigger('truncate-done', [self]);
-      });
+
+        var notifyTruncateChange = function(field) {
+            field.find('.truncate-change span').each(function(ind, e) {
+                var visible = $(e).position().top <= field.height();
+                $(e).trigger('truncate-change', [visible]);
+            });
+        };
+
+        var truncation = [];
+        var rowHeight = [];
+        holder.find('.truncate-field').not('.truncate-done').each(function(index) {
+            var content = $(this).html();
+            var self = $(this);
+            self.addClass('truncate-done');
+
+            if (typeof(self.data('row-height')) !== 'undefined') {
+                rowHeight[index] = self.data('row-height');
+            } else {
+                // use first child as the height element if available
+                if (self.children().length > 0) {
+                    var heightElem = self.children().first();
+                    if (heightElem.is('div')) {
+                        rowHeight[index] = parseFloat(heightElem.height());
+                    } else {
+                        rowHeight[index] = parseFloat(heightElem.css('line-height').replace('px', ''));
+                    }
+                } else {
+                    rowHeight[index] = parseFloat(self.css('line-height').replace('px', ''));
+                }
+            }
+
+            var rowCount = 3;
+            if (self.data('rows')) {
+                rowCount = self.data('rows');
+            }
+
+            // get the line-height of first element to determine each text line height
+            truncation[index] = rowHeight[index] * rowCount;
+            // truncate only if there's more than one line to hide
+            if (self.height() > (truncation[index] + rowHeight[index] + 1)) {
+                self.css('height', truncation[index] - 1 + 'px');
+                if (self.hasClass('wide')) { // generate different truncate styles according to class
+                    self.after('<div class="more-link wide"><i class="fa fa-handle-open"></i></div><div class="less-link wide"> <i class="fa fa-handle-close"></i></div>');
+                } else {
+                    self.after('<div class="more-link">' + VuFind.translate('show_more') + ' <i class="fa fa-arrow-down"></i></div><div class="less-link">' + VuFind.translate('show_less') + ' <i class="fa fa-arrow-up"></i></div>');
+                }
+                $('.less-link').hide();
+
+                self.nextAll('.more-link').first().click(function(event) {
+                    $(this).hide();
+                    $(this).next('.less-link').show();
+                    $(this).prev('.truncate-field').css('height', 'auto');
+                    notifyTruncateChange(self);
+                });
+
+                self.nextAll('.less-link').first().click(function(event) {
+                    $(this).hide();
+                    $(this).prev('.more-link').show();
+                    $(this).prevAll('.truncate-field').first().css('height', truncation[index]-1+'px');
+                    notifyTruncateChange(self);
+                });
+                self.addClass('truncated');
+            }
+            notifyTruncateChange(self);
+            self.trigger('truncate-done', [self]);
+        });
     };
 
     var initTruncatedRecordImageNavi = function() {
