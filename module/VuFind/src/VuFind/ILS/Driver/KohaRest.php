@@ -441,6 +441,35 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $renewable = $renewStatusCode == 200
                 && !empty($renewabilityResult['renewable']);
+            $message = '';
+            if (!$renewable && isset($renewabilityResult['error'])) {
+                switch ($renewabilityResult['error']) {
+                case 'too_soon':
+                    if ($entry['renewals'] > 0) {
+                        $message = 'Renewed today';
+                    } else {
+                        $message = 'Borrowed today';
+                    }
+                    break;
+                case 'onsite_checkout':
+                    $message = 'Copy has special circulation';
+                    break;
+                case 'on_reserve':
+                    $message = 'renew_item_requested';
+                    break;
+                case 'too_many':
+                    $message = 'renew_item_limit';
+                    break;
+                case 'restriction':
+                    $message = 'Borrowing Block Message';
+                    break;
+                case 'overdue':
+                    $message = 'renew_item_overdue';
+                    break;
+                default:
+                    $message = 'renew_denied';
+                }
+            }
 
             $transaction = [
                 'id' => isset($item['biblionumber']) ? $item['biblionumber'] : '',
@@ -453,7 +482,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 ),
                 'dueStatus' => $dueStatus,
                 'renew' => $entry['renewals'],
-                'renewable' => $renewable
+                'renewable' => $renewable,
+                'message' => $message
             ];
 
             $transactions[] = $transaction;
