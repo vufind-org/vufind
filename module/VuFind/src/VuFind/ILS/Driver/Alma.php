@@ -179,7 +179,7 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
         $client->setMethod(\Zend\Http\Request::METHOD_POST);
         $client->setParameterPost(['op' => 'auth', 'password' => trim($password)]);
         $response = $client->send();
-        // TODO: DO NOT FAKE SUCCESS
+        // TODO: Test once we have POST access
         if (true || $response->isSuccess()) {
             return [
                 'cat_username' => trim($barcode),
@@ -222,5 +222,39 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
             }
         }
         return $profile;
+    }
+
+    /**
+     * Get Patron Fines
+     *
+     * This is responsible for retrieving all fines by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed        Array of the patron's fines on success.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getMyFines($patron)
+    {
+        $session = $this->getSession();
+        if (true || !isset($session->fines)) {
+            $xml = $this->makeRequest(
+                '/users/' . $patron['cat_username'] . '/fees'
+            );
+            $fineList = [];
+            for ($i = 0; $i < count($xml->fees); $i++) {
+                $fineList[] = [
+                    "amount"   => $xml->fees[$i]->original_amount,
+                    "balance"  => $xml->fees[$i]->balance,
+                    "checkout" => $this->dateConverter->convertToDisplayDate(
+                        'U', $checkout
+                    ),
+                    "fine"     => $xml->fees[$i]->type['desc']
+                ];
+            }
+            $session->fines = $fineList;
+        }
+        return $session->fines;
     }
 }
