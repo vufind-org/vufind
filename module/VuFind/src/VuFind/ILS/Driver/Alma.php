@@ -81,12 +81,16 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @return \SimpleXMLElement
      */
-    protected function makeRequest($path)
+    protected function makeRequest($path, $params = [])
     {
         // TODO: Support requests of different methods
+        if (!isset($params['apiKey'])) {
+            $params['apiKey'] = $this->apiKey;
+        }
         $client = $this->httpService->createClient(
-            $this->baseUrl . $path . '?apiKey=' . urlencode($this->apiKey)
+            $this->baseUrl . $path . '?apiKey=' . urlencode()
         );
+        $client->setParameterGet($params);
         $result = $client->send();
         if ($result->isSuccess()) {
             return simplexml_load_string($result->getBody());
@@ -268,7 +272,8 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyHolds($patron)
     {
         $xml = $this->makeRequest(
-            '/users/' . $patron['cat_username'] . '/requests'
+            '/users/' . $patron['cat_username'] . '/requests',
+            ['request_type' => 'HOLD']
         );
         $holdList = [];
         for ($i = 0; $i < count($xml->user_requests); $i++) {
@@ -284,6 +289,7 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
                     && $request->request_status !== 'NOT_STARTED',
                 'title' => $request->title,
                 /*
+                // VuFind keys
                 'available'         => $request->,
                 'canceled'          => $request->,
                 'institution_dbkey' => $request->,
@@ -293,7 +299,7 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
                 'reqnum'            => $request->,
                 'requestGroup'      => $request->,
                 'source'            => $request->,
-
+                // Alma keys
                 "author": null,
                 "comment": null,
                 "desc": "Book"
@@ -315,8 +321,85 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
         return $holdList;
     }
 
-    /*
-            $currentItem = [
+    /**
+     * Get Patron Storage Retrieval Requests
+     *
+     * This is responsible for retrieving all call slips by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed        Array of the patron's holds
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getMyStorageRetrievalRequests($patron)
+    {
+        $xml = $this->makeRequest(
+            '/users/' . $patron['cat_username'] . '/requests',
+            ['request_type' => 'MOVE']
+        );
+        $holdList = [];
+        for ($i = 0; $i < count($xml->user_requests); $i++) {
+            $request = $xml->user_requests[$i];
+            if (
+                !isset($request->item_policy)
+                || $request->item_policy !== 'Archive'
+            ) {
+                continue;
             }
-            */
+            $holdList[] = [
+                'create' => $request->request_date,
+                'expire' => $request->last_interest_date,
+                'id' => $request->request_id,
+                'in_transit' => $request->request_status !== 'IN_PROCESS',
+                'item_id' => $request->mms_id,
+                'location' => $request->pickup_location,
+                'processed' => $request->item_policy === 'InterlibraryLoan'
+                    && $request->request_status !== 'NOT_STARTED',
+                'title' => $request->title,
+            ];
+        }
+        return $holdList;
+    }
+
+    /**
+     * Get Patron ILL Requests
+     *
+     * This is responsible for retrieving all ILL requests by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed        Array of the patron's ILL requests
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getMyILLRequests($patron)
+    {
+        $xml = $this->makeRequest(
+            '/users/' . $patron['cat_username'] . '/requests',
+            ['request_type' => 'MOVE']
+        );
+        $holdList = [];
+        for ($i = 0; $i < count($xml->user_requests); $i++) {
+            $request = $xml->user_requests[$i];
+            if (
+                !isset($request->item_policy)
+                || $request->item_policy !== 'InterlibraryLoan'
+            ) {
+                continue;
+            }
+            $holdList[] = [
+                'create' => $request->request_date,
+                'expire' => $request->last_interest_date,
+                'id' => $request->request_id,
+                'in_transit' => $request->request_status !== 'IN_PROCESS',
+                'item_id' => $request->mms_id,
+                'location' => $request->pickup_location,
+                'processed' => $request->item_policy === 'InterlibraryLoan'
+                    && $request->request_status !== 'NOT_STARTED',
+                'title' => $request->title,
+            ];
+        }
+        return $holdList;
+    }
 }
