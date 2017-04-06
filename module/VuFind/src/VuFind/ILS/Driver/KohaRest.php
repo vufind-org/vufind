@@ -410,7 +410,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
         $transactions = [];
         foreach ($result as $entry) {
-            list($renewStatusCode) = $this->makeRequest(
+            list($renewStatusCode, $renewabilityResult) = $this->makeRequest(
                 ['v1', 'checkouts', $entry['issue_id'], 'renewability'],
                 false,
                 'GET',
@@ -418,12 +418,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 true
             );
             $item = $this->getItem($entry['itemnumber']);
-            $transaction['volume'] = isset($item['enumchron'])
+            $volume = isset($item['enumchron'])
                 ? $item['enumchron'] : '';
+            $title = '';
             if (!empty($item['biblionumber'])) {
                 $bib = $this->getBibRecord($item['biblionumber']);
                 if (!empty($bib['title'])) {
-                    $transaction['title'] = $bib['title'];
+                    // TODO: use this when the full title is available
+                    // $title = $bib['title'];
                 }
             }
 
@@ -437,17 +439,21 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     $dueStatus = 'due';
                 }
             }
+            $renewable = $renewStatusCode == 200
+                && !empty($renewabilityResult['renewable']);
 
             $transaction = [
                 'id' => isset($item['biblionumber']) ? $item['biblionumber'] : '',
                 'checkout_id' => $entry['issue_id'],
                 'item_id' => $entry['itemnumber'],
+                'title' => $title,
+                'volume' => $volume,
                 'duedate' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d\TH:i:sP', $entry['date_due']
                 ),
                 'dueStatus' => $dueStatus,
                 'renew' => $entry['renewals'],
-                'renewable' => $renewStatusCode != 403
+                'renewable' => $renewable
             ];
 
             $transactions[] = $transaction;
