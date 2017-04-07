@@ -1,4 +1,4 @@
-<?
+<?php
   $this->headScript()->appendFile("vendor/d3.js");
 
   $visualFacetSet = $this->recommend->getPivotFacetSet();
@@ -28,9 +28,9 @@
   }
 ?>
 
-<? if (isset($visualFacetSet)): ?>
+<?php if (isset($visualFacetSet)): ?>
   <script type="text/javascript">
-  <? $pivotdata = json_encode($visualFacetSet);
+  <?php $pivotdata = json_encode($visualFacetSet);
   echo "var pivotdata = " . $pivotdata . ";"; ?>
   jQuery(document).ready(function(data) {
   if (!d3.select("#visualResults").empty()) {
@@ -233,4 +233,4 @@ function settitle() {
 
 </script>
 
-<? endif; ?>
+<?php endif; ?>

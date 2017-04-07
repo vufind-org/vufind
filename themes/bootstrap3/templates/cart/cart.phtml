@@ -1,4 +1,4 @@
-<?
+<?php
   // Set page title.
   $this->headTitle($this->translate('Book Bag'));
 
@@ -9,7 +9,7 @@
 <?=$this->flashmessages()?>
 <form class="form-inline" action="<?=$this->url('cart-processor')?>" method="post"  name="cartForm" data-lightbox-onsubmit="cartFormHandler">
   <input type="hidden" id="dropdown_value"/>
-  <? if (!$this->cart()->isEmpty()): ?>
+  <?php if (!$this->cart()->isEmpty()): ?>
     <div class="cart-controls clearfix">
       <div class="checkbox pull-left flip">
         <label>
@@ -17,22 +17,22 @@
           <?=$this->transEsc('select_page')?>
         </label>
       </div>
-      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
         <button type="submit" class="btn btn-default" name="saveCart" title="<?=$this->transEsc('bookbag_save')?>" value="1">
           <i class="fa fa-save" aria-hidden="true"></i>
           <?=$this->transEsc('Save')?>
         </button>
-      <? endif; ?>
+      <?php endif; ?>
       <button type="submit" class="btn btn-default" name="email" title="<?=$this->transEsc('bookbag_email')?>" value="1">
         <i class="fa fa-envelope-o" aria-hidden="true"></i>
         <?=$this->transEsc('Email')?>
       </button>
-      <? $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
+      <?php $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
         <button type="submit" class="btn btn-default" name="export" title="<?=$this->transEsc('bookbag_export')?>" value="1">
           <i class="fa fa-list-alt" aria-hidden="true"></i>
           <?=$this->transEsc('Export')?>
         </button>
-      <? endif; ?>
+      <?php endif; ?>
       <button type="submit" class="btn btn-default dropdown-toggle" name="print" title="<?=$this->transEsc('print_selected')?>" value="1">
         <i class="fa fa-printer" aria-hidden="true"></i>
         <?=$this->transEsc('Print')?>
@@ -58,11 +58,11 @@
         </ul>
       </div>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
   <?=$this->render('cart/contents.phtml')?>
 </form>
 
-<?
+<?php
   $script = <<<JS
   function submitFormWithButton(link, name) {
     $('#dropdown_value').attr('name', name).val(1);

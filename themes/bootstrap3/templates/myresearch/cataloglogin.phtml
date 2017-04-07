@@ -1,4 +1,4 @@
-<?
+<?php
     // Set up page title:
     $this->headTitle($this->translate('Login'));
 
@@ -8,25 +8,25 @@
     // Convenience variable:
     $offlineMode = $this->ils()->getOfflineMode();
 ?>
-<? if ($offlineMode == "ils-offline"): ?>
+<?php if ($offlineMode == "ils-offline"): ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
-<? else: ?>
+<?php else: ?>
   <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
   <?=$this->flashmessages()?>
   <p><?=$this->transEsc('cat_establish_account')?></p>
   <form method="post" action="<?=$this->serverUrl(true)?>" class="form-horizontal">
-    <? if ($this->targets !== null): ?>
+    <?php if ($this->targets !== null): ?>
     <div class="form-group">
       <label class="col-sm-2 control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
       <div class="col-sm-10">
         <select id="login_target" name="target" class="form-control">
-        <? foreach ($this->targets as $target): ?>
+        <?php foreach ($this->targets as $target): ?>
           <option value="<?=$this->escapeHtmlAttr($target)?>"><?=$this->transEsc("source_$target", null, $target)?></option>
-        <? endforeach; ?>
+        <?php endforeach; ?>
         </select>
       </div>
     </div>
-    <? endif; ?>
+    <?php endif; ?>
     <div class="form-group">
       <label class="col-sm-2 control-label" for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
       <div class="col-sm-10">
@@ -45,4 +45,4 @@
       </div>
     </div>
   </form>
-<? endif; ?>
+<?php endif; ?>

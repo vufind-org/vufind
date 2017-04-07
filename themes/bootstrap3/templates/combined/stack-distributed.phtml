@@ -1,20 +1,20 @@
 <div class="row">
-  <? $span = floor(12/$columns); ?>
-  <? $sectionCount = count($this->combinedResults); ?>
-  <? $keys = []; ?>
-  <? $searches = []; ?>
-  <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
-    <? $keys[] = $searchClassId; ?>
-    <? $searches[] = $currentSearch; ?>
-  <? endforeach; ?>
-  <? for ($column=0;$column<$columns;$column++): ?>
-    <? $columnIndex = $column; ?>
+  <?php $span = floor(12/$columns); ?>
+  <?php $sectionCount = count($this->combinedResults); ?>
+  <?php $keys = []; ?>
+  <?php $searches = []; ?>
+  <?php foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
+    <?php $keys[] = $searchClassId; ?>
+    <?php $searches[] = $currentSearch; ?>
+  <?php endforeach; ?>
+  <?php for ($column=0;$column<$columns;$column++): ?>
+    <?php $columnIndex = $column; ?>
     <div class="col-sm-<?=$span ?> combined-list">
-      <? while ($columnIndex < $sectionCount): ?>
-        <? $searchClassId = $keys[$columnIndex]; ?>
-        <? $currentSearch = $searches[$columnIndex]; ?>
-        <? if ((!isset($currentSearch['ajax']) || !$currentSearch['ajax']) && isset($currentSearch['hide_if_empty']) && $currentSearch['hide_if_empty'] && $currentSearch['view']->results->getResultTotal() == 0) { $columnIndex += $columns; continue; } ?>
-          <?
+      <?php while ($columnIndex < $sectionCount): ?>
+        <?php $searchClassId = $keys[$columnIndex]; ?>
+        <?php $currentSearch = $searches[$columnIndex]; ?>
+        <?php if ((!isset($currentSearch['ajax']) || !$currentSearch['ajax']) && isset($currentSearch['hide_if_empty']) && $currentSearch['hide_if_empty'] && $currentSearch['view']->results->getResultTotal() == 0) { $columnIndex += $columns; continue; } ?>
+          <?php
             $viewParams = ['searchClassId' => $searchClassId, 'currentSearch' => $currentSearch];
             // Enable cart if appropriate:
             $viewParams['showCartControls'] = $this->supportsCartOptions[$columnIndex] && $this->showCartControls;
@@ -22,11 +22,11 @@
             $viewParams['showBulkOptions'] = $this->supportsCartOptions[$columnIndex] && $this->showBulkOptions;
           ?>
           <div id="<?=$this->escapeHtmlAttr($currentSearch['domId'])?>">
-            <? $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' : 'list'; ?>
+            <?php $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' : 'list'; ?>
             <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $viewParams)?>
           </div>
-        <? $columnIndex += $columns ?>
-      <? endwhile; ?>
+        <?php $columnIndex += $columns ?>
+      <?php endwhile; ?>
     </div>
-  <? endfor; ?>
+  <?php endfor; ?>
 </div>

@@ -1,4 +1,4 @@
-<?
+<?php
 // A driver-specific template may pass in format overrides; check for these before going to the driver itself:
 $formats = isset($this->overrideFormats) ? $this->overrideFormats : $this->driver->tryMethod('getFormats');
 if (is_array($formats)) {

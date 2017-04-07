@@ -1,4 +1,4 @@
-<?
+<?php
   // Set up page title:
   $pageTitle = empty($this->card->id) ? 'Add a Library Card' : "Edit Library Card";
   $this->headTitle($this->translate($pageTitle));
@@ -21,18 +21,18 @@
       <input id="card_name" class="form-control" type="text" name="card_name" value="<?=$this->escapeHtmlAttr($this->cardName)?>"/>
     </div>
   </div>
-  <? if ($this->targets !== null): ?>
+  <?php if ($this->targets !== null): ?>
   <div class="form-group">
     <label class="col-sm-3 control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
     <div class="col-sm-9">
       <select id="login_target" name="target" class="form-control">
-      <? foreach ($this->targets as $target): ?>
+      <?php foreach ($this->targets as $target): ?>
         <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->target ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
-      <? endforeach; ?>
+      <?php endforeach; ?>
       </select>
     </div>
   </div>
-  <? endif; ?>
+  <?php endif; ?>
   <div class="form-group">
     <label class="col-sm-3 control-label" for="login_username"><?=$this->transEsc('Username')?>:</label>
     <div class="col-sm-9">

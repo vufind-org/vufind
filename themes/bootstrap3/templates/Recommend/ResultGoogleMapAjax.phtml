@@ -1,4 +1,4 @@
-<?
+<?php
   $searchParams = $this->recommend->getSearchParams();
 
   $this->headScript()->appendFile('https://maps.googleapis.com/maps/api/js?key=' . urlencode($this->recommend->getGoogleMapApiKey()) . '&sensor=false&language='.$this->layout()->userLang);

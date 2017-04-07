@@ -1,45 +1,45 @@
-<? $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled'; ?>
+<?php $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled'; ?>
 <table class="table table-striped">
   <tr>
     <th width="20%"><?=$this->transEsc("history_time")?></th>
     <th><?=$this->transEsc("history_search")?></th>
     <th><?=$this->transEsc("history_limits")?></th>
     <th><?=$this->transEsc("history_results")?></th>
-    <? if ($saveSupported): ?><th><?=$this->transEsc($this->showSaved ? "history_delete" : "history_save")?></th><? endif; ?>
+    <?php if ($saveSupported): ?><th><?=$this->transEsc($this->showSaved ? "history_delete" : "history_save")?></th><?php endif; ?>
   </tr>
-  <? foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
+  <?php foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
     <tr class="<?=$iteration % 2 == 1 ? 'even' : 'odd'?>row">
       <td><?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime("U", $info->getStartTime()))?></td>
       <td>
         <?=$this->historylabel($info->getParams()->getSearchClassId())?>
-        <a href="<?=$this->url($info->getOptions()->getSearchAction()) . $info->getUrlQuery()->getParams()?>"><?
+        <a href="<?=$this->url($info->getOptions()->getSearchAction()) . $info->getUrlQuery()->getParams()?>"><?php
           $desc = $info->getParams()->getDisplayQuery();
           echo empty($desc) ? $this->transEsc("history_empty_search") : $this->escapeHtml($desc);
         ?></a>
       </td>
       <td>
-        <? $info->getParams()->activateAllFacets(); foreach ($info->getParams()->getFilterList(true) as $field => $filters): ?>
-          <? foreach ($filters as $i => $filter): ?>
-            <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?>
+        <?php $info->getParams()->activateAllFacets(); foreach ($info->getParams()->getFilterList(true) as $field => $filters): ?>
+          <?php foreach ($filters as $i => $filter): ?>
+            <?php if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?>
             <strong><?=$this->transEsc($field)?></strong>: <?=$this->escapeHtml($filter['displayText'])?><br/>
-          <? endforeach; ?>
-        <? endforeach; ?>
-        <? foreach($info->getParams()->getCheckboxFacets() as $facet): ?>
-          <? if ($facet['selected']): ?>
+          <?php endforeach; ?>
+        <?php endforeach; ?>
+        <?php foreach($info->getParams()->getCheckboxFacets() as $facet): ?>
+          <?php if ($facet['selected']): ?>
             <strong><?=$this->transEsc($facet['desc'])?></strong><br/>
-          <? endif; ?>
-        <? endforeach; ?>
+          <?php endif; ?>
+        <?php endforeach; ?>
       </td>
       <td><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
-      <? if ($saveSupported): ?>
+      <?php if ($saveSupported): ?>
         <td>
-          <? if ($this->showSaved): ?>
+          <?php if ($this->showSaved): ?>
             <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_delete_link")?></a>
-          <? else: ?>
+          <?php else: ?>
             <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-save" aria-hidden="true"></i> <?=$this->transEsc("history_save_link")?></a>
-          <? endif; ?>
+          <?php endif; ?>
         </td>
-      <? endif; ?>
+      <?php endif; ?>
     </tr>
-  <? endforeach; ?>
+  <?php endforeach; ?>
 </table>

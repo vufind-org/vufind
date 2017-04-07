@@ -1,26 +1,26 @@
-<?
+<?php
   // TODO: This file needs love
   $topFacetSet = $this->recommend->getTopFacetSet();
   $topFacetSettings = $this->recommend->getTopFacetSettings();
   $results = $this->recommend->getResults();
 ?>
-<? if (isset($topFacetSet)): ?>
-  <? $row=0; foreach($topFacetSet as $title => $cluster): ?>
-    <? $moreClass = ' NarrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
-    <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
+<?php if (isset($topFacetSet)): ?>
+  <?php $row=0; foreach($topFacetSet as $title => $cluster): ?>
+    <?php $moreClass = ' NarrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
+    <?php $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <strong><?=$this->transEsc($cluster['label'])?></strong><?=$this->transEsc("top_facet_suffix") ?>
     <div class="row top-row">
-    <? $iter=1;$corner=$topFacetSettings['rows']*$topFacetSettings['cols']; ?>
-    <? foreach($cluster['list'] as $thisFacet): ?>
-      <? /* More link */ ?>
-      <? if ($iter == $corner+1): ?>
+    <?php $iter=1;$corner=$topFacetSettings['rows']*$topFacetSettings['cols']; ?>
+    <?php foreach($cluster['list'] as $thisFacet): ?>
+      <?php /* More link */ ?>
+      <?php if ($iter == $corner+1): ?>
         </div><div id="more-NarrowGroupHidden_<?=$this->escapeHtml($title)?>" class="row top-row">
           <span class="col-sm-12 narrow-toggle"><a href="#" onclick="moreFacets('NarrowGroupHidden_<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('more') ?> ...</a></span>
         </div><div class="row top-row <?=$moreClass ?>">
-      <? endif; ?>
-      <? /* Columns */ ?>
-      <span class="col-sm-<?=floor(12/$topFacetSettings['cols'])?><? if ($iter == $corner+1) echo $moreClass ?>">
-        <? if ($thisFacet['isApplied']):
+      <?php endif; ?>
+      <?php /* Columns */ ?>
+      <span class="col-sm-<?=floor(12/$topFacetSettings['cols'])?><?php if ($iter == $corner+1) echo $moreClass ?>">
+        <?php if ($thisFacet['isApplied']):
           if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
             $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($thisFacet['value'], '');
           } else {
@@ -29,22 +29,22 @@
           <a href="<?=$removeLink ?>" class="applied">
             <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check" aria-hidden="true"></i>
           </a>
-        <? else: ?>
+        <?php else: ?>
           <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?>
-          <? if ($allowExclude): ?>
+          <?php if ($allowExclude): ?>
             <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><i class="fa fa-times" aria-hidden="true"></i></a>
-          <? endif; ?>
+          <?php endif; ?>
           </span>
-        <? endif; ?>
+        <?php endif; ?>
       </span>
-      <? /* Close rows */ ?>
-      <? if ($iter%$topFacetSettings['cols'] == 0 && $iter > 0): ?></div><div class="row top-row<? if(++$row > $topFacetSettings['rows']) echo $moreClass ?>"><? endif; ?>
-      <? /* Less link */ ?>
-      <? if (count($cluster['list']) > $corner && $iter == count($cluster['list'])): ?>
+      <?php /* Close rows */ ?>
+      <?php if ($iter%$topFacetSettings['cols'] == 0 && $iter > 0): ?></div><div class="row top-row<?php if(++$row > $topFacetSettings['rows']) echo $moreClass ?>"><?php endif; ?>
+      <?php /* Less link */ ?>
+      <?php if (count($cluster['list']) > $corner && $iter == count($cluster['list'])): ?>
         <a class="col-sm-12 narrow-toggle" href="#" onclick="lessFacets('NarrowGroupHidden_<?=$title ?>'); return false;"><?=$this->transEsc('less') ?> ...</a>
-      <? endif; ?>
-      <? $iter++; ?>
-    <? endforeach; ?>
+      <?php endif; ?>
+      <?php $iter++; ?>
+    <?php endforeach; ?>
     </div>
-  <? endforeach; ?>
-<? endif; ?>
+  <?php endforeach; ?>
+<?php endif; ?>

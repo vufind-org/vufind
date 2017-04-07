@@ -1,4 +1,4 @@
-<?
+<?php
   // Load the EDS-specific advanced search controls and inject them into the
   // standard advanced search layout:
   $this->extraAdvancedControls = $this->render('search/advanced/eds.phtml');
@@ -10,15 +10,15 @@
   <div class="group well clearfix">
     <input type="hidden" name="join" value="AND"/>
     <input type="hidden" name="bool0[]" value="AND"/>
-    <? for ($search=0;$search<3;$search++): ?>
-      <? if ($search == 0): ?>
+    <?php for ($search=0;$search<3;$search++): ?>
+      <?php if ($search == 0): ?>
         <div id="new_search_template">
-      <? endif; ?>
+      <?php endif; ?>
       <div class="search row">
         <div class="col-sm-3">
           <input type="hidden" value="AND" class="first-op"/>
-          <label class="help-block<? if ($search > 0): ?> hidden<?endif;?>"><?=$this->transEsc("adv_search_label")?>:</label>
-          <select id="search_op0_<?=$search ?>" name="op0[]" class="op col-sm-9 form-control<? if ($search == 0): ?> hidden<?endif;?>">
+          <label class="help-block<?php if ($search > 0): ?> hidden<?endif;?>"><?=$this->transEsc("adv_search_label")?>:</label>
+          <select id="search_op0_<?=$search ?>" name="op0[]" class="op col-sm-9 form-control<?php if ($search == 0): ?> hidden<?endif;?>">
             <option value="AND"><?=$this->transEsc("AND")?></option>
             <option value="OR"><?=$this->transEsc("OR")?></option>
             <option value="NOT"><?=$this->transEsc("NOT")?></option>
@@ -32,9 +32,9 @@
             <span class="col-sm-1 help-block hidden-xs"><?=$this->transEsc("in")?></span>
             <div class="col-sm-4 middle">
               <select id="search_type0_<?=$search ?>" name="type0[]" class="type form-control">
-                <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+                <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                   <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
-                <? endforeach; ?>
+                <?php endforeach; ?>
               </select>
             </div>
             <div class="close">
@@ -44,14 +44,14 @@
         </div>
         <br class="hidden-lg"/>
       </div>
-      <? if ($search == 0): ?>
+      <?php if ($search == 0): ?>
         </div>
-      <? endif; ?>
-    <? endfor; ?>
+      <?php endif; ?>
+    <?php endfor; ?>
     <i class="fa fa-plus-circle search_place_holder hidden" aria-hidden="true"></i> <a href="#" class="add_search_link hidden"><?=$this->transEsc("add_search")?></a>
   </div>
 </div>
-<?
+<?php
   $this->formOverride = ob_get_contents();
   ob_end_clean();
 

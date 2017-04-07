@@ -1,18 +1,18 @@
-<? // This template is a JSON fragment of a complete Swagger specification ?>
-<? ob_start(); ?>
+<?php // This template is a JSON fragment of a complete Swagger specification ?>
+<?php ob_start(); ?>
                     {
                         "name": "field[]",
                         "in": "query",
-                        "description": "Fields to return.<? if ($this->defaultFields): ?> If not specified, a set of default fields is returned.\n\nThe default fields are:\n- <?=implode('\n- ', array_map('addslashes', $this->defaultFields)) ?><? endif; ?>",
+                        "description": "Fields to return.<?php if ($this->defaultFields): ?> If not specified, a set of default fields is returned.\n\nThe default fields are:\n- <?=implode('\n- ', array_map('addslashes', $this->defaultFields)) ?><?php endif; ?>",
                         "type": "array",
                         "collectionFormat": "multi",
                         "items": {
                             "type": "string"
                         }
                     }
-<? $field = ob_get_contents(); ?>
-<? ob_end_clean(); ?>
-<? ob_start(); ?>
+<?php $field = ob_get_contents(); ?>
+<?php ob_end_clean(); ?>
+<?php ob_start(); ?>
                     {
                         "name": "prettyPrint",
                         "in": "query",
@@ -34,8 +34,8 @@
                         "description": "A callback that can be used for JSONP.",
                         "type": "string"
                     }
-<? $commonFields = ob_get_contents(); ?>
-<? ob_end_clean(); ?>
+<?php $commonFields = ob_get_contents(); ?>
+<?php ob_end_clean(); ?>
 {
     "paths": {
         "/record": {
@@ -117,7 +117,7 @@
                     {
                         "name": "facet[]",
                         "in": "query",
-                        "description": "Fields to facet on. Repeat for every field. <? if ($this->facetConfig): ?>At least the following fields are available for faceting (there may be additional facetable index fields not published here):\n- <?=implode('\n- ', array_map('addslashes', array_keys($this->facetConfig))) ?><? endif; ?>",
+                        "description": "Fields to facet on. Repeat for every field. <?php if ($this->facetConfig): ?>At least the following fields are available for faceting (there may be additional facetable index fields not published here):\n- <?=implode('\n- ', array_map('addslashes', array_keys($this->facetConfig))) ?><?php endif; ?>",
                         "type": "array",
                         "collectionFormat": "multi",
                         "items": {
