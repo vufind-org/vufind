@@ -6,6 +6,7 @@ $source = $driver->tryMethod('getDataSource');
 $locations = false;
 $holdings = $this->statusItems;
 $summary = array_pop($holdings);
+$onlyUnknownStatuses = true;
 if (isset($summary['total'])) {
   $itemsTotal = $summary['total'];
   $availableTotal = $summary['available'];
@@ -21,6 +22,10 @@ if (isset($summary['total'])) {
 foreach ($holdings as &$holding) {
   $holding['location']
      = $this->transEsc('location_' . $holding['location'], [], $holding['location']);
+
+  if (!empty($holding['availability']) || empty($holding['use_unknown_message'])) {
+    $onlyUnknownStatuses = false;
+  }
 }
 $this->statusItems = $holdings;
 
@@ -200,7 +205,7 @@ foreach ($this->statusItems as $item):
       $classes = ['ok', 'success'];
     }
     if (!$classes && !empty($item['use_unknown_message']) && $item['use_unknown_message']) {
-      $classes = ['status-unknown', 'warning'];
+      $classes = $onlyUnknownStatuses ? ['status-unknown-no-icon warning'] : ['status-unknown', 'warning'];
     }
     if (!$classes) {
       $classes = ['remove', 'error'];
