@@ -75,7 +75,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Make an HTTP request against Alma
      *
-     * @param string $path Path to retrieve from API (excluding base URL/API key)
+     * @param string $path   Path to retrieve from API (excluding base URL/API key)
+     * @param string $params Additional GET params
      *
      * @return \SimpleXMLElement
      */
@@ -339,8 +340,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $holdList = [];
         for ($i = 0; $i < count($xml->user_requests); $i++) {
             $request = $xml->user_requests[$i];
-            if (
-                !isset($request->item_policy)
+            if (!isset($request->item_policy)
                 || $request->item_policy !== 'Archive'
             ) {
                 continue;
@@ -380,8 +380,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $holdList = [];
         for ($i = 0; $i < count($xml->user_requests); $i++) {
             $request = $xml->user_requests[$i];
-            if (
-                !isset($request->item_policy)
+            if (!isset($request->item_policy)
                 || $request->item_policy !== 'InterlibraryLoan'
             ) {
                 continue;
