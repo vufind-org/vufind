@@ -36,7 +36,7 @@ namespace VuFind\ILS\Driver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
+class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
 
@@ -68,8 +68,6 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
         }
-        // TODO: remove parent line when we unhook from demo driver
-        parent::init();
         $this->baseUrl = $this->config['Catalog']['apiBaseUrl'];
         $this->apiKey = $this->config['Catalog']['apiKey'];
     }
@@ -401,5 +399,57 @@ class Alma extends Demo implements \VuFindHttp\HttpServiceAwareInterface
             ];
         }
         return $holdList;
+    }
+
+    /**
+     * Get Status
+     *
+     * This is responsible for retrieving the status information of a certain
+     * record.
+     *
+     * @param string $id The record id to retrieve the holdings for
+     *
+     * @return mixed     On success, an associative array with the following keys:
+     * id, availability (boolean), status, location, reserve, callnumber.
+     */
+    public function getStatus($id)
+    {
+        return $this->getHolding($id);
+    }
+
+    /**
+     * Get Statuses
+     *
+     * This is responsible for retrieving the status information for a
+     * collection of records.
+     *
+     * @param array $ids The array of record ids to retrieve the status for
+     *
+     * @return array An array of getStatus() return values on success.
+     */
+    public function getStatuses($ids)
+    {
+        return array_map([$this, 'getStatus'], $ids);
+    }
+
+    /**
+     * Get Purchase History
+     *
+     * This is responsible for retrieving the acquisitions history data for the
+     * specific record (usually recently received issues of a serial).
+     *
+     * @param string $id The record id to retrieve the info for
+     *
+     * @return array     An array with the acquisitions data on success.
+     */
+    public function getPurchaseHistory($id)
+    {
+        $this->checkIntermittentFailure();
+        $issues = rand(0, 3);
+        $retval = [];
+        for ($i = 0; $i < $issues; $i++) {
+            $retval[] = ['issue' => 'issue ' . ($i + 1)];
+        }
+        return $retval;
     }
 }
