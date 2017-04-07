@@ -241,7 +241,7 @@ class Cart
     /**
      * Process parameters and return the cart content.
      *
-     * @return array $records The cart content
+     * @return bool
      */
     public function isActiveInSearch()
     {
