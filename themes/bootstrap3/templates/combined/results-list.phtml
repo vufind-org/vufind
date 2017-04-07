@@ -30,6 +30,7 @@
       <? endforeach; ?>
       <?
         $transParams = [
+          '%%lookfor%%' => $this->escapeHtml($lookfor),
           '%%start%%' => $this->localizedNumber($results->getStartRecord()),
           '%%end%%'   => $this->localizedNumber($results->getEndRecord()),
           '%%total%%' => $this->localizedNumber($recordTotal)
@@ -46,9 +47,9 @@
         <?=$view->overrideSearchHeading?>
       <? elseif ($params->getSearchType() == 'basic'): ?>
         <? if (!isset($this->skipTotalCount)): ?>
-          <? $showingResults = $this->translate('showing_results_of_for_html', $transParams); ?>
+          <?=$this->translate('showing_results_of_for_html', $transParams); ?>
         <? else: ?>
-          <? $showingResults = $this->translate('showing_results_for_html', $transParams); ?>
+          <?=$this->translate('showing_results_for_html', $transParams); ?>
         <? endif; ?>
       <? endif; ?>
       <? if ($qtime = $results->getQuerySpeed()): ?>
