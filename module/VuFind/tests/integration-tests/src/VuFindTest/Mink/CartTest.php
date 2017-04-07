@@ -665,7 +665,16 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         );
     }
 
-    protected function runConfigCombo($page, $combo) {
+    protected function assertVisible($combo, $elements, $name, $exp)
+    {
+        $message = $elements[$name]
+            ? $name . " should be hidden.\n" . print_r($combo, true)
+            : $name . " should be visible.\n" . print_r($combo, true);
+        $this->assertEquals($elements[$name], $exp, $message);
+    }
+
+    protected function runConfigCombo($page, $combo)
+    {
         $this->changeConfigs(['config' => ['Site' => $combo]]);
         $this->getMinkSession()->reload();
         $this->snooze();
@@ -676,17 +685,12 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
             'resultCartBtns'   => $page->find('css', '.result .btn-bookbag-toggle') !== null,
             'resultCheckbox'   => $page->find('css', '.result .checkbox-select-item') !== null,
         ];
-        // Make sure there are checkboxes when there is a toolbar visible
-        $this->assertEquals(
-            $page->find('css', '.checkbox-select-item') !== null,
-            $elements['bulkEmail']
-        );
         // Expected
-        $this->assertEquals($elements['headerBtn'], $combo['showBookBag']);
-        $this->assertEquals($elements['bulkEmail'], $combo['showBulkOptions']);
-        $this->assertEquals($elements['bulkUpdateCart'], $combo['showBookBag'] && $combo['showBulkOptions']);
-        $this->assertEquals($elements['resultCartBtns'], $combo['showBookBag'] && $combo['bookbagTogglesInSearch']);
-        $this->assertEquals($elements['resultCheckbox'], $elements['bulkEmail'] || $elements['bulkUpdateCart']);
+        $this->assertVisible($combo, $elements, 'headerBtn', $combo['showBookBag']);
+        $this->assertVisible($combo, $elements, 'bulkEmail', $combo['showBulkOptions'], $combo);
+        $this->assertVisible($combo, $elements, 'bulkUpdateCart', $combo['showBookBag'] && ($combo['showBulkOptions'] || !$combo['bookbagTogglesInSearch']));
+        $this->assertVisible($combo, $elements, 'resultCartBtns', $combo['showBookBag'] && $combo['bookbagTogglesInSearch']);
+        $this->assertVisible($combo, $elements, 'resultCheckbox', $elements['bulkEmail'] || $elements['bulkUpdateCart']);
         return $elements;
     }
 
