@@ -670,10 +670,11 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->getMinkSession()->reload();
         $this->snooze();
         $elements = [
+            'headerBtn'  => $page->find('css', '#cartItems') !== null,
             'bulkEmail'  => $page->find('css', '#ribbon-email') !== null,
-            'cartBtns'   => $page->find('css', '.result .btn-bookbag-toggle') !== null,
-            'cartItems'  => $page->find('css', '#cartItems') !== null,
-            'updateCart' => $page->find('css', '#updateCart') !== null,
+            'bulkUpdateCart' => $page->find('css', '#updateCart') !== null,
+            'resultCartBtns'   => $page->find('css', '.result .btn-bookbag-toggle') !== null,
+            'resultCheckbox'   => $page->find('css', '.result .checkbox-select-item') !== null,
         ];
         // Make sure there are checkboxes when there is a toolbar visible
         $this->assertEquals(
@@ -681,10 +682,11 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
             $elements['bulkEmail']
         );
         // Expected
+        $this->assertEquals($elements['headerBtn'], $combo['showBookBag']);
         $this->assertEquals($elements['bulkEmail'], $combo['showBulkOptions']);
-        $this->assertEquals($elements['cartBtns'], $combo['showBookBag'] && $combo['bookbagTogglesInSearch']);
-        $this->assertEquals($elements['cartItems'], $combo['showBookBag']);
-        $this->assertEquals($elements['updateCart'], $combo['showBookBag'] && $combo['showBulkOptions']);
+        $this->assertEquals($elements['bulkUpdateCart'], $combo['showBookBag'] && $combo['showBulkOptions']);
+        $this->assertEquals($elements['resultCartBtns'], $combo['showBookBag'] && $combo['bookbagTogglesInSearch']);
+        $this->assertEquals($elements['resultCheckbox'], $elements['bulkEmail'] || $elements['bulkUpdateCart']);
         return $elements;
     }
 
@@ -692,38 +694,38 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->getSearchResultsPage();
         $elements = $this->runConfigCombo($page, [
             'showBookBag' => true,
-            'bookbagTogglesInSearch' => false,
             'showBulkOptions' => false,
+            'bookbagTogglesInSearch' => false,
         ]);
         $elements = $this->runConfigCombo($page, [
             'showBookBag' => false,
-            'bookbagTogglesInSearch' => true,
             'showBulkOptions' => false,
+            'bookbagTogglesInSearch' => true,
         ]);
         $elements = $this->runConfigCombo($page, [
             'showBookBag' => false,
-            'bookbagTogglesInSearch' => false,
             'showBulkOptions' => true,
+            'bookbagTogglesInSearch' => false,
         ]);
         $elements = $this->runConfigCombo($page, [
             'showBookBag' => true,
-            'bookbagTogglesInSearch' => true,
             'showBulkOptions' => false,
+            'bookbagTogglesInSearch' => true,
         ]);
         $elements = $this->runConfigCombo($page, [
             'showBookBag' => true,
-            'bookbagTogglesInSearch' => false,
             'showBulkOptions' => true,
+            'bookbagTogglesInSearch' => false,
         ]);
         $elements = $this->runConfigCombo($page, [
             'showBookBag' => false,
-            'bookbagTogglesInSearch' => true,
             'showBulkOptions' => true,
+            'bookbagTogglesInSearch' => true,
         ]);
         $elements = $this->runConfigCombo($page, [
             'showBookBag' => true,
-            'bookbagTogglesInSearch' => true,
             'showBulkOptions' => true,
+            'bookbagTogglesInSearch' => true,
         ]);
     }
 
