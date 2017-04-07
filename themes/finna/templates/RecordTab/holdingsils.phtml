@@ -198,9 +198,6 @@
     }
 
     $additionalSummary = [];
-    if (!$branches && ($itemCount = count($holding['items']))) {
-      $additionalSummary[] = $this->translate('status_items_total_html', ['%%count%%' => $itemCount]);
-    }
     if ($requests) {
       $additionalSummary[] = $this->translate('status_requests_html', ['%%count%%' => $requests]);
     }

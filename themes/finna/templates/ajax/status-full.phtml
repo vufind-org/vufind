@@ -134,16 +134,13 @@ if ($groupBranches) {
     <div class="row">
       <div class="col-xs-12">
       <? if (!empty($availableTotal)): ?>
-        <i class="fa fa-ok"></i> <span><?=$this->translate('status_items_available_html', ['%%count%%' => $availableTotal])?></span>
-      <? elseif (isset($availableTotal)): ?>
-        <i class="fa fa-remove"></i> <span><?=$this->translate('status_items_not_available_html')?></span>
+        <span class="available-total">
+          <i class="fa fa-ok"></i> <span><?=$this->translate('status_items_available_html', ['%%count%%' => $availableTotal])?></span>
+        </span>
       <? endif; ?>
       <span class="info">
         <? if (!empty($reservationsTotal)): ?>
           <?=$this->translate('status_requests_html', ['%%count%%' => $reservationsTotal]);?>
-        <? endif; ?>
-        <? if (!empty($itemsTotal)): ?>
-          <?=$this->translate('status_items_total_html', ['%%count%%' => $itemsTotal]);?>
         <? endif; ?>
       </span>
       </div>
