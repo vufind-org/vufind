@@ -59,7 +59,7 @@
 
 <?=$this->record($this->driver)->getToolbar()?>
 
-<div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> row">
+<div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
