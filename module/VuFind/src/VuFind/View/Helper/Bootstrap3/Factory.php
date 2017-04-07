@@ -65,7 +65,7 @@ class Factory
     public static function getLayoutClass(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $left = !isset($config->Site->sidebarOnLeft)
+        $sidebarOnLeft = !isset($config->Site->sidebarOnLeft)
             ? false : $config->Site->sidebarOnLeft;
         $mirror = !isset($config->Site->mirrorSidebarInRTL)
             ? true : $config->Site->mirrorSidebarInRTL;
