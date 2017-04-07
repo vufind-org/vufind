@@ -61,6 +61,14 @@ img {max-width: 100%;}
   h2 { font-size: 20px; }
   h3 { font-size: 16px; }
 }
+@media (max-width: 530px) {
+  .label {
+    display: inline-block;
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
 
 /* --- Form Errors --- */
 .has-error {margin-bottom: 0;}
@@ -90,6 +98,15 @@ img {max-width: 100%;}
 .cart-controls .checkbox {
   line-height: 2.5em;
   padding-right: 1em;
+}
+
+/* --- Devtools --- */
+.translation-output {
+  width: 100%;
+  max-width: none;
+  font-family: @font-family-monospace;
+  font-size: 12px;
+  white-space: pre;
 }
 
 /* --- PubDateVis --- */

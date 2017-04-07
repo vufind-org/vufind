@@ -52,7 +52,7 @@ class Factory
      */
     public static function getApiController(ServiceManager $sm)
     {
-        $controller = new ApiController();
+        $controller = new ApiController($sm);
         $controller->addApi($sm->get('SearchApi'));
         return $controller;
     }
@@ -68,10 +68,9 @@ class Factory
     {
         $recordFields = $sm->getServiceLocator()
             ->get('VuFind\YamlReader')->get('SearchApiRecordFields.yaml');
-        $helperManager = $sm->getServiceLocator()->get('viewmanager')
-            ->getHelperManager();
+        $helperManager = $sm->getServiceLocator()->get('ViewHelperManager');
         $rf = new RecordFormatter($recordFields, $helperManager);
-        $controller = new SearchApiController($rf, new FacetFormatter());
+        $controller = new SearchApiController($sm, $rf, new FacetFormatter());
         return $controller;
     }
 }

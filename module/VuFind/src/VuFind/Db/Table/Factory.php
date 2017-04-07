@@ -42,6 +42,69 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Return row prototype object (null if unavailable)
+     *
+     * @param ServiceManager $sm   Service manager
+     * @param string         $name Name of row prototype to retrieve
+     *
+     * @return object
+     */
+    public static function getRowPrototype(ServiceManager $sm, $name)
+    {
+        if ($name) {
+            $rowManager = $sm->getServiceLocator()->get('VuFind\DbRowPluginManager');
+            return $rowManager->has($name) ? $rowManager->get($name) : null;
+        }
+        return null;
+    }
+
+    /**
+     * Construct a generic table object.
+     *
+     * @param string         $name    Name of table to construct (fully qualified
+     * class name, or else a class name within the current namespace)
+     * @param ServiceManager $sm      Service manager
+     * @param string         $rowName Name of custom row prototype object to
+     * retrieve (null for none).
+     * @param array          $args    Extra constructor arguments for table object
+     *
+     * @return object
+     */
+    public static function getGenericTable($name, ServiceManager $sm,
+        $rowName = null, $args = []
+    ) {
+        // Prepend the current namespace unless we receive a FQCN:
+        $class = (strpos($name, '\\') === false)
+            ? __NAMESPACE__ . '\\' . $name : $name;
+        if (!class_exists($class)) {
+            throw new \Exception('Cannot construct ' . $class);
+        }
+        $adapter = $sm->getServiceLocator()->get('VuFind\DbAdapter');
+        $config = $sm->getServiceLocator()->get('config');
+        return new $class(
+            $adapter, $sm, $config, static::getRowPrototype($sm, $rowName), ...$args
+        );
+    }
+
+    /**
+     * Default factory behavior.
+     *
+     * @param string $name Method name being called
+     * @param array  $args Method arguments
+     *
+     * @return object
+     */
+    public static function __callStatic($name, $args)
+    {
+        // Strip "get" off method name, and use the remainder as the table name;
+        // grab the first argument to pass through as the service manager.
+        $dbName = substr($name, 3);
+        return static::getGenericTable(
+            $dbName, array_shift($args), strtolower($dbName)
+        );
+    }
+
+    /**
      * Construct the Resource table.
      *
      * @param ServiceManager $sm Service manager.
@@ -50,22 +113,11 @@ class Factory
      */
     public static function getResource(ServiceManager $sm)
     {
-        return new Resource($sm->getServiceLocator()->get('VuFind\DateConverter'));
-    }
-
-    /**
-     * Construct the Tags table.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return User
-     */
-    public static function getTags(ServiceManager $sm)
-    {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $caseSensitive = isset($config->Social->case_sensitive_tags)
-            && $config->Social->case_sensitive_tags;
-        return new Tags($caseSensitive);
+        $converter = $sm->getServiceLocator()->get('VuFind\DateConverter');
+        $loader = $sm->getServiceLocator()->get('VuFind\RecordLoader');
+        return static::getGenericTable(
+            'Resource', $sm, 'resource', [$converter, $loader]
+        );
     }
 
     /**
@@ -80,7 +132,24 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $caseSensitive = isset($config->Social->case_sensitive_tags)
             && $config->Social->case_sensitive_tags;
-        return new ResourceTags($caseSensitive);
+        return static::getGenericTable(
+            'ResourceTags', $sm, 'resourcetags', [$caseSensitive]
+        );
+    }
+
+    /**
+     * Construct the Tags table.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return User
+     */
+    public static function getTags(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $caseSensitive = isset($config->Social->case_sensitive_tags)
+            && $config->Social->case_sensitive_tags;
+        return static::getGenericTable('Tags', $sm, 'tags', [$caseSensitive]);
     }
 
     /**
@@ -93,16 +162,14 @@ class Factory
     public static function getUser(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        // Use a special row class when we're in privacy mode:
         $privacy = isset($config->Authentication->privacy)
             && $config->Authentication->privacy;
-        $rowClass = 'VuFind\Db\Row\\' . ($privacy ? 'PrivateUser' : 'User');
         $session = null;
         if ($privacy) {
             $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
             $session = new \Zend\Session\Container('Account', $sessionManager);
         }
-        return new User($config, $rowClass, $session);
+        return static::getGenericTable('User', $sm, 'user', [$config, $session]);
     }
 
     /**
@@ -116,6 +183,6 @@ class Factory
     {
         $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
         $session = new \Zend\Session\Container('List', $sessionManager);
-        return new UserList($session);
+        return static::getGenericTable('UserList', $sm, 'userlist', [$session]);
     }
 }

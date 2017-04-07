@@ -27,6 +27,7 @@
  */
 namespace VuFind\Controller;
 
+use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Stdlib\ResponseInterface as Response;
 
 /**
@@ -42,11 +43,14 @@ class ShibbolethLogoutNotificationController extends AbstractBase
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         $this->accessPermission = 'access.api.ShibbolethLogoutNotification';
         $this->accessDeniedBehavior = 'exception';
+        parent::__construct($sm);
     }
 
     /**
@@ -102,7 +106,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
         if (empty($row)) {
             return;
         }
-        $sessionManager = $this->getServiceLocator()->get('VuFind\SessionManager');
+        $sessionManager = $this->serviceLocator->get('VuFind\SessionManager');
         $handler = $sessionManager->getSaveHandler();
         $handler->destroy($row['session_id']);
         return;

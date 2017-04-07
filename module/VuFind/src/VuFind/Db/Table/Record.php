@@ -30,6 +30,8 @@
  */
 namespace VuFind\Db\Table;
 
+use VuFind\Db\Row\RowGateway;
+use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Predicate\Expression;
 use Zend\Db\Sql\Where;
 
@@ -47,10 +49,17 @@ class Record extends Gateway
 {
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param string        $table   Name of database table to interface with
      */
-    public function __construct()
-    {
-        parent::__construct('record', 'VuFind\Db\Row\Record');
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj = null, $table = 'record'
+    ) {
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**
