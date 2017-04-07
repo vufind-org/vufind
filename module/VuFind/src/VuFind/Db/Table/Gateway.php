@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
+use VuFind\Db\Row\RowGateway;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\TableGateway\AbstractTableGateway;
 use Zend\Db\TableGateway\Feature;
@@ -51,15 +52,14 @@ class Gateway extends AbstractTableGateway
     /**
      * Constructor
      *
-     * @param Adapter       $adapter  Database adapter
-     * @param PluginManager $tm       Table manager
-     * @param array         $cfg      Zend Framework configuration
-     * @param string        $table    Name of database table to interface with
-     * @param string        $rowClass Name of class used to represent rows (null for
-     * default)
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg, $table,
-        $rowClass = null
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj, $table
     ) {
         $this->adapter = $adapter;
         $this->tableManager = $tm;
@@ -68,11 +68,9 @@ class Gateway extends AbstractTableGateway
         $this->initializeFeatures($cfg);
         $this->initialize();
 
-        if (null !== $rowClass) {
+        if (null !== $rowObj) {
             $resultSetPrototype = $this->getResultSetPrototype();
-            $resultSetPrototype->setArrayObjectPrototype(
-                $this->initializeRowPrototype($rowClass)
-            );
+            $resultSetPrototype->setArrayObjectPrototype($rowObj);
         }
     }
 
@@ -100,22 +98,6 @@ class Gateway extends AbstractTableGateway
                 );
             }
         }
-    }
-
-    /**
-     * Construct the prototype for rows.
-     *
-     * @param string $rowClass Name of row class to instantiate
-     *
-     * @return object
-     */
-    protected function initializeRowPrototype($rowClass)
-    {
-        $prototype = new $rowClass($this->getAdapter());
-        if ($prototype instanceof DbTableAwareInterface) {
-            $prototype->setDbTableManager($this->tableManager);
-        }
-        return $prototype;
     }
 
     /**

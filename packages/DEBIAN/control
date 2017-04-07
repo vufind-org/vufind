@@ -15,7 +15,6 @@ Depends: apache2,
          php5-intl | php-intl,
          php5-json | php-json,
          php5-ldap | php-ldap,
-         php5-mcrypt | php-mcrypt,
          php5-mysql | php-mysql,
          php5-xsl | php-xml
 Maintainer: VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>

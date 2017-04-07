@@ -26,6 +26,8 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
+use VuFind\Date\Converter as DateConverter;
+use VuFind\Db\Row\RowGateway;
 use VuFind\Record\Loader;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Expression;
@@ -44,7 +46,7 @@ class Resource extends Gateway
     /**
      * Date converter
      *
-     * @var \VuFind\Date\Converter
+     * @var DateConverter
      */
     protected $dateConverter;
 
@@ -58,20 +60,21 @@ class Resource extends Gateway
     /**
      * Constructor
      *
-     * @param Adapter                $adapter   Database adapter
-     * @param PluginManager          $tm        Table manager
-     * @param array                  $cfg       Zend Framework configuration
-     * @param \VuFind\Date\Converter $converter Date converter
-     * @param Loader                 $loader    Record loader
+     * @param Adapter       $adapter   Database adapter
+     * @param PluginManager $tm        Table manager
+     * @param array         $cfg       Zend Framework configuration
+     * @param RowGateway    $rowObj    Row prototype object (null for default)
+     * @param DateConverter $converter Date converter
+     * @param Loader        $loader    Record loader
+     * @param string        $table     Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        \VuFind\Date\Converter $converter, Loader $loader
+        RowGateway $rowObj, DateConverter $converter, Loader $loader,
+        $table = 'resource'
     ) {
         $this->dateConverter = $converter;
         $this->recordLoader = $loader;
-        parent::__construct(
-            $adapter, $tm, $cfg, 'resource', 'VuFind\Db\Row\Resource'
-        );
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**

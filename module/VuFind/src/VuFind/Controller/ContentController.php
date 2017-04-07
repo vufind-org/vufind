@@ -40,7 +40,7 @@ namespace VuFind\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ContentController extends \VuFind\Controller\AbstractBase
+class ContentController extends AbstractBase
 {
     /**
      * Default action if none provided
@@ -50,8 +50,8 @@ class ContentController extends \VuFind\Controller\AbstractBase
     public function contentAction()
     {
         $page = $this->params()->fromRoute('page');
-        $themeInfo = $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
-        $language = $this->getServiceLocator()->get('VuFind\Translator')
+        $themeInfo = $this->serviceLocator->get('VuFindTheme\ThemeInfo');
+        $language = $this->serviceLocator->get('VuFind\Translator')
             ->getLocale();
         $defaultLanguage = $this->getConfig()->Site->language;
 
