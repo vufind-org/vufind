@@ -1,5 +1,5 @@
-<? if (!empty($this->authors)): ?><?=$this->escapeHtml($this->authors)?>. <? endif; ?>
-&quot;<?=$this->title?><? if ($this->periodAfterTitle): ?>.<? endif ?>&quot; 
+<?php if (!empty($this->authors)): ?><?=$this->escapeHtml($this->authors)?>. <?php endif; ?>
+&quot;<?=$this->title?><?php if ($this->periodAfterTitle): ?>.<?php endif ?>&quot; 
 <span style="font-style:italic;"><?=$this->escapeHtml($this->journal)?></span> 
-<? if (!empty($this->numberAndDate)): ?><?=$this->escapeHtml($this->numberAndDate)?><? if (!empty($this->pageRange)): ?>: <? endif; ?><? endif; ?>
-<? if (!empty($this->pageRange)): ?><?=$this->escapeHtml($this->pageRange)?><? endif; ?>.
+<?php if (!empty($this->numberAndDate)): ?><?=$this->escapeHtml($this->numberAndDate)?><?php if (!empty($this->pageRange)): ?>: <?php endif; ?><?php endif; ?>
+<?php if (!empty($this->pageRange)): ?><?=$this->escapeHtml($this->pageRange)?><?php endif; ?>.

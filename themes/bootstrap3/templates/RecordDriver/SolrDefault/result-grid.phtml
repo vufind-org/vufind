@@ -1,4 +1,4 @@
-<?
+<?php
 /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
    but even if we don't plan to display the link, we still want to get the $openUrl
    value for use in generating a COinS (Z3988) tag -- see bottom of file.
@@ -11,32 +11,32 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
 
 <div class="result <?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-  <? if ((isset($this->showCartControls) && $this->showCartControls)
+  <?php if ((isset($this->showCartControls) && $this->showCartControls)
       || (isset($this->showBulkOptions) && $this->showBulkOptions)): ?>
     <?=$this->record($this->driver)->getCheckbox() ?></br>
-  <? endif; ?>
+  <?php endif; ?>
   <div class="text-center">
     <?=$this->record($this->driver)->getCover('result-grid', 'small', $this->recordLink()->getUrl($this->driver)); ?>
   </div>
-  <? if (!$openUrlActive && empty($urls)): ?>
-    <? if ($this->driver->supportsAjaxStatus()): ?>
+  <?php if (!$openUrlActive && empty($urls)): ?>
+    <?php if ($this->driver->supportsAjaxStatus()): ?>
       <div class="status ajax-availability hidden text-center"><span class="label label-default"><?=$this->transEsc('Loading')?>...</span></div>
-    <? endif; ?>
-  <? endif; ?>
+    <?php endif; ?>
+  <?php endif; ?>
   <div>
     <a class="title" href="<?=$this->recordLink()->getUrl($this->driver)?>">
       <?=$this->record($this->driver)->getTitleHtml(80)?>
     </a>
-    <? if ($openUrlActive || !empty($urls)): ?>
+    <?php if ($openUrlActive || !empty($urls)): ?>
       <br/><br/>
-      <? if ($openUrlActive): ?>
+      <?php if ($openUrlActive): ?>
         <?=$openUrl->renderTemplate()?><br />
-      <? endif; ?>
-      <? if (!is_array($urls)) $urls = array(); foreach ($urls as $current): ?>
+      <?php endif; ?>
+      <?php if (!is_array($urls)) $urls = array(); foreach ($urls as $current): ?>
         <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
         <br/>
-      <? endforeach; ?>
-    <? endif; ?>
+      <?php endforeach; ?>
+    <?php endif; ?>
   </div>
 </div>
 

@@ -1,4 +1,4 @@
-<?
+<?php
   // Set page title.
   $this->headTitle($this->translate('Record Citations'));
 
@@ -14,14 +14,14 @@
     $citations[$format . ' Citation'] = $helper->getCitation($format);
   }
 ?>
-<? if (count($citations) == 0): ?>
+<?php if (count($citations) == 0): ?>
   <?=$this->transEsc('No citations are available for this record')?>
-<? else: ?>
-  <? foreach ($citations as $caption => $citation): ?>
+<?php else: ?>
+  <?php foreach ($citations as $caption => $citation): ?>
     <strong><?=$this->transEsc($caption)?></strong>
     <p class="text-left">
       <?=$citation?>
     </p>
-  <? endforeach; ?>
+  <?php endforeach; ?>
   <div class="text-muted text-center"><?=$this->transEsc('Warning: These citations may not always be 100% accurate')?>.</div>
-<? endif; ?>
+<?php endif; ?>

@@ -1,4 +1,4 @@
-<? // This is a text-only email template; do not include HTML! ?>
+<?php // This is a text-only email template; do not include HTML! ?>
 <?=$this->translate('This email was sent from')?>: <?=$this->from?>
 
 ------------------------------------------------------------
@@ -7,6 +7,6 @@
   <?=$this->translate('email_link')?>: <?=$this->serverUrl($this->recordLink()->getUrl($this->driver))?>
 
 ------------------------------------------------------------
-<? if (!empty($this->message)): ?><?=$this->translate("Message From Sender")?>:
+<?php if (!empty($this->message)): ?><?=$this->translate("Message From Sender")?>:
 <?=$this->message?>
-<? endif; ?>
+<?php endif; ?>

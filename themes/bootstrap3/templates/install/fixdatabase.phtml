@@ -1,4 +1,4 @@
-<?
+<?php
     // Set page title.
     $this->headTitle($this->translate('auto_configure_title'));
 
@@ -17,7 +17,7 @@
     <div class="col-sm-9">
       <select name="driver" class="form-control">
         <option value="mysql">MySQL</option>
-        <option <? if ($driver == 'pgsql'): ?>selected="selected" <? endif; ?>value="pgsql">PostgreSQL</option>
+        <option <?php if ($driver == 'pgsql'): ?>selected="selected" <?php endif; ?>value="pgsql">PostgreSQL</option>
       </select>
     </div>
   </div>

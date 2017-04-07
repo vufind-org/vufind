@@ -1,4 +1,4 @@
-<?
+<?php
   // Set page title.
   $this->headTitle($this->translate('Comments') . ': ' . $this->driver->getBreadcrumb());
 ?>
@@ -14,16 +14,16 @@
       <strong><?=$this->transEsc("Your Comment")?></strong>
     </div>
     <div class="col-sm-9">
-      <? $user = $this->auth()->isLoggedIn() ?>
-      <? if($user): ?>
+      <?php $user = $this->auth()->isLoggedIn() ?>
+      <?php if($user): ?>
         <textarea name="comment" class="form-control" rows="3" required></textarea><br/>
-        <? if ($this->tab->isRecaptchaActive()): ?>
+        <?php if ($this->tab->isRecaptchaActive()): ?>
           <?=$this->recaptcha()->html(true, false) ?><br/>
-        <? endif; ?>
+        <?php endif; ?>
         <input class="btn btn-primary" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
-      <? else: ?>
+      <?php else: ?>
         <a href="<?=$this->url('myresearch-userlogin') ?>" class="btn btn-primary" data-lightbox title="Login"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("You must be logged in first") ?></a>
-      <? endif; ?>
+      <?php endif; ?>
     </div>
   </div>
 </form>

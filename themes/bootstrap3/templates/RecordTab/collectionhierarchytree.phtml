@@ -1,4 +1,4 @@
-<?
+<?php
     $this->mainTreeClass = 'col-sm-6';
     $this->treeContext = 'Collection';
 ?>
@@ -9,13 +9,13 @@
   <div class="col-sm-6">
     <div id="hierarchyRecordHolder">
       <div id="hierarchyRecord">
-        <? if (($collectionRecord = $this->tab->getActiveRecord()) !== false): ?>
-          <? if ($collectionRecord === null): ?>
+        <?php if (($collectionRecord = $this->tab->getActiveRecord()) !== false): ?>
+          <?php if ($collectionRecord === null): ?>
             <?=$this->render('collection/collection-record-error.phtml')?>
-          <? else: ?>
+          <?php else: ?>
             <?=html_entity_decode($this->record($collectionRecord)->getCollectionBriefRecord())?>
-          <? endif; ?>
-        <? endif; ?>
+          <?php endif; ?>
+        <?php endif; ?>
       </div>
     </div>
   </div>
