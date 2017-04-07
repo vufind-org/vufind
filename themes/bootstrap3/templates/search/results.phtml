@@ -56,39 +56,10 @@
       <? endforeach; ?>
     <? endif; ?>
     <?=$this->flashmessages()?>
-    <div class="hidden-print search-controls row">
+    <div class="hidden-print search-controls clearfix">
       <div class="pull-left">
         <? if ($recordTotal > 0): ?>
-          <?
-            $transParams = [
-              '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
-              '%%end%%'   => $this->localizedNumber($this->results->getEndRecord()),
-              '%%total%%' => $this->localizedNumber($recordTotal),
-              '%%lookfor%%' => $this->escapeHtml($lookfor)
-            ];
-            $showingResults = '';
-          ?>
-          <? if (!isset($this->skipTotalCount)): ?>
-            <? $showingResults = $this->translate('showing_results_of_html', $transParams); ?>
-          <? else: ?>
-            <? $showingResults = $this->translate('showing_results_html', $transParams); ?>
-          <? endif; ?>
-          <? if (isset($this->overrideSearchHeading)): ?>
-            <? echo $this->layout()->srmessage = $showingResults; ?>
-            <?=$this->overrideSearchHeading?>
-          <? elseif ($this->params->getSearchType() == 'basic'): ?>
-            <? if (!isset($this->skipTotalCount)): ?>
-              <? $showingResults = $this->translate('showing_results_of_for_html', $transParams); ?>
-            <? else: ?>
-              <? $showingResults = $this->translate('showing_results_for_html', $transParams); ?>
-            <? endif; ?>
-            <? $this->layout()->srmessage = $showingResults; ?>
-          <? endif; ?>
-          <? if ($qtime = $this->results->getQuerySpeed()): ?>
-            <?=$showingResults; ?>, <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
-          <? else: ?>
-            <?=$showingResults; ?>
-          <? endif; ?>
+          <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
         <? else: ?>
           <h2><?=$this->transEsc('nohit_heading')?></h2>
         <? endif; ?>
