@@ -436,36 +436,27 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $renewable = $entry['renewable'];
             $message = '';
             if (!$renewable) {
-                list($renewStatusCode, $renewabilityResult) = $this->makeRequest(
-                    ['v1', 'checkouts', $entry['issue_id'], 'renewability'],
-                    false,
-                    'GET',
-                    $patron,
-                    true
-                );
-                if (isset($renewabilityResult['error'])) {
-                    switch ($renewabilityResult['error']) {
-                    case 'too_soon':
-                        $message = 'Cannot renew yet';
-                        break;
-                    case 'onsite_checkout':
-                        $message = 'Copy has special circulation';
-                        break;
-                    case 'on_reserve':
-                        $message = 'renew_item_requested';
-                        break;
-                    case 'too_many':
-                        $message = 'renew_item_limit';
-                        break;
-                    case 'restriction':
-                        $message = 'Borrowing Block Message';
-                        break;
-                    case 'overdue':
-                        $message = 'renew_item_overdue';
-                        break;
-                    default:
-                        $message = 'renew_denied';
-                    }
+                switch ($entry['renewability_error']) {
+                case 'too_soon':
+                    $message = 'Cannot renew yet';
+                    break;
+                case 'onsite_checkout':
+                    $message = 'Copy has special circulation';
+                    break;
+                case 'on_reserve':
+                    $message = 'renew_item_requested';
+                    break;
+                case 'too_many':
+                    $message = 'renew_item_limit';
+                    break;
+                case 'restriction':
+                    $message = 'Borrowing Block Message';
+                    break;
+                case 'overdue':
+                    $message = 'renew_item_overdue';
+                    break;
+                default:
+                    $message = 'renew_denied';
                 }
             }
 
