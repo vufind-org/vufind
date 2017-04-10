@@ -17,9 +17,11 @@
       }
     }
   ?>
-  <div class="checkboxFilter<?if(!$checkboxesShown):?> hidden<? endif; ?>">
-    <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
-  </div>
+  <?if ($checkboxesShown):?>
+    <div class="checkboxFilter">
+      <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
+    </div>
+  <? endif; ?>
 <? endif; ?>
 <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
 <? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
