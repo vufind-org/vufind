@@ -125,6 +125,19 @@ img {max-width: 100%;}
   white-space: pre;
 }
 
+/* --- MyResearch --- */
+.myresearch-menu a {
+  &:extend(.nav>li>a all);
+  .badge { float: right; }
+}
+.myresearch-menu a.active {
+  &:extend(.nav-pills>li.active>a all);
+  .badge {
+    background-color: #fff;
+    color: @gray-darker;
+  }
+}
+
 /* --- PubDateVis --- */
 #dateVisColorSettings {
   background-color: #fff; // background of box
