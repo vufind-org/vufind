@@ -417,8 +417,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if (!empty($item['biblionumber'])) {
                 $bib = $this->getBibRecord($item['biblionumber']);
                 if (!empty($bib['title'])) {
-                    // TODO: use this when the full title is available
-                    // $title = $bib['title'];
+                    $title = $bib['title'];
+                }
+                if (!empty($bib['title_remainder'])) {
+                    $title .= ' ' . $bib['title_remainder'];
+                    $title = trim($title);
                 }
             }
 
