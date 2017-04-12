@@ -32,8 +32,7 @@ languages[] = en
 cachetime = 1
 
 ; URL patterns for map and route instructions
-;routeUrl = "http://www.matka.fi/fi/?keya=&keyb={street},%20{city}"
-routeUrl = ""
+routeUrl = "https://opas.matka.fi/?to={street},%20{city}"
 mapUrl = "http://maps.google.com/?q={street}%20{city}"
 
 
