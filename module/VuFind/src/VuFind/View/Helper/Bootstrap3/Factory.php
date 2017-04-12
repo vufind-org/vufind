@@ -75,10 +75,10 @@ class Factory
         // pull it back out here to avoid duplicate effort, then use it to apply
         // the mirror setting appropriately.
         $layout = $sm->getServiceLocator()->get('viewmanager')->getViewModel();
-        if ($layout->rtl && !$mirror) {
-            $left = !$left;
+        if ($layout->rtl && $mirror) {
+            $sidebarOnLeft = !$sidebarOnLeft;
         }
-        return new LayoutClass($left, $offcanvas);
+        return new LayoutClass($sidebarOnLeft, $offcanvas);
     }
 
     /**
