@@ -248,6 +248,7 @@ $config = [
                     'demo' => 'Finna\ILS\Driver\Factory::getDemo',
                     'koharest' => 'Finna\ILS\Driver\Factory::getKohaRest',
                     'multibackend' => 'Finna\ILS\Driver\Factory::getMultiBackend',
+                    'sierrarest' => 'Finna\ILS\Driver\Factory::getSierraRest',
                     'voyager' => 'Finna\ILS\Driver\Factory::getVoyager',
                     'voyagerrestful' => 'Finna\ILS\Driver\Factory::getVoyagerRestful'
                 ],
