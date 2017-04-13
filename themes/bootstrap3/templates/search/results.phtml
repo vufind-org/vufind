@@ -58,8 +58,8 @@
     <? endforeach; ?>
   <? endif; ?>
   <?=$this->flashmessages()?>
-  <div class="hidden-print search-controls clearfix">
-    <div class="pull-left">
+  <nav class="search-header hidden-print">
+    <div class="search-stats">
       <? if ($recordTotal > 0): ?>
         <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
       <? else: ?>
@@ -68,13 +68,13 @@
     </div>
 
     <? if ($recordTotal > 0): ?>
-      <div class="pull-right text-right">
+      <div class="search-controls">
         <?=$this->render('search/controls/limit.phtml')?>
         <?=$this->render('search/controls/sort.phtml')?>
         <?=$this->render('search/controls/view.phtml')?>
       </div>
     <? endif; ?>
-  </div>
+  </nav>
   <? /* End Listing Options */ ?>
 
   <? if ($recordTotal < 1): ?>
