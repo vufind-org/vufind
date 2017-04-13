@@ -72,8 +72,8 @@ header .breadcrumb {
   border-radius: 0;
   border-width: 1px 0;
   font-size: 12px;
-  margin-bottom: 2px;
-  padding: 7px 20px 5px
+  margin-bottom: 0;
+  padding: .5rem 1rem;
 }
 
 /* --- Footer --- */
@@ -153,6 +153,7 @@ ul.random.image li img { margin: 0 auto; }
 
 /* --- Search --- */
 .bulkActionButtons { padding: 1rem; }
+.top-facets .facet a { vertical-align: middle; }
 .result {
   padding: floor((@grid-gutter-width / 2));
   margin-left: floor((@grid-gutter-width / -2)); // Bring result to the edge of the container
@@ -180,12 +181,7 @@ ul.random.image li img { margin: 0 auto; }
   margin: 0;
   vertical-align: middle;
 }
-@media (min-width: 768px) {
-  .search-stats {
-    line-height: 2;
-    color: @gray;
-  }
-}
+.search-stats { color: @gray; }
 
 /* --- Sidebar --- */
 .sidebar {
