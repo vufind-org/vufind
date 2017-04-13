@@ -29,7 +29,7 @@ namespace VuFind\Db\Row;
 use Zend\Db\Sql\Expression,
     Zend\Db\Sql\Predicate\Predicate,
     Zend\Db\Sql\Sql,
-    Zend\Crypt\Symmetric\Mcrypt,
+    Zend\Crypt\Symmetric\Openssl,
     Zend\Crypt\Password\Bcrypt,
     Zend\Crypt\BlockCipher as BlockCipher;
 
@@ -210,7 +210,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         $algo = isset($this->config->Authentication->ils_encryption_algo)
             ? $this->config->Authentication->ils_encryption_algo
             : 'blowfish';
-        $cipher = new BlockCipher(new Mcrypt(['algorithm' => $algo]));
+        $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
     }
