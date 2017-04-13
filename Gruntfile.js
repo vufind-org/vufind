@@ -137,6 +137,10 @@ module.exports = function(grunt) {
         files: 'themes/*/less/**/*.less',
         tasks: ['less']
       },
+      lessdev: {
+        files: 'themes/*/less/**/*.less',
+        tasks: ['lessdev']
+      },
       scss: {
         files: 'themes/*/scss/**/*.scss',
         tasks: ['scss']
