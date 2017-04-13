@@ -72,8 +72,8 @@ header .breadcrumb {
   border-radius: 0;
   border-width: 1px 0;
   font-size: 12px;
-  margin-bottom: 2px;
-  padding: 7px 20px 5px
+  margin-bottom: 0;
+  padding: .5rem 1rem;
 }
 
 /* --- Footer --- */
@@ -144,6 +144,7 @@ ul.random.image li img { margin: 0 auto; }
 
 /* --- Search --- */
 .bulkActionButtons { padding: 1rem; }
+.top-facets .facet a { vertical-align: middle; }
 .result {
   padding: 1rem;
   &:nth-child(even) { background-color: @gray-lighter; }
@@ -170,12 +171,7 @@ ul.random.image li img { margin: 0 auto; }
   margin: 0;
   vertical-align: middle;
 }
-@media (min-width: 768px) {
-  .search-stats {
-    line-height: 2;
-    color: @gray;
-  }
-}
+.search-stats { color: @gray; }
 
 /* --- Sidebar --- */
 .sidebar {
