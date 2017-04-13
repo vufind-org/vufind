@@ -126,23 +126,6 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
-     * Construct the HeadScript helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return HeadScript
-     */
-    public static function getHeadScript(ServiceManager $sm)
-    {
-        $locator = $sm->getServiceLocator();
-        return new HeadScript(
-            $locator->get('VuFindTheme\ThemeInfo'),
-            \VuFindTheme\View\Helper\Factory::getPipelineConfig($sm),
-            $locator->get('Request')
-        );
-    }
-
-    /**
      * Construct the LayoutClass helper.
      *
      * @param ServiceManager $sm Service manager.
