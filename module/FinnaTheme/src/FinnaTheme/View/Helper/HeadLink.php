@@ -216,6 +216,22 @@ class HeadLink extends \VuFindTheme\View\Helper\HeadLink
     }
 
     /**
+     * Returns true if file should not be included in the compressed concat file
+     * Required by ConcatTrait
+     *
+     * @param stdClass $item Link element object
+     *
+     * @return bool
+     */
+    protected function isExcludedFromConcat($item)
+    {
+        $ua = $this->request->getHeader('User-Agent');
+        $agent = is_object($ua) ? $ua->toString() : '';
+        return strstr($agent, 'MSIE 9.0') || strstr($agent, 'MSIE 8.0')
+            || strstr($agent, 'MSIE 7.0');
+    }
+
+    /**
      * Get the minifier that can handle these file types
      * Required by ConcatTrait
      *
