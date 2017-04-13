@@ -81,19 +81,39 @@ trait MinifyTrait
             }
         }
 
-        $content = parent::minify($path);
+        // Write to temp file in the correct directory to make sure paths are
+        // correctly rewritten
+        $content = parent::minify($path . '.tmp');
+        // Remove temp file
+        if (false === unlink($path . '.tmp')) {
+            throw new \Exception("Could not remove $path.tmp");
+        }
 
-        // Save to database
+        // Save to a file and the database
         if (null !== $path) {
-            $mtime = filemtime($path);
-            if (false === $mtime) {
-                throw new \Exception("Could not get mtime of $path");
-            }
+            // Create a database entry
             $row = $this->finnaCache->createRow();
             $row->resource_id = $filename;
-            $row->mtime = $mtime;
+            $row->mtime = time();
             $row->data = $content;
-            $row->save();
+            try {
+                $row->save();
+            } catch (\Exception $e) {
+                // Recheck the database to be sure that no-one else has created the
+                // resource in the meantime
+                $row = $this->finnaCache->getByResourceId($filename);
+                if (false === $row) {
+                    // No, something else failed
+                    throw $e;
+                }
+            }
+            // Write the file
+            if (false === file_put_contents($path, $content)) {
+                throw new \Exception("Could not write to file $path");
+            }
+            if (false === touch($path, $row->mtime)) {
+                throw new \Exception("Could not touch timestamp of $path");
+            }
         }
 
         return $content;
