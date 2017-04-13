@@ -7,25 +7,26 @@ body {
   color: @near-black;
 }
 header {
-  background-color: @blue;
+  background-color: @green;
   color: @white;
   a,
+  .nav a,
   .btn-link {
     color: @white;
-    &:hover { color: @lightest-blue; }
+    &:hover { color: @lightest-green; }
   }
   .btn-primary {
     color: @black;
-    background-color: @lightest-blue;
+    background-color: @lightest-green;
   }
   .btn-primary:hover {
     color: @black;
-    background-color: @washed-blue;
+    background-color: @washed-green;
   }
   .nav>li>a:hover,
   .nav>li>a:focus {
     color: @black;
-    background-color: @light-blue;
+    background-color: @light-green;
   }
 }
 .navbar { border-radius: 0; }
@@ -38,16 +39,14 @@ header {
   padding: 1rem;
   padding-top: 0;
 }
-#searchForm_lookfor,
-#searchForm_type { border: 0; }
-#searchForm_lookfor:focus,
-#searchForm_type:focus {
+header .form-control { border: 0; }
+header .form-control:focus {
   padding-bottom: (@padding-base-vertical - 3px);
   border-bottom: 3px solid @gold;
 }
 .breadcrumbs {
-  border-bottom: 1px solid @light-blue;
-  background-color: @lightest-blue;
+  border-bottom: 1px solid @light-green;
+  background-color: @lightest-green;
 }
 .breadcrumb {
   margin: 0;
@@ -57,8 +56,8 @@ header {
   color: @gray;
   background-color: transparent;
   border-radius: 0;
-  &>.active { color: @dark-gray; }
 }
+
 .main .container {
   padding-top: 1rem;
   background-color: @white;
@@ -71,7 +70,7 @@ header {
 .list-group-item.title { color: @dark-gray; }
 .result {
   padding-bottom: .5rem;
-  border-bottom: 1px solid @light-gray;
+  border-bottom: 1px solid @moon-gray;
 }
 .search-controls {
   padding-top: 1rem;

@@ -1,16 +1,20 @@
 /* Bootstrap variable changes */
-@brand-primary: @dark-blue;
+@brand-primary: @dark-green;
+@lightest-green: lighten(@light-green, 10%);
 
-@btn-default-bg:              @light-gray;
-@btn-default-color:           @near-black;
-@btn-primary-bg:              @dark-blue;
+@input-border:              @light-silver;
+@input-color:               @dark-gray;
+@btn-default-bg:            @light-gray;
+@btn-default-color:         @near-black;
+@btn-primary-bg:            @dark-green;
 
 @input-border-radius:         .25rem;
 
-@autocomplete-hover-bg:     @lightest-blue;
-@dropdown-link-hover-bg:    @lightest-blue;
+@autocomplete-hover-bg:     @lightest-green;
+@dropdown-link-hover-bg:    @lightest-green;
 @dropdown-link-hover-color: @black;
-@table-bg-hover:            @lightest-blue;
+@table-bg-hover:            @lightest-green;
+@pagination-color:          @brand-primary;
 
 /* Common element changes */
 h1, h2, h3, h4 { margin: 1rem 0; }
@@ -18,17 +22,22 @@ h1, h2, h3, h4 { margin: 1rem 0; }
 /* Bootstrap class overrides */
 .btn {
   height: 34px;
-  border: 0;
   border-radius: .25rem;
+  border-color: @silver;
 }
-.btn:hover,
-.btn:focus { color: @white; }
+.btn-default:hover,
+.btn-default:focus {
+  color: @white;
+  border-color: transparent;
+}
+.btn-link,
+.btn-primary { border-color: transparent; }
+.btn-primary:hover { border-color: @brand-primary; }
+.btn-link { color: @dark-green; }
 
-.form-control,
-.search select.form-control {
-  border: 1px solid @light-silver;
-  box-shadow: none;
-}
+.form-control { box-shadow: none; }
+.form-control:hover,
+.form-control:focus { border-color: @brand-primary; }
 .form-control:focus {
   padding-bottom: (@padding-base-vertical - 3px);
   border-bottom: 3px solid @gold;
@@ -38,6 +47,12 @@ select.form-control {
   padding-bottom: @padding-base-vertical;
   border: 1px solid @light-silver;
 }
+
+.breadcrumb a { color: @dark-gray; }
+.breadcrumb .active { color: @near-black; }
+
+.nav > li > a { color: @brand-primary; }
+
 .alert {
   border: 0;
   color: @black;
