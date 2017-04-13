@@ -13,8 +13,8 @@ function addSearch(group, _fieldValues) {
     .attr('id', 'search_lookfor' + inputID)
     .attr('name', 'lookfor' + group + '[]')
     .attr('value', '');
-  $newSearch.find('select.type option:first-child').attr('selected', 1);
-  $newSearch.find('select.type')
+  $newSearch.find('select.adv-term-type option:first-child').attr('selected', 1);
+  $newSearch.find('select.adv-term-type')
     .attr('id', 'search_type' + inputID)
     .attr('name', 'type' + group + '[]');
   $newSearch.find('.adv-term-remove')
@@ -24,7 +24,7 @@ function addSearch(group, _fieldValues) {
     $newSearch.find('input.form-control').attr('value', fieldValues.term);
   }
   if (typeof fieldValues.field !== "undefined") {
-    $newSearch.find('select.type option[value="' + fieldValues.field + '"]').attr('selected', 1);
+    $newSearch.find('select.adv-term-type option[value="' + fieldValues.field + '"]').attr('selected', 1);
   }
   if (typeof fieldValues.op !== "undefined") {
     $newSearch.find('select.op option[value="' + fieldValues.op + '"]').attr('selected', 1);
@@ -114,7 +114,7 @@ function deleteGroup(group) {
   // If the last group was removed, add an empty group
   if ($('.adv-group').length === 0) {
     addGroup();
-  } else if ($('#advSearchForm .group').length === 1) {
+  } else if ($('#advSearchForm .adv-group').length === 1) {
     $('#groupJoin').addClass('hidden'); // Hide join menu
     $('.adv-group .adv-group-close').addClass('hidden'); // Hide x
   }
