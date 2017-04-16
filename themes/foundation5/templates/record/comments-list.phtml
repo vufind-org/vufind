@@ -1,0 +1,23 @@
+<!-- record - COMMENTS-LIST.phtml -->
+<? $comments = $this->driver->getComments(); ?>
+<? if (empty($comments) || count($comments) == 0): ?>
+  <div data-alert class="alert-box info" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->transEsc('Be the first to leave a comment')?>!</div>
+<? else: ?>
+  <? foreach ($comments as $comment): ?>
+    <div class="comment row">
+      <div class="medium-3 columns name">
+        <strong><?=$this->escapeHtml(trim($comment->firstname . ' ' . $comment->lastname))?></strong><br/>
+        <small>
+          <?=$this->escapeHtml($comment->created)?>
+          <? if (($user = $this->auth()->isLoggedIn()) && $comment->user_id == $user->id): ?>
+            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="delete text-alert"><?=$this->transEsc('Delete')?></a>
+          <? endif; ?>
+        </small>
+      </div>
+      <div class="medium-9 columns">
+        <?=$this->escapeHtml($comment->comment)?>
+      </div>
+    </div>
+  <? endforeach; ?>
+<? endif; ?>
+<!-- record - COMMENTS-LIST.phtml end -->

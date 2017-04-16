@@ -1,0 +1,7 @@
+.combined-list .result .left   {width:25%}
+.combined-list .result .middle {width:75%}
+.combined-list .result .right  {display:none}
+.result {padding-right:0}
+.result > .small-1 .checkbox {padding-right:0;width:10%}
+.result > .small-11 {width:89%}
+.form-inline > .clearfix {margin-left:.5rem}

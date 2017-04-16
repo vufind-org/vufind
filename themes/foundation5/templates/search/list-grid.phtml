@@ -1,0 +1,10 @@
+<!-- search - list.grid.phtml -->
+<div class="row">
+<? $i = 0; foreach ($this->results->getResults() as $current): ?>
+  <div id="result<?=$i++ ?>" class="small-6 medium-3 columns grid">
+    <?=$this->record($current)->getSearchResult('grid')?>
+  </div>
+  <?=($i%4==0)?'</div><div class="row">':''?>
+<? endforeach; ?>
+</div>
+<!-- search - list.grid.phtml - END -->

@@ -1,0 +1,17 @@
+<!-- recordDriver - libguides - RESULT-LIST.phtml -->
+<?
+  $url = $this->driver->getUniqueId();
+?>
+<div class="listentry small-11 columns">
+  <div class="resultItemLine1">
+    <a href="<?=$this->escapeHtmlAttr($url)?>" class="title"><?
+      $summTitle = $this->driver->getTitle();
+      if (!empty($summTitle)) {
+          echo $this->escapeHtml($this->truncate($summTitle, 180));
+      } else {
+          echo $this->transEsc('Title not available');
+      }
+    ?></a>
+  </div>
+</div>
+<!-- recordDriver - libguides - RESULT-LIST.phtml end -->

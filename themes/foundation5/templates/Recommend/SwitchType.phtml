@@ -1,0 +1,8 @@
+<!-- recommend - SWITCHTYPE.phtml -->
+<? if ($handler = $this->recommend->getNewHandler()): ?>
+  <div data-alert class="alert-box info" tabindex="0" aria-live="assertive" role="dialogalert">
+    <?=$this->transEsc('widen_prefix')?>
+    <a href="<?=$this->recommend->getResults()->getUrlQuery()->setHandler($handler)?>"><?=$this->transEsc($this->recommend->getNewHandlerName())?></a>.
+  </div>
+<? endif; ?>
+<!-- recommend - SWITCHTYPE.phtml end -->

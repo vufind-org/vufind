@@ -1,0 +1,46 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Text this'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+	. '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
+	. '<li class="active">' . $this->transEsc('Text this') . '</li>';
+
+  if ($this->validation == 'US') {
+	$phone_pattern = '^(\([2-9]\d{2}\)|[2-9]\d{2})[ -\.]?[2-9]\d{2}[-\.]?\d{4}$';
+  }
+?>
+<?=$this->flashmessages()?>
+<form method="post" action="" name="smsRecord" class="form-horizontal">
+  <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
+  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
+  <div class="form-group">
+	<label class="medium-3 columns control-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
+	<div class="medium-9 columns">
+	  <input id="sms_to" type="tel"<? if(isset($phone_pattern)): ?> pattern="<?=$phone_pattern ?>"<? endif ?> name="to" placeholder="<?=$this->transEsc('sms_phone_number')?>" class="form-control" oninvalid="$('#modal .fa-spinner').remove()"/>
+	</div>
+  </div>
+  <? if (is_array($this->carriers) && count($this->carriers) > 1): ?>
+	<div class="form-group">
+	  <label class="medium-3 columns control-label" for="sms_provider"><?=$this->transEsc('Provider')?>:</label>
+	  <div class="medium-9 columns">
+		<select id="sms_provider" name="provider" class="form-control">
+		  <option selected="selected" value=""><?=$this->transEsc('Select your carrier')?></option>
+		  <? foreach ($this->carriers as $val => $details): ?>
+			<option value="<?=$this->escapeHtmlAttr($val)?>"><?=$this->escapeHtml($details['name'])?></option>
+		  <? endforeach; ?>
+		</select>
+	  </div>
+	</div>
+  <? else: ?>
+	<? $keys = is_array($this->carriers) ? array_keys($this->carriers) : array(); ?>
+	<input type="hidden" name="provider" value="<?=isset($keys[0]) ? $keys[0] : ''?>" />
+  <? endif; ?>
+  <?=$this->recaptcha()->html($this->useRecaptcha) ?>
+  <div class="form-group">
+	<div class="medium-9 medium-offset-3 columns ">
+	  <input class="button tiny" type="submit" name="submit" role="button" value="<?=$this->transEsc('Send Text')?>"/>
+	</div>
+  </div>
+</form>

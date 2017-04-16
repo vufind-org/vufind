@@ -1,0 +1,12 @@
+<!-- recommend - SWITCHQUERY.phtml -->
+<? $suggestions = $this->recommend->getSuggestions(); if (!empty($suggestions)): ?>
+  <div data-alert class="alert-box info" tabindex="0" aria-live="assertive" role="dialogalert">
+    <p><?=$this->transEsc('switchquery_intro')?></p>
+    <ul>
+      <? foreach ($suggestions as $desc => $query): ?>
+        <li><?=$this->transEsc($desc)?>: <a href="<?=$this->recommend->getResults()->getUrlQuery()->setSearchTerms($query)?>"><?=$this->escapeHtml($query)?></a>.</li>
+      <? endforeach; ?>
+    </ul>
+  </div>
+<? endif; ?>
+<!-- recommend - SWITCHQUERY.phtml end -->

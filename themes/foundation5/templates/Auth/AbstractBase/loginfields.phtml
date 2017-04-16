@@ -1,0 +1,14 @@
+<!-- auth - abstractbase - loginfields.phtml -->
+<div class="form-group">
+  <label class="medium-3 columns control-label" for="login_username"><?=$this->transEsc('Username')?>:</label>
+  <div class="medium-9 columns">
+    <input type="text" name="username" id="login_username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control"/>
+  </div>
+</div>
+<div class="form-group">
+  <label class="medium-3 columns control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
+  <div class="medium-9 columns">
+    <input type="password" name="password" id="login_password" class="form-control"/>
+  </div>
+</div>
+<!-- auth - abstractbase - loginfields.phtml - END -->

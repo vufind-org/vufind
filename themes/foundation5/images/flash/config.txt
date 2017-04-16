@@ -1,0 +1,15 @@
+width=300
+height=30
+autoload=1
+showstop=1
+showvolume=1
+showloading=always
+buttonwidth=30
+volumeheight=10
+loadingcolor=ABD331
+bgcolor=5C595A
+bgcolor1=5C595A
+bgcolor2=5C595A
+sliderovercolor=ABD331
+buttoncolor=dddddd
+buttonovercolor=ffffff

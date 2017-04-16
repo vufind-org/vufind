@@ -1,0 +1,240 @@
+<!-- recordtab - description.phtml -->
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Description') . ': ' . $this->driver->getBreadcrumb());
+
+    // Grab clean ISBN for convenience:
+    $isbn = $this->driver->getCleanISBN();
+?>
+<table class="table" summary="<?=$this->transEsc('Description')?>">
+  <? $summ = $this->driver->getSummary(); if (!empty($summ)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Summary')?>: </th>
+      <td>
+        <? foreach ($summ as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $dateSpan = $this->driver->getDateSpan(); if (!empty($dateSpan)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Published')?>: </th>
+      <td>
+        <? foreach ($dateSpan as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $notes = $this->driver->getGeneralNotes(); if (!empty($notes)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Item Description')?>: </th>
+      <td>
+        <? foreach ($notes as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $physical = $this->driver->getPhysicalDescriptions(); if (!empty($physical)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Physical Description')?>: </th>
+      <td>
+        <? foreach ($physical as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $freq = $this->driver->getPublicationFrequency(); if (!empty($freq)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Publication Frequency')?>: </th>
+      <td>
+        <? foreach ($freq as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $playTime = $this->driver->getPlayingTimes(); if (!empty($playTime)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Playing Time')?>: </th>
+      <td>
+        <? foreach ($playTime as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $system = $this->driver->getSystemDetails(); if (!empty($system)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Format')?>: </th>
+      <td>
+        <? foreach ($system as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $audience = $this->driver->getTargetAudienceNotes(); if (!empty($audience)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Audience')?>: </th>
+      <td>
+        <? foreach ($audience as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $awards = $this->driver->getAwards(); if (!empty($awards)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Awards')?>: </th>
+      <td>
+        <? foreach ($awards as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $credits = $this->driver->getProductionCredits(); if (!empty($credits)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Production Credits')?>: </th>
+      <td>
+        <? foreach ($credits as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $bib = $this->driver->getBibliographyNotes(); if (!empty($bib)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Bibliography')?>: </th>
+      <td>
+        <? foreach ($bib as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $isbns = $this->driver->getISBNs(); if (!empty($isbns)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('ISBN')?>: </th>
+      <td>
+        <? foreach ($isbns as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $issns = $this->driver->getISSNs(); if (!empty($issns)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('ISSN')?>: </th>
+      <td>
+        <? foreach ($issns as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $doi = $this->driver->tryMethod('getCleanDOI'); if (!empty($doi)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('DOI')?>: </th>
+      <td><?=$this->escapeHtml($doi)?></td>
+    </tr>
+  <? endif; ?>
+
+  <? $related = $this->driver->getRelationshipNotes(); if (!empty($related)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Related Items')?>: </th>
+      <td>
+        <? foreach ($related as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $access = $this->driver->getAccessRestrictions(); if (!empty($access)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Access')?>: </th>
+      <td>
+        <? foreach ($access as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $findingAids = $this->driver->getFindingAids(); if (!empty($findingAids)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Finding Aid')?>: </th>
+      <td>
+        <? foreach ($findingAids as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $publicationPlaces = $this->driver->getHierarchicalPlaceNames(); if (!empty($publicationPlaces)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Publication_Place')?>: </th>
+      <td>
+        <? foreach ($publicationPlaces as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $authorNotes = empty($isbn) ? array() : $this->authorNotes($isbn); if (!empty($authorNotes)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('Author Notes')?>: </th>
+      <td>
+        <? foreach ($authorNotes as $provider => $list): ?>
+          <? foreach ($list as $field): ?>
+            <?=$field['Content']?><br/>
+          <? endforeach; ?>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? if (!isset($contentDisplayed) || !$contentDisplayed): // Avoid errors if there were no rows above ?>
+    <tr><td><?=$this->transEsc('no_description')?></td></tr>
+  <? endif; ?>
+</table>
+<!-- recordtab - description.phtml - END -->

@@ -1,0 +1,6 @@
+<?
+  $cctype = array();
+  preg_match('/licenses\/([^\/]*)/', $this->details['license'], $cctype);
+  $cctype = $cctype[1];
+?>
+This work is licensed under a <a target="_blank" rel="license" href="<?=$this->details['license'] ?>deed.en_US">Creative Commons <?=strpos($cctype, 'by') == 0 ? 'Attribution-' : '' ?><?=strpos($cctype, 'nc') ? 'NonCommercial-' : '' ?><?=strpos($cctype, 'nd') ? 'NoDerivs' : '' ?><?=strpos($cctype, 'sa') ? 'ShareAlike' : '' ?> 3.0 Unported License</a>.<br/><br/><a target="_blank" rel="license" href="<?=$this->details['license'] ?>deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/<?=$cctype ?>/3.0/80x15.png" /></a>
