@@ -49,3 +49,33 @@
     z-index: 5;
   }
 }
+
+.bulkActionButtons { padding: 1rem; }
+.top-facets .facet a { vertical-align: middle; }
+.search-controls label {
+  margin: 0;
+  vertical-align: middle;
+}
+.search-stats { color: @gray; }
+
+.result:nth-child(even) { background-color: @gray-lighter; }
+.result.embedded .getFull.expanded {
+  margin-top: -6px;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+}
+.result > p {padding:0 1em;}
+.result .label {
+  display: inline-block;
+  margin-bottom: 4px;
+}
+.result .long-view .tab-content {background: #fff;}
+.result .media { margin: 0; }
+.result .row { padding: 0; }
+.result .savedLists {
+  margin: 0 0 4px;
+  padding: 4px 0 4px 6px;
+}
+.result .savedLists ul { padding-left: 18px; }
+.result .checkbox-select-item{ margin-left: 1rem; }
+.result .checkbox-select-item:checked ~ .media { background-color: @state-success-bg; }

@@ -41,40 +41,38 @@ header .container.navbar { margin-bottom: 0; }
 .bulkActionButtons label input {margin-top: 2px;}
 .grid { @media (max-width: 767px) {min-height: 250px;} }
 .result {
-  padding-top: 1.5rem;
-  .checkbox {
-    float: left;
-    padding-right: .5rem;
+  border-bottom: 1px solid @btn-default-border;
+  .media {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
   }
   .media,
-  .media-body { overflow: visible; }
-  .media-body .row {
-    margin-left: 0;
-    margin-right: 0;
-  }
-  .media {
-    margin-top: 0;
-    margin-bottom: 1rem;
+  .media-body {
     .clearfix();
+    margin: 0;
+    overflow: visible;
   }
   .media-left,
   .media-right {
     padding: 0;
     text-align: center;
+    max-width: 25%;
     a {
       display: inline-block;
+      max-width: 100%;
       text-align: center;
+      text-decoration: underline;
     }
     img {
       max-width: 100%;
       max-height: 300px;
     }
-    &.small > a,
-    &.small > img,
-    &.medium > a,
-    &.medium > img,
-    &.large > a,
-    &.large > img { width: @thumbnail-width-small; }
+    &.small,
+    &.medium,
+    &.large {
+      & > a,
+      & > img { width: @thumbnail-width-small; }
+    }
     @media (min-width: 768px) {
       &.small > a,
       &.small > img { width: @thumbnail-width-small; }
@@ -87,30 +85,21 @@ header .container.navbar { margin-bottom: 0; }
   .title {font-weight: bold;}
   .list-tab-content.record .img-col { display: none; }
   .list-tab-content.record .info-col { width: 100%; }
-
-  @media (min-width: 768px) {
-    .media-left { padding-left: 10px; }
-    .media-right { padding-right: 10px; }
-  }
-  @media (max-width: 767px) {
-    border-bottom: 1px solid @btn-default-border;
-      .media-left,
-      .media-right {
-        max-width: 25%;
-      }
-    a {
-      max-width: 100%;
-      text-decoration: underline;
-    }
-    img { max-width: 100%; }
-  }
-  @media (max-width: 530px) {
-    .media-left { padding-right: 0; }
-  }
-
   .format {
     &:extend(.label);
     &:extend(.label-info);
+  }
+
+  .checkbox-select-item {
+    float: left;
+    margin-top: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .media-left,
+    .media-right {
+      max-width: none;
+    }
   }
 }
 
