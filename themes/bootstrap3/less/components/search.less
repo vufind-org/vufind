@@ -38,8 +38,9 @@ header .container.navbar { margin-bottom: 0; }
   .search-stats { line-height: 2; }
 }
 
-.bulkActionButtons label { display: inline-block;}
-.bulkActionButtons label input { margin-top: 2px;}
+.bulkActionButtons .checkbox,
+.bulkActionButtons label { display: inline-block; }
+.bulkActionButtons label input { margin-top: 2px; }
 @media (max-width: 767px) {
   .grid { min-height: 250px; }
 }
@@ -126,7 +127,20 @@ header .container.navbar { margin-bottom: 0; }
     &:extend(.label-info);
   }
 }
-
+.result-body { padding-left: 1rem; }
+.result-links { padding: 1rem; }
+@media (min-width: 768px) {
+  .result-body {
+    float: left;
+    width: 75%;
+    padding: 0;
+  }
+  .result-links {
+    float: left;
+    width: 25%;
+    padding: 0;
+  }
+}
 .result.embedded {
   .getFull {
     display: block;
