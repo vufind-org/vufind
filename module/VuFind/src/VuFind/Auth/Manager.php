@@ -555,7 +555,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         $this->getAuth()->preLoginCheck($request);
 
         // Validate CSRF for form-based authentication methods:
-        if (!$this->getAuth()->getSessionInitiator(null)
+        if (!$this->getAuth()->getSessionInitiator(null, $request)
             && !$this->csrf->isValid($request->getPost()->get('csrf'))
         ) {
             $this->getAuth()->resetState();
