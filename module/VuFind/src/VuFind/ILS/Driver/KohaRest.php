@@ -525,7 +525,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 ];
             } else {
                 $newDate = $this->dateConverter->convertToDisplayDate(
-                    'Y-m-d H:i:s', $result['date_due']
+                    'Y-m-d\TH:i:sP', $result['date_due']
                 );
                 $finalResult['details'][$itemId] = [
                     'item_id' => $itemId,
