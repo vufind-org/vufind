@@ -7,8 +7,8 @@
 ?>
 <table class="table table-striped" summary="<?=$this->transEsc('Description')?>">
   <? if (!empty($mainFields)): ?>
-    <? foreach ($mainFields as $key => $value): ?>
-      <tr><th><?=$this->transEsc($key)?>:</th><td><?=$value?></td></tr>
+    <? foreach ($mainFields as $key => $current): ?>
+      <tr><th><?=$this->transEsc($key)?>:</th><td><?=$current['value']?></td></tr>
     <? endforeach; ?>
   <? else: ?>
     <tr><td><?=$this->transEsc('no_description')?></td></tr>

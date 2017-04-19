@@ -182,11 +182,12 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
         // Check for expected text (with markup stripped)
         foreach ($expected as $key => $value) {
             $this->assertEquals(
-                $value, trim(preg_replace('/\s+/', ' ', strip_tags($results[$key])))
+                $value,
+                trim(preg_replace('/\s+/', ' ', strip_tags($results[$key]['value'])))
             );
         }
 
         // Check for exact markup in representative example:
-        $this->assertEquals('Italian<br />Latin', $results['Language']);
+        $this->assertEquals('Italian<br />Latin', $results['Language']['value']);
     }
 }
