@@ -428,7 +428,50 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getStatuses($ids)
     {
-        return array_map([$this, 'getStatus'], $ids);
+        $results = [];
+        $copyCount = 0;
+        $params = [
+            'mms_id' => implode(',', $ids),
+            'view'   => 'brief', // no solrmarc xml
+            // 'expand' => 'p_avail,e_avail,d_avail'
+        ];
+        if ($bibs = $this->makeRequest('/bibs', $params)) {
+            foreach ($bibs->holding as $bib) {
+                if (!isset($bib->holdings->link)) {
+                    continue;
+                }
+                $bibPath = $bib->holdings->link;
+                $holdings = $this->makeRequest($bibPath);
+                foreach ($holdings->holding as $holding) {
+                    $holdingId = (string)$holding->holding_id;
+                    $itemPath = $bibPath . '/' . urlencode($holdingId) . '/items';
+                    if ($currentItems = $this->makeRequest($itemPath)) {
+                        foreach ($currentItems->item as $item) {
+                            $availability = $this->getAvailabilityFromItem($item);
+                            $barcode = (string)$item->item_data->barcode;
+                            $callnumber = (string)$item->holding_data->call_number;
+                            $results[] = [
+                                'id' => $id,
+                                'source' => 'Solr',
+                                'availability' => $availability,
+                                'status' => (string)$item->item_data->base_status[0]
+                                    ->attributes()['desc'],
+                                'location' => (string)$holding->library[0]
+                                    ->attributes()['desc'],
+                                'reserve' => 'N',   // TODO: support reserve status
+                                'callnumber' => $callnumber,
+                                'duedate' => null, // TODO: support due dates
+                                'returnDate' => false,// TODO: support recent returns
+                                'number' => ++$copyCount,
+                                'barcode' => empty($barcode) ? 'n/a' : $barcode,
+                                'item_id' => (string)$item->item_data->pid,
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+        return $results;
     }
 
     /**
@@ -451,4 +494,77 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
         return $retval;
     }
+
+    /**
+     * @param string $courseID     Value from getCourses
+     * @param string $instructorID Value from getInstructors
+     * @param string $departmentID Value from getDepartments
+     *
+     * @return array With key BIB_ID - The record ID of the current reserve item.
+     *               Not currently used:
+     *               DISPLAY_CALL_NO, AUTHOR, TITLE, PUBLISHER, PUBLISHER_DATE
+     * /
+    public function findReserves($courseID, $instructorID, $departmentID) {
+        // https://developers.exlibrisgroup.com/alma/apis/courses
+        // GET /​almaws/​v1/​courses/​{course_id}/​reading-lists
+    } //*/
+
+    /**
+     * @return array with key = course ID, value = course name
+     * /
+    public function getCourses() {
+        // https://developers.exlibrisgroup.com/alma/apis/courses
+        // GET /​almaws/​v1/​courses
+    } //*/
+
+    /**
+     * @return array with key = course ID, value = course name
+     * /
+    public function getFunds() {
+        // https://developers.exlibrisgroup.com/alma/apis/acq
+        // GET /​almaws/​v1/​acq/​funds
+    } //*/
+
+    /**
+     * @param string $bibID Bibligraphic ID
+     *
+     * @return boolean
+     * /
+    public function hasHoldings($bibID) {
+        // https://developers.exlibrisgroup.com/alma/apis/bibs
+        // GET /almaws/v1/bibs/{mms_id}/holdings
+    } //*/
+
+    /* ================= METHODS INACCESSIBLE OUTSIDE OF GET ===================== */
+
+    /**
+     * @param array $cancelDetails An associative array with two keys:
+     *                  patron  (array returned by the driver's patronLogin method)
+     *                  details (array returned by the driver's getCancelHoldDetails)
+     *
+     * @return array count – The number of items successfully cancelled
+     *               items – Associative array where keyed by item_id (getMyHolds)
+     *                   success – Boolean true or false
+     *                   status – A status message from the language file (required)
+     *                   sysMessage - A system supplied failure message (optional)
+     * /
+    public function cancelHolds($cancelDetails) {
+        // https://developers.exlibrisgroup.com/alma/apis/users
+        // DELETE /​almaws/​v1/​users/​{user_id}/​requests/​{request_id}
+    } //*/
+    /**
+     * @param array $cancelDetails An associative array with two keys:
+     *                  patron  (array returned by the driver's patronLogin method)
+     *                  details (array returned by the driver's getCancelHoldDetails)
+     *
+     * @return array count – The number of items successfully cancelled
+     *               items – Associative array where keyed by item_id (getMyHolds)
+     *                   success – Boolean true or false
+     *                   status – A status message from the language file (required)
+     *                   sysMessage - A system supplied failure message (optional)
+     * /
+    public function cancelHolds($cancelDetails) {
+        // https://developers.exlibrisgroup.com/alma/apis/users
+        // DELETE /​almaws/​v1/​users/​{user_id}/​requests/​{request_id}
+    } //*/
 }
