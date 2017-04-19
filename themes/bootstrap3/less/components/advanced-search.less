@@ -69,10 +69,19 @@
   display: block;
   padding: 1rem;
 }
-.template-dir-eds.template-name-advanced {
-  legend {margin-bottom: 0;}
-  .no-js .adv-group:nth-child(n+3) {display: none;}
-  .adv-search .close a {margin-left: -2em;}
+
+/* --- Fieldsets --- */
+@media (min-width: 768px) {
+  fieldset,
+  .fieldset {
+    float: left;
+    width: 33%;
+    padding: 1rem .5rem;
+  }
+  .solr-facets {
+    float: none;
+    width: auto;
+  }
 }
 
 /* --- EDS --- */
