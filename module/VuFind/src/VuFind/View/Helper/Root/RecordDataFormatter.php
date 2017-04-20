@@ -105,9 +105,7 @@ class RecordDataFormatter extends AbstractHelper
                     ) {
                         $field = call_user_func($current['labelFunction'], $data);
                     }
-                    $context = isset($options['context']) ? $options['context'] : [];
-                    $context['data'] = $data;
-                    $context['driver'] = $driver;
+                    $context = isset($current['context']) ? $current['context'] : [];
                     $result[$field] = [
                         'value' => $text,
                         'context' => $context
