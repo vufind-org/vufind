@@ -178,12 +178,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $client = $this->httpService->createClient(
             $this->baseUrl . '/users/' . $barcode
             . '?apiKey=' . urlencode($this->apiKey)
+            . '&op=auth&password=' . urlencode(trim($password))
         );
         $client->setMethod(\Zend\Http\Request::METHOD_POST);
-        $client->setParameterPost(['op' => 'auth', 'password' => trim($password)]);
         $response = $client->send();
-        // TODO: Test once we have POST access
-        if (true || $response->isSuccess()) {
+        // Test once we have POST access
+        if ($response->isSuccess()) {
             return [
                 'cat_username' => trim($barcode),
                 'cat_password' => trim($password)
@@ -549,21 +549,23 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * /
     public function cancelHolds($cancelDetails) {
         // https://developers.exlibrisgroup.com/alma/apis/users
-        // DELETE /​almaws/​v1/​users/​{user_id}/​requests/​{request_id}
+        // DELETE /almaws/v1/users/{user_id}/requests/{request_id}
     } //*/
+
     /**
-     * @param array $cancelDetails An associative array with two keys:
-     *                  patron  (array returned by the driver's patronLogin method)
-     *                  details (array returned by the driver's getCancelHoldDetails)
+     * @param array $holdDetails - An associative array with several keys.
+     *                  patron -array returned by patronLogin method
+     *                  holdtype - type of hold (as provided by the getHolding)
+     *                  pickUpLocation - user-selected pickup location
+     *                  item_id - item ID
+     *                  comment - user comment
+     *                  id - bibliographic ID
+     *                  level - 'title' when a user requests a title-level hold
      *
-     * @return array count – The number of items successfully cancelled
-     *               items – Associative array where keyed by item_id (getMyHolds)
-     *                   success – Boolean true or false
-     *                   status – A status message from the language file (required)
-     *                   sysMessage - A system supplied failure message (optional)
+     * @return array success: bool, sysMessage: string
      * /
-    public function cancelHolds($cancelDetails) {
+    public function placeHold($holdDetails) {
         // https://developers.exlibrisgroup.com/alma/apis/users
-        // DELETE /​almaws/​v1/​users/​{user_id}/​requests/​{request_id}
+        // POST /almaws/v1/users/{user_id}/requests
     } //*/
 }
