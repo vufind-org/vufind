@@ -288,7 +288,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      * @param string $service     Called function (GetAvailability,
      *                                             GetRecords,
      *                                             GetAuthorityRecords,
-     *                                             LookupPatron,
+     *                                             
+     ,
      *                                             AuthenticatePatron,
      *                                             GetPatronInfo,
      *                                             GetPatronStatus,
