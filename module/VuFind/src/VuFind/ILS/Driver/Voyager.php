@@ -1016,7 +1016,7 @@ EOT;
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function processHoldingData($data, $id, $patron = false)
+    protected function processHoldingData($data, $id, $patron = null)
     {
         $holding = [];
 
