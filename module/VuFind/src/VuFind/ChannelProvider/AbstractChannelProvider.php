@@ -27,6 +27,7 @@
  */
 namespace VuFind\ChannelProvider;
 use VuFind\Cover\Router as CoverRouter;
+use VuFind\Search\Base\Params;
 
 /**
  * Facet-driven channel provider.
