@@ -21,12 +21,14 @@ $formattedAuthors = [];
       <?
         // Display additional data using the appropriate translation prefix
         // (for example, to render author roles correctly):
-        foreach ($requiredDataFields as $field) {
-            $name = $field['name'];
-            $prefix = isset($field['prefix']) ? $field['prefix'] : '';
-            if (isset($dataFields[$name])) {
-                echo $formatProperty($dataFields[$name], $name, $prefix);
-            }
+        if (!empty($requiredDataFields)) {
+          foreach ($requiredDataFields as $field) {
+              $name = $field['name'];
+              $prefix = isset($field['prefix']) ? $field['prefix'] : '';
+              if (isset($dataFields[$name])) {
+                  echo $formatProperty($dataFields[$name], $name, $prefix);
+              }
+          }
         }
       ?>
     </span>
