@@ -52,6 +52,17 @@ trait FullMarcTrait
 {
 
     /**
+     * Return academia lettering 
+     *
+     * @return array
+     */
+    public function getAcademiaLettering()
+    {
+        return $this->getFieldArray('502', ['a']);
+    }
+
+
+    /**
      * Return the list of "source records" for this consortial record.
      *
      * @return array
@@ -82,6 +93,17 @@ trait FullMarcTrait
     {
         return $this->getFirstFieldValue('250', ['a']);
     }
+
+    /**
+     * Get an array of all the formats associated with the record.
+     *
+     * @return array
+     */
+    public function getFormats()
+    {
+        return $this->getFieldArray('300', ['a', 'b'], false);
+    }
+
 
     /**
      * Get an array of all ISBNs associated with the record (may be empty).
@@ -225,19 +247,29 @@ trait FullMarcTrait
     }
 
     /**
+     * Get an array of all corporate authors (complementing getPrimaryAuthor()).
+     *
+     * @return array
+     */
+    public function getCorporateAuthors()
+    {
+        $other_author = array_merge(
+            $this->getFieldArray('110', ['a', 'b']),
+            $this->getFieldArray('111', ['a', 'b']),
+            $this->getFieldArray('710', ['a', 'b']),
+            $this->getFieldArray('711', ['a', 'b'])
+        );
+        return $other_author;
+    }
+
+    /**
      * Get an array of all secondary authors (complementing getPrimaryAuthor()).
      *
      * @return array
      */
     public function getSecondaryAuthors()
     {
-        $other_author = array_merge(
-            $this->getFieldArray('110', ['a', 'b']),
-            $this->getFieldArray('111', ['a', 'b']),
-            $this->getFieldArray('700', ['a', 'b', 'c', 'd']),
-            $this->getFieldArray('710', ['a', 'b']),
-            $this->getFieldArray('711', ['a', 'b'])
-        );
+        $other_author = $this->getFieldArray('700', ['a', 'b', 'c', 'd']);
         return $other_author;
     }
 
