@@ -433,18 +433,19 @@ class DueDateReminders extends AbstractService
         if (!empty($errors)) {
             $subject = $this->translator->translate('due_date_email_error');
             $params = [
-             'loans' => $remindLoans,
-             'url' => $baseUrl . $this->urlHelper->__invoke('librarycards-home'),
-             'unsubscribeUrl' => $baseUrl . $unsubscribeUrl,
-             'baseUrl' => $baseUrl, 'errors' => $errors,
+                'loans' => $remindLoans,
+                'url' => $baseUrl . $this->urlHelper->__invoke('librarycards-home'),
+                'unsubscribeUrl' => $baseUrl . $unsubscribeUrl,
+                'baseUrl' => $baseUrl, 'errors' => $errors,
             ];
         } else {
             $subject = $this->translator->translate('due_date_email_subject');
             $params = [
-            'loans' => $remindLoans,
-            'url' => $baseUrl . $this->urlHelper->__invoke('myresearch-checkedout'),
-            'unsubscribeUrl' => $baseUrl . $unsubscribeUrl,
-            'baseUrl' => $baseUrl
+                'loans' => $remindLoans,
+                'url' => $baseUrl
+                    . $this->urlHelper->__invoke('myresearch-checkedout'),
+                'unsubscribeUrl' => $baseUrl . $unsubscribeUrl,
+                'baseUrl' => $baseUrl
             ];
         }
         $message = $this->renderer->render("Email/due-date-reminder.phtml", $params);
