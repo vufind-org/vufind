@@ -36,21 +36,7 @@ namespace FinnaTheme\Minify;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CSS extends \MatthiasMullie\Minify\CSS
+class CSS extends \VuFindTheme\Minify\CSS
 {
     use MinifyTrait;
-
-    /**
-     * Return a converter to update relative paths to be relative to the new
-     * destination.
-     *
-     * @param string $source Source path
-     * @param string $target Target path
-     *
-     * @return ConverterInterface
-     */
-    protected function getPathConverter($source, $target)
-    {
-        return new Converter($source, $target);
-    }
 }
