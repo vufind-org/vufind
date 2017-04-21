@@ -494,6 +494,33 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         return $retval;
     }
 
+
+    /**
+     * @param array $holdDetails An associative array w/ atleast patron and item_id
+     *
+     * @return array success: bool, sysMessage: string
+     */
+    public function placeHold($holdDetails)
+    {
+        // https://developers.exlibrisgroup.com/alma/apis/users
+        // POST /almaws/v1/users/{user_id}/requests
+        $client = $this->httpService->createClient(
+            $this->baseUrl . '/users/' . $holdDetails['patron']['cat_username']
+            . '/requests?apiKey=' . urlencode($this->apiKey)
+            . '&item_pid=' . urlencode($holdDetails['item_id'])
+        );
+        $client->setMethod(\Zend\Http\Request::METHOD_POST);
+        $response = $client->send();
+        // Test once we have POST access
+        if ($response->isSuccess()) {
+            return ['success' => true];
+        }
+        $xml = simplexml_load_string($response->getBody());
+        return [
+            'success' => false,
+            'system_msg' => $xml->errorList[0]->errorMessage // TODO: This is a guess
+        ];
+    }
     /**
      * @param string $courseID     Value from getCourses
      * @param string $instructorID Value from getInstructors
@@ -550,22 +577,5 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function cancelHolds($cancelDetails) {
         // https://developers.exlibrisgroup.com/alma/apis/users
         // DELETE /almaws/v1/users/{user_id}/requests/{request_id}
-    } //*/
-
-    /**
-     * @param array $holdDetails - An associative array with several keys.
-     *                  patron -array returned by patronLogin method
-     *                  holdtype - type of hold (as provided by the getHolding)
-     *                  pickUpLocation - user-selected pickup location
-     *                  item_id - item ID
-     *                  comment - user comment
-     *                  id - bibliographic ID
-     *                  level - 'title' when a user requests a title-level hold
-     *
-     * @return array success: bool, sysMessage: string
-     * /
-    public function placeHold($holdDetails) {
-        // https://developers.exlibrisgroup.com/alma/apis/users
-        // POST /almaws/v1/users/{user_id}/requests
     } //*/
 }
