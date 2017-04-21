@@ -18,7 +18,7 @@ See the [bootstrap config file](https://github.com/vufind-org/vufind/blob/master
 
 ## Theme Inheritance
 
-Out themes system allows you to base your custom theme on a previously created theme. Doing so will cause VuFind to look for a template, CSS, Javascript, or image file first in your custom theme, then its parent, then its grand-parent, all the way up to root. This allows you to change any individual file within the theme without having to copy every file over. For example, you might noticed that the [bootprint theme has no templates](https://github.com/vufind-org/vufind/blob/master/themes/bootprint3/) of its own. It is entirely a style overhaul based on the bootstrap theme.
+VuFind's themes system allows you to base your custom theme on a previously created theme. Doing so will cause VuFind to look for a template, CSS, Javascript, or image file first in your custom theme, then its parent, then its grand-parent, all the way up to root. This allows you to change any individual file within the theme without having to copy every file over. For example, you might noticed that the [bootprint theme has no templates](https://github.com/vufind-org/vufind/blob/master/themes/bootprint3/) of its own. It is entirely a style overhaul based on the bootstrap theme.
 
 This is configured in `theme.config.php`. LESS inheritance is targetted towards and controlled by the [`compiled.less`](https://github.com/vufind-org/vufind/blob/master/themes/custom_tmpl/less/compiled.less) file.
 
@@ -32,6 +32,6 @@ VuFind also supports [SASS](https://sass-lang.com/). We use a custom command, `g
 
 ## Grunt
 
-After you make any changes to a themes LESS, you need to run the command `grunt less` in the command line. Make sure you have run `npm install` and have [installed the Grunt CLI](https://gruntjs.com/getting-started). For times when you're making a lot of changes, you can have Grunt watch for changes and compile LESS accordingly. To do this, start the command `grunt watch:less` in the command line.
+After you make any changes to a theme's LESS, you need to run the command `grunt less` in the command line. Make sure you have run `npm install` and have [installed the Grunt CLI](https://gruntjs.com/getting-started). For times when you're making a lot of changes, you can have Grunt watch for changes and compile LESS accordingly. To do this, start the command `grunt watch:less` in the command line.
 
 For SASS, you can run `grunt scss` and `grunt watch:scss`.
