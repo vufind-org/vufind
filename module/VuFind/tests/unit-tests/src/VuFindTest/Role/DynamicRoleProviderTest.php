@@ -101,7 +101,7 @@ class DynamicRoleProviderTest extends \VuFindTest\Unit\TestCase
     {
         $pm = new PluginManager();
         foreach (['a', 'b', 'c'] as $name) {
-            $pm->setService($name, $this->getMock('VuFind\Role\PermissionProvider\PermissionProviderInterface'));
+            $pm->setService($name, $this->createMock('VuFind\Role\PermissionProvider\PermissionProviderInterface'));
         }
         return $pm;
     }
