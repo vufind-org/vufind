@@ -54,6 +54,20 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
     protected $providerId = '';
 
     /**
+     * Hook to configure search parameters before executing search.
+     *
+     * @param Params $params Search parameters to adjust
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function configureSearchParams(Params $params)
+    {
+        // No action necessary by default.
+    }
+
+    /**
      * Inject cover router
      *
      * @param CoverRouter $coverRouter Cover router.

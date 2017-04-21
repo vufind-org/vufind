@@ -114,20 +114,6 @@ class SimilarItems extends AbstractChannelProvider
     }
 
     /**
-     * Hook to configure search parameters before executing search.
-     *
-     * @param Params $params Search parameters to adjust
-     *
-     * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function configureSearchParams(Params $params)
-    {
-        // No action necessary.
-    }
-
-    /**
      * Return channel information derived from a record driver object.
      *
      * @param RecordDriver $driver       Record driver
