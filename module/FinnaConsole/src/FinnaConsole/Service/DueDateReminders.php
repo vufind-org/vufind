@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2013-2016.
+ * Copyright (C) The National Library of Finland 2013-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @package  Service
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -39,6 +40,7 @@ use Zend\View\Resolver\TemplatePathStack;
  * @package  Service
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -225,13 +227,17 @@ class DueDateReminders extends AbstractService
         $this->msg('Processing ' . count($users) . ' users');
 
         foreach ($users as $user) {
-            $remindLoans = $this->getReminders($user);
-            if ($remindCnt = count($remindLoans)) {
+            $results = $this->getReminders($user);
+            $errors = $results['errors'];
+            $remindLoans = $results['remindLoans'];
+            $remindCnt = count($remindLoans);
+            $errorCnt = count($errors);
+            if ($remindCnt || $errorCnt) {
                 $this->msg(
-                    "$remindCnt new loans to remind for user {$user->username}"
-                    . " (id {$user->id})"
+                    "$remindCnt reminders and $errorCnt errors to send for user"
+                    . "{$user->username}" . " (id {$user->id})"
                 );
-                $this->sendReminder($user, $remindLoans);
+                 $this->sendReminder($user, $remindLoans, $errors);
             } else {
                 $this->msg(
                     "No loans to remind for user {$user->username} (id {$user->id})"
@@ -246,7 +252,7 @@ class DueDateReminders extends AbstractService
      *
      * @param \Finna\Db\Table\Row\User $user User.
      *
-     * @return array Array of loans to be reminded.
+     * @return array Array of loans to be reminded and possible login errors.
      */
     protected function getReminders($user)
     {
@@ -259,6 +265,7 @@ class DueDateReminders extends AbstractService
         }
 
         $remindLoans = [];
+        $errors = [];
         foreach ($user->getLibraryCards() as $card) {
             if (!$card['id']) {
                 continue;
@@ -279,6 +286,7 @@ class DueDateReminders extends AbstractService
                     . " (id {$user->id}), card {$card->cat_username}"
                     . " (id {$card->id})"
                 );
+                $errors[] = ['card' => $card['cat_username']];
                 continue;
             }
             $todayTime = new \DateTime();
@@ -339,7 +347,7 @@ class DueDateReminders extends AbstractService
                 }
             }
         }
-        return $remindLoans;
+        return ['remindLoans' => $remindLoans, 'errors' => $errors];
     }
 
     /**
@@ -347,10 +355,11 @@ class DueDateReminders extends AbstractService
      *
      * @param \Finna\Db\Table\Row\User $user        User.
      * @param array                    $remindLoans Loans to be reminded.
+     * @param array                    $errors      Errors in due date checking.
      *
      * @return boolean success.
      */
-    protected function sendReminder($user, $remindLoans)
+    protected function sendReminder($user, $remindLoans, $errors)
     {
         if (!$user->email || trim($user->email) == '') {
             $this->msg(
@@ -421,13 +430,23 @@ class DueDateReminders extends AbstractService
         if ($urlView != $this::DEFAULT_PATH) {
             $baseUrl .= "/$urlView";
         }
-        $params = [
+        if (!empty($errors)) {
+            $subject = $this->translator->translate('due_date_email_error');
+            $params = [
              'loans' => $remindLoans,
-             'url' => $baseUrl . $this->urlHelper->__invoke('myresearch-checkedout'),
+             'url' => $baseUrl . $this->urlHelper->__invoke('librarycards-home'),
              'unsubscribeUrl' => $baseUrl . $unsubscribeUrl,
-             'baseUrl' => $baseUrl
-        ];
-        $subject = $this->translator->translate('due_date_email_subject');
+             'baseUrl' => $baseUrl, 'errors' => $errors,
+            ];
+        } else {
+            $subject = $this->translator->translate('due_date_email_subject');
+            $params = [
+            'loans' => $remindLoans,
+            'url' => $baseUrl . $this->urlHelper->__invoke('myresearch-checkedout'),
+            'unsubscribeUrl' => $baseUrl . $unsubscribeUrl,
+            'baseUrl' => $baseUrl
+            ];
+        }
         $message = $this->renderer->render("Email/due-date-reminder.phtml", $params);
         try {
             $to = $user->email;
