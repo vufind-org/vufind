@@ -73,7 +73,7 @@ class RecordDataFormatter extends AbstractHelper
      * @param RecordDriver $driver Record driver object.
      * @param array        $spec   Formatting specification
      *
-     * @return Record
+     * @return array
      */
     public function getData(RecordDriver $driver, array $spec)
     {
@@ -105,7 +105,11 @@ class RecordDataFormatter extends AbstractHelper
                     ) {
                         $field = call_user_func($current['labelFunction'], $data);
                     }
-                    $result[$field] = $text;
+                    $context = isset($current['context']) ? $current['context'] : [];
+                    $result[$field] = [
+                        'value' => $text,
+                        'context' => $context
+                    ];
                 }
             }
         }
