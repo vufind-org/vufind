@@ -1,4 +1,8 @@
-# Configuration
+# Making a new theme
+
+We recommend you make a copy of the `custom_tmpl` directory, inside of the `themes` directory. That way, when there are updates to VuFind, you won't run into trouble with the updates changing your customizations or causing conflicts in git.
+
+## Configuration
 
 There are three places in the VuFind configuration that you can change to see your custom theme in action.
 
@@ -14,7 +18,7 @@ Setting up themes under `selectable_themes` causes a dropdown to appear in the t
 
 The first thing you'll have to set in a new theme is the file `theme.config.php`. This file allows you to establish your theme as a child of another theme and allows you to add new CSS and Javascript files. If you've created custom view helpers, you will also set up their factories in this file. You only need to add files here that wouldn't be matched via inheritance (such as adding a new jQuery plugin).
 
-See the [bootstrap config file](https://github.com/vufind-org/vufind/blob/master/themes/bootstrap3/theme.config.php) for a full example.
+A basic setup is already included in the custom theme template. For a full example, see the [bootstrap config file](https://github.com/vufind-org/vufind/blob/master/themes/bootstrap3/theme.config.php).
 
 ## Theme Inheritance
 
