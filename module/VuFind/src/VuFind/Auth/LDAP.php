@@ -158,9 +158,11 @@ class LDAP extends AbstractBase
         }
 
         // if the host parameter is not specified as ldaps://
-        // then we need to initiate TLS so we
+        // then (unless TLS is disabled) we need to initiate TLS so we
         // can have a secure connection over the standard LDAP port.
-        if (stripos($host, 'ldaps://') === false) {
+        $disableTls = isset($this->config->LDAP->disable_tls)
+            && $this->config->LDAP->disable_tls;
+        if (stripos($host, 'ldaps://') === false && !$disableTls) {
             $this->debug('Starting TLS');
             if (!@ldap_start_tls($connection)) {
                 $this->debug('TLS failed');
