@@ -24,14 +24,14 @@ function checkSaveStatus(el) {
   $.ajax({
     dataType: 'json',
     method: 'POST',
-    url: VuFind.path + '/AJAX/JSON?method=getSingleSaveStatus',
+    url: VuFind.path + '/AJAX/JSON?method=getSaveStatuses',
     data: {
-      id: $id.val(),
-      source: $source.val()
+      id: [ $id.val() ],
+      source: [ $source.val() ]
     }
   })
   .done(function checkSaveStatusDone(response) {
-    displaySaveStatus(response.data, $item);
+    displaySaveStatus(response.data[0], $item);
   })
   .fail(function checkItemStatusFail(response, textStatus) {
     itemStatusFail(el, response, textStatus);

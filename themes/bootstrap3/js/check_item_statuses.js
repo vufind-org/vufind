@@ -80,11 +80,11 @@ function checkItemStatus(el) {
   $.ajax({
     dataType: 'json',
     method: 'POST',
-    url: VuFind.path + '/AJAX/JSON?method=getSingleItemStatus',
-    data: { 'id': datum }
+    url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
+    data: { 'id': [ datum ] }
   })
   .done(function checkItemStatusDone(response) {
-    displayItemStatus(response.data, $item);
+    displayItemStatus(response.data[0], $item);
   })
   .fail(function checkItemStatusFail(response, textStatus) {
     itemStatusFail(el, response, textStatus);

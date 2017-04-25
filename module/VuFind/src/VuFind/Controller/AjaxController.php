@@ -361,82 +361,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Get Item Statuses
-     *
-     * This is responsible for printing the holdings information for a
-     * collection of records in JSON format.
-     *
-     * @return \Zend\Http\Response
-     * @author Chris Delis <cedelis@uillinois.edu>
-     * @author Tuan Nguyen <tuan@yorku.ca>
-     */
-    protected function getSingleItemStatusAjax()
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        $catalog = $this->getILS();
-
-        // Load messages for response:
-        $messages = [
-            'available' => 'ajax/status-available.phtml',
-            'unavailable' => 'ajax/status-unavailable.phtml',
-            'unknown' => 'ajax/status-unknown.phtml'
-        ];
-
-        // Load callnumber and location settings:
-        $config = $this->getConfig();
-        $callnumberSetting = isset($config->Item_Status->multiple_call_nos)
-            ? $config->Item_Status->multiple_call_nos : 'msg';
-        $locationSetting = isset($config->Item_Status->multiple_locations)
-            ? $config->Item_Status->multiple_locations : 'msg';
-        $showFullStatus = isset($config->Item_Status->show_full_status)
-            ? $config->Item_Status->show_full_status : false;
-
-        // Get result
-        $ids = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
-        $result = $catalog->getStatus($ids);
-
-        // Filter out suppressed locations:
-        $record = $this->filterSuppressedLocations($result);
-
-        // Loop through all the status information that came back
-        $status = null;
-        if (count($record)) {
-            if ($locationSetting == "group") {
-                $status = $this->getItemStatusGroup(
-                    $record, $messages, $callnumberSetting
-                );
-            } else {
-                $status = $this->getItemStatus(
-                    $record, $messages, $locationSetting, $callnumberSetting
-                );
-            }
-            // If a full status display has been requested, append the HTML:
-            if ($showFullStatus) {
-                $status['full_status'] = $renderer->render(
-                    'ajax/status-full.phtml', [
-                        'statusItems' => $record,
-                        'callnumberHandler' => $this->getCallnumberHandler()
-                     ]
-                );
-            }
-        } else {
-            $status = [
-                'availability'         => 'false',
-                'availability_message' => $messages['unavailable'],
-                'location'             => $this->translate('Unknown'),
-                'locationList'         => false,
-                'reserve'              => 'false',
-                'reserve_message'      => $this->translate('Not On Reserve'),
-                'callnumber'           => '',
-                'missing_data'         => true,
-            ];
-        }
-
-        // Done
-        return $this->output($status, self::STATUS_OK);
-    }
-
-    /**
      * Support method for getItemStatuses() -- process a single bibliographic record
      * for location settings other than "group".
      *
@@ -597,46 +521,6 @@ class AjaxController extends AbstractBase
                 : $this->translate('Not On Reserve'),
             'callnumber' => false
         ];
-    }
-
-    /**
-     * Check one or more records to see if they are saved in one of the user's list.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function getSingleSaveStatusAjax()
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        // check if user is logged in
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
-            );
-        }
-
-        // loop through each ID check if it is saved to any of the user's lists
-        $id = $this->params()->fromPost('id', $this->params()->fromQuery('id', []));
-        $source = $this->params()->fromPost(
-            'source', $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
-        );
-        $data = $user->getSavedData($id, null, $source);
-        $lists = [];
-        if ($data && count($data) > 0) {
-            // if this item was saved, add it to the list of saved items.
-            foreach ($data as $list) {
-                $lists[] = [
-                    'list_url' => $this->url()->fromRoute(
-                        'userList',
-                        ['id' => $list->list_id]
-                    ),
-                    'list_title' => $list->list_title
-                ];
-            }
-        }
-        return $this->output($lists, self::STATUS_OK);
     }
 
     /**
