@@ -3,6 +3,7 @@
 @import "common";
 
 body {
+  font-size: 16px;
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; // native font stack
   color: @near-black;
 }
@@ -75,6 +76,15 @@ header .form-control:focus {
 .search-controls {
   padding-top: 1rem;
   padding-bottom: 1rem;
+}
+.searchForm { box-shadow: none; }
+#searchForm_lookfor,
+#searchForm_type { margin-bottom: .25rem; }
+@media (min-width: 768px) {
+  #searchForm_lookfor,
+  #searchForm_type {
+    margin-bottom: 0;
+  }
 }
 
 /* --- Sidebar --- */
