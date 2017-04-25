@@ -85,5 +85,12 @@ header .form-control:focus {
   }
   */
   background-color: @light-gray;
-  .title::after { color: @gray; }
+  .title::after { color: @gray-light; }
+
+  /* Collapsed arrows */
+  .list-group.facet .list-group-item.title::after {
+    font-family: "FontAwesome";
+    content: '\f106';
+  }
+  .list-group.facet .list-group-item.title.collapsed::after { content: '\f107'; }
 }
