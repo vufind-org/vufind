@@ -96,6 +96,8 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
     public function getConsoleUsage(Console $console)
     {
         return [
+            'generate customtheme'
+                => 'Create and configure a new theme from custom_theme_template',
             'generate dynamicroute' => 'Add a dynamic route',
             'generate extendservice' => 'Override a service with a new child class',
             'generate nontabrecordaction' => 'Add routes for non-tab record action',

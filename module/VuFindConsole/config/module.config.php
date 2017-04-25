@@ -35,6 +35,7 @@ $config = [
 ];
 
 $routes = [
+    'generate/customtheme' => 'generate customtheme [<themename>]',
     'generate/dynamicroute' => 'generate dynamicroute [<name>] [<newController>] [<newAction>] [<module>]',
     'generate/extendservice' => 'generate extendservice [<source>] [<target>]',
     'generate/nontabrecordaction' => 'generate nontabrecordaction [<newAction>] [<module>]',

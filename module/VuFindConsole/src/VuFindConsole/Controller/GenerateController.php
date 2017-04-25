@@ -26,6 +26,8 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\Writer as ConfigWriter;
 use Zend\Code\Generator\ClassGenerator;
 use Zend\Code\Generator\MethodGenerator;
 use Zend\Code\Generator\FileGenerator;
@@ -290,6 +292,148 @@ class GenerateController extends AbstractBase
 
         // Write updated configuration
         $this->writeModuleConfig($configPath, $config);
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     * Copies contents from $source to $dest
+     *
+     * @param string $source
+     * @param string $dest
+     *
+     * @return boolean true on success false otherwise
+     */
+    protected static function copyDirectory($source, $dest)
+    {
+        $sourceHandle = opendir($source);
+        if (!file_exists($dest)) {
+            mkdir($dest, 0755);
+        }
+
+        if (!$sourceHandle) {
+            echo 'failed to copy directory: failed to open source ' . $source;
+            return false;
+        }
+
+        while ($file = readdir($sourceHandle)) {
+            if ($file == '.' || $file == '..') {
+                continue;
+            }
+
+            if (is_dir($source . '/' . $file)) {
+                if (!file_exists($dest . '/' . $file)) {
+                    mkdir($dest . '/' . $file, 0755);
+                }
+                self::copyDirectory($source . '/' . $file, $dest . '/' . $file);
+            } else {
+                copy($source . '/' . $file, $dest . '/' . $file);
+            }
+        }
+
+        return true;
+    }
+    /**
+     * Same as realpath, but doesn't check file existance
+     */
+    protected function get_absolute_path($path) {
+        $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
+        $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
+        $absolutes = array();
+        foreach ($parts as $part) {
+            if ('.' == $part) continue;
+            if ('..' == $part) {
+                array_pop($absolutes);
+            } else {
+                $absolutes[] = $part;
+            }
+        }
+        if (substr($path, 0, 1) === DIRECTORY_SEPARATOR) {
+            return DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $absolutes);
+        }
+        return implode(DIRECTORY_SEPARATOR, $absolutes);
+    }
+
+    /**
+     * Create a custom theme from the custom_theme_template, configure.
+     */
+    public function customthemeAction()
+    {
+        // Validate command line arguments:
+        $request = $this->getRequest();
+        $name = $request->getParam('themename');
+        if (empty($name)) {
+            Console::writeLine('\tNo themename found, using "custom"');
+            $name = 'custom';
+        }
+        // Check for existing theme
+        $baseDir = __DIR__ . '/../../../../../themes/';
+        if (realpath($baseDir . $name)) {
+            Console::writeLine('Theme "' . $name . '" already exists');
+            return $this->getFailureResponse();
+        }
+        Console::writeLine('Creating new theme: "' . $name . '"');
+        // Copy custom_theme_template
+        $source = $this->get_absolute_path($baseDir . 'custom_theme_template');
+        $dest = $this->get_absolute_path($baseDir . $name);
+        Console::writeLine("\tCopying custom_theme_template");
+        Console::writeLine("\t\t" . $source);
+        Console::writeLine("\t\t" . $dest);
+        $this->copyDirectory($source, $dest);
+        // Enable theme
+        $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        Console::writeLine("\tUpdating $configPath...");
+        Console::writeLine("\t\t[Site] > theme = $name");
+        $writer = new ConfigWriter($configPath);
+        $writer->set('Site', 'theme', $name);
+        // Enable dropdown
+        $config = $this->getConfig();
+        $settingPrefixes = [
+            'bootstrap' => 'bs3',
+            'custom' => strtolower(str_replace(' ', '', $name))
+        ];
+        // - Set alternate_themes
+        Console::writeLine("\t\t[Site] > alternate_themes");
+        $altSetting = [];
+        if (isset($config->Site->alternate_themes)) {
+            $alts = explode(',', $config->Site->alternate_themes);
+            foreach ($alts as $a) {
+                $parts = explode(':', $a);
+                if ($parts[1] === 'bootstrap3') {
+                    $settingPrefixes['bootstrap'] = $parts[0];
+                } elseif ($parts[1] === $name) {
+                    $settingPrefixes['custom'] = $parts[0];
+                } else {
+                    $altSetting[] = $a;
+                }
+            }
+        }
+        $altSetting[] = $settingPrefixes['bootstrap'] . ':bootstrap3';
+        $altSetting[] = $settingPrefixes['custom'] . ':' . $name;
+        $writer->set('Site', 'alternate_themes', implode(',', $altSetting));
+        // - Set selectable_themes
+        Console::writeLine("\t\t[Site] > selectable_themes");
+        $dropSetting = [
+            $settingPrefixes['bootstrap'] . ':Bootstrap',
+            $settingPrefixes['custom'] . ':' . ucwords($name)
+        ];
+        if (isset($config->Site->selectable_themes)) {
+            $themes = explode(',', $config->Site->selectable_themes);
+            foreach ($themes as $t) {
+                $parts = explode(':', $t);
+                if ($parts[0] !== $settingPrefixes['bootstrap']
+                    && $parts[0] !== $settingPrefixes['custom']
+                ) {
+                    $dropSetting[] = $t;
+                }
+            }
+        }
+        $writer->set('Site', 'selectable_themes', implode(',', $dropSetting));
+        // Save
+        if (!$writer->save()) {
+            Console::writeLine("\tWrite failed!");
+            return $this->getFailureResponse();
+        }
+        Console::writeLine("\tFinished.");
         return $this->getSuccessResponse();
     }
 
