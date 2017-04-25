@@ -354,7 +354,7 @@ class GenerateController extends AbstractBase
     }
 
     /**
-     * Create a custom theme from the custom_theme_template, configure.
+     * Create a custom theme from the custom_theme_example, configure.
      */
     public function customthemeAction()
     {
@@ -372,10 +372,10 @@ class GenerateController extends AbstractBase
             return $this->getFailureResponse();
         }
         Console::writeLine('Creating new theme: "' . $name . '"');
-        // Copy custom_theme_template
-        $source = $this->get_absolute_path($baseDir . 'custom_theme_template');
+        // Copy custom_theme_example
+        $source = $this->get_absolute_path($baseDir . 'custom_theme_example');
         $dest = $this->get_absolute_path($baseDir . $name);
-        Console::writeLine("\tCopying custom_theme_template");
+        Console::writeLine("\tCopying custom_theme_example");
         Console::writeLine("\t\t" . $source);
         Console::writeLine("\t\t" . $dest);
         $this->copyDirectory($source, $dest);

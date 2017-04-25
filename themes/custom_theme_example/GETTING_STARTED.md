@@ -1,6 +1,6 @@
 # Making a new theme
 
-We recommend you make a copy of the `custom_theme_template` directory, inside of the `themes` directory. That way, when there are updates to VuFind, you won't run into trouble with the updates changing your customizations or causing conflicts in git.
+We recommend you make a copy of the `custom_theme_example` directory, inside of the `themes` directory. That way, when there are updates to VuFind, you won't run into trouble with the updates changing your customizations or causing conflicts in git.
 
 ## Configuration
 
@@ -10,7 +10,7 @@ The first and most straight-forward is by changing `config.ini > [Site] > theme`
 
 The two more development-oriented options are below `theme`: `alternate_themes` and `selectable_themes`. They both take comma-separated lists of themes in the format of `name1:theme1,name2:theme2`. Changing the theme via either of these two options sets a cookie that will keep your theme choice over the course of your session.
 
-Setting up themes under `alternate_themes` allows you to add a `ui=name` parameter to the end of your URL to see that theme. For example, the default configuration of `custom:custom_theme_template` would cause `https://vufind.org/?ui=custom` to show the theme described in the directory `custom_theme_template`.
+Setting up themes under `alternate_themes` allows you to add a `ui=name` parameter to the end of your URL to see that theme. For example, the default configuration of `custom:custom_theme_example` would cause `https://vufind.org/?ui=custom` to show the theme described in the directory `custom_theme_example`.
 
 Setting up themes under `selectable_themes` causes a dropdown to appear in the toolbar next to Login. This will allow you and any user to change their theme via this dropdown.
 
@@ -24,7 +24,7 @@ A basic setup is already included in the custom theme template. For a full examp
 
 VuFind's themes system allows you to base your custom theme on a previously created theme. Doing so will cause VuFind to look for a template, CSS, Javascript, or image file first in your custom theme, then its parent, then its grand-parent, all the way up to root. This allows you to change any individual file within the theme without having to copy every file over. For example, you might noticed that the [bootprint theme has no templates](https://github.com/vufind-org/vufind/blob/master/themes/bootprint3/) of its own. It is entirely a style overhaul based on the bootstrap theme.
 
-This is configured in `theme.config.php`. LESS inheritance is targetted towards and controlled by the [`compiled.less`](https://github.com/vufind-org/vufind/blob/master/themes/custom_theme_template/less/compiled.less) file.
+This is configured in `theme.config.php`. LESS inheritance is targetted towards and controlled by the [`compiled.less`](https://github.com/vufind-org/vufind/blob/master/themes/custom_theme_example/less/compiled.less) file.
 
 # Style Customization
 
