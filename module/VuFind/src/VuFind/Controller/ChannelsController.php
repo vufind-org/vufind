@@ -53,9 +53,11 @@ class ChannelsController extends AbstractBase
 
         // Send both GET and POST variables to search class:
         $request = [];
-        $searchClassId = DEFAULT_SEARCH_BACKEND;
 
         $config = $this->getConfig('channels');
+        $defaultSearchClassId = isset($config->General->default_home_source)
+            ? $config->General->default_home_source : DEFAULT_SEARCH_BACKEND;
+        $searchClassId = $this->params()->fromQuery('source', $defaultSearchClassId);
         $providerIds = isset($config->{"source.$searchClassId"}->home)
             ? $config->{"source.$searchClassId"}->home->toArray() : [];
         $providers = $this->getChannelProviderArray($providerIds, $config);
