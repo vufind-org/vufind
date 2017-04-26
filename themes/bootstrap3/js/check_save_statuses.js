@@ -1,4 +1,4 @@
-/*global htmlEncode, itemStatusFail, userIsLoggedIn, Hunt, VuFind */
+/*global htmlEncode, userIsLoggedIn, Hunt, VuFind */
 /*exported checkSaveStatuses */
 
 function displaySaveStatus(itemLists, $item) {
@@ -10,6 +10,15 @@ function displaySaveStatus(itemLists, $item) {
   }
 }
 
+function saveStatusFail(response, textStatus) {
+  $('.savedLists.ajax-pending').empty();
+  if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') {
+    return;
+  }
+  // display the error message on each of the ajax status place holder
+  $('.savedLists.ajax-pending').addClass('alert-danger').append(response.responseJSON.data);
+}
+
 var saveStatusObjs = [];
 var saveStatusEls = {};
 var saveStatusTimer = null;
@@ -17,7 +26,7 @@ var saveStatusDelay = 200;
 function saveQueueAjax(obj, el) {
   clearTimeout(saveStatusTimer);
   saveStatusObjs.push(obj);
-  saveStatusObjs[obj.id] = el;
+  saveStatusEls[obj.id] = el;
   saveStatusTimer = setTimeout(function delaySaveAjax() {
     var ids = [];
     var sources = [];
@@ -42,9 +51,13 @@ function saveQueueAjax(obj, el) {
       }
     })
     .fail(function checkItemStatusFail(response, textStatus) {
-      itemStatusFail(container, response, textStatus);
+      saveStatusFail(response, textStatus);
     });
+    for (var j = 0; j < saveStatusObjs.length; j++) {
+      saveStatusEls[saveStatusObjs[j].id].find('.ajax-availability').addClass('ajax-pending');
+    }
     saveStatusObjs = [];
+    saveStatusEls = {};
   }, saveStatusDelay);
 }
 

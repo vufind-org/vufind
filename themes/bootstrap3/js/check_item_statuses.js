@@ -62,12 +62,15 @@ function displayItemStatus(result, $item) {
         : result.location
     );
   }
+  $item.find('.ajax-availability').removeClass('ajax-availability hidden');
 }
-function itemStatusFail(container, response, textStatus) {
-  $(container).find('.ajax-availability').empty();
-  if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
+function itemStatusFail(response, textStatus) {
+  $('.ajax-availability.ajax-pending').empty();
+  if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') {
+    return;
+  }
   // display the error message on each of the ajax status place holder
-  $(container).find('.ajax-availability').append(response.responseJSON.data).addClass('text-danger');
+  $('.ajax-availability.ajax-pending').addClass('text-danger').append(response.responseJSON.data);
 }
 
 var itemStatusIds = [];
@@ -91,9 +94,13 @@ function itemQueueAjax(id, el) {
       }
     })
     .fail(function checkItemStatusFail(response, textStatus) {
-      itemStatusFail(container, response, textStatus);
+      itemStatusFail(response, textStatus);
     });
+    for (var i = 0; i < itemStatusIds.length; i++) {
+      itemStatusEls[itemStatusIds[i]].find('.ajax-availability').addClass('ajax-pending');
+    }
     itemStatusIds = [];
+    itemStatusEls = {};
   }, itemStatusDelay);
 }
 
@@ -104,7 +111,6 @@ function checkItemStatus(el) {
   }
   var id = $item.find('.hiddenId').val();
   itemQueueAjax(id, $item);
-  $item.find(".ajax-availability").removeClass('hidden ajax-availability');
 }
 
 function checkItemStatuses(_container) {
@@ -117,7 +123,6 @@ function checkItemStatuses(_container) {
     var id = $(ajaxItems[i]).find('.hiddenId').val();
     itemQueueAjax(id, $(ajaxItems[i]));
   }
-  console.log(itemStatusEls);
   // Stop looking for a scroll loader
   if (itemStatusObserver) {
     itemStatusObserver.disconnect();
