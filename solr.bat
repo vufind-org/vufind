@@ -22,6 +22,9 @@ rem JAVA_HOME
 rem   Home of Java installation (not directly used by this script, but passed along to
 rem   the standard Solr control script).
 rem
+rem SOLR_ADDITIONAL_START_OPTIONS
+rem   Additional options to pass to the solr binary at startup.
+rem
 rem SOLR_ADDITIONAL_JVM_OPTIONS
 rem   Additional options to pass to the JVM when launching Solr.
 
@@ -38,7 +41,7 @@ if "!%1!"=="!!" goto usage
 
 rem Set VUFIND_HOME (if not already set)
 if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
-rem VUFIND_HOME not set -- try to call env.bat to 
+rem VUFIND_HOME not set -- try to call env.bat to
 rem fix the problem before we give up completely
 if exist env.bat goto useenvbat
 rem If env.bat doesn't exist, the user hasn't run the installer yet.
@@ -77,7 +80,7 @@ if not "!%SOLR_PORT%!"=="!!" goto solrportset
 set SOLR_PORT=8080
 :solrportset
 
-call %SOLR_BIN%\solr.cmd %1 -p %SOLR_PORT% -s %SOLR_HOME% -m %SOLR_HEAP% -a "-Dsolr.log=%SOLR_LOGS_DIR% %SOLR_ADDITIONAL_JVM_OPTIONS%"
+call %SOLR_BIN%\solr.cmd %1 %SOLR_ADDITIONAL_START_OPTIONS% -p %SOLR_PORT% -s %SOLR_HOME% -m %SOLR_HEAP% -a "-Dsolr.log=%SOLR_LOGS_DIR% %SOLR_ADDITIONAL_JVM_OPTIONS%"
 goto end
 
 :usage
