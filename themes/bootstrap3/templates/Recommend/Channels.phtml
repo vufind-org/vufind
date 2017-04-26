@@ -4,6 +4,6 @@
         . $results->getUrlQuery()->getParams(false)
         . '&source=' . urlencode($results->getParams()->getSearchClassId());
 ?>
-<div class="alert alert-info">
+<div class="channels-alert alert alert-info">
   <a href="<?=$this->escapeHtmlAttr($link)?>"><?=$this->transEsc('channel_expand')?></a>
 </div>
