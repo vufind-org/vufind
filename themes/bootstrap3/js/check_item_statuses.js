@@ -70,25 +70,41 @@ function itemStatusFail(container, response, textStatus) {
   $(container).find('.ajax-availability').append(response.responseJSON.data).addClass('text-danger');
 }
 
+var itemStatusIds = [];
+var itemStatusEls = {};
+var itemStatusTimer = null;
+var itemStatusDelay = 200;
+function itemQueueAjax(id, el) {
+  clearTimeout(itemStatusTimer);
+  itemStatusIds.push(id);
+  itemStatusEls[id] = el;
+  itemStatusTimer = setTimeout(function delayItemAjax() {
+    $.ajax({
+      dataType: 'json',
+      method: 'POST',
+      url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
+      data: { 'id': itemStatusIds }
+    })
+    .done(function checkItemStatusDone(response) {
+      for (var j = 0; j < response.data.length; j++) {
+        displayItemStatus(response.data[j], itemStatusEls[response.data[j].id]);
+      }
+    })
+    .fail(function checkItemStatusFail(response, textStatus) {
+      itemStatusFail(container, response, textStatus);
+    });
+    itemStatusIds = [];
+  }, itemStatusDelay);
+}
+
 function checkItemStatus(el) {
   var $item = $(el);
   if ($item.find('.hiddenId').length === 0) {
     return false;
   }
-  var datum = $item.find('.hiddenId').val();
+  var id = $item.find('.hiddenId').val();
+  itemQueueAjax(id, $item);
   $item.find(".ajax-availability").removeClass('hidden ajax-availability');
-  $.ajax({
-    dataType: 'json',
-    method: 'POST',
-    url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
-    data: { 'id': [ datum ] }
-  })
-  .done(function checkItemStatusDone(response) {
-    displayItemStatus(response.data[0], $item);
-  })
-  .fail(function checkItemStatusFail(response, textStatus) {
-    itemStatusFail(el, response, textStatus);
-  });
 }
 
 function checkItemStatuses(_container) {
@@ -97,28 +113,11 @@ function checkItemStatuses(_container) {
     : document.body;
 
   var ajaxItems = $(container).find('.ajaxItem');
-  var elements = {};
-  var ids = [];
   for (var i = 0; i < ajaxItems.length; i++) {
     var id = $(ajaxItems[i]).find('.hiddenId').val();
-    elements[id] = $(ajaxItems[i]);
-    ids.push(id);
+    itemQueueAjax(id, $(ajaxItems[i]));
   }
-
-  $.ajax({
-    dataType: 'json',
-    method: 'POST',
-    url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
-    data: { 'id': ids }
-  })
-  .done(function checkItemStatusDone(response) {
-    for (var j = 0; j < response.data.length; j++) {
-      displayItemStatus(response.data[j], elements[response.data[j].id]);
-    }
-  })
-  .fail(function checkItemStatusFail(response, textStatus) {
-    itemStatusFail(container, response, textStatus);
-  });
+  console.log(itemStatusEls);
   // Stop looking for a scroll loader
   if (itemStatusObserver) {
     itemStatusObserver.disconnect();

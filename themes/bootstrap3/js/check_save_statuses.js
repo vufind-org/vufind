@@ -10,6 +10,44 @@ function displaySaveStatus(itemLists, $item) {
   }
 }
 
+var saveStatusObjs = [];
+var saveStatusEls = {};
+var saveStatusTimer = null;
+var saveStatusDelay = 200;
+function saveQueueAjax(obj, el) {
+  clearTimeout(saveStatusTimer);
+  saveStatusObjs.push(obj);
+  saveStatusObjs[obj.id] = el;
+  saveStatusTimer = setTimeout(function delaySaveAjax() {
+    var ids = [];
+    var sources = [];
+    for (var i = 0; i < saveStatusObjs.length; i++) {
+      ids.push(saveStatusObjs[i].id);
+      sources.push(saveStatusObjs[i].source);
+    }
+    $.ajax({
+      dataType: 'json',
+      method: 'POST',
+      url: VuFind.path + '/AJAX/JSON?method=getSaveStatuses',
+      data: {
+        'ids': ids,
+        'sources': sources
+      }
+    })
+    .done(function checkSaveStatusDone(response) {
+      for (var id in response.data) {
+        if (response.data.hasOwnProperty(id)) {
+          displaySaveStatus(response.data[id], saveStatusEls[id]);
+        }
+      }
+    })
+    .fail(function checkItemStatusFail(response, textStatus) {
+      itemStatusFail(container, response, textStatus);
+    });
+    saveStatusObjs = [];
+  }, saveStatusDelay);
+}
+
 function checkSaveStatus(el) {
   if (!userIsLoggedIn) {
     return;
@@ -21,21 +59,10 @@ function checkSaveStatus(el) {
   if ($id.length === 0 || $source.length === 0) {
     return null;
   }
-  $.ajax({
-    dataType: 'json',
-    method: 'POST',
-    url: VuFind.path + '/AJAX/JSON?method=getSaveStatuses',
-    data: {
-      id: [ $id.val() ],
-      source: [ $source.val() ]
-    }
-  })
-  .done(function checkSaveStatusDone(response) {
-    displaySaveStatus(response.data[0], $item);
-  })
-  .fail(function checkItemStatusFail(response, textStatus) {
-    itemStatusFail(el, response, textStatus);
-  });
+  saveQueueAjax({
+    id: $id.val(),
+    source: $source.val()
+  }, $item);
 }
 
 function checkSaveStatuses(_container) {
@@ -48,39 +75,18 @@ function checkSaveStatuses(_container) {
     : document.body;
 
   var ajaxItems = $(container).find('.result,.record');
-  var elements = {};
-  var ids = [];
-  var sources = [];
   for (var i = 0; i < ajaxItems.length; i++) {
     var $id = $(ajaxItems[i]).find('.hiddenId').val();
     var $source = $(ajaxItems[i]).find('.hiddenSource').val();
     if ($id.length === 0 || $source.length === 0) {
       var idval = $id.val();
-      elements[idval] = $(ajaxItems[i]);
-      ids.push(idval);
-      sources.push($source.val());
+      saveQueueAjax({
+        id: idval,
+        source: $source.val()
+      }, $(ajaxItems[i]));
     }
   }
 
-  $.ajax({
-    dataType: 'json',
-    method: 'POST',
-    url: VuFind.path + '/AJAX/JSON?method=getSaveStatuses',
-    data: {
-      'ids': ids,
-      'sources': sources
-    }
-  })
-  .done(function checkSaveStatusDone(response) {
-    for (var id in response.data) {
-      if (response.data.hasOwnProperty(id)) {
-        displaySaveStatus(response.data[id], elements[id]);
-      }
-    }
-  })
-  .fail(function checkItemStatusFail(response, textStatus) {
-    itemStatusFail(container, response, textStatus);
-  });
   // Stop looking for a scroll loader
   if (saveStatusObserver) {
     saveStatusObserver.disconnect();
