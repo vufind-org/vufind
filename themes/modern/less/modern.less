@@ -29,6 +29,21 @@ header {
     color: @black;
     background-color: @light-green;
   }
+  .navbar-toggle {
+    margin: .5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-size: 14px;
+  }
+  #header-collapse .navbar-nav {
+    margin-top: 0;
+    background-color: @washed-blue;
+    a { color: @green; }
+    .active > a {
+      color: @black;
+      background-color: @light-green;
+    }
+  }
 }
 .navbar { border-radius: 0; }
 .banner {
@@ -73,13 +88,17 @@ header .form-control:focus {
   padding-bottom: .5rem;
   border-bottom: 1px solid @moon-gray;
 }
+.result .format,
+.result .label {
+  padding: .5rem .75rem;
+  font-size: 12px;
+}
 .search-controls {
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
-.searchForm { box-shadow: none; }
 #searchForm_lookfor,
-#searchForm_type { margin-bottom: .25rem; }
+#searchForm_type { margin-bottom: 4px; }
 @media (min-width: 768px) {
   #searchForm_lookfor,
   #searchForm_type {
