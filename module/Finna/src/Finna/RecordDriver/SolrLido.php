@@ -432,6 +432,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 ? (string)$node->culture->term : '';
             $description = isset($node->eventDescriptionSet->descriptiveNoteValue)
                 ? (string)$node->eventDescriptionSet->descriptiveNoteValue : '';
+
             $event = [
                 'type' => $type,
                 'name' => $name,
@@ -443,7 +444,13 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 'culture' => $culture,
                 'description' => $description
             ];
-            $events[$type][] = $event;
+            // Only add the event if it has content
+            foreach ($event as $key => $field) {
+                if ('type' !== $key && !empty($field)) {
+                    $events[$type][] = $event;
+                    break;
+                }
+            }
         }
         return $events;
     }
