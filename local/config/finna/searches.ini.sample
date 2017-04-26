@@ -6,12 +6,12 @@ default_handler      = AllFields    ; Search handler to use if none is specified
 ; specific setting was present in the [DefaultSortingByType] section below; the
 ; selected option should be one of the options present in the [Sorting] section
 ; below.
-default_sort         = relevance
+default_sort         = "relevance,id asc"
 
 ; This setting controls the sort order to be used for empty search when relevance
 ; sort is selected. Since relevance doesn't have a meaningful function with an empty
 ; search, this can be set to e.g. "title".
-empty_search_relevance_override = "last_indexed desc"
+empty_search_relevance_override = "last_indexed desc,id asc"
 
 ; This setting controls the default view for search results; the selected option
 ; should be one of the options present in the [Views] section below.
@@ -132,7 +132,7 @@ PublicationPlace    = adv_search_publication_place
 ;       "publishDateSort", "author_sort" and "title_sort" Solr fields; you can use
 ;       either form in this file.
 [Sorting]
-relevance = sort_relevance
+relevance,id asc = sort_relevance
 main_date_str desc = sort_year
 main_date_str asc = "sort_year asc"
 
@@ -144,7 +144,7 @@ callnumber = sort_callnumber
 
 author = sort_author
 title = sort_title
-last_indexed desc = sort_last_indexed
+last_indexed desc,id asc = sort_last_indexed
 
 ; This section allows you to specify the default sort order for specific types of
 ; searches.  Each key in this section should correspond with a key in the
@@ -383,7 +383,7 @@ result_pages = 10
 ; IMPORTANT: In order for first_indexed and last_indexed sorting to work properly,
 ;            you need to index record change dates; see the Wiki page at
 ;            http://vufind.org/wiki/tracking_record_changes
-sort = "last_indexed desc"
+sort = "last_indexed desc,id asc"
 
 ; The following two sections control the behavior of the autocomplete drop-downs
 ; associated with search boxes.  The [Autocomplete] section contains global default
@@ -593,9 +593,9 @@ container_title = "Journal Title"
 ;0 = "format:\"Book\" OR format:\"Journal\""
 ;1 = "language:\"English\" OR language:\"French\""
 
-; This section is an extension to [RawHiddenFilters] when you need to create 
+; This section is an extension to [RawHiddenFilters] when you need to create
 ; additional advanced types of filters -- i.e. complex boolean queries -- applied
-; only when the API functions are used (in addition to any HiddenFilters or 
+; only when the API functions are used (in addition to any HiddenFilters or
 ; RawHiddenFilters. Keys are ignored, but increasing numeric values (1, 2, 3...) are
 ; recommended.  Values are fully-formed filter queries.
 [ApiHiddenFilters]
