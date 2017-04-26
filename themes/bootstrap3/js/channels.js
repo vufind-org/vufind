@@ -30,7 +30,7 @@ function channelAddLinkButtons(elem) {
     $cont.append(
       $('<a/> ', {
         href: links[i].url,
-        class: "btn btn-default",
+        class: links[i].label + " btn btn-default",
         html: '<i class="fa ' + links[i].icon + '"></i> ' + VuFind.translate(links[i].label)
       })
     );
