@@ -164,6 +164,10 @@
           </span>
         <? endif; ?>
 
+        <? if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
+          <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
+        <? endif; ?>
+
         <? if ($this->userlist()->getMode() !== 'disabled'): ?>
           <? /* Add to favorites */ ?>
           <i class="fa fa-fw fa-star" aria-hidden="true"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>"><?=$this->transEsc('Add to favorites')?></a><br/>
