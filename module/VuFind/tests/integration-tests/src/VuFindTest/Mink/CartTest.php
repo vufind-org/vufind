@@ -472,13 +472,30 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test that we can put items in the cart using the bottom checkbox.
+     * Test that we can put items in the cart using the bottom checkbox/button.
      *
      * @return void
      */
-    public function testFillCartUsingBottomCheckbox()
+    public function testFillCartUsingBottomControls()
     {
-        $this->setUpGenericCartTest([], '#bottom_addFormCheckboxSelectAll');
+         // Activate the cart:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => [
+                        'showBookBag' => true,
+                        'bookbagTogglesInSearch' => false
+                    ]
+                ]
+            ]
+        );
+        $page = $this->getSearchResultsPage();
+        $this->addCurrentPageToCart(
+            $page,
+            $this->findCss($page, '#bottom_updateCart'),
+            '#bottom_addFormCheckboxSelectAll'
+        );
+        $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
     }
 
     /**
