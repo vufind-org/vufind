@@ -136,7 +136,8 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Add the current page of results to the cart.
+     * Add the current page of results to the cart (using the select all bulk
+     * controls).
      *
      * @param Element $page        Page element
      * @param Element $updateCart  Add to cart button
@@ -151,6 +152,21 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $selectAll = $page->find('css', $selectAllId);
         $selectAll->check();
         $updateCart->click();
+    }
+
+    /**
+     * Add the current page of results to the cart (using the individual add
+     * buttons).
+     *
+     * @param Element $page        Page element
+     *
+     * @return void
+     */
+    protected function addCurrentPageToCartUsingButtons(Element $page)
+    {
+        foreach ($page->findAll('css', '.cart-add') as $button) {
+            $button->click();
+        }
     }
 
     /**
@@ -177,23 +193,15 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return Element
      */
-    protected function setUpGenericCartTest($extraConfigs = [],
-        $selectAllId = '#addFormCheckboxSelectAll'
-    ) {
+    protected function setUpGenericCartTest($extraConfigs = []) {
         // Activate the cart:
         $extraConfigs['config']['Site'] = [
             'showBookBag' => true,
-            'bookbagTogglesInSearch' => false,
         ];
         $this->changeConfigs($extraConfigs);
 
         $page = $this->getSearchResultsPage();
-
-        // Click "add" without selecting anything.
-        $updateCart = $this->findCss($page, '#updateCart');
-
-        // Now actually select something:
-        $this->addCurrentPageToCart($page, $updateCart, $selectAllId);
+        $this->addCurrentPageToCartUsingButtons($page);
         $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
 
         // Open the cart and empty it:
