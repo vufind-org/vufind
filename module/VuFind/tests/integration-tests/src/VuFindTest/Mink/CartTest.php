@@ -181,7 +181,10 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $selectAllId = '#addFormCheckboxSelectAll'
     ) {
         // Activate the cart:
-        $extraConfigs['config']['Site'] = ['showBookBag' => true, 'showBulkOptions' => true];
+        $extraConfigs['config']['Site'] = [
+            'showBookBag' => true,
+            'bookbagTogglesInSearch' => false,
+        ];
         $this->changeConfigs($extraConfigs);
 
         $page = $this->getSearchResultsPage();
@@ -270,7 +273,16 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     public function testAddingNothing()
     {
         // Activate the cart:
-        $this->changeConfigs(['config' => ['Site' => ['showBookBag' => true, 'showBulkOptions' => true]]]);
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => [
+                        'showBookBag' => true,
+                        'bookbagTogglesInSearch' => false
+                    ]
+                ]
+            ]
+        );
 
         $page = $this->getSearchResultsPage();
 
@@ -288,7 +300,16 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     public function testAddingDuplicates()
     {
          // Activate the cart:
-        $this->changeConfigs(['config' => ['Site' => ['showBookBag' => true, 'showBulkOptions' => true]]]);
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => [
+                        'showBookBag' => true,
+                        'bookbagTogglesInSearch' => false
+                    ]
+                ]
+            ]
+        );
 
         $page = $this->getSearchResultsPage();
 
@@ -309,7 +330,15 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     {
          // Activate the cart:
         $this->changeConfigs(
-            ['config' => ['Site' => ['showBookBag' => true, 'bookBagMaxSize' => 1, 'showBulkOptions' => true]]]
+            [
+                'config' => [
+                    'Site' => [
+                        'showBookBag' => true,
+                        'bookBagMaxSize' => 1,
+                        'bookbagTogglesInSearch' => false
+                    ]
+                ]
+            ]
         );
 
         $page = $this->getSearchResultsPage();
