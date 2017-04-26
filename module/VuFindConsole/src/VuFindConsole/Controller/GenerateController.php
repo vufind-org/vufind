@@ -298,8 +298,8 @@ class GenerateController extends AbstractBase
     /**
      * Copies contents from $source to $dest
      *
-     * @param string $source
-     * @param string $dest
+     * @param string $source full path to source directory
+     * @param string $dest   full path to copy destination
      *
      * @return boolean true on success false otherwise
      */
@@ -333,14 +333,22 @@ class GenerateController extends AbstractBase
         return true;
     }
     /**
-     * Same as realpath, but doesn't check file existance
+     * Removes // and /./ in paths and collapses /../
+     * Same as realpath, but doesn't check for file existance
+     *
+     * @param string $path full path to condense
+     *
+     * @return string
      */
-    protected function get_absolute_path($path) {
+    protected function getAbsolutePath($path)
+    {
         $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
         $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
         $absolutes = array();
         foreach ($parts as $part) {
-            if ('.' == $part) continue;
+            if ('.' == $part) {
+                continue;
+            }
             if ('..' == $part) {
                 array_pop($absolutes);
             } else {
@@ -355,6 +363,8 @@ class GenerateController extends AbstractBase
 
     /**
      * Create a custom theme from the custom_theme_example, configure.
+     *
+     * @return \Zend\Console\Response
      */
     public function customthemeAction()
     {
@@ -373,8 +383,8 @@ class GenerateController extends AbstractBase
         }
         Console::writeLine('Creating new theme: "' . $name . '"');
         // Copy custom_theme_example
-        $source = $this->get_absolute_path($baseDir . 'custom_theme_example');
-        $dest = $this->get_absolute_path($baseDir . $name);
+        $source = $this->getAbsolutePath($baseDir . 'custom_theme_example');
+        $dest = $this->getAbsolutePath($baseDir . $name);
         Console::writeLine("\tCopying custom_theme_example");
         Console::writeLine("\t\t" . $source);
         Console::writeLine("\t\t" . $dest);
