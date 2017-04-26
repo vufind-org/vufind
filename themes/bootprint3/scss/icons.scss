@@ -2,7 +2,7 @@ $bp3-icon-path: '../../bootprint3/images/icons' !default;
 .bp-icon {
   background-position: center center;
   background-repeat: no-repeat;
-  color: transparent;
+  color: transparent !important;
   content: '';
   display: inline-block;
   height: 16px;
