@@ -27,14 +27,21 @@ header .container.navbar { margin-bottom: 0; }
 }
 .top-facets .narrow-toggle { text-decoration: underline; }
 
-.search-header { .clearfix(); }
-.search-stats { float: left; }
-.search-controls {
-  float: right;
-  text-align: right;
+.search-stats {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 @media (min-width: 768px) {
-  .search-stats { line-height: 2; }
+  .search-header { .clearfix(); }
+  .search-stats {
+    float: left;
+    padding: 0;
+    line-height: 2;
+  }
+  .search-controls {
+    float: right;
+    text-align: right;
+  }
 }
 
 .bulkActionButtons label {display: inline-block;}
@@ -157,7 +164,10 @@ header .container.navbar { margin-bottom: 0; }
   .list-tab-content { padding: 1rem; }
 }
 
-.searchtools a {padding: 0 .5rem;}
+.searchtools a {
+  padding: 0 .5rem;
+  white-space: nowrap;
+}
 .title-in-heading {
   font-size: inherit;
   font-style: italic;
