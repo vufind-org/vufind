@@ -95,7 +95,7 @@ class Cart
      * @param int                   $maxSize         Maximum size of cart contents
      * @param bool                  $active          Is cart enabled?
      * @param bool                  $togglesInSearch Is cart configured to toggles
-     *                                               in search results?
+     * in search results?
      */
     public function __construct(\VuFind\Record\Loader $loader,
         \VuFind\Cookie\CookieManager $cookieManager,
