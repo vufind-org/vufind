@@ -195,9 +195,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     protected function setUpGenericCartTest($extraConfigs = []) {
         // Activate the cart:
-        $extraConfigs['config']['Site'] = [
-            'showBookBag' => true,
-        ];
+        $extraConfigs['config']['Site'] = ['showBookBag' => true];
         $this->changeConfigs($extraConfigs);
 
         $page = $this->getSearchResultsPage();
