@@ -102,12 +102,12 @@
       <p>or</p>
       <pre class="code">economics AND Keynes</pre>
       <h4 title="+">+</h4>
-      <p><strong>AND</strong>, the conjunction operator, is the system’s default operator for multi-term queries that do not include an operator. When using the <strong>AND</strong> operator, the records included in the search results feature each of the terms in the search fields. </p>
-      <p>For example, to search for records that include “economics” and “Keynes”: </p>
-      <pre class="code">+economics Keynes</pre>
-      <h4 title="OR">OR</h4>
       <p>The + sign can be used to indicate that the term must appear in each search result.  </p>
       <p>For example, to search for records that must include “economics” and may include “Keynes”: </p>
+      <pre class="code">+economics Keynes</pre>
+      <h4 title="OR">OR</h4>
+      <p>The OR operator links two terms and finds a matching record if either of the terms exist in a record.</p>
+      <p>To search for documents that contain either "economics Keynes" or just "Keynes" use the query:</p>
       <pre class="code">"economics Keynes" OR Keynes</pre>
       <h3 title="!-">!-</h3>
       <p>The "!-" operator excludes records that contain the following term.</p>
