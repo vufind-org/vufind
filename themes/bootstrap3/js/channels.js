@@ -84,7 +84,7 @@ function setupChannelSlider(i, op) {
             + '<a href="' + VuFind.path + '/Channels/Record?'
               + 'id=' + encodeURIComponent(record.attr('data-record-id'))
               + '&source=' + encodeURIComponent(record.attr('data-record-source'))
-            + '" class="btn btn-default">' + VuFind.translate('channel_add_more') + '</a>'
+            + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
             + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
             + '</div>'
             + data;
