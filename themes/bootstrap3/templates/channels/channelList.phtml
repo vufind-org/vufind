@@ -1,0 +1,65 @@
+<? $this->headLink()->appendStylesheet('lib/channel-slider.css'); ?>
+<? $this->headScript()->appendFile('lib/channel-slider.js'); ?>
+<? $this->headScript()->appendFile('channels.js'); ?>
+<? $this->headScript()->appendFile('vendor/jquery.dotdotdot.min.js'); ?>
+<?
+  $this->jsTranslations()->addStrings([
+    'channel_expand' => 'channel_expand',
+    'channel_search' => 'channel_search',
+    'View Record' => 'View Record',
+  ]);
+?>
+
+<? if (empty($token)): ?>
+  <form action="<?=$this->url('channels-search')?>" class="form-inline">
+    Search for more channels:
+    <input type="text" name="lookfor" class="form-control" value="<?=$this->escapeHtmlAttr($this->lookfor) ?>"/>
+    <input type="submit" class="btn btn-default" />
+  </form>
+<? endif; ?>
+
+<? $insideButton = false; ?>
+<? $channelLinkData = []; ?>
+<? foreach ($channels as $channel): ?>
+  <?
+    $groupId = isset($channel['groupId'])
+      ? $channel['groupId']
+      : $channel['providerId'];
+  ?>
+  <? $channelID = 'channel-' . md5(serialize($channel)); ?>
+  <? if (isset($channel['contents'])): ?>
+    <? if ($insideButton): ?>
+        </ul>
+      </div>
+      <? $insideButton = false; ?>
+    <? endif; ?>
+    <div class="channel-title">
+      <h2><?=$this->escapeHtml($channel['title'])?>
+      <? if (!empty($channel['links'])): ?>
+        <? $channelLinkData[$channelID] = json_encode($channel['links']); ?>
+      <? endif; ?>
+      </h2>
+    </div>
+    <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>" data-link-json='<?=json_encode($channel['links']) ?>'>
+      <!-- Wrapper for slides -->
+      <? foreach ($channel['contents'] as $item): ?>
+        <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>" class="channel-record slide" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
+          <div class="thumb"><img src="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>"/></div>
+          <?=$this->escapeHtml($item['title'])?>
+        </a>
+      <? endforeach; ?>
+    </div>
+  <? elseif (isset($channel['token'])): ?>
+    <? if (!$insideButton): ?>
+      <div class="channel-add-menu btn-group hidden" data-group="<?=$groupId ?>">
+        <button type="button" class="add-btn btn btn-default"><?=$this->transEsc('channel_add_more') ?></button>
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="caret"></span>
+          <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu">
+      <? $insideButton = true; ?>
+    <? endif; ?>
+    <li><a href="<?=current(explode('?', $this->serverUrl(true)))?>?<?=empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')?>channelProvider=<?=urlencode($channel['providerId']) ?>&amp;channelToken=<?=urlencode($channel['token']) ?>&amp;layout=lightbox" data-token="<?=$channel['token'] ?>"><?=$this->escapeHtml($channel['title'])?></a></li>
+  <? endif; ?>
+<? endforeach; ?>
