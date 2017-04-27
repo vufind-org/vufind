@@ -510,6 +510,7 @@ $config = [
                 ],
                 'invokables' => [
                     'alphabrowselink' => 'VuFind\Recommend\AlphaBrowseLink',
+                    'channels' => 'VuFind\Recommend\Channels',
                     'doi' => 'VuFind\Recommend\DOI',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
@@ -579,6 +580,7 @@ $config = [
                     'worldcatsimilar' => 'VuFind\Related\Factory::getWorldCatSimilar',
                 ],
                 'invokables' => [
+                    'channels' => 'VuFind\Related\Channels',
                     'editions' => 'VuFind\Related\Deprecated',
                     'worldcateditions' => 'VuFind\Related\Deprecated',
                 ],
