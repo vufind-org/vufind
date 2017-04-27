@@ -95,15 +95,72 @@ trait FullMarcTrait
     }
 
     /**
+     * Get an array of the volumes (for example: how many pages) 
+     * associated with the record.
+     *
+     * @return array
+     */
+    public function getVolumes()
+    {
+        return $this->getFieldArray('300', ['a', 'b'], false);
+    }
+
+    /**
+     * Get the edition of the current record.
+     *
+     * @return string
+     */
+    public function getMediaicon()
+    {
+        return $this->mapIcon($this->getFormats());
+    }
+
+
+    /**
      * Get an array of all the formats associated with the record.
      *
      * @return array
      */
     public function getFormats()
     {
-        return $this->getFieldArray('300', ['a', 'b'], false);
-    }
+        if ($this->formats === null) {
+            $formats = [];
+            $f007 = $f008 = $leader = null;
+            $f007_0 = $f007_1 = $f008_21 = $leader_6 = $leader_7 = '';
 
+            //field 007 - physical description
+            $f007 = $this->getMarcRecord()->getFields("007", false);
+            foreach ($f007 as $field) {
+                $data = strtoupper($field->getData());
+                if (strlen($data) > 0) {
+                    $f007_0 = $data{0};
+                }
+                if (strlen($data) > 1) {
+                    $f007_1 = $data{1};
+                }
+            }
+            $f008 = $this->getMarcRecord()->getFields("008", false);
+            foreach ($f008 as $field) {
+                $data = strtoupper($field->getData());
+                if (strlen($data) > 21) {
+                    $f008_21 = $data{21};
+                }
+            }
+
+            $leader = $this->getMarcRecord()->getLeader();
+            $leader_6 = $leader{6};
+            $leader_7 = $leader{7};
+
+            $formats[] = $this->marc21007($f007_0, $f007_1);
+            $formats[] = $this->marc21leader7($leader_7, $f007_0, $f008_21);
+            if ($this->isCollection() && !$this->isArticle()) {
+                $formats[] = 'Compilation';
+            }
+
+            $this->formats = array_filter($formats);
+        }
+        return $this->formats;
+    }
 
     /**
      * Get an array of all ISBNs associated with the record (may be empty).
@@ -114,10 +171,11 @@ trait FullMarcTrait
     {
         // ToDo: remove duplex entries; with or without slash
         $isbn = array_merge(
-           $this->getFieldArray('020', ['a', 'z', '9'], false), $this->getFieldArray('773', ['z'])
+            $this->getFieldArray('020', ['a', 'z', '9'], false), 
+            $this->getFieldArray('773', ['z'])
         );
         foreach ($isbn as $key => $num) {
-           $isbn[$key] = str_replace("-","",$num);
+            $isbn[$key] = str_replace("-", "", $num);
         }
         $isbn = array_unique($isbn);
         return $isbn;
@@ -131,14 +189,14 @@ trait FullMarcTrait
     public function getISSNs()
     {
         $issn = array_merge(
-                $this->getFieldArray('022', ['a']), $this->getFieldArray('029', ['a']), 
-                $this->getFieldArray('440', ['x']), $this->getFieldArray('490', ['x']), 
-                $this->getFieldArray('730', ['x']), $this->getFieldArray('773', ['x']), 
-                $this->getFieldArray('776', ['x']), $this->getFieldArray('780', ['x']), 
-                $this->getFieldArray('785', ['x'])
+            $this->getFieldArray('022', ['a']), $this->getFieldArray('029', ['a']), 
+            $this->getFieldArray('440', ['x']), $this->getFieldArray('490', ['x']), 
+            $this->getFieldArray('730', ['x']), $this->getFieldArray('773', ['x']), 
+            $this->getFieldArray('776', ['x']), $this->getFieldArray('780', ['x']), 
+            $this->getFieldArray('785', ['x'])
         );
         foreach ($issn as $key => $num) {
-           $issn[$key] = str_replace("-","",$num);
+            $issn[$key] = str_replace("-", "", $num);
         }
         $issn = array_unique($issn);
         return $issn;
@@ -154,8 +212,7 @@ trait FullMarcTrait
         $languages = [];
         $fields = $this->getMarcRecord()->getFields('041');
         foreach ($fields as $field) {
-            if (strcmp($field->getIndicator(1), '0') == 0 &&
-                    strcmp($field->getIndicator(2), '7') !== 0) {
+            if (strcmp($field->getIndicator(2), '7') !== 0) {
                 foreach ($field->getSubFields('a') as $sf) {
                     $languages[] = $this->translate($sf->getData());
                 }
@@ -174,6 +231,163 @@ trait FullMarcTrait
         //lccn = 010a, first
         return $this->getFirstFieldValue('010', ['a']);
     }
+
+    /**
+     * Get an array of all the MediaTypes associated with the record.
+     *
+     * @return array
+     */
+    public function getMediaTypes()
+    {
+        if ($this->formats === null) {
+            $formats = [];
+            $f007 = $f008 = $leader = null;
+            $f007_0 = $f007_1 = $f008_21 = $leader_6 = $leader_7 = '';
+
+            //field 007 - physical description
+            $f007 = $this->getMarcRecord()->getFields("007", false);
+            foreach ($f007 as $field) {
+                $data = strtoupper($field->getData());
+                if (strlen($data) > 0) {
+                    $f007_0 = $data{0};
+                }
+                if (strlen($data) > 1) {
+                    $f007_1 = $data{1};
+                }
+            }
+            $f008 = $this->getMarcRecord()->getFields("008", false);
+            foreach ($f008 as $field) {
+                $data = strtoupper($field->getData());
+                if (strlen($data) > 21) {
+                    $f008_21 = $data{21};
+                }
+            }
+
+            $leader = $this->getMarcRecord()->getLeader();
+            $leader_6 = $leader{6};
+            $leader_7 = $leader{7};
+
+            $formats[] = $this->marc21007($f007_0, $f007_1);
+            $formats[] = $this->marc21leader7($leader_7, $f007_0, $f008_21);
+            if ($this->isCollection() && !$this->isArticle()) {
+                $formats[] = 'Compilation';
+            }
+
+            $this->formats = array_filter($formats);
+        }
+        return $this->formats;
+    }
+
+    /**
+     * Maps formats from formats.ini to icon file names
+     *
+     * @param string $formats the formats that are avialable
+     *
+     * @return string
+     */
+    protected function mapIcon($formats) 
+    {
+
+        //this function uses simplifies formats as we can only show one icon
+        $formats = $this->simplify($formats);
+        foreach ($formats as $k => $format) {
+            $formats[$k] = strtolower($format);
+        }
+        $return = '';
+        if (is_array($formats)) {
+            if (in_array('electronicresource', $formats)  
+                && in_array('e-book', $formats)
+            ) {
+                $return = 'ebook'; 
+            } elseif (in_array('videodisc', $formats)  
+                && in_array('video', $formats)
+            ) {
+                $return = 'movie';
+            } elseif (in_array('electronicresource', $formats)  
+                && in_array('journal', $formats)
+            ) {
+                $return = 'ejournal';
+            } elseif (in_array('opticaldisc', $formats)  
+                && in_array('e-book', $formats)
+            ) {
+                $return = 'disc';
+            } elseif (in_array('cd', $formats)  
+                && in_array('soundrecording', $formats)
+            ) {
+                $return = 'music-cd';
+            } elseif (in_array('book', $formats)  
+                && in_array('compilation', $formats)
+            ) {
+                $return = 'serial';
+            } elseif (in_array('musicalscore', $formats)) {
+                $return = 'partitur';
+            } elseif (in_array('atlas', $formats)) {
+                $return = 'map';
+            } elseif (in_array('serial', $formats)) {
+                $return = 'collection';
+            } elseif (in_array('journal', $formats)) {
+                $return = 'journal';
+            } elseif (in_array('conference proceeding', $formats)) {
+                $return = 'journal';
+            } elseif (in_array('e-journal', $formats)) {
+                $return = 'ejournal';
+            } elseif (in_array('text', $formats)) {
+                $return = 'article';
+            } elseif (in_array('pdf', $formats)) {
+                $return = 'article';
+            } elseif (in_array('book', $formats)) {
+                $return = 'book';
+            } elseif (in_array('book chapter', $formats)) {
+                $return = 'book';
+            } elseif (in_array('e-book', $formats)) {
+                $return = 'ebook';
+            } elseif (in_array('e-book', $formats)) {
+                $return = 'ebook';
+            } elseif (in_array('ebook', $formats)) {
+                $return = 'ebook';
+            } elseif (in_array('vhs', $formats)) {
+                $return = 'vhs';
+            } elseif (in_array('video', $formats)) {
+                $return = 'video-disc';
+            } elseif (in_array('microfilm', $formats)) {
+                $return = 'microfilm';
+            } elseif (in_array('platter', $formats)) {
+                $return = 'platter';
+            } elseif (in_array('dvd/bluray', $formats)) {
+                $return = 'video-disc';
+            } elseif (in_array('music-cd', $formats)) {
+                $return = 'music-disc';
+            } elseif (in_array('cd-rom', $formats)) {
+                $return = 'disc';
+            } elseif (in_array('article', $formats)) {
+                $return = 'article';
+            } elseif (in_array('magazine article', $formats)) {
+                $return = 'article';
+            } elseif (in_array('journal article', $formats)) {
+                $return = 'article';
+            } elseif (in_array('band', $formats)) {
+                $return = 'book';
+            } elseif (in_array('cassette', $formats)) {
+                $return = 'cassette';
+            } elseif (in_array('soundrecording', $formats)) {
+                $return = 'sound';
+            } elseif (in_array('norm', $formats)) {
+                $return = 'norm';
+            } elseif (in_array('thesis', $formats)) {
+                $return = 'thesis';
+            } elseif (in_array('proceedings', $formats)) {
+                $return = 'books';
+            } elseif (in_array('electronic', $formats)) {
+                $return = 'globe';
+            } else {
+                $return =  'article'; 
+            }
+        }
+
+
+        return 'icon icon-'. $return;
+    }
+
 
     /**
      * Get the OCLC number of the record.
@@ -273,7 +487,7 @@ trait FullMarcTrait
         return $other_author;
     }
 
-   /**
+    /**
      * Get the short (pre-subtitle) title of the record.
      *
      * @return string
@@ -326,14 +540,14 @@ trait FullMarcTrait
         }
         if (strlen($this->getSubtitle()) > 0) {
             if ($stit) { 
-               $title .= ": ";
+                $title .= ": ";
             }
             $title .= $this->getSubtitle();
             $subt = true;
         }
         if (strlen($this->getEdition()) > 0) {
             if ($stit || $subt) {
-               $title .= " - ";
+                $title .= " - ";
             }
             $title .= $this->getEdition(); 
         }
@@ -341,7 +555,7 @@ trait FullMarcTrait
     }
 
 
-// maybe in a DefaultTrait
+    // maybe in a DefaultTrait
 
     /**
      * Get highlighted author data, if available.
@@ -380,5 +594,210 @@ trait FullMarcTrait
         }
         return $authors;
     }
+
+    /**
+     * Returns content/format from Marc21 field 007
+     *
+     * @param char $leader7 Marc Leader
+     * @param char $f007    Field 007
+     * @param char $f008    Field 008
+     *
+     * @return string
+     */
+    protected function marc21leader7($leader7, $f007, $f008 ) 
+    {
+        $format = '';
+        $leader7 = strtoupper($leader7);
+        $f007 = strtoupper($f007);
+        $mappings = [];
+        $mappings['A']['default'] = 'Article'; 
+        $mappings['B']['default'] = 'Article';
+        $mappings['M']['C'] = 'E-Book';
+        $mappings['M']['V'] = 'Video';
+        $mappings['M']['S'] = 'SoundRecording';
+        $mappings['M']['default'] = 'Book';
+        $mappings['S']['N'] = 'Newspaper';
+        $mappings['S']['P'] = 'Journal';
+        $mappings['S']['M'] = 'Serial';
+        $mappings['S']['default'] = 'Serial';
+
+        if (isset($mappings[$leader7])) {
+            if ($leader7 == 'S' && isset($mappings[$leader7][$f008])) {
+                $format = $mappings[$leader7][$f008];
+            } elseif ($leader7 != 'S' && isset($mappings[$leader7][$f007])) {
+                $format = $mappings[$leader7][$f007];
+            } elseif (isset($mappings[$leader7]['default'])) {
+                $format = $mappings[$leader7]['default'];
+            }
+        }
+        return $format;
+    }
+
+    /**
+     * Returns physical medium from Marc21 field 007 - char 0 and 1
+     *
+     * @param char $code1 char 0 
+     * @param char $code2 char 1
+     *
+     * @return string
+     */
+    protected function marc21007($code1, $code2) 
+    {
+        $medium = '';
+        $code1 = strtoupper($code1);
+        $code2 = strtoupper($code2);
+        $mappings = [];
+        $mappings['A']['D'] = 'Atlas';
+        $mappings['A']['default'] = 'Map';
+        $mappings['C']['A'] = 'TapeCartridge';
+        $mappings['C']['B'] = 'ChipCartridge';
+        $mappings['C']['C'] = 'DiscCartridge';
+        $mappings['C']['F'] = 'TapeCassette';
+        $mappings['C']['H'] = 'TapeReel';
+        $mappings['C']['J'] = 'FloppyDisk';
+        $mappings['C']['M'] = 'MagnetoOpticalDisc';
+        $mappings['C']['Z'] = 'E-Journal on Disc';
+        $mappings['C']['O'] = 'OpticalDisc';
+        // Do not return - this will cause anything with an
+        // 856 field to be labeled as "Electronic"
+        $mappings['C']['R'] = 'E-Journal';
+        $mappings['C']['default'] = 'ElectronicResource'; 
+        $mappings['D']['default'] = 'Globe';
+        $mappings['F']['default'] = 'Braille';
+        $mappings['G']['C'] = 'FilmstripCartridge';
+        $mappings['G']['D'] = 'Filmstrip';
+        $mappings['G']['S'] = 'Slide';
+        $mappings['G']['T'] = 'Transparency';
+        $mappings['G']['default'] = 'Slide';
+        $mappings['H']['default'] = 'Microfilm';
+        $mappings['K']['C'] = 'Collage';
+        $mappings['K']['D'] = 'Drawing';
+        $mappings['K']['E'] = 'Painting';
+        $mappings['K']['F'] = 'Print';
+        $mappings['K']['G'] = 'Photonegative';
+        $mappings['K']['J'] = 'Print';
+        $mappings['K']['L'] = 'Drawing';
+        $mappings['K']['O'] = 'FlashCard';
+        $mappings['K']['N'] = 'Chart';
+        $mappings['K']['default'] = 'Photo';
+        $mappings['M']['F'] = 'VideoCassette';
+        $mappings['M']['R'] = 'Filmstrip';
+        $mappings['M']['default'] = 'MotionPicture';
+        $mappings['O']['default'] = 'Kit';
+        $mappings['Q']['U'] = 'SheetMusic';
+        $mappings['Q']['default'] = 'MusicalScore';
+        $mappings['R']['default'] = 'SensorImage';
+        $mappings['S']['D'] = 'CD';
+        $mappings['S']['O'] = 'SoundRecording'; // SO ist not specified
+        $mappings['S']['S'] = 'SoundCassette';
+        $mappings['S']['Z'] = 'Platter'; //Undefined         
+        $mappings['S']['default'] = 'SoundRecording'; // unspecified
+        $mappings['T']['A'] = 'Printed'; //Text               
+        $mappings['T']['D'] = 'LooseLeaf'; //Text               
+        $mappings['T']['default'] = null; //Text               
+        $mappings['V']['C'] = 'VideoCartridge';
+        $mappings['V']['D'] = 'VideoDisc';
+        $mappings['V']['F'] = 'VideoCassette';
+        $mappings['V']['R'] = 'VideoReel';
+        $mappings['V']['default'] = 'Video';
+        $mappings['Z']['default'] = 'Kit';
+
+
+        if (isset($mappings[$code1])) {
+            if (!empty($mappings[$code1][$code2])) {
+                $medium = $mappings[$code1][$code2];
+            } elseif (!empty($mappings[$code1]['default'])) {
+                $medium = $mappings[$code1]['default'];
+            }
+        }
+        return $medium;
+    }
+
+    /**
+     * Simplify format array
+     *
+     * @param array $formats that are available
+     *
+     * @return array
+     */
+    protected function simplify($formats) 
+    {
+        $formats = array_unique($formats);
+        foreach ($formats as$k => $format) {
+            if (!empty($format)) {
+                $formats[$k] = ucfirst($format);
+            }
+        }
+        if (in_array('SoundRecording', $formats)  
+            && in_array('MusicRecording', $formats)
+        ) {
+            return ['Musik']; 
+        } elseif (in_array('SheetMusic', $formats)  
+            && in_array('Book', $formats)
+        ) {
+            return ['MusicalScore']; 
+        } elseif (in_array('Map', $formats)  
+            && in_array('Book', $formats)
+        ) {
+            return ['Atlas']; 
+        } elseif (in_array('Platter', $formats)  
+            && in_array('SoundRecording', $formats)
+        ) {
+            return ['Platter']; 
+        } elseif (in_array('E-Journal', $formats)  
+            && in_array('E-Book', $formats)
+        ) {
+            return ['E-Book']; 
+        } elseif (in_array('E-Journal on Disc', $formats)  
+            && in_array('Journal', $formats)
+        ) {
+            return ['E-Journal']; 
+        } elseif (in_array('VideoDisc', $formats)  
+            && in_array('Video', $formats)
+        ) {
+            return ['DVD/BluRay']; 
+        } elseif (in_array('CD', $formats)  
+            && in_array('SoundRecording', $formats)
+        ) {
+            return ['Music-CD']; 
+        } elseif (in_array('OpticalDisc', $formats)  
+            && in_array('E-Book', $formats)
+        ) {
+            return ['CD-ROM']; 
+        } elseif (in_array('E-Journal', $formats)  
+            && in_array('Journal', $formats)
+        ) {
+            return ['E-Journal']; 
+        } elseif (in_array('Journal', $formats)  
+            && in_array('Printed', $formats)
+        ) {
+            return ['E-Journal']; 
+        } elseif (in_array('VideoCassette', $formats)  
+            && in_array('Video', $formats)
+        ) {
+            return ['VHS']; 
+        } elseif (in_array('Microfilm', $formats)  
+            && in_array('Book', $formats)
+        ) {
+            
+            return ['Book']; 
+        } elseif (in_array('Microfilm', $formats)  
+            && in_array('Journal', $formats)
+        ) {
+            return ['Journal']; 
+        } elseif (in_array('SoundCassette', $formats)  
+            && in_array('SoundRecording', $formats)
+        ) {
+            return ['Cassette']; 
+        } elseif (in_array('SoundRecording', $formats)   
+            && in_array('Article', $formats)
+        ) {
+            return ['Music-CD']; 
+        } 
+
+        return $formats;
+
+    }
+
 
 }
