@@ -75,7 +75,9 @@ class Spellcheck implements IteratorAggregate, Countable
     public function __construct(array $spellcheck, $query)
     {
         $this->terms = new ArrayObject();
-        $list = new NamedList($spellcheck);
+        // Solr 6.4 and before use an array of arrays with two elements, while
+        // from Solr 6.5 on the array is associative.
+        $list = isset($spellcheck[0]) ? new NamedList($spellcheck) : $spellcheck;
         foreach ($list as $term => $info) {
             if (is_array($info)) {
                 $this->terms->offsetSet($term, $info);
