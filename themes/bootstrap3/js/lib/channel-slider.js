@@ -87,7 +87,7 @@ function ChannelSlider(el) {
         requestAnimationFrame(_animate);
       }
       _slider.css('left', 0 - Math.round(_xpos));
-      var barMax =_container.width() - _scrollbar.width();
+      var barMax = _container.width() - _scrollbar.width();
       _scrollbar.css('left', Math.max(0, Math.min(barMax, (_xpos / _maxpos) * barMax)));
     };
     var _moveToClosest = function _moveToClosest(threshold) {
@@ -125,7 +125,7 @@ function ChannelSlider(el) {
       _touchX = e.clientX || e.originalEvent.touches[0].clientX;
       _draggingScrollbar = false;
     };
-    var _scrollbarDragStart = function _sliderDragStart(e) {
+    var _scrollbarDragStart = function _scrollbarDragStart(e) {
       _touchX = e.clientX || e.originalEvent.touches[0].clientX;
       _draggingScrollbar = true;
     };
