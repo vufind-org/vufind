@@ -133,6 +133,18 @@ ul.random.image li img { margin: 0 auto; }
 }
 
 /* --- Record --- */
+.record-nav > li,
+.btn-bookbag-toggle { width: 100%; }
+.record-nav > li > a { padding: .5rem; }
+.record-nav > li > a,
+.btn-bookbag-toggle { text-align: center; }
+@media(min-width: 768px) {
+  .record-nav > li,
+  .btn-bookbag-toggle { width: auto; }
+  .record-nav > li > a { padding: @nav-link-padding; }
+  .record-nav > li > a,
+  .btn-bookbag-toggle { text-align: left; }
+}
 .tagList button {
   margin-top: 0;
   padding-top: 0;
