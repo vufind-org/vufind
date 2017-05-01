@@ -32,7 +32,10 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>5.5.0</luceneMatchVersion>
+  <luceneMatchVersion>6.4.2</luceneMatchVersion>
+
+  <!-- Use the classic schema style by default for VuFind -->
+  <schemaFactory class="ClassicIndexSchemaFactory"/>
 
   <!-- Used to specify an alternate directory to hold all index data
        other than the default ./data under the Solr home.
@@ -364,6 +367,8 @@
       <str name="spellcheck.extendedResults">true</str>
       <str name="spellcheck.onlyMorePopular">true</str>
       <str name="spellcheck.count">20</str>
+      <str name="q.op">AND</str>
+      <str name="df">allfields</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -386,6 +391,8 @@
       <str name="spellcheck.extendedResults">true</str>
       <str name="spellcheck.onlyMorePopular">true</str>
       <str name="spellcheck.count">20</str>
+      <str name="q.op">AND</str>
+      <str name="df">allfields</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -401,6 +408,8 @@
       <str name="spellcheck.onlyMorePopular">true</str>
       <str name="spellcheck.count">20</str>
       <str name="lowercaseOperators">false</str>
+      <str name="q.op">AND</str>
+      <str name="df">allfields</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
