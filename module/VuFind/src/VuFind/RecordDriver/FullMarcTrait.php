@@ -453,11 +453,20 @@ trait FullMarcTrait
      */
     public function getPublishers()
     {
-        $fields = [
-            260 => 'b',
-            264 => 'b',
-        ];
-        return $this->getFieldArray($fields);
+        // First check old-style 260 field:
+        $results = $this->getFieldArray('260', ['b'], true);
+
+        // Now track down relevant RDA-style 264 fields; 
+        $pubResults = $this->getFieldArray('264', ['b'], true);
+
+        $replace260 = isset($this->mainConfig->Record->replaceMarc260)
+            ? $this->mainConfig->Record->replaceMarc260 : false;
+
+        if (count($pubResults) > 0) {
+            return $replace260 ? $pubResults : array_merge($results, $pubResults);
+        }
+
+        return $results;
     }
 
     /**
