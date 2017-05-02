@@ -19,6 +19,7 @@ $fa-font-path: "../../../../../../themes/bootstrap3/css/fonts" !default;
 @import "components/similar-carousel";
 @import "components/sliders";
 
+a { cursor: pointer; }
 .alert.alert-info a {text-decoration: underline;}
 .btn.disabled {
   &:active,
@@ -33,6 +34,18 @@ header .dropdown form { display: none; }
 }
 .icon-bar {background-color: #888;}
 img {max-width: 100%;}
+.nav .btn-bookbag-toggle { float: left; }
+.nav .btn-bookbag-toggle a {
+  display: block;
+  padding: $nav-link-padding;
+  text-decoration: none;
+  &:hover,
+  &:focus {
+    @include outline(1px);
+    text-decoration: none;
+    background-color: $nav-link-hover-bg;
+  }
+}
 .popover {width: 250px;}
 .sub-breadcrumb {
   padding: 5px 10px;
@@ -107,7 +120,7 @@ img {max-width: 100%;}
   max-width: none;
   font-family: $font-family-monospace;
   font-size: 12px;
-  white-space: nowrap;
+  white-space: pre;
 }
 
 /* --- PubDateVis --- */

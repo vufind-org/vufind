@@ -15,44 +15,71 @@
 
 header .container.navbar { margin-bottom: 0; }
 
-.bulkActionButtons label {display: inline-block;}
+.top-facets {
+  margin-left: -.5rem;
+  margin-right: -.5rem;
+}
+.top-facets .facet,
+.top-facets .narrow-toggle {
+  display: inline-block;
+  padding: .25rem .5rem;
+  white-space: nowrap;
+}
+.top-facets .narrow-toggle { text-decoration: underline; }
+
+.search-stats {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+@media (min-width: 768px) {
+  .search-header { .clearfix(); }
+  .search-stats {
+    float: left;
+    padding: 0;
+    line-height: 2;
+  }
+  .search-controls {
+    float: right;
+    text-align: right;
+  }
+}
+
+.bulkActionButtons .checkbox {display: inline-block;}
 .bulkActionButtons label input {margin-top: 2px;}
 .grid { @media (max-width: 767px) {min-height: 250px;} }
 .result {
-  padding-top: 1.5rem;
-  .checkbox {
-    float: left;
-    padding-right: .5rem;
+  border-bottom: 1px solid @btn-default-border;
+  .media {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
   }
   .media,
-  .media-body { overflow: visible; }
-  .media-body .row {
-    margin-left: 0;
-    margin-right: 0;
-  }
-  .media {
-    margin-top: 0;
-    margin-bottom: 1rem;
+  .media-body {
     .clearfix();
+    margin: 0;
+    overflow: visible;
   }
   .media-left,
   .media-right {
     padding: 0;
     text-align: center;
+    max-width: 25%;
     a {
       display: inline-block;
+      max-width: 100%;
       text-align: center;
+      text-decoration: underline;
     }
     img {
       max-width: 100%;
       max-height: 300px;
     }
-    &.small > a,
-    &.small > img,
-    &.medium > a,
-    &.medium > img,
-    &.large > a,
-    &.large > img { width: @thumbnail-width-small; }
+    &.small,
+    &.medium,
+    &.large {
+      & > a,
+      & > img { width: @thumbnail-width-small; }
+    }
     @media (min-width: 768px) {
       &.small > a,
       &.small > img { width: @thumbnail-width-small; }
@@ -65,25 +92,44 @@ header .container.navbar { margin-bottom: 0; }
   .title {font-weight: bold;}
   .list-tab-content.record .img-col { display: none; }
   .list-tab-content.record .info-col { width: 100%; }
+  .format {
+    &:extend(.label);
+    &:extend(.label-info);
+  }
+
+  .checkbox-select-item {
+    float: left;
+    margin-top: 1.5rem;
+  }
 
   @media (min-width: 768px) {
-    .media-left { padding-left: 10px; }
-    .media-right { padding-right: 10px; }
-  }
-  @media (max-width: 767px) {
-    border-bottom: 1px solid @btn-default-border;
-      .media-left,
-      .media-right {
-        max-width: 25%;
-      }
-    a {
-      max-width: 100%;
-      text-decoration: underline;
+    .media-left,
+    .media-right {
+      max-width: none;
     }
-    img { max-width: 100%; }
   }
-  @media (max-width: 530px) {
-    .media-left { padding-right: 0; }
+}
+.result-body { padding-left: .5rem; }
+.result-links { padding: .5rem; }
+@media (min-width: 768px) {
+  .result-body {
+    float: left;
+    width: 75%;
+    padding: 0;
+  }
+  .result-links {
+    float: left;
+    width: 25%;
+    padding: 0;
+  }
+  .btn-bookbag-toggle {
+    form { display: inline; }
+    .fa {
+      color: @text-color;
+      /* .fa-fw */
+      width: 1.28571429em;
+      text-align: center;
+    }
   }
 
   .format {
@@ -91,7 +137,6 @@ header .container.navbar { margin-bottom: 0; }
     &:extend(.label-info);
   }
 }
-
 .result.embedded {
   .getFull {
     display: block;
@@ -133,8 +178,10 @@ header .container.navbar { margin-bottom: 0; }
   .list-tab-content { padding: 1rem; }
 }
 
-.search-controls .alert {margin-bottom: 0;}
-.searchtools a {padding: 0 .5em;}
+.searchtools a {
+  padding: 0 .5rem;
+  white-space: nowrap;
+}
 .title-in-heading {
   font-size: inherit;
   font-style: italic;
@@ -145,15 +192,4 @@ header .container.navbar { margin-bottom: 0; }
 .geoItem {
     font-size: .9em;
     margin: 0px 0px 10px;
-}
-
-@media (max-width: 767px) {
-  .top-row {
-    padding-left: @grid-gutter-width;
-    padding-right: @grid-gutter-width;
-  }
-  .top-row > span {
-    padding: 0;
-    white-space: nowrap;
-  }
 }
