@@ -70,7 +70,7 @@ header .form-control:focus {
   margin: 0;
   padding-left: 0;
   padding-right: 0;
-  font-size: 85%;
+  font-size: 14px;
   color: @gray;
   background-color: transparent;
   border-radius: 0;
@@ -81,6 +81,7 @@ header .form-control:focus {
 }
 
 .main .container { background-color: @white; }
+.mainbody { padding-top: 1rem; }
 
 /* --- Cart --- */
 #cartSummary strong { font-weight: inherit; }
@@ -96,10 +97,36 @@ header .form-control:focus {
   padding: .5rem .75rem;
   font-size: 12px;
 }
-.search-controls {
+.result .media-body { padding-left: .5rem; }
+.result-body,
+.result-links {
+  float: left;
+  margin: 0;
+  padding: 0;
+}
+.result-body { width: 85%; }
+.result-links {
+  width: 15%;
+  text-align: center;
+}
+.result-link-icon,
+.result .cart-link-icon {
+  width: 100%;
+  font-size: 1.5rem;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  color: @brand-secondary;
+}
+.result-link-label,
+.result .cart-link-label { display: none; }
+
+.top-facets,
+.search-header { font-size: 14px; }
+.search-header {
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
+#searchForm { font-size: 14px; }
 #searchForm_lookfor,
 #searchForm_type { margin-bottom: 4px; }
 
@@ -115,15 +142,20 @@ header .form-control:focus {
   #searchForm_type {
     margin-bottom: 0;
   }
+  .result-link-icon,
+  .result .cart-link-icon {
+    margin-right: .25rem;
+    padding: 0;
+  }
+  .result-link-label,
+  .result .cart-link-label { display: inline; }
 }
 
 /* --- Sidebar --- */
 .sidebar {
-  /*
-  .rtl {
-    border-left: 0;
-  }
-  */
+  padding-left: 1rem;
+  padding-right: 1rem;
+  font-size: 14px;
   background-color: @light-gray;
   .title::after { color: @gray-light; }
 

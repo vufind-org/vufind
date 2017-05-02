@@ -154,7 +154,10 @@
           $this->jsTranslations()->addStrings(array('qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show'));
         ?>
         <span class="hidden-xs">
-          <i class="fa fa-fw fa-qrcode" aria-hidden="true"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
+          <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink">
+            <i class="result-link-icon fa fa-fw fa-qrcode" title="<?=$this->transEsc('qrcode_show')?>"></i><!--
+         --><span class="result-link-label"><?=$this->transEsc('qrcode_show')?></span>
+          </a>
           <div class="qrcode hidden">
             <script type="text/template" class="qrCodeImgTag">
               <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
@@ -169,7 +172,10 @@
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Add to favorites */ ?>
-        <i class="fa fa-fw fa-star" aria-hidden="true"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
+          <i class="result-link-icon fa fa-fw fa-star" title="<?=$this->transEsc('Add to favorites')?>"></i><!--
+       --><span class="result-link-label"><?=$this->transEsc('Add to favorites')?></span>
+        </a><br/>
         <? /* Saved lists */ ?>
         <div class="savedLists alert alert-info hidden">
           <strong><?=$this->transEsc("Saved in")?>:</strong>
