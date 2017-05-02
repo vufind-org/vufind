@@ -1,4 +1,4 @@
-@import "vendor/tachyons-colors.less";
+@import "colors";
 @import "bootstrap";
 @import "common";
 
@@ -8,26 +8,28 @@ body {
   color: @near-black;
 }
 header {
-  background-color: @green;
+  background-color: @header-bg;
+  font-weight: 500;
   color: @white;
   a,
   .nav a,
   .btn-link {
     color: @white;
-    &:hover { color: @lightest-green; }
+    &:hover { color: @header-light; }
   }
   .btn-primary {
     color: @black;
-    background-color: @lightest-green;
+    background-color: @header-light;
   }
   .btn-primary:hover {
     color: @black;
-    background-color: @washed-green;
+    background-color: @header-light;
+    border-color: @black;
   }
   .nav>li>a:hover,
   .nav>li>a:focus {
     color: @black;
-    background-color: @light-green;
+    background-color: @header-light;
   }
   .navbar-toggle {
     margin: .5rem;
@@ -37,12 +39,12 @@ header {
   }
   #header-collapse .navbar-nav {
     margin-top: 0;
-    background-color: @washed-blue;
-    a { color: @green; }
-    .active > a {
-      color: @black;
-      background-color: @light-green;
-    }
+    font-size: 14px;
+    a { color: @white; }
+    a:focus,
+    .active > a,
+    .dropdown-menu a { color: @black; }
+    .active > a { background-color: @header-light; }
   }
 }
 .navbar { border-radius: 0; }
@@ -61,8 +63,8 @@ header .form-control:focus {
   border-bottom: 3px solid @gold;
 }
 .breadcrumbs {
-  border-bottom: 1px solid @light-green;
-  background-color: @lightest-green;
+  border-bottom: 1px solid @header-light;
+  background-color: @header-light;
 }
 .breadcrumb {
   margin: 0;
@@ -73,14 +75,15 @@ header .form-control:focus {
   background-color: transparent;
   border-radius: 0;
 }
-
-.main .container {
-  padding-top: 1rem;
-  background-color: @white;
+.breadcrumb > li+li::before {
+  font-weight: 900;
+  color: #fff;
 }
 
+.main .container { background-color: @white; }
+
 /* --- Cart --- */
-#cartSummary strong { font-weight: normal; }
+#cartSummary strong { font-weight: inherit; }
 
 /* --- Search --- */
 .list-group-item.title { color: @dark-gray; }
@@ -99,6 +102,14 @@ header .form-control:focus {
 }
 #searchForm_lookfor,
 #searchForm_type { margin-bottom: 4px; }
+
+.list-group-item.active,
+.list-group-item.active:hover,
+.list-group-item.active:focus {
+  border-color: @active-filter-bg;
+  background-color: @active-filter-bg;
+}
+
 @media (min-width: 768px) {
   #searchForm_lookfor,
   #searchForm_type {
