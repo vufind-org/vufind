@@ -54,6 +54,13 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     protected $apiKey;
 
+    protected $dateConverter;
+
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
+
     /**
      * Initialize the driver.
      *
@@ -93,7 +100,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             return simplexml_load_string($result->getBody());
         } else {
             // TODO: Throw an error
-            error_log($this->baseUrl . $path);
+            error_log($client->getUri());
+            error_log(print_r($params, true));
             error_log($result->getBody());
         }
         return null;
@@ -151,6 +159,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             'number' => ++$copyCount,
                             'barcode' => empty($barcode) ? 'n/a' : $barcode,
                             'item_id' => (string)$item->item_data->pid,
+                            'addLink' => 'check'
                         ];
                     }
                 }
@@ -487,12 +496,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getPurchaseHistory($id)
     {
-        $issues = rand(0, 3);
-        $retval = [];
-        for ($i = 0; $i < $issues; $i++) {
-            $retval[] = ['issue' => 'issue ' . ($i + 1)];
-        }
-        return $retval;
+        // TODO: Alma getPurchaseHistory
+        return [];
     }
 
     /**
@@ -518,15 +523,15 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
 
     /**
+     * https://developers.exlibrisgroup.com/alma/apis/users
+     * POST /almaws/v1/users/{user_id}/requests
+     *
      * @param array $holdDetails An associative array w/ atleast patron and item_id
      *
      * @return array success: bool, sysMessage: string
      */
     public function placeHold($holdDetails)
     {
-        // https://developers.exlibrisgroup.com/alma/apis/users
-        // POST /almaws/v1/users/{user_id}/requests
-var_dump($holdDetails);
         $client = $this->httpService->createClient(
             $this->baseUrl . '/users/' . $holdDetails['patron']['cat_username']
             . '/requests?apiKey=' . urlencode($this->apiKey)
@@ -537,19 +542,25 @@ var_dump($holdDetails);
         if (isset($holdDetails['comment'])) {
             $body['comment'] = $holdDetails['comment'];
         }
+        if (isset($holdDetails['requiredBy'])) {
+            $body['last_interest_date'] = $this->dateConverter->convertFromDisplayDate(
+                'Y-m-d', $holdDetails['requiredBy']
+            );
+        }
         if (isset($holdDetails['pickUpLocation'])) {
             $body['pickup_location_type'] = 'LIBRARY';
             $body['pickup_location_library'] = $holdDetails['pickUpLocation'];
         }
-        $response = $client->send($body);
+        $client->setRawBody(json_encode($body));
+        $response = $client->send();
         // Test once we have POST access
         if ($response->isSuccess()) {
             return ['success' => true];
         }
-        $xml = simplexml_load_string($response->getBody());
+        $json = json_decode($response->getBody());
         return [
             'success' => false,
-            'system_msg' => $xml->errorList[0]->errorMessage // TODO: This is a guess
+            'sysMessage' => $json->web_service_result->errorList->error->errorMessage
         ];
     }
 
