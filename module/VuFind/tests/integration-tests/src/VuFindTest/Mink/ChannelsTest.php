@@ -55,7 +55,8 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Make sure the page works, channels exists, search
      */
-    public function testBasic() {
+    public function testBasic()
+    {
         $page = $this->getChannelsPage();
         // Channels are here
         $this->findCss($page, 'div.channel');
@@ -72,9 +73,10 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Add channels button
      */
-    public function testAddChannels() {
+    public function testAddChannels()
+    {
         $page = $this->getChannelsPage();
-        $channel = $this->findCss($page, '#channel-87d1fea774ce31e819cfa1e721280847');
+        $channel = $this->findCss($page, 'div.channel');
         // Initial counts
         $this->assertEquals(6, count($page->findAll('css', 'div.channel')));
         $this->assertEquals(8, count($channel->findAll('css', '.channel-add-menu .dropdown-menu li')));
@@ -89,9 +91,10 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Switch to search
      */
-    public function testSwitchToSearch() {
+    public function testSwitchToSearch()
+    {
         $page = $this->getChannelsPage();
-        $channel = $this->findCss($page, '#channel-87d1fea774ce31e819cfa1e721280847');
+        $channel = $this->findCss($page, 'div.channel');
         // Click link to go to search results
         $this->findCss($channel, '.channel_search')->click();
         // Make sure the search translated
