@@ -495,6 +495,27 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         return $retval;
     }
 
+    /**
+     * Public Function which retrieves renew, hold and cancel settings from the
+     * driver ini file.
+     *
+     * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
+     *
+     * @return array An array with key-value pairs.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getConfig($function, $params = null)
+    {
+        if (isset($this->config[$function])) {
+            $functionConfig = $this->config[$function];
+        } else {
+            $functionConfig = false;
+        }
+
+        return $functionConfig;
+    }
 
     /**
      * @param array $holdDetails An associative array w/ atleast patron and item_id
@@ -505,6 +526,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         // https://developers.exlibrisgroup.com/alma/apis/users
         // POST /almaws/v1/users/{user_id}/requests
+
+        // id -> mms_id, item_id -> item_pid
+        // user_request body: request_type = HOLD, last_interest_date, comment
+        // pickup_location_type, pickup_location_library -> getPickupLocations
+
         $client = $this->httpService->createClient(
             $this->baseUrl . '/users/' . $holdDetails['patron']['cat_username']
             . '/requests?apiKey=' . urlencode($this->apiKey)
@@ -521,6 +547,19 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             'success' => false,
             'system_msg' => $xml->errorList[0]->errorMessage // TODO: This is a guess
         ];
+    }
+
+    public function getPickupLocations($patron)
+    {
+        $xml = $this->makeRequest('/conf/libraries');
+        $libraries = [];
+        foreach ($xml as $library) {
+            $libraries[] = [
+                'locationID' => $library->code,
+                'locationDisplay' => $library->name
+            ];
+        }
+        return $libraries;
     }
     /**
      * @param string $courseID     Value from getCourses
