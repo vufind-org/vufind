@@ -392,7 +392,7 @@
   </requestHandler>
   
   <!-- Search component for extracting terms (useful for sitemap generation) -->
-  <searchComponent name="term" class="org.apache.solr.handler.component.TermsComponent">
+  <searchComponent name="terms" class="solr.TermsComponent">
   </searchComponent>
 
   <!--
@@ -413,9 +413,9 @@
    -->
   
   <!-- Request handler to extract terms (useful for sitemap generation) -->
-  <requestHandler name="/term" class="org.apache.solr.handler.component.SearchHandler">
+  <requestHandler name="/terms" class="solr.SearchHandler" startup="lazy">
     <arr name="components">
-      <str>term</str>
+      <str>terms</str>
     </arr>
   </requestHandler>
   
