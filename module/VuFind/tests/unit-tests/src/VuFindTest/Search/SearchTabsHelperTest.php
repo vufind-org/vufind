@@ -208,13 +208,13 @@ class SearchTabsHelperTest extends TestCase
     protected function getSearchTabsHelper($config = 'default_unfiltered',
         $filters = null
     ) {
-        $mockRequest = $this->getMock('Zend\Http\Request');
+        $mockRequest = $this->createMock('Zend\Http\Request');
         $mockRequest->expects($this->any())
             ->method('getQuery')
             ->with($this->equalTo('hiddenFilters'))
             ->willReturn($filters);
 
-        $configManager = $this->getMock('VuFind\Config\PluginManager');
+        $configManager = $this->createMock('VuFind\Config\PluginManager');
 
         $mockSolrOptions = $this->getMockBuilder('VuFind\Search\Solr\Options')
             ->disableOriginalConstructor()->getMock();
@@ -236,7 +236,7 @@ class SearchTabsHelperTest extends TestCase
                 new \VuFind\Search\Primo\Params($mockPrimoOptions, $configManager)
             );
 
-        $mockResults = $this->getMock('VuFind\Search\Results\PluginManager');
+        $mockResults = $this->createMock('VuFind\Search\Results\PluginManager');
         $mockResults->expects($this->any())
             ->method('get')
             ->will(

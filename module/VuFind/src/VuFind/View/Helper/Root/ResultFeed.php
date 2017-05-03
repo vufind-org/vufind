@@ -26,11 +26,11 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
-use DateTime,
-    VuFind\I18n\Translator\TranslatorAwareInterface,
-    Zend\Feed\Writer\Writer as FeedWriter,
-    Zend\Feed\Writer\Feed,
-    Zend\View\Helper\AbstractHelper;
+use DateTime;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use Zend\Feed\Writer\Writer as FeedWriter;
+use Zend\Feed\Writer\Feed;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * "Results as feed" view helper
@@ -65,13 +65,13 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     }
 
     /**
-     * Set up Dublin Core extension.
+     * Set up custom extensions.
      *
      * @return void
      */
-    protected function registerExtension()
+    protected function registerExtensions()
     {
-        $manager = FeedWriter::getExtensionManager();
+        $manager = new \Zend\Feed\Writer\ExtensionPluginManager();
         $manager->setInvokableClass(
             'dublincorerendererentry',
             'VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry'
@@ -86,6 +86,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         $manager->setInvokableClass(
             'opensearchfeed', 'VuFind\Feed\Writer\Extension\OpenSearch\Feed'
         );
+        FeedWriter::setExtensionManager($manager);
         FeedWriter::registerExtension('OpenSearch');
     }
 
@@ -101,7 +102,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
      */
     public function __invoke($results, $currentPath = null)
     {
-        $this->registerExtension();
+        $this->registerExtensions();
 
         // Determine base URL if not already provided:
         if (is_null($currentPath)) {
