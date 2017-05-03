@@ -56,7 +56,7 @@ highlighting = true
 
 ; Set this to restrict the list of fields that will be highlighted (the hl.fl
 ; Solr parameter); default = '*' for all fields:
-highlighting_fields = "author,author2,author_additional,author_fuller,container_title,contents,culture,description,dewey-full,edition,era,genre,geographic,holdings_txtP_mv,institution,isbn,issn,language,lccn,main_date_str,material,measurements,physical,publication_place_txt_mv,publishDate,publisher,rights,series,series2,title,title_alt,title_full,title_new,title_old,topic"
+highlighting_fields = "author,author2,author_additional,author_fuller,container_title,contents,culture,description,dewey-full,edition,era,genre,geographic,institution,isbn,issn,language,lccn,material,measurements,publication_place_txt_mv,publisher,series,series2,title,title_alt,title_full,title_new,title_old,topic"
 
 ; Set this to true in order to include a text snippet in the search results when
 ; a keyword match is found in a field that is not normally displayed as part of
