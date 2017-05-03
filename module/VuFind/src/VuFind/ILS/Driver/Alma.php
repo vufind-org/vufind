@@ -526,18 +526,22 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         // https://developers.exlibrisgroup.com/alma/apis/users
         // POST /almaws/v1/users/{user_id}/requests
-
-        // id -> mms_id, item_id -> item_pid
-        // user_request body: request_type = HOLD, last_interest_date, comment
-        // pickup_location_type, pickup_location_library -> getPickupLocations
-
+var_dump($holdDetails);
         $client = $this->httpService->createClient(
             $this->baseUrl . '/users/' . $holdDetails['patron']['cat_username']
             . '/requests?apiKey=' . urlencode($this->apiKey)
             . '&item_pid=' . urlencode($holdDetails['item_id'])
         );
         $client->setMethod(\Zend\Http\Request::METHOD_POST);
-        $response = $client->send();
+        $body = ['request_type' => 'HOLD'];
+        if (isset($holdDetails['comment'])) {
+            $body['comment'] = $holdDetails['comment'];
+        }
+        if (isset($holdDetails['pickUpLocation'])) {
+            $body['pickup_location_type'] = 'LIBRARY';
+            $body['pickup_location_library'] = $holdDetails['pickUpLocation'];
+        }
+        $response = $client->send($body);
         // Test once we have POST access
         if ($response->isSuccess()) {
             return ['success' => true];
