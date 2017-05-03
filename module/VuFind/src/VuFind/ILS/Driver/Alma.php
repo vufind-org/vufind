@@ -86,9 +86,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         if (!isset($params['apiKey'])) {
             $params['apiKey'] = $this->apiKey;
         }
-        $client = $this->httpService->createClient(
-            $this->baseUrl . $path . '?apiKey=' . urlencode()
-        );
+        $client = $this->httpService->createClient($this->baseUrl . $path);
         $client->setParameterGet($params);
         $result = $client->send();
         if ($result->isSuccess()) {
@@ -199,11 +197,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @param array $patron The patron array
      *
-     * @return array        Array of the patron's profile data on success.
+     * @return array Array of the patron's profile data on success.
      */
     public function getMyProfile($patron)
     {
         $xml = $this->makeRequest('/users/' . $patron['cat_username']);
+        if (empty($xml)) {
+            return [];
+        }
         $profile = [
             'firstname' => $xml->first_name,
             'lastname'  => $xml->last_name,
