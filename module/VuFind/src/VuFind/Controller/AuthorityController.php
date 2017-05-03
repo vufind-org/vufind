@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Authority Controller
@@ -40,11 +41,13 @@ class AuthorityController extends AbstractSearch
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         $this->searchClassId = 'SolrAuth';
-        parent::__construct();
+        parent::__construct($sm);
     }
 
     /**
@@ -72,12 +75,12 @@ class AuthorityController extends AbstractSearch
     public function recordAction()
     {
         $id = $this->params()->fromQuery('id');
-        $cfg = $this->getServiceLocator()->get('Config');
+        $cfg = $this->serviceLocator->get('Config');
         $tabConfig = $cfg['vufind']['recorddriver_tabs'];
-        $driver = $this->getServiceLocator()->get('VuFind\RecordLoader')
+        $driver = $this->serviceLocator->get('VuFind\RecordLoader')
             ->load($id, 'SolrAuth');
         $request = $this->getRequest();
-        $tabs = $this->getServiceLocator()
+        $tabs = $this->serviceLocator
             ->get('VuFind\RecordTabPluginManager')
             ->getTabsForRecord($driver, $tabConfig, $request);
         return $this->createViewModel(['driver' => $driver, 'tabs' => $tabs]);

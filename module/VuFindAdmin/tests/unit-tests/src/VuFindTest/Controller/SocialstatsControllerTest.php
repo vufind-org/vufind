@@ -47,7 +47,8 @@ class SocialstatsControllerTest extends \VuFindTest\Unit\TestCase
     public function testHome()
     {
         // Create mocks to simulate database lookups:
-        $c = $this->getMock('VuFindAdmin\Controller\SocialstatsController', ['getTable']);
+        $c = $this->getMockBuilder('VuFindAdmin\Controller\SocialstatsController')
+            ->setMethods(['getTable'])->disableOriginalConstructor()->getMock();
         $comments = $this->getMockBuilder('VuFind\Db\Table\Comments')
             ->disableOriginalConstructor()->setMethods(['getStatistics'])->getMock();
         $comments->expects($this->once())->method('getStatistics')->will($this->returnValue('comments-data'));

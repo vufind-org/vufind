@@ -1,0 +1,12 @@
+<? foreach ($checkboxFilters as $current): ?>
+    <label class="checkbox<? if(!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<? endif; ?>">
+      <input type="checkbox" name="filter[]"
+        value="<?=$this->escapeHtmlAttr($current['filter']) ?>"
+        <?=$current['selected'] ? ' checked="checked"' : '' ?>
+        id="<?=$this->escapeHtmlAttr(str_replace(' ', '', $current['desc'])) ?>"
+        onclick="document.location.href='<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter']);?>'" />
+      <?=$this->transEsc($current['desc']) ?>
+    </label>
+  <?
+  endforeach;
+?>

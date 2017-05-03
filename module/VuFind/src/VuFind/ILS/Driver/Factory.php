@@ -197,6 +197,21 @@ class Factory
     }
 
     /**
+     * Factory for Symphony driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Symphony
+     */
+    public static function getSymphony(ServiceManager $sm)
+    {
+        return new Symphony(
+            $sm->getServiceLocator()->get('VuFind\RecordLoader'),
+            $sm->getServiceLocator()->get('VuFind\CacheManager')
+        );
+    }
+
+    /**
      * Factory for Unicorn driver.
      *
      * @param ServiceManager $sm Service manager.

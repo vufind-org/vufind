@@ -190,7 +190,7 @@ class GenerateController extends AbstractBase
         $config = include $configPath;
 
         // Append the route
-        $mainConfig = $this->getServiceLocator()->get('Config');
+        $mainConfig = $this->serviceLocator->get('Config');
         foreach ($mainConfig['router']['routes'] as $key => $val) {
             if (isset($val['options']['route'])
                 && substr($val['options']['route'], -14) == '[:id[/[:tab]]]'
@@ -603,7 +603,7 @@ class GenerateController extends AbstractBase
      */
     protected function retrieveConfig(array $path)
     {
-        $config = $this->getServiceLocator()->get('config');
+        $config = $this->serviceLocator->get('config');
         foreach ($path as $part) {
             if (!isset($config[$part])) {
                 return false;

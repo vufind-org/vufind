@@ -75,10 +75,15 @@ class Service
     /**
      * Constructor.
      *
+     * @param EventManagerInterface $events Event manager (optional)
+     *
      * @return void
      */
-    public function __construct()
+    public function __construct(EventManagerInterface $events = null)
     {
+        if (null !== $events) {
+            $this->setEventManager($events);
+        }
         $this->backends = [];
     }
 
@@ -349,13 +354,13 @@ class Service
     protected function resolve($backend, $args)
     {
         if (!isset($this->backends[$backend])) {
-            $response = $this->getEventManager()->trigger(
-                self::EVENT_RESOLVE,
-                $this,
-                $args,
+            $response = $this->getEventManager()->triggerUntil(
                 function ($o) {
                     return ($o instanceof BackendInterface);
-                }
+                },
+                self::EVENT_RESOLVE,
+                $this,
+                $args
             );
             if (!$response->stopped()) {
                 throw new Exception\RuntimeException(
