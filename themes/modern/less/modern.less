@@ -89,6 +89,7 @@ header .form-control:focus {
 /* --- Search --- */
 .list-group-item.title { color: @dark-gray; }
 .result {
+  margin-right: -1rem;
   padding-bottom: .5rem;
   border-bottom: 1px solid @moon-gray;
 }
@@ -142,10 +143,16 @@ header .form-control:focus {
   #searchForm_type {
     margin-bottom: 0;
   }
+  .result { margin: 0; }
+  .result-body { width: 75%; }
+  .result-links { width: 25%; }
   .result-link-icon,
   .result .cart-link-icon {
+    width: auto;
     margin-right: .25rem;
     padding: 0;
+    font-size: inherit;
+    color: inherit;
   }
   .result-link-label,
   .result .cart-link-label { display: inline; }
