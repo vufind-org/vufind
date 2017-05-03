@@ -12,7 +12,7 @@
   <? $showingResults = $this->translate('showing_results_html', $transParams); ?>
 <? endif; ?>
 <? if (isset($this->overrideSearchHeading)): ?>
-  <? $showingResults .= $this->overrideSearchHeading; ?>
+  <? $showingResults .= ' ' . $this->overrideSearchHeading; ?>
 <? elseif ($this->params->getSearchType() == 'basic'): ?>
   <? if (!isset($this->skipTotalCount)): ?>
     <? $showingResults = $this->translate('showing_results_of_for_html', $transParams); ?>
