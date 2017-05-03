@@ -53,6 +53,21 @@ VuFind.register('cart', function Cart() {
     return full;
   }
 
+  function _refreshToggles() {
+    var $toggleBtns = $('.btn-bookbag-toggle');
+    if ($toggleBtns.length > 0) {
+      $toggleBtns.each(function cartIdEach() {
+        var $this = $(this);
+        $this.find('.cart-add,.cart-remove').addClass('hidden');
+        if (hasItem($this.data('cart-id'), $this.data('cart-source'))) {
+          $this.find('.cart-remove').removeClass('hidden');
+        } else {
+          $this.find('.cart-add').removeClass('hidden');
+        }
+      });
+    }
+  }
+
   function updateCount() {
     var items = VuFind.cart.getFullItems();
     $('#cartItems strong').html(items.length);
@@ -178,21 +193,6 @@ VuFind.register('cart', function Cart() {
       }, 5000);
       return false;
     });
-  }
-
-  function _refreshToggles() {
-    var $toggleBtns = $('.btn-bookbag-toggle');
-    if ($toggleBtns.length > 0) {
-      $toggleBtns.each(function cartIdEach() {
-        var $this = $(this);
-        $this.find('.cart-add,.cart-remove').addClass('hidden');
-        if (hasItem($this.data('cart-id'), $this.data('cart-source'))) {
-          $this.find('.cart-remove').removeClass('hidden');
-        } else {
-          $this.find('.cart-add').removeClass('hidden');
-        }
-      });
-    }
   }
 
   function _registerToggles() {
