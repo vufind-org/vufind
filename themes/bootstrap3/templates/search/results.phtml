@@ -59,30 +59,17 @@
       <? endforeach; ?>
     <? endif; ?>
     <?=$this->flashmessages()?>
-    <div class="hidden-print search-controls row">
-      <div class="col-sm-6">
+    <div class="hidden-print search-controls clearfix">
+      <div class="pull-left">
         <? if ($recordTotal > 0): ?>
-          <?=$this->transEsc("Showing")?>
-          <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
-          <? if (!isset($this->skipTotalCount)): ?>
-            <? $this->layout()->srmessage = $this->transEsc('result_count', ['%%count%%' => $this->localizedNumber($recordTotal)]); ?>
-            <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
-          <? endif; ?>
-          <? if (isset($this->overrideSearchHeading)): ?>
-            <?=$this->overrideSearchHeading?>
-          <? elseif ($this->params->getSearchType() == 'basic'): ?>
-            <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
-          <? endif; ?>
-          <? if ($qtime = $this->results->getQuerySpeed()): ?>
-            <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
-          <? endif; ?>
+          <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
         <? else: ?>
           <h2><?=$this->transEsc('nohit_heading')?></h2>
         <? endif; ?>
       </div>
 
       <? if ($recordTotal > 0): ?>
-        <div class="col-sm-6 text-right">
+        <div class="pull-right text-right">
           <?=$this->render('search/controls/limit.phtml')?>
           <?=$this->render('search/controls/sort.phtml')?>
           <?=$this->render('search/controls/view.phtml')?>
@@ -96,7 +83,7 @@
         <? if (isset($this->overrideEmptyMessage)): ?>
           <?=$this->overrideEmptyMessage?>
         <? else: ?>
-          <? $this->layout()->srmessage = $this->transEsc('nohit_prefix') . ' - ' . $this->escapeHtml($lookfor) . ' - ' . $this->transEsc('nohit_suffix'); ?>
+          <? $this->layout()->srmessage = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]); ?>
           <?=$this->layout()->srmessage ?>
         <? endif; ?>
       </p>

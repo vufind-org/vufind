@@ -157,12 +157,12 @@ VuFind.register('cart', function Cart() {
         var updated = getFullItems();
         var added = updated.length - orig.length;
         var inCart = selected.length - added;
-        msg += added + " " + VuFind.translate('itemsAddBag');
+        msg += VuFind.translate('itemsAddBag', {'%%count%%': added});
         if (updated.length >= parseInt(VuFind.translate('bookbagMax'), 10)) {
           msg += "<br/>" + VuFind.translate('bookbagFull');
         }
         if (inCart > 0 && orig.length > 0) {
-          msg += "<br/>" + inCart + " " + VuFind.translate('itemsInBag');
+          msg += "<br/>" + VuFind.translate('itemsInBag', {'%%count%%': inCart});
         }
         $('#' + elId).data('bs.popover').options.content = msg;
         $('#cartItems strong').html(updated.length);

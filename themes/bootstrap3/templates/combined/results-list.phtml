@@ -2,7 +2,7 @@
   $view = $currentSearch['view'];
   $results = $view->results;
   $params = $results->getParams();
-  $lookfor = $params->getDisplayQuery();
+  $lookfor = $results->getUrlQuery()->isQuerySuppressed() ? '' : $params->getDisplayQuery();
   $recordTotal = $results->getResultTotal();
 
   // More link should use default limit, not custom limit:
@@ -28,19 +28,9 @@
       <? foreach (($top = $results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
       <? endforeach; ?>
-      <?=$this->transEsc("Showing")?>
-      <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
-      <? if (!isset($view->skipTotalCount)): ?>
-        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
-      <? endif; ?>
-      <? if (isset($view->overrideSearchHeading)): ?>
-        <?=$view->overrideSearchHeading?>
-      <? elseif ($params->getSearchType() == 'basic'): ?>
-        <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
-      <? endif; ?>
-      <? if ($qtime = $results->getQuerySpeed()): ?>
-        <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
-      <? endif; ?>
+      <?=$this->context()->renderInContext('search/controls/showing.phtml',
+                                          ['lookfor' => $lookfor, 'recordTotal' => $recordTotal,
+                                           'params' => $params, 'results' => $results] ) ?>
     <? else: ?>
       <h3><?=$this->transEsc('nohit_heading')?></h3>
     <? endif; ?>
@@ -53,7 +43,7 @@
     <? if (isset($view->overrideEmptyMessage)): ?>
       <?=$view->overrideEmptyMessage?>
     <? else: ?>
-      <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
+      <?=$this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]) ?>
     <? endif; ?>
   </p>
   <? if (isset($view->parseError)): ?>

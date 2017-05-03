@@ -29,13 +29,18 @@
       <? endif; ?>
 
       <? if ($paginator): ?>
-        <?=$this->transEsc("Showing")?>
-        <? $start = $paginator->getAbsoluteItemNumber(1);
-           $end = $paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage());
-           $total = $paginator->getTotalItemCount();
+        <?
+          $end = min(
+            $paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage()),
+            $paginator->getTotalItemCount()
+          );
+          $transParams = [
+            '%%start%%' => $this->localizedNumber($paginator->getAbsoluteItemNumber(1)),
+            '%%end%%'   => $this->localizedNumber($end),
+            '%%total%%' => $this->localizedNumber($paginator->getTotalItemCount())
+          ];
         ?>
-        <strong><?=$this->localizedNumber($start)?></strong> - <strong><?=$this->localizedNumber($end > $total ? $total : $end)?></strong>
-        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($total)?></strong>
+        <?=$this->translate('showing_items_of_html', $transParams); ?>
       <? endif; ?>
 
       <? foreach ($hiddenTransactions as $ilsDetails): ?>

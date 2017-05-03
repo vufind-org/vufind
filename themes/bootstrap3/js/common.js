@@ -37,8 +37,17 @@ var VuFind = (function VuFind() {
       }
     }
   };
-  var translate = function translate(op) {
-    return _translations[op] || op;
+  var translate = function translate(op, _replacements) {
+    var replacements = _replacements || [];
+    var translation = _translations[op] || op;
+    if (replacements) {
+      for (var key in replacements) {
+        if (replacements.hasOwnProperty(key)) {
+          translation = translation.replace(key, replacements[key]);
+        }
+      }
+    }
+    return translation;
   };
 
   /**
