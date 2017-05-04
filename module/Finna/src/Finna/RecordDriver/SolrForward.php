@@ -898,8 +898,24 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     protected function getVideoUrls()
     {
         // Get video URLs, if any
+        $source = $this->getSource();
+        $source = isset($source[0]) ? $source[0] : '';
+        if (empty($this->recordConfig->Record->video_sources)) {
+            return [];
+        }
+        $sourceConfigs = [];
+        foreach ($this->recordConfig->Record->video_sources as $current) {
+            $settings = explode('|', $current, 3);
+            if (!isset($settings[2]) || $source !== $settings[0]) {
+                continue;
+            }
+            $sourceConfigs[$settings[1]] = $settings[2];
+        }
+        if (empty($sourceConfigs)) {
+            return [];
+        }
+
         $videoUrls = [];
-        $source = null;
         foreach ($this->getAllRecordsXML() as $xml) {
             foreach ($xml->Title as $title) {
                 if (!isset($title->TitleText)
@@ -911,18 +927,17 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 if (empty($attributes['video-tyyppi'])) {
                     continue;
                 }
-                $videoSources = [
-                    [
-                        'src' => 'http://elo.salama.tv.funet.fi/vod/_definst_/mp4:'
-                            . (string)$title->TitleText . '/manifest.mpd',
-                        'type' => 'application/dash+xml'
-                    ],
-                    [
-                        'src' => 'http://elo.salama.tv.funet.fi/vod/_definst_/mp4:'
-                            . (string)$title->TitleText . '/playlist.m3u8',
-                        'type' => 'application/x-mpegURL'
-                    ]
-                ];
+                $videoSources = [];
+                foreach ($sourceConfigs as $type => $src) {
+                    $src = str_replace(
+                        '{videoname}', (string)$title->TitleText, $src
+                    );
+                    $videoSources[] = [
+                        'src' => $src,
+                        'type' >= $type
+                    ];
+                }
+
                 $eventAttrs = $xml->ProductionEvent->ProductionEventType
                     ->attributes();
                 $url = (string)$eventAttrs->{'elokuva-elonet-materiaali-video-url'};
@@ -931,11 +946,6 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
 
                 if ($this->urlBlacklisted($url, $description)) {
                     continue;
-                }
-
-                if (null === $source) {
-                    $source = $this->getSource();
-                    $source = isset($source[0]) ? $source[0] : '';
                 }
 
                 $videoUrls[] = [

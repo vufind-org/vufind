@@ -1163,6 +1163,11 @@ url_blacklist[] = '/booky\.fi\/(image\.php\?|description\.php\?)/'
 ; in searches.ini).
 ;sort_sources = true
 
+; Video source configuration. First element is data source ID, second is media type
+; and third is the URL. {videoname} in the URL is replaced with the video ID.
+;video_sources[] = "kavi|application/dash+xml|http://elo.salama.tv.funet.fi/vod/_definst_/mp4:{videoname}/manifest.mpd"
+;video_sources[] = "kavi|application/x-mpegURL|http://elo.salama.tv.funet.fi/vod/_definst_/mp4:{videoname}/playlist.m3u8"
+
 ; The following two sections control the Alphabetic Browse module.
 [AlphaBrowse]
 ; This setting controls how many headings are displayed on each page of results:
