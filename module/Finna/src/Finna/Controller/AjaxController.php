@@ -1134,7 +1134,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 // Who would want this?
                 continue;
             }
-            foreach ($tabs as $tab) {
+            foreach ($tabs['tabs'] as $tab) {
                 if ($tab['id'] == $recommendation) {
                     $uri = new \Zend\Uri\Uri($tab['url']);
                     $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
