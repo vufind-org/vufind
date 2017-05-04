@@ -129,8 +129,8 @@ permission = finna.cache
 ;require = ANY
 ;ipRange[] = 127.0.0.1
 ;ipRange[] = ::1
-;permission = access.api.Search
-;permission = access.api.Record
+;permission[] = access.api.Search
+;permission[] = access.api.Record
 
 ; Acess to Finna Authentication API
 ;[access.finna.api.auth]
