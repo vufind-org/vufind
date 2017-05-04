@@ -45,7 +45,7 @@
               }
             }
           ?>
-          <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>"<?=!empty($url['embed']) && $url['embed'] == 'iframe' ? ' data-embed-iframe' : '' ?> target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa <?=$icon?>" aria-hidden="true"></i> <?=!empty($url['desc']) ? $this->transEsc('default::link_' . $url['desc'], null, $url['desc']) : $this->truncateUrl($url['url']) ?></a>
+          <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>"<? if (!empty($url['videoSources'])): ?> data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<? endif; ?><?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?> target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa <?=$icon?>" aria-hidden="true"></i> <?=!empty($url['desc']) ? $this->transEsc('default::link_' . $url['desc'], null, $url['desc']) : $this->truncateUrl($url['url']) ?></a>
           <? if (!empty($url['part'])): ?> <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part']) ?></span><? endif; ?>
         <? endforeach; ?>
       <? endif; ?>

@@ -252,41 +252,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      */
     public function getURLs()
     {
-        $results = [];
-        foreach ($this->getAllRecordsXML() as $xml) {
-            foreach ($xml->ProductionEvent as $event) {
-                $attributes = $event->ProductionEventType->attributes();
-                if (empty($attributes->{'elokuva-elonet-materiaali-video-url'})) {
-                    continue;
-                }
-                $url = (string)$attributes->{'elokuva-elonet-materiaali-video-url'};
-                $type = '';
-                $description = '';
-                if ($xml->Title->PartDesignation->Value) {
-                    $attributes = $xml->Title->PartDesignation->Value->attributes();
-                    $type = ucfirst((string)$attributes->{'video-tyyppi'});
-                    $description = (string)$attributes->{'video-lisatieto'};
-                }
-                $description = $description ? $description : $type;
-                if ($this->urlBlacklisted($url, $description)) {
-                    continue;
-                }
-
-                $embed = '';
-                if (strpos($url, 'elonet.fi') > 0 && strpos($url, '/video/') > 0) {
-                    $url = str_replace('/video/', '/embed/', $url);
-                    $url = str_replace('http://', '//', $url);
-                    $embed = 'iframe';
-                }
-
-                $results[] = [
-                    'url' => $url,
-                    'desc' => $description,
-                    'embed' => $embed
-                ];
-            }
-        }
-        return $results;
+        return $this->getVideoUrls();
     }
 
     /**
@@ -529,19 +495,21 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      */
     public function getOnlineURLs($raw = false)
     {
-        if (!isset($this->fields['online_urls_str_mv'])) {
-            return [];
+        $videoUrls = $this->getVideoUrls();
+        $urls = [];
+        foreach ($videoUrls as $videoUrl) {
+            $urls[] = json_encode($videoUrl);
         }
-        $urls = $this->fields['online_urls_str_mv'];
-        foreach ($urls as &$urlJson) {
-            $url = json_decode($urlJson, true);
-            if (strpos($url['url'], 'elonet.fi') > 0
-                && strpos($url['url'], '/video/') > 0
-            ) {
-                $url['url'] = str_replace('/video/', '/embed/', $url['url']);
-                $url['url'] = str_replace('http://', '//', $url['url']);
-                $url['embed'] = 'iframe';
-                $urlJson = json_encode($url);
+        if ($videoUrls && !empty($this->fields['online_urls_str_mv'])) {
+            // Filter out video URLs
+            foreach ($this->fields['online_urls_str_mv'] as $urlJson) {
+                $url = json_decode($urlJson, true);
+                if ($videoUrls && strpos($url['url'], 'elonet.fi') > 0
+                    && strpos($url['url'], '/video/') > 0
+                ) {
+                    continue;
+                }
+                $urls[] = $urlJson;
             }
         }
         return $raw ? $urls : $this->mergeURLArray($urls, true);
@@ -920,5 +888,67 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     {
         $records = $this->getAllRecordsXML();
         return reset($records);
+    }
+
+    /**
+     * Get video URLs
+     *
+     * @return array
+     */
+    protected function getVideoUrls()
+    {
+        // Get video URLs, if any
+        $videoUrls = [];
+        $source = null;
+        foreach ($this->getAllRecordsXML() as $xml) {
+            foreach ($xml->Title as $title) {
+                if (!isset($title->TitleText)
+                    || !isset($title->PartDesignation->Value)
+                ) {
+                    continue;
+                }
+                $attributes = $title->PartDesignation->Value->attributes();
+                if (empty($attributes['video-tyyppi'])) {
+                    continue;
+                }
+                $videoSources = [
+                    [
+                        'src' => 'http://elo.salama.tv.funet.fi/vod/_definst_/mp4:'
+                            . (string)$title->TitleText . '/manifest.mpd',
+                        'type' => 'application/dash+xml'
+                    ],
+                    [
+                        'src' => 'http://elo.salama.tv.funet.fi/vod/_definst_/mp4:'
+                            . (string)$title->TitleText . '/playlist.m3u8',
+                        'type' => 'application/x-mpegURL'
+                    ]
+                ];
+                $eventAttrs = $xml->ProductionEvent->ProductionEventType
+                    ->attributes();
+                $url = (string)$eventAttrs->{'elokuva-elonet-materiaali-video-url'};
+                $type = (string)$attributes->{'video-tyyppi'};
+                $description = (string)$attributes->{'video-lisatieto'};
+
+                if ($this->urlBlacklisted($url, $description)) {
+                    continue;
+                }
+
+                if (null === $source) {
+                    $source = $this->getSource();
+                    $source = isset($source[0]) ? $source[0] : '';
+                }
+
+                $videoUrls[] = [
+                    'url' => $url,
+                    'videoSources' => $videoSources,
+                    // Include both 'text' and 'desc' for online and normal urls
+                    'text' => $description ? $description : $type,
+                    'desc' => $description ? $description : $type,
+                    'source' => $source,
+                    'embed' => 'video'
+                ];
+            }
+        }
+        return $videoUrls;
     }
 }

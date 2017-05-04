@@ -732,6 +732,40 @@ finna.layout = (function() {
         });
     };
 
+    var initVideoPopup = function(container) {
+        if (typeof(container) == 'undefined') {
+            container = $('body');
+        }
+
+        container.find('a[data-embed-video]').click(function(e) {
+            var videoSources = $(this).data('videoSources');
+            $.magnificPopup.open({
+                type: 'inline',
+                items: {
+                    src: "<div class='video-popup'><video id='video-player' class='video-js vjs-big-play-centered' controls></video></div>"
+                },
+                callbacks: {
+                    open: function () {
+                        var player = videojs('video-player');
+
+                        var disablelogging = function (player, mediaPlayer) {
+                            mediaPlayer.getDebug().setLogToBrowserConsole(false);
+                        };
+                        videojs.Html5DashJS.hook('beforeinitialize', disablelogging);
+
+                        player.src(videoSources);
+                        player.load();
+                    },
+                    close: function () {
+                        videojs('video-player').dispose();
+                    }
+                }
+            });
+            e.preventDefault();
+            return false;
+        });
+    };
+
     var initKeyboardNavigation = function () {
         $(window).keyup(function(e) {
             var $target = $(e.target);
@@ -759,6 +793,7 @@ finna.layout = (function() {
         initOrganisationPageLinks: initOrganisationPageLinks,
         initSecondaryLoginField: initSecondaryLoginField,
         initIframeEmbed: initIframeEmbed,
+        initVideoPopup: initVideoPopup,
         init: function() {
             initScrollRecord();
             initJumpMenus();
@@ -788,6 +823,7 @@ finna.layout = (function() {
             initOrganisationInfoWidgets();
             initOrganisationPageLinks();
             initIframeEmbed();
+            initVideoPopup();
             initKeyboardNavigation();
         }
     };
