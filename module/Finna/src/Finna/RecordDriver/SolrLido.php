@@ -210,9 +210,10 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 case 'thumb':
                     $size = 'small';
                     break;
-                case 'image_master':
-                case 'large':
-                case 'zoomview':
+                case 'medium':
+                    $size = 'medium';
+                    break;
+                default:
                     $size = 'large';
                     break;
                 }
