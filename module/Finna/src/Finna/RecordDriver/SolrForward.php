@@ -934,7 +934,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                     );
                     $videoSources[] = [
                         'src' => $src,
-                        'type' >= $type
+                        'type' => $type
                     ];
                 }
 
