@@ -739,10 +739,11 @@ finna.layout = (function() {
 
         container.find('a[data-embed-video]').click(function(e) {
             var videoSources = $(this).data('videoSources');
+            var posterUrl = $(this).data('posterUrl');
             $.magnificPopup.open({
                 type: 'inline',
                 items: {
-                    src: "<div class='video-popup'><video id='video-player' class='video-js vjs-big-play-centered' controls autoplay></video></div>"
+                    src: "<div class='video-popup'><video id='video-player' class='video-js vjs-big-play-centered' controls></video></div>"
                 },
                 callbacks: {
                     open: function () {
@@ -761,6 +762,7 @@ finna.layout = (function() {
                         });
 
                         player.src(videoSources);
+                        player.poster(posterUrl);
                         player.load();
                     },
                     close: function () {

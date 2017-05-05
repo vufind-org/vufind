@@ -914,6 +914,8 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
         if (empty($sourceConfigs)) {
             return [];
         }
+        $posterSource = isset($this->recordConfig->Record->poster_sources[$source])
+            ? $this->recordConfig->Record->poster_sources[$source] : '';
 
         $videoUrls = [];
         foreach ($this->getAllRecordsXML() as $xml) {
@@ -944,12 +946,21 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 $type = (string)$attributes->{'video-tyyppi'};
                 $description = (string)$attributes->{'video-lisatieto'};
 
+                $poster = '';
+                $posterFilename = (string)$title->PartDesignation->Value;
+                if ($posterFilename) {
+                    $poster = str_replace(
+                        '{filename}', $posterFilename, $posterSource
+                    );
+                }
+
                 if ($this->urlBlacklisted($url, $description)) {
                     continue;
                 }
 
                 $videoUrls[] = [
                     'url' => $url,
+                    'posterUrl' => $poster,
                     'videoSources' => $videoSources,
                     // Include both 'text' and 'desc' for online and normal urls
                     'text' => $description ? $description : $type,
