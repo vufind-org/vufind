@@ -81,7 +81,15 @@
             <? foreach ($urls as $url): ?>
               <? if (isset($images[$url['url']])) { continue; } ?>
               <? $desc = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
-              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=$this->transEsc('default::link_' . $desc, null, $desc) ?></a></div>
+              <div class="fulltextField">
+                <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"
+                  <? if (!empty($url['videoSources'])): ?> data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<? endif; ?>
+                  <? if (!empty($url['posterUrl'])): ?> data-poster-url="<?= $this->escapeHtmlAttr($url['posterUrl']) ?>"<? endif; ?>
+                  <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
+                >
+                  <i class="fa fa-external-link"></i> <?=$this->transEsc('default::link_' . $desc, null, $desc) ?>
+                </a>
+              </div>
             <? endforeach; ?>
           <? endif; ?>
           <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>

@@ -70,7 +70,14 @@
         <div class="local-available-online-record recordURLs">
           <div class="truncate-field">
           <? foreach ($urls as $current): ?>
-            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="_blank"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate('link_' . $current['desc'], null, $current['desc']))?></a><br/>
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="_blank"
+              <? if (!empty($url['videoSources'])): ?> data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<? endif; ?>
+              <? if (!empty($url['posterUrl'])): ?> data-poster-url="<?= $this->escapeHtmlAttr($url['posterUrl']) ?>"<? endif; ?>
+              <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
+            >
+              <i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate('link_' . $current['desc'], null, $current['desc']))?>
+            </a>
+            <br/>
           <? endforeach; ?>
           </div>
         </div>
