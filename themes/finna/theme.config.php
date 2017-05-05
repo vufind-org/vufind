@@ -86,7 +86,7 @@ return [
         'vendor/video.min.js',
         'vendor/dash.all.min.js',
         'vendor/videojs-dash.min.js',
-        'vendor/videojs-contrib-hls.min.js',
+        'vendor/videojs.hotkeys.min.js',
         'vendor/jquery.touchSwipe.min.js',
         'vendor/bootstrap-multiselect.min.js',
         'vendor/gauge.min.js'

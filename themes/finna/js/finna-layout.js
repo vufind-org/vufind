@@ -742,7 +742,7 @@ finna.layout = (function() {
             $.magnificPopup.open({
                 type: 'inline',
                 items: {
-                    src: "<div class='video-popup'><video id='video-player' class='video-js vjs-big-play-centered' controls></video></div>"
+                    src: "<div class='video-popup'><video id='video-player' class='video-js vjs-big-play-centered' controls autoplay></video></div>"
                 },
                 callbacks: {
                     open: function () {
@@ -752,6 +752,13 @@ finna.layout = (function() {
                             mediaPlayer.getDebug().setLogToBrowserConsole(false);
                         };
                         videojs.Html5DashJS.hook('beforeinitialize', disablelogging);
+
+                        player.ready(function () {
+                            this.hotkeys({
+                                enableVolumeScroll: false,
+                                enableModifiersForNumbers: false
+                            });
+                        });
 
                         player.src(videoSources);
                         player.load();
