@@ -93,7 +93,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         if (!isset($params['apiKey'])) {
             $params['apiKey'] = $this->apiKey;
         }
-        $client = $this->httpService->createClient($this->baseUrl . $path);
+        $url = strpos($path, '://') === false ? $this->baseUrl . $path : $path;
+        $client = $this->httpService->createClient($url);
         $client->setParameterGet($params);
         $result = $client->send();
         if ($result->isSuccess()) {
@@ -438,43 +439,44 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getStatuses($ids)
     {
+        return array_map([$this, 'getStatus'], $ids);
+        /* TODO: Get expand fixed by Alma!!
         $results = [];
         $copyCount = 0;
         $params = [
             'mms_id' => implode(',', $ids),
             'view'   => 'brief', // no solrmarc xml
-            // 'expand' => 'p_avail,e_avail,d_avail'
+            'expand' => 'p_avail,e_avail,d_avail'
         ];
         if ($bibs = $this->makeRequest('/bibs', $params)) {
-            foreach ($bibs->holding as $bib) {
-                if (!isset($bib->holdings->link)) {
+            foreach ($bibs as $bib) {
+                if (!isset($bib->holdings['link'])) {
                     continue;
                 }
-                $bibPath = $bib->holdings->link;
+                $bibPath = (string) $bib->holdings['link'];
                 $holdings = $this->makeRequest($bibPath);
-                foreach ($holdings->holding as $holding) {
+                foreach ($holdings as $holding) {
                     $holdingId = (string)$holding->holding_id;
                     $itemPath = $bibPath . '/' . urlencode($holdingId) . '/items';
                     if ($currentItems = $this->makeRequest($itemPath)) {
                         foreach ($currentItems->item as $item) {
-                            $availability = $this->getAvailabilityFromItem($item);
                             $barcode = (string)$item->item_data->barcode;
-                            $callnumber = (string)$item->holding_data->call_number;
                             $results[] = [
                                 'id' => $id,
                                 'source' => 'Solr',
-                                'availability' => $availability,
+                                'availability' => $this->getAvailabilityFromItem($item),
                                 'status' => (string)$item->item_data->base_status[0]
                                     ->attributes()['desc'],
                                 'location' => (string)$holding->library[0]
                                     ->attributes()['desc'],
                                 'reserve' => 'N',   // TODO: support reserve status
-                                'callnumber' => $callnumber,
+                                'callnumber' => (string)$item->holding_data->call_number,
                                 'duedate' => null, // TODO: support due dates
-                                'returnDate' => false,// TODO: support recent returns
+                                'returnDate' => false, // TODO: support recent returns
                                 'number' => ++$copyCount,
                                 'barcode' => empty($barcode) ? 'n/a' : $barcode,
                                 'item_id' => (string)$item->item_data->pid,
+                                'addLink' => 'check'
                             ];
                         }
                     }
@@ -482,6 +484,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             }
         }
         return $results;
+        */
     }
 
     /**
@@ -537,15 +540,20 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             . '/requests?apiKey=' . urlencode($this->apiKey)
             . '&item_pid=' . urlencode($holdDetails['item_id'])
         );
+        $client->setHeaders([
+            'Content-type: application/json',
+            'Accept: application/json'
+        ]);
         $client->setMethod(\Zend\Http\Request::METHOD_POST);
         $body = ['request_type' => 'HOLD'];
-        if (isset($holdDetails['comment'])) {
+        if (isset($holdDetails['comment']) && !empty($holdDetails['comment'])) {
             $body['comment'] = $holdDetails['comment'];
         }
         if (isset($holdDetails['requiredBy'])) {
-            $body['last_interest_date'] = $this->dateConverter->convertFromDisplayDate(
+            $date = $this->dateConverter->convertFromDisplayDate(
                 'Y-m-d', $holdDetails['requiredBy']
             );
+            $body['last_interest_date'] = $date;
         }
         if (isset($holdDetails['pickUpLocation'])) {
             $body['pickup_location_type'] = 'LIBRARY';
@@ -553,14 +561,20 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
         $client->setRawBody(json_encode($body));
         $response = $client->send();
-        // Test once we have POST access
+
         if ($response->isSuccess()) {
-            return ['success' => true];
+            return [
+                'success' => true,
+                'status' => 'hold_request_success'
+            ];
+        } else {
+            // TODO: Throw an error
+            error_log($response->getBody());
         }
         $json = json_decode($response->getBody());
         return [
             'success' => false,
-            'sysMessage' => $json->web_service_result->errorList->error->errorMessage
+            'sysMessage' => $json->errorList->error[0]->errorMessage
         ];
     }
 
