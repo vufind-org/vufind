@@ -160,6 +160,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             'number' => ++$copyCount,
                             'barcode' => empty($barcode) ? 'n/a' : $barcode,
                             'item_id' => (string)$item->item_data->pid,
+                            'holding_id' => $holdingId,
                             'addLink' => 'check'
                         ];
                     }
@@ -536,9 +537,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function placeHold($holdDetails)
     {
         $client = $this->httpService->createClient(
-            $this->baseUrl . '/users/' . $holdDetails['patron']['cat_username']
+            $this->baseUrl . '/bibs/' . $holdDetails['id']
+            . '/holdings/' . urlencode($holdDetails['holding_id'])
+            . '/items/' . urlencode($holdDetails['item_id'])
             . '/requests?apiKey=' . urlencode($this->apiKey)
-            . '&item_pid=' . urlencode($holdDetails['item_id'])
+            . '&user_id=' . urlencode($holdDetails['patron']['cat_username'])
+            . '&format=json'
         );
         $client->setHeaders([
             'Content-type: application/json',
@@ -571,10 +575,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             // TODO: Throw an error
             error_log($response->getBody());
         }
-        $json = json_decode($response->getBody());
+        $error = json_decode($response->getBody());
+        if (!$error) {
+            $error = simplexml_load_string($response->getBody());
+        }
+        error_log($response->getBody());
         return [
             'success' => false,
-            'sysMessage' => $json->errorList->error[0]->errorMessage
+            'sysMessage' => $error->errorList->error[0]->errorMessage
         ];
     }
 
