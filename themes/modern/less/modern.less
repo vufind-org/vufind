@@ -1,16 +1,26 @@
-@import "colors";
 @import "bootstrap";
+@import "colors";
 @import "common";
+
+@reduced-font-size: 14px;
 
 body {
   font-size: 16px;
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; // native font stack
   color: @near-black;
 }
+
+/* -- Layout --- */
+.main .container { background-color: @white; }
+.mainbody { padding-top: 1rem; }
+
+/* --- Header --- */
 header {
   background-color: @header-bg;
+  font-size: @reduced-font-size;
   font-weight: 500;
   color: @white;
+  .navbar-nav { margin-top: 0; }
   a,
   .nav a,
   .btn-link {
@@ -35,17 +45,15 @@ header {
     margin: .5rem;
     padding-left: 1rem;
     padding-right: 1rem;
-    font-size: 14px;
+    font-size: @reduced-font-size;
   }
-  #header-collapse .navbar-nav {
-    margin-top: 0;
-    font-size: 14px;
-    a { color: @white; }
-    a:focus,
-    .active > a,
-    .dropdown-menu a { color: @black; }
-    .active > a { background-color: @header-light; }
+  .dropdown-menu a { color: @black; }
+  .dropdown-menu a:hover {
+    background-color: @header-light;
+    color: @black;
   }
+  .dropdown-menu .active a,
+  .dropdown-menu .active a:hover { background-color: @header-bg; }
 }
 .navbar { border-radius: 0; }
 .banner {
@@ -70,21 +78,37 @@ header .form-control:focus {
   margin: 0;
   padding-left: 0;
   padding-right: 0;
-  font-size: 14px;
+  font-size: @reduced-font-size;
   color: @gray;
   background-color: transparent;
   border-radius: 0;
 }
+.breadcrumb a { color: @link-color; }
+.breadcrumb .active { color: @black; }
+.breadcrumb .active a { color: #37474F; } /* Material Blue Grey 800 */
+.breadcrumb .active a:hover { color: @link-color-hover; } /* Material Blue Grey 900 */
 .breadcrumb > li+li::before {
   font-weight: 900;
   color: #fff;
 }
 
-.main .container { background-color: @white; }
-.mainbody { padding-top: 1rem; }
-
 /* --- Cart --- */
 #cartSummary strong { font-weight: inherit; }
+.btn-bookbag-toggle .fa { color: @link-color; }
+
+/* --- Record --- */
+.record-nav {
+  display: table;
+  margin-left: auto;
+  margin-top: 1rem;
+  margin-right: auto;
+}
+.info-col { font-size: @reduced-font-size; }
+.info-col h3 {
+  margin-top: 0;
+  font-weight: 500;
+}
+.record .sidebar { margin-top: 1rem; }
 
 /* --- Search --- */
 .list-group-item.title { color: @dark-gray; }
@@ -92,10 +116,18 @@ header .form-control:focus {
   margin-right: -1rem;
   padding-bottom: .5rem;
   border-bottom: 1px solid @moon-gray;
+  font-size: @reduced-font-size;
+}
+.result .title { font-size: 1rem; }
+.result .callnumAndLocation {
+  margin-top: .25rem;
+  margin-bottom: .25rem;
+  font-size: 12px;
 }
 .result .format,
 .result .label {
-  padding: .5rem .75rem;
+  display: inline-block;
+  padding: .25rem .75rem;
   font-size: 12px;
 }
 .result .media-body { padding-left: .5rem; }
@@ -122,12 +154,12 @@ header .form-control:focus {
 .result .cart-link-label { display: none; }
 
 .top-facets,
-.search-header { font-size: 14px; }
+.search-header { font-size: @reduced-font-size; }
 .search-header {
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
-#searchForm { font-size: 14px; }
+#searchForm { font-size: @reduced-font-size; }
 #searchForm_lookfor,
 #searchForm_type { margin-bottom: 4px; }
 
@@ -138,14 +170,51 @@ header .form-control:focus {
   background-color: @active-filter-bg;
 }
 
+.searchHomeContent {
+  &:extend(.clearfix all);
+  position: relative;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  padding: 6rem 3rem;
+  background-color: @header-light;
+  background-image: url('https://source.unsplash.com/collection/803311/800x300');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center top;
+  box-shadow: 0 .5rem 2rem rgba(0,0,0,.1);
+  .btn-link { text-shadow: 0 1px 0 @white; }
+}
+.searchHomeContent::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(255,255,255,.5);
+}
+
 @media (min-width: 768px) {
   #searchForm_lookfor,
   #searchForm_type {
     margin-bottom: 0;
   }
+
+  #searchForm .nav-tabs { border: 0; }
+  #searchForm .nav-tabs a:hover {
+    border-color: transparent;
+    color: @header-light;
+    background-color: transparent;
+  }
+  #searchForm .nav-tabs .active a {
+    color: @black;
+    background-color: @white;
+  }
+  #searchForm .nav-tabs ~ #searchForm_lookfor { border-top-left-radius: 0; }
+
   .result { margin: 0; }
   .result-body { width: 75%; }
-  .result-links { width: 25%; }
+  .result-links {
+    width: 25%;
+    text-align: left;
+  }
   .result-link-icon,
   .result .cart-link-icon {
     width: auto;
@@ -162,7 +231,7 @@ header .form-control:focus {
 .sidebar {
   padding-left: 1rem;
   padding-right: 1rem;
-  font-size: 14px;
+  font-size: @reduced-font-size;
   background-color: @light-gray;
   .title::after { color: @gray-light; }
 
