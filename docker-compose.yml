@@ -12,10 +12,14 @@ services:
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
       - MYSQL_DATABASE=vufind
+    ports:
+      - "3306:3306"
     volumes:
       - ./module/VuFind/sql/mysql.sql:/docker-entrypoint-initdb.d/mysql.sql
   solr:
     image: solr:6.4.2
+    ports:
+      - "8983:8983"
     volumes:
       - ./solr/vufind:/opt/solr/server/solr/mycores
       - ./solr/vendor/contrib:/opt/solr/server/solr/vendor/contrib
