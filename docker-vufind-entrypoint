@@ -1,12 +1,17 @@
 #!/bin/sh
 set -e
 
+# Conditionally set environment variables.
+if [ -z "$VUFIND_MYSQL_URL" ]; then VUFIND_MYSQL_URL='mysql://root@mysql/vufind'; fi
+if [ -z "$VUFIND_SOLR_URL" ]; then VUFIND_SOLR_URL='http://solr:8983/solr'; fi
+
 # Build local configurations.
 php install.php --non-interactive
 cp /usr/local/vufind/config/vufind/config.ini /usr/local/vufind/local/config/vufind/
-sed -i -e 's/mysql:\/\/root@localhost/mysql:\/\/root@mysql/g' /usr/local/vufind/local/config/vufind/config.ini
-sed -i -e 's/http:\/\/localhost:8080\/solr/http:\/\/solr:8983\/solr/g' /usr/local/vufind/local/config/vufind/config.ini
-ln -s /usr/local/vufind/local/httpd-vufind.conf /etc/apache2/conf-enabled/vufind.conf
+
+sed -i -e "s/mysql:\/\/root@localhost\/vufind/$(echo "$VUFIND_MYSQL_URL" | sed 's/\//\\\//g')/g" /usr/local/vufind/local/config/vufind/config.ini
+sed -i -e "s/http:\/\/localhost:8080\/solr/$(echo "$VUFIND_SOLR_URL" | sed 's/\//\\\//g')/g" /usr/local/vufind/local/config/vufind/config.ini
+ln -sf /usr/local/vufind/local/httpd-vufind.conf /etc/apache2/conf-enabled/vufind.conf
 chown -R www-data:www-data /usr/local/vufind/local/cache /usr/local/vufind/local/config
 
 exec "$@"
