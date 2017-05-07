@@ -11,3 +11,13 @@ services:
       - MYSQL_DATABASE=vufind
     volumes:
       - ./module/VuFind/sql/mysql.sql:/docker-entrypoint-initdb.d/mysql.sql
+  solr:
+    image: solr:6.4.2
+    volumes:
+      - ./solr/vufind:/opt/solr/server/solr/mycores
+      - ./solr/vendor/contrib:/opt/solr/server/solr/vendor/contrib
+    entrypoint:
+      - docker-entrypoint.sh
+      - solr-precreate
+      - authority
+      - biblio
