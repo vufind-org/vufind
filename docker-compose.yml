@@ -4,6 +4,9 @@ services:
     build: .
     ports:
       - "8080:80"
+    depends_on:
+      - mysql
+      - solr
   mysql:
     image: mysql
     environment:
