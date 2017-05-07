@@ -4,6 +4,8 @@ services:
     build: .
     ports:
       - "8080:80"
+    volumes:
+      - .:/usr/local/vufind/
     depends_on:
       - mysql
       - solr
