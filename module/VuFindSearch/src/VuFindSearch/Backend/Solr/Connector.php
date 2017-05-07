@@ -35,12 +35,14 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\ParamBag;
 
 use VuFindSearch\Backend\Exception\HttpErrorException;
+use VuFindSearch\Backend\Exception\RequestErrorException;
 
 use VuFindSearch\Backend\Solr\Document\AbstractDocument;
 
 use Zend\Http\Request;
 use Zend\Http\Client as HttpClient;
 use Zend\Http\Client\Adapter\AdapterInterface;
+use Zend\Http\Client\Adapter\Exception\TimeoutException;
 
 use InvalidArgumentException;
 
@@ -362,6 +364,19 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
+     * Check if an exception from a Solr request should be thrown rather than retried
+     *
+     * @param \Exception $ex Exception
+     *
+     * @return bool
+     */
+    protected function isRethrowableSolrException($ex)
+    {
+        return $ex instanceof TimeoutException
+            || $ex instanceof RequestErrorException;
+    }
+
+    /**
      * Try all Solr URLs until we find one that works (or throw an exception).
      *
      * @param string   $method    HTTP method to use
@@ -388,6 +403,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             try {
                 return $this->send($client);
             } catch (\Exception $ex) {
+                if ($this->isRethrowableSolrException($ex)) {
+                    throw $ex;
+                }
                 $exception = $ex;
             }
         }

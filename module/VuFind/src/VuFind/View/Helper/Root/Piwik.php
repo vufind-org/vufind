@@ -244,10 +244,13 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected function getSearchResults()
     {
         $viewModel = $this->getView()->plugin('view_model');
+        if ('layout/lightbox' === $viewModel->getCurrent()->getTemplate()) {
+            return null;
+        }
         $children = $viewModel->getCurrent()->getChildren();
         if (isset($children[0])) {
             $template = $children[0]->getTemplate();
-            if (!strstr($template, '/home')) {
+            if (!strstr($template, '/home') && !strstr($template, 'facet-list')) {
                 $results = $children[0]->getVariable('results');
                 if (is_a($results, 'VuFind\Search\Base\Results')) {
                     return $results;

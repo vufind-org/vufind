@@ -26,6 +26,8 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
+use VuFind\Db\Row\RowGateway;
+use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Expression;
 
 /**
@@ -49,12 +51,18 @@ class ResourceTags extends Gateway
     /**
      * Constructor
      *
-     * @param bool $caseSensitive Are tags case sensitive?
+     * @param Adapter       $adapter       Database adapter
+     * @param PluginManager $tm            Table manager
+     * @param array         $cfg           Zend Framework configuration
+     * @param RowGateway    $rowObj        Row prototype object (null for default)
+     * @param bool          $caseSensitive Are tags case sensitive?
+     * @param string        $table         Name of database table to interface with
      */
-    public function __construct($caseSensitive = false)
-    {
-        parent::__construct('resource_tags', 'VuFind\Db\Row\ResourceTags');
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj = null, $caseSensitive = false, $table = 'resource_tags'
+    ) {
         $this->caseSensitive = $caseSensitive;
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**

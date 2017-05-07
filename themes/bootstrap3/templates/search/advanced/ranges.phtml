@@ -20,7 +20,7 @@
           <input type="text" id="<?=$escField?><?=$this->escapeHtmlAttr($current['type'])?>Slider">
         </div>
         <?
-          $this->headScript()->appendFile('vendor/bootstrap-slider.js');
+          $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
           $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
           $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
           $future = date('Y', time()+31536000);
@@ -52,6 +52,19 @@ $(document).ready(function() {
     .on('change', fillTexts)
     .data('slider');
   {$init}
+});
+
+$('#{$escField}from, #{$escField}to').change(function () {
+  var fromValue = Number($('#{$escField}from').val());
+  var toValue = Number($('#{$escField}to').val());
+  $('#{$escField}dateSlider').slider(
+    'setValue',
+    [
+      isNaN(fromValue) || fromValue <= 0 ? {$min} : fromValue,
+      isNaN(toValue) || toValue <= 0 ? {$max} : toValue
+    ],
+    true
+  );
 });
 JS;
         ?>

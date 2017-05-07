@@ -24,7 +24,7 @@
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindTheme\View\Helper;
 use VuFindTheme\ThemeInfo;
@@ -89,6 +89,8 @@ trait ConcatTrait
      * @param stdClass $item Link element object
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getType($item)
     {
@@ -151,7 +153,7 @@ trait ConcatTrait
 
         $this->getContainer()->ksort();
 
-        foreach ($this as $key => $item) {
+        foreach ($this as $item) {
             if ($this->isExcludedFromConcat($item)) {
                 $this->groups[] = [
                     'other' => true,

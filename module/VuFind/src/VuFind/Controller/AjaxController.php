@@ -27,6 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Auth as AuthException;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * This controller handles global AJAX functionality
@@ -60,11 +61,14 @@ class AjaxController extends AbstractBase
 
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         // Add notices to a key in the output
         set_error_handler(['VuFind\Controller\AjaxController', "storeError"]);
+        parent::__construct($sm);
     }
 
     /**
@@ -110,7 +114,7 @@ class AjaxController extends AbstractBase
         // Process recommendations -- for now, we assume Solr-based search objects,
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
-        $rm = $this->getServiceLocator()->get('VuFind\RecommendPluginManager');
+        $rm = $this->serviceLocator->get('VuFind\RecommendPluginManager');
         $module = $rm->get($this->params()->fromQuery('mod'));
         $module->setConfig($this->params()->fromQuery('params'));
         $results = $this->getResultsManager()->get('Solr');
@@ -143,7 +147,7 @@ class AjaxController extends AbstractBase
     {
         static $hideHoldings = false;
         if ($hideHoldings === false) {
-            $logic = $this->getServiceLocator()->get('VuFind\ILSHoldLogic');
+            $logic = $this->serviceLocator->get('VuFind\ILSHoldLogic');
             $hideHoldings = $logic->getSuppressedLocations();
         }
 
@@ -709,7 +713,7 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('source', DEFAULT_SEARCH_BACKEND)
             );
             $tag = $this->params()->fromPost('tag', '');
-            $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
+            $tagParser = $this->serviceLocator->get('VuFind\Tags');
             if (strlen($tag) > 0) { // don't add empty tags
                 if ('false' === $this->params()->fromPost('remove', 'false')) {
                     $driver->addTags($user, $tagParser->parse($tag));
@@ -783,10 +787,9 @@ class AjaxController extends AbstractBase
             trim(strtolower($this->params()->fromQuery('type')))
         );
         $request = $this->getRequest();
-        $config = $this->getServiceLocator()->get('Config');
-        $sconfig = $this->getServiceLocator()->get('VuFind\Config')->get('searches');
+        $config = $this->serviceLocator->get('Config');
 
-        $recordTabPlugin = $this->getServiceLocator()
+        $recordTabPlugin = $this->serviceLocator
             ->get('VuFind\RecordTabPluginManager');
         $details = $recordTabPlugin
             ->getTabDetailsForRecord(
@@ -796,7 +799,7 @@ class AjaxController extends AbstractBase
                 'Information'
             );
 
-        $rtpm = $this->getServiceLocator()->get('VuFind\RecordTabPluginManager');
+        $rtpm = $this->serviceLocator->get('VuFind\RecordTabPluginManager');
         $html = $this->getViewRenderer()
             ->render(
                 "record/ajaxview-" . $viewtype . ".phtml",
@@ -909,9 +912,8 @@ class AjaxController extends AbstractBase
             $facets[$field]['removalURL']
                 = $results->getUrlQuery()->removeFacet(
                     $field,
-                    isset($filters[$field][0]) ? $filters[$field][0] : null,
-                    false
-                );
+                    isset($filters[$field][0]) ? $filters[$field][0] : null
+                )->getParams(false);
         }
         return $this->output($facets, self::STATUS_OK);
     }
@@ -984,7 +986,7 @@ class AjaxController extends AbstractBase
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $query = $this->getRequest()->getQuery();
-        $autocompleteManager = $this->getServiceLocator()
+        $autocompleteManager = $this->serviceLocator
             ->get('VuFind\AutocompletePluginManager');
         return $this->output(
             $autocompleteManager->getSuggestions($query), self::STATUS_OK
@@ -1178,7 +1180,7 @@ class AjaxController extends AbstractBase
     protected function exportFavoritesAjax()
     {
         $format = $this->params()->fromPost('format');
-        $export = $this->getServiceLocator()->get('VuFind\Export');
+        $export = $this->serviceLocator->get('VuFind\Export');
         $url = $export->getBulkUrl(
             $this->getViewRenderer(), $format,
             $this->params()->fromPost('ids', [])
@@ -1214,7 +1216,7 @@ class AjaxController extends AbstractBase
         $config = $this->getConfig();
         $resolverType = isset($config->OpenURL->resolver)
             ? $config->OpenURL->resolver : 'other';
-        $pluginManager = $this->getServiceLocator()
+        $pluginManager = $this->serviceLocator
             ->get('VuFind\ResolverDriverPluginManager');
         if (!$pluginManager->has($resolverType)) {
             return $this->output(
@@ -1261,11 +1263,15 @@ class AjaxController extends AbstractBase
             $base = false;
         }
 
+        $moreOptionsLink = $resolver->supportsMoreOptionsLink()
+            ? $resolver->getResolverUrl($openUrl) : '';
+
         // Render the links using the view:
         $view = [
             'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
             'electronic' => $electronic, 'services' => $services,
-            'searchClassId' => $searchClassId
+            'searchClassId' => $searchClassId,
+            'moreOptionsLink' => $moreOptionsLink
         ];
         $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml', $view);
 
@@ -1284,7 +1290,7 @@ class AjaxController extends AbstractBase
     protected function keepAliveAjax()
     {
         // Request ID from session to mark it active
-        $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
+        $this->serviceLocator->get('VuFind\SessionManager')->getId();
         return $this->output(true, self::STATUS_OK);
     }
 
@@ -1428,7 +1434,7 @@ class AjaxController extends AbstractBase
 
         $facetList = $facets[$facet]['data']['list'];
 
-        $facetHelper = $this->getServiceLocator()
+        $facetHelper = $this->serviceLocator
             ->get('VuFind\HierarchicalFacetHelper');
         if (!empty($sort)) {
             $facetHelper->sortFacetList($facetList, $sort == 'top');
@@ -1486,7 +1492,7 @@ class AjaxController extends AbstractBase
         }
 
         // This may be called frequently, don't leave sessions dangling
-        $this->getServiceLocator()->get('VuFind\SessionManager')->destroy();
+        $this->serviceLocator->get('VuFind\SessionManager')->destroy();
 
         return $this->output('', self::STATUS_OK);
     }
@@ -1498,6 +1504,34 @@ class AjaxController extends AbstractBase
      */
     protected function getResultsManager()
     {
-        return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
+        return $this->serviceLocator->get('VuFind\SearchResultsPluginManager');
+    }
+
+    /**
+     * Get Ils Status
+     *
+     * This will check the ILS for being online and will return the ils-offline
+     * template upon failure.
+     *
+     * @return \Zend\Http\Response
+     * @author André Lahmann <lahmann@ub.uni-leipzig.de>
+     */
+    protected function getIlsStatusAjax()
+    {
+        $this->disableSessionWrites();  // avoid session write timing bug
+        if ($this->getILS()->getOfflineMode(true) == 'ils-offline') {
+            $offlineModeMsg = $this->params()->fromPost(
+                'offlineModeMsg',
+                $this->params()->fromQuery('offlineModeMsg')
+            );
+            return $this->output(
+                $this->getViewRenderer()->render(
+                    'Helpers/ils-offline.phtml',
+                    compact('offlineModeMsg')
+                ),
+                self::STATUS_OK
+            );
+        }
+        return $this->output('', self::STATUS_OK);
     }
 }

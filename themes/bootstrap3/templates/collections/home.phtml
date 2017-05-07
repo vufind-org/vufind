@@ -1,9 +1,9 @@
 <?
   $this->headTitle($this->translate('Collection Browse'));
   $this->layout()->breadcrumbs = '<a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a>';
-  $filterList = array();
+  $filterList = [];
   $filterString = '';
-  foreach (isset($filters['Other']) ? $filters['Other'] : array() as $filter) {
+  foreach (isset($filters['Other']) ? $filters['Other'] : [] as $filter) {
     $filter['urlPart'] = $filter['field'] . ':' . $filter['value'];
     $filterList[] = $filter;
     $filterString .= '&' . urlencode('filter[]') .  '=' . urlencode($filter['urlPart']);

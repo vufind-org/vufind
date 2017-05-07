@@ -8,6 +8,7 @@
 @import "components/advanced-search";
 @import "components/alphabrowse";
 @import "components/autocomplete";
+@import "components/channels";
 @import "components/icons";
 @import "components/js-tree";
 @import "components/lightbox";
@@ -18,6 +19,7 @@
 @import "components/similar-carousel";
 @import "components/sliders";
 
+a { cursor: pointer; }
 .alert.alert-info a {text-decoration: underline;}
 .btn.disabled {
   &:active,
@@ -32,6 +34,18 @@ header .dropdown form { display: none; }
 }
 .icon-bar {background-color: #888;}
 img {max-width: 100%;}
+.nav .btn-bookbag-toggle { float: left; }
+.nav .btn-bookbag-toggle a {
+  display: block;
+  padding: @nav-link-padding;
+  text-decoration: none;
+  &:hover,
+  &:focus {
+    .outline(1px);
+    text-decoration: none;
+    background-color: @nav-link-hover-bg;
+  }
+}
 .popover {width: 250px;}
 .sub-breadcrumb {
   padding: 5px 10px;
@@ -46,10 +60,6 @@ img {max-width: 100%;}
 }
 .tab-content {padding: 4px;}
 
-@media (max-width: 991px) {
-  header .container.navbar {margin-bottom: 0;}
-  .searchForm {margin-top: 0;}
-}
 @media (min-width: 768px) {
   h2 {
     font-size: 23px;
@@ -64,7 +74,14 @@ img {max-width: 100%;}
 @media (max-width: 767px) {
   h2 { font-size: 20px; }
   h3 { font-size: 16px; }
-  .searchForm {padding-top: 0;}
+}
+@media (max-width: 530px) {
+  .label {
+    display: inline-block;
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 /* --- Form Errors --- */
@@ -95,6 +112,15 @@ img {max-width: 100%;}
 .cart-controls .checkbox {
   line-height: 2.5em;
   padding-right: 1em;
+}
+
+/* --- Devtools --- */
+.translation-output {
+  width: 100%;
+  max-width: none;
+  font-family: @font-family-monospace;
+  font-size: 12px;
+  white-space: pre;
 }
 
 /* --- PubDateVis --- */

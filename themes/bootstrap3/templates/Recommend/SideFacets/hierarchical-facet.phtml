@@ -1,0 +1,28 @@
+<? $this->headScript()->appendFile('vendor/jsTree/jstree.min.js'); ?>
+<? if (!in_array($this->title, $collapsedFacets)): ?>
+  <?
+    $script = <<<JS
+$(document).ready(function() {
+  initFacetTree($('#facet_{$this->escapeHtml($this->title)}'), true);
+});
+JS;
+  ?>
+  <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+<? else: ?>
+  <?
+  $script = <<<JS
+$('#side-collapse-{$this->escapeHtmlAttr($this->title)}').on('show.bs.collapse', function() {
+  initFacetTree($('#facet_{$this->escapeHtml($this->title)}'), true);
+});
+JS;
+  ?>
+  <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+<? endif; ?>
+<li id="facet_<?=$this->escapeHtml($this->title)?>" class="jstree-facet"
+    data-facet="<?=$this->escapeHtmlAttr($this->title)?>"
+    data-path="<?=$this->currentPath()?>"
+    data-exclude="<?=$allowExclude?>"
+    data-operator="<?=$this->recommend->getFacetOperator($this->title)?>"
+    data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
+    data-sort="<?=isset($this->sortOptions) ? $this->sortOptions : ''?>">
+</li>

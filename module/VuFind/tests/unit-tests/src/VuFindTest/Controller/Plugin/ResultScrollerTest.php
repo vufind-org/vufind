@@ -50,7 +50,9 @@ class ResultScrollerTest extends TestCase
      */
     public function testDisabled()
     {
-        $plugin = new ResultScroller(new Container('test'), false);
+        $mockManager = $this->getMockBuilder('VuFind\Search\Results\PluginManager')
+            ->disableOriginalConstructor()->getMock();
+        $plugin = new ResultScroller(new Container('test'), $mockManager, false);
         $results = $this->getMockResults();
         $this->assertFalse($plugin->init($results));
         $expected = [
@@ -336,7 +338,13 @@ class ResultScrollerTest extends TestCase
         if (null !== $sort) {
             $params->setSort($sort, true);
         }
-        $results = new \VuFindTest\Search\TestHarness\Results($params, $total);
+        $ss = $this->getMockBuilder('VuFindSearch\Service')
+            ->disableOriginalConstructor()->getMock();
+        $rl = $this->getMockBuilder('VuFind\Record\Loader')
+            ->disableOriginalConstructor()->getMock();
+        $results = new \VuFindTest\Search\TestHarness\Results(
+            $params, $ss, $rl, $total
+        );
         return $results;
     }
 
@@ -349,15 +357,50 @@ class ResultScrollerTest extends TestCase
      *
      * @return ResultScroller
      */
-    protected function getMockResultScroller($results = null,
-        $methods = ['restoreLastSearch', 'rememberSearch']
-    ) {
-        $mock = $this->getMock(
-            'VuFind\Controller\Plugin\ResultScroller', $methods, [new Container('test')]
-        );
-        if (in_array('restoreLastSearch', $methods) && null !== $results) {
-            $mock->expects($this->any())->method('restoreLastSearch')->will($this->returnValue($results));
-        }
-        return $mock;
+    protected function getMockResultScroller($results) {
+        $mockManager = $this->getMockBuilder('VuFind\Search\Results\PluginManager')
+            ->disableOriginalConstructor()->getMock();
+        return new ResultScrollerMock($mockManager, $results);
+    }
+}
+
+/**
+ * Mock class to stub search results
+ */
+class ResultScrollerMock extends \VuFind\Controller\Plugin\ResultScroller
+{
+    /**
+     * Search results to return
+     *
+     * @var \VuFind\Search\Base\Results
+     */
+    protected $testResults;
+
+    public function __construct($mockManager, $testResults)
+    {
+        parent::__construct(new Container('test'), $mockManager);
+        $this->testResults = $testResults;
+    }
+
+    /**
+     * Stubbed
+     *
+     * @return \VuFind\Search\Base\Results
+     */
+    protected function restoreLastSearch()
+    {
+        return $this->testResults;
+    }
+
+    /**
+     * Stubbed
+     *
+     * @param \VuFind\Search\Base\Results $search Search object to remember.
+     *
+     * @return void
+     */
+    protected function rememberSearch($search)
+    {
+        return null;
     }
 }

@@ -27,6 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Forbidden as ForbiddenException;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * EDS Record Controller
@@ -41,15 +42,17 @@ class EdsrecordController extends AbstractRecord
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         // Override some defaults:
         $this->searchClassId = 'EDS';
         $this->fallbackDefaultTab = 'Description';
 
         // Call standard record controller initialization:
-        parent::__construct();
+        parent::__construct($sm);
     }
 
     /**
@@ -78,7 +81,7 @@ class EdsrecordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EDS');
+        $config = $this->serviceLocator->get('VuFind\Config')->get('EDS');
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
     }

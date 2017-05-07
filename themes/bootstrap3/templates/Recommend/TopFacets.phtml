@@ -8,7 +8,7 @@
   <? $row=0; foreach($topFacetSet as $title => $cluster): ?>
     <? $moreClass = ' NarrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
-    <strong><?=$this->transEsc($cluster['label'])?></strong><?=$this->transEsc("top_facet_suffix") ?>
+    <strong><?=$this->transEsc('top_facet_label', ['%%label%%' => $cluster['label']]) ?></strong>
     <div class="row top-row">
     <? $iter=1;$corner=$topFacetSettings['rows']*$topFacetSettings['cols']; ?>
     <? foreach($cluster['list'] as $thisFacet): ?>
@@ -24,7 +24,7 @@
           if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
             $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($thisFacet['value'], '');
           } else {
-            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']);
+            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']);
           } ?>
           <a href="<?=$removeLink ?>" class="applied">
             <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check" aria-hidden="true"></i>
