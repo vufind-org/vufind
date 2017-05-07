@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y git zip unzip libmcrypt-dev libldap2-de
 
 COPY docker-vufind-entrypoint /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-vufind-entrypoint
-COPY . /usr/local/vufind
+COPY . /usr/local/vufind/
 
 RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-interaction
 
