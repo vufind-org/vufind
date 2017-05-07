@@ -1,9 +1,7 @@
 FROM php:7.1-apache
 
 WORKDIR /usr/local/vufind
-ENV APP_HOME=/usr/local/vufind2 \
-VUFIND_HTTPD_CONF=local/httpd-vufind.conf
-EXPOSE 80 443
+EXPOSE 80
 
 RUN apt-get update && apt-get install -y git zip unzip libmcrypt-dev libldap2-dev libpng12-dev libxslt-dev libicu-dev && \
     docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ && \
