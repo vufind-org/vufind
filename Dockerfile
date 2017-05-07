@@ -16,7 +16,9 @@ RUN apt-get update && apt-get install -y git zip unzip libmcrypt-dev libldap2-de
 COPY . /usr/local/vufind
 
 RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-interaction && \
-    php install.php --non-interactive
+    php install.php --non-interactive && \
+    cp /usr/local/vufind/config/vufind/config.ini /usr/local/vufind/local/config/vufind/
 
-RUN ln -s /usr/local/vufind/local/httpd-vufind.conf /etc/apache2/conf-enabled/vufind.conf && \
+RUN sed -i -e 's/mysql:\/\/root@localhost/mysql:\/\/root@mysql/g' /usr/local/vufind/local/config/vufind/config.ini && \
+    ln -s /usr/local/vufind/local/httpd-vufind.conf /etc/apache2/conf-enabled/vufind.conf && \
     chown -R www-data:www-data /usr/local/vufind/local/cache /usr/local/vufind/local/config
