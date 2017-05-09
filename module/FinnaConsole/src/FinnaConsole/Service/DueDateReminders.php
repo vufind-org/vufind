@@ -235,7 +235,7 @@ class DueDateReminders extends AbstractService
             if ($remindCnt || $errorCnt) {
                 $this->msg(
                     "$remindCnt reminders and $errorCnt errors to send for user"
-                    . "{$user->username}" . " (id {$user->id})"
+                    . " {$user->username} (id {$user->id})"
                 );
                  $this->sendReminder($user, $remindLoans, $errors);
             } else {
@@ -413,14 +413,14 @@ class DueDateReminders extends AbstractService
         $key = $this->dueDateReminderTable->getUnsubscribeSecret(
             $this->hmac, $user, $user->id
         );
-        $params = [
+        $urlParams = [
             'id' => $user->id,
             'type' => 'reminder',
             'key' => $key
         ];
         $unsubscribeUrl
             = $this->urlHelper->__invoke('myresearch-unsubscribe')
-            . '?' . http_build_query($params);
+            . '?' . http_build_query($urlParams);
 
         $urlParts = explode('/', $this->currentViewPath);
         $urlView = array_pop($urlParts);
@@ -430,23 +430,29 @@ class DueDateReminders extends AbstractService
         if ($urlView != $this::DEFAULT_PATH) {
             $baseUrl .= "/$urlView";
         }
+        $lastLogin = new \DateTime($user->finna_last_login);
+        $loginMethod = strtolower($user->finna_auth_method);
+        $dateFormat = isset($this->currentSiteConfig['Site']['displayDateFormat'])
+            ? $this->currentSiteConfig['Site']['displayDateFormat']
+            : $this->mainConfig->Site->displayDateFormat;
+
+        $params = [
+            'loans' => $remindLoans,
+            'unsubscribeUrl' => $baseUrl . $unsubscribeUrl,
+            'baseUrl' => $baseUrl,
+            'lastLogin' => $lastLogin->format($dateFormat),
+            'loginMethod' => $loginMethod
+        ];
+
         if (!empty($errors)) {
             $subject = $this->translator->translate('due_date_email_error');
-            $params = [
-                'loans' => $remindLoans,
-                'url' => $baseUrl . $this->urlHelper->__invoke('librarycards-home'),
-                'unsubscribeUrl' => $baseUrl . $unsubscribeUrl,
-                'baseUrl' => $baseUrl, 'errors' => $errors,
-            ];
+            $params['url'] = $baseUrl
+                . $this->urlHelper->__invoke('librarycards-home');
+            $params['errors'] = $errors;
         } else {
             $subject = $this->translator->translate('due_date_email_subject');
-            $params = [
-                'loans' => $remindLoans,
-                'url' => $baseUrl
-                    . $this->urlHelper->__invoke('myresearch-checkedout'),
-                'unsubscribeUrl' => $baseUrl . $unsubscribeUrl,
-                'baseUrl' => $baseUrl
-            ];
+            $params['url'] = $baseUrl
+                . $this->urlHelper->__invoke('myresearch-checkedout');
         }
         $message = $this->renderer->render("Email/due-date-reminder.phtml", $params);
         try {

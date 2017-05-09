@@ -27,7 +27,11 @@
 
 <? endforeach; ?>
 <? endif; ?>
-<?= !empty($this->errors) ? $this->translate('due_date_email_login_error') : $this->translate('due_date_email_link_title') ?>
+<? if (!empty($this->errors)): ?>
+<?= $this->translate('due_date_email_login_error', ['%%lastLogin%%' => $this->lastLogin, '%%loginMethod%%' => $this->translate('due_date_login_method_' . $this->loginMethod, null, '..')]) ?>
+<? else: ?>
+<?= $this->translate('due_date_email_link_title') ?>
+<? endif; ?>
 
 <?= $this->url ?>
 
@@ -39,7 +43,7 @@
 <? list($target, $card) = explode('.', $card, 2); ?>
 <? $cards[] = $this->transEsc("source_$target", null, $target); ?>
 <? endforeach; ?>
-<?= $this->translate('due_date_failed_library' . (count(array_unique($cards)) >= 2 ? '_multi' : '')) . implode(", ", array_unique($cards)) ?>
+<?= $this->translate('due_date_failed_library' . (count(array_unique($cards)) >= 2 ? '_multi' : '')) . implode(', ', array_unique($cards)) ?>
 
 <? endif; ?>
 
