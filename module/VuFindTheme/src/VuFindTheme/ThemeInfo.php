@@ -151,6 +151,12 @@ class ThemeInfo
             do {
                 $this->allThemeInfo[$currentTheme]
                     = include $this->getThemeConfig($currentTheme);
+                if (isset($this->allThemeInfo[$currentTheme]['mixins'])) {
+                    foreach ($this->allThemeInfo[$currentTheme]['mixins'] as $mix) {
+                        $this->allThemeInfo[$mix]
+                            = include $this->getThemeConfig($mix);
+                    }
+                }
                 $currentTheme = $this->allThemeInfo[$currentTheme]['extends'];
             } while ($currentTheme);
         }
@@ -180,16 +186,25 @@ class ThemeInfo
         $allThemeInfo = $this->getThemeInfo();
 
         while (!empty($currentTheme)) {
-            foreach ($allPaths as $currentPath) {
-                $file = "$basePath/$currentTheme/$currentPath";
-                if (file_exists($file)) {
-                    if (true === $returnType) {
-                        return $file;
-                    } else if (self::RETURN_ALL_DETAILS === $returnType) {
-                        return ['path' => $file, 'theme' => $currentTheme];
+            $currentThemeSet = array_merge(
+                (array) $currentTheme,
+                isset($allThemeInfo[$currentTheme]['mixins'])
+                    ? $allThemeInfo[$currentTheme]['mixins'] : []
+            );
+            foreach ($currentThemeSet as $currentThemeToCheck) {
+                foreach ($allPaths as $currentPath) {
+                    $file = "$basePath/$currentThemeToCheck/$currentPath";
+                    if (file_exists($file)) {
+                        if (true === $returnType) {
+                            return $file;
+                        } else if (self::RETURN_ALL_DETAILS === $returnType) {
+                            return [
+                                'path' => $file, 'theme' => $currentThemeToCheck
+                            ];
+                        }
+                        // Default return type:
+                        return $currentThemeToCheck;
                     }
-                    // Default return type:
-                    return $currentTheme;
                 }
             }
             $currentTheme = $allThemeInfo[$currentTheme]['extends'];
