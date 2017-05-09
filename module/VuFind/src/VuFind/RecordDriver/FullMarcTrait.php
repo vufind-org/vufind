@@ -95,6 +95,27 @@ trait FullMarcTrait
     }
 
     /**
+     * Get the external additional information
+     *
+     * @return array
+     */
+    public function getExternalAdditionalInformation()
+    {
+        $result = [];
+        $total = $this->getFieldArray('856', ['u', '3', 'x'], true, "|");
+        foreach ($total as $link) {
+            $comp = explode("|", $link);
+            if (count($comp) > 1) {
+                $result[$comp[1]] = $comp[0];
+            } else {
+                $result[] = $comp[0];
+            }
+        } 
+        return $result;
+    }
+
+
+    /**
      * Get an array of the volumes (for example: how many pages) 
      * associated with the record.
      *
