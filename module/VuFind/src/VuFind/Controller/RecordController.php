@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -26,6 +26,8 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+use Zend\Config\Config;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Record Controller
@@ -45,12 +47,13 @@ class RecordController extends AbstractRecord
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param ServiceLocatorInterface $sm     Service manager
+     * @param Config                  $config VuFind configuration
      */
-    public function __construct(\Zend\Config\Config $config)
+    public function __construct(ServiceLocatorInterface $sm, Config $config)
     {
         // Call standard record controller initialization:
-        parent::__construct();
+        parent::__construct($sm);
 
         // Load default tab setting:
         $this->fallbackDefaultTab = isset($config->Site->defaultRecordTab)
@@ -64,7 +67,7 @@ class RecordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
     }

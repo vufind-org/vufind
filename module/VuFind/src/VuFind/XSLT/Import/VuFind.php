@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Import_Tools
@@ -366,7 +366,9 @@ class VuFind
     {
         static $articles = ['a', 'an', 'the'];
 
-        $text = strtolower(trim($in));
+        $text = is_callable('mb_strtolower')
+            ? mb_strtolower(trim($in), 'UTF-8')
+            : strtolower(trim($in));
 
         foreach ($articles as $a) {
             if (substr($text, 0, strlen($a) + 1) == ($a . ' ')) {

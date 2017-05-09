@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -27,6 +27,7 @@
  */
 namespace VuFindAdmin\Controller;
 use Zend\Mvc\MvcEvent;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * VuFind Admin Controller Base
@@ -41,10 +42,12 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
-        parent::__construct();
+        parent::__construct($sm);
         $this->accessPermission = 'access.AdminModule';
     }
 
@@ -70,7 +73,7 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
         // Block access to everyone when module is disabled:
         $config = $this->getConfig();
         if (!isset($config->Site->admin_enabled) || !$config->Site->admin_enabled) {
-            $pluginManager  = $this->getServiceLocator()
+            $pluginManager  = $this->serviceLocator
                 ->get('Zend\Mvc\Controller\PluginManager');
             $redirectPlugin = $pluginManager->get('redirect');
             return $redirectPlugin->toRoute('admin/disabled');

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -83,9 +83,15 @@ class EIT extends SolrDefault
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
      * @return array
      */
-    public function getAllSubjectHeadings()
+    public function getAllSubjectHeadings($extended = false)
     {
         $su = isset($this->controlInfo['artinfo']['su'])
             ? $this->controlInfo['artinfo']['su'] : [];
@@ -94,7 +100,9 @@ class EIT extends SolrDefault
         // format, so we'll just send each value as a single chunk.
         $retval = [];
         foreach ($su as $s) {
-            $retval[] = [$s];
+            $retval[] = $extended
+                ? ['heading' => [$s], 'type' => '', 'source' => '']
+                : [$s];
         }
         return $retval;
     }

@@ -8,7 +8,7 @@
       <div class="col-sm-<?=$span ?><? if($columnIndex == $columns-1): ?> col-sm-pull-<?=$span*($columns-1) ?><? else: ?> col-sm-push-<?=$span ?><? endif; ?> combined-list">
     <? endif; ?>
     <?
-      $viewParams = array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch);
+      $viewParams = ['searchClassId' => $searchClassId, 'currentSearch' => $currentSearch];
       // Enable cart if appropriate:
       $viewParams['showCartControls'] = $this->supportsCartOptions[$columnIndex] && $this->showCartControls;
       // Enable bulk options if appropriate:

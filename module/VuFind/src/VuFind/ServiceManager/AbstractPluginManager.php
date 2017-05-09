@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ServiceManager
@@ -46,13 +46,16 @@ abstract class AbstractPluginManager extends Base
     /**
      * Constructor
      *
-     * Make sure table gateways are properly initialized.
+     * Make sure plugins are properly initialized.
      *
-     * @param ConfigInterface $configuration Configuration settings (optional)
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
      */
-    public function __construct(ConfigInterface $configuration = null)
-    {
-        parent::__construct($configuration);
+    public function __construct($configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        parent::__construct($configOrContainerInstance, $v3config);
         $this->addInitializer(
             ['VuFind\ServiceManager\Initializer', 'initPlugin'], false
         );

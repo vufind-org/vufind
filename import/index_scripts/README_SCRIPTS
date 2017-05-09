@@ -1,1 +1,3 @@
 This is the directory in which you should place java-like beanshell scripts for handling custom indexing functions via dynamic scripts.
+
+Note that use of beanshell is discouraged now that java can be dynamically compiled; see the index_java directory instead.

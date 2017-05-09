@@ -19,7 +19,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -256,7 +256,8 @@ class CacheTest extends TestCase
             return false;
         };
 
-        $recordTable = $this->getMock('VuFind\Db\Table\Record');
+        $recordTable = $this->getMockBuilder('VuFind\Db\Table\Record')
+            ->disableOriginalConstructor()->getMock();
         $recordTable->method('findRecords')
             ->will($this->returnCallback($findRecordsCallback));
         $recordTable->method('findRecord')
@@ -283,7 +284,7 @@ class CacheTest extends TestCase
      */
     protected function getRecordFactoryManager()
     {
-        $recordFactoryManager = $this->getMock(
+        $recordFactoryManager = $this->createMock(
             'VuFind\RecordDriver\PluginManager'
         );
         $recordFactoryManager->method('getSolrRecord')->will(
@@ -323,7 +324,7 @@ class CacheTest extends TestCase
      */
     protected function getDriver($id = 'test', $source = 'Solr')
     {
-        $driver = $this->getMock('VuFind\RecordDriver\AbstractBase');
+        $driver = $this->createMock('VuFind\RecordDriver\AbstractBase');
         $driver->expects($this->any())
             ->method('getUniqueId')
             ->will($this->returnValue($id));

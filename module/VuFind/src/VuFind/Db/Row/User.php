@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Db_Row
@@ -29,7 +29,7 @@ namespace VuFind\Db\Row;
 use Zend\Db\Sql\Expression,
     Zend\Db\Sql\Predicate\Predicate,
     Zend\Db\Sql\Sql,
-    Zend\Crypt\Symmetric\Mcrypt,
+    Zend\Crypt\Symmetric\Openssl,
     Zend\Crypt\Password\Bcrypt,
     Zend\Crypt\BlockCipher as BlockCipher;
 
@@ -103,6 +103,20 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Save ILS ID.
+     *
+     * @param string $catId Catalog ID to save.
+     *
+     * @return mixed        The output of the save method.
+     * @throws \VuFind\Exception\PasswordSecurity
+     */
+    public function saveCatalogId($catId)
+    {
+        $this->cat_id = $catId;
+        return $this->save();
+    }
+
+    /**
      * Save ILS login credentials.
      *
      * @param string $username Username to save
@@ -140,9 +154,11 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getCatPassword()
     {
-        return $this->passwordEncryptionEnabled()
-            ? $this->encryptOrDecrypt($this->cat_pass_enc, false)
-            : (isset($this->cat_password) ? $this->cat_password : null);
+        if ($this->passwordEncryptionEnabled()) {
+            return isset($this->cat_pass_enc)
+                ? $this->encryptOrDecrypt($this->cat_pass_enc, false) : null;
+        }
+        return isset($this->cat_password) ? $this->cat_password : null;
     }
 
     /**
@@ -194,7 +210,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         $algo = isset($this->config->Authentication->ils_encryption_algo)
             ? $this->config->Authentication->ils_encryption_algo
             : 'blowfish';
-        $cipher = new BlockCipher(new Mcrypt(['algorithm' => $algo]));
+        $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
     }
@@ -229,51 +245,8 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     public function getTags($resourceId = null, $listId = null,
         $source = DEFAULT_SEARCH_BACKEND
     ) {
-        $userId = $this->id;
-        $callback = function ($select) use ($userId, $resourceId, $listId, $source) {
-            $select->columns(
-                [
-                    'id' => new Expression(
-                        'min(?)', ['tags.id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    ),
-                    'tag',
-                    'cnt' => new Expression(
-                        'COUNT(DISTINCT(?))', ['rt.resource_id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    )
-                ]
-            );
-            $select->join(
-                ['rt' => 'resource_tags'], 'tags.id = rt.tag_id', []
-            );
-            $select->join(
-                ['r' => 'resource'], 'rt.resource_id = r.id', []
-            );
-            $select->join(
-                ['ur' => 'user_resource'], 'r.id = ur.resource_id', []
-            );
-            $select->group(['tag'])
-                ->order(['tag']);
-
-            $select->where->equalTo('ur.user_id', $userId)
-                ->equalTo('rt.user_id', $userId)
-                ->equalTo(
-                    'ur.list_id', 'rt.list_id',
-                    Predicate::TYPE_IDENTIFIER, Predicate::TYPE_IDENTIFIER
-                )
-                ->equalTo('r.source', $source);
-
-            if (!is_null($resourceId)) {
-                $select->where->equalTo('r.record_id', $resourceId);
-            }
-            if (!is_null($listId)) {
-                $select->where->equalTo('rt.list_id', $listId);
-            }
-        };
-
-        $table = $this->getDbTable('Tags');
-        return $table->select($callback);
+        return $this->getDbTable('Tags')
+            ->getForUser($this->id, $resourceId, $listId, $source);
     }
 
     /**
@@ -653,6 +626,8 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             $list = $table->getExisting($current->id);
             $list->delete($this, true);
         }
+        $resourceTags = $this->getDbTable('ResourceTags');
+        $resourceTags->destroyLinks(null, $this->id);
 
         // Remove the user itself:
         return parent::delete();

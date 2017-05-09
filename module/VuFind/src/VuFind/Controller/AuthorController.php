@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -38,6 +38,21 @@ namespace VuFind\Controller;
  */
 class AuthorController extends AbstractSearch
 {
+    /**
+     * Returns a list of all items associated with one facet for the lightbox
+     *
+     * Parameters:
+     * facet        The facet to retrieve
+     * searchParams Facet search params from $results->getUrlQuery()->getParams()
+     *
+     * @return mixed
+     */
+    public function facetListAction()
+    {
+        $this->searchClassId = 'SolrAuthor';
+        return parent::facetListAction();
+    }
+
     /**
      * Sets the configuration for displaying author results
      *
@@ -93,7 +108,7 @@ class AuthorController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
     }

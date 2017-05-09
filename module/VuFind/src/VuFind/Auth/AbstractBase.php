@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Authentication
@@ -91,6 +91,17 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function preLoginCheck($request)
+    {
+        // By default, do no checking.
+    }
+
+    /**
+     * Reset any internal status; this is essentially an event hook which most auth
+     * modules can ignore. See ChoiceAuth for a use case example.
+     *
+     * @return void
+     */
+    public function resetState()
     {
         // By default, do no checking.
     }
@@ -264,6 +275,19 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Return a canned password policy hint when available
+     *
+     * @param string $pattern Current policy pattern
+     *
+     * @return string
+     */
+    protected function getCannedPasswordPolicyHint($pattern)
+    {
+        return (in_array($pattern, ['numeric', 'alphanumeric']))
+            ? 'password_only_' . $pattern : null;
+    }
+
+    /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
      * @return array
@@ -279,6 +303,17 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         if (isset($config->Authentication->maximum_password_length)) {
             $policy['maxLength']
                 = $config->Authentication->maximum_password_length;
+        }
+        if (isset($config->Authentication->password_pattern)) {
+            $policy['pattern']
+                = $config->Authentication->password_pattern;
+        }
+        if (isset($config->Authentication->password_hint)) {
+            $policy['hint'] = $config->Authentication->password_hint;
+        } else {
+            $policy['hint'] = $this->getCannedPasswordPolicyHint(
+                isset($policy['pattern']) ? $policy['pattern'] : null
+            );
         }
         return $policy;
     }
@@ -324,6 +359,33 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
                     ['%%maxlength%%' => $policy['maxLength']]
                 )
             );
+        }
+        if (!empty($policy['pattern'])) {
+            $valid = true;
+            if ($policy['pattern'] == 'numeric') {
+                if (!ctype_digit($password)) {
+                    $valid = false;
+                }
+            } elseif ($policy['pattern'] == 'alphanumeric') {
+                if (preg_match('/[^\da-zA-Z]/', $password)) {
+                    $valid = false;
+                }
+            } else {
+                $result = preg_match(
+                    "/({$policy['pattern']})/", $password, $matches
+                );
+                if ($result === false) {
+                    throw new \Exception(
+                        'Invalid regexp in password pattern: ' . $policy['pattern']
+                    );
+                }
+                if (!$result || $matches[1] != $password) {
+                    $valid = false;
+                }
+            }
+            if (!$valid) {
+                throw new AuthException($this->translate('password_error_invalid'));
+            }
         }
     }
 }

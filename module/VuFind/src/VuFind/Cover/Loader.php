@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -150,11 +150,11 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
-     * Get Cover Generator Object
+     * Get settings for the cover generator.
      *
-     * @return VuFind\Cover\Generator
+     * @return array
      */
-    public function getCoverGenerator()
+    protected function getCoverGeneratorSettings()
     {
         $settings = isset($this->config->DynamicCovers)
             ? $this->config->DynamicCovers->toArray() : [];
@@ -163,7 +163,33 @@ class Loader extends \VuFind\ImageLoader
         ) {
             $settings['backgroundMode'] = $this->config->Content->makeDynamicCovers;
         }
-        return new \VuFind\Cover\Generator($this->themeTools, $settings);
+        $size = $this->size;
+        $pickSize = function ($setting) use ($size) {
+            if (isset($setting[$size])) {
+                return $setting[$size];
+            }
+            if (isset($setting['*'])) {
+                return $setting['*'];
+            }
+            return $setting;
+        };
+        return array_map($pickSize, $settings);
+    }
+
+    /**
+     * Get Cover Generator Object (or return false if disabled)
+     *
+     * @return VuFind\Cover\Generator|bool
+     */
+    public function getCoverGenerator()
+    {
+        if (isset($this->config->Content->makeDynamicCovers)
+            && $this->config->Content->makeDynamicCovers
+        ) {
+            $settings = $this->getCoverGeneratorSettings();
+            return new \VuFind\Cover\Generator($this->themeTools, $settings);
+        }
+        return false;
     }
 
     /**
@@ -260,10 +286,8 @@ class Loader extends \VuFind\ImageLoader
         } else if (!$this->fetchFromAPI()
             && !$this->fetchFromContentType()
         ) {
-            if (isset($this->config->Content->makeDynamicCovers)
-                && $this->config->Content->makeDynamicCovers
-            ) {
-                $this->image = $this->getCoverGenerator()->generate(
+            if ($generator = $this->getCoverGenerator()) {
+                $this->image = $generator->generate(
                     $settings['title'], $settings['author'], $settings['callnumber']
                 );
                 $this->contentType = 'image/png';

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -589,11 +589,9 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                         ) {
                             // ... can this user borrow on loan items at this
                             // location?
-                            if (in_array(
+                            $can_req = in_array(
                                 $location, $unavailable_locs[$item_loc_code]
-                            )) {
-                                $can_req = true;
-                            }
+                            );
                         }
                     } else {
                         // The item is NOT on loan ...
@@ -601,9 +599,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                         // ... and has a requestable status ...
                         if (in_array($item_stat_code, $status_list)) {
                             // ... can the user borrow status items at this location?
-                            if (in_array($location, $status_locs[$item_loc_code])) {
-                                $can_req = true;
-                            }
+                            $can_req
+                                = in_array($location, $status_locs[$item_loc_code]);
                         } else {
                             // ... and DOESN'T have a requestable status ...
                             if ($item_stat_code !== null) {
@@ -611,11 +608,9 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                             } else {
                                 // ... can the user borrow available items at this
                                 // location?
-                                if (in_array(
+                                $can_req = in_array(
                                     $location, $available_locs[$item_loc_code]
-                                )) {
-                                    $can_req = true;
-                                }
+                                );
                             }
                         }
                     }
@@ -1764,24 +1759,24 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Have to use raw post data because of the way
         //   virtua expects the barcodes to come across.
-        $post_data  = "function="      . "RENEWAL";
-        $post_data .= "&search="       . "PATRON";
-        $post_data .= "&sessionid="    . "$session_id";
-        $post_data .= "&skin="         . "homepage";
-        $post_data .= "&lng="          . $this->getConfiguredLanguage();
-        $post_data .= "&inst="         . "consortium";
-        $post_data .= "&conf="         . urlencode(".&#047;chameleon.conf");
-        $post_data .= "&u1="           . "12";
+        $post_data  = "function=" . "RENEWAL";
+        $post_data .= "&search=" . "PATRON";
+        $post_data .= "&sessionid=" . "$session_id";
+        $post_data .= "&skin=" . "homepage";
+        $post_data .= "&lng=" . $this->getConfiguredLanguage();
+        $post_data .= "&inst=" . "consortium";
+        $post_data .= "&conf=" . urlencode(".&#047;chameleon.conf");
+        $post_data .= "&u1=" . "12";
         $post_data .= "&SourceScreen=" . "PATRONACTIVITY";
-        $post_data .= "&pos="          . "1";
-        $post_data .= "&patronid="     . $patron['cat_username'];
+        $post_data .= "&pos=" . "1";
+        $post_data .= "&patronid=" . $patron['cat_username'];
         $post_data .= "&patronhost="
             . urlencode($this->config['Catalog']['patron_host']);
         $post_data .= "&host="
             . urlencode($this->config['Catalog']['host_string']);
-        $post_data .= "&itembarcode="  . implode("&itembarcode=", $item_list);
-        $post_data .= "&submit="       . "Renew";
-        $post_data .= "&reset="        . "Clear";
+        $post_data .= "&itembarcode=" . implode("&itembarcode=", $item_list);
+        $post_data .= "&submit=" . "Renew";
+        $post_data .= "&reset=" . "Clear";
 
         $result = $this->httpRequest($virtua_url, null, $post_data);
 
@@ -1832,7 +1827,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
 
         foreach ($result as $row) {
-            $list[] = 'vtls' .  str_pad($row['AUTH_ID'], 9, "0", STR_PAD_LEFT);
+            $list[] = 'vtls' . str_pad($row['AUTH_ID'], 9, "0", STR_PAD_LEFT);
         }
         return $list;
     }

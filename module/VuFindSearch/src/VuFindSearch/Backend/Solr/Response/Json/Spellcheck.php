@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -75,7 +75,9 @@ class Spellcheck implements IteratorAggregate, Countable
     public function __construct(array $spellcheck, $query)
     {
         $this->terms = new ArrayObject();
-        $list = new NamedList($spellcheck);
+        // Solr 6.4 and before use an array of arrays with two elements, while
+        // from Solr 6.5 on the array is associative.
+        $list = isset($spellcheck[0]) ? new NamedList($spellcheck) : $spellcheck;
         foreach ($list as $term => $info) {
             if (is_array($info)) {
                 $this->terms->offsetSet($term, $info);
@@ -161,7 +163,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @param string $term Term to check
      *
-     * @return boolean
+     * @return bool
      */
     protected function contains($term)
     {

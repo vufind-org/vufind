@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -76,7 +76,7 @@ class Recaptcha extends AbstractHelper
     public function __construct($rc, $config)
     {
         $this->recaptcha = $rc;
-        $this->active = isset($config->Captcha);
+        $this->active = isset($config->Captcha->forms);
     }
 
     /**
@@ -92,14 +92,18 @@ class Recaptcha extends AbstractHelper
     /**
      * Generate <div> with ReCaptcha from render.
      *
-     * @param boolean $useRecaptcha Boolean of active state, for compact templating
+     * @param bool $useRecaptcha Boolean of active state, for compact templating
+     * @param bool $wrapHtml     Include prefix and suffix?
      *
      * @return string $html
      */
-    public function html($useRecaptcha = true)
+    public function html($useRecaptcha = true, $wrapHtml = true)
     {
         if (!isset($useRecaptcha) || !$useRecaptcha) {
             return false;
+        }
+        if (!$wrapHtml) {
+            return $this->recaptcha->getHtml();
         }
         return $this->prefixHtml . $this->recaptcha->getHtml() . $this->suffixHtml;
     }
@@ -107,7 +111,7 @@ class Recaptcha extends AbstractHelper
     /**
      * Return whether Captcha is active in the config
      *
-     * @return boolean
+     * @return bool
      */
     public function active()
     {

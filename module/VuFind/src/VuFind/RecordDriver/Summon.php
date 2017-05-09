@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -39,6 +39,18 @@ namespace VuFind\RecordDriver;
 class Summon extends SolrDefault
 {
     /**
+     * Fields that may contain subject headings, and their descriptions
+     *
+     * @var array
+     */
+    protected $subjectFields = [
+        'SubjectTerms' => 'topic',
+        'TemporalSubjectTerms' => 'chronological',
+        'GeographicLocations' => 'geographic',
+        'Keywords' => 'keyword',
+    ];
+
+    /**
      * Date converter
      *
      * @var \VuFind\Date\Converter
@@ -50,32 +62,31 @@ class Summon extends SolrDefault
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
      * @return array
      */
-    public function getAllSubjectHeadings()
+    public function getAllSubjectHeadings($extended = false)
     {
         $retval = [];
-        $topic = isset($this->fields['SubjectTerms']) ?
-            $this->fields['SubjectTerms'] : [];
-        $temporal = isset($this->fields['TemporalSubjectTerms']) ?
-            $this->fields['TemporalSubjectTerms'] : [];
-        $geo = isset($this->fields['GeographicLocations']) ?
-            $this->fields['GeographicLocations'] : [];
-        $key = isset($this->fields['Keywords']) ?
-            $this->fields['Keywords'] : [];
 
-        $retval = [];
-        foreach ($topic as $t) {
-            $retval[] = [trim($t)];
-        }
-        foreach ($temporal as $t) {
-            $retval[] = [trim($t)];
-        }
-        foreach ($geo as $g) {
-            $retval[] = [trim($g)];
-        }
-        foreach ($key as $k) {
-            $retval[] = [trim($k)];
+        foreach ($this->subjectFields as $field => $fieldType) {
+            if (!isset($this->fields[$field])) {
+                continue;
+            }
+            foreach ($this->fields[$field] as $topic) {
+                $topic = trim($topic);
+                $retval[] = $extended
+                    ? [
+                        'heading' => [$topic],
+                        'type' => $fieldType,
+                        'source' => ''
+                    ] : [$topic];
+            }
         }
         return $retval;
     }

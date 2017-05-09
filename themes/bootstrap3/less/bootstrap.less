@@ -1,12 +1,14 @@
 @import "vendor/bootstrap/bootstrap";
 @import "vendor/font-awesome/font-awesome";
-@fa-font-path: "../../../fonts";
 @import "vendor/bootstrap-accessibility/bootstrap-accessibility";
 @import "vendor/a11y";
+
+@fa-font-path: "../../../../../../themes/bootstrap3/css/fonts";
 
 @import "components/advanced-search";
 @import "components/alphabrowse";
 @import "components/autocomplete";
+@import "components/channels";
 @import "components/icons";
 @import "components/js-tree";
 @import "components/lightbox";
@@ -17,12 +19,14 @@
 @import "components/similar-carousel";
 @import "components/sliders";
 
+a { cursor: pointer; }
 .alert.alert-info a {text-decoration: underline;}
 .btn.disabled {
   &:active,
   &:focus,
   &:hover {color: #000;}
 }
+header .dropdown form { display: none; }
 .list-unstyled {margin: 0;}
 .highlight,mark {
   background: lighten(#FF0, 20%);
@@ -30,6 +34,18 @@
 }
 .icon-bar {background-color: #888;}
 img {max-width: 100%;}
+.nav .btn-bookbag-toggle { float: left; }
+.nav .btn-bookbag-toggle a {
+  display: block;
+  padding: @nav-link-padding;
+  text-decoration: none;
+  &:hover,
+  &:focus {
+    .outline(1px);
+    text-decoration: none;
+    background-color: @nav-link-hover-bg;
+  }
+}
 .popover {width: 250px;}
 .sub-breadcrumb {
   padding: 5px 10px;
@@ -44,10 +60,6 @@ img {max-width: 100%;}
 }
 .tab-content {padding: 4px;}
 
-@media (max-width: 991px) {
-  header .container.navbar {margin-bottom: 0;}
-  .searchForm {margin-top: 0;}
-}
 @media (min-width: 768px) {
   h2 {
     font-size: 23px;
@@ -62,7 +74,14 @@ img {max-width: 100%;}
 @media (max-width: 767px) {
   h2 { font-size: 20px; }
   h3 { font-size: 16px; }
-  .searchForm {padding-top: 0;}
+}
+@media (max-width: 530px) {
+  .label {
+    display: inline-block;
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 /* --- Form Errors --- */
@@ -93,6 +112,15 @@ img {max-width: 100%;}
 .cart-controls .checkbox {
   line-height: 2.5em;
   padding-right: 1em;
+}
+
+/* --- Devtools --- */
+.translation-output {
+  width: 100%;
+  max-width: none;
+  font-family: @font-family-monospace;
+  font-size: 12px;
+  white-space: pre;
 }
 
 /* --- PubDateVis --- */

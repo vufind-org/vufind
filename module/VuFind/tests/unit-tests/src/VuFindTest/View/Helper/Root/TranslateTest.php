@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -219,7 +219,7 @@ class TranslateTest extends \PHPUnit_Framework_TestCase
     public function testLocaleWithTranslator()
     {
         $translate = new Translate();
-        $translator = $this->getMock('Zend\I18n\Translator\Translator');
+        $translator = $this->createMock('Zend\I18n\Translator\Translator');
         $translator->expects($this->once())->method('getLocale')
             ->will($this->returnValue('foo'));
         $translate->setTranslator($translator);
@@ -234,7 +234,7 @@ class TranslateTest extends \PHPUnit_Framework_TestCase
     public function testGetTranslator()
     {
         $translate = new Translate();
-        $translator = $this->getMock('Zend\I18n\Translator\TranslatorInterface');
+        $translator = $this->createMock('Zend\I18n\Translator\TranslatorInterface');
         $translate->setTranslator($translator);
         $this->assertEquals($translator, $translate->getTranslator());
     }
@@ -252,7 +252,7 @@ class TranslateTest extends \PHPUnit_Framework_TestCase
             return isset($translations[$domain][$str])
                 ? $translations[$domain][$str] : $str;
         };
-        $translator = $this->getMock('Zend\I18n\Translator\TranslatorInterface');
+        $translator = $this->createMock('Zend\I18n\Translator\TranslatorInterface');
         $translator->expects($this->any())->method('translate')
             ->will($this->returnCallback($callback));
         return $translator;

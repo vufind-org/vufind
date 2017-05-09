@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -174,7 +174,7 @@ class RouterTest extends TestCase
      */
     protected function getDriver($id = 'test', $source = 'Solr')
     {
-        $driver = $this->getMock('VuFind\RecordDriver\AbstractBase');
+        $driver = $this->createMock('VuFind\RecordDriver\AbstractBase');
         $driver->expects($this->any())->method('getUniqueId')
             ->will($this->returnValue($id));
         $driver->expects($this->any())->method('getSourceIdentifier')
@@ -195,13 +195,13 @@ class RouterTest extends TestCase
         if (null === $record) {
             $record = $this->getDriver();
         }
-        $loader = $this->getMock(
-            'VuFind\Record\Loader', [],
-            [
-                $this->getMock('VuFindSearch\Service'),
-                $this->getMock('VuFind\RecordDriver\PluginManager')
-            ]
-        );
+        $loader = $this->getMockBuilder('VuFind\Record\Loader')
+            ->setConstructorArgs(
+                [
+                    $this->createMock('VuFindSearch\Service'),
+                    $this->createMock('VuFind\RecordDriver\PluginManager')
+                ]
+            )->getMock();
         $loader->expects($this->any())->method('load')
             ->will($this->returnValue($record));
 

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -76,10 +76,10 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         if (!$this->continuousIntegrationRunning()) {
             return $this->markTestSkipped('Continuous integration not running.');
         }
-        $this->driver = $this->getMock('VuFind\ILS\Driver\Sample');
+        $this->driver = $this->createMock('VuFind\ILS\Driver\Sample');
         $driverManager = new \VuFind\ILS\Driver\PluginManager();
         $driverManager->setService('Sample', $this->driver);
-        $mockConfigReader = $this->getMock('VuFind\Config\PluginManager');
+        $mockConfigReader = $this->createMock('VuFind\Config\PluginManager');
         $mockConfigReader->expects($this->any())->method('get')
             ->will($this->returnValue(new \Zend\Config\Config([])));
         $this->auth = new \VuFind\Auth\ILS(

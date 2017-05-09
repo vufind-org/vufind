@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -52,6 +52,25 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test configuration parsing.
+     *
+     * @return void
+     */
+    public function testConfigParsing()
+    {
+        $helper = new HeadThemeResources($this->getResourceContainer());
+        $tests = [
+            'foo:bar:baz' => ['foo', 'bar', 'baz'],
+            'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy']
+        ];
+        foreach ($tests as $test => $expected) {
+            $this->assertEquals(
+                $expected, $this->callMethod($helper, 'parseSetting', [$test])
+            );
+        }
+    }
+
+    /**
      * Get a populated resource container for testing.
      *
      * @return ResourceContainer
@@ -71,7 +90,7 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockView()
     {
-        $view = $this->getMock('Zend\View\Renderer\PhpRenderer');
+        $view = $this->createMock('Zend\View\Renderer\PhpRenderer');
         $view->expects($this->at(0))->method('plugin')
             ->with($this->equalTo('headmeta'))
             ->will($this->returnValue($this->getMockHeadMeta()));

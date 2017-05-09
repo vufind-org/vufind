@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -58,7 +58,7 @@ class AdminController extends AbstractAdmin
         $config = $this->getConfig();
         $xml = false;
         if (isset($config->Index->url)) {
-            $response = $this->getServiceLocator()->get('VuFind\Http')
+            $response = $this->serviceLocator->get('VuFind\Http')
                 ->get($config->Index->url . '/admin/multicore');
             $xml = $response->isSuccess() ? $response->getBody() : false;
         }

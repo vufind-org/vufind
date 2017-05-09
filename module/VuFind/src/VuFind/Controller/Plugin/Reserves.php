@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
+use VuFindSearch\Service;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
@@ -48,14 +49,27 @@ class Reserves extends AbstractPlugin
     protected $useIndex;
 
     /**
+     * Search service
+     *
+     * @var Service
+     */
+    protected $searchService;
+
+    /**
      * Constructor
      *
-     * @param bool $useIndex Do we need to use the Solr index for reserves (true)
-     * or the ILS driver (false)?
+     * @param bool    $useIndex      Do we need to use the Solr index for reserves
+     * (true) or the ILS driver (false)?
+     * @param Service $searchService Search service (only required when $useIndex
+     * is true).
      */
-    public function __construct($useIndex = false)
+    public function __construct($useIndex = false, Service $searchService = null)
     {
         $this->useIndex = $useIndex;
+        if ($useIndex && null === $searchService) {
+            throw new \Exception('Missing required search service');
+        }
+        $this->searchService = $searchService;
     }
 
     /**
@@ -84,8 +98,7 @@ class Reserves extends AbstractPlugin
         if ($this->useIndex()) {
             // get the selected reserve record from reserves index
             // and extract the bib IDs from it
-            $result = $this->getController()->getServiceLocator()
-                ->get('VuFind\Search')
+            $result = $this->searchService
                 ->retrieve('SolrReserves', $course . '|' . $inst . '|' . $dept);
             $bibs = [];
             if ($result->getTotal() < 1) {

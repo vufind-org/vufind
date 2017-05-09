@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -28,10 +28,13 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Auth as AuthException,
+    VuFind\Exception\Forbidden as ForbiddenException,
+    VuFind\Exception\ILS as ILSException,
     VuFind\Exception\Mail as MailException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\RecommendListener, Zend\Stdlib\Parameters;
+    VuFind\Search\RecommendListener, Zend\Stdlib\Parameters,
+    Zend\View\Model\ViewModel;
 
 /**
  * Controller for the user account area.
@@ -75,6 +78,37 @@ class MyResearchController extends AbstractBase
     protected function storeRefererForPostLoginRedirect()
     {
         $this->setFollowupUrlToReferer();
+    }
+
+    /**
+     * Execute the request
+     *
+     * @param \Zend\Mvc\MvcEvent $event Event
+     *
+     * @return mixed
+     * @throws Exception\DomainException
+     */
+    public function onDispatch(\Zend\Mvc\MvcEvent $event)
+    {
+        // Catch any ILSExceptions thrown during processing and display a generic
+        // failure message to the user (instead of going to the fatal exception
+        // screen). This offers a slightly more forgiving experience when there is
+        // an unexpected ILS issue. Note that most ILS exceptions are handled at a
+        // lower level in the code (see \VuFind\ILS\Connection and the config.ini
+        // loadNoILSOnFailure setting), but there are some rare edge cases (for
+        // example, when the MultiBackend driver fails over to NoILS while used in
+        // combination with MultiILS authentication) that could lead here.
+        try {
+            return parent::onDispatch($event);
+        } catch (ILSException $exception) {
+            // Always display generic message:
+            $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+            // In development mode, also show technical failure message:
+            if ('development' == APPLICATION_ENV) {
+                $this->flashMessenger()->addErrorMessage($exception->getMessage());
+            }
+            return $this->createViewModel();
+        }
     }
 
     /**
@@ -292,10 +326,10 @@ class MyResearchController extends AbstractBase
     protected function setSavedFlagSecurely($searchId, $saved, $userId)
     {
         $searchTable = $this->getTable('Search');
-        $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
+        $sessId = $this->serviceLocator->get('VuFind\SessionManager')->getId();
         $row = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
         if (empty($row)) {
-            throw new \Exception('Access denied.');
+            throw new ForbiddenException('Access denied.');
         }
         $row->saved = $saved ? 1 : 0;
         $row->user_id = $userId;
@@ -310,9 +344,9 @@ class MyResearchController extends AbstractBase
     public function savesearchAction()
     {
         // Fail if saved searches are disabled.
-        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
         if ($check->getSavedSearchSetting() === 'disabled') {
-            throw new \Exception('Saved searches disabled.');
+            throw new ForbiddenException('Saved searches disabled.');
         }
 
         $user = $this->getUser();
@@ -370,6 +404,7 @@ class MyResearchController extends AbstractBase
 
         // Obtain user information from ILS:
         $catalog = $this->getILS();
+        $this->addAccountBlocksToFlashMessenger($catalog, $patron);
         $profile = $catalog->getMyProfile($patron);
         $profile['home_library'] = $user->home_library;
         $view->profile = $profile;
@@ -383,6 +418,29 @@ class MyResearchController extends AbstractBase
         }
 
         return $view;
+    }
+
+    /**
+     * Add account blocks to the flash messenger as errors.
+     * These messages are lightbox ignored.
+     *
+     * @param \VuFind\ILS\Connection $catalog Catalog connection
+     * @param array                  $patron  Patron details
+     *
+     * @return void
+     */
+    public function addAccountBlocksToFlashMessenger($catalog, $patron)
+    {
+        if ($catalog->checkCapability('getAccountBlocks', compact($patron))
+            && $blocks = $catalog->getAccountBlocks($patron)
+        ) {
+            foreach ($blocks as $block) {
+                $this->flashMessenger()->addMessage(
+                    [ 'msg' => $block, 'dataset' => [ 'lightbox-ignore' => '1' ] ],
+                    'error'
+                );
+            }
+        }
     }
 
     /**
@@ -518,22 +576,24 @@ class MyResearchController extends AbstractBase
     protected function processEditSubmit($user, $driver, $listID)
     {
         $lists = $this->params()->fromPost('lists');
-        $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
+        $tagParser = $this->serviceLocator->get('VuFind\Tags');
+        $favorites = $this->serviceLocator
+            ->get('VuFind\Favorites\FavoritesService');
         foreach ($lists as $list) {
             $tags = $this->params()->fromPost('tags' . $list);
-            $driver->saveToFavorites(
+            $favorites->save(
                 [
                     'list'  => $list,
                     'mytags'  => $tagParser->parse($tags),
                     'notes' => $this->params()->fromPost('notes' . $list)
                 ],
-                $user
+                $user, $driver
             );
         }
         // add to a new list?
         $addToList = $this->params()->fromPost('addToList');
         if ($addToList > -1) {
-            $driver->saveToFavorites(['list' => $addToList], $user);
+            $favorites->save(['list' => $addToList], $user, $driver);
         }
         $this->flashMessenger()->addMessage('edit_list_success', 'success');
 
@@ -643,7 +703,7 @@ class MyResearchController extends AbstractBase
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
-            throw new \Exception('Lists disabled');
+            throw new ForbiddenException('Lists disabled');
         }
 
         // Check for "delete item" request; parameter may be in GET or POST depending
@@ -673,7 +733,7 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, we just need to display the favorites:
         try {
-            $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+            $runner = $this->serviceLocator->get('VuFind\SearchRunner');
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
@@ -682,7 +742,7 @@ class MyResearchController extends AbstractBase
                 + ['id' => $this->params()->fromRoute('id')];
 
             // Set up listener for recommendations:
-            $rManager = $this->getServiceLocator()
+            $rManager = $this->serviceLocator
                 ->get('VuFind\RecommendPluginManager');
             $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
                 $listener = new RecommendListener($rManager, $searchId);
@@ -775,7 +835,7 @@ class MyResearchController extends AbstractBase
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
-            throw new \Exception('Lists disabled');
+            throw new ForbiddenException('Lists disabled');
         }
 
         // User must be logged in to edit list:
@@ -816,7 +876,7 @@ class MyResearchController extends AbstractBase
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
-            throw new \Exception('Lists disabled');
+            throw new ForbiddenException('Lists disabled');
         }
 
         // Get requested list ID:
@@ -874,7 +934,7 @@ class MyResearchController extends AbstractBase
         $id = isset($current['id']) ? $current['id'] : null;
         $source = isset($current['source'])
             ? $current['source'] : DEFAULT_SEARCH_BACKEND;
-        $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
+        $record = $this->serviceLocator->get('VuFind\RecordLoader')
             ->load($id, $source, true);
         $record->setExtraDetail('ils_details', $current);
         return $record;
@@ -1077,6 +1137,9 @@ class MyResearchController extends AbstractBase
         // Connect to the ILS:
         $catalog = $this->getILS();
 
+        // Display account blocks, if any:
+        $this->addAccountBlocksToFlashMessenger($catalog, $patron);
+
         // Get the current renewal status and process renewal form, if necessary:
         $renewStatus = $catalog->checkFunction('Renewals', compact('patron'));
         $renewResult = $renewStatus
@@ -1165,7 +1228,7 @@ class MyResearchController extends AbstractBase
                 }
                 $source = isset($row['source'])
                     ? $row['source'] : DEFAULT_SEARCH_BACKEND;
-                $row['driver'] = $this->getServiceLocator()
+                $row['driver'] = $this->serviceLocator
                     ->get('VuFind\RecordLoader')->load($row['id'], $source);
                 $row['title'] = $row['driver']->getShortTitle();
             } catch (\Exception $e) {
@@ -1270,7 +1333,7 @@ class MyResearchController extends AbstractBase
                                 . $user->verify_hash . '&auth_method=' . $method
                         ]
                     );
-                    $this->getServiceLocator()->get('VuFind\Mailer')->send(
+                    $this->serviceLocator->get('VuFind\Mailer')->send(
                         $user->email,
                         $config->Site->email,
                         $this->translate('recovery_email_subject'),
@@ -1316,7 +1379,7 @@ class MyResearchController extends AbstractBase
                     $view->hash = $hash;
                     $view->username = $user->username;
                     $view->useRecaptcha
-                        = $this->recaptcha()->active('passwordRecovery');
+                        = $this->recaptcha()->active('changePassword');
                     $view->setTemplate('myresearch/newpassword');
                     return $view;
                 }
@@ -1324,6 +1387,26 @@ class MyResearchController extends AbstractBase
         }
         $this->flashMessenger()->addMessage('recovery_invalid_hash', 'error');
         return $this->forwardTo('MyResearch', 'Login');
+    }
+
+    /**
+     * Reset the new password form and return the modified view. When a user has
+     * already been loaded from an existing hash, this resets the hash and updates
+     * the form so that the user can try again.
+     *
+     * @param mixed     $userFromHash User loaded from database, or false if none.
+     * @param ViewModel $view         View object
+     *
+     * @return ViewModel
+     */
+    protected function resetNewPasswordForm($userFromHash, ViewModel $view)
+    {
+        if ($userFromHash) {
+            $userFromHash->updateHash();
+            $view->username = $userFromHash->username;
+            $view->hash = $userFromHash->verify_hash;
+        }
+        return $view;
     }
 
     /**
@@ -1351,7 +1434,8 @@ class MyResearchController extends AbstractBase
         $view->useRecaptcha = $this->recaptcha()->active('changePassword');
         // Check reCaptcha
         if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
-            return $view;
+            $this->setUpAuthenticationFromRequest();
+            return $this->resetNewPasswordForm($userFromHash, $view);
         }
         // Missing or invalid hash
         if (false == $userFromHash) {
@@ -1362,10 +1446,7 @@ class MyResearchController extends AbstractBase
         } elseif ($userFromHash->username !== $post->username) {
             $this->flashMessenger()
                 ->addMessage('authentication_error_invalid', 'error');
-            $userFromHash->updateHash();
-            $view->username = $userFromHash->username;
-            $view->hash = $userFromHash->verify_hash;
-            return $view;
+            return $this->resetNewPasswordForm($userFromHash, $view);
         }
         // Verify old password if we're logged in
         if ($this->getUser()) {
@@ -1452,7 +1533,11 @@ class MyResearchController extends AbstractBase
      */
     protected function setUpAuthenticationFromRequest()
     {
-        $method = trim($this->params()->fromQuery('auth_method'));
+        $method = trim(
+            $this->params()->fromQuery(
+                'auth_method', $this->params()->fromPost('auth_method')
+            )
+        );
         if (!empty($method)) {
             $this->getAuthManager()->setAuthMethod($method);
         }

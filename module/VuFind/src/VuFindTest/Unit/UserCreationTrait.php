@@ -19,7 +19,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -132,6 +132,29 @@ trait UserCreationTrait
             $passwordField = $this->findCss($page, $prefix . '[name="password"]');
             $passwordField->setValue($password);
         }
+    }
+
+    /**
+     * Mink support function: fill in the change password form.
+     *
+     * @param Element $page    Page element.
+     * @param string  $old     Old password
+     * @param string  $new     New password
+     * @param bool    $inModal Should we assume the login box is in a lightbox?
+     * @param string  $prefix  Extra selector prefix
+     *
+     * @return void
+     */
+    protected function fillInChangePasswordForm(Element $page, $old, $new,
+        $inModal = false, $prefix = '#newpassword '
+    ) {
+        $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
+        $usernameField = $this->findCss($page, $prefix . '[name="oldpwd"]');
+        $usernameField->setValue($old);
+        $passwordField = $this->findCss($page, $prefix . '[name="password"]');
+        $passwordField->setValue($new);
+        $password2Field = $this->findCss($page, $prefix . '[name="password2"]');
+        $password2Field->setValue($new);
     }
 
     /**

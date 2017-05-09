@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -75,10 +75,15 @@ class Service
     /**
      * Constructor.
      *
+     * @param EventManagerInterface $events Event manager (optional)
+     *
      * @return void
      */
-    public function __construct()
+    public function __construct(EventManagerInterface $events = null)
     {
+        if (null !== $events) {
+            $this->setEventManager($events);
+        }
         $this->backends = [];
     }
 
@@ -87,8 +92,8 @@ class Service
      *
      * @param string              $backend Search backend identifier
      * @param Query\AbstractQuery $query   Search query
-     * @param integer             $offset  Search offset
-     * @param integer             $limit   Search limit
+     * @param int                 $offset  Search offset
+     * @param int                 $limit   Search limit
      * @param ParamBag            $params  Search backend parameters
      *
      * @return RecordCollectionInterface
@@ -196,7 +201,7 @@ class Service
      *
      * @param string              $backend Search backend identifier
      * @param Query\AbstractQuery $query   Search query
-     * @param integer             $limit   Search limit
+     * @param int                 $limit   Search limit
      * @param ParamBag            $params  Search backend parameters
      *
      * @return RecordCollectionInterface
@@ -349,13 +354,13 @@ class Service
     protected function resolve($backend, $args)
     {
         if (!isset($this->backends[$backend])) {
-            $response = $this->getEventManager()->trigger(
-                self::EVENT_RESOLVE,
-                $this,
-                $args,
+            $response = $this->getEventManager()->triggerUntil(
                 function ($o) {
                     return ($o instanceof BackendInterface);
-                }
+                },
+                self::EVENT_RESOLVE,
+                $this,
+                $args
             );
             if (!$response->stopped()) {
                 throw new Exception\RuntimeException(

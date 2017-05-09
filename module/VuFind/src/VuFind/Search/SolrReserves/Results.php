@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_SolrReserves
@@ -27,6 +27,8 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\SolrReserves;
+use VuFind\Record\Loader;
+use VuFindSearch\Service as SearchService;
 
 /**
  * Solr Reserves Search Parameters
@@ -43,12 +45,15 @@ class Results extends \VuFind\Search\Solr\Results
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params $params Object representing user search
-     * parameters.
+     * @param \VuFind\Search\Base\Params $params        Object representing user
+     * search parameters.
+     * @param SearchService              $searchService Search service
+     * @param Loader                     $recordLoader  Record loader
      */
-    public function __construct(\VuFind\Search\Base\Params $params)
-    {
-        parent::__construct($params);
+    public function __construct(\VuFind\Search\Base\Params $params,
+        SearchService $searchService, Loader $recordLoader
+    ) {
+        parent::__construct($params, $searchService, $recordLoader);
         $this->backendId = 'SolrReserves';
     }
 }

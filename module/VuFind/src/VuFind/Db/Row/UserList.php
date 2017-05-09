@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Db_Row
@@ -26,8 +26,9 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Row;
-use VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Exception\MissingField as MissingFieldException;
+use VuFind\Exception\ListPermission as ListPermissionException;
+use VuFind\Exception\MissingField as MissingFieldException;
+use Zend\Session\Container;
 
 /**
  * Row Definition for user_list
@@ -45,7 +46,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     /**
      * Session container for last list information.
      *
-     * @var \Zend\Session\Container
+     * @var Container
      */
     protected $session = null;
 
@@ -53,9 +54,11 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      * Constructor
      *
      * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
+     * @param Container                $session Session container
      */
-    public function __construct($adapter)
+    public function __construct($adapter, Container $session = null)
     {
+        $this->session = $session;
         parent::__construct('id', 'user_list', $adapter);
     }
 
@@ -139,11 +142,11 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     /**
      * Set session container
      *
-     * @param \Zend\Session\Container $session Session container
+     * @param Container $session Session container
      *
      * @return void
      */
-    public function setSession(\Zend\Session\Container $session)
+    public function setSession(Container $session)
     {
         $this->session = $session;
     }

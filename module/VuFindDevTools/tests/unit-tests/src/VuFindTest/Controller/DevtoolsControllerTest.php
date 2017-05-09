@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -84,7 +84,8 @@ class DevtoolsControllerTest extends \VuFindTest\Unit\TestCase
     protected function getMockController()
     {
         $config = new Config(['Languages' => ['en' => 'English']]);
-        $c = $this->getMock('VuFindDevTools\Controller\DevtoolsController', ['getConfig']);
+        $c = $this->getMockBuilder('VuFindDevTools\Controller\DevtoolsController')
+            ->setMethods(['getConfig'])->disableOriginalConstructor()->getMock();
         $c->expects($this->any())->method('getConfig')->will($this->returnValue($config));
         return $c;
     }

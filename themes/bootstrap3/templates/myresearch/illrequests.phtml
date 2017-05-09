@@ -13,7 +13,7 @@
 
     <?=$this->flashmessages()?>
 
-    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
 
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>
@@ -43,7 +43,7 @@
         <hr/>
         <? $iteration++; ?>
         <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-        <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="row">
+        <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="row result">
           <? if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
             <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
             <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" />
@@ -84,8 +84,8 @@
               <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><? if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?><br/>
             <? endif; ?>
 
-            <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
-              <?=str_replace('class="', 'class="label label-info ', $this->record($resource)->getFormatList())?>
+            <? if (count($resource->getFormats()) > 0): ?>
+              <?=$this->record($resource)->getFormatList() ?>
               <br/>
             <? endif; ?>
             <? if (isset($ilsDetails['volume']) && !empty($ilsDetails['volume'])): ?>
@@ -139,7 +139,7 @@
             <? endif; ?>
 
             <? if (isset($ilsDetails['in_transit']) && $ilsDetails['in_transit']): ?>
-              <div class="text-success"><?=$this->transEsc("request_in_transit") . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], array(), $ilsDetails['in_transit']) : '') ?></div>
+              <div class="text-success"><?=$this->transEsc("request_in_transit") . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], [], $ilsDetails['in_transit']) : '') ?></div>
             <? endif; ?>
             <? if (isset($ilsDetails['processed']) && $ilsDetails['processed']): ?>
               <div class="text-success"><?=$this->transEsc("ill_request_processed") . (is_string($ilsDetails['processed']) ? ': ' . $ilsDetails['processed'] : '') ?></div>
@@ -164,6 +164,6 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
-    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'ILLRequests'))?>
+    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'ILLRequests'])?>
   </div>
 </div>

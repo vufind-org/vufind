@@ -26,6 +26,9 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFind\Controller;
+use VuFind\Exception\Forbidden as ForbiddenException;
+use Zend\Config\Config;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * BrowseController Class
@@ -64,9 +67,10 @@ class BrowseController extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param ServiceLocatorInterface $sm     Service manager
+     * @param Config                  $config VuFind configuration
      */
-    public function __construct(\Zend\Config\Config $config)
+    public function __construct(ServiceLocatorInterface $sm, Config $config)
     {
         $this->config = $config;
 
@@ -76,6 +80,7 @@ class BrowseController extends AbstractBase
                 $this->disabledFacets[] = $key;
             }
         }
+        parent::__construct($sm);
     }
 
     /**
@@ -283,7 +288,7 @@ class BrowseController extends AbstractBase
     public function tagAction()
     {
         if (!$this->tagsEnabled()) {
-            throw new \Exception('Tags disabled.');
+            throw new ForbiddenException('Tags disabled.');
         }
 
         $this->setCurrentAction('Tag');
@@ -589,7 +594,7 @@ class BrowseController extends AbstractBase
     protected function getFacetList($facet, $category = null,
         $sort = 'count', $query = '[* TO *]'
     ) {
-        $results = $this->getServiceLocator()
+        $results = $this->serviceLocator
             ->get('VuFind\SearchResultsPluginManager')->get('Solr');
         $params = $results->getParams();
         $params->addFacet($facet);

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Authentication
@@ -226,9 +226,10 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function supportsPasswordChange($authMethod = null)
     {
-        if ($this->getAuth($authMethod)->supportsPasswordChange()) {
-            return isset($this->config->Authentication->change_password)
-                && $this->config->Authentication->change_password;
+        if (isset($this->config->Authentication->change_password)
+            && $this->config->Authentication->change_password
+        ) {
+            return $this->getAuth($authMethod)->supportsPasswordChange();
         }
         return false;
     }
@@ -557,6 +558,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         if (!$this->getAuth()->getSessionInitiator(null)
             && !$this->csrf->isValid($request->getPost()->get('csrf'))
         ) {
+            $this->getAuth()->resetState();
             throw new AuthException('authentication_error_technical');
         }
 

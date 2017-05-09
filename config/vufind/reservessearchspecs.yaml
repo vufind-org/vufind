@@ -8,40 +8,19 @@ AllFields:
     - course^400
     - instructor^400
     - department^200
-  QueryFields:
-    course:
-      - [onephrase, 1000]
-      - [and, 750]
-      - [or, 10]
-    instructor:
-      - [onephrase, 1000]
-      - [and, 750]
-      - [or, 10]
-    department:
-      - [onephrase, 1000]
-      - [and, 750]
-      - [or, 10]
+  DismaxHandler: edismax
+
 Instructor:
   DismaxFields:
     - instructor^400
-  QueryFields:
-    instructor:
-      - [onephrase, 1000]
-      - [and, 750]
-      - [or, 10]
+  DismaxHandler: edismax
+
 Course:
   DismaxFields:
     - course^400
-  QueryFields:
-    course:
-      - [onephrase, 1000]
-      - [and, 750]
-      - [or, 10]
+  DismaxHandler: edismax
+
 Department:
   DismaxFields:
     - department^400
-  QueryFields:
-    department:
-      - [onephrase, 1000]
-      - [and, 750]
-      - [or, 10]
+  DismaxHandler: edismax

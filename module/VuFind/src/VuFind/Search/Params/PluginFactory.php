@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -54,19 +54,19 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
      * @param ServiceLocatorInterface $serviceLocator Service locator
      * @param string                  $name           Name of service
      * @param string                  $requestedName  Unfiltered name of service
+     * @param array                   $extraParams    Extra constructor parameters
+     * (to follow the Options object and config loader)
      *
      * @return object
      */
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
-        $name, $requestedName
+        $name, $requestedName, array $extraParams = []
     ) {
         $options = $serviceLocator->getServiceLocator()
             ->get('VuFind\SearchOptionsPluginManager')->get($requestedName);
         $class = $this->getClassName($name, $requestedName);
+        $configLoader = $serviceLocator->getServiceLocator()->get('VuFind\Config');
         // Clone the options instance in case caller modifies it:
-        return new $class(
-            clone($options),
-            $serviceLocator->getServiceLocator()->get('VuFind\Config')
-        );
+        return new $class(clone($options), $configLoader, ...$extraParams);
     }
 }

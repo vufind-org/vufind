@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -35,12 +35,14 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\ParamBag;
 
 use VuFindSearch\Backend\Exception\HttpErrorException;
+use VuFindSearch\Backend\Exception\RequestErrorException;
 
 use VuFindSearch\Backend\Solr\Document\AbstractDocument;
 
 use Zend\Http\Request;
 use Zend\Http\Client as HttpClient;
 use Zend\Http\Client\Adapter\AdapterInterface;
+use Zend\Http\Client\Adapter\Exception\TimeoutException;
 
 use InvalidArgumentException;
 
@@ -66,7 +68,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * @see self::query()
      *
-     * @var integer
+     * @var int
      */
     const MAX_GET_URL_LENGTH = 2048;
 
@@ -185,23 +187,20 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     /**
      * Return records similar to a given record specified by id.
      *
-     * Uses MoreLikeThis Request Handler
+     * Uses MoreLikeThis Request Component or MoreLikeThis Handler
      *
-     * @param string   $id     Id of given record
+     * @param string   $id     ID of given record (not currently used, but
+     * retained for backward compatibility / extensibility).
      * @param ParamBag $params Parameters
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function similar($id, ParamBag $params = null)
+    public function similar($id, ParamBag $params)
     {
-        $params = $params ?: new ParamBag();
-        $params
-            ->set('q', sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"')));
-        $params->set('qt', 'morelikethis');
-
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
-
         return $this->query($handler, $params);
     }
 
@@ -365,6 +364,19 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
+     * Check if an exception from a Solr request should be thrown rather than retried
+     *
+     * @param \Exception $ex Exception
+     *
+     * @return bool
+     */
+    protected function isRethrowableSolrException($ex)
+    {
+        return $ex instanceof TimeoutException
+            || $ex instanceof RequestErrorException;
+    }
+
+    /**
      * Try all Solr URLs until we find one that works (or throw an exception).
      *
      * @param string   $method    HTTP method to use
@@ -391,6 +403,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             try {
                 return $this->send($client);
             } catch (\Exception $ex) {
+                if ($this->isRethrowableSolrException($ex)) {
+                    throw $ex;
+                }
                 $exception = $ex;
             }
         }

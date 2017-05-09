@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Solr
@@ -170,29 +170,31 @@ abstract class QueryAdapter
      */
     public static function fromRequest(Parameters $request, $defaultHandler)
     {
-        $groupCount = 0;
         $groups = [];
-
-        // Loop through each search group
-        while (!is_null($lookfor = $request->get("lookfor{$groupCount}"))) {
+        // Loop through all parameters and look for 'lookforX'
+        foreach ($request as $key => $value) {
+            if (!preg_match('/^lookfor(\d+)$/', $key, $matches)) {
+                continue;
+            }
+            $groupId = $matches[1];
             $group = [];
             $lastBool = null;
 
             // Loop through each term inside the group
-            for ($i = 0; $i < count($lookfor); $i++) {
+            for ($i = 0; $i < count($value); $i++) {
                 // Ignore advanced search fields with no lookup
-                if ($lookfor[$i] != '') {
+                if ($value[$i] != '') {
                     // Use default fields if not set
-                    $typeArr = $request->get('type' . $groupCount);
+                    $typeArr = $request->get("type$groupId");
                     $handler = !empty($typeArr[$i]) ? $typeArr[$i] : $defaultHandler;
 
-                    $opArr = $request->get('op' . $groupCount);
+                    $opArr = $request->get("op$groupId");
                     $operator = !empty($opArr[$i]) ? $opArr[$i] : null;
 
                     // Add term to this group
-                    $boolArr = $request->get('bool' . $groupCount);
+                    $boolArr = $request->get("bool$groupId");
                     $lastBool = isset($boolArr[0]) ? $boolArr[0] : 'AND';
-                    $group[] = new Query($lookfor[$i], $handler, $operator);
+                    $group[] = new Query($value[$i], $handler, $operator);
                 }
             }
 
@@ -201,9 +203,6 @@ abstract class QueryAdapter
                 // Add the completed group to the list
                 $groups[] = new QueryGroup($lastBool, $group);
             }
-
-            // Increment
-            $groupCount++;
         }
 
         return (count($groups) > 0)

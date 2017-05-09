@@ -1,8 +1,8 @@
 --
--- Table structure for table `record`
+-- Table structure for table record
 --
 
-CREATE TABLE `record` (
+CREATE TABLE record (
   id serial NOT NULL,
   record_id varchar(255),
   source varchar(50),

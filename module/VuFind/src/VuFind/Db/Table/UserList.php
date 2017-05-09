@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Db_Table
@@ -26,9 +26,12 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
-use VuFind\Exception\LoginRequired as LoginRequiredException,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Db\Sql\Expression;
+use VuFind\Db\Row\RowGateway;
+use VuFind\Exception\LoginRequired as LoginRequiredException;
+use VuFind\Exception\RecordMissing as RecordMissingException;
+use Zend\Db\Adapter\Adapter;
+use Zend\Db\Sql\Expression;
+use Zend\Session\Container;
 
 /**
  * Table Definition for user_list
@@ -44,20 +47,26 @@ class UserList extends Gateway
     /**
      * Session container for last list information.
      *
-     * @var \Zend\Session\Container
+     * @var Container
      */
     protected $session;
 
     /**
      * Constructor
      *
-     * @param \Zend\Session\Container $session Session container (must use same
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param Container     $session Session container (must use same
      * namespace as container provided to \VuFind\View\Helper\Root\UserList).
+     * @param string        $table   Name of database table to interface with
      */
-    public function __construct(\Zend\Session\Container $session)
-    {
-        parent::__construct('user_list', 'VuFind\Db\Row\UserList');
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj = null, Container $session = null, $table = 'user_list'
+    ) {
         $this->session = $session;
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**
@@ -137,17 +146,5 @@ class UserList extends Gateway
             }
         };
         return $this->select($callback);
-    }
-
-    /**
-     * Construct the prototype for rows.
-     *
-     * @return object
-     */
-    protected function initializeRowPrototype()
-    {
-        $prototype = parent::initializeRowPrototype();
-        $prototype->setSession($this->session);
-        return $prototype;
     }
 }

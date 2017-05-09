@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -27,7 +27,8 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
-use Zend\Console\Console, Zend\Console\Getopt,
+use Zend\Console\Console,
+    Zend\ServiceManager\ServiceLocatorInterface,
     Zend\Mvc\Controller\AbstractActionController;
 
 /**
@@ -43,27 +44,21 @@ use Zend\Console\Console, Zend\Console\Getopt,
 class AbstractBase extends AbstractActionController
 {
     /**
-     * Console options
-     *
-     * @var Getopt
-     */
-    protected $consoleOpts;
-
-    /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         // This controller should only be accessed from the command line!
         if (PHP_SAPI != 'cli') {
             throw new \Exception('Access denied to command line tools.');
         }
 
-        // Get access to information about the CLI request.
-        $this->consoleOpts = new Getopt([]);
+        $this->setServiceLocator($sm);
 
         // Switch the context back to the original working directory so that
-        // relative paths work as expected.  (This constant is set in
+        // relative paths work as expected. (This constant is set in
         // public/index.php)
         if (defined('ORIGINAL_WORKING_DIRECTORY')) {
             chdir(ORIGINAL_WORKING_DIRECTORY);
@@ -121,7 +116,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getConfig($id = 'config')
     {
-        return $this->getServiceLocator()->get('VuFind\Config')->get($id);
+        return $this->serviceLocator->get('VuFind\Config')->get($id);
     }
 
     /**
@@ -131,7 +126,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getILS()
     {
-        return $this->getServiceLocator()->get('VuFind\ILSConnection');
+        return $this->serviceLocator->get('VuFind\ILSConnection');
     }
 
     /**
@@ -143,7 +138,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getTable($table)
     {
-        return $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
+        return $this->serviceLocator->get('VuFind\DbTablePluginManager')
             ->get($table);
     }
 }

@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -51,13 +51,12 @@ class BackendTest extends TestCase
      */
     public function testGetConnector()
     {
-        $connector = $this->getMock(
-            'VuFindSearch\Backend\Pazpar2\Connector', [],
-            ['http://fake', $this->getMock('Zend\Http\Client')]
-        );
+        $connector = $this->getMockBuilder('VuFindSearch\Backend\Pazpar2\Connector')
+            ->setConstructorArgs(['http://fake', $this->createMock('Zend\Http\Client')])
+            ->getMock();
         $back = new Backend(
             $connector,
-            $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface')
+            $this->createMock('VuFindSearch\Response\RecordCollectionFactoryInterface')
         );
         $this->assertEquals($connector, $back->getConnector());
     }
@@ -150,10 +149,11 @@ class BackendTest extends TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->getMock('Zend\Http\Client');
-        return $this->getMock(
-            'VuFindSearch\Backend\Pazpar2\Connector', $mock, ['fake', $client]
-        );
+        $client = $this->createMock('Zend\Http\Client');
+        return $this->getMockBuilder('VuFindSearch\Backend\Pazpar2\Connector')
+            ->setMethods($mock)
+            ->setConstructorArgs(['fake', $client])
+            ->getMock();
     }
 
     /**

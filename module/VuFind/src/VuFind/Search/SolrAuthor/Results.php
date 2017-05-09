@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -27,6 +27,8 @@
  */
 namespace VuFind\Search\SolrAuthor;
 use VuFind\Search\Solr\Results as SolrResults;
+use VuFind\Record\Loader;
+use VuFindSearch\Service as SearchService;
 
 /**
  * Author Search Options
@@ -42,16 +44,25 @@ class Results extends SolrResults
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params $params Object representing user search
-     * parameters.
+     * @param \VuFind\Search\Base\Params $params        Object representing user
+     * search parameters.
+     * @param SearchService              $searchService Search service
+     * @param Loader                     $recordLoader  Record loader
      */
-    public function __construct($params)
-    {
-        // Call parent constructor:
-        parent::__construct($params);
+    public function __construct(\VuFind\Search\Base\Params $params,
+        SearchService $searchService, Loader $recordLoader
+    ) {
+        parent::__construct($params, $searchService, $recordLoader);
+    }
 
-        // Set up URL helper to use appropriate search parameter:
-        $this->getUrlQuery()->setBasicSearchParam('author');
+    /**
+     * Options for UrlQueryHelper
+     *
+     * @return array
+     */
+    protected function getUrlQueryHelperOptions()
+    {
+        return ['basicSearchParam' => 'author'];
     }
 
     /**

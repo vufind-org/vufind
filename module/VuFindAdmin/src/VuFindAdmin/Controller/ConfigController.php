@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -70,7 +70,7 @@ class ConfigController extends AbstractAdmin
 
             // Reload config now that it has been edited (otherwise, old setting
             // will persist in cache):
-            $this->getServiceLocator()->get('VuFind\Config')->reload('config');
+            $this->serviceLocator->get('VuFind\Config')->reload('config');
         } else {
             $this->flashMessenger()->addMessage(
                 'Could not enable auto-configuration; check permissions on '

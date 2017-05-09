@@ -33,9 +33,18 @@
   }
 
   // Enable cart if appropriate:
-  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive();
-  // Enable bulk options if appropriate:
   $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
+  // Checkboxes if appropriate:
+  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive()
+    && ($this->showBulkOptions || !$this->cart()->isActiveInSearch());
+  // Enable bulk options if appropriate:
+  $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
+
+  // Load Javascript only if list view parameter is NOT full:
+  if ($this->params->getOptions()->getListViewOption() != "full") {
+    $this->headScript()->appendFile("record.js");
+    $this->headScript()->appendFile("embedded_record.js");
+  }
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
@@ -50,30 +59,17 @@
       <? endforeach; ?>
     <? endif; ?>
     <?=$this->flashmessages()?>
-    <div class="hidden-print search-controls row">
-      <div class="col-sm-6">
+    <div class="hidden-print search-controls clearfix">
+      <div class="pull-left">
         <? if ($recordTotal > 0): ?>
-          <?=$this->transEsc("Showing")?>
-          <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
-          <? if (!isset($this->skipTotalCount)): ?>
-            <? $this->layout()->srmessage = $recordTotal . ' ' . $this->transEsc('results'); ?>
-            <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
-          <? endif; ?>
-          <? if (isset($this->overrideSearchHeading)): ?>
-            <?=$this->overrideSearchHeading?>
-          <? elseif ($this->params->getSearchType() == 'basic'): ?>
-            <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
-          <? endif; ?>
-          <? if ($qtime = $this->results->getQuerySpeed()): ?>
-            <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
-          <? endif; ?>
+          <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
         <? else: ?>
           <h2><?=$this->transEsc('nohit_heading')?></h2>
         <? endif; ?>
       </div>
 
       <? if ($recordTotal > 0): ?>
-        <div class="col-sm-6 text-right">
+        <div class="pull-right text-right">
           <?=$this->render('search/controls/limit.phtml')?>
           <?=$this->render('search/controls/sort.phtml')?>
           <?=$this->render('search/controls/view.phtml')?>
@@ -87,7 +83,7 @@
         <? if (isset($this->overrideEmptyMessage)): ?>
           <?=$this->overrideEmptyMessage?>
         <? else: ?>
-          <? $this->layout()->srmessage = $this->transEsc('nohit_prefix') . ' - ' . $this->escapeHtml($lookfor) . ' - ' . $this->transEsc('nohit_suffix'); ?>
+          <? $this->layout()->srmessage = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]); ?>
           <?=$this->layout()->srmessage ?>
         <? endif; ?>
       </p>
@@ -103,12 +99,12 @@
         <? endif; ?>
       <? endforeach; ?>
     <? else: ?>
-      <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
-        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
-        <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
-        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_'))?>
-        <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results, 'options' => isset($this->paginationOptions) ? $this->paginationOptions : []))?>
+      <form id="search-cart-form" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
       </form>
+      <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
+      <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_', 'formAttr' => 'search-cart-form'])?>
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results, 'options' => isset($this->paginationOptions) ? $this->paginationOptions : []])?>
 
       <div class="searchtools hidden-print">
         <strong><?=$this->transEsc('Search Tools')?>:</strong>

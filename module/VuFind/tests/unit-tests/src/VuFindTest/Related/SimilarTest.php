@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -48,11 +48,15 @@ class SimilarTest extends \VuFindTest\Unit\TestCase
     {
         // Similar is really just a thin wrapper around the search service; make
         // sure it does its job properly with the help of some mocks.
-        $driver = $this->getMock('VuFind\RecordDriver\SolrDefault', ['getUniqueId']);
+        $driver = $this->getMockBuilder('VuFind\RecordDriver\SolrDefault')
+            ->setMethods(['getUniqueId'])
+            ->getMock();
         $driver->expects($this->once())
             ->method('getUniqueId')
             ->will($this->returnValue('fakeid'));
-        $service = $this->getMock('VuFindSearch\Service', ['similar']);
+        $service = $this->getMockBuilder('VuFindSearch\Service')
+            ->setMethods(['similar'])
+            ->getMock();
         $service->expects($this->once())
             ->method('similar')
             ->with($this->equalTo('Solr'), $this->equalTo('fakeid'))

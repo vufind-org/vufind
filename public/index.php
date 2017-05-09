@@ -7,6 +7,8 @@ use Zend\Mvc\Service\ServiceManagerConfig;
 $xhprof = getenv('VUFIND_PROFILER_XHPROF');
 if (!empty($xhprof) && extension_loaded('xhprof')) {
     xhprof_enable();
+} else if (extension_loaded('tideways')) {
+    tideways_enable();
 } else {
     $xhprof = false;
 }
@@ -82,9 +84,9 @@ Zend\Mvc\Application::init(require 'config/application.config.php')->run();
 
 // Handle final profiling details, if necessary:
 if ($xhprof) {
-    $xhprofData = xhprof_disable();
-    include_once "xhprof_lib/utils/xhprof_lib.php";
-    include_once "xhprof_lib/utils/xhprof_runs.php";
+    $xhprofData = extension_loaded('xhprof') ? xhprof_disable() : tideways_disable();
+    require_once "xhprof_lib/utils/xhprof_lib.php";
+    require_once "xhprof_lib/utils/xhprof_runs.php";
     $xhprofRuns = new XHProfRuns_Default();
     $suffix = 'vufind';
     $xhprofRunId = $xhprofRuns->save_run($xhprofData, $suffix);

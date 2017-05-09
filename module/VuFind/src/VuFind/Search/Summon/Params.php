@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Summon
@@ -83,6 +83,18 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
+     * Reset the current facet configuration.
+     *
+     * @return void
+     */
+    public function resetFacetConfig()
+    {
+        parent::resetFacetConfig();
+        $this->dateFacetSettings = [];
+        $this->fullFacetSettings = [];
+    }
+
+    /**
      * Get the full facet settings stored by addFacet -- these may include extra
      * parameters needed by the search results class.
      *
@@ -135,11 +147,11 @@ class Params extends \VuFind\Search\Base\Params
         // Special case -- if we have a "holdings only" or "expand query" facet,
         // we want this to always appear, even on the "no results" screen, since
         // setting this facet actually EXPANDS rather than reduces the result set.
-        if (isset($facets['holdingsOnly'])) {
-            $facets['holdingsOnly']['alwaysVisible'] = true;
-        }
-        if (isset($facets['queryExpansion'])) {
-            $facets['queryExpansion']['alwaysVisible'] = true;
+        foreach ($facets as $i => $facet) {
+            list($field) = explode(':', $facet['filter']);
+            if ($field == 'holdingsOnly' || $field == 'queryExpansion') {
+                $facets[$i]['alwaysVisible'] = true;
+            }
         }
 
         // Return modified list:
@@ -176,7 +188,7 @@ class Params extends \VuFind\Search\Base\Params
         $backendParams->set('didYouMean', $options->spellcheckEnabled());
 
         // Get the language setting:
-        $lang = $this->getServiceLocator()->get('VuFind\Translator')->getLocale();
+        $lang = $this->getOptions()->getTranslator()->getLocale();
         $backendParams->set('language', substr($lang, 0, 2));
 
         if ($options->highlightEnabled()) {
@@ -200,7 +212,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function getBackendFacetParameters()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('Summon');
+        $config = $this->configLoader->get('Summon');
         $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
             ? $config->Facet_Settings->facet_limit : 30;
         $fieldSpecificLimits = isset($config->Facet_Settings->facet_limit_by_field)

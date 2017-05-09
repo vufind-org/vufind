@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -91,6 +91,33 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
             'Vico, Giambattista, 1668-1744. Works. 1982 ;', $series[0]['name']
         );
         $this->assertEquals('2, pt. 1.', $series[0]['number']);
+    }
+
+    /**
+     * Test regular and extended subject heading support.
+     *
+     * @return void
+     */
+    public function testSubjectHeadings()
+    {
+        $config = new \Zend\Config\Config([]);
+        $record = new \VuFind\RecordDriver\SolrMarc($config);
+        $fixture = $this->loadRecordFixture('testbug1.json');
+        $record->setRawData($fixture['response']['docs'][0]);
+        $this->assertEquals(
+            [['Matematica', 'Periodici.']],
+            $record->getAllSubjectHeadings()
+        );
+        $this->assertEquals(
+            [
+                [
+                    'heading' => ['Matematica', 'Periodici.'],
+                    'type' => '',
+                    'source' => ''
+                ],
+            ],
+            $record->getAllSubjectHeadings(true)
+        );
     }
 
     /**

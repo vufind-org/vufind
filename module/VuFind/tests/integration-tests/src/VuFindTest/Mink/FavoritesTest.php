@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -74,7 +74,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
-        $this->findCss($page, '.searchForm [name="lookfor"]')->setValue('Dewey');
+        $this->findCss($page, '#searchForm_lookfor')->setValue('Dewey');
         $this->findCss($page, '.btn.btn-primary')->click();
         return $page;
     }
@@ -196,6 +196,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#make-list')->click();
         $this->findCss($page, '#list_title')->setValue('Future List');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->assertEquals(
             $this->findCss($page, '#save_list option[selected]')->getHtml(),
             'Future List'
@@ -276,6 +277,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             $page, ['username' => 'username2', 'email' => 'username2@ignore.com']
         );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '#save_list');
         // Make list
         $this->findCss($page, '#make-list')->click();
@@ -325,6 +327,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoSearch();
 
         $this->findCss($page, '.save-record')->click();
+        $this->snooze();
         // Login
         // - empty
         $this->submitLoginForm($page);
@@ -338,21 +341,26 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // Make Two Lists
         // - One for the next test
         $this->findCss($page, '#make-list')->click();
+        $this->snooze();
         $this->findCss($page, '#list_title')->setValue('Future List');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->assertEquals(
             $this->findCss($page, '#save_list option[selected]')->getHtml(),
             'Future List'
         );
         // - One for now
         $this->findCss($page, '#make-list')->click();
+        $this->snooze();
         $this->findCss($page, '#list_title')->setValue('Login Test List');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->assertEquals(
             $this->findCss($page, '#save_list option[selected]')->getHtml(),
             'Login Test List'
         );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '.alert.alert-success');
     }
 
@@ -391,6 +399,13 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     protected function setupBulkTest()
     {
+        $this->changeConfigs(
+            ['config' =>
+                [
+                    'Mail' => ['testOnly' => 1],
+                ],
+            ]
+        );
         // Go home
         $session = $this->getMinkSession();
         $path = '/Search/Home';
@@ -496,6 +511,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // Do the export:
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
+        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
         $this->assertEquals('Download File', $result->getText());
     }

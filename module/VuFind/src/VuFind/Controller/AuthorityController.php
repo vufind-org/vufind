@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Authority Controller
@@ -40,11 +41,13 @@ class AuthorityController extends AbstractSearch
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         $this->searchClassId = 'SolrAuth';
-        parent::__construct();
+        parent::__construct($sm);
     }
 
     /**
@@ -72,12 +75,12 @@ class AuthorityController extends AbstractSearch
     public function recordAction()
     {
         $id = $this->params()->fromQuery('id');
-        $cfg = $this->getServiceLocator()->get('Config');
+        $cfg = $this->serviceLocator->get('Config');
         $tabConfig = $cfg['vufind']['recorddriver_tabs'];
-        $driver = $this->getServiceLocator()->get('VuFind\RecordLoader')
+        $driver = $this->serviceLocator->get('VuFind\RecordLoader')
             ->load($id, 'SolrAuth');
         $request = $this->getRequest();
-        $tabs = $this->getServiceLocator()
+        $tabs = $this->serviceLocator
             ->get('VuFind\RecordTabPluginManager')
             ->getTabsForRecord($driver, $tabConfig, $request);
         return $this->createViewModel(['driver' => $driver, 'tabs' => $tabs]);

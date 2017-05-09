@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -127,15 +127,14 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
                 'cancelHolds' => 0,
                 'cancelILLRequests' => 0,
                 'cancelStorageRetrievalRequests' => 0,
-                'checkILLRequestBlock' => 0,
                 'checkILLRequestIsValid' => 0,
                 'checkRenewBlock' => 0,
-                'checkRequestBlock' => 0,
                 'checkRequestIsValid' => 0,
-                'checkStorageRetrievalRequestBlock' => 0,
                 'checkStorageRetrievalRequestIsValid' => 0,
+                'getAccountBlocks' => 0,
                 'getDefaultRequestGroup' => 0,
                 'getHoldDefaultRequiredDate' => 0,
+                'getRequestBlocks' => 0,
                 'placeHold' => 0,
                 'placeILLRequest' => 0,
                 'placeStorageRetrievalRequest' => 0,
@@ -300,7 +299,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
         $page = $this->gotoRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
-        $this->assertEquals('Login', $element->getText());
+        $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->snooze();
         $this->findCss($page, '.createAccountLink')->click();
@@ -369,7 +368,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
-        $this->assertEquals('Login', $element->getText());
+        $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test', false);
@@ -434,7 +433,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
-        $this->assertEquals('Login', $element->getText());
+        $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test', false);
@@ -470,7 +469,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
-        $this->assertEquals('Login', $element->getText());
+        $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test', false);

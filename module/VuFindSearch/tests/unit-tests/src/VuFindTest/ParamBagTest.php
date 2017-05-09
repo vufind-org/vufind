@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -43,6 +43,33 @@ use PHPUnit_Framework_TestCase as TestCase;
  */
 class ParamBagTest extends TestCase
 {
+    /**
+     * Test "contains"
+     *
+     * @return void
+     */
+    public function testContains()
+    {
+        $bag = new ParamBag();
+        $bag->set('foo', 'bar');
+        $this->assertTrue($bag->contains('foo', 'bar'));
+        $this->assertFalse($bag->contains('bar', 'foo'));
+        $this->assertFalse($bag->contains('foo', 'baz'));
+    }
+
+    /**
+     * Test "hasParam"
+     *
+     * @return void
+     */
+    public function testHasParam()
+    {
+        $bag = new ParamBag();
+        $bag->set('foo', 'bar');
+        $this->assertTrue($bag->hasParam('foo'));
+        $this->assertFalse($bag->hasParam('bar'));
+    }
+
     /**
      * Test "remove"
      *

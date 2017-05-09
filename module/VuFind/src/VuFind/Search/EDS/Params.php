@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  EBSCO
@@ -122,33 +122,6 @@ class Params extends \VuFind\Search\Base\Params
         $this->createBackendFilterParameters($backendParams, $options);
 
         return $backendParams;
-    }
-
-    /**
-     * Set up facets based on VuFind settings.
-     *
-     * @return array
-     */
-    protected function getBackendFacetParameters()
-    {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EDS');
-        $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
-            ? $config->Facet_Settings->facet_limit : 30;
-
-        $finalFacets = [];
-        foreach ($this->getFullFacetSettings() as $facet) {
-            // See if parameters are included as part of the facet name;
-            // if not, override them with defaults.
-            $parts = explode(',', $facet);
-            $facetName = $parts[0];
-            $defaultMode = ($this->getFacetOperator($facet) == 'OR') ? 'or' : 'and';
-            $facetMode = isset($parts[1]) ? $parts[1] : $defaultMode;
-            $facetPage = isset($parts[2]) ? $parts[2] : 1;
-            $facetLimit = isset($parts[3]) ? $parts[3] : $defaultFacetLimit;
-            $facetParams = "{$facetMode},{$facetPage},{$facetLimit}";
-            $finalFacets[] = "{$facetName},{$facetParams}";
-        }
-        return $finalFacets;
     }
 
     /**

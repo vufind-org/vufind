@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,6 +41,22 @@ use Zend\ServiceManager\ServiceManager;
  */
 class Factory
 {
+    /**
+     * Construct the Favorites plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Zend\Mvc\Controller\Plugin\Favorites
+     */
+    public static function getFavorites(ServiceManager $sm)
+    {
+        return new Favorites(
+            $sm->getServiceLocator()->get('VuFind\RecordLoader'),
+            $sm->getServiceLocator()->get('VuFind\RecordCache'),
+            $sm->getServiceLocator()->get('VuFind\Tags')
+        );
+    }
+
     /**
      * Construct the FlashMessenger plugin.
      *
@@ -145,7 +161,8 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $useIndex = isset($config->Reserves->search_enabled)
             && $config->Reserves->search_enabled;
-        return new Reserves($useIndex);
+        $ss = $useIndex ? $sm->getServiceLocator()->get('VuFind\Search') : null;
+        return new Reserves($useIndex, $ss);
     }
 
     /**
@@ -161,7 +178,8 @@ class Factory
             new \Zend\Session\Container(
                 'ResultScroller',
                 $sm->getServiceLocator()->get('VuFind\SessionManager')
-            )
+            ),
+            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
         );
     }
 

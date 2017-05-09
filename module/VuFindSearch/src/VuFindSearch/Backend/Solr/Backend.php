@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -74,6 +74,13 @@ class Backend extends AbstractBackend
     protected $queryBuilder = null;
 
     /**
+     * Similar records query builder.
+     *
+     * @var SimilarBuilder
+     */
+    protected $similarBuilder = null;
+
+    /**
      * Constructor.
      *
      * @param Connector $connector SOLR connector
@@ -90,8 +97,8 @@ class Backend extends AbstractBackend
      * Perform a search and return record collection.
      *
      * @param AbstractQuery $query  Search query
-     * @param integer       $offset Search offset
-     * @param integer       $limit  Search limit
+     * @param int           $offset Search offset
+     * @param int           $limit  Search limit
      * @param ParamBag      $params Search backend parameters
      *
      * @return RecordCollectionInterface
@@ -116,7 +123,7 @@ class Backend extends AbstractBackend
      * Get Random records
      *
      * @param AbstractQuery $query  Search query
-     * @param integer       $limit  Search limit
+     * @param int           $limit  Search limit
      * @param ParamBag      $params Search backend parameters
      *
      * @return RecordCollectionInterface
@@ -211,6 +218,7 @@ class Backend extends AbstractBackend
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
+        $params->mergeWith($this->getSimilarBuilder()->build($id, $params));
         $response   = $this->connector->similar($id, $params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
@@ -227,20 +235,43 @@ class Backend extends AbstractBackend
      *
      * @return Terms
      */
-    public function terms($field, $start, $limit, ParamBag $params = null)
-    {
+    public function terms($field = null, $start = null, $limit = null,
+        ParamBag $params = null
+    ) {
+        // Support alternate syntax with ParamBag as first parameter:
+        if ($field instanceof ParamBag && $params === null) {
+            $params = $field;
+            $field = null;
+        }
+
+        // Create empty ParamBag if none provided:
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
+        // Always enable terms:
         $params->set('terms', 'true');
-        $params->set('terms.fl', $field);
-        $params->set('terms.lower', $start);
-        $params->set('terms.limit', $limit);
-        $params->set('terms.lower.incl', 'false');
-        $params->set('terms.sort', 'index');
+
+        // Use parameters if provided:
+        if (null !== $field) {
+            $params->set('terms.fl', $field);
+        }
+        if (null !== $start) {
+            $params->set('terms.lower', $start);
+        }
+        if (null !== $limit) {
+            $params->set('terms.limit', $limit);
+        }
+
+        // Set defaults unless overridden:
+        if (!$params->hasParam('terms.lower.incl')) {
+            $params->set('terms.lower.incl', 'false');
+        }
+        if (!$params->hasParam('terms.sort')) {
+            $params->set('terms.sort', 'index');
+        }
 
         $response = $this->connector->terms($params);
-        $terms    = new Terms($this->deserialize($response));
+        $terms = new Terms($this->deserialize($response));
         return $terms;
     }
 
@@ -302,6 +333,33 @@ class Backend extends AbstractBackend
             $this->queryBuilder = new QueryBuilder();
         }
         return $this->queryBuilder;
+    }
+
+    /**
+     * Set the similar records query builder.
+     *
+     * @param SimilarBuilder $similarBuilder Similar builder
+     *
+     * @return void
+     */
+    public function setSimilarBuilder(SimilarBuilder $similarBuilder)
+    {
+        $this->similarBuilder = $similarBuilder;
+    }
+
+    /**
+     * Return similar records query builder.
+     *
+     * Lazy loads an empty default SimilarBuilder if none was set.
+     *
+     * @return SimilarBuilder
+     */
+    public function getSimilarBuilder()
+    {
+        if (!$this->similarBuilder) {
+            $this->similarBuilder = new SimilarBuilder();
+        }
+        return $this->similarBuilder;
     }
 
     /**
