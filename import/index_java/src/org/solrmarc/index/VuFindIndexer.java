@@ -1467,12 +1467,19 @@ public class VuFindIndexer extends SolrIndexer
                 Double north = convertCoordinate(f);
                 Double south = convertCoordinate(g);
 
+                ControlField recID = (ControlField) record.getVariableField("001");
+                String recNum = recID.getData();
+
                 // New Format for indexing coordinates in Solr 5.0 - minX, maxX, maxY, minY
                 // Note - storage in Solr follows the WENS order, but display is WSEN order
                 String result = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { west, east, north, south });
 
                 if (validateCoordinates(west, east, north, south)) {
                     geo_coordinates.add(result);
+                } else {
+                System.out.println("*** -- Record ID: "+recNum.trim()+"... Not indexing INVALID coordinates.");
+                System.out.println("*** ---- Coords: "+d+" "+e+" "+f+" "+g+"  | DD coords: "+west+" "+east+" "+north+" "+south);
+                System.out.println("---------------------------");
                 }
             }
         }
@@ -1624,19 +1631,136 @@ public class VuFindIndexer extends SolrIndexer
      * @return boolean
      */
     protected boolean validateCoordinates(Double west, Double east, Double north, Double south) {
-        if (west == null || east == null || north == null || south == null) {
+        String validLines = "";
+        String validValues = "";
+        String validExtent = "";
+        String validNorthSouth = "";
+        String validCoordDist = "";
+
+        // Validate lines
+        if (validateLines(west, east, north, south)) {
+            validLines = "true";
+        } else {
+            validLines = "false";
+            System.out.println("*** ERROR: Coordinates form a line at the pole...DD coords: "+west+" "+east+" "+north+" "+south);
+        }
+
+        // Validate values
+        if (validateValues(west, east, north, south)) {
+            validValues = "true";
+        } else {
+            validValues = "false";
+            System.out.println("*** ERROR: Coordinates contain null values...DD coords: "+west+" "+east+" "+north+" "+south);
+        }
+
+        // Validate extent
+        if (validateExtent(west, east, north, south)) {
+            validExtent = "true";
+        } else {
+            validExtent = "false";
+            System.out.println("*** ERROR: Coordinates outside map extent...DD coords: "+west+" "+east+" "+north+" "+south);
+        }
+        // Note E-W wrapping is allowed.
+        if (validateNorthSouth(north, south)) {
+           validNorthSouth = "true";
+        } else {
+           validNorthSouth = "false";
+           System.out.println("*** ERROR: North < South...DD coords: "+west+" "+east+" "+north+" "+south);
+        }
+        // Validate Coordinate distances
+        if (validateCoordinateDistance(west, east, north, south)) {
+            validCoordDist = "true";
+        } else {
+            validCoordDist = "false";
+        }
+
+        // Validate all coordinate combinations
+        if (validLines.equals("true") && validValues.equals("true")
+            && validExtent.equals("true") && validNorthSouth.equals("true")
+            && validCoordDist.equals("true")) {
+            return true;
+        } else {
             return false;
         }
-        if (west > 180.0 || west < -180.0 || east > 180.0 || east < -180.0) {
-            return false;
-        }
-        if (north > 90.0 || north < -90.0 || south > 90.0 || south < -90.0) {
-            return false;
-        }
-        if (north < south || west > east) {
-            return false;
-        }
-        return true;
+    }
+
+    /**
+    * Check decimal degree coordinates to make sure they do not form a line at the poles.
+    *
+    * @param  Double west, east, north, south
+    * @return boolean
+    */
+   public boolean validateLines(Double west, Double east, Double north, Double south) {
+    if ((!west.equals(east) && north.equals(south)) && (north == 90 || south == -90)) {
+        return false;
+    }
+    return true;
+   }
+
+    /**
+     * Check decimal degree coordinates to make sure they do not contain null values.
+     *
+     * @param  Double west, east, north, south
+     * @return boolean
+     */
+    public boolean validateValues(Double west, Double east, Double north, Double south) {
+     if (west == null || east == null || north == null || south == null) {
+        return false;
+     }
+    return true;
+    }
+
+    /**
+     * Check decimal degree coordinates to make sure they are within map extent.
+     *
+     * @param  Double west, east, north, south
+     * @return boolean
+     */
+    public boolean validateExtent(Double west, Double east, Double north, Double south) {
+     if (west > 180.0 || west < -180.0 || east > 180.0 || east < -180.0) {
+        return false;
+     }
+     if (north > 90.0 || north < -90.0 || south > 90.0 || south < -90.0) {
+        return false;
+     }
+    return true;
+    }
+    /**
+     * Check decimal degree coordinates to make sure that north is not less than south.
+     *
+     * @param  Double north, south
+     * @return boolean
+     */
+    public boolean validateNorthSouth(Double north, Double south) {
+    if (north < south) {
+        return false;
+    }
+    return true;
+    }
+
+    /**
+     * Check decimal degree coordinates to make sure they are not too close.
+     * Coordinates too close will cause Solr to run out of memory during indexing.
+     *
+     * @param  Double west, east, north, south
+     * @return boolean
+     */
+    public boolean validateCoordinateDistance(Double west, Double east, Double north, Double south) {
+    Double distEW = east - west;
+    Double distNS = north - south;
+
+    //Check for South Pole coordinate distance
+    if ((north == -90 || south == -90) && (distNS > 0 && distNS < 0.167)) {
+        System.out.println("*** ERROR: Coordinates < 0.167 degrees from South Pole...Coordinate Distance: "+distNS);
+        return false;
+    }
+
+    //Check for East-West coordinate distance
+    if ((west == 0 || east == 0) && (distEW > -2 && distEW <0)) {
+        System.out.println("*** ERROR: Coordinates < 2 degrees from Prime Meridian...Coordinate Distance: "+distEW);
+        return false;
+    }
+    return true;
     }
 
     /**
