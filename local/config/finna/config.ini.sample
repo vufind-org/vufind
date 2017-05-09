@@ -252,7 +252,7 @@ title_level_holds_mode = "driver"
 ;
 ; You may use multiple group keys (delimited by comma), e.g.,
 ; - item_agency_id,location
-;holdings_grouping = holdings_id
+holdings_grouping = holdings_id,location
 
 ; Whether support for multiple library cards is enabled. Default is false.
 library_cards = true
