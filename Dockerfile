@@ -4,6 +4,8 @@ MAINTAINER "demian.katz@villanova.edu"
 WORKDIR /usr/local/vufind
 EXPOSE 80
 
+ENV VUFIND_INSTALL_SOLR=no
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git=1:2.1.4-* unzip=6.0-* \
         libmcrypt-dev=2.5.8-* \
