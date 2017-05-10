@@ -85,6 +85,13 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
     protected $fullMatchBoostMultiplier = 10;
 
     /**
+     * Characters that need to be escaped in a Solr query
+     *
+     * @var string
+     */
+    protected $escapedChars = '+-&|!(){}[]^"~*?:\\';
+
+    /**
      * Constructor.
      *
      * @param \Zend\Config\Config $searchConfig Search config
@@ -161,14 +168,14 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
                     if (strlen($values) < 3) {
                         continue;
                     }
-                    $escaped = addcslashes($values, '":-()');
+                    $escaped = addcslashes($values, $this->escapedChars);
                     $fullBoost = $this->fullMatchBoostMultiplier * $boostValue;
                     $query[] = "$field:($escaped)^$fullBoost";
                     foreach (explode(' ', $values) as $value) {
                         if (strlen($value) < 3) {
                             continue;
                         }
-                        $escaped = addcslashes($value, '":-()');
+                        $escaped = addcslashes($value, $this->escapedChars);
                         $query[] = "$field:($escaped)^$boostValue";
                         if (++$count > 15) {
                             break;
