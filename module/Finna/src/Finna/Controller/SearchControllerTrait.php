@@ -78,7 +78,7 @@ trait SearchControllerTrait
 
         $searchId = $combined[$this->searchClassId];
         $search = $this->getTable('Search')->getRowById($searchId, false);
-        if (false === $search) {
+        if (null === $search) {
             return;
         }
 
