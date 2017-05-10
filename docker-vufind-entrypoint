@@ -10,12 +10,13 @@ if [ -z "$VUFIND_RUN_COMPOSER" ]; then VUFIND_RUN_COMPOSER='no'; fi
 if [ ! -f /usr/local/vufind/local/httpd-vufind.conf ]; then 
   php install.php --non-interactive;
 fi
-
 if [ ! -f /usr/local/vufind/local/config/vufind/config.ini ]; then 
   cp /usr/local/vufind/config/vufind/config.ini /usr/local/vufind/local/config/vufind/;
-  sed -i -e "s/mysql:\/\/root@localhost\/vufind/$(echo "$VUFIND_MYSQL_URL" | sed 's/\//\\\//g')/g" /usr/local/vufind/local/config/vufind/config.ini
-  sed -i -e "s/http:\/\/localhost:8080\/solr/$(echo "$VUFIND_SOLR_URL" | sed 's/\//\\\//g')/g" /usr/local/vufind/local/config/vufind/config.ini
 fi
+
+# Set config.ini values.
+sed -i -r -e "s/database\s+= mysql:.*/database = $(echo "$VUFIND_MYSQL_URL" | sed 's/\//\\\//g')/g" /usr/local/vufind/local/config/vufind/config.ini && echo "MySQL URL written to config.ini"
+sed -i -r -e "s/url\s+= http:.*\/solr/url = $(echo "$VUFIND_SOLR_URL" | sed 's/\//\\\//g')/g" /usr/local/vufind/local/config/vufind/config.ini && echo "Solr URL written to config.ini"
 
 if [ "$VUFIND_RUN_COMPOSER" = 'yes' ]; then composer install; fi
 

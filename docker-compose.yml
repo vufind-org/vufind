@@ -4,6 +4,8 @@ services:
     build: .
     environment:
       - VUFIND_RUN_COMPOSER=yes
+      - VUFIND_MYSQL_URL=${VUFIND_MYSQL_URL}
+      - VUFIND_SOLR_URL=${VUFIND_SOLR_URL}
     ports:
       - "8080:80"
     volumes:
