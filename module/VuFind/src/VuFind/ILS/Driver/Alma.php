@@ -256,14 +256,16 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             '/users/' . $patron['cat_username'] . '/fees'
         );
         $fineList = [];
-        for ($i = 0; $i < count($xml->fees); $i++) {
+        foreach ($xml as $fee) {
+            $checkout = $fee->status_time;
             $fineList[] = [
-                "amount"   => $xml->fees[$i]->original_amount,
-                "balance"  => $xml->fees[$i]->balance,
-                "checkout" => $this->dateConverter->convertToDisplayDate(
-                    'U', $checkout
-                ),
-                "fine"     => $xml->fees[$i]->type['desc']
+                "title"   => $fee->type,
+                "amount"   => $fee->original_amount * 100,
+                "balance"  => $fee->balance * 100,
+             // "checkout" => $this->dateConverter->convertToDisplayDate(
+             //     'U', $checkout
+             // ),
+                "fine"     => $fee->type['desc']
             ];
         }
         return $fineList;
@@ -579,7 +581,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         if (!$error) {
             $error = simplexml_load_string($response->getBody());
         }
-        error_log($response->getBody());
         return [
             'success' => false,
             'sysMessage' => $error->errorList->error[0]->errorMessage
