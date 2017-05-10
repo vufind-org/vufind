@@ -25,8 +25,3 @@ services:
     volumes:
       - ./solr/vufind:/opt/solr/server/solr/mycores
       - ./solr/vendor/contrib:/opt/solr/server/solr/vendor/contrib
-    entrypoint:
-      - docker-entrypoint.sh
-      - solr-precreate
-      - authority
-      - biblio
