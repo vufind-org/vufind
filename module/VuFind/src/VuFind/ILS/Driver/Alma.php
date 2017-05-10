@@ -257,15 +257,15 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         );
         $fineList = [];
         foreach ($xml as $fee) {
-            $checkout = $fee->status_time;
+            $checkout = (string) $fee->status_time;
             $fineList[] = [
-                "title"   => $fee->type,
+                "title"   => (string) $fee->type,
                 "amount"   => $fee->original_amount * 100,
                 "balance"  => $fee->balance * 100,
-             // "checkout" => $this->dateConverter->convertToDisplayDate(
-             //     'U', $checkout
-             // ),
-                "fine"     => $fee->type['desc']
+                "checkout" => $this->dateConverter->convertToDisplayDate(
+                    'U', $checkout
+                ),
+                "fine"     => (string) $fee->type['desc']
             ];
         }
         return $fineList;
@@ -289,18 +289,17 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             ['request_type' => 'HOLD']
         );
         $holdList = [];
-        for ($i = 0; $i < count($xml->user_requests); $i++) {
-            $request = $xml->user_requests[$i];
+        foreach ($xml as $request) {
             $holdList[] = [
-                'create' => $request->request_date,
-                'expire' => $request->last_interest_date,
-                'id' => $request->request_id,
+                'create' => (string) $request->request_date,
+                'expire' => (string) $request->last_interest_date,
+                'id' => (string) $request->request_id,
                 'in_transit' => $request->request_status !== 'IN_PROCESS',
-                'item_id' => $request->mms_id,
-                'location' => $request->pickup_location,
+                'item_id' => (string) $request->mms_id,
+                'location' => (string) $request->pickup_location,
                 'processed' => $request->item_policy === 'InterlibraryLoan'
                     && $request->request_status !== 'NOT_STARTED',
-                'title' => $request->title,
+                'title' => (string) $request->title,
                 /*
                 // VuFind keys
                 'available'         => $request->,
