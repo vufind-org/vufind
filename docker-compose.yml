@@ -24,4 +24,4 @@ services:
       - "8983:8983"
     volumes:
       - ./solr/vufind:/opt/solr/server/solr/mycores
-      - ./solr/vendor/contrib:/opt/solr/server/solr/vendor/contrib
+      - ./solr/docker/dev_link_vendor.sh:/docker-entrypoint-initdb.d/dev_link_vendor.sh
