@@ -2,6 +2,8 @@ version: '3'
 services:
   web:
     build: .
+    environment:
+      - VUFIND_RUN_COMPOSER=yes
     ports:
       - "8080:80"
     volumes:

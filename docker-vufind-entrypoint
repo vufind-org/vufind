@@ -4,6 +4,7 @@ set -e
 # Conditionally set environment variables.
 if [ -z "$VUFIND_MYSQL_URL" ]; then VUFIND_MYSQL_URL='mysql://root@mysql/vufind'; fi
 if [ -z "$VUFIND_SOLR_URL" ]; then VUFIND_SOLR_URL='http://solr:8983/solr'; fi
+if [ -z "$VUFIND_RUN_COMPOSER" ]; then VUFIND_RUN_COMPOSER='no'; fi
 
 # Build local configurations.
 if [ ! -f /usr/local/vufind/local/httpd-vufind.conf ]; then 
@@ -15,6 +16,8 @@ if [ ! -f /usr/local/vufind/local/config/vufind/config.ini ]; then
   sed -i -e "s/mysql:\/\/root@localhost\/vufind/$(echo "$VUFIND_MYSQL_URL" | sed 's/\//\\\//g')/g" /usr/local/vufind/local/config/vufind/config.ini
   sed -i -e "s/http:\/\/localhost:8080\/solr/$(echo "$VUFIND_SOLR_URL" | sed 's/\//\\\//g')/g" /usr/local/vufind/local/config/vufind/config.ini
 fi
+
+if [ "$VUFIND_RUN_COMPOSER" = 'yes' ]; then composer install; fi
 
 ln -sf /usr/local/vufind/local/httpd-vufind.conf /etc/apache2/conf-enabled/vufind.conf
 chown -R www-data:www-data /usr/local/vufind/local/cache /usr/local/vufind/local/config
