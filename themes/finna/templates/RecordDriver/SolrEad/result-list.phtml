@@ -12,102 +12,104 @@
 <? endif;?>
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?> list-view">
   <div class="media">
-    <div class="media-body col-xs-9 <? if ($thumbnailAlignment == 'left'): ?><?= $combinedView ? 'col-sm-10 col-sm-push-2' : 'col-sm-8 col-sm-push-3 col-md-9 col-md-push-2' ?><? elseif ($thumbnailAlignment == 'right'): ?><?= $combinedView ? 'col-sm-10' : 'col-sm-8 col-md-9' ?><? endif; ?>">
-      <div>
-        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-        <?
-          $summHighlightedTitle = $this->driver->getHighlightedTitle();
-          $summTitle = $this->driver->getTitle();
-          if (!empty($summHighlightedTitle)) {
-            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-          } else if (!empty($summTitle)) {
-            echo $this->escapeHtml($this->truncate($summTitle, 180));
-          } else {
-            echo $this->transEsc('Title not available');
-          }
-        ?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
-        </a>
-      </div>
+    <div class="col-xs-9 <? if ($thumbnailAlignment == 'left'): ?><?= $combinedView ? 'col-sm-10 col-sm-push-2' : 'col-sm-8 col-sm-push-3 col-md-9 col-md-push-2' ?><? elseif ($thumbnailAlignment == 'right'): ?><?= $combinedView ? 'col-sm-10' : 'col-sm-8 col-md-9' ?><? endif; ?>">
+      <div class="media-body">
+        <div>
+          <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+          <?
+            $summHighlightedTitle = $this->driver->getHighlightedTitle();
+            $summTitle = $this->driver->getTitle();
+            if (!empty($summHighlightedTitle)) {
+              echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+            } else if (!empty($summTitle)) {
+              echo $this->escapeHtml($this->truncate($summTitle, 180));
+            } else {
+              echo $this->transEsc('Title not available');
+            }
+          ?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
+          </a>
+        </div>
 
-      <div class="dateyeartype">
-        <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
-        <? $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
-          <div class="truncate-field" data-rows="1">
-            <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
-              <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ' ; ' : ''?>
-            <? endforeach; ?>
-          </div>
-        <? endif; ?>
-
-        <div class="resultHierarchyLinks">
-          <? // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
-          <? if (!$this->translationEmpty('Archive Repository')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><? endif; ?>
-          <?=$this->escapeHtml($this->organisationDisplayName($this->driver)) ?>
-          <? if ($origination = $this->driver->getOrigination()): ?>
-            <br/><span class="archive-label"><?=$this->transEsc('Archive Origination')?>:</span>
-            <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($origination)?>%22&amp;type=Author"><?=$this->escapeHtml($origination)?></a>
+        <div class="dateyeartype">
+          <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
+          <? $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
+            <div class="truncate-field" data-rows="1">
+              <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
+                <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ' ; ' : ''?>
+              <? endforeach; ?>
+            </div>
           <? endif; ?>
-          <? if (!($fondsOrCollection = in_array('Document/ArchiveFonds', $this->driver->getFormats()) || in_array('Document/ArchiveCollection', $this->driver->getFormats()))): ?>
-            <? $parentSource = $this->driver->getSourceIdentifier(); ?>
-            <? if ($this->driver->isPartOfArchiveSeries()): ?>
-              <? $topIds = $this->driver->getHierarchyTopId(); $topTitles = $this->driver->getHierarchyTopTitle(); ?>
-            <? else: ?>
-              <? $topIds = $this->driver->getHierarchyParentId(); $topTitles = $this->driver->getHierarchyParentTitle(); ?>
+
+          <div class="resultHierarchyLinks">
+            <? // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
+            <? if (!$this->translationEmpty('Archive Repository')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><? endif; ?>
+            <?=$this->escapeHtml($this->organisationDisplayName($this->driver)) ?>
+            <? if ($origination = $this->driver->getOrigination()): ?>
+              <br/><span class="archive-label"><?=$this->transEsc('Archive Origination')?>:</span>
+              <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($origination)?>%22&amp;type=Author"><?=$this->escapeHtml($origination)?></a>
             <? endif; ?>
-            <? if (!$this->driver->isCollection()): ?>
-              <br/><span class="archive-label"><?=$this->transEsc('Archive')?>:</span>
-              <? foreach($topIds as $index => $parentId): ?>
-                <a href="<?=$this->recordLink()->getUrl("$parentSource|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
+            <? if (!($fondsOrCollection = in_array('Document/ArchiveFonds', $this->driver->getFormats()) || in_array('Document/ArchiveCollection', $this->driver->getFormats()))): ?>
+              <? $parentSource = $this->driver->getSourceIdentifier(); ?>
+              <? if ($this->driver->isPartOfArchiveSeries()): ?>
+                <? $topIds = $this->driver->getHierarchyTopId(); $topTitles = $this->driver->getHierarchyTopTitle(); ?>
+              <? else: ?>
+                <? $topIds = $this->driver->getHierarchyParentId(); $topTitles = $this->driver->getHierarchyParentTitle(); ?>
+              <? endif; ?>
+              <? if (!$this->driver->isCollection()): ?>
+                <br/><span class="archive-label"><?=$this->transEsc('Archive')?>:</span>
+                <? foreach($topIds as $index => $parentId): ?>
+                  <a href="<?=$this->recordLink()->getUrl("$parentSource|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
+                <? endforeach; ?>
+              <? endif; ?>
+            <? endif; ?>
+            <? if (!$fondsOrCollection && $this->driver->isPartOfArchiveSeries()): ?>
+              <br/><span class="archive-label"><?=$this->transEsc('Archive Series')?>:</span>
+              <? $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
+              <? foreach ($parentIds as $index => $parentId): ?>
+                <?
+                  try {
+                    $parentUrl = $this->recordLink()->getUrl("$parentSource|$parentId");
+                  } catch (\Exception $e) {
+                    $parentUrl = '';
+                  }
+                ?>
+                <a href="<?=$parentUrl?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
               <? endforeach; ?>
             <? endif; ?>
-          <? endif; ?>
-          <? if (!$fondsOrCollection && $this->driver->isPartOfArchiveSeries()): ?>
-            <br/><span class="archive-label"><?=$this->transEsc('Archive Series')?>:</span>
-            <? $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
-            <? foreach ($parentIds as $index => $parentId): ?>
-              <?
-                try {
-                  $parentUrl = $this->recordLink()->getUrl("$parentSource|$parentId");
-                } catch (\Exception $e) {
-                  $parentUrl = '';
-                }
-              ?>
-              <a href="<?=$parentUrl?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
-            <? endforeach; ?>
-          <? endif; ?>
+          </div>
         </div>
-      </div>
 
-      <? if(!$this->driver->isCollection()): ?>
-        <? if ($snippet = $this->driver->getHighlightedSnippet()): ?>
-          <? if (!empty($snippet['caption'])): ?>
-            <strong><?=$this->transEsc($snippet['caption']) ?>:</strong> ';
-          <? endif; ?>
-          <? if (!empty($snippet['snippet'])): ?>
-            <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
+        <? if(!$this->driver->isCollection()): ?>
+          <? if ($snippet = $this->driver->getHighlightedSnippet()): ?>
+            <? if (!empty($snippet['caption'])): ?>
+              <strong><?=$this->transEsc($snippet['caption']) ?>:</strong> ';
+            <? endif; ?>
+            <? if (!empty($snippet['snippet'])): ?>
+              <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
+            <? endif; ?>
           <? endif; ?>
         <? endif; ?>
-      <? endif; ?>
 
-      <?=$this->partial('RecordDriver/SolrDefault/holdings.phtml') ?>
-      <?=$this->record($this->driver)->getOnlineUrls('results')?>
+        <?=$this->partial('RecordDriver/SolrDefault/holdings.phtml') ?>
+        <?=$this->record($this->driver)->getOnlineUrls('results')?>
 
-      <?=$this->record($this->driver)->getPreviews()?>
-      <? if ($this->layout()->templateDir === 'list'): ?>
-        <?=$this->render('list/list-notes.phtml')?>
-      <? endif; ?>
-      <? /* Hierarchy tree link */ ?>
-      <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
-        <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
-          <div class="hierarchyTreeLink hidden-print">
-            <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
-            <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>" data-lightbox-href="<?=$this->recordLink()->getTabUrl($this->driver, 'AjaxTab')?>?hierarchy=<?=urlencode($hierarchyID)?>" data-lightbox-post="tab=hierarchytree">
-              <i class="fa fa-sitemap"></i>
-              <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
-            </a>
-          </div>
-        <? endforeach; ?>
-      <? endif; ?>
+        <?=$this->record($this->driver)->getPreviews()?>
+        <? if ($this->layout()->templateDir === 'list'): ?>
+          <?=$this->render('list/list-notes.phtml')?>
+        <? endif; ?>
+        <? /* Hierarchy tree link */ ?>
+        <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+          <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
+            <div class="hierarchyTreeLink hidden-print">
+              <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
+              <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>" data-lightbox-href="<?=$this->recordLink()->getTabUrl($this->driver, 'AjaxTab')?>?hierarchy=<?=urlencode($hierarchyID)?>" data-lightbox-post="tab=hierarchytree">
+                <i class="fa fa-sitemap"></i>
+                <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
+              </a>
+            </div>
+          <? endforeach; ?>
+        <? endif; ?>
+      </div>
     </div>
     <div class="media-<?=$thumbnailAlignment ?> col-xs-3 <? if ($thumbnailAlignment == 'left'): ?><?= $combinedView ? 'col-sm-2 col-sm-pull-10' : 'col-sm-3 col-sm-pull-8 col-md-2 col-md-pull-9' ?><? elseif ($thumbnailAlignment == 'right'): ?><?= $combinedView ? 'col-sm-2' : 'col-sm-3 col-md-2' ?><? endif; ?> resultThumb">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />

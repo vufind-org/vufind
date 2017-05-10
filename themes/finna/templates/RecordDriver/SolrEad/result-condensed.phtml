@@ -56,7 +56,8 @@
   </div>
   <div class="clearfix"></div>
   <div class="media condensed-collapse-data col-xs-12">
-    <div class="media-body col-xs-9<? if ($thumbnailAlignment == 'left'): ?> col-sm-push-2<? endif; ?>">
+    <div class="col-xs-9<? if ($thumbnailAlignment == 'left'): ?> col-sm-push-2<? endif; ?>">
+      <div class="media-body">
         <? if ($origination = $this->driver->getOrigination()): ?>
             <span class="archive-label"><?=$this->transEsc('Archive Origination')?>:</span>
             <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($origination)?>%22&amp;type=Author"><?=$this->escapeHtml($origination)?></a>
@@ -84,44 +85,45 @@
               <a href="<?=$this->recordLink()->getUrl("$parentSource|$parentId")?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
             <? endforeach; ?>
             <br/>
-        <? endif; ?>
-      <div class="summary">
-      <? if($this->driver->isCollection()): ?>
-        <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
-      <? else: ?>
-        <? $authors = $this->driver->tryMethod('getAuthorsWithRoles'); if (!empty($authors)): ?>
-          <? $author = $authors[0]; ?>
-          <a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a>
-          <? if (count($authors) > 1): ?> <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
-        <? endif; ?>
-      <? endif; ?>
-      </div>
-      <div class="callnumAndLocation ajax-availability hidden">
-        <? if ($this->driver->supportsAjaxStatus()): ?>
-          <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
-          <span class="callnumber ajax-availability hidden">
-            <?=$this->transEsc('Loading')?>...<br/>
-          </span>
-          <strong><?=$this->transEsc('Located')?>:</strong>
-          <span class="location ajax-availability hidden">
-            <?=$this->transEsc('Loading')?>...
-          </span>
-          <div class="locationDetails"></div>
+          <? endif; ?>
+        <div class="summary">
+        <? if($this->driver->isCollection()): ?>
+          <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
         <? else: ?>
-          <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
-            <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
+          <? $authors = $this->driver->tryMethod('getAuthorsWithRoles'); if (!empty($authors)): ?>
+            <? $author = $authors[0]; ?>
+            <a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a>
+            <? if (count($authors) > 1): ?> <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
           <? endif; ?>
         <? endif; ?>
-      </div>
-      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? /* Saved lists */ ?>
-        <div class="savedLists alert alert-info hidden">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
         </div>
-      <? endif; ?>
-      <? if ($this->layout()->templateDir === 'list'): ?>
-        <?=$this->render('list/list-notes.phtml')?>
-      <? endif; ?>
+        <div class="callnumAndLocation ajax-availability hidden">
+          <? if ($this->driver->supportsAjaxStatus()): ?>
+            <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
+            <span class="callnumber ajax-availability hidden">
+              <?=$this->transEsc('Loading')?>...<br/>
+            </span>
+            <strong><?=$this->transEsc('Located')?>:</strong>
+            <span class="location ajax-availability hidden">
+              <?=$this->transEsc('Loading')?>...
+            </span>
+            <div class="locationDetails"></div>
+          <? else: ?>
+            <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
+              <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
+            <? endif; ?>
+          <? endif; ?>
+        </div>
+        <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+          <? /* Saved lists */ ?>
+          <div class="savedLists alert alert-info hidden">
+            <strong><?=$this->transEsc("Saved in")?>:</strong>
+          </div>
+        <? endif; ?>
+        <? if ($this->layout()->templateDir === 'list'): ?>
+          <?=$this->render('list/list-notes.phtml')?>
+        <? endif; ?>
+      </div>
     </div>
     <div class="media-<?=$thumbnailAlignment ?> col-xs-3 col-sm-2<? if ($thumbnailAlignment == 'left'): ?>  col-sm-pull-9<? endif; ?> resultThumb">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />

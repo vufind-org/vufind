@@ -96,93 +96,94 @@
   <div class="clearfix"></div>
   <div class="media condensed-collapse-data col-xs-12">
   <? if  ($database === 'false' && $ejournal === 'false'): ?>
-    <div class="media-body col-xs-9<? if ($thumbnailAlignment == 'left'): ?> col-sm-push-2<? endif; ?>">
-          <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
-            <div class="resultClassification">
+    <div class="col-xs-9<? if ($thumbnailAlignment == 'left'): ?> col-sm-push-2<? endif; ?>">
+      <div class="media-body">
+        <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
+          <div class="resultClassification">
+            <?
+              $result = '';
+              $i = 0;
+              foreach ($classifications as $class => $field) {
+                foreach ($field as $j => $subfield) {
+                  $result = $this->escapeHtml($class) . ' ' . $this->escapeHtml($subfield);
+                  ?>
+                  <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><? if (!$this->translationEmpty('classification::'.$result)): ?><?=$this->transEsc('classification::'.$result).'<span class="classification-detail"> (' . $result . ')</span>' ;?><? else: ?><?= $result; ?><? endif; ?></a>
               <?
-                $result = '';
-                $i = 0;
-                foreach ($classifications as $class => $field) {
-                  foreach ($field as $j => $subfield) {
-                    $result = $this->escapeHtml($class) . ' ' . $this->escapeHtml($subfield);
-                    ?>
-                    <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><? if (!$this->translationEmpty('classification::'.$result)): ?><?=$this->transEsc('classification::'.$result).'<span class="classification-detail"> (' . $result . ')</span>' ;?><? else: ?><?= $result; ?><? endif; ?></a>
-                <?
-                  }
                 }
-                ?>
-            </div>
-          <? endif; ?>
-
-
-          <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
-            <? foreach ($summInCollection as $collId => $collText): ?>
-              <div>
-                <b><?=$this->transEsc("in_collection_label")?></b>
-                <a class="collectionLinkText" href="<?=$this->url('collection', ['id' => $collId])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
-                  <?=$this->escapeHtml($collText)?>
-                </a>
-              </div>
-            <? endforeach; ?>
-          <? endif; ?>
-
-      <div class="holding-details">
-      <?
-      /* Display information on duplicate records if available */
-      $dedupData = $this->driver->getDedupData();
-      if (count($dedupData) > 1): ?>
-        <div class="dedupInformation">
-            <select class="dedup-select form-control" role="listbox" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
-            <? foreach ($dedupData as $source => $current): ?>
-              <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>"><?=$this->transEsc("source_$source", null, $source) ?></option>
-            <? endforeach; ?>
-            </select>
-        </div>
-      <? else: ?>
-        <?
-          if (!empty($dedupData)) {
-            reset($dedupData);
-            $source = key($dedupData);
-          } else {
-            $source = $this->driver->tryMethod('getDataSource');
-          }
-        ?>
-        <? if ($source): ?>
-          <div class="dedupInformation">
-            <strong><?=$this->transEsc("source_$source", null, $source) ?></strong>
+              }
+              ?>
           </div>
         <? endif; ?>
-      <? endif; ?>
 
-      <div class="callnumAndLocation ajax-availability<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
-        <span class="availability-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...<br/></span>
-        <? if ($this->driver->supportsAjaxStatus()): ?>
-          <strong class="hideIfDetailed"></strong>
-          <span class="callnumber ajax-availability hidden">
-          </span>
-          <span class="location ajax-availability hidden">
-          </span>
-          <div class="locationDetails clearfix"></div>
+
+        <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
+          <? foreach ($summInCollection as $collId => $collText): ?>
+            <div>
+              <b><?=$this->transEsc("in_collection_label")?></b>
+              <a class="collectionLinkText" href="<?=$this->url('collection', ['id' => $collId])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
+                <?=$this->escapeHtml($collText)?>
+              </a>
+            </div>
+          <? endforeach; ?>
+        <? endif; ?>
+
+        <div class="holding-details">
+        <?
+        /* Display information on duplicate records if available */
+        $dedupData = $this->driver->getDedupData();
+        if (count($dedupData) > 1): ?>
+          <div class="dedupInformation">
+              <select class="dedup-select form-control" role="listbox" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
+              <? foreach ($dedupData as $source => $current): ?>
+                <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>"><?=$this->transEsc("source_$source", null, $source) ?></option>
+              <? endforeach; ?>
+              </select>
+          </div>
         <? else: ?>
-          <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
-            <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
+          <?
+            if (!empty($dedupData)) {
+              reset($dedupData);
+              $source = key($dedupData);
+            } else {
+              $source = $this->driver->tryMethod('getDataSource');
+            }
+          ?>
+          <? if ($source): ?>
+            <div class="dedupInformation">
+              <strong><?=$this->transEsc("source_$source", null, $source) ?></strong>
+            </div>
           <? endif; ?>
         <? endif; ?>
-        <div class="no-holdings<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
-          <?=$this->transEsc('No Holdings Available')?>
+
+        <div class="callnumAndLocation ajax-availability<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
+          <span class="availability-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...<br/></span>
+          <? if ($this->driver->supportsAjaxStatus()): ?>
+            <strong class="hideIfDetailed"></strong>
+            <span class="callnumber ajax-availability hidden">
+            </span>
+            <span class="location ajax-availability hidden">
+            </span>
+            <div class="locationDetails clearfix"></div>
+          <? else: ?>
+            <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
+              <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
+            <? endif; ?>
+          <? endif; ?>
+          <div class="no-holdings<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
+            <?=$this->transEsc('No Holdings Available')?>
+          </div>
+        </div>
+        <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+        <? /* Saved lists */ ?>
+        <div class="savedLists alert alert-info hidden">
+          <strong><?=$this->transEsc("Saved in")?>:</strong>
+        </div>
+        <? endif; ?>
+        <? if ($this->layout()->templateDir === 'list'): ?>
+          <?=$this->render('list/list-notes.phtml')?>
+        <? endif; ?>
         </div>
       </div>
-      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-      <? /* Saved lists */ ?>
-      <div class="savedLists alert alert-info hidden">
-        <strong><?=$this->transEsc("Saved in")?>:</strong>
-      </div>
-      <? endif; ?>
-      <? if ($this->layout()->templateDir === 'list'): ?>
-        <?=$this->render('list/list-notes.phtml')?>
-      <? endif; ?>
-    </div>
-
   </div>
   <div class="media-<?=$thumbnailAlignment ?> col-xs-3 col-sm-2<? if ($thumbnailAlignment == 'left'): ?> col-sm-pull-9<? endif; ?> resultThumb">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
