@@ -441,52 +441,61 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getStatuses($ids)
     {
-        return array_map([$this, 'getStatus'], $ids);
-        /* TODO: Get expand fixed by Alma!!
         $results = [];
         $copyCount = 0;
         $params = [
             'mms_id' => implode(',', $ids),
-            'view'   => 'brief', // no solrmarc xml
             'expand' => 'p_avail,e_avail,d_avail'
         ];
         if ($bibs = $this->makeRequest('/bibs', $params)) {
-            foreach ($bibs as $bib) {
-                if (!isset($bib->holdings['link'])) {
-                    continue;
-                }
-                $bibPath = (string) $bib->holdings['link'];
-                $holdings = $this->makeRequest($bibPath);
-                foreach ($holdings as $holding) {
-                    $holdingId = (string)$holding->holding_id;
-                    $itemPath = $bibPath . '/' . urlencode($holdingId) . '/items';
-                    if ($currentItems = $this->makeRequest($itemPath)) {
-                        foreach ($currentItems->item as $item) {
-                            $barcode = (string)$item->item_data->barcode;
-                            $results[] = [
-                                'id' => $id,
-                                'source' => 'Solr',
-                                'availability' => $this->getAvailabilityFromItem($item),
-                                'status' => (string)$item->item_data->base_status[0]
-                                    ->attributes()['desc'],
-                                'location' => (string)$holding->library[0]
-                                    ->attributes()['desc'],
-                                'reserve' => 'N',   // TODO: support reserve status
-                                'callnumber' => (string)$item->holding_data->call_number,
-                                'duedate' => null, // TODO: support due dates
-                                'returnDate' => false, // TODO: support recent returns
-                                'number' => ++$copyCount,
-                                'barcode' => empty($barcode) ? 'n/a' : $barcode,
-                                'item_id' => (string)$item->item_data->pid,
-                                'addLink' => 'check'
-                            ];
-                        }
+            foreach ($bibs as $num => $bib) {
+                $marc = new \File_MARCXML(
+                    $bib->record->asXML(),
+                    \File_MARCXML::SOURCE_STRING
+                );
+                $status = [];
+                $tmpl = [
+                    'id' => (string) $bib->mms_id,
+                    'source' => 'Solr',
+                    'callnumber' => isset($bib->isbn)
+                        ? (string) $bib->isbn
+                        : ''
+                ];
+                if ($record = $marc->next()) {
+                    // Physical
+                    $physicalItems = $record->getFields('AVA');
+                    foreach ($physicalItems as $field) {
+                        $avail = $field->getSubfield('e')->getData();
+                        $item = $tmpl;
+                        $item['availability'] = strtolower($avail) === 'available';
+                        $item['location'] = (string) $field->getSubfield('c')
+                            ->getData();
+                        $status[] = $item;
                     }
+                    // Electronic
+                    $electronicItems = $record->getFields('AVE');
+                    foreach ($electronicItems as $field) {
+                        $avail = $field->getSubfield('e')->getData();
+                        $item = $tmpl;
+                        $item['availability'] = strtolower($avail) === 'available';
+                        $status[] = $item;
+                    }
+                    // Digital
+                    $digitalItems = $record->getFields('AVD');
+                    foreach ($digitalItems as $field) {
+                        $avail = $field->getSubfield('e')->getData();
+                        $item = $tmpl;
+                        $item['availability'] = strtolower($avail) === 'available';
+                        $status[] = $item;
+                    }
+                } else {
+                    // TODO: Throw error
+                    error_log('no record');
                 }
+                $results[] = $status;
             }
         }
         return $results;
-        */
     }
 
     /**
