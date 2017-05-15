@@ -56,6 +56,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
     protected $dateConverter;
 
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
+     */
     public function __construct(\VuFind\Date\Converter $dateConverter)
     {
         $this->dateConverter = $dateConverter;
@@ -247,8 +252,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's fines on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyFines($patron)
     {
@@ -537,7 +540,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
 
     /**
-     * https://developers.exlibrisgroup.com/alma/apis/users
+     * Ref: https://developers.exlibrisgroup.com/alma/apis/users
      * POST /almaws/v1/users/{user_id}/requests
      *
      * @param array $holdDetails An associative array w/ atleast patron and item_id
@@ -554,10 +557,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             . '&user_id=' . urlencode($holdDetails['patron']['cat_username'])
             . '&format=json'
         );
-        $client->setHeaders([
-            'Content-type: application/json',
-            'Accept: application/json'
-        ]);
+        $client->setHeaders(
+            [
+                'Content-type: application/json',
+                'Accept: application/json'
+            ]
+        );
         $client->setMethod(\Zend\Http\Request::METHOD_POST);
         $body = ['request_type' => 'HOLD'];
         if (isset($holdDetails['comment']) && !empty($holdDetails['comment'])) {
@@ -595,6 +600,18 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         ];
     }
 
+    /**
+     * Get Pick Up Locations
+     *
+     * This is responsible get a list of valid library locations for holds / recall
+     * retrieval
+     *
+     * @param array $patron Patron information returned by the patronLogin
+     * method.
+     *
+     * @return array An array of associative arrays with locationID and
+     * locationDisplay keys
+     */
     public function getPickupLocations($patron)
     {
         $xml = $this->makeRequest('/conf/libraries');
@@ -607,6 +624,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
         return $libraries;
     }
+
+    // @codingStandardsIgnoreStart
     /**
      * @param string $courseID     Value from getCourses
      * @param string $instructorID Value from getInstructors
@@ -619,7 +638,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function findReserves($courseID, $instructorID, $departmentID) {
         // https://developers.exlibrisgroup.com/alma/apis/courses
         // GET /​almaws/​v1/​courses/​{course_id}/​reading-lists
-    } //*/
+    }
+    */
 
     /**
      * @return array with key = course ID, value = course name
@@ -627,7 +647,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getCourses() {
         // https://developers.exlibrisgroup.com/alma/apis/courses
         // GET /​almaws/​v1/​courses
-    } //*/
+    }
+    */
 
     /**
      * @return array with key = course ID, value = course name
@@ -635,7 +656,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getFunds() {
         // https://developers.exlibrisgroup.com/alma/apis/acq
         // GET /​almaws/​v1/​acq/​funds
-    } //*/
+    }
+    */
 
     /**
      * @param string $bibID Bibligraphic ID
@@ -645,9 +667,10 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function hasHoldings($bibID) {
         // https://developers.exlibrisgroup.com/alma/apis/bibs
         // GET /almaws/v1/bibs/{mms_id}/holdings
-    } //*/
+    }
+    */
 
-    /* ================= METHODS INACCESSIBLE OUTSIDE OF GET ===================== */
+    /* ================= METHODS INACCESSIBLE OUTSIDE OF GET ================== */
 
     /**
      * @param array $cancelDetails An associative array with two keys:
@@ -656,12 +679,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @return array count – The number of items successfully cancelled
      *               items – Associative array where keyed by item_id (getMyHolds)
-     *                   success – Boolean true or false
-     *                   status – A status message from the language file (required)
-     *                   sysMessage - A system supplied failure message (optional)
+     *                    success – Boolean true or false
+     *                    status – A status message from the language file (required)
+     *                    sysMessage - A system supplied failure message (optional)
      * /
     public function cancelHolds($cancelDetails) {
         // https://developers.exlibrisgroup.com/alma/apis/users
         // DELETE /almaws/v1/users/{user_id}/requests/{request_id}
-    } //*/
+    }
+    */
+    // @codingStandardsIgnoreEnd
 }
