@@ -262,8 +262,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 "title"   => (string) $fee->type,
                 "amount"   => $fee->original_amount * 100,
                 "balance"  => $fee->balance * 100,
-                "checkout" => $this->dateConverter->convertToDisplayDate(
-                    'U', $checkout
+                "checkout" => $this->dateConverter->convert(
+                    'Y-m-d H:i', 'm-d-Y', $checkout
                 ),
                 "fine"     => (string) $fee->type['desc']
             ];
