@@ -1534,4 +1534,67 @@ class AjaxController extends AbstractBase
         }
         return $this->output('', self::STATUS_OK);
     }
+
+    /**
+     * Get fines data
+     */
+    public function getUserFinesAjax()
+    {
+        $user = $this->getUser();
+        if (!$this->getILS()->checkCapability('getMyFines')) {
+            return $this->output('', self::STATUS_OK, 405);
+        }
+        $fines = $this->getILS()->getMyFines($this->getUser());
+        $foundValid = false;
+        foreach ($fines as $fine) {
+            if (isset($fine['duedate'])) {
+                $foundValid = true;
+                // Overdue
+                if(strtotime($fine['duedate']) - time() <= 0) {
+                    return $this->output('OVERDUE', self::STATUS_OK);
+                }
+                // Due soon (1 week)
+                return $this->output('EXIST', self::STATUS_OK);
+            }
+        }
+        return $this->output('', self::STATUS_OK, 405);
+    }
+
+    /**
+     * Get checkedout items data
+     */
+    public function getUserTransactionsAjax()
+    {
+        $user = $this->getUser();
+        if (!$this->getILS()->checkCapability('getMyTransactions')) {
+            return $this->output('', self::STATUS_OK, 405);
+        }
+        $items = $this->getILS()->getMyTransactions($this->getUser());
+        $counts = [
+            'ok' => 0,
+            'warn' => 0,
+            'overdue' => 0
+        ];
+        $foundValid = false;
+        foreach ($items as $item) {
+            if (isset($item['duedate'])) {
+                $foundValid = true;
+                // Overdue
+                if(strtotime($item['duedate']) - time() <= 0) {
+                    $counts['overdue'] ++;
+                } else {
+                    // Due soon (1 week)
+                    if(strtotime($item['duedate']) - time() < 60 * 60 * 24 * 7) {
+                        $counts['warn'] ++;
+                    } else {
+                        $counts['ok'] ++;
+                    }
+                }
+            }
+        }
+        if (!$foundValid) {
+            return $this->output('', self::STATUS_OK, 405);
+        }
+        return $this->output(json_encode($counts), self::STATUS_OK);
+    }
 }

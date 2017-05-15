@@ -1,5 +1,5 @@
 <h4><?=$this->transEsc('Your Account')?></h4>
-<div class="list-group">
+<div class="myresearch-menu list-group">
   <? if ($this->userlist()->getMode() !== 'disabled'): ?>
     <a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=$this->active == 'favorites' ? ' active' : ''?>">
       <i class="fa fa-fw fa-star" aria-hidden="true"></i> <?=$this->transEsc('Favorites')?>
@@ -7,13 +7,15 @@
   <? endif; ?>
   <? if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
     <? if ($this->ils()->checkCapability('getMyTransactions')): ?>
-      <a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item<?=$this->active == 'checkedout' ? ' active' : ''?>">
+      <a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item checkedout<?=$this->active == 'checkedout' ? ' active' : ''?>">
         <i class="fa fa-fw fa-book" aria-hidden="true"></i> <?=$this->transEsc('Checked Out Items')?>
+        <span class="status hidden checkedout-status"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
       </a>
     <? endif; ?>
     <? if ($this->ils()->checkCapability('getMyHolds')): ?>
-      <a href="<?=$this->url('myresearch-holds')?>" class="list-group-item<?=$this->active == 'holds' ? ' active' : ''?>">
+      <a href="<?=$this->url('myresearch-holds')?>" class="list-group-item <?=$this->active == 'holds' ? ' active' : ''?>">
         <i class="fa fa-fw fa-flag" aria-hidden="true"></i> <?=$this->transEsc('Holds and Recalls')?>
+        <i class="status hidden holds-status fa fa-spin fa-spinner" aria-hidden="true"></i>
       </a>
     <? endif; ?>
     <? if ($this->ils()->checkFunction('StorageRetrievalRequests')): ?>
@@ -27,8 +29,9 @@
     </a>
     <? endif; ?>
     <? if ($this->ils()->checkCapability('getMyFines')): ?>
-      <a href="<?=$this->url('myresearch-fines')?>" class="list-group-item<?=$this->active == 'fines' ? ' active' : ''?>">
+      <a href="<?=$this->url('myresearch-fines')?>" class="list-group-item <?=$this->active == 'fines' ? ' active' : ''?>">
         <i class="fa fa-fw fa-usd" aria-hidden="true"></i> <?=$this->transEsc('Fines')?>
+        <i class="status hidden fines-status fa fa-spin fa-spinner" aria-hidden="true"></i>
       </a>
     <? endif; ?>
     <? if ($this->ils()->checkCapability('getMyProfile')): ?>

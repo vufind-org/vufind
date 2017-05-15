@@ -19,6 +19,7 @@ return array(
         'lib/autocomplete.js',
         'common.js',
         'lightbox.js',
+        'account_ajax.js',
     ),
     'less' => array(
         'active' => false,
