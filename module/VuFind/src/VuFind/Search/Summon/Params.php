@@ -266,6 +266,13 @@ class Params extends \VuFind\Search\Base\Params
                         $params->set(
                             'expand', strtolower(trim($safeValue)) == 'true'
                         );
+                    } else if ($filt['field'] == 'openAccessFilter') {
+                        // Special case -- "open access filter" is a separate
+                        // parameter from other facets.
+                        $params->set(
+                            'openAccessFilter',
+                            strtolower(trim($safeValue)) == 'true'
+                        );
                     } else if ($filt['field'] == 'excludeNewspapers') {
                         // Special case -- support a checkbox for excluding
                         // newspapers:
