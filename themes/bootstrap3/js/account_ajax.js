@@ -119,7 +119,7 @@ VuFind.register('account', function Account() {
       holds: holdStatus
     }));
   };
-  var _load = function _load() {
+  var load = function load() {
     $('.myresearch-menu .status').removeClass('hidden');
     var data = sessionStorage.getItem('account');
     if (data) {
@@ -139,6 +139,6 @@ VuFind.register('account', function Account() {
     holdStatus: holdStatus,
 
     update: performAjax,
-    init: _load
+    init: load
   };
 });
