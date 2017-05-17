@@ -1547,10 +1547,14 @@ class AjaxController extends AbstractBase
             return $this->output('', self::STATUS_OK, 405);
         }
         $fines = $this->getILS()->getMyFines($this->getUser());
-        if (count($fines) > 0) {
-            return $this->output('EXIST', self::STATUS_OK);
+        if (count($fines) === 0) {
+            return $this->output(0, self::STATUS_OK);
         }
-        return $this->output('CLEAR', self::STATUS_OK);
+        $sum = 0;
+        foreach ($fines as $fine) {
+            $sum += $fine['balance'];
+        }
+        return $this->output($sum, self::STATUS_OK);
     }
 
     /**

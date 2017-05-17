@@ -1,6 +1,6 @@
 /*global VuFind */
 VuFind.register('account', function Account() {
-  var LOADING = 0;
+  var LOADING = -1;
 
   var checkedOutStatus = LOADING;
   var fineStatus = LOADING;
@@ -27,10 +27,10 @@ VuFind.register('account', function Account() {
       $('.myresearch-menu .checkedout-status').removeClass('hidden');
     }
     // FINES
-    if (fineStatus === 'EXIST') {
-      $('.myresearch-menu .fines-status')
-        .removeClass('hidden fa-spin fa-spinner')
-        .addClass('fa-exclamation-triangle overdue');
+    if (fineStatus !== null && fineStatus > 0) {
+      $('.myresearch-menu .fines-status').html(
+        '<span class="badge overdue">$' + (fineStatus / 100).toFixed(2) + '</span>'
+      );
     } else if (fineStatus !== LOADING) {
       $('.myresearch-menu .fines-status').addClass('hidden');
     }
@@ -97,7 +97,7 @@ VuFind.register('account', function Account() {
       if (response.status === 405) {
         holdStatus = null;
       } else {
-        holdStatus = response.data;
+        holdStatus = parseInt(response.data);
         _save();
         _render();
       }
