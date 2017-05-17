@@ -920,19 +920,37 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
         $videoUrls = [];
         foreach ($this->getAllRecordsXML() as $xml) {
             foreach ($xml->Title as $title) {
-                if (!isset($title->TitleText)
-                    || !isset($title->PartDesignation->Value)
-                ) {
+                if (!isset($title->TitleText)) {
                     continue;
                 }
-                $attributes = $title->PartDesignation->Value->attributes();
-                if (empty($attributes['video-tyyppi'])) {
+
+                $videoUrl = (string)$title->TitleText;
+                if (strtolower(substr($videoUrl, -4)) !== '.mp4') {
                     continue;
                 }
+
+                $poster = '';
+                $videoType = 'elokuva';
+                $description = '';
+                if (isset($title->PartDesignation->Value)) {
+                    $attributes = $title->PartDesignation->Value->attributes();
+                    if (!empty($attributes['video-tyyppi'])) {
+                        $videoType = (string)$attributes->{'video-tyyppi'};
+                    }
+                    $description = (string)$attributes->{'video-lisatieto'};
+
+                    $posterFilename = (string)$title->PartDesignation->Value;
+                    if ($posterFilename) {
+                        $poster = str_replace(
+                            '{filename}', $posterFilename, $posterSource
+                        );
+                    }
+                }
+
                 $videoSources = [];
                 foreach ($sourceConfigs as $type => $src) {
                     $src = str_replace(
-                        '{videoname}', (string)$title->TitleText, $src
+                        '{videoname}', $videoUrl, $src
                     );
                     $videoSources[] = [
                         'src' => $src,
@@ -943,16 +961,6 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 $eventAttrs = $xml->ProductionEvent->ProductionEventType
                     ->attributes();
                 $url = (string)$eventAttrs->{'elokuva-elonet-materiaali-video-url'};
-                $type = (string)$attributes->{'video-tyyppi'};
-                $description = (string)$attributes->{'video-lisatieto'};
-
-                $poster = '';
-                $posterFilename = (string)$title->PartDesignation->Value;
-                if ($posterFilename) {
-                    $poster = str_replace(
-                        '{filename}', $posterFilename, $posterSource
-                    );
-                }
 
                 if ($this->urlBlacklisted($url, $description)) {
                     continue;
@@ -963,8 +971,8 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                     'posterUrl' => $poster,
                     'videoSources' => $videoSources,
                     // Include both 'text' and 'desc' for online and normal urls
-                    'text' => $description ? $description : $type,
-                    'desc' => $description ? $description : $type,
+                    'text' => $description ? $description : $videoType,
+                    'desc' => $description ? $description : $videoType,
                     'source' => $source,
                     'embed' => 'video'
                 ];
