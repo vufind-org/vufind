@@ -50,7 +50,11 @@ VuFind.register('account', function Account() {
         '<span class="badge overdue">$' + (fineStatus / 100).toFixed(2) + '</span>'
       );
       accountIcon = 'fa fa-exclamation-triangle text-danger';
-    } else if (fineStatus !== LOADING) {
+    } else if (fineStatus === LOADING) {
+      $('.myresearch-menu .fines-status').html(
+        '<i class="fa fa-spin fa-spinner" aria-hidden="true"></i>'
+      );
+    } else {
       $('.myresearch-menu .fines-status').addClass('hidden');
     }
     $('#account-icon').attr('class', accountIcon);
