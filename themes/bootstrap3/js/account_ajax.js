@@ -1,4 +1,4 @@
-/*global VuFind */
+/*global userIsLoggedIn, VuFind */
 VuFind.register('account', function Account() {
   var LOADING = -1;
 
