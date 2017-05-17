@@ -6,7 +6,7 @@ VuFind.register('account', function Account() {
   var fineStatus = LOADING;
   var holdStatus = LOADING;
 
-  var render = function render() {
+  var _render = function _render() {
     // CHECKED OUT COUNTS
     if (checkedOutStatus === null) {
       $('.myresearch-menu .checkedout-status').addClass('hidden');
@@ -61,7 +61,7 @@ VuFind.register('account', function Account() {
       } else {
         checkedOutStatus = JSON.parse(response.data);
         _save();
-        render();
+        _render();
       }
     })
     .fail(function getCheckedOutFail() {
@@ -80,7 +80,7 @@ VuFind.register('account', function Account() {
       } else {
         fineStatus = response.data;
         _save();
-        render();
+        _render();
       }
     })
     .fail(function getFinesFail() {
@@ -99,14 +99,14 @@ VuFind.register('account', function Account() {
       } else {
         holdStatus = response.data;
         _save();
-        render();
+        _render();
       }
     })
     .fail(function getFinesFail() {
       holdStatus = null;
     });
   };
-  var _performAjax = function _performAjax() {
+  var performAjax = function performAjax() {
     _ajaxCheckedOut();
     _ajaxFines();
     _ajaxHolds();
@@ -127,9 +127,9 @@ VuFind.register('account', function Account() {
       checkedOutStatus = json.checkedOut;
       fineStatus = json.fines;
       holdStatus = json.holds;
-      render();
+      _render();
     } else {
-      _performAjax();
+      performAjax();
     }
   };
 
@@ -138,7 +138,7 @@ VuFind.register('account', function Account() {
     fineStatus: fineStatus,
     holdStatus: holdStatus,
 
-    update: _performAjax,
+    update: performAjax,
     init: _load
   };
 });
