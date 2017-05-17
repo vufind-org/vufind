@@ -79,9 +79,11 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     /**
      * Return access restriction notes for the record.
      *
+     * @param string $language Optional primary language to look for
+     *
      * @return array
      */
-    public function getAccessRestrictions()
+    public function getAccessRestrictions($language = '')
     {
         $restrictions = [];
         $rights = $this->getSimpleXML()->xpath(
@@ -95,7 +97,9 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 }
                 $type = strtolower((string)$right->conceptID->attributes()->type);
                 if ($type == 'copyright') {
-                    $term = (string)$right->term;
+                    $term = (string)$this->getLanguageSpecificItem(
+                        $right->term, $language
+                    );
                     if ($term) {
                         $restrictions[] = $term;
                     }
@@ -192,7 +196,9 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 }
             }
             if (!empty($resourceSet->rightsResource->rightsType->term)) {
-                $term = (string)$resourceSet->rightsResource->rightsType->term;
+                $term = (string)$this->getLanguageSpecificItem(
+                    $resourceSet->rightsResource->rightsType->term, $language
+                );
                 if (!isset($rights['copyright']) || $rights['copyright'] !== $term) {
                     $rights['description'][] = $term;
                 }
@@ -215,8 +221,13 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 case 'medium':
                     $size = 'medium';
                     break;
-                default:
+                case 'image_large':
+                case 'large':
+                case 'zoomview':
                     $size = 'large';
+                    break;
+                case 'image_master':
+                    $size = 'master';
                     break;
                 }
 
@@ -552,7 +563,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             }
         }
 
-        $desc = $this->getAccessRestrictions();
+        $desc = $this->getAccessRestrictions($language);
         if ($desc && count($desc)) {
             $description = [];
             foreach ($desc as $p) {
@@ -873,6 +884,39 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             return [$matches[1], $matches[2] == '9999' ? null : $matches[2]];
         }
         return null;
+    }
+
+    /**
+     * Get a language-specific item from an element array
+     *
+     * @param SimpleXMLElement $element  Element to use
+     * @param string           $language Language to look for
+     *
+     * @return SimpleXMLElement
+     */
+    protected function getLanguageSpecificItem($element, $language)
+    {
+        $languages = [];
+        if ($language) {
+            $languages[] = $language;
+            if (strlen($language) > 2) {
+                $languages[] = substr($language, 0, 2);
+            }
+        }
+        $result = null;
+        foreach ($languages as $lng) {
+            foreach ($element as $item) {
+                $attrs = $item->attributes();
+                if (!empty($attrs->lang) && (string)$attrs->lang == $lng) {
+                    $result = (string)$item;
+                    break 2;
+                }
+            }
+        }
+        if (null === $result) {
+            $result = $element;
+        }
+        return $result;
     }
 
     /**

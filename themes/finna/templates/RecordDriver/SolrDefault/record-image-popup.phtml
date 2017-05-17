@@ -2,7 +2,7 @@
 <?
   $recordImage = $this->recordImage($this->record($this->driver));
   $largeImage = $recordImage->getLargeImage($this->index, ['w' => 1200, 'h' => 1200]);
-  $originalImage = $recordImage->getLargeImage($this->index);
+  $originalImage = $recordImage->getMasterImage($this->index);
   $currentImage = $this->index + 1;
   $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
   $imageDescription = $this->driver->tryMethod('getImageDescription', [$this->index]);

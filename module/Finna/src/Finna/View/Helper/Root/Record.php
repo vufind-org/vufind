@@ -270,7 +270,7 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     public function getAllImages($language, $thumbnails = true)
     {
-        $sizes = ['small', 'medium', 'large'];
+        $sizes = ['small', 'medium', 'large', 'master'];
         $recordId = $this->driver->getUniqueID();
         $images = $this->driver->tryMethod('getAllImages', [$language]);
         if (null === $images) {
