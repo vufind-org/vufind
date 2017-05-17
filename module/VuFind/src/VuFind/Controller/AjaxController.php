@@ -1547,19 +1547,35 @@ class AjaxController extends AbstractBase
             return $this->output('', self::STATUS_OK, 405);
         }
         $fines = $this->getILS()->getMyFines($this->getUser());
+        if (count($fines) > 0) {
+            return $this->output('EXIST', self::STATUS_OK);
+        }
+        return $this->output('CLEAR', self::STATUS_OK);
+    }
+
+    /**
+     * Get holds data
+     *
+     * @return \Zend\Http\Response
+     */
+    public function getUserHoldsAjax()
+    {
+        $user = $this->getUser();
+        if (!$this->getILS()->checkCapability('getMyHolds')) {
+            return $this->output('', self::STATUS_OK, 405);
+        }
+        $holds = $this->getILS()->getMyHolds($this->getUser());
         $foundValid = false;
-        foreach ($fines as $fine) {
-            if (isset($fine['duedate'])) {
-                $foundValid = true;
-                // Overdue
-                if (strtotime($fine['duedate']) - time() <= 0) {
-                    return $this->output('OVERDUE', self::STATUS_OK);
-                }
-                // Due soon (1 week)
-                return $this->output('EXIST', self::STATUS_OK);
+        foreach ($holds as $hold) {
+            error_log(print_r($hold, true));
+            if (isset($hold['available']) && $hold['available']) {
+                return $this->output('PICKUP', self::STATUS_OK);
+            }
+            if (isset($hold['in_transit']) && $hold['in_transit']) {
+                return $this->output('IN TRANSIT', self::STATUS_OK);
             }
         }
-        return $this->output('', self::STATUS_OK, 405);
+        return $this->output('CLEAR', self::STATUS_OK);
     }
 
     /**

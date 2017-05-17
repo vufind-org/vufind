@@ -1,54 +1,53 @@
 /*global VuFind */
 VuFind.register('account', function Account() {
   var LOADING = 0;
-  var OK = 1;
-  var WARN = 2;
-  var ALERT = 3;
 
   var checkedOutStatus = LOADING;
   var fineStatus = LOADING;
   var holdStatus = LOADING;
 
-  var _iconUpdate = function _iconUpdate($el, status) {
-    var okStr = 'fa-check ok';
-    var warnStr = 'fa-clock-o warn';
-    var alertStr = 'fa-exclamation-triangle overdue';
-    var _resetIcon = function _resetIcon($el) {
-      $el
-        .removeClass('fa-spin fa-spinner')
-        .removeClass(okStr)
-        .removeClass(warnStr)
-        .removeClass(alertStr);
-      return $el;
-    }
-    switch(status) {
-      case OK:
-        _resetIcon($el).addClass(okStr);
-        break;
-      case WARN:
-        _resetIcon($el).addClass(warnStr);
-        break;
-      case ALERT:
-        _resetIcon($el).addClass(alertStr);
-        break;
-    }
-  }
-  var update = function update() {
-    var html = '';
-    if (checkedOutStatus !== LOADING) {
-      if (checkedOutStatus.ok > 0) {
-        html += '<span class="badge ok">' + checkedOutStatus.ok + '</span>';
-      }
-      if (checkedOutStatus.warn > 0) {
-        html += '<span class="badge warn">' + checkedOutStatus.warn + '</span>';
-      }
-      if (checkedOutStatus.overdue > 0) {
-        html += '<span class="badge overdue">' + checkedOutStatus.overdue + '</span>';
+  var render = function render() {
+    // CHECKED OUT COUNTS
+    if (checkedOutStatus === null) {
+      $('.myresearch-menu .checkedout-status').addClass('hidden');
+    } else {
+      var html = '';
+      if (checkedOutStatus !== LOADING) {
+        if (checkedOutStatus.ok > 0) {
+          html += '<span class="badge ok">' + checkedOutStatus.ok + '</span>';
+        }
+        if (checkedOutStatus.warn > 0) {
+          html += '<span class="badge warn">' + checkedOutStatus.warn + '</span>';
+        }
+        if (checkedOutStatus.overdue > 0) {
+          html += '<span class="badge overdue">' + checkedOutStatus.overdue + '</span>';
+        }
       }
       $('.myresearch-menu .checkedout-status').html(html);
+      $('.myresearch-menu .checkedout-status').removeClass('hidden');
     }
-    _iconUpdate($('.myresearch-menu .fines-status'), fineStatus);
-    _iconUpdate($('.myresearch-menu .holds-status'), holdStatus);
+    // FINES
+    if (fineStatus === 'EXIST') {
+      $('.myresearch-menu .fines-status')
+        .removeClass('hidden fa-spin fa-spinner')
+        .addClass('fa-exclamation-triangle overdue');
+    } else if (fineStatus !== LOADING) {
+      $('.myresearch-menu .fines-status').addClass('hidden');
+    }
+    // HOLDS
+    if (holdStatus === 'PICKUP') {
+      $('.myresearch-menu .holds-status')
+        .removeClass('hidden fa-spin fa-spinner')
+        .removeClass('fa-clock-o warn')
+        .addClass('fa-bell ok');
+    } else if (holdStatus === 'INTRANSIT') {
+      $('.myresearch-menu .holds-status')
+        .removeClass('hidden fa-spin fa-spinner')
+        .removeClass('fa-bell ok')
+        .addClass('fa-clock-o warn');
+    } else if (holdStatus !== LOADING) {
+      $('.myresearch-menu .holds-status').addClass('hidden');
+    }
   };
 
   var _ajaxCheckedOut = function _ajaxCheckedOut() {
@@ -58,17 +57,18 @@ VuFind.register('account', function Account() {
     })
     .done(function getCheckedOutDone(response) {
       if (response.status === 405) {
-        $('.myresearch-menu .checkedout-status').addClass('hidden');
+        holdStatus = null;
       } else {
         checkedOutStatus = JSON.parse(response.data);
         _save();
-        update();
+        render();
       }
     })
     .fail(function getCheckedOutFail(response) {
-      $('.myresearch-menu .checkedout-status').addClass('hidden');
+      holdStatus = null;
     });
   };
+
   var _ajaxFines = function _ajaxFines() {
     $.ajax({
       url: VuFind.path + '/AJAX/JSON?method=getUserFines',
@@ -76,31 +76,35 @@ VuFind.register('account', function Account() {
     })
     .done(function getFinesDone(response) {
       if (response.status === 405) {
-        $('.myresearch-menu .fines-status').addClass('hidden');
+        holdStatus = null;
       } else {
-        switch (response.data) {
-          case 'CLEAR':
-            fineStatus = OK;
-            break;
-          case 'EXIST':
-            fineStatus = WARN;
-            break;
-          case 'OVERDUE':
-            fineStatus = ALERT;
-            break;
-        }
+        fineStatus = response.data;
         _save();
-        update();
+        render();
       }
     })
     .fail(function getFinesFail(response) {
-      $('.myresearch-menu .fines-status').addClass('hidden');
+      holdStatus = null;
     });
   };
+
   var _ajaxHolds = function _ajaxHolds() {
-    holdStatus = WARN;
-    _save();
-    update();
+    $.ajax({
+      url: VuFind.path + '/AJAX/JSON?method=getUserHolds',
+      dataType: 'json'
+    })
+    .done(function getFinesDone(response) {
+      if (response.status === 405) {
+        holdStatus = null;
+      } else {
+        holdStatus = response.data;
+        _save();
+        render();
+      }
+    })
+    .fail(function getFinesFail(response) {
+      holdStatus = null;
+    });
   };
   var _performAjax = function _performAjax() {
     _ajaxCheckedOut();
@@ -116,17 +120,17 @@ VuFind.register('account', function Account() {
     }));
   };
   var _load = function _load() {
+    $('.myresearch-menu .status').removeClass('hidden');
     var data = sessionStorage.getItem('account');
     if (data) {
       var json = JSON.parse(data);
       checkedOutStatus = json.checkedOut;
       fineStatus = json.fines;
       holdStatus = json.holds;
-      update();
+      render();
     } else {
       _performAjax();
     }
-    $('.myresearch-menu .status').removeClass('hidden');
   };
 
   return {
@@ -134,7 +138,7 @@ VuFind.register('account', function Account() {
     fineStatus: fineStatus,
     holdStatus: holdStatus,
 
-    update: update,
+    update: _performAjax,
     init: _load
   };
 });
