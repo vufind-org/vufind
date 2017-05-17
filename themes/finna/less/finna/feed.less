@@ -13,7 +13,7 @@
         overflow: hidden;
     }
     & .slick-initialized.slick-slider:not(.slick-vertical) {
-        margin-bottom: 70px;
+        margin-bottom: 50px;
         & .slick-slide {
             // adjust slick slider to align left grid
             border-left: none;
@@ -209,10 +209,14 @@
     }
     
     & .slick-dots {
-        margin-top: -30px;
+        margin-top: -15px;
         left: 0;
         position: relative;
+        button:before{
+            font-size: 10px;
+        }
     }
+
     & .slick-prev, .slick-next {
         background: rgba(50,50,50,0.2);
         overflow-x: hidden;
