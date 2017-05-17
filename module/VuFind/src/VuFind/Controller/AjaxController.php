@@ -1537,6 +1537,8 @@ class AjaxController extends AbstractBase
 
     /**
      * Get fines data
+     *
+     * @return \Zend\Http\Response
      */
     public function getUserFinesAjax()
     {
@@ -1550,7 +1552,7 @@ class AjaxController extends AbstractBase
             if (isset($fine['duedate'])) {
                 $foundValid = true;
                 // Overdue
-                if(strtotime($fine['duedate']) - time() <= 0) {
+                if (strtotime($fine['duedate']) - time() <= 0) {
                     return $this->output('OVERDUE', self::STATUS_OK);
                 }
                 // Due soon (1 week)
@@ -1562,6 +1564,8 @@ class AjaxController extends AbstractBase
 
     /**
      * Get checkedout items data
+     *
+     * @return \Zend\Http\Response
      */
     public function getUserTransactionsAjax()
     {
@@ -1580,11 +1584,11 @@ class AjaxController extends AbstractBase
             if (isset($item['duedate'])) {
                 $foundValid = true;
                 // Overdue
-                if(strtotime($item['duedate']) - time() <= 0) {
+                if (strtotime($item['duedate']) - time() <= 0) {
                     $counts['overdue'] ++;
                 } else {
                     // Due soon (1 week)
-                    if(strtotime($item['duedate']) - time() < 60 * 60 * 24 * 7) {
+                    if (strtotime($item['duedate']) - time() < 60 * 60 * 24 * 7) {
                         $counts['warn'] ++;
                     } else {
                         $counts['ok'] ++;
