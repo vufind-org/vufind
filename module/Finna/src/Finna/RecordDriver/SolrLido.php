@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @package  RecordDrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -35,6 +36,7 @@ namespace Finna\RecordDriver;
  * @package  RecordDrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -277,12 +279,24 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     /**
      * Get the collections of the current record.
      *
-     * @return string
+     * @return array
      */
     public function getCollections()
     {
-        return isset($this->fields['collection']) ?
-        $this->fields['collection'] : [];
+        $results = [];
+        $allowedTypes = ['Kokoelma', 'kuuluu kokoelmaan', 'kokoelma', 'Alakokoelma',
+            'Erityiskokoelma'];
+        foreach ($this->getSimpleXML()->xpath(
+            'lido/descriptiveMetadata/objectRelationWrap/relatedWorksWrap/'
+            . 'relatedWorkSet'
+        ) as $node) {
+            $term = isset($node->relatedWorkRelType->term)
+             ? $node->relatedWorkRelType->term : '';
+            if (in_array($term, $allowedTypes)) {
+                $results[] = (string)$node->relatedWork->displayObject;
+            }
+        }
+        return $results;
     }
 
     /**
