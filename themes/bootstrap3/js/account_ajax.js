@@ -104,7 +104,7 @@ VuFind.register('account', function Account() {
       holdStatus = null;
     });
   };
-  var performAjax = function performAjax() {
+  var _performAjax = function _performAjax() {
     _ajaxCheckedOut();
     _ajaxFines();
     _ajaxHolds();
@@ -118,16 +118,22 @@ VuFind.register('account', function Account() {
     }));
   };
   var load = function load() {
+    if (!userIsLoggedIn) {
+      sessionStorage.setItem('account-logged-in', false);
+      return false;
+    }
     $('.myresearch-menu .status').removeClass('hidden');
+    var prevLoginStatus = sessionStorage.getItem('account-logged-in');
     var data = sessionStorage.getItem('account');
-    if (data) {
+    if (data && prevLoginStatus !== null && prevLoginStatus === 'true') {
       var json = JSON.parse(data);
       checkedOutStatus = json.checkedOut;
       fineStatus = json.fines;
       holdStatus = json.holds;
       _render();
     } else {
-      performAjax();
+      _performAjax();
+      sessionStorage.setItem('account-logged-in', true);
     }
   };
 
@@ -136,7 +142,6 @@ VuFind.register('account', function Account() {
     fineStatus: fineStatus,
     holdStatus: holdStatus,
 
-    update: performAjax,
     init: load
   };
 });
