@@ -7,6 +7,7 @@ VuFind.register('account', function Account() {
   var holdStatus = LOADING;
 
   var _render = function _render() {
+    var accountIcon = 'fa fa-user-circle';
     // CHECKED OUT COUNTS
     if (checkedOutStatus === null) {
       $('.myresearch-menu .checkedout-status').addClass('hidden');
@@ -18,21 +19,15 @@ VuFind.register('account', function Account() {
         }
         if (checkedOutStatus.warn > 0) {
           html += '<span class="badge warn">' + checkedOutStatus.warn + '</span>';
+          accountIcon = 'fa fa-book text-warning';
         }
         if (checkedOutStatus.overdue > 0) {
           html += '<span class="badge overdue">' + checkedOutStatus.overdue + '</span>';
+          accountIcon = 'fa fa-book text-danger';
         }
       }
       $('.myresearch-menu .checkedout-status').html(html);
       $('.myresearch-menu .checkedout-status').removeClass('hidden');
-    }
-    // FINES
-    if (fineStatus !== null && fineStatus > 0) {
-      $('.myresearch-menu .fines-status').html(
-        '<span class="badge overdue">$' + (fineStatus / 100).toFixed(2) + '</span>'
-      );
-    } else if (fineStatus !== LOADING) {
-      $('.myresearch-menu .fines-status').addClass('hidden');
     }
     // HOLDS
     if (holdStatus === 'PICKUP') {
@@ -40,6 +35,7 @@ VuFind.register('account', function Account() {
         .removeClass('hidden fa-spin fa-spinner')
         .removeClass('fa-clock-o warn')
         .addClass('fa-bell ok');
+      accountIcon = 'fa fa-bell text-success';
     } else if (holdStatus === 'INTRANSIT') {
       $('.myresearch-menu .holds-status')
         .removeClass('hidden fa-spin fa-spinner')
@@ -48,6 +44,16 @@ VuFind.register('account', function Account() {
     } else if (holdStatus !== LOADING) {
       $('.myresearch-menu .holds-status').addClass('hidden');
     }
+    // FINES
+    if (fineStatus !== null && fineStatus > 0) {
+      $('.myresearch-menu .fines-status').html(
+        '<span class="badge overdue">$' + (fineStatus / 100).toFixed(2) + '</span>'
+      );
+      accountIcon = 'fa fa-exclamation-triangle text-danger';
+    } else if (fineStatus !== LOADING) {
+      $('.myresearch-menu .fines-status').addClass('hidden');
+    }
+    $('#account-icon').attr('class', accountIcon);
   };
 
   var _ajaxCheckedOut = function _ajaxCheckedOut() {
