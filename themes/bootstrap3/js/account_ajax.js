@@ -66,13 +66,9 @@ VuFind.register('account', function Account() {
       dataType: 'json'
     })
     .done(function getCheckedOutDone(response) {
-      if (response.status === 405) {
-        holdStatus = null;
-      } else {
-        checkedOutStatus = JSON.parse(response.data);
-        _save();
-        _render();
-      }
+      checkedOutStatus = JSON.parse(response.data);
+      _save();
+      _render();
     })
     .fail(function getCheckedOutFail() {
       holdStatus = null;
@@ -85,13 +81,9 @@ VuFind.register('account', function Account() {
       dataType: 'json'
     })
     .done(function getFinesDone(response) {
-      if (response.status === 405) {
-        holdStatus = null;
-      } else {
-        fineStatus = response.data;
-        _save();
-        _render();
-      }
+      fineStatus = response.data;
+      _save();
+      _render();
     })
     .fail(function getFinesFail() {
       holdStatus = null;
@@ -104,13 +96,9 @@ VuFind.register('account', function Account() {
       dataType: 'json'
     })
     .done(function getFinesDone(response) {
-      if (response.status === 405) {
-        holdStatus = null;
-      } else {
-        holdStatus = parseInt(response.data);
-        _save();
-        _render();
-      }
+      holdStatus = parseInt(response.data);
+      _save();
+      _render();
     })
     .fail(function getFinesFail() {
       holdStatus = null;

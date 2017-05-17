@@ -1543,7 +1543,10 @@ class AjaxController extends AbstractBase
     public function getUserFinesAjax()
     {
         $user = $this->getUser();
-        if (!$user || !$this->getILS()->checkCapability('getMyFines')) {
+        if (!$user) {
+            return $this->output('', self::STATUS_OK, 401);
+        }
+        if (!$this->getILS()->checkCapability('getMyFines')) {
             return $this->output('', self::STATUS_OK, 405);
         }
         $fines = $this->getILS()->getMyFines($this->getUser());
@@ -1565,7 +1568,10 @@ class AjaxController extends AbstractBase
     public function getUserHoldsAjax()
     {
         $user = $this->getUser();
-        if (!$user || !$this->getILS()->checkCapability('getMyHolds')) {
+        if (!$user) {
+            return $this->output('', self::STATUS_OK, 401);
+        }
+        if (!$this->getILS()->checkCapability('getMyHolds')) {
             return $this->output('', self::STATUS_OK, 405);
         }
         $holds = $this->getILS()->getMyHolds($this->getUser());
@@ -1590,7 +1596,10 @@ class AjaxController extends AbstractBase
     public function getUserTransactionsAjax()
     {
         $user = $this->getUser();
-        if (!$user || !$this->getILS()->checkCapability('getMyTransactions')) {
+        if (!$user) {
+            return $this->output('', self::STATUS_OK, 401);
+        }
+        if (!$this->getILS()->checkCapability('getMyTransactions')) {
             return $this->output('', self::STATUS_OK, 405);
         }
         $items = $this->getILS()->getMyTransactions($this->getUser());
