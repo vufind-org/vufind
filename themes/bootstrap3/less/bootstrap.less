@@ -129,12 +129,24 @@ img {max-width: 100%;}
   display: block;
   line-height: 2rem;
 }
-.myresearch-menu .checkedout-status { margin-right: -.5rem; }
-.myresearch-menu .checkedout-status .fa-spinner { margin-right: .5rem; }
-.myresearch-menu .checkedout-status .badge {
-  border: 1px solid @gray;
-  color: #000;
-  border-radius: 0;
+.myresearch-menu .checkedout-status,
+.myresearch-menu .fines-status { margin-right: -.5rem; }
+.myresearch-menu .status .fa-spinner { margin-right: .5rem; }
+.myresearch-menu .status.ok,
+.myresearch-menu .status .ok { color: @state-success-text; }
+.myresearch-menu .status.warn,
+.myresearch-menu .status .warn { color: @state-warning-text; }
+.myresearch-menu .status.overdue,
+.myresearch-menu .status .overdue { color: @state-danger-text; }
+.myresearch-menu .status .badge.ok { background-color: @state-success-bg; }
+.myresearch-menu .status .badge.warn { background-color: @state-warning-bg; }
+.myresearch-menu .status .badge.overdue { background-color: @state-danger-bg; }
+.myresearch-menu .checkedout-status .badge { border-radius: 0; }
+.myresearch-menu .active .status { color: #fff; }
+.myresearch-menu .active .status .badge {
+  color: #fff;
+  background-color: transparent;
+  border: 1px solid #fff;
 }
 .myresearch-menu .checkedout-status .badge:first-child {
   padding-left: 1rem;
@@ -145,30 +157,6 @@ img {max-width: 100%;}
   padding-right: 1rem;
   border-top-right-radius: @badge-border-radius;
   border-bottom-right-radius: @badge-border-radius;
-}
-.myresearch-menu .status.ok,
-.myresearch-menu .status .ok { color: @state-success-text; }
-.myresearch-menu .status.warn,
-.myresearch-menu .status .warn { color: @state-warning-text; }
-.myresearch-menu .status.overdue,
-.myresearch-menu .status .overdue { color: @state-danger-text; }
-.myresearch-menu .status .badge.ok {
-  background-color: @state-success-bg;
-  border-color: @state-success-border;
-}
-.myresearch-menu .status .badge.warn {
-  background-color: @state-warning-bg;
-  border-color: @state-warning-border;
-}
-.myresearch-menu .status .badge.overdue {
-  background-color: @state-danger-bg;
-  border-color: @state-danger-border;
-}
-.myresearch-menu .active .status { color: #fff; }
-.myresearch-menu .active .status .badge {
-  color: #fff;
-  background-color: transparent;
-  border-color: #fff;
 }
 
 /* --- PubDateVis --- */

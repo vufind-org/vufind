@@ -31,7 +31,7 @@
     <? if ($this->ils()->checkCapability('getMyFines')): ?>
       <a href="<?=$this->url('myresearch-fines')?>" class="list-group-item <?=$this->active == 'fines' ? ' active' : ''?>">
         <i class="fa fa-fw fa-usd" aria-hidden="true"></i> <?=$this->transEsc('Fines')?>
-        <i class="status hidden fines-status fa fa-spin fa-spinner" aria-hidden="true"></i>
+        <span class="status hidden fines-status"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
       </a>
     <? endif; ?>
     <? if ($this->ils()->checkCapability('getMyProfile')): ?>
