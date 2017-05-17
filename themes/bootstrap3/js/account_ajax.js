@@ -64,7 +64,7 @@ VuFind.register('account', function Account() {
         render();
       }
     })
-    .fail(function getCheckedOutFail(response) {
+    .fail(function getCheckedOutFail() {
       holdStatus = null;
     });
   };
@@ -83,7 +83,7 @@ VuFind.register('account', function Account() {
         render();
       }
     })
-    .fail(function getFinesFail(response) {
+    .fail(function getFinesFail() {
       holdStatus = null;
     });
   };
@@ -102,7 +102,7 @@ VuFind.register('account', function Account() {
         render();
       }
     })
-    .fail(function getFinesFail(response) {
+    .fail(function getFinesFail() {
       holdStatus = null;
     });
   };
