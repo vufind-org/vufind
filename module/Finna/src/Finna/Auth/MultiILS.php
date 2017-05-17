@@ -60,6 +60,7 @@ class MultiILS extends \VuFind\Auth\MultiILS
     {
         $target = trim($request->getPost()->get('target'));
         $username = trim($request->getPost()->get('username'));
+        $username = str_replace(' ', '', $username);
         $password = trim($request->getPost()->get('password'));
         if ($username == '' || $password == '') {
             throw new AuthException('authentication_error_blank');

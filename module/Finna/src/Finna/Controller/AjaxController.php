@@ -778,6 +778,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 = isset($config->autoplay) ? $config->autoplay : false;
             $settings['dots']
                 = isset($config->dots) ? $config->dots == true : true;
+            $settings['scrollSpeed']
+                = isset($config->scrollSpeed) ? $config->scrollSpeed : 750;
             $breakPoints
                 = ['desktop' => 4, 'desktop-small' => 3,
                    'tablet' => 2, 'mobile' => 1];

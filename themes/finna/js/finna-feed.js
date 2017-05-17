@@ -1,7 +1,7 @@
 /*global VuFind*/
 finna.feed = (function() {
-    var calculateScrollSpeed = function(scrollCnt) {
-        return 750 * Math.max(1, (scrollCnt/5));
+    var calculateScrollSpeed = function(scrollCnt, scrollSpeed) {
+        return scrollSpeed * Math.max(1, (scrollCnt/5));
     };
 
     // Horizontal carousel:
@@ -219,7 +219,7 @@ finna.feed = (function() {
             autoplaySpeed: settings['autoplay'],
             slidesToShow: settings['slidesToShow']['desktop'],
             slidesToScroll: settings['scrolledItems']['desktop'],
-            speed: calculateScrollSpeed(settings['scrolledItems']['desktop']),
+            speed: calculateScrollSpeed(settings['scrolledItems']['desktop'], settings['scrollSpeed']),
             vertical: settings['vertical'],
             responsive: responsive = [
                 {
@@ -227,7 +227,7 @@ finna.feed = (function() {
                     settings: {
                         slidesToShow: settings['slidesToShow']['desktop-small'],
                         slidesToScroll: settings['scrolledItems']['desktop-small'],
-                        speed: calculateScrollSpeed(settings['scrolledItems']['desktop-small']),
+                        speed: calculateScrollSpeed(settings['scrolledItems']['desktop-small'], settings['scrollSpeed']),
                     }
                 },
                 {
@@ -235,7 +235,7 @@ finna.feed = (function() {
                     settings: {
                         slidesToShow: settings['slidesToShow']['tablet'],
                         slidesToScroll: settings['scrolledItems']['tablet'],
-                        speed: calculateScrollSpeed(settings['scrolledItems']['tablet']),
+                        speed: calculateScrollSpeed(settings['scrolledItems']['tablet'], settings['scrollSpeed']),
                     }
                 },
                 {
@@ -243,7 +243,7 @@ finna.feed = (function() {
                     settings: {
                         slidesToShow: settings['slidesToShow']['mobile'],
                         slidesToScroll: settings['scrolledItems']['mobile'],
-                        speed: calculateScrollSpeed(settings['scrolledItems']['mobile']),
+                        speed: calculateScrollSpeed(settings['scrolledItems']['mobile'], settings['scrollSpeed']),
                     }
                 }
             ]

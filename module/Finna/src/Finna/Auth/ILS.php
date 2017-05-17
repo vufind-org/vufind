@@ -59,6 +59,7 @@ class ILS extends \VuFind\Auth\ILS
     public function authenticate($request)
     {
         $username = trim($request->getPost()->get('username'));
+        $username = str_replace(' ', '', $username);
         $password = trim($request->getPost()->get('password'));
         if ($username == '' || $password == '') {
             throw new AuthException('authentication_error_blank');
