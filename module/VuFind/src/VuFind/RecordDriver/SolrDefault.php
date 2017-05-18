@@ -652,7 +652,7 @@ class SolrDefault extends AbstractBase
                 && is_array($this->highlightDetails)
             ) {
                 foreach ($this->highlightDetails as $key => $value) {
-                    if (!in_array($key, $this->forbiddenSnippetFields)) {
+                    if ($value && !in_array($key, $this->forbiddenSnippetFields)) {
                         return [
                             'snippet' => $value[0],
                             'caption' => $this->getSnippetCaption($key)
