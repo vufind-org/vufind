@@ -61,7 +61,7 @@
             'options' => $options,
             'allowExclude' => $this->recommend->excludeAllowed($title),
             'facets_before_more' => $this->recommend->getShowMoreSetting($title),
-            'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($title),
+            'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($title)
           ]; ?>
           <?=$this->context($this)->renderInContext('Recommend/SideFacets/cluster-list.phtml', array_merge($contextVars, ['title' => $title, 'cluster' => $cluster])); ?>
           <? if (in_array($title, $hierarchicalFacets)): ?>
