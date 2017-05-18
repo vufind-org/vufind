@@ -1922,11 +1922,8 @@ class SolrDefault extends AbstractBase
         $query = new \VuFindSearch\Query\Query(
             'hierarchy_parent_id:"' . $safeId . '"'
         );
-        $params = new \VuFindSearch\ParamBag(
-            [
-                'hl' => ['false']
-            ]
-        );
+        // Disable highlighting for efficiency; not needed here:
+        $params = new \VuFindSearch\ParamBag(['hl' => ['false']]);
         return $this->searchService->search('Solr', $query, 0, 0, $params)
             ->getTotal();
     }
