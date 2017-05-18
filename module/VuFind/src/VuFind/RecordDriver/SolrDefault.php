@@ -1922,7 +1922,13 @@ class SolrDefault extends AbstractBase
         $query = new \VuFindSearch\Query\Query(
             'hierarchy_parent_id:"' . $safeId . '"'
         );
-        return $this->searchService->search('Solr', $query, 0, 0)->getTotal();
+        $params = new \VuFindSearch\ParamBag(
+            [
+                'hl' => ['false']
+            ]
+        );
+        return $this->searchService->search('Solr', $query, 0, 0, $params)
+            ->getTotal();
     }
 
     /**
