@@ -260,6 +260,15 @@ function applyRecordTabHash() {
   }
 }
 
+function removeHashFromLocation() {
+  if (window.history.replaceState) {
+    var href = window.location.href.split('#');
+    window.history.replaceState({}, document.title, href[0]);  
+  } else {
+    window.location.hash = '#';  
+  }
+}
+
 $(window).on('hashchange', applyRecordTabHash);
 
 function recordDocReady() {
