@@ -3,6 +3,7 @@
 @import "common";
 
 @reduced-font-size: 14px;
+@search-tab-height: 1.6rem;
 
 body {
   font-size: 16px;
@@ -62,8 +63,8 @@ header {
   a { color: #fff; }
 }
 .search {
-  padding: 1rem;
-  padding-top: 0;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 header .form-control { border: 0; }
 header .form-control:focus {
@@ -197,17 +198,35 @@ header .form-control:focus {
     margin-bottom: 0;
   }
 
-  #searchForm .nav-tabs { border: 0; }
-  #searchForm .nav-tabs a:hover {
-    border-color: transparent;
-    color: @header-light;
-    background-color: transparent;
+  #searchForm {
+    position: relative;
+    padding-top: .7rem;
+    padding-bottom: @search-tab-height;
+
+    .nav-tabs {
+      position: absolute;
+      bottom: 0;
+      border: 0;
+    }
+    .nav-tabs a {
+      height: @search-tab-height;
+      padding-top: 0;
+      padding-bottom: 0;
+      border: 0;
+      border-bottom: 3px solid transparent;
+      border-radius: 0;
+      background-color: transparent;
+    }
+    .nav-tabs a:hover {
+      border-color: transparent;
+      color: @header-light;
+      background-color: transparent;
+    }
+    .nav-tabs .active a {
+      color: #fff;
+      border-color: @white;
+    }
   }
-  #searchForm .nav-tabs .active a {
-    color: @black;
-    background-color: @white;
-  }
-  #searchForm .nav-tabs ~ #searchForm_lookfor { border-top-left-radius: 0; }
 
   .result { margin: 0; }
   .result-body { width: 75%; }
