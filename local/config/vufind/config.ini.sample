@@ -83,9 +83,6 @@ fi = "Finnish"
 recipient_email = ""
 recipient_name = ""
 
-[Security]
-HMACkey = mySuperSecretValue
-
 [Piwik]
 site_id =
 token_auth =
