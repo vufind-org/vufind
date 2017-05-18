@@ -150,7 +150,8 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
         $imageParams = [
             'small' => [],
             'medium' => [],
-            'large' => []
+            'large' => [],
+            'master' => [],
         ];
         foreach ($params as $size => $sizeParams) {
             $imageParams[$size] = $sizeParams;
@@ -158,7 +159,7 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
 
         $urlHelper = $this->getView()->plugin('url');
 
-        $imageTypes = ['small', 'medium', 'large'];
+        $imageTypes = ['small', 'medium', 'large', 'master'];
 
         $images = $this->record->getAllImages($language, $thumbnails);
         foreach ($images as $idx => &$image) {
