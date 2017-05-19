@@ -11,13 +11,13 @@ return array(
     ),
     'js' => array(
         'vendor/base64.js:lt IE 10', // btoa polyfill
-        'vendor/jquery.min.js',
+        'vendor/jquery.min.js:critical',
         'vendor/bootstrap.min.js',
         'vendor/bootstrap-accessibility.min.js',
         'vendor/validator.min.js',
         'lib/form-attr-polyfill.js', // input[form] polyfill, cannot load conditionally, since we need all versions of IE
         'lib/autocomplete.js',
-        'common.js',
+        'common.js:critical',
         'lightbox.js',
     ),
     'less' => array(

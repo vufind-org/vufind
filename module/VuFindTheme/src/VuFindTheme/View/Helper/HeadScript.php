@@ -102,6 +102,70 @@ class HeadScript extends \Zend\View\Helper\HeadScript
     }
 
     /**
+     * Checks for "critical" condition and defers if absent
+     *
+     * @param string $value Append script or file
+     *
+     * @return object
+     */
+    protected function addDefer($value)
+    {
+        if (isset($value->attributes['src'])) {
+            if (!empty($value->attributes['conditional'])
+                && $value->attributes['conditional'] == 'critical'
+            ) {
+                unset($value->attributes['conditional']);
+            } else {
+                $value->attributes['defer'] = 'defer';
+            }
+        }
+        return $value;
+    }
+
+    /**
+     * Overwrites appendFile to always consider conditions added via :
+     *
+     * @param string $src   File source
+     * @param string $type  mime type of source
+     * @param array  $attrs additional attributes from script element
+     *
+     * @return object
+     */
+    public function appendFile($src, $type = 'text/javascript', $attrs = [])
+    {
+        $parts = explode(':', $src);
+        if (isset($parts[1])) {
+            $src = $parts[0];
+            $attrs['conditional'] = $parts[1];
+        }
+        return parent::appendFile($src, $type, $attrs);
+    }
+
+    /**
+     * Overwrites append to automatically defer appended scripts
+     *
+     * @param string $value Append script or file
+     *
+     * @return object
+     */
+    public function append($value)
+    {
+        return parent::append($this->addDefer($value));
+    }
+
+    /**
+     * Overwrites append to automatically defer prepended scripts
+     *
+     * @param string $value Append script or file
+     *
+     * @return object
+     */
+    public function prepend($value)
+    {
+        return parent::prepend($this->addDefer($value));
+    }
+
+    /**
      * Returns true if file should not be included in the compressed concat file
      * Required by ConcatTrait
      *
