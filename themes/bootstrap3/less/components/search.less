@@ -48,8 +48,16 @@ header .container.navbar { margin-bottom: 0; }
 .bulkActionButtons label input {margin-top: 2px;}
 .grid { @media (max-width: 767px) {min-height: 250px;} }
 .result {
+  display: flex;
+  flex-direction: row;
   border-bottom: 1px solid @btn-default-border;
+  .record-checkbox {
+    flex: 0 2rem;
+    line-height: 3rem;
+    text-align: center;
+  }
   .media {
+    flex: 1;
     padding-top: 1rem;
     padding-bottom: 1rem;
   }
@@ -95,11 +103,6 @@ header .container.navbar { margin-bottom: 0; }
   .format {
     &:extend(.label);
     &:extend(.label-info);
-  }
-
-  .checkbox-select-item {
-    float: left;
-    margin-top: 1.5rem;
   }
 
   @media (min-width: 768px) {
