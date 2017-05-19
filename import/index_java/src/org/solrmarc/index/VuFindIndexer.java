@@ -1477,9 +1477,9 @@ public class VuFindIndexer extends SolrIndexer
                 if (validateCoordinates(west, east, north, south)) {
                     geo_coordinates.add(result);
                 } else {
-                System.out.println("*** -- Record ID: "+recNum.trim()+"... Not indexing INVALID coordinates.");
-                System.out.println("*** ---- Coords: "+d+" "+e+" "+f+" "+g+"  | DD coords: "+west+" "+east+" "+north+" "+south);
-                System.out.println("---------------------------");
+                    logger.error("*** -- Record ID: "+recNum.trim()+"... Not indexing INVALID coordinates.");
+                    logger.error("*** ---- Coords: "+d+" "+e+" "+f+" "+g+"  | DD coords: "+west+" "+east+" "+north+" "+south);
+                    logger.error("---------------------------");
                 }
             }
         }
@@ -1642,7 +1642,7 @@ public class VuFindIndexer extends SolrIndexer
             validLines = "true";
         } else {
             validLines = "false";
-            System.out.println("*** ERROR: Coordinates form a line at the pole...DD coords: "+west+" "+east+" "+north+" "+south);
+            logger.error("*** ERROR: Coordinates form a line at the pole...DD coords: "+west+" "+east+" "+north+" "+south);
         }
 
         // Validate values
@@ -1650,7 +1650,7 @@ public class VuFindIndexer extends SolrIndexer
             validValues = "true";
         } else {
             validValues = "false";
-            System.out.println("*** ERROR: Coordinates contain null values...DD coords: "+west+" "+east+" "+north+" "+south);
+            logger.error("*** ERROR: Coordinates contain null values...DD coords: "+west+" "+east+" "+north+" "+south);
         }
 
         // Validate extent
@@ -1658,14 +1658,14 @@ public class VuFindIndexer extends SolrIndexer
             validExtent = "true";
         } else {
             validExtent = "false";
-            System.out.println("*** ERROR: Coordinates outside map extent...DD coords: "+west+" "+east+" "+north+" "+south);
+            logger.error("*** ERROR: Coordinates outside map extent...DD coords: "+west+" "+east+" "+north+" "+south);
         }
         // Note E-W wrapping is allowed.
         if (validateNorthSouth(north, south)) {
            validNorthSouth = "true";
         } else {
            validNorthSouth = "false";
-           System.out.println("*** ERROR: North < South...DD coords: "+west+" "+east+" "+north+" "+south);
+           logger.error("*** ERROR: North < South...DD coords: "+west+" "+east+" "+north+" "+south);
         }
         // Validate Coordinate distances
         if (validateCoordinateDistance(west, east, north, south)) {
@@ -1751,13 +1751,13 @@ public class VuFindIndexer extends SolrIndexer
 
     //Check for South Pole coordinate distance
     if ((north == -90 || south == -90) && (distNS > 0 && distNS < 0.167)) {
-        System.out.println("*** ERROR: Coordinates < 0.167 degrees from South Pole...Coordinate Distance: "+distNS);
+        logger.error("*** ERROR: Coordinates < 0.167 degrees from South Pole...Coordinate Distance: "+distNS);
         return false;
     }
 
     //Check for East-West coordinate distance
     if ((west == 0 || east == 0) && (distEW > -2 && distEW <0)) {
-        System.out.println("*** ERROR: Coordinates < 2 degrees from Prime Meridian...Coordinate Distance: "+distEW);
+        logger.error("*** ERROR: Coordinates < 2 degrees from Prime Meridian...Coordinate Distance: "+distEW);
         return false;
     }
     return true;
