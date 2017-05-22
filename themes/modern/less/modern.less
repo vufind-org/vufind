@@ -129,10 +129,20 @@ header .form-control:focus {
 .result .format,
 .result .label {
   display: inline-block;
-  padding: .25rem .75rem;
-  font-size: 12px;
+  padding: 4px .75rem;
+  font-size: 11px;
 }
 .result .media-body { padding-left: .5rem; }
+.result.checked {
+  color: #fff;
+  background-color: @brand-primary;
+  a { color: #fff; }
+  .format,
+  .label {
+    color: @brand-primary;
+    background-color: #fff;
+  }
+}
 .result-body,
 .result-links {
   float: left;
@@ -172,7 +182,7 @@ header .form-control:focus {
 }
 .result .record-checkbox :checked ~ .checkbox-icon::before {
   color: #fff;
-  background-color: @brand-primary;
+  background-color: transparent;
 }
 
 .top-facets,

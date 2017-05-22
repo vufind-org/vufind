@@ -1,4 +1,7 @@
 <?php
 return array(
-    'extends' => 'bootstrap3'
+    'extends' => 'bootstrap3',
+    'js' => [
+        'modern.js'
+    ]
 );
