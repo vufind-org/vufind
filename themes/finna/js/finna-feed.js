@@ -187,7 +187,7 @@ finna.feed = (function() {
                         holder.find('.carousel').addClass('carousel-non-touch-device');
                     }
                     // Force refresh to make sure that the layout is ok
-                    obj.slickGoTo(0, true);
+                    obj.slick('slickGoTo', 0, true);
                 }
 
                 // Bind lightbox if feed content is shown in modal
