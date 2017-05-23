@@ -831,8 +831,15 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 if ($key !== $secret) {
                     throw new \Exception('Invalid parameters.');
                 }
-                $user->finna_due_date_reminder = 0;
-                $user->save();
+                $user->setFinnaDueDateReminder(0);
+                // Remove due date reminder from all cards too
+                foreach ($user->getLibraryCards() as $card) {
+                    if ($card->finna_due_date_reminder != 0) {
+                        $card = $user->getLibraryCard($card->id);
+                        $card->finna_due_date_reminder = 0;
+                        $card->save();
+                    }
+                }
             }
             $view->success = true;
         } else {

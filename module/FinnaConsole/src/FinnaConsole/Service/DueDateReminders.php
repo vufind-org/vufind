@@ -239,9 +239,7 @@ class DueDateReminders extends AbstractService
             $remindLoans = $results['remindLoans'];
             $remindCnt = count($remindLoans);
             $errorCnt = count($errors);
-            //  if ($remindCnt || $errorCnt) {
-            // Disable sending errors until we get the mechanism improved
-            if ($remindCnt) {
+            if ($remindCnt || $errorCnt) {
                 $this->msg(
                     "$remindCnt reminders and $errorCnt errors to send for user"
                     . " {$user->username} (id {$user->id})"
@@ -276,7 +274,7 @@ class DueDateReminders extends AbstractService
         $remindLoans = [];
         $errors = [];
         foreach ($user->getLibraryCards() as $card) {
-            if (!$card['id']) {
+            if (!$card->id || $card->finna_due_date_reminder == 0) {
                 continue;
             }
             $ddrConfig = $this->catalog->getConfig(
@@ -296,10 +294,11 @@ class DueDateReminders extends AbstractService
             }
 
             $patron = null;
+            // Retrieve a complete UserCard object
             $card = $user->getLibraryCard($card['id']);
             try {
                 $patron = $this->catalog->patronLogin(
-                    $card['cat_username'], $card['cat_password']
+                    $card->cat_username, $card->cat_password
                 );
             } catch (\Exception $e) {
                 $this->err(
@@ -314,9 +313,19 @@ class DueDateReminders extends AbstractService
                 $this->warn(
                     "Catalog login failed for user {$user->username}"
                     . " (id {$user->id}), card {$card->cat_username}"
-                    . " (id {$card->id})"
+                    . " (id {$card->id}) -- disabling due date reminders for the"
+                    . ' card'
                 );
                 $errors[] = ['card' => $card['cat_username']];
+                // Disable due date reminders for this card
+                if ($user->cat_username == $card->cat_username) {
+                    // Card is the active one, update via user
+                    $user->setFinnaDueDateReminder(0);
+                } else {
+                    // Update just the card
+                    $card->finna_due_date_reminder = 0;
+                    $card->save();
+                }
                 continue;
             }
 
@@ -461,6 +470,7 @@ class DueDateReminders extends AbstractService
         if ($urlView != $this::DEFAULT_PATH) {
             $baseUrl .= "/$urlView";
         }
+        $serviceName = $urlInstitution . '.finna.fi';
         $lastLogin = new \DateTime($user->finna_last_login);
         $loginMethod = strtolower($user->finna_auth_method);
         $dateFormat = isset($this->currentSiteConfig['Site']['displayDateFormat'])
@@ -472,7 +482,8 @@ class DueDateReminders extends AbstractService
             'unsubscribeUrl' => $baseUrl . $unsubscribeUrl,
             'baseUrl' => $baseUrl,
             'lastLogin' => $lastLogin->format($dateFormat),
-            'loginMethod' => $loginMethod
+            'loginMethod' => $loginMethod,
+            'serviceName' => $serviceName
         ];
 
         if (!empty($errors)) {
