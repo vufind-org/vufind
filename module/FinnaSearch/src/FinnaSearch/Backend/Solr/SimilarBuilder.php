@@ -89,7 +89,7 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
      *
      * @var string
      */
-    protected $escapedChars = '+-&|!(){}[]^"~*?:\\';
+    protected $escapedChars = '+-&|!(){}[]^"~*?:\\/';
 
     /**
      * Constructor.
