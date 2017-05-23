@@ -33,6 +33,7 @@ return [
             'primo' => 'Finna\View\Helper\Root\Factory::getPrimo',
             'recaptcha' => 'VuFind\View\Helper\Root\Factory::getRecaptcha',
             'record' => 'Finna\View\Helper\Root\Factory::getRecord',
+            'recordDataFormatter' => 'Finna\View\Helper\Root\RecordDataFormatterFactory',
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
             'scriptSrc' => 'Finna\View\Helper\Root\Factory::getScriptSrc',
             'searchbox' => 'Finna\View\Helper\Root\Factory::getSearchBox',

@@ -1,0 +1,12 @@
+<? //Don't add START and END comments ?>
+<?
+  $openUrl = $this->openUrl($this->driver, 'record');
+  $openUrlActive = $openUrl->isActive();
+  // Account for replace_other_urls setting
+  $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
+?>
+<? if ($openUrlActive): ?>
+<tr>
+  <td colspan="2" class="more-options-link"><?=$openUrl->renderTemplate()?> </td>
+</tr>
+<? endif; ?>

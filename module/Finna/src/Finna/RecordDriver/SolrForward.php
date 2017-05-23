@@ -52,6 +52,13 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     ];
 
     /**
+     * Primary author relator codes (mapped)
+     *
+     * @var array
+     */
+    protected $primaryAuthorRelators = ['drt'];
+
+    /**
      * Presenter author relator codes.
      *
      * @var array
@@ -477,13 +484,48 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Get all authors apart from presenters
+     * Get all primary authors apart from presenters
      *
      * @return array
      */
-    public function getNonPresenterAuthors()
+    public function getNonPresenterPrimaryAuthors()
     {
-        return $this->getAuthorsByRelators($this->nonPresenterAuthorRelators);
+        return $this->getNonPresenterAuthors(true);
+    }
+
+    /**
+     * Get all secondary authors apart from presenters
+     *
+     * @return array
+     */
+    public function getNonPresenterSecondaryAuthors()
+    {
+        return $this->getNonPresenterAuthors(false);
+    }
+
+    /**
+     * Get all authors apart from presenters
+     *
+     * @param mixed $primary Whether to return only primary or secondary authors or
+     * all (null)
+     *
+     * @return array
+     */
+    public function getNonPresenterAuthors($primary = null)
+    {
+        $authors = $this->getAuthorsByRelators($this->nonPresenterAuthorRelators);
+        if (null === $primary) {
+            return $authors;
+        }
+        $result = [];
+        foreach ($authors as $author) {
+            $isPrimary = isset($author['role'])
+                && in_array($author['role'], $this->primaryAuthorRelators);
+            if ($isPrimary === $primary) {
+                $result[] = $author;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -537,15 +579,49 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Get presenters
+     * Get credited presenters
      *
      * @return array
      */
-    public function getPresenters()
+    public function getCreditedPresenters()
     {
+        return $this->getPresenters(false);
+    }
+
+    /**
+     * Get uncredited presenters
+     *
+     * @return array
+     */
+    public function getUncreditedPresenters()
+    {
+        return $this->getPresenters(true);
+    }
+
+    /**
+     * Get presenters
+     *
+     * @param mixed $uncredited Whether to return only uncredited (true) or credited
+     * authors (false) or all (null).
+     *
+     * @return array
+     */
+    public function getPresenters($uncredited = null)
+    {
+        $presenters = $this->getAuthorsByRelators($this->presenterAuthorRelators);
+        if (null !== $uncredited) {
+            $result = [];
+            foreach ($presenters as $presenter) {
+                $isUncredited = isset($presenter['uncredited'])
+                    && $presenter['uncredited'];
+                if ($isUncredited === $uncredited) {
+                    $result[] = $presenter;
+                }
+            }
+            $presenters = $result;
+        }
         return [
-            'presenters'
-                => $this->getAuthorsByRelators($this->presenterAuthorRelators)
+            'presenters' => $presenters
         ];
     }
 

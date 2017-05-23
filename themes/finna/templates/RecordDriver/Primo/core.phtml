@@ -1,12 +1,11 @@
 <!-- START of: finna - RecordDriver/Primo/core.phtml -->
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
 
-
-    <? // if you have a preview tab but want to move or remove the preview link
-       // from this area of the record view, this can be split into
-       // getPreviewData() (should stay here) and
-       // getPreviewLink() (can go in your desired tab) ?>
-    <?=$this->record($this->driver)->getPreviews()?>
+  <? // if you have a preview tab but want to move or remove the preview link
+      // from this area of the record view, this can be split into
+      // getPreviewData() (should stay here) and
+      // getPreviewLink() (can go in your desired tab) ?>
+  <?=$this->record($this->driver)->getPreviews()?>
 
   <div class="col-sm-12">
     <div class="visible-print inline-block">
@@ -66,388 +65,32 @@
       <? endif; ?>
     </div>
 
-
     <?/* Display Main Details */?>
     <div class="record-details">
-    <table class="table table-condensed table-finna-record" summary="<?=$this->transEsc('Bibliographic Details')?>">
-
-      <? $nextTitles = $this->driver->getNewerTitles(); $prevTitles = $this->driver->getPreviousTitles(); ?>
-      <? if (!empty($nextTitles)): ?>
-      <tr>
-        <th><?=$this->transEsc('New Title')?>: </th>
-        <td>
-          <? foreach($nextTitles as $field): ?>
-            <a href="<?=$this->record($this->driver)->getLink('title', $field)?>"><?=$this->escapeHtml($field)?></a><br/>
-          <? endforeach; ?>
-        </td>
-      </tr>
-      <? endif; ?>
-
-      <? if (!empty($prevTitles)): ?>
-      <tr>
-        <th><?=$this->transEsc('Previous Title')?>: </th>
-        <td>
-          <? foreach($prevTitles as $field): ?>
-            <a href="<?=$this->record($this->driver)->getLink('title', $field)?>"><?=$this->escapeHtml($field)?></a><br/>
-          <? endforeach; ?>
-        </td>
-      </tr>
-      <? endif; ?>
-
-      <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
-        <tr>
-          <th><?=$this->transEsc('Language')?>: </th>
-          <td><? foreach ($langs as $lang): ?><?= $this->transEsc($lang)?><br/><? endforeach; ?></td>
-        </tr>
-      <? endif; ?>
-        <?
-          $publications = $this->driver->getPublicationDetails();
-          if (!empty($publications)):
-        ?>
-        <?
-          $published = false;
-          $html = '';
-          foreach ($publications as $field) {
-            $html .= '<span property="publisher" typeof="Organization">';
-            $pubPlace = $field->getPlace();
-            if (!empty($pubPlace)) {
-              $published = true;
-              $html .= '<span property="location">' . $this->escapeHtml($pubPlace) . '</span>';
-            }
-            $pubName = $field->getName();
-            if (!empty($pubName)) {
-              $published = true;
-              $html .= '<span property="name">' . $this->escapeHtml($pubName) . '</span>';
-            }
-            $html .= '</span><br/>';
-          }
-        ?>
-        <? if ($published): ?>
-        <tr>
-          <th><?=$this->transEsc('Published')?>: </th>
-          <td>
-            <?=$html?>
-          </td>
-        </tr>
-        <? endif; ?>
-      <? endif; ?>
-
-      <? $edition = $this->driver->getEdition(); if (!empty($edition)): ?>
-      <tr>
-        <th><?=$this->transEsc('Edition')?>: </th>
-        <td property="bookEdition"><?=$this->escapeHtml($edition)?></td>
-      </tr>
-      <? endif; ?>
-
-      <?/* Display series section if at least one series exists. */?>
-      <? $series = $this->driver->getSeries(); if (!empty($series)): ?>
-      <tr>
-        <th><?=$this->transEsc('Series')?>: </th>
-        <td>
-          <? foreach ($series as $field): ?>
-            <?/* Depending on the record driver, $field may either be an array with
-               "name" and "number" keys or a flat string containing only the series
-               name.  We should account for both cases to maximize compatibility. */?>
-            <? if (is_array($field)): ?>
-              <? if (!empty($field['name'])): ?>
-                <a href="<?=$this->record($this->driver)->getLink('series', $field['name'])?>"><?=$this->escapeHtml($field['name'])?></a>
-                <? if (!empty($field['number'])): ?>
-                  <?=$this->escapeHtml($field['number'])?>
-                <? endif; ?>
-                <br/>
-              <? endif; ?>
-            <? else: ?>
-              <a href="<?=$this->record($this->driver)->getLink('series', $field)?>"><?=$this->escapeHtml($field)?></a><br/>
-            <? endif; ?>
-          <? endforeach; ?>
-        </td>
-      </tr>
-      <? endif; ?>
-
-      <? $subjects = $this->driver->getAllSubjectHeadings(); if (!empty($subjects)): ?>
-      <tr>
-        <th><?=$this->transEsc('Subjects')?>: </th>
-        <td>
-          <? foreach ($subjects as $field): ?>
-          <div class="subjectLine" property="keywords">
-            <? $subject = ''; ?>
-            <? if(count($field) == 1) $field = explode('--', $field[0]); ?>
-            <? $i = 0; foreach ($field as $subfield): ?>
-              <?=($i++ == 0) ? '' : ' &gt; '?>
-              <? $subject = trim($subject . ' ' . $subfield); ?>
-              <a class="" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" rel="nofollow"><?=trim($this->escapeHtml($subfield))?> </a>
-            <? endforeach; ?>
-          </div>
-          <? endforeach; ?>
-
-        </td>
-      </tr>
-      <? endif; ?>
-
-      <? $childRecordCount = $this->driver->tryMethod('getChildRecordCount'); if ($childRecordCount): ?>
-      <tr>
-        <th><?=$this->transEsc('child_records')?>: </th>
-        <td>
-          <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>"><?=$this->transEsc('child_record_count', ['%%count%%' => $childRecordCount])?></a>
-        </td>
-      </tr>
-      <? endif; ?>
-
-      <? if ($source = $this->driver->getSource()): ?>
-      <tr>
-        <th><?=$this->transEsc('Source Collection')?>: </th>
-        <td><?=$this->escapeHtml($source) ?></td>
-      </tr>
-      <? endif; ?>
-
-      <? $recordLinks = $this->driver->getAllRecordLinks(); ?>
-      <? if(!empty($recordLinks)): ?>
-        <tr>
-          <th><?=$this->transEsc('Related Items')?>:</th>
-          <td>
-            <? foreach ($recordLinks as $recordLink): ?>
-              <?=$this->transEsc($recordLink['title'])?>:
-              <a href="<?=$this->recordLink()->related($recordLink['link'])?>"><?=$this->escapeHtml($recordLink['value'])?></a><br />
-            <? endforeach; ?>
-            <? /* if we have record links, display relevant explanatory notes */
-              $related = $this->driver->getRelationshipNotes();
-              if (!empty($related)): ?>
-                <? foreach ($related as $field): ?>
-                  <?=$this->escapeHtml($field)?><br/>
-                <? endforeach; ?>
-            <? endif; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? // Grab clean ISBN for convenience:
-        $isbn = $this->driver->getCleanISBN();
+      <?
+        $formatter = $this->recordDataFormatter();
+        $coreFields = $formatter->getData(
+            $driver, $formatter->filterPrimoFields($formatter->getDefaults('core'))
+        );
       ?>
-      <? $dateSpan = $this->driver->getDateSpan(); if (!empty($dateSpan)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedDateSpan">
-          <th><?=$this->transEsc('Published')?>: </th>
-          <td>
-            <? foreach ($dateSpan as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
+      <? if (!empty($coreFields)): ?>
+      <table class="table table-condensed table-finna-record" summary="<?=$this->transEsc('Bibliographic Details')?>">
+          <? foreach ($coreFields as $key => $current): ?>
+            <tr class="<?=$current['context']['class'];?>"><th><?=$this->transEsc($key)?>:</th><td><?=$current['value']?></td></tr>
+          <? endforeach; ?>
+      </table>
       <? endif; ?>
-
-      <? $notes = $this->driver->getGeneralNotes(); if (!empty($notes)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedNotes">
-          <th><?=$this->transEsc('Item Description')?>: </th>
-          <td>
-            <? foreach ($notes as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $physical = $this->driver->getPhysicalDescriptions(); if (!empty($physical)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedPhysicalDescription">
-          <th><?=$this->transEsc('Physical Description')?>: </th>
-          <td>
-            <? foreach ($physical as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $freq = $this->driver->getPublicationFrequency(); if (!empty($freq)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedFrequency">
-          <th><?=$this->transEsc('Publication Frequency')?>: </th>
-          <td>
-            <? foreach ($freq as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $playTime = $this->driver->getPlayingTimes(); if (!empty($playTime)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedPlayTime">
-          <th><?=$this->transEsc('Playing Time')?>: </th>
-          <td>
-            <? foreach ($playTime as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $system = $this->driver->getSystemDetails(); if (!empty($system)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedSystem">
-          <th><?=$this->transEsc('Format')?>: </th>
-          <td>
-            <? foreach ($system as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $audience = $this->driver->getTargetAudienceNotes(); if (!empty($audience)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedAudience">
-          <th><?=$this->transEsc('Audience')?>: </th>
-          <td>
-            <? foreach ($audience as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $awards = $this->driver->getAwards(); if (!empty($awards)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedAwards">
-          <th><?=$this->transEsc('Awards')?>: </th>
-          <td>
-            <? foreach ($awards as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $credits = $this->driver->getProductionCredits(); if (!empty($credits)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedCredits">
-          <th><?=$this->transEsc('Production Credits')?>: </th>
-          <td>
-            <? foreach ($credits as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $bib = $this->driver->getBibliographyNotes(); if (!empty($bib)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedBibliography">
-          <th><?=$this->transEsc('Bibliography')?>: </th>
-          <td>
-            <? foreach ($bib as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $isbns = $this->driver->getISBNs(); if (!empty($isbns)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedISBNs">
-          <th><?=$this->transEsc('ISBN')?>: </th>
-          <td>
-            <? foreach ($isbns as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $issns = $this->driver->getISSNs(); if (!empty($issns)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedISSNs">
-          <th><?=$this->transEsc('ISSN')?>: </th>
-          <td>
-            <? foreach ($issns as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $doi = $this->driver->tryMethod('getCleanDOI'); if (!empty($doi)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extended-doi">
-          <th><?=$this->transEsc('DOI')?>: </th>
-          <td><?=$this->escapeHtml($doi)?></td>
-        </tr>
-      <? endif; ?>
-
-      <? $related = $this->driver->getRelationshipNotes(); if (!empty($related)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedRelatedItems">
-          <th><?=$this->transEsc('Related Items')?>: </th>
-          <td>
-            <? foreach ($related as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $access = $this->driver->getAccessRestrictions(); if (!empty($access)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedAccess">
-          <th><?=$this->transEsc('Access')?>: </th>
-          <td>
-            <? foreach ($access as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $findingAids = $this->driver->getFindingAids(); if (!empty($findingAids)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedFindingAids">
-          <th><?=$this->transEsc('Finding Aid')?>: </th>
-          <td>
-            <? foreach ($findingAids as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $publicationPlaces = $this->driver->getHierarchicalPlaceNames(); if (!empty($publicationPlaces)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="publicationPlace">
-          <th><?=$this->transEsc('Publication_Place')?>: </th>
-          <td>
-            <? foreach ($publicationPlaces as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $authorNotes = empty($isbn) ? [] : $this->authorNotes($isbn); if (!empty($authorNotes)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr class="extendedAuthorNotes">
-          <th><?=$this->transEsc('Author Notes')?>: </th>
-          <td>
-            <? foreach ($authorNotes as $provider => $list): ?>
-              <? foreach ($list as $field): ?>
-                <?=$field['Content']?><br/>
-              <? endforeach; ?>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-    </table>
-
-    <?=$openUrl ? $openUrl->renderMoreOptions() : '' ?>
-
+      <?=$openUrl ? $openUrl->renderMoreOptions() : '' ?>
     </div>
-        <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
       <? /* Display the lists that this record is saved to */ ?>
       <div class="savedLists hidden alert alert-info" id="savedLists">
         <strong><?=$this->transEsc("Saved in")?>:</strong>
       </div>
     <? endif; ?>
     <?/* End Main Details */?>
+
     <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-metadata")): ?>
     <div class="row">
       <div class="col-xs-12">
