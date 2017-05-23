@@ -566,6 +566,12 @@ class RecordDataFormatterFactory
                 'context' => ['class' => 'recordPhysicalLocation']
             ]
         );
+        $spec->setTemplateLine(
+            'Date', 'getUnitDate', 'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'recordDaterange']
+            ]
+        );
         return $spec->getArray();
     }
 
