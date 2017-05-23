@@ -19,11 +19,19 @@ header .container.navbar { margin-bottom: 0; }
 .bulkActionButtons label input {margin-top: 2px;}
 .grid { @media (max-width: 767px) {min-height: 250px;} }
 .result {
+  display: flex;
+  flex-direction: row;
   padding-top: 1.5rem;
-  .checkbox {
-    float: left;
-    padding-right: .5rem;
+
+  .record-number {
+    flex: 0 2rem;
+    text-align: center;
   }
+  .record-checkbox {
+    flex: 0;
+    cursor: pointer;
+  }
+
   .media,
   .media-body { overflow: visible; }
   .media-body .row {
@@ -31,6 +39,7 @@ header .container.navbar { margin-bottom: 0; }
     margin-right: 0;
   }
   .media {
+    flex: 1;
     margin-top: 0;
     margin-bottom: 1rem;
     .clearfix();
