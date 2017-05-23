@@ -41,29 +41,48 @@
   <div class="col-md-10 col-lg-9">
     <? if (!$this->translationEmpty('profile_instructions')): ?><p class="no-content-message"><?=$this->transEsc('profile_instructions')?></p><? endif; ?>
     <?=$this->flashmessages();?>
-    <?=$this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
+    <?= $this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
     <?= $this->partial('myresearch/profile-my-information.phtml', ['user' => $user, 'cards' => $cards, 'hideDueDateReminder' => $this->hideDueDateReminder, 'hideProfileEmailAddress' => $this->hideProfileEmailAddress]); ?>
     <? if (isset($this->profile)): ?>
     <div class="myresearch-profile-header"><?=$this->transEsc('Library Card Settings');?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
     <div class="col-xs-12 myresearch-profile-list library-profile">
+      <? if (!$this->hideDueDateReminder): ?>
+        <form id="profile_due_date_form" class="inline" method="post">
+          <div class="col-sm-4 profile-title">
+              <label for="due-date-reminder"><?=$this->transEsc("due_date_reminder") ?>:</label>
+          </div>
+          <div class="col-sm-8">
+            <select id="due-date-reminder" name="due_date_reminder" class="jumpMenu form-control">
+              <option value="0" <?= $user->finna_due_date_reminder == 0 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_none") ?></option>
+              <option value="1" <?= $user->finna_due_date_reminder == 1 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_one_day") ?></option>
+              <option value="2" <?= $user->finna_due_date_reminder == 2 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_two_days") ?></option>
+              <option value="3" <?= $user->finna_due_date_reminder == 3 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_three_days") ?></option>
+            </select>
+            <? if ($user->finna_due_date_reminder && empty($user->email)): ?>
+              <span class="alert-danger"><?=$this->transEsc('no_email_address')?></span>
+            <? endif; ?>
+          </div>
+        </form>
+      <? endif; ?>
+
       <? if ($showHomeLibForm): ?>
         <form id="profile_form" class="inline" method="post">
           <div class="col-sm-4 profile-title"><label for="home_library"><?=$this->transEsc('preferred_pickup_location')?>:</label></div>
           <div class="col-sm-8">
-              <?
-                $selected = (isset($this->profile['home_library']) && $this->profile['home_library'] != "")
-                  ? $this->profile['home_library'] : $this->defaultPickupLocation
-              ?>
-              <select id="home_library" name="home_library" class="jumpMenu form-control">
-                <? foreach ($this->pickup as $lib): ?>
-                  <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?></option>
-                <? endforeach; ?>
-              </select>
+            <?
+              $selected = (isset($this->profile['home_library']) && $this->profile['home_library'] != "")
+                ? $this->profile['home_library'] : $this->defaultPickupLocation
+            ?>
+            <select id="home_library" name="home_library" class="jumpMenu form-control">
+              <? foreach ($this->pickup as $lib): ?>
+                <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?></option>
+              <? endforeach; ?>
+            </select>
           </div>
         </form>
       <? elseif (!empty($this->pickup)): ?>
-          <div class="col-sm-4 profile-title"><?=$this->transEsc('preferred_pickup_location')?>:</div>
-          <div class="col-sm-8"><?=$this->escapeHtml($this->pickup[0]['locationDisplay']); ?></div>
+        <div class="col-sm-4 profile-title"><?=$this->transEsc('preferred_pickup_location')?>:</div>
+        <div class="col-sm-8"><?=$this->escapeHtml($this->pickup[0]['locationDisplay']); ?></div>
       <? endif; ?>
 
       <? if (isset($profile['messagingServices']) && !empty($profile['messagingServices'])): ?>

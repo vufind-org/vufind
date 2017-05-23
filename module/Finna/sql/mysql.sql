@@ -37,6 +37,12 @@ CREATE INDEX `finna_user_due_date_reminder_key` ON user (`finna_due_date_reminde
 CREATE INDEX `finna_user_email` ON user (`email`);
 
 --
+-- Additional columns for user_card
+--
+ALTER TABLE `user_card` ADD COLUMN `finna_due_date_reminder` int(11) NOT NULL DEFAULT 0;
+--To initialize: UPDATE user_card SET finna_due_date_reminder=(SELECT finna_due_date_reminder FROM user WHERE user.id=user_card.user_id);
+
+--
 -- Additional columns for user_list
 --
 ALTER TABLE user_list ADD COLUMN `finna_updated` datetime DEFAULT NULL;

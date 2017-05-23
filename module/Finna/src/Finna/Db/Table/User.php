@@ -147,7 +147,10 @@ class User extends \VuFind\Db\Table\User
     {
         return $this->select(
             function (Select $select) {
-                $select->where->greaterThan('finna_due_date_reminder', 0);
+                $subquery = new Select('user_card');
+                $subquery->columns(['user_id']);
+                $subquery->where->greaterThan('finna_due_date_reminder', 0);
+                $select->where->in('id', $subquery);
                 $select->order('username desc');
             }
         );

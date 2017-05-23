@@ -195,6 +195,13 @@ class DueDateReminders extends AbstractService
         $this->dueDateReminderTable = $dueDateReminderTable;
         $this->catalog = $catalog;
         $this->mainConfig = $configReader->get('config');
+
+        if (isset($this->mainConfig->Catalog->loadNoILSOnFailure)
+            && $this->mainConfig->Catalog->loadNoILSOnFailure
+        ) {
+            throw new \Exception('Catalog/loadNoILSOnFailure must not be enabled');
+        }
+
         $this->datasourceConfig = $configReader->get('datasources');
         $this->configReader = $configReader;
         $this->renderer = $renderer;
@@ -232,7 +239,7 @@ class DueDateReminders extends AbstractService
             $remindLoans = $results['remindLoans'];
             $remindCnt = count($remindLoans);
             $errorCnt = count($errors);
-            //if ($remindCnt || $errorCnt) {
+            //  if ($remindCnt || $errorCnt) {
             // Disable sending errors until we get the mechanism improved
             if ($remindCnt) {
                 $this->msg(
@@ -272,6 +279,22 @@ class DueDateReminders extends AbstractService
             if (!$card['id']) {
                 continue;
             }
+            $ddrConfig = $this->catalog->getConfig(
+                'dueDateReminder',
+                ['cat_username' => $card->cat_username]
+            );
+            // Assume ddrConfig['enabled'] may contain also something else than a
+            // boolean..
+            if (isset($ddrConfig['enabled']) && $ddrConfig['enabled'] !== true) {
+                // Due date reminders disabled for the source
+                $this->warn(
+                    "Due date reminders disabled for source, user {$user->username}"
+                    . " (id {$user->id}), card {$card->cat_username}"
+                    . " (id {$card->id})"
+                );
+                continue;
+            }
+
             $patron = null;
             $card = $user->getLibraryCard($card['id']);
             try {
@@ -279,10 +302,15 @@ class DueDateReminders extends AbstractService
                     $card['cat_username'], $card['cat_password']
                 );
             } catch (\Exception $e) {
-                $this->err('Catalog login error: ' . $e->getMessage());
+                $this->err(
+                    "Catalog login error for user {$user->username}"
+                    . " (id {$user->id}), card {$card->cat_username}"
+                    . " (id {$card->id}): " . $e->getMessage()
+                );
+                continue;
             }
 
-            if (!$patron) {
+            if (null === $patron) {
                 $this->warn(
                     "Catalog login failed for user {$user->username}"
                     . " (id {$user->id}), card {$card->cat_username}"
@@ -291,6 +319,7 @@ class DueDateReminders extends AbstractService
                 $errors[] = ['card' => $card['cat_username']];
                 continue;
             }
+
             $todayTime = new \DateTime();
             try {
                 $loans = $this->catalog->getMyTransactions($patron);
@@ -307,7 +336,7 @@ class DueDateReminders extends AbstractService
                 $dueDate = new \DateTime($loan['duedate']);
                 $dayDiff = $dueDate->diff($todayTime)->days;
                 if ($todayTime >= $dueDate
-                    || $dayDiff <= $user->finna_due_date_reminder
+                    || $dayDiff <= $card->finna_due_date_reminder
                 ) {
                     $params = [
                        'user_id' => $user->id,

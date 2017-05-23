@@ -2,7 +2,7 @@
 
 .main.template-dir-myresearch, .main.template-dir-search.template-name-history, .main.template-dir-librarycards {
     padding-bottom: 30px;
-    
+
     h1 {
         display: inline-block;
     }
@@ -13,7 +13,7 @@
     }
     & .useraccount-header {
         font-weight: bold;
-        font-size:@font-size-h2;   
+        font-size:@font-size-h2;
     }
     & #account-actions {
         margin-bottom: 20px;
@@ -23,7 +23,7 @@
     }
     & .pickup-location {
         margin-top: 3px;
-        margin-bottom: 3px; 
+        margin-bottom: 3px;
     }
     & .pickup-locations {
         overflow-y: auto;
@@ -42,21 +42,21 @@
         }
     }
     & #card_name {
-        width: 205px;   
+        width: 205px;
     }
     & .myresearch-profile-list {
         padding: 0px 6px 20px;
         & label, & .profile-title {
-            padding-top: 6px;  
+            padding-top: 6px;
         }
         .clearfix {
-            padding: 3px 0px;   
+            padding: 3px 0px;
         }
-        & #email, & #due-date-reminder {
+        & #email {
             width: 100%;
             margin-bottom: 5px;
             @media (max-width: @screen-xs-max) {
-                max-width: 320px;   
+                max-width: 320px;
             }
         }
     }
@@ -97,13 +97,13 @@
         border: 1px solid @gray-lighter;
         box-shadow: 10px 15px 30px -25px @gray;
         & #profile_form {
-            margin-top: 10px;   
+            margin-top: 10px;
         }
         & #profile_library_form {
             & input {
                 min-width: 210px;
                 @media (min-width: @screen-sm-min) {
-                    margin-top: -7px;        
+                    margin-top: -7px;
                 }
             }
         }
@@ -120,7 +120,7 @@
             &.profile-text-value {
                 line-height: 1.7;
                 @media (max-width: @screen-xs-max) {
-                    padding: 0px 8px 8px;   
+                    padding: 0px 8px 8px;
                 }
             }
             &.profile-xs {
@@ -166,7 +166,7 @@
         border-top: none;
         box-shadow: 0px 15px 30px -35px @gray;
         &.online-payment {
-            margin-bottom: 15px;           
+            margin-bottom: 15px;
         }
         &.library-cards {
             @media (max-width: @screen-xs-max) {
@@ -183,18 +183,18 @@
             border: none;
             border-right: 1px solid @body-bg;
             &:last-child {
-                border-right: none;   
+                border-right: none;
             }
         }
         & td {
             border-right: 1px solid @body-bg;
             vertical-align: middle;
             &:last-child {
-                border-right: none;   
+                border-right: none;
             }
         }
         & .user-account-table-title {
-            width: 25%;   
+            width: 25%;
         }
         & .total-balance {
             background: none;
@@ -207,8 +207,8 @@
             }
         }
         & .balance {
-            text-align: right;   
-        }        
+            text-align: right;
+        }
         & .online-payment-remark {
             font-weight: bold;
         }
@@ -216,7 +216,7 @@
             background: @body-bg;
         }
         & th {
-            font-size: 1.1em;   
+            font-size: 1.1em;
         }
         & .history-time {
             width: 20%;
@@ -226,7 +226,7 @@
             width: 15%;
         }
         & .history-results {
-            width: 15%;   
+            width: 15%;
         }
         & .actions {
             width: 15%;
@@ -239,8 +239,8 @@
             color: @gray-light;
             font-size: .9em;
         }
-        
-    } 
+
+    }
     .myresearch-grid-list {
         margin-bottom: 20px;
         > h2 {
@@ -249,24 +249,24 @@
             padding: 10px;
             padding-bottom: 0px;
             margin-bottom: 0px;
-            
+
         }
         > h4 {
-            margin-left: 10px;   
+            margin-left: 10px;
         }
         & .myresearch-row:last-child {
-          box-shadow: none;       
+          box-shadow: none;
         }
     }
     .checkboxFilter.mylist-select-all {
         float: left;
         margin-right: 15px;
         & .checkbox {
-            margin:0;   
+            margin:0;
         }
     }
     #renewals .toolbar {
-        @media (max-width:@screen-xs-max) { 
+        @media (max-width:@screen-xs-max) {
             margin-left: -15px;
             & .renew-button {
                 margin-bottom: 10px;
@@ -293,16 +293,16 @@
         }
     }
     & .myresearch-notes {
-        margin-top: 10px;  
+        margin-top: 10px;
     }
     & .myresearch-notes a, .myresearch-notes i {
-        color: @gray-light;  
+        color: @gray-light;
     }
     .bulk-action-buttons-row {
         margin: 0;
         min-height: 60px; // prevent fixed element bounce effect
         @media(max-width:@screen-xs-max) {
-           .row();    
+           .row();
         }
     }
     .bulk-action-buttons-col {
@@ -320,7 +320,7 @@
                 max-width: 140px;
             }
             & select, button {
-                margin-bottom: 4px;   
+                margin-bottom: 4px;
             }
         }
         &.fixed {
@@ -362,9 +362,9 @@
          }
     }
     & .list-title {
-         margin-bottom: 0px;   
+         margin-bottom: 0px;
     }
-    
+
     & .markdown.edit {
         & .CodeMirror {
             height: 300px;
@@ -389,7 +389,7 @@
             margin: 0;
         }
     }
-    
+
     & .list-title, .list-description:not(.edit), .resource-note:not(.edit), .add-new-list {
             border: 1px solid transparent;
             display: inline-block;
@@ -399,10 +399,10 @@
             width: ~"calc(100% - 30px)";
             width: 100%;
         &:hover, &:active, &:focus {
-            border: 1px solid @gray-lighter; 
+            border: 1px solid @gray-lighter;
             & i {
                 transition: all 0.2s linear;
-                color: @gray;   
+                color: @gray;
             }
         }
         & i {
@@ -444,16 +444,16 @@
         display: none;
     }
     & .list-title i.fa-pen {
-        margin-bottom: -22px; 
+        margin-bottom: -22px;
     }
     & .list-description i.fa-pen {
-        margin-bottom: -12px;   
+        margin-bottom: -12px;
     }
     & .list-description h1 {
         display: inherit;
     }
     & .resource-note i.fa-pen {
-        margin-bottom: -18px;   
+        margin-bottom: -18px;
     }
     & .list-title.no-edit {
         border: 0;
@@ -471,7 +471,7 @@
     }
     .mylist-nav {
         & li > a {
-            word-wrap: break-word;   
+            word-wrap: break-word;
         }
         & li > a:not(.add-new-list) {
             background: @gray-light;
@@ -511,7 +511,7 @@
         padding: 15px 0px;
         .status-text {
             float: right;
-            line-height: 38px;   
+            line-height: 38px;
         }
         &.bottom {
             padding-top: 15px;
@@ -519,7 +519,7 @@
             border-bottom: none;
         }
         & .btn-group {
-            margin-top: 3px;   
+            margin-top: 3px;
         }
     }
     .myresearch-row {
@@ -527,10 +527,10 @@
         margin: 0px;
         word-wrap: break-word;
         @media(max-width:@screen-xs-max) {
-           .row();    
+           .row();
         }
         &:nth-child(odd) {
-            background: @table-bg-accent;   
+            background: @table-bg-accent;
         }
         & h3 {
             margin: 0;
@@ -578,11 +578,11 @@
     }
     @media(max-width:@screen-md-max) {
         .paginationSimple {
-            margin-top: 0px;   
+            margin-top: 0px;
         }
     }
     .paginationSimple {
-        margin-left: 5px;   
+        margin-left: 5px;
     }
     .useraccount-nav-mobile {
         background: @link-color;
@@ -604,19 +604,19 @@
     }
     .useraccount-nav {
         @media(min-width: @screen-lg-min) {
-            padding-left: 15px;   
+            padding-left: 15px;
         }
         & li {
             float:left;
             margin:0;
             @media(max-width: @screen-md-max) {
-                max-width: 160px;  
+                max-width: 160px;
             }
             @media(max-width: @screen-sm-max) {
                     max-width: 95px;
             }
             &:first-child {
-                border-left: 2px solid @myresearch-header-background;  
+                border-left: 2px solid @myresearch-header-background;
             }
             .list-group-item {
                 padding: 10px;
@@ -625,9 +625,9 @@
                 background: darken(@myresearch-header-background, 12%);
                 color: @myresearch-tabs-color;
                 font-weight: normal;
-                transition: background 0.1s linear; 
+                transition: background 0.1s linear;
                 &:hover {
-                    background: darken(@myresearch-header-background, 16%);   
+                    background: darken(@myresearch-header-background, 16%);
                 }
                 @media(max-width: @screen-md-max) {
                     overflow: hidden;
@@ -650,20 +650,20 @@
         line-height: 40px;
         font-weight: bold;
         &.no-buttons {
-            line-height: inherit;   
+            line-height: inherit;
         }
     }
     & .no-padding-table {
-        
+
         & th, td {
             padding: 8px 0px;
             vertical-align: middle;
         }
         & th {
-            width: 25%;   
+            width: 25%;
         }
         & td {
-            width: 75%;   
+            width: 75%;
         }
     }
 
@@ -700,7 +700,7 @@
             padding-right: 0;
         }
         &:not(.fixed) .mylist-functions {
-            text-align: right;   
+            text-align: right;
         }
     }
     & .mylist-nav .list-visibility {
@@ -750,7 +750,7 @@
 }
 .template-dir-list.template-name-list {
     & .finna-main-header {
-        background: @myresearch-header-background;   
+        background: @myresearch-header-background;
     }
 }
 .template-dir-librarycards .dropdown-menu.useraccount-cancel {
@@ -761,7 +761,7 @@
 .template-dir-myresearch .toolbar > .btn-group:last-of-type .dropdown-menu.useraccount-cancel {
     @media (max-width: @screen-xs-max) {
        left: auto;
-       right: 0;   
+       right: 0;
     }
 }
 
@@ -777,7 +777,7 @@
     float: left;
     height: 36px;
     width: 100%;
-    
+
 }
 
 .sortable-favorite-list {
@@ -789,7 +789,7 @@
         list-style-type: decimal;
         list-style-position: inside;
         &:hover {
-            cursor: move;   
+            cursor: move;
         }
         & h4 {
             margin: 0;
@@ -805,7 +805,7 @@
             margin-top: 10px;
         }
         & .fa.fa-arrow-up {
-            margin-top: 0px;   
+            margin-top: 0px;
         }
     }
     & .btn {
@@ -813,7 +813,7 @@
         margin-right: 10px;
     }
     @media(max-width: @screen-xs-max) {
-        margin-left: 5px; 
+        margin-left: 5px;
         margin-right: 10px;
         & li {
             & .fa.fa-arrow-down, & .fa.fa-arrow-up {

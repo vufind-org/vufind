@@ -350,13 +350,15 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         $values = $this->getRequest()->getPost();
+        if (isset($values->due_date_reminder)) {
+            $user->setFinnaDueDateReminder($values->due_date_reminder);
+            $this->flashMessenger()->setNamespace('info')
+                ->addMessage('profile_update');
+        }
         if ($this->formWasSubmitted('saveUserProfile')) {
             $validator = new \Zend\Validator\EmailAddress();
-            if ($validator->isValid($values->email)) {
+            if ('' === $values->email || $validator->isValid($values->email)) {
                 $user->email = $values->email;
-                if (isset($values->due_date_reminder)) {
-                    $user->finna_due_date_reminder = $values->due_date_reminder;
-                }
                 $user->save();
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('profile_update');
@@ -395,6 +397,14 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $view->hideDueDateReminder = $user->finna_due_date_reminder == 0
             && isset($config->Site->hideDueDateReminder)
             && $config->Site->hideDueDateReminder;
+        if (!$view->hideDueDateReminder) {
+            $catalog = $this->getILS();
+            $patron = $this->catalogLogin();
+            $ddrConfig = $catalog->getConfig('dueDateReminder', $patron);
+            if (isset($ddrConfig['enabled']) && !$ddrConfig['enabled']) {
+                $view->hideDueDateReminder = true;
+            }
+        }
 
         // Check whether to hide email address in profile
         $view->hideProfileEmailAddress
