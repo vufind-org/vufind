@@ -53,18 +53,18 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
     {
         switch ($class) {
         case 'mainbody':
-            return $this->left
+            return $this->sidebarOnLeft
                 ? 'col-sm-9 col-sm-push-3'
                 : 'col-sm-9';
         case 'sidebar':
-            return $this->left
+            return $this->sidebarOnLeft
                 ? 'sidebar col-sm-3 col-sm-pull-9 hidden-print'
                 : 'sidebar col-sm-3 hidden-print';
         case 'offcanvas-row':
             if (!$this->offcanvas) {
                 return "";
             }
-            return $this->left
+            return $this->sidebarOnLeft
                 ? 'offcanvas offcanvas-left flip'
                 : 'offcanvas offcanvas-right flip';
         }
