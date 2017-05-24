@@ -18,10 +18,6 @@ private static final Pattern COORDINATES_PATTERN = Pattern.compile("^([eEwWnNsS]
 private static final Pattern HDMSHDD_PATTERN = Pattern.compile("^([eEwWnNsS])(\\d+(\\.\\d+)?)");
 private static final Pattern PMDD_PATTERN = Pattern.compile("^([+-])(\\d+(\\.\\d+)?)");
 
-// define the base level indexer so that its methods can be called from the script.
-// note that the SolrIndexer code will set this value before the script methods are called.
-org.solrmarc.index.SolrIndexer indexer = null;
-
 /**
  * Convert MARC coordinates into location_geo format.
  *
@@ -33,61 +29,32 @@ public List getAllCoordinates(Record record) {
     List list034 = record.getVariableFields("034");
     if (list034 != null) {
         for (VariableField vf : list034) {
-            DataField df = (DataField) vf;
-            String d = df.getSubfield('d').getData();
-            String e = df.getSubfield('e').getData();
-            String f = df.getSubfield('f').getData();
-            String g = df.getSubfield('g').getData();
+           HashMap coords = getCoordinateValues(vf);
+           //DEBUG output
+           //ControlField recID = (ControlField) record.getVariableField("001");
+           //String recNum = recID.getData();
+           //indexer.getLogger().info("Record ID: " + recNum.trim() + " ...Coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
 
-            if (df.getSubfield('d') != null) {
-                d_coord = df.getSubfield('d').getData();
-            }
-            if (df.getSubfield('e') != null) {
-                e_coord = df.getSubfield('e').getData();
-            }
-            if (df.getSubfield('f') != null) {
-                f_coord = df.getSubfield('f').getData();
-            }
-            if (df.getSubfield('g') != null) {
-                g_coord = df.getSubfield('g').getData();
-            }
-
-            //DEBUG output
-            //ControlField recID = (ControlField) record.getVariableField("001");
-            //String recNum = recID.getData();
-            //indexer.getLogger().error("Record ID: " + recNum.trim() + " Coordinates Values: " + d_coord + " " + e_coord + " " + f_coord + " " + g_coord);
-
-           // Check to see if this is a point coordinate with only 2 coordinates
-           // If so, copy the N or S and E or W values into the empty fields
-           if ((d_coord !=null && (e_coord == null || e_coord.trim().equals(""))) && (f_coord != null && (g_coord==null || g_coord.trim().equals("")))) {
-                e_coord = d_coord;
-                g_coord = f_coord;
-           }
-           if ((e_coord !=null && (d_coord == null || d_coord.trim().equals(""))) && (g_coord != null && (f_coord == null || f_coord.trim().equals("")))) {
-                d_coord = e_coord;
-                f_coord = g_coord;
-           }
-                
-	   // Check for null coordinates
-           if (validateCoordinateValues(record, d_coord, e_coord, f_coord, g_coord)) {
+           // Check for null coordinates
+           if (validateCoordinateValues(record, coords)) {
               // Check and convert coordinates to +/- decimal degrees
-              Double west = convertCoordinate(d_coord);
-              Double east = convertCoordinate(e_coord);
-              Double north = convertCoordinate(f_coord);
-              Double south = convertCoordinate(g_coord);
-                  
-	      if (validateDDCoordinates(record, west, east, north, south)) {
-                // New Format for indexing coordinates in Solr 5.0 - minX, maxX, maxY, minY
-                // Note - storage in Solr follows the WENS order, but display is WSEN order
-                String result = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { west, east, north, south });
-                geo_coordinates.add(result);
+              Double west = convertCoordinate(coords.get('d'));
+              Double east = convertCoordinate(coords.get('e'));
+              Double north = convertCoordinate(coords.get('f'));
+              Double south = convertCoordinate(coords.get('g'));
+
+              if (validateDDCoordinates(record, west, east, north, south)) {
+                 // New Format for indexing coordinates in Solr 5.0 - minX, maxX, maxY, minY
+                 // Note - storage in Solr follows the WENS order, but display is WSEN order
+                 String result = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { west, east, north, south });
+                 geo_coordinates.add(result);
               }  else {
-                 indexer.getLogger().error(".......... Not indexing INVALID coordinates: [ {" + d_coord + "} {" + e_coord + "} {" + f_coord + "} {" + g_coord + "} ]");
+                  indexer.getLogger().error(".......... Not indexing INVALID coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
               }
-         } else {
-              indexer.getLogger().error(".......... Not indexing INVALID coordinates: [ {" + d_coord + "} {" + e_coord + "} {" + f_coord + "} {" + g_coord + "} ]");
-         }
-      }
+           } else {
+                  indexer.getLogger().error(".......... Not indexing INVALID coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
+           }
+        }
     }
     return geo_coordinates;
 }
@@ -103,45 +70,20 @@ public List getPointCoordinates(Record record) {
     List list034 = record.getVariableFields("034");
     if (list034 != null) {
         for (VariableField vf : list034) {
-            DataField df = (DataField) vf;
-            // Initialize coordinate variables
-            String d_coord = "";
-            String e_coord = "";
-            String f_coord = "";
-            String g_coord = "";
-
-            if (df.getSubfield('d') != null) {
-                d_coord = df.getSubfield('d').getData();
-            }
-            if (df.getSubfield('e') != null) {
-                e_coord = df.getSubfield('e').getData();
-            }
-            if (df.getSubfield('f') != null) {
-                f_coord = df.getSubfield('f').getData();
-            }
-            if (df.getSubfield('g') != null) {
-                g_coord = df.getSubfield('g').getData();
-            }
-
-            // Check to see if this is a point coordinate with only 2 coordinates
-            // If so, copy the N or S and E or W values into the empty fields
-            if ((d_coord !=null && (e_coord == null || e_coord.trim().equals(""))) && (f_coord != null && (g_coord==null || g_coord.trim().equals("")))) {
-                e_coord = d_coord;
-                g_coord = f_coord;
-            }
-            if ((e_coord !=null && (d_coord == null || d_coord.trim().equals(""))) && (g_coord != null && (f_coord == null || f_coord.trim().equals("")))) {
-                d_coord = e_coord;
-                f_coord = g_coord;
-            }
-
-            // Check to see if we have a point coordinate
-            if (d_coord.equals(e_coord) && f_coord.equals(g_coord)) {
-              // Convert N (f_coord) and E (e_coord) coordinates to decimal degrees
-              Double long_val = convertCoordinate(e_coord);
-              Double lat_val = convertCoordinate(f_coord);
-              String longlatCoordinate = Double.toString(long_val) + ',' + Double.toString(lat_val);
-              coordinates.add(longlatCoordinate);
-            }
+           HashMap coords = getCoordinateValues(vf);
+           // Check for null coordinates
+           if (validateCoordinateValues(record, coords)) {
+              // Check to see if we have a point coordinate
+              if (coords.get('d').equals(coords.get('e')) && coords.get('f').equals(coords.get('g'))) {
+                  // Convert N (f_coord) and E (e_coord) coordinates to decimal degrees
+                  Double long_val = convertCoordinate(coords.get('e'));
+                  Double lat_val = convertCoordinate(coords.get('f'));
+                  String longlatCoordinate = Double.toString(long_val) + ',' + Double.toString(lat_val);
+                  coordinates.add(longlatCoordinate);
+               }
+            } else {
+                  indexer.getLogger().error(".......... Not indexing INVALID Point coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
+	   }
         }
    }
    return coordinates;
@@ -158,35 +100,74 @@ public List getDisplayCoordinates(Record record) {
     List list034 = record.getVariableFields("034");
     if (list034 != null) {
         for (VariableField vf : list034) {
-            DataField df = (DataField) vf;
-            // Initialize coordinate variables
-            String d_coord = "";
-            String e_coord = "";
-            String f_coord = "";
-            String g_coord = "";
-
-            if (df.getSubfield('d') != null) {
-                d_coord = df.getSubfield('d').getData();
-            }
-            if (df.getSubfield('e') != null) {
-                e_coord = df.getSubfield('e').getData();
-            }
-            if (df.getSubfield('f') != null) {
-                f_coord = df.getSubfield('f').getData();
-            }
-            if (df.getSubfield('g') != null) {
-                g_coord = df.getSubfield('g').getData();
-            }
+            HashMap coords = getCoordinateValues(vf);
             // Check for null coordinates
-            if (validateCoordinateValues(record, d_coord, e_coord, f_coord, g_coord)) {
-              String result = String.format("%s %s %s %s", new Object[] { d_coord, e_coord, f_coord, g_coord });
+            if (validateCoordinateValues(record, coords)) {
+                String result = String.format("%s %s %s %s", new Object[] {  coords.get('d'),  coords.get('e'),  coords.get('f'),  coords.get('g') });
               geo_coordinates.add(result);
             } else {
-                indexer.getLogger().error(".......... Not indexing INVALID Display Coordinates: [ {" + d_coord + "} {" + e_coord + "} {" + f_coord + "} {" + g_coord + "} ]");
+                indexer.getLogger().error(".......... Not indexing INVALID Display coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
             }
         }
-     }
+    }
    return geo_coordinates;
+}
+
+/**
+* Get all coordinate values from list034
+*
+* @param  VariableField vf
+* @return HashMap full_coords
+*/
+protected HashMap getCoordinateValues(VariableField vf) {
+    DataField df = (DataField) vf;
+    HashMap coords = new HashMap();
+    for (char code = 'd'; code <= 'g'; code++) {
+       Subfield subfield = df.getSubfield(code);
+       if (subfield != null) {
+         coords.put(code, subfield.getData());
+       }
+    }
+    // If coordinate set is a point with 2 coordinates, fill the empty values.
+    HashMap full_coords = fillEmptyPointCoordinates(coords);
+    return full_coords;
+}
+
+/**
+* If coordinates are a point, fill empty N/S or E/W coordinate
+*
+* @param  HashMap coords
+* @return HashMap full_coords
+*/
+protected HashMap fillEmptyPointCoordinates(HashMap coords) {
+    HashMap full_coords = coords;
+    if (coords.containsKey('d') && !coords.containsKey('e') && coords.containsKey('f') && !coords.containsKey('g')) {
+        full_coords.put('e', coords.get('d').toString());
+        full_coords.put('g', coords.get('f').toString());
+    }
+    if (coords.containsKey('e') && !coords.containsKey('d') && coords.containsKey('g') && !coords.containsKey('h')) {
+        full_coords.put('d', coords.get('e').toString());
+        full_coords.put('f', coords.get('g').toString());
+    }
+    return full_coords;
+}
+
+/**
+* Check record coordinates to make sure they do not contain null values.
+*
+* @param  Record record
+* @param  HashMap coords
+* @return boolean
+*/
+protected boolean validateCoordinateValues(Record record, HashMap coords) {
+
+    if (coords.containsKey('d') && coords.containsKey('e') && coords.containsKey('f') && coords.containsKey('g')) {
+        return true;
+    }
+    ControlField recID = (ControlField) record.getVariableField("001");
+    String recNum = recID.getData();
+    indexer.getLogger().error("Record ID: " + recNum.trim() + " - Coordinate values contain null values.");
+    return false;
 }
 
 /**
@@ -262,24 +243,6 @@ public Double coordinateToDecimal(String coordinateStr) {
 }
 
 /**
- * Check record coordinates to make sure they do not contain null values.
- *
- * @param  Record record
- * @param  String d_coord, e_coord, f_coord, g_coord
- * @return boolean
- */
-public boolean validateCoordinateValues(Record record, String d_coord, String e_coord, String f_coord, String g_coord) {
-    if ((d_coord == null || d_coord.trim().equals("")) || (e_coord == null || e_coord.trim().equals("")) ||
-        (f_coord == null || f_coord.trim().equals("")) || (g_coord == null || g_coord.trim().equals(""))) {
-        ControlField recID = (ControlField) record.getVariableField("001");
-        String recNum = recID.getData();
-        indexer.getLogger().error("Record ID: " + recNum.trim() + " - Coordinate values contain null values.");
-        return false;
-    }
-    return true;
-}
-
-/**
  * Check decimal degree coordinates to make sure they are valid.
  *
  * @param  Record record
@@ -338,7 +301,7 @@ public boolean validateValues(Record record, Double west, Double east, Double no
     if (west == null || east == null || north == null || south == null) {
         ControlField recID = (ControlField) record.getVariableField("001");
         String recNum = recID.getData();
-        indexer.getLogger().error("Record ID: " + recNum.trim() + " - Decimal Degree coordinates contain null values.");
+        indexer.getLogger().error("Record ID: " + recNum.trim() + " - Decimal Degree coordinates contain null values: [ {" + west + "} {" + east + "} {" + north + "} {" + south + "} ]");
         return false;
     }
     return true;
