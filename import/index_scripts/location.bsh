@@ -18,6 +18,10 @@ private static final Pattern COORDINATES_PATTERN = Pattern.compile("^([eEwWnNsS]
 private static final Pattern HDMSHDD_PATTERN = Pattern.compile("^([eEwWnNsS])(\\d+(\\.\\d+)?)");
 private static final Pattern PMDD_PATTERN = Pattern.compile("^([+-])(\\d+(\\.\\d+)?)");
 
+// define the base level indexer so that its methods can be called from the script.
+// note that the SolrIndexer code will set this value before the script methods are called.
+org.solrmarc.index.SolrIndexer indexer = null;
+
 /**
  * Convert MARC coordinates into location_geo format.
  *
@@ -30,11 +34,10 @@ public List getAllCoordinates(Record record) {
     if (list034 != null) {
         for (VariableField vf : list034) {
             DataField df = (DataField) vf;
-            // Initialize coordinate variables
-            String d_coord = "";
-            String e_coord = "";
-            String f_coord = "";
-            String g_coord = "";
+            String d = df.getSubfield('d').getData();
+            String e = df.getSubfield('e').getData();
+            String f = df.getSubfield('f').getData();
+            String g = df.getSubfield('g').getData();
 
             if (df.getSubfield('d') != null) {
                 d_coord = df.getSubfield('d').getData();
@@ -52,7 +55,7 @@ public List getAllCoordinates(Record record) {
             //DEBUG output
             //ControlField recID = (ControlField) record.getVariableField("001");
             //String recNum = recID.getData();
-            //System.out.println("Record ID: " + recNum.trim() + " Coordinates Values: " + d_coord + " " + e_coord + " " + f_coord + " " + g_coord);
+            //indexer.getLogger().error("Record ID: " + recNum.trim() + " Coordinates Values: " + d_coord + " " + e_coord + " " + f_coord + " " + g_coord);
 
            // Check to see if this is a point coordinate with only 2 coordinates
            // If so, copy the N or S and E or W values into the empty fields
@@ -79,10 +82,10 @@ public List getAllCoordinates(Record record) {
                 String result = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { west, east, north, south });
                 geo_coordinates.add(result);
               }  else {
-                 System.out.println(".......... Not indexing INVALID coordinates: [ {" + d_coord + "} {" + e_coord + "} {" + f_coord + "} {" + g_coord + "} ]");
+                 indexer.getLogger().error(".......... Not indexing INVALID coordinates: [ {" + d_coord + "} {" + e_coord + "} {" + f_coord + "} {" + g_coord + "} ]");
               }
          } else {
-              System.out.println(".......... Not indexing INVALID coordinates: [ {" + d_coord + "} {" + e_coord + "} {" + f_coord + "} {" + g_coord + "} ]");
+              indexer.getLogger().error(".......... Not indexing INVALID coordinates: [ {" + d_coord + "} {" + e_coord + "} {" + f_coord + "} {" + g_coord + "} ]");
          }
       }
     }
@@ -179,7 +182,7 @@ public List getDisplayCoordinates(Record record) {
               String result = String.format("%s %s %s %s", new Object[] { d_coord, e_coord, f_coord, g_coord });
               geo_coordinates.add(result);
             } else {
-                System.out.println(".......... Not indexing INVALID Display Coordinates: [ {" + d_coord + "} {" + e_coord + "} {" + f_coord + "} {" + g_coord + "} ]");
+                indexer.getLogger().error(".......... Not indexing INVALID Display Coordinates: [ {" + d_coord + "} {" + e_coord + "} {" + f_coord + "} {" + g_coord + "} ]");
             }
         }
      }
@@ -231,7 +234,7 @@ public Double convertCoordinate(String coordinateStr) {
         }
         return coordinate;
     } else {
-         System.out.println("Decimal Degree Coordinate Conversion Error:  Poorly formed coordinate: [" + coordinateStr + "] ... Returning null value ... ");
+         indexer.getLogger().error("Decimal Degree Coordinate Conversion Error:  Poorly formed coordinate: [" + coordinateStr + "] ... Returning null value ... ");
          return null;
     }
 }
@@ -270,7 +273,7 @@ public boolean validateCoordinateValues(Record record, String d_coord, String e_
         (f_coord == null || f_coord.trim().equals("")) || (g_coord == null || g_coord.trim().equals(""))) {
         ControlField recID = (ControlField) record.getVariableField("001");
         String recNum = recID.getData();
-        System.out.println("Record ID: " + recNum.trim() + " - Coordinate values contain null values.");
+        indexer.getLogger().error("Record ID: " + recNum.trim() + " - Coordinate values contain null values.");
         return false;
     }
     return true;
@@ -318,7 +321,7 @@ public boolean validateLines(Record record, Double west, Double east, Double nor
     if ((!west.equals(east) && north.equals(south)) && (north == 90 || south == -90)) {
         ControlField recID = (ControlField) record.getVariableField("001");
         String recNum = recID.getData();
-        System.out.println("Record ID: " + recNum.trim() + " - Coordinates form a line at the pole");
+        indexer.getLogger().error("Record ID: " + recNum.trim() + " - Coordinates form a line at the pole");
         return false;
     }
     return true;
@@ -335,7 +338,7 @@ public boolean validateValues(Record record, Double west, Double east, Double no
     if (west == null || east == null || north == null || south == null) {
         ControlField recID = (ControlField) record.getVariableField("001");
         String recNum = recID.getData();
-        System.out.println("Record ID: " + recNum.trim() + " - Decimal Degree coordinates contain null values.");
+        indexer.getLogger().error("Record ID: " + recNum.trim() + " - Decimal Degree coordinates contain null values.");
         return false;
     }
     return true;
@@ -352,13 +355,13 @@ public boolean validateExtent(Record record, Double west, Double east, Double no
      if (west > 180.0 || west < -180.0 || east > 180.0 || east < -180.0) {
         ControlField recID = (ControlField) record.getVariableField("001");
         String recNum = recID.getData();
-        System.out.println("Record ID: " + recNum.trim() + " - Coordinates exceed map extent.");
+        indexer.getLogger().error("Record ID: " + recNum.trim() + " - Coordinates exceed map extent.");
         return false;
     }
     if (north > 90.0 || north < -90.0 || south > 90.0 || south < -90.0) {
         ControlField recID = (ControlField) record.getVariableField("001");
         String recNum = recID.getData();
-        System.out.println("Record ID: " + recNum.trim() + " - Coordinates exceed map extent.");
+        indexer.getLogger().error("Record ID: " + recNum.trim() + " - Coordinates exceed map extent.");
         return false;
     }
     return true;
@@ -375,7 +378,7 @@ public boolean validateNorthSouth(Record record, Double north, Double south) {
     if (north < south) {
         ControlField recID = (ControlField) record.getVariableField("001");
         String recNum = recID.getData();
-        System.out.println("Record ID: " + recNum.trim() + " - North < South.");
+        indexer.getLogger().error("Record ID: " + recNum.trim() + " - North < South.");
         return false;
     }
     return true;
@@ -397,7 +400,7 @@ public boolean validateCoordinateDistance(Record record, Double west, Double eas
     if ((north == -90 || south == -90) && (distNS > 0 && distNS < 0.167)) {
         ControlField recID = (ControlField) record.getVariableField("001");
         String recNum = recID.getData();
-        System.out.println("Record ID: " + recNum.trim() + " - Coordinates < 0.167 degrees from South Pole. Coordinate Distance: "+distNS);
+        indexer.getLogger().error("Record ID: " + recNum.trim() + " - Coordinates < 0.167 degrees from South Pole. Coordinate Distance: "+distNS);
 	return false;
     }
  
@@ -405,7 +408,7 @@ public boolean validateCoordinateDistance(Record record, Double west, Double eas
     if ((west == 0 || east == 0) && (distEW > -2 && distEW <0)) {
         ControlField recID = (ControlField) record.getVariableField("001");
         String recNum = recID.getData();
-        System.out.println("Record ID: " + recNum.trim() + " - Coordinates within 2 degrees of Prime Meridian. Coordinate Distance: "+distEW);
+        indexer.getLogger().error("Record ID: " + recNum.trim() + " - Coordinates within 2 degrees of Prime Meridian. Coordinate Distance: "+distEW);
         return false;
     }
     return true;
