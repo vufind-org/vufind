@@ -214,7 +214,7 @@ class AlphaBrowse extends AbstractChannelProvider
     /**
      * Given details from alphabeticBrowse(), create channel contents.
      *
-     * @param array $details
+     * @param array $details Details from alphabetic browse index
      *
      * @return array
      */
@@ -227,7 +227,7 @@ class AlphaBrowse extends AbstractChannelProvider
                     continue;
                 }
                 $results[] = [
-                    'title' => $item['heading'] . ': ' . $item['extras']['title'][0][0],
+                    'title' => $item['extras']['title'][0][0],
                     'source' => 'Solr',
                     'thumbnail' => false, // TODO: better thumbnails!
                     'id' => $item['extras']['id'][0][0]
