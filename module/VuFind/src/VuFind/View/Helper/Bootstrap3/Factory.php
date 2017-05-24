@@ -65,7 +65,7 @@ class Factory
     public static function getLayoutClass(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $left = !isset($config->Site->sidebarOnLeft)
+        $sidebarOnLeft = !isset($config->Site->sidebarOnLeft)
             ? false : $config->Site->sidebarOnLeft;
         $mirror = !isset($config->Site->mirrorSidebarInRTL)
             ? true : $config->Site->mirrorSidebarInRTL;
@@ -76,9 +76,9 @@ class Factory
         // the mirror setting appropriately.
         $layout = $sm->getServiceLocator()->get('viewmanager')->getViewModel();
         if ($layout->rtl && !$mirror) {
-            $left = !$left;
+            $sidebarOnLeft = !$sidebarOnLeft;
         }
-        return new LayoutClass($left, $offcanvas);
+        return new LayoutClass($sidebarOnLeft, $offcanvas);
     }
 
     /**
