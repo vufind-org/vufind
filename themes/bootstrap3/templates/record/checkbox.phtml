@@ -1,4 +1,2 @@
-<label class="record-checkbox">
-  <input class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<? if(isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<? endif; ?>/>
-</label>
+<input class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<? if(isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<? endif; ?>/>
 <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<? if(isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<? endif; ?>/>
