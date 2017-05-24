@@ -1444,42 +1444,59 @@ public class VuFindIndexer extends SolrIndexer
         if (list034 != null) {
             for (VariableField vf : list034) {
                 DataField df = (DataField) vf;
-                String d = df.getSubfield('d').getData();
-                String e = df.getSubfield('e').getData();
-                String f = df.getSubfield('f').getData();
-                String g = df.getSubfield('g').getData();
-                //System.out.println("raw Coords: "+d+" "+e+" "+f+" "+g);
+                // Initialize coordinate variables
+                String d_coord = "";
+                String e_coord = "";
+                String f_coord = "";
+                String g_coord = "";
 
-                // Check to see if there are only 2 coordinates
-                // If so, copy them into the corresponding coordinate fields
-                if ((d !=null && (e == null || e.trim().equals(""))) && (f != null && (g==null || g.trim().equals("")))) {
-                    e = d;
-                    g = f;
+                if (df.getSubfield('d') != null) {
+                    d_coord = df.getSubfield('d').getData();
                 }
-                if ((e !=null && (d == null || d.trim().equals(""))) && (g != null && (f==null || f.trim().equals("")))) {
-                    d = e;
-                    f = g;
+                if (df.getSubfield('e') != null) {
+                    e_coord = df.getSubfield('e').getData();
+                }
+                if (df.getSubfield('f') != null) {
+                    f_coord = df.getSubfield('f').getData();
+                }
+                if (df.getSubfield('g') != null) {
+                    g_coord = df.getSubfield('g').getData();
                 }
 
-                // Check and convert coordinates to +/- decimal degrees
-                Double west = convertCoordinate(d);
-                Double east = convertCoordinate(e);
-                Double north = convertCoordinate(f);
-                Double south = convertCoordinate(g);
+                //DEBUG output
+                //ControlField recID = (ControlField) record.getVariableField("001");
+                //String recNum = recID.getData();
+                //System.out.println("Record ID: " + recNum.trim() + " Coordinates Values: " + d_coord + " " + e_coord + " " + f_coord + " " + g_coord);
 
-                ControlField recID = (ControlField) record.getVariableField("001");
-                String recNum = recID.getData();
+                // Check to see if this is a point coordinate with only 2 coordinates
+                // If so, copy the N or S and E or W values into the empty fields
+                if ((d_coord !=null && (e_coord == null || e_coord.trim().equals(""))) && (f_coord != null && (g_coord==null || g_coord.trim().equals("")))) {
+                    e_coord = d_coord;
+                    g_coord = f_coord;
+                }
+                if ((e_coord !=null && (d_coord == null || d_coord.trim().equals(""))) && (g_coord != null && (f_coord == null || f_coord.trim().equals("")))) {
+                    d_coord = e_coord;
+                    f_coord = g_coord;
+                }
+                // Check for null coordinates
+                if (validateCoordinateValues(record, d_coord, e_coord, f_coord, g_coord)) {
 
-                // New Format for indexing coordinates in Solr 5.0 - minX, maxX, maxY, minY
-                // Note - storage in Solr follows the WENS order, but display is WSEN order
-                String result = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { west, east, north, south });
+                  // Check and convert coordinates to +/- decimal degrees
+                  Double west = convertCoordinate(d_coord);
+                  Double east = convertCoordinate(e_coord);
+                  Double north = convertCoordinate(f_coord);
+                  Double south = convertCoordinate(g_coord);
 
-                if (validateCoordinates(west, east, north, south)) {
-                    geo_coordinates.add(result);
+                  if (validateDDCoordinates(record, west, east, north, south)) {
+                     // New Format for indexing coordinates in Solr 5.0 - minX, maxX, maxY, minY
+                     // Note - storage in Solr follows the WENS order, but display is WSEN order
+                     String result = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { west, east, north, south });
+                     geo_coordinates.add(result);
+                  }  else {
+                    logger.error(".......... Not indexing INVALID coordinates: [ {" + d_coord + "} {" + e_coord + "} {" + f_coord + "} {" + g_coord + "} ]");
+                  }
                 } else {
-                System.out.println("*** -- Record ID: "+recNum.trim()+"... Not indexing INVALID coordinates.");
-                System.out.println("*** ---- Coords: "+d+" "+e+" "+f+" "+g+"  | DD coords: "+west+" "+east+" "+north+" "+south);
-                System.out.println("---------------------------");
+                    logger.error(".......... Not indexing INVALID coordinates: [ {" + d_coord + "} {" + e_coord + "} {" + f_coord + "} {" + g_coord + "} ]");
                 }
             }
         }
@@ -1498,30 +1515,43 @@ public class VuFindIndexer extends SolrIndexer
         if (list034 != null) {
             for (VariableField vf : list034) {
                 DataField df = (DataField) vf;
-                String d = df.getSubfield('d').getData();
-                String e = df.getSubfield('e').getData();
-                String f = df.getSubfield('f').getData();
-                String g = df.getSubfield('g').getData();
+                // Initialize coordinate variables
+                String d_coord = "";
+                String e_coord = "";
+                String f_coord = "";
+                String g_coord = "";
 
-                // Check to see if there are only 2 coordinates
-                if ((d !=null && (e == null || e.trim().equals(""))) && (f != null && (g==null || g.trim().equals("")))) {
-                    Double long_val = convertCoordinate(d);
-                    Double lat_val = convertCoordinate(f);
-                    String longlatCoordinate = Double.toString(long_val) + ',' + Double.toString(lat_val);
-                    coordinates.add(longlatCoordinate);
+                if (df.getSubfield('d') != null) {
+                    d_coord = df.getSubfield('d').getData();
                 }
-                if ((e !=null && (d == null || d.trim().equals(""))) && (g != null && (f==null || f.trim().equals("")))) {
-                    Double long_val = convertCoordinate(e);
-                    Double lat_val = convertCoordinate(g);
-                    String longlatCoordinate = Double.toString(long_val) + ',' + Double.toString(lat_val);
-                    coordinates.add(longlatCoordinate);
+                if (df.getSubfield('e') != null) {
+                    e_coord = df.getSubfield('e').getData();
                 }
-                // Check if N=S and E=W
-                if (d.equals(e) && f.equals(g)) {
-                    Double long_val = convertCoordinate(d);
-                    Double lat_val = convertCoordinate(f);
-                    String longlatCoordinate = Double.toString(long_val) + ',' + Double.toString(lat_val);
-                    coordinates.add(longlatCoordinate);
+                if (df.getSubfield('f') != null) {
+                    f_coord = df.getSubfield('f').getData();
+                }
+                if (df.getSubfield('g') != null) {
+                    g_coord = df.getSubfield('g').getData();
+                }
+
+                // Check to see if this is a point coordinate with only 2 coordinates
+                // If so, copy the N or S and E or W values into the empty fields
+                if ((d_coord !=null && (e_coord == null || e_coord.trim().equals(""))) && (f_coord != null && (g_coord==null || g_coord.trim().equals("")))) {
+                    e_coord = d_coord;
+                    g_coord = f_coord;
+                }
+                if ((e_coord !=null && (d_coord == null || d_coord.trim().equals(""))) && (g_coord != null && (f_coord == null || f_coord.trim().equals("")))) {
+                    d_coord = e_coord;
+                    f_coord = g_coord;
+                }
+
+                // Check to see if we have a point coordinate
+                if (d_coord.equals(e_coord) && f_coord.equals(g_coord)) {
+                  // Convert N (f_coord) and E (e_coord) coordinates to decimal degrees
+                  Double long_val = convertCoordinate(e_coord);
+                  Double lat_val = convertCoordinate(f_coord);
+                  String longlatCoordinate = Double.toString(long_val) + ',' + Double.toString(lat_val);
+                  coordinates.add(longlatCoordinate);
                 }
             }
         }
@@ -1540,13 +1570,30 @@ public class VuFindIndexer extends SolrIndexer
         if (list034 != null) {
             for (VariableField vf : list034) {
                 DataField df = (DataField) vf;
-                String west = df.getSubfield('d').getData();
-                String east = df.getSubfield('e').getData();
-                String north = df.getSubfield('f').getData();
-                String south = df.getSubfield('g').getData();
-                String result = String.format("%s %s %s %s", new Object[] { west, east, north, south });
-                if (west != null || east != null || north != null || south != null) {
-                    geo_coordinates.add(result);
+                // Initialize coordinate variables
+                String d_coord = "";
+                String e_coord = "";
+                String f_coord = "";
+                String g_coord = "";
+
+                if (df.getSubfield('d') != null) {
+                    d_coord = df.getSubfield('d').getData();
+                }
+                if (df.getSubfield('e') != null) {
+                    e_coord = df.getSubfield('e').getData();
+                }
+                if (df.getSubfield('f') != null) {
+                    f_coord = df.getSubfield('f').getData();
+                }
+                if (df.getSubfield('g') != null) {
+                    g_coord = df.getSubfield('g').getData();
+                }
+                // Check for null coordinates
+                if (validateCoordinateValues(record, d_coord, e_coord, f_coord, g_coord)) {
+                  String result = String.format("%s %s %s %s", new Object[] { d_coord, e_coord, f_coord, g_coord });
+                  geo_coordinates.add(result);
+                } else {
+                    logger.error(".......... Not indexing INVALID Display Coordinates: [ {" + d_coord + "} {" + e_coord + "} {" + f_coord + "} {" + g_coord + "} ]");
                 }
             }
         }
@@ -1598,6 +1645,7 @@ public class VuFindIndexer extends SolrIndexer
             }
             return coordinate;
         } else {
+            logger.error("Decimal Degree Coordinate Conversion Error:  Poorly formed coordinate: [" + coordinateStr + "] ... Returning null value ... ");
             return null;
         }
     }
@@ -1625,143 +1673,155 @@ public class VuFindIndexer extends SolrIndexer
     }
 
     /**
-     * Check decimal degree coordinates to make sure they are valid.
-     *
-     * @param  Double west, east, north, south
-     * @return boolean
-     */
-    protected boolean validateCoordinates(Double west, Double east, Double north, Double south) {
-        String validLines = "";
-        String validValues = "";
-        String validExtent = "";
-        String validNorthSouth = "";
-        String validCoordDist = "";
-
-        // Validate lines
-        if (validateLines(west, east, north, south)) {
-            validLines = "true";
-        } else {
-            validLines = "false";
-            System.out.println("*** ERROR: Coordinates form a line at the pole...DD coords: "+west+" "+east+" "+north+" "+south);
-        }
-
-        // Validate values
-        if (validateValues(west, east, north, south)) {
-            validValues = "true";
-        } else {
-            validValues = "false";
-            System.out.println("*** ERROR: Coordinates contain null values...DD coords: "+west+" "+east+" "+north+" "+south);
-        }
-
-        // Validate extent
-        if (validateExtent(west, east, north, south)) {
-            validExtent = "true";
-        } else {
-            validExtent = "false";
-            System.out.println("*** ERROR: Coordinates outside map extent...DD coords: "+west+" "+east+" "+north+" "+south);
-        }
-        // Note E-W wrapping is allowed.
-        if (validateNorthSouth(north, south)) {
-           validNorthSouth = "true";
-        } else {
-           validNorthSouth = "false";
-           System.out.println("*** ERROR: North < South...DD coords: "+west+" "+east+" "+north+" "+south);
-        }
-        // Validate Coordinate distances
-        if (validateCoordinateDistance(west, east, north, south)) {
-            validCoordDist = "true";
-        } else {
-            validCoordDist = "false";
-        }
-
-        // Validate all coordinate combinations
-        if (validLines.equals("true") && validValues.equals("true")
-            && validExtent.equals("true") && validNorthSouth.equals("true")
-            && validCoordDist.equals("true")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-    * Check decimal degree coordinates to make sure they do not form a line at the poles.
+    * Check record coordinates to make sure they do not contain null values.
     *
-    * @param  Double west, east, north, south
+    * @param  Record record
+    * @param  String d_coord, e_coord, f_coord, g_coord
     * @return boolean
     */
-   public boolean validateLines(Double west, Double east, Double north, Double south) {
-    if ((!west.equals(east) && north.equals(south)) && (north == 90 || south == -90)) {
+   public boolean validateCoordinateValues(Record record, String d_coord, String e_coord, String f_coord, String g_coord) {
+    if ((d_coord == null || d_coord.trim().equals("")) || (e_coord == null || e_coord.trim().equals("")) ||
+        (f_coord == null || f_coord.trim().equals("")) || (g_coord == null || g_coord.trim().equals(""))) {
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData();
+        logger.error("Record ID: " + recNum.trim() + " - Coordinate values contain null values.");
         return false;
     }
     return true;
    }
 
     /**
-     * Check decimal degree coordinates to make sure they do not contain null values.
+     * Check decimal degree coordinates to make sure they are valid.
      *
+     * @param  Record record
      * @param  Double west, east, north, south
      * @return boolean
      */
-    public boolean validateValues(Double west, Double east, Double north, Double south) {
-     if (west == null || east == null || north == null || south == null) {
-        return false;
-     }
-    return true;
+    protected boolean validateDDCoordinates(Record record, Double west, Double east, Double north, Double south) {
+        boolean validValues = true;
+        boolean validLines = true;
+        boolean validExtent = true;
+        boolean validNorthSouth = true;
+        boolean validCoordDist = true;
+
+        if (validateValues(record, west, east, north, south)) {
+          validLines = validateLines(record, west, east, north, south);
+          validExtent = validateExtent(record, west, east, north, south);
+          validNorthSouth = validateNorthSouth(record, north, south);
+          validCoordDist = validateCoordinateDistance(record, west, east, north, south);
+        } else {
+          return false;
+        }
+
+        // Validate all coordinate combinations
+        if (!validLines || !validExtent || !validNorthSouth || !validCoordDist) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
-     * Check decimal degree coordinates to make sure they are within map extent.
-     *
-     * @param  Double west, east, north, south
-     * @return boolean
-     */
-    public boolean validateExtent(Double west, Double east, Double north, Double south) {
+    * Check decimal degree coordinates to make sure they do not form a line at the poles.
+    *
+    * @param  Record record
+    * @param  Double west, east, north, south
+    * @return boolean
+    */
+   public boolean validateLines(Record record, Double west, Double east, Double north, Double south) {
+    if ((!west.equals(east) && north.equals(south)) && (north == 90 || south == -90)) {
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData();
+        logger.error("Record ID: " + recNum.trim() + " - Coordinates form a line at the pole");
+        return false;
+    }
+    return true;
+   }
+
+   /**
+    * Check decimal degree coordinates to make sure they do not contain null values.
+    *
+    * @param  Record record
+    * @param  Double west, east, north, south
+    * @return boolean
+    */
+   public boolean validateValues(Record record, Double west, Double east, Double north, Double south) {
+     if (west == null || east == null || north == null || south == null) {
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData();
+        logger.error("Record ID: " + recNum.trim() + " - Decimal Degree coordinates contain null values.");
+        return false;
+     }
+    return true;
+   }
+
+   /**
+    * Check decimal degree coordinates to make sure they are within map extent.
+    *
+    * @param  Record record
+    * @param  Double west, east, north, south
+    * @return boolean
+    */
+   public boolean validateExtent(Record record, Double west, Double east, Double north, Double south) {
      if (west > 180.0 || west < -180.0 || east > 180.0 || east < -180.0) {
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData();
+        logger.error("Record ID: " + recNum.trim() + " - Coordinates exceed map extent.");
         return false;
      }
      if (north > 90.0 || north < -90.0 || south > 90.0 || south < -90.0) {
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData();
+        logger.error("Record ID: " + recNum.trim() + " - Coordinates exceed map extent.");
         return false;
-     }
+    }
     return true;
     }
-    /**
-     * Check decimal degree coordinates to make sure that north is not less than south.
-     *
-     * @param  Double north, south
-     * @return boolean
-     */
-    public boolean validateNorthSouth(Double north, Double south) {
+   /**
+    * Check decimal degree coordinates to make sure that north is not less than south.
+    *
+    * @param  Record record
+    * @param  Double north, south
+    * @return boolean
+    */
+   public boolean validateNorthSouth(Record record, Double north, Double south) {
     if (north < south) {
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData();
+        logger.error("Record ID: " + recNum.trim() + " - North < South.");
         return false;
     }
     return true;
-    }
+   }
 
-    /**
-     * Check decimal degree coordinates to make sure they are not too close.
-     * Coordinates too close will cause Solr to run out of memory during indexing.
-     *
-     * @param  Double west, east, north, south
-     * @return boolean
-     */
-    public boolean validateCoordinateDistance(Double west, Double east, Double north, Double south) {
+   /**
+    * Check decimal degree coordinates to make sure they are not too close.
+    * Coordinates too close will cause Solr to run out of memory during indexing.
+    *
+    * @param  Record record
+    * @param  Double west, east, north, south
+    * @return boolean
+    */
+   public boolean validateCoordinateDistance(Record record, Double west, Double east, Double north, Double south) {
     Double distEW = east - west;
     Double distNS = north - south;
 
     //Check for South Pole coordinate distance
     if ((north == -90 || south == -90) && (distNS > 0 && distNS < 0.167)) {
-        System.out.println("*** ERROR: Coordinates < 0.167 degrees from South Pole...Coordinate Distance: "+distNS);
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData();
+        logger.error("Record ID: " + recNum.trim() + " - Coordinates < 0.167 degrees from South Pole. Coordinate Distance: "+distNS);
         return false;
     }
-
     //Check for East-West coordinate distance
     if ((west == 0 || east == 0) && (distEW > -2 && distEW <0)) {
-        System.out.println("*** ERROR: Coordinates < 2 degrees from Prime Meridian...Coordinate Distance: "+distEW);
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData();
+        logger.error("Record ID: " + recNum.trim() + " - Coordinates within 2 degrees of Prime Meridian. Coordinate Distance: "+distEW);
         return false;
     }
     return true;
-    }
+   }
 
     /**
      * THIS FUNCTION HAS BEEN DEPRECATED.
