@@ -47,8 +47,14 @@
         <? if (isset($rangeFacets[$title])): ?>
           <?=$this->context($this)->renderInContext('Recommend/SideFacets/range-slider.phtml', ['title' => $title, 'facet' => $rangeFacets[$title]]); ?>
         <? else: ?>
+          <? $contextVars = [
+            'allowExclude' => $this->recommend->excludeAllowed($title),
+            'title' => $title,
+            'sortOptions' => isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : '',
+            'collapsedFacets' => $collapsedFacets
+          ]; ?>
           <? if (in_array($title, $hierarchicalFacets)): ?>
-            <?=$this->context($this)->renderInContext('Recommend/SideFacets/hierarchical-facet.phtml', ['title' => $title, 'sortOptions' => $hierarchicalFacetSortOptions[$title]]); ?>
+            <?=$this->context($this)->renderInContext('Recommend/SideFacets/hierarchical-facet.phtml', $contextVars); ?>
             <noscript>
           <? endif; ?>
           <? $contextVars = [
