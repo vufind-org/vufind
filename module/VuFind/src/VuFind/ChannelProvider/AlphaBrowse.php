@@ -31,6 +31,7 @@ use VuFind\Record\Router as RecordRouter;
 use VuFind\Search\Base\Params, VuFind\Search\Base\Results;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\ParamBag;
 use Zend\Mvc\Controller\Plugin\Url;
 
 /**
@@ -42,7 +43,7 @@ use Zend\Mvc\Controller\Plugin\Url;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SimilarItems extends AbstractChannelProvider
+class AlphaBrowse extends AbstractChannelProvider
     implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -222,7 +223,15 @@ class SimilarItems extends AbstractChannelProvider
         $results = [];
         if (isset($details['Browse']['items'])) {
             foreach ($details['Browse']['items'] as $item) {
-                var_dump($item);
+                if (!isset($item['extras']['title'][0][0])) {
+                    continue;
+                }
+                $results[] = [
+                    'title' => $item['heading'] . ': ' . $item['extras']['title'][0][0],
+                    'source' => 'Solr',
+                    'thumbnail' => false, // TODO: better thumbnails!
+                    'id' => $item['extras']['id'][0][0]
+                ];
             }
         }
         return $results;
@@ -255,7 +264,8 @@ class SimilarItems extends AbstractChannelProvider
                 ? (array)$raw[$this->solrField] : null;
             $details = !empty($from[0])
                 ? $this->solr->alphabeticBrowse(
-                    $this->browseIndex, $from[0], 1, 'title:author:isbn',
+                    $this->browseIndex, $from[0], 0, 20,
+                    new ParamBag(['extras' => 'title:author:isbn:id']),
                     -$this->rowsBefore
                 ) : [];
             $retVal['contents'] = $this->summarizeBrowseDetails($details);
