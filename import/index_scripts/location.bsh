@@ -29,31 +29,31 @@ public List getAllCoordinates(Record record) {
     List list034 = record.getVariableFields("034");
     if (list034 != null) {
         for (VariableField vf : list034) {
-           HashMap coords = getCoordinateValues(vf);
-           //DEBUG output
-           //ControlField recID = (ControlField) record.getVariableField("001");
-           //String recNum = recID.getData();
-           //indexer.getLogger().info("Record ID: " + recNum.trim() + " ...Coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
+            HashMap coords = getCoordinateValues(vf);
+            //DEBUG output
+            //ControlField recID = (ControlField) record.getVariableField("001");
+            //String recNum = recID.getData();
+            //indexer.getLogger().info("Record ID: " + recNum.trim() + " ...Coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
 
-           // Check for null coordinates
-           if (validateCoordinateValues(record, coords)) {
-              // Check and convert coordinates to +/- decimal degrees
-              Double west = convertCoordinate(coords.get('d'));
-              Double east = convertCoordinate(coords.get('e'));
-              Double north = convertCoordinate(coords.get('f'));
-              Double south = convertCoordinate(coords.get('g'));
+            // Check for null coordinates
+            if (validateCoordinateValues(record, coords)) {
+            // Check and convert coordinates to +/- decimal degrees
+                Double west = convertCoordinate(coords.get('d'));
+                Double east = convertCoordinate(coords.get('e'));
+                Double north = convertCoordinate(coords.get('f'));
+                Double south = convertCoordinate(coords.get('g'));
 
-              if (validateDDCoordinates(record, west, east, north, south)) {
-                 // New Format for indexing coordinates in Solr 5.0 - minX, maxX, maxY, minY
-                 // Note - storage in Solr follows the WENS order, but display is WSEN order
-                 String result = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { west, east, north, south });
-                 geo_coordinates.add(result);
-              }  else {
-                  indexer.getLogger().error(".......... Not indexing INVALID coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
-              }
-           } else {
-                  indexer.getLogger().error(".......... Not indexing INVALID coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
-           }
+                if (validateDDCoordinates(record, west, east, north, south)) {
+                    // New Format for indexing coordinates in Solr 5.0 - minX, maxX, maxY, minY
+                    // Note - storage in Solr follows the WENS order, but display is WSEN order
+                    String result = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { west, east, north, south });
+                    geo_coordinates.add(result);
+                }  else {
+                    indexer.getLogger().error(".......... Not indexing INVALID coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
+                }
+            } else {
+                indexer.getLogger().error(".......... Not indexing INVALID coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
+            }
         }
     }
     return geo_coordinates;
@@ -70,23 +70,23 @@ public List getPointCoordinates(Record record) {
     List list034 = record.getVariableFields("034");
     if (list034 != null) {
         for (VariableField vf : list034) {
-           HashMap coords = getCoordinateValues(vf);
-           // Check for null coordinates
-           if (validateCoordinateValues(record, coords)) {
-              // Check to see if we have a point coordinate
-              if (coords.get('d').equals(coords.get('e')) && coords.get('f').equals(coords.get('g'))) {
-                  // Convert N (f_coord) and E (e_coord) coordinates to decimal degrees
-                  Double long_val = convertCoordinate(coords.get('e'));
-                  Double lat_val = convertCoordinate(coords.get('f'));
-                  String longlatCoordinate = Double.toString(long_val) + ',' + Double.toString(lat_val);
-                  coordinates.add(longlatCoordinate);
-               }
+            HashMap coords = getCoordinateValues(vf);
+            // Check for null coordinates
+            if (validateCoordinateValues(record, coords)) {
+                // Check to see if we have a point coordinate
+                if (coords.get('d').equals(coords.get('e')) && coords.get('f').equals(coords.get('g'))) {
+                    // Convert N (f_coord) and E (e_coord) coordinates to decimal degrees
+                    Double long_val = convertCoordinate(coords.get('e'));
+                    Double lat_val = convertCoordinate(coords.get('f'));
+                    String longlatCoordinate = Double.toString(long_val) + ',' + Double.toString(lat_val);
+                    coordinates.add(longlatCoordinate);
+                }
             } else {
-                  indexer.getLogger().error(".......... Not indexing INVALID Point coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
-	   }
+                indexer.getLogger().error(".......... Not indexing INVALID Point coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
+            }
         }
-   }
-   return coordinates;
+    }
+    return coordinates;
 }
 
 /**
@@ -104,13 +104,13 @@ public List getDisplayCoordinates(Record record) {
             // Check for null coordinates
             if (validateCoordinateValues(record, coords)) {
                 String result = String.format("%s %s %s %s", new Object[] {  coords.get('d'),  coords.get('e'),  coords.get('f'),  coords.get('g') });
-              geo_coordinates.add(result);
+                geo_coordinates.add(result);
             } else {
                 indexer.getLogger().error(".......... Not indexing INVALID Display coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
             }
         }
     }
-   return geo_coordinates;
+    return geo_coordinates;
 }
 
 /**
@@ -215,8 +215,8 @@ public Double convertCoordinate(String coordinateStr) {
         }
         return coordinate;
     } else {
-         indexer.getLogger().error("Decimal Degree Coordinate Conversion Error:  Poorly formed coordinate: [" + coordinateStr + "] ... Returning null value ... ");
-         return null;
+        indexer.getLogger().error("Decimal Degree Coordinate Conversion Error:  Poorly formed coordinate: [" + coordinateStr + "] ... Returning null value ... ");
+        return null;
     }
 }
 
@@ -250,27 +250,27 @@ public Double coordinateToDecimal(String coordinateStr) {
  * @return boolean
  */
 protected boolean validateDDCoordinates(Record record, Double west, Double east, Double north, Double south) {
-        boolean validValues = true;
-        boolean validLines = true;
-        boolean validExtent = true;
-        boolean validNorthSouth = true;
-        boolean validCoordDist = true;
+    boolean validValues = true;
+    boolean validLines = true;
+    boolean validExtent = true;
+    boolean validNorthSouth = true;
+    boolean validCoordDist = true;
 
-        if (validateValues(record, west, east, north, south)) {
-          validLines = validateLines(record, west, east, north, south);
-          validExtent = validateExtent(record, west, east, north, south);
-          validNorthSouth = validateNorthSouth(record, north, south);
-          validCoordDist = validateCoordinateDistance(record, west, east, north, south);
-        } else {
-          return false;
-        }
+    if (validateValues(record, west, east, north, south)) {
+        validLines = validateLines(record, west, east, north, south);
+        validExtent = validateExtent(record, west, east, north, south);
+        validNorthSouth = validateNorthSouth(record, north, south);
+        validCoordDist = validateCoordinateDistance(record, west, east, north, south);
+    } else {
+        return false;
+    }
 
-        // Validate all coordinate combinations
-        if (!validLines || !validExtent || !validNorthSouth || !validCoordDist) {
-            return false;
-        } else {
-            return true;
-        }
+    // Validate all coordinate combinations
+    if (!validLines || !validExtent || !validNorthSouth || !validCoordDist) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 /**
@@ -364,7 +364,7 @@ public boolean validateCoordinateDistance(Record record, Double west, Double eas
         ControlField recID = (ControlField) record.getVariableField("001");
         String recNum = recID.getData();
         indexer.getLogger().error("Record ID: " + recNum.trim() + " - Coordinates < 0.167 degrees from South Pole. Coordinate Distance: "+distNS);
-	return false;
+        return false;
     }
  
     //Check for East-West coordinate distance 
@@ -421,4 +421,3 @@ public String getLongLat(Record record) {
     //otherwise return null
     return null;
 }
-
