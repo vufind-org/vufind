@@ -78,7 +78,7 @@ public class VuFindIndexer extends SolrIndexer
     private Connection vufindDatabase = null;
     private UpdateDateTracker tracker = null;
 
-    // the SimpleDateFormat class is not Thread-safe the below line were changes to be not static 
+    // the SimpleDateFormat class is not Thread-safe the below line were changes to be not static
     // which given the rest of the design of SolrMarc will make them work correctly.
     private SimpleDateFormat marc005date = new SimpleDateFormat("yyyyMMddHHmmss.S");
     private SimpleDateFormat marc008date = new SimpleDateFormat("yyMMdd");
@@ -875,7 +875,7 @@ public class VuFindIndexer extends SolrIndexer
 
     /**
      * Get call numbers of a specific type.
-     * 
+     *
      * <p>{@code fieldSpec} is of form {@literal 098abc:099ab}, does not accept subfield ranges.
      *
      *
@@ -906,7 +906,7 @@ public class VuFindIndexer extends SolrIndexer
                 // Assume tag represents a DataField
                 DataField df = (DataField) vf;
                 boolean callTypeMatch = false;
-                
+
                 // Assume call type subfield could repeat
                 for (Subfield typeSf : df.getSubfields(callTypeSf)) {
                     if (callTypeSf.indexOf(typeSf.getCode()) != -1 && typeSf.getData().equals(callType)) {
@@ -921,11 +921,11 @@ public class VuFindIndexer extends SolrIndexer
         } // end loop over fieldSpec
         return result;
     }
-    
+
 
     /**
      * Get call numbers of a specific type.
-     * 
+     *
      * <p>{@code fieldSpec} is of form {@literal 098abc:099ab}, does not accept subfield ranges.
      *
      * @param record  current MARC record
@@ -941,7 +941,7 @@ public class VuFindIndexer extends SolrIndexer
 
     /**
      * Get call numbers of a specific type.
-     * 
+     *
      * <p>{@code fieldSpec} is of form {@literal 098abc:099ab}, does not accept subfield ranges.
      *
      * @param record  current MARC record
@@ -954,7 +954,7 @@ public class VuFindIndexer extends SolrIndexer
         return (List<String>) getCallNumberByTypeCollector(record, fieldSpec, callTypeSf, callType,
                 new ArrayList<String>());
     }
-    
+
     /**
      * Extract the full call number from a record, stripped of spaces
      * @param record MARC record
@@ -1162,7 +1162,7 @@ public class VuFindIndexer extends SolrIndexer
      *
      * @param  record current MARC record
      * @param  fieldSpec which MARC fields / subfields need to be analyzed
-     * @return sortable shelf key of the first valid LC number encountered, 
+     * @return sortable shelf key of the first valid LC number encountered,
      *         otherwise shelf key of the first call number found.
      */
     public String getLCSortable(Record record, String fieldSpec) {
@@ -1186,7 +1186,7 @@ public class VuFindIndexer extends SolrIndexer
 
     /**
      * Get sort key for first LC call number, identified by call type.
-     * 
+     *
      * <p>{@code fieldSpec} is of form {@literal 098abc:099ab}, does not accept subfield ranges.
      *
      *
@@ -1217,7 +1217,7 @@ public class VuFindIndexer extends SolrIndexer
                 // Assume tag represents a DataField
                 DataField df = (DataField) vf;
                 boolean callTypeMatch = false;
-                
+
                 // Assume call type subfield could repeat
                 for (Subfield typeSf : df.getSubfields(callTypeSf)) {
                     if (callTypeSf.indexOf(typeSf.getCode()) != -1 && typeSf.getData().equals(callType)) {
@@ -1260,10 +1260,10 @@ public class VuFindIndexer extends SolrIndexer
             if (callNum.isValid()) {
                 // Convert the numeric portion of the call number into a float:
                 float currentVal = Float.parseFloat(callNum.getClassification());
-                
+
                 // Round the call number value to the specified precision:
                 Float finalVal = new Float(Math.floor(currentVal / precision) * precision);
-                
+
                 // Convert the rounded value back to a string (with leading zeros) and save it:
                 // TODO: Provide different conversion to remove CallNumUtils dependency
                 result.add(CallNumUtils.normalizeFloat(finalVal.toString(), 3, -1));
@@ -1341,7 +1341,7 @@ public class VuFindIndexer extends SolrIndexer
 
     /**
      * Get sort key for first Dewey call number, identified by call type.
-     * 
+     *
      * <p>{@code fieldSpec} is of form {@literal 098abc:099ab}, does not accept subfield ranges.
      *
      *
@@ -1372,7 +1372,7 @@ public class VuFindIndexer extends SolrIndexer
                 // Assume tag represents a DataField
                 DataField df = (DataField) vf;
                 boolean callTypeMatch = false;
-                
+
                 // Assume call type subfield could repeat
                 for (Subfield typeSf : df.getSubfields(callTypeSf)) {
                     if (callTypeSf.indexOf(typeSf.getCode()) != -1 && typeSf.getData().equals(callType)) {
@@ -1389,7 +1389,7 @@ public class VuFindIndexer extends SolrIndexer
         return sortKey;
     }
 
-    
+
     /**
      * Normalize Dewey numbers for AlphaBrowse sorting purposes (use all numbers!)
      *
@@ -1443,36 +1443,29 @@ public class VuFindIndexer extends SolrIndexer
         List<VariableField> list034 = record.getVariableFields("034");
         if (list034 != null) {
             for (VariableField vf : list034) {
-                DataField df = (DataField) vf;
-                String d = df.getSubfield('d').getData();
-                String e = df.getSubfield('e').getData();
-                String f = df.getSubfield('f').getData();
-                String g = df.getSubfield('g').getData();
-                //System.out.println("raw Coords: "+d+" "+e+" "+f+" "+g);
+                HashMap<Character, String> coords = getCoordinateValues(vf);
+                //DEBUG output
+                //ControlField recID = (ControlField) record.getVariableField("001");
+                //String recNum = recID.getData();
+                //logger.info("Record ID: " + recNum.trim() + " ...Coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
 
-                // Check to see if there are only 2 coordinates
-                // If so, copy them into the corresponding coordinate fields
-                if ((d !=null && (e == null || e.trim().equals(""))) && (f != null && (g==null || g.trim().equals("")))) {
-                    e = d;
-                    g = f;
-                }
-                if ((e !=null && (d == null || d.trim().equals(""))) && (g != null && (f==null || f.trim().equals("")))) {
-                    d = e;
-                    f = g;
-                }
-
-                // Check and convert coordinates to +/- decimal degrees
-                Double west = convertCoordinate(d);
-                Double east = convertCoordinate(e);
-                Double north = convertCoordinate(f);
-                Double south = convertCoordinate(g);
-
-                // New Format for indexing coordinates in Solr 5.0 - minX, maxX, maxY, minY
-                // Note - storage in Solr follows the WENS order, but display is WSEN order
-                String result = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { west, east, north, south });
-
-                if (validateCoordinates(west, east, north, south)) {
-                    geo_coordinates.add(result);
+                // Check for null coordinates
+                if (validateCoordinateValues(record, coords)) {
+                    // Check and convert coordinates to +/- decimal degrees
+                    Double west = convertCoordinate(coords.get('d'));
+                    Double east = convertCoordinate(coords.get('e'));
+                    Double north = convertCoordinate(coords.get('f'));
+                    Double south = convertCoordinate(coords.get('g'));
+                    if (validateDDCoordinates(record, west, east, north, south)) {
+                        // New Format for indexing coordinates in Solr 5.0 - minX, maxX, maxY, minY
+                        // Note - storage in Solr follows the WENS order, but display is WSEN order
+                        String result = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { west, east, north, south });
+                        geo_coordinates.add(result);
+                    }  else {
+                        logger.error(".......... Not indexing INVALID coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
+                    }
+                } else {
+                    logger.error(".......... Not indexing INVALID coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
                 }
             }
         }
@@ -1490,31 +1483,19 @@ public class VuFindIndexer extends SolrIndexer
         List<VariableField> list034 = record.getVariableFields("034");
         if (list034 != null) {
             for (VariableField vf : list034) {
-                DataField df = (DataField) vf;
-                String d = df.getSubfield('d').getData();
-                String e = df.getSubfield('e').getData();
-                String f = df.getSubfield('f').getData();
-                String g = df.getSubfield('g').getData();
-
-                // Check to see if there are only 2 coordinates
-                if ((d !=null && (e == null || e.trim().equals(""))) && (f != null && (g==null || g.trim().equals("")))) {
-                    Double long_val = convertCoordinate(d);
-                    Double lat_val = convertCoordinate(f);
-                    String longlatCoordinate = Double.toString(long_val) + ',' + Double.toString(lat_val);
-                    coordinates.add(longlatCoordinate);
-                }
-                if ((e !=null && (d == null || d.trim().equals(""))) && (g != null && (f==null || f.trim().equals("")))) {
-                    Double long_val = convertCoordinate(e);
-                    Double lat_val = convertCoordinate(g);
-                    String longlatCoordinate = Double.toString(long_val) + ',' + Double.toString(lat_val);
-                    coordinates.add(longlatCoordinate);
-                }
-                // Check if N=S and E=W
-                if (d.equals(e) && f.equals(g)) {
-                    Double long_val = convertCoordinate(d);
-                    Double lat_val = convertCoordinate(f);
-                    String longlatCoordinate = Double.toString(long_val) + ',' + Double.toString(lat_val);
-                    coordinates.add(longlatCoordinate);
+                HashMap<Character, String> coords = getCoordinateValues(vf);
+                // Check for null coordinates
+                if (validateCoordinateValues(record, coords)) {
+                    // Check to see if we have a point coordinate
+                    if (coords.get('d').equals(coords.get('e')) && coords.get('f').equals(coords.get('g'))) {
+                        // Convert N (f_coord) and E (e_coord) coordinates to decimal degrees
+                        Double long_val = convertCoordinate(coords.get('e'));
+                        Double lat_val = convertCoordinate(coords.get('f'));
+                        String longlatCoordinate = Double.toString(long_val) + ',' + Double.toString(lat_val);
+                        coordinates.add(longlatCoordinate);
+                    }
+                } else {
+                    logger.error(".......... Not indexing INVALID Point coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
                 }
             }
         }
@@ -1532,18 +1513,73 @@ public class VuFindIndexer extends SolrIndexer
         List<VariableField> list034 = record.getVariableFields("034");
         if (list034 != null) {
             for (VariableField vf : list034) {
-                DataField df = (DataField) vf;
-                String west = df.getSubfield('d').getData();
-                String east = df.getSubfield('e').getData();
-                String north = df.getSubfield('f').getData();
-                String south = df.getSubfield('g').getData();
-                String result = String.format("%s %s %s %s", new Object[] { west, east, north, south });
-                if (west != null || east != null || north != null || south != null) {
+                HashMap<Character, String> coords = getCoordinateValues(vf);
+                // Check for null coordinates
+                if (validateCoordinateValues(record, coords)) {
+                    String result = String.format("%s %s %s %s", new Object[] {  coords.get('d'),  coords.get('e'),  coords.get('f'),  coords.get('g') });
                     geo_coordinates.add(result);
+                } else {
+                    logger.error(".......... Not indexing INVALID Display coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
                 }
             }
         }
         return geo_coordinates;
+    }
+
+    /**
+     * Get all coordinate values from list034
+     *
+     * @param  VariableField vf
+     * @return HashMap full_coords
+     */
+    protected HashMap<Character, String> getCoordinateValues(VariableField vf) {
+        DataField df = (DataField) vf;
+        HashMap<Character, String> coords = new HashMap();
+        for (char code = 'd'; code <= 'g'; code++) {
+            Subfield subfield = df.getSubfield(code);
+            if (subfield != null) {
+                coords.put(code, subfield.getData());
+            }
+        }
+        // If coordinate set is a point with 2 coordinates, fill the empty values.
+        HashMap<Character, String> full_coords = fillEmptyPointCoordinates(coords);
+        return full_coords;
+    }
+
+    /**
+     * If coordinates are a point, fill empty N/S or E/W coordinate
+     *
+     * @param  HashMap coords
+     * @return HashMap full_coords
+     */
+    protected HashMap<Character, String> fillEmptyPointCoordinates(HashMap coords) {
+        HashMap<Character, String> full_coords = coords;
+        if (coords.containsKey('d') && !coords.containsKey('e') && coords.containsKey('f') && !coords.containsKey('g')) {
+            full_coords.put('e', coords.get('d').toString());
+            full_coords.put('g', coords.get('f').toString());
+        }
+        if (coords.containsKey('e') && !coords.containsKey('d') && coords.containsKey('g') && !coords.containsKey('h')) {
+            full_coords.put('d', coords.get('e').toString());
+            full_coords.put('f', coords.get('g').toString());
+        }
+        return full_coords;
+    }
+
+    /**
+    * Check record coordinates to make sure they do not contain null values.
+    *
+    * @param  Record record
+    * @param  HashMap coords
+    * @return boolean
+    */
+   protected boolean validateCoordinateValues(Record record, HashMap coords) {
+        if (coords.containsKey('d') && coords.containsKey('e') && coords.containsKey('f') && coords.containsKey('g')) {
+            return true;
+        }
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData();
+        logger.error("Record ID: " + recNum.trim() + " - Coordinate values contain null values.");
+        return false;
     }
 
     /**
@@ -1591,6 +1627,7 @@ public class VuFindIndexer extends SolrIndexer
             }
             return coordinate;
         } else {
+            logger.error("Decimal Degree Coordinate Conversion Error:  Poorly formed coordinate: [" + coordinateStr + "] ... Returning null value ... ");
             return null;
         }
     }
@@ -1620,20 +1657,133 @@ public class VuFindIndexer extends SolrIndexer
     /**
      * Check decimal degree coordinates to make sure they are valid.
      *
+     * @param  Record record
      * @param  Double west, east, north, south
      * @return boolean
      */
-    protected boolean validateCoordinates(Double west, Double east, Double north, Double south) {
-        if (west == null || east == null || north == null || south == null) {
+    protected boolean validateDDCoordinates(Record record, Double west, Double east, Double north, Double south) {
+        boolean validValues = true;
+        boolean validLines = true;
+        boolean validExtent = true;
+        boolean validNorthSouth = true;
+        boolean validCoordDist = true;
+
+        if (validateValues(record, west, east, north, south)) {
+            validLines = validateLines(record, west, east, north, south);
+            validExtent = validateExtent(record, west, east, north, south);
+            validNorthSouth = validateNorthSouth(record, north, south);
+            validCoordDist = validateCoordinateDistance(record, west, east, north, south);
+        } else {
             return false;
         }
-        if (west > 180.0 || west < -180.0 || east > 180.0 || east < -180.0) {
+
+        // Validate all coordinate combinations
+        if (!validLines || !validExtent || !validNorthSouth || !validCoordDist) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+    * Check decimal degree coordinates to make sure they do not form a line at the poles.
+    *
+    * @param  Record record
+    * @param  Double west, east, north, south
+    * @return boolean
+    */
+   public boolean validateLines(Record record, Double west, Double east, Double north, Double south) {
+    if ((!west.equals(east) && north.equals(south)) && (north == 90 || south == -90)) {
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData();
+        logger.error("Record ID: " + recNum.trim() + " - Coordinates form a line at the pole");
+        return false;
+    }
+    return true;
+   }
+
+    /**
+    * Check decimal degree coordinates to make sure they do not contain null values.
+    *
+    * @param  Record record
+    * @param  Double west, east, north, south
+    * @return boolean
+    */
+   public boolean validateValues(Record record, Double west, Double east, Double north, Double south) {
+    if (west == null || east == null || north == null || south == null) {
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData();
+        logger.error("Record ID: " + recNum.trim() + " - Decimal Degree coordinates contain null values: [ {" + west + "} {" + east + "} {" + north + "} {" + south + "} ]");
+        return false;
+    }
+    return true;
+   }
+
+    /**
+    * Check decimal degree coordinates to make sure they are within map extent.
+    *
+    * @param  Record record
+    * @param  Double west, east, north, south
+    * @return boolean
+    */
+   public boolean validateExtent(Record record, Double west, Double east, Double north, Double south) {
+    if (west > 180.0 || west < -180.0 || east > 180.0 || east < -180.0) {
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData();
+        logger.error("Record ID: " + recNum.trim() + " - Coordinates exceed map extent.");
+        return false;
+    }
+    if (north > 90.0 || north < -90.0 || south > 90.0 || south < -90.0) {
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData();
+        logger.error("Record ID: " + recNum.trim() + " - Coordinates exceed map extent.");
+        return false;
+    }
+    return true;
+   }
+
+    /**
+    * Check decimal degree coordinates to make sure that north is not less than south.
+    *
+    * @param  Record record
+    * @param  Double north, south
+    * @return boolean
+    */
+   public boolean validateNorthSouth(Record record, Double north, Double south) {
+    if (north < south) {
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData();
+        logger.error("Record ID: " + recNum.trim() + " - North < South.");
+        return false;
+    }
+    return true;
+   }
+
+    /**
+     * Check decimal degree coordinates to make sure they are not too close.
+     * Coordinates too close will cause Solr to run out of memory during indexing.
+     *
+     * @param  Record record
+     * @param  Double west, east, north, south
+     * @return boolean
+     */
+    public boolean validateCoordinateDistance(Record record, Double west, Double east, Double north, Double south) {
+        Double distEW = east - west;
+        Double distNS = north - south;
+
+        //Check for South Pole coordinate distance
+        if ((north == -90 || south == -90) && (distNS > 0 && distNS < 0.167)) {
+            ControlField recID = (ControlField) record.getVariableField("001");
+            String recNum = recID.getData();
+            logger.error("Record ID: " + recNum.trim() + " - Coordinates < 0.167 degrees from South Pole. Coordinate Distance: "+distNS);
             return false;
         }
-        if (north > 90.0 || north < -90.0 || south > 90.0 || south < -90.0) {
-            return false;
-        }
-        if (north < south || west > east) {
+
+        //Check for East-West coordinate distance
+        if ((west == 0 || east == 0) && (distEW > -2 && distEW <0)) {
+            ControlField recID = (ControlField) record.getVariableField("001");
+            String recNum = recID.getData();
+            logger.error("Record ID: " + recNum.trim() + " - Coordinates within 2 degrees of Prime Meridian. Coordinate Distance: "+distEW);
             return false;
         }
         return true;
@@ -1953,7 +2103,7 @@ public class VuFindIndexer extends SolrIndexer
         //System.out.println("Loading fulltext from " + url + ". Please wait ...");
         try {
             Process p = Runtime.getRuntime().exec(cmd);
-            
+
             // Debugging output
             /*
             BufferedReader stdInput = new BufferedReader(new
@@ -1963,7 +2113,7 @@ public class VuFindIndexer extends SolrIndexer
                 System.out.println(s);
             }
             */
-            
+
             // Wait for Aperture to finish
             p.waitFor();
         } catch (Throwable e) {
@@ -2122,7 +2272,7 @@ public class VuFindIndexer extends SolrIndexer
      * no declared relator.
      * @param relatorConfig         The setting in author-classification.ini which
      * defines which relator terms are acceptable (or a colon-delimited list)
-     * @param unknownRelatorAllowed Array of tag names whose relators should be indexed 
+     * @param unknownRelatorAllowed Array of tag names whose relators should be indexed
      * even if they are not listed in author-classification.ini.
      * @param indexRawRelators      Set to "true" to index relators raw, as found
      * in the MARC or "false" to index mapped versions.
@@ -2580,7 +2730,7 @@ public class VuFindIndexer extends SolrIndexer
      * Normalizes the strings in a list.
      *
      * @param stringList List of strings to be normalized
-     * @return Normalized List of strings 
+     * @return Normalized List of strings
      */
     protected List<String> normalizeRelatorStringList(List<String> stringList)
     {
@@ -2680,7 +2830,7 @@ public class VuFindIndexer extends SolrIndexer
             acceptUnknownRelators, "false"
         );
     }
-    
+
     /**
      * Takes a name and cuts it into initials
      * @param authorName e.g. Yeats, William Butler
@@ -2689,17 +2839,17 @@ public class VuFindIndexer extends SolrIndexer
     protected String processInitials(String authorName) {
         Boolean isPersonalName = false;
         // we guess that if there is a comma before the end - this is a personal name
-        if ((authorName.indexOf(',') > 0) 
+        if ((authorName.indexOf(',') > 0)
             && (authorName.indexOf(',') < authorName.length()-1)) {
             isPersonalName = true;
         }
-        // get rid of non-alphabet chars but keep hyphens and accents 
+        // get rid of non-alphabet chars but keep hyphens and accents
         authorName = authorName.replaceAll("[^\\p{L} -]", "").toLowerCase();
         String[] names = authorName.split(" "); //split into tokens on spaces
         // if this is a personal name we'll reorganise to put lastname at the end
         String result = "";
         if (isPersonalName) {
-            String lastName = names[0]; 
+            String lastName = names[0];
             for (int i = 0; i < names.length-1; i++) {
                 names[i] = names[i+1];
             }
@@ -2715,7 +2865,7 @@ public class VuFindIndexer extends SolrIndexer
                     String extra = name.substring(pos+1, pos+2);
                     initial = initial + " " + extra;
                 }
-                result += " " + initial; 
+                result += " " + initial;
             }
         }
         // grab all initials and stick them together
@@ -2728,7 +2878,7 @@ public class VuFindIndexer extends SolrIndexer
         }
         // now we have initials separate and together
         if (!result.trim().equals(smushAll)) {
-            result += " " + smushAll; 
+            result += " " + smushAll;
         }
         result = result.trim();
         return result;
