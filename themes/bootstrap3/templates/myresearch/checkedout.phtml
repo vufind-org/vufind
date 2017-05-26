@@ -19,7 +19,7 @@
         <div class="checkbox">
           <label>
             <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
-            <?=$this->transEsc('select_page')?> |
+            <?=$this->transEsc('select_page')?>
           </label>
           <input type="submit" class="btn btn-default" id="renewSelected" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
           <input type="submit" class="btn btn-default" id="renewAll" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
@@ -59,7 +59,6 @@
     <? endforeach; ?>
 
     <? $i = 0; foreach ($this->transactions as $resource): ?>
-      <hr/>
       <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
       <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="row result">
         <? if ($this->renewForm): ?>
