@@ -25,7 +25,7 @@
         <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> &raquo;</a></li>
       <? endif; ?>
       <input type="submit" class="btn btn-default" value="<?=$this->transEsc('Jump to')?>" />
-      <input type="text" name="from" value="<?=$this->escapeHtmlAttr($from)?>" />
+      <input type="text" name="from" value="<?=$this->escapeHtmlAttr($from)?>" class="form-control" />
     </ul>
   </form>
 <? $pageLinks = ob_get_contents(); ?>
