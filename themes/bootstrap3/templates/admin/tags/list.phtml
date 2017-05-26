@@ -6,14 +6,13 @@
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <h2><?=$this->translate('Tag Management')?></h2>
-    <h3><?=$this->translate('List Tags')?></h3>
 
-    <?=$this->render("admin/tags/menu.phtml")?>
+    <?=$this->render("admin/tags/menu.phtml", ['active' => 'list'])?>
 
     <?=$this->flashmessages()?>
 
     <div class="tagForm">
-      <form action="<?= $this->url('admin/tags', array('action' => 'List'))?>" method="get">
+      <form class="form-tags-list" action="<?= $this->url('admin/tags', array('action' => 'List'))?>" method="get">
 
         <fieldset>
           <legend><?=$this->translate('filter_tags')?></legend>
