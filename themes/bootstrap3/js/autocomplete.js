@@ -4,7 +4,7 @@
  */
 (function autocomplete( $ ) {
   var cache = {},
-    element = false,
+    element = $(),
     options = {
       ajaxDelay: 200,
       cache: true,
