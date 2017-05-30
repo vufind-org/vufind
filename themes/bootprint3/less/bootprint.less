@@ -11,11 +11,7 @@ body {
   background: @brand-primary;
   font-size: 13px
 }
-.container {
-  background: #FFF;
-  padding: 0;
-}
-.main .container { padding: 0 4px 18px; }
+.container { background-color: #fff; }
 
 a,
 .btn-link {
@@ -46,7 +42,10 @@ a,
 #commentList .comment:nth-child(even) { background: @gray-lighter; }
 #dateVisColorSettings { stroke: @brand-primary; }
 #hierarchyRecord { background: #FFF; }
-h2 { margin: 0 8px 8px; }
+h2 {
+  margin: .5rem;
+  margin-bottom: .75rem;
+}
 input[type=radio],
 input[type=checkbox] {
   margin: 2px auto 0;
@@ -150,6 +149,7 @@ header .searchbox .tab-content .navbar-text { margin: 5px 10px 5px 0; }
     margin-bottom: 2px
   }
 }
+header .breadcrumbs { padding: 0; }
 header .breadcrumb {
   border: 1px solid @gray-lighter;
   border-radius: 0;
@@ -238,7 +238,7 @@ ul.random.image li img { margin: 0 auto; }
 .bulkActionButtons { margin-bottom: 6px; }
 .result {
   padding: 1rem;
-  margin-left: -1.1rem;
+  margin-left: floor((@grid-gutter-width / -2)); // Bring result to the edge of the container
   &:nth-child(even) { background-color: @gray-lighter; }
   &.embedded .getFull.expanded {
     margin-top: -6px;
