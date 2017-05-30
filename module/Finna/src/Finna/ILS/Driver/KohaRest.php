@@ -275,6 +275,43 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     }
 
     /**
+     * Change pickup location
+     *
+     * This is responsible for changing the pickup location of a hold
+     *
+     * @param string $patron      Patron array
+     * @param string $holdDetails The request details
+     *
+     * @return array Associative array of the results
+     */
+    public function changePickupLocation($patron, $holdDetails)
+    {
+        $requestId = $holdDetails['requestId'];
+        $pickUpLocation = $holdDetails['pickupLocationId'];
+
+        if (!$this->pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)) {
+            return $this->holdError('hold_invalid_pickup');
+        }
+
+        $request = [
+            'branchcode' => $pickUpLocation
+        ];
+
+        list($code, $result) = $this->makeRequest(
+            ['v1', 'holds', $requestId],
+            json_encode($request),
+            'PUT',
+            $patron,
+            true
+        );
+
+        if ($code >= 300) {
+            return $this->holdError($code, $result);
+        }
+        return ['success' => true];
+    }
+
+    /**
      * Return total amount of fees that may be paid online.
      *
      * @param array $patron Patron

@@ -95,9 +95,9 @@
               <? if (empty($record['title'])): ?>
                 <?=$this->transEsc('not_applicable')?>
               <? elseif (!is_object($record['driver'])): ?>
-                <?=$this->escapeHtml(trim($record['title'], '/:'))?>
+                <?=$this->escapeHtml(trim($record['title'], '/: '))?>
               <? else: ?>
-                <a href="<?=$this->recordLink()->getUrl($record['driver'])?>"><?=$this->escapeHtml(trim($record['title'], '/:'))?></a>
+                <a href="<?=$this->recordLink()->getUrl($record['driver'])?>"><?=$this->escapeHtml(trim($record['title'], '/: '))?></a>
               <? endif; ?>
             <td<? if ($hideCheckout): ?> class="hidden"<? endif; ?>>
               <?=isset($record['checkout']) ? $this->escapeHtml($record['checkout']) : ''?>

@@ -96,7 +96,7 @@
                 if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
                   // Use ILS title if available since it may contain e.g. issue number
                   if (!empty($ilsDetails['title'])) {
-                    $title = $ilsDetails['title'];
+                    $title = trim($ilsDetails['title'], '/: ');
                   } else {
                     $title = $resource->getTitle();
                     $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
@@ -160,7 +160,7 @@
               <? endif; ?>
               <? if (!empty($pickupDisplay)): ?>
                 <strong><?=$this->transEsc('pick_up_location') ?>:</strong>
-                <? if (isset($ilsDetails['available']) && !$ilsDetails['available'] == true && $changePickupLocation): ?>
+                <? if (isset($ilsDetails['available']) && !$ilsDetails['available'] && $changePickupLocation): ?>
                   <div class="changeHolds" data-record-id="<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" data-request-id="<?=$this->escapeHtml($ilsDetails['requestId']) ?>" >
                     <span class="pickup-change-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i></span>
                     <div class="view-button pickup-location">
