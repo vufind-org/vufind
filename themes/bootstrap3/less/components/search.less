@@ -20,10 +20,7 @@ header .container.navbar { margin-bottom: 0; }
 .grid { @media (max-width: 767px) {min-height: 250px;} }
 .result {
   padding-top: 1.5rem;
-  .checkbox {
-    float: left;
-    padding-right: .5rem;
-  }
+  .checkbox { float: left; }
   .media,
   .media-body { overflow: visible; }
   .media-body .row {
@@ -39,10 +36,6 @@ header .container.navbar { margin-bottom: 0; }
   .media-right {
     padding: 0;
     text-align: center;
-    a {
-      display: inline-block;
-      text-align: center;
-    }
     img {
       max-width: 100%;
       max-height: 300px;
@@ -52,7 +45,11 @@ header .container.navbar { margin-bottom: 0; }
     &.medium > a,
     &.medium > img,
     &.large > a,
-    &.large > img { width: @thumbnail-width-small; }
+    &.large > img {
+      display: inline-block;
+      width: @thumbnail-width-small;
+      max-width: none;
+    }
     @media (min-width: 768px) {
       &.small > a,
       &.small > img { width: @thumbnail-width-small; }
@@ -67,15 +64,18 @@ header .container.navbar { margin-bottom: 0; }
   .list-tab-content.record .info-col { width: 100%; }
 
   @media (min-width: 768px) {
-    .media-left { padding-left: 10px; }
-    .media-right { padding-right: 10px; }
+    .media-left,
+    .media-right {
+      padding-right: 10px;
+      padding-left: 10px;
+    }
   }
   @media (max-width: 767px) {
     border-bottom: 1px solid @btn-default-border;
-      .media-left,
-      .media-right {
-        max-width: 25%;
-      }
+    .media-left,
+    .media-right {
+      max-width: 25%;
+    }
     a {
       max-width: 100%;
       text-decoration: underline;
