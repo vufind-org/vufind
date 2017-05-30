@@ -104,6 +104,24 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     ];
 
     /**
+     * Mappings from renewal block reasons
+     *
+     * @var array
+     */
+    protected $renewalBlockMappings = [
+        'too_soon' => 'Cannot renew yet',
+        'onsite_checkout' => 'Copy has special circulation',
+        'on_reserve' => 'renew_item_requested',
+        'too_many' => 'renew_item_limit',
+        'restriction' => 'Borrowing Block Message',
+        'overdue' => 'renew_item_overdue',
+        'cardlost' => 'renew_card_lost',
+        'gonenoaddress' => 'Borrowing Block Koha Reason Patron_GoneNoAddress',
+        'debarred' => 'Borrowing Block Koha Reason Patron_DebarredOverdue',
+        'debt' => 'renew_debt'
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -439,28 +457,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $renewable = $entry['renewable'];
             $message = '';
             if (!$renewable) {
-                switch ($entry['renewability_error']) {
-                case 'too_soon':
-                    $message = 'Cannot renew yet';
-                    break;
-                case 'onsite_checkout':
-                    $message = 'Copy has special circulation';
-                    break;
-                case 'on_reserve':
-                    $message = 'renew_item_requested';
-                    break;
-                case 'too_many':
-                    $message = 'renew_item_limit';
-                    break;
-                case 'restriction':
-                    $message = 'Borrowing Block Message';
-                    break;
-                case 'overdue':
-                    $message = 'renew_item_overdue';
-                    break;
-                default:
-                    $message = 'renew_denied';
-                }
+                $message = $this->mapRenewalBlockReason(
+                    $entry['renewability_error']
+                );
             }
 
             $transaction = [
@@ -1561,5 +1560,18 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'success' => false,
             'sysMessage' => $message
         ];
+    }
+
+    /**
+     * Map a Koha renewal block reason code to a VuFind translation string
+     *
+     * @param string $reason Koha block code
+     *
+     * @return string
+     */
+    protected function mapRenewalBlockReason($reason)
+    {
+        return isset($this->renewalBlockMappings[$reason])
+            ? $this->renewalBlockMappings[$reason] : 'renew_denied';
     }
 }

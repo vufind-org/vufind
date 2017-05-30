@@ -2267,7 +2267,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'isOverdue'             => 'renew_item_overdue',
             'maxNofRenewals'        => 'renew_item_limit',
             'patronIsDeniedLoan'    => 'fine_limit_patron',
-            'patronHasDebt'         => 'fine_limit_patron',
+            'patronHasDebt'         => 'renew_debt',
             'patronIsInvoiced'      => 'renew_item_patron_is_invoiced',
             'renewalIsDenied'       => 'renew_denied',
             'ReservationDenied'     => 'hold_error_denied'
