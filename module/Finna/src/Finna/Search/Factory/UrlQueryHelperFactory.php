@@ -44,6 +44,25 @@ use VuFind\Search\Base\Params;
 class UrlQueryHelperFactory extends \VuFind\Search\Factory\UrlQueryHelperFactory
 {
     /**
+     * Extract default settings from the search parameters.
+     *
+     * @param Params $params Finna search parameters
+     *
+     * @return array
+     */
+    protected function getDefaults(Params $params)
+    {
+        $options = $params->getOptions();
+        return [
+            'handler' => $options->getDefaultHandler(),
+            'limit' => $options->getDefaultLimitByView($params->getView()),
+            'selectedShards' => $options->getDefaultSelectedShards(),
+            'sort' => $params->getDefaultSort(),
+            'view' => $options->getDefaultView(),
+        ];
+    }
+
+    /**
      * Construct the UrlQueryHelper
      *
      * @param Params $params VuFind search parameters

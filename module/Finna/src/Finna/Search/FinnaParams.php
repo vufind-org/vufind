@@ -325,4 +325,42 @@ trait FinnaParams
         }
         return $field == $dateRangeField;
     }
+
+    /**
+     * Pull the page size parameter or set to default
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    protected function initLimit($request)
+    {
+        // Check for a limit parameter in the url.
+        $defaultLimit = $this->getOptions()->getDefaultLimitByView($this->view);
+
+        if (($limit = $request->get('limit')) != $defaultLimit) {
+            // make sure the url parameter is a valid limit -- either
+            // one of the explicitly allowed values, or at least smaller
+            // than the largest allowed. (This leniency is useful in
+            // combination with combined search, where it is often useful
+            // to reduce the size of result lists without actually enabling
+            // the user's ability to select a reduced list size).
+            $legalOptions = $this->getOptions()->getLimitOptions();
+            if (in_array($limit, $legalOptions)
+                || ($limit > 0 && $limit < max($legalOptions))
+            ) {
+                $this->limit = $limit;
+                return;
+            }
+        }
+
+        // Increase default limit for RSS mode:
+        if ($this->getView() == 'rss' && $defaultLimit < 50) {
+            $defaultLimit = 50;
+        }
+
+        // If we got this far, setting was missing or invalid; load the default
+        $this->limit = $defaultLimit;
+    }
 }
