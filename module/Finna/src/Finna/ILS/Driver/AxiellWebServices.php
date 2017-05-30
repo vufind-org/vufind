@@ -711,7 +711,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      */
     public function changePickupLocation($patron, $holdDetails)
     {
-        global $configArray;
         $username = $patron['cat_username'];
         $password = $patron['cat_password'];
         $pickupLocationId = $holdDetails['pickupLocationId'];
