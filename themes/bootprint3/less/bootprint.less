@@ -237,7 +237,7 @@ ul.random.image li img { margin: 0 auto; }
 /* --- Search --- */
 .bulkActionButtons { margin-bottom: 6px; }
 .result {
-  padding: 1rem;
+  padding: floor((@grid-gutter-width / 2));
   margin-left: floor((@grid-gutter-width / -2)); // Bring result to the edge of the container
   &:nth-child(even) { background-color: @gray-lighter; }
   &.embedded .getFull.expanded {
