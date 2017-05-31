@@ -182,6 +182,37 @@ header .container.navbar { margin-bottom: 0; }
   .list-tab-content { padding: 1rem; }
 }
 
+.search-grid::after {
+  display: table;
+  clear: both;
+  content: '';
+}
+.grid-result {
+  display: flex;
+  float: left;
+  width: 50%;
+
+  .grid-body { flex: 1; }
+  .grid-checkbox {
+    flex: 0 0 30px;
+    min-width: 0;
+  }
+  .title { font-weight: bold; }
+  .label,
+  .format {
+    display: inline-block;
+    white-space: normal;
+  }
+}
+.grid-large-break,
+.grid-small-break { clear: both; }
+.grid-large-break { display: none; }
+@media (min-width: 992px) {
+  .grid-result{ width: 25%; }
+  .grid-large-break { display: block; }
+  .grid-small-break { display: none; }
+}
+
 .searchtools a {padding: 0 .5rem;}
 .title-in-heading {
   font-size: inherit;
