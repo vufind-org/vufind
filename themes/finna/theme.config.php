@@ -7,6 +7,7 @@ return [
             'autocomplete' => 'Finna\View\Helper\Root\Factory::getAutocomplete',
             'browse' => 'Finna\View\Helper\Root\Factory::getBrowse',
             'callnumber' => 'Finna\View\Helper\Root\Factory::getCallnumber',
+            'citation' => 'Finna\View\Helper\Root\Factory::getCitation',
             'checkboxFacetCounts' => 'Finna\View\Helper\Root\Factory::getCheckboxFacetCounts',
             'combined' => 'Finna\View\Helper\Root\Factory::getCombined',
             'content' => 'Finna\View\Helper\Root\Factory::getContent',

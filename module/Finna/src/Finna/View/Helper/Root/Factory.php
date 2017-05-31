@@ -83,6 +83,18 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the Citation helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Citation
+     */
+    public static function getCitation(ServiceManager $sm)
+    {
+        return new Citation($sm->getServiceLocator()->get('VuFind\DateConverter'));
+    }
+
+    /**
      * Construct the CheckboxFacetCounts helper.
      *
      * @param ServiceManager $sm Service manager.
