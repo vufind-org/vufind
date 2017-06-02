@@ -144,21 +144,20 @@ header .container.navbar { margin-bottom: 0; }
 .result.embedded {
   .getFull {
     display: block;
-    margin-left: 1.5rem;
-    padding-right: 30px;
+    margin-left: -.5rem;
+    padding-left: .5rem;
     border-left: 1px solid transparent;
   }
   .getFull.expanded {
     &:extend(.list-group-item);
     margin-top: -11px;
-    margin-left: .75rem;
-    padding-left: .75rem;
+    padding-left: .5rem;
     border-top-left-radius: @border-radius-base;
     border-top-right-radius: @border-radius-base;
     &::before {
       content: '\25BC';
       position: absolute;
-      right: 15px;
+      right: 1rem;
       color: @gray;
     }
   }
@@ -169,7 +168,7 @@ header .container.navbar { margin-bottom: 0; }
     background: #fff;
   }
   .long-view {
-    margin-left: .75rem;
+    margin-left: -.5rem;
     padding: .5rem;
     border: 1px solid @list-group-border;
     background-color: #fff;
