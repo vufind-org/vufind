@@ -277,7 +277,7 @@ class RecordDataFormatterFactory
         $spec->setTemplateLine(
             'mainFormat', 'getEvents', 'data-mainFormat.phtml',
             [
-                'context' => ['class' => 'recordHide']
+                'context' => ['class' => 'hide']
             ]
         );
         $spec->setTemplateLine(
@@ -405,7 +405,7 @@ class RecordDataFormatterFactory
         $spec->setTemplateLine(
             'recordLinks', 'getAllRecordLinks', 'data-allRecordLinks.phtml',
             [
-                'context' => ['class' => 'recordHide']
+                'context' => ['class' => 'hide']
             ]
         );
         $spec->setTemplateLine(
@@ -570,6 +570,12 @@ class RecordDataFormatterFactory
             'Date', 'getUnitDate', 'data-escapeHtml.phtml',
             [
                 'context' => ['class' => 'recordDaterange']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Photo Info', 'getPhotoInfo', 'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'recordPhotographer']
             ]
         );
         return $spec->getArray();

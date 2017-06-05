@@ -46,6 +46,9 @@
               <? endif; ?>
               </div>
             <? endif; ?>
+          <? if ($photo = $this->driver->getPhotoInfo()): ?>
+            <?=$this->transEsc('Photo Info') ?>: <?=$this->escapeHtml($photo) ?>
+          <? endif; ?>
         <? endif; ?>
       </div>
       <div class="building">
