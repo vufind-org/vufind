@@ -1107,12 +1107,22 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if ($method == 'GET') {
                 $client->setParameterGet($params);
             } else {
+                $body = '';
                 if (is_string($params)) {
-                    $client->getRequest()->setContent($params);
+                    $body = $params;
+                } else {
+                    if (isset($params['##body##'])) {
+                        $body = $params['##body##'];
+                        unset($params['##body##']);
+                        $client->setParameterGet($params);
+                    } else {
+                        $client->setParameterPost($params);
+                    }
+                }
+                if ('' !== $body) {
+                    $client->getRequest()->setContent($body);
                     $client->getRequest()->getHeaders()
                         ->addHeaderLine('Content-Type', 'application/json');
-                } else {
-                    $client->setParameterPost($params);
                 }
             }
         }
