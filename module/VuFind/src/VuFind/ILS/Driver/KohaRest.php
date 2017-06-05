@@ -1338,6 +1338,23 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         } else {
                             $statuses[] = 'On Reference Desk';
                         }
+                        break;
+                    case 'Transfer':
+                        $onHold = false;
+                        if (!empty($item['availability']['notes'])) {
+                            foreach ($item['availability']['notes'] as $noteKey
+                                => $note
+                            ) {
+                                if ('Item::Held' === $noteKey) {
+                                    $onHold = true;
+                                    break;
+                                }
+                            }
+                        }
+                        $statuses[] = $onHold ? 'In Transit On Hold' : 'In Transit';
+                        break;
+                    default:
+                        $statuses[] = $status;
                     }
                 } elseif (strncmp($key, 'Hold::', 6) == 0) {
                     $status = substr($key, 6);
