@@ -13,7 +13,7 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <? if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
     <label class="grid-checkbox">
-      <?=$this->record($this->driver)->getCheckbox() ?>
+      <?=$this->record($this->driver)->getCheckbox('', 'search-cart-form') ?>
     </label>
   <? endif; ?>
   <div class="grid-body">
