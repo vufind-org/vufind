@@ -601,4 +601,18 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     {
         return new OnlinePayment();
     }
+
+    /**
+     * Construct the SearchMemory helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SearchMemory
+     */
+    public static function getSearchMemory(ServiceManager $sm)
+    {
+        return new SearchMemory(
+            $sm->getServiceLocator()->get('Finna\Search\Memory')
+        );
+    }
 }

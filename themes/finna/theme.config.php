@@ -38,6 +38,7 @@ return [
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
             'scriptSrc' => 'Finna\View\Helper\Root\Factory::getScriptSrc',
             'searchbox' => 'Finna\View\Helper\Root\Factory::getSearchBox',
+            'searchmemory' => 'Finna\View\Helper\Root\Factory::getSearchMemory',
             'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',
             'searchTabsRecommendations' => 'Finna\View\Helper\Root\Factory::getSearchTabsRecommendations',
             'summon' => 'Finna\View\Helper\Root\Factory::getSummon',
