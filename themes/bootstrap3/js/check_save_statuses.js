@@ -55,6 +55,11 @@ function checkSaveStatuses(_container) {
   }
 }
 
+function checkSaveStatusesCallback() {
+  // Make sure no event parameter etc. is passed to checkSaveStatuses()
+  checkSaveStatuses();
+}
+
 $(document).ready(function checkSaveStatusFail() {
   checkSaveStatuses();
 });
