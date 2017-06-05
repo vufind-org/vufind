@@ -1,4 +1,5 @@
 /*global htmlEncode, userIsLoggedIn, VuFind */
+/*exported checkSaveStatuses, checkSaveStatusesCallback */
 
 function checkSaveStatuses(_container) {
   if (!userIsLoggedIn) {
