@@ -1191,7 +1191,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if (isset($values->profile_sms_number)
             && $catalog->checkFunction('updateSmsNumber', $patron)
         ) {
-            $result = $catalog->updateSmsNumber($patron, $values->profile_sms_number);
+            $result = $catalog->updateSmsNumber(
+                $patron, $values->profile_sms_number
+            );
             if (!$result['success']) {
                 $this->flashMessenger()->addErrorMessage($result['status']);
                 $success = false;
