@@ -578,6 +578,50 @@ class RecordDataFormatterFactory
                 'context' => ['class' => 'recordPhotographer']
             ]
         );
+        $spec->setTemplateLine(
+            'Source of Acquisition', 'getAcquisitionSource', 'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'recordAcquisition']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Medium of Performance', 'getMusicComposition', 'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'recordComposition']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Notated Music Format', 'getNotatedMusicFormat', 'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'recordNoteFormat']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Event Notice', 'getEventNotice', 'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'recordEventNotice']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Lyrics', 'getFirstLyrics', 'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'recordFirstLyrics']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Trade Availability Note',
+            'getTradeAvailabilityNote',
+            'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'recordTradeNote']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Methodology', 'getMethodology', 'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'recordMethodology']
+            ]
+        );
         return $spec->getArray();
     }
 
