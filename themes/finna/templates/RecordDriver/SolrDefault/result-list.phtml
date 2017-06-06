@@ -18,6 +18,13 @@
           <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title" data-view="<?=isset($this->params) ? $this->params->getOptions()->getListViewOption() : 'list' ?>">
             <?=$this->record($this->driver)->getTitleHtml()?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
           </a>
+          <? if ($uniformTitles = $this->driver->tryMethod('getUniformTitles')): ?>
+            <div class="result-uniform-titles">
+              <? foreach ($uniformTitles as $uniformTitle): ?>
+                <?=$this->escapeHtml($uniformTitle) ?><br/>
+              <? endforeach; ?>
+            </div>
+          <? endif; ?>
         </div>
 
         <div class="dateyeartype">

@@ -20,6 +20,12 @@
           <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
             <?=$this->record($this->driver)->getTitleHtml()?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
           </a>
+          <? if ($uniformTitles = $this->driver->tryMethod('getUniformTitles')): ?>
+            <div class="result-uniform-titles">
+              <?=implode(' &ndash; ', array_map($this->escapeHtml, $uniformTitles)) ?>
+            </div>
+          <? endif; ?>
+
           <div class="resultOtherLinks">
           <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
           <? if ($results = $this->driver->tryMethod('getOtherLinks')): ?>
