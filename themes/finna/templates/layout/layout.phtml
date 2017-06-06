@@ -205,7 +205,7 @@ JS;
       // this covers case 1.  Cases 2 and 3 are then covered by logic below.
       if (!isset($this->layout()->searchbox)) {
         $url = $this->searchMemory()->getLastSearchUrl();
-        if ($this->layout()->templateName == 'home' && $this->layout()->templateDir == 'search' || !$url) {
+        if ($this->layout()->templateDir != 'record' || !$url) {
             $this->layout()->searchbox = $this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => isset($this->layout()->ignoreHiddenFilterMemory) ? $this->layout()->ignoreHiddenFilterMemory : false]);
         } else {
           $searchId = $this->searchMemory()->getLastSearchId();
