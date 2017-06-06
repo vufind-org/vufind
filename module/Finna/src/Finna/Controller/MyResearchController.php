@@ -485,7 +485,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $view->hideDueDateReminder = $user->finna_due_date_reminder == 0
             && isset($config->Site->hideDueDateReminder)
             && $config->Site->hideDueDateReminder;
-        if (!$view->hideDueDateReminder) {
+        if (!$view->hideDueDateReminder && is_array($patron)) {
             $catalog = $this->getILS();
             $ddrConfig = $catalog->getConfig('dueDateReminder', $patron);
             if (isset($ddrConfig['enabled']) && !$ddrConfig['enabled']) {
