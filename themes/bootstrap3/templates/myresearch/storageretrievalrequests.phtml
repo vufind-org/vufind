@@ -52,7 +52,7 @@
         <? endif; ?>
 
         <?
-          $coverDetails = $this->record($resource)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($resource));
+          $coverDetails = $this->record($resource)->getCoverDetails('storageretrievalrequests', 'medium', $this->recordLink()->getUrl($resource));
           $cover = $coverDetails['html'];
           $thumbnail = false;
           $thumbnailAlignment = $this->record($resource)->getThumbnailAlignment('list');
