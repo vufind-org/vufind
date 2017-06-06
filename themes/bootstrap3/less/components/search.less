@@ -15,7 +15,7 @@
 
 header .container.navbar { margin-bottom: 0; }
 
-.bulkActionButtons label {display: inline-block;}
+.bulkActionButtons .checkbox {display: inline-block;}
 .bulkActionButtons label input {margin-top: 2px;}
 .grid { @media (max-width: 767px) {min-height: 250px;} }
 .result {
@@ -84,6 +84,16 @@ header .container.navbar { margin-bottom: 0; }
   }
   @media (max-width: 530px) {
     .media-left { padding-right: 0; }
+  }
+
+  .btn-bookbag-toggle {
+    form { display: inline; }
+    .fa {
+      color: @text-color;
+      /* .fa-fw */
+      width: 1.28571429em;
+      text-align: center;
+    }
   }
 
   .format {

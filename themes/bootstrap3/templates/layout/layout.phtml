@@ -121,7 +121,7 @@ JS;
     ?>
     <?=$this->headScript()?>
   </head>
-  <body class="<?=$this->layoutClass('offcanvas-row')?><? if ($this->layout()->rtl): ?> rtl<? endif; ?>">
+  <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><? if ($this->layout()->rtl): ?> rtl<? endif; ?>">
     <? // Set up the search box -- there are three possible cases:
       // 1. No search box was set; we should default to the normal box
       // 2. It was set to false; we should display nothing
@@ -164,7 +164,7 @@ JS;
         <? endif; ?>
       </div>
     </header>
-    <div role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>">
+    <div role="main" class="main">
       <div id="content" class="container">
         <?=$this->layout()->content ?>
       </div>

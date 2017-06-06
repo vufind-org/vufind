@@ -1,5 +1,5 @@
 /*global htmlEncode, userIsLoggedIn, Hunt, VuFind */
-/*exported checkSaveStatuses */
+/*exported checkSaveStatuses, checkSaveStatusesCallback */
 
 function displaySaveStatus(itemLists, $item) {
   if (itemLists.length > 0) {
@@ -82,12 +82,9 @@ function checkSaveStatuses(_container) {
   if (!userIsLoggedIn) {
     return;
   }
+  var container = _container || $('body');
 
-  var container = _container instanceof Element
-    ? _container
-    : document.body;
-
-  var ajaxItems = $(container).find('.result,.record');
+  var ajaxItems = container.find('.result,.record');
   for (var i = 0; i < ajaxItems.length; i++) {
     var $id = $(ajaxItems[i]).find('.hiddenId').val();
     var $source = $(ajaxItems[i]).find('.hiddenSource').val();
@@ -105,6 +102,12 @@ function checkSaveStatuses(_container) {
     saveStatusObserver.disconnect();
   }
 }
+
+function checkSaveStatusesCallback() {
+  // Make sure no event parameter etc. is passed to checkSaveStatuses()
+  checkSaveStatuses();
+}
+
 var saveStatusObserver = null;
 $(document).ready(function checkSaveStatusFail() {
   saveStatusObserver = new Hunt(

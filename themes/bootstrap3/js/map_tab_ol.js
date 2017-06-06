@@ -78,10 +78,25 @@ function loadMapTab(mapData, popupTitle) {
         iconFeature.setStyle(iconStyle);
         vectorSource.addFeature(iconFeature);
       } else if (mapData[i][4] === 4) { // It's a polygon feature //
-        var point1 = ol.proj.transform([mapData[i][0], mapData[i][3]], srcProj, dstProj);
-        var point2 = ol.proj.transform([mapData[i][0], mapData[i][1]], srcProj, dstProj);
-        var point3 = ol.proj.transform([mapData[i][2], mapData[i][1]], srcProj, dstProj);
-        var point4 = ol.proj.transform([mapData[i][2], mapData[i][3]], srcProj, dstProj);
+        var west = mapData[i][0];
+        var east = mapData[i][2];
+        var north = mapData[i][3];
+        var south = mapData[i][1];
+        // handle dateline crossing
+        if (west > east) {
+          var wpt = 180 - west;
+          var ept = 180 + east;
+          east = west + wpt + ept;
+        }
+        // move S90 off the poles so ol will map it
+        if (south === -90) {
+          south = south + 0.5;
+        }
+        var point1 = ol.proj.transform([west, north], srcProj, dstProj);
+        var point2 = ol.proj.transform([west, south], srcProj, dstProj);
+        var point3 = ol.proj.transform([east, south], srcProj, dstProj);
+        var point4 = ol.proj.transform([east, north], srcProj, dstProj);
+
         var polyFeature = new ol.Feature({
           geometry: new ol.geom.Polygon([
             [point1, point2, point3, point4, point1]

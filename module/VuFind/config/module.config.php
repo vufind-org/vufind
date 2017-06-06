@@ -111,6 +111,7 @@ $config = [
             'authority' => 'VuFind\Controller\Factory::getAuthorityController',
             'browse' => 'VuFind\Controller\Factory::getBrowseController',
             'cart' => 'VuFind\Controller\Factory::getCartController',
+            'channels' => 'VuFind\Controller\Factory::getChannelsController',
             'collection' => 'VuFind\Controller\Factory::getCollectionController',
             'collections' => 'VuFind\Controller\Factory::getCollectionsController',
             'combined' => 'VuFind\Controller\Factory::getCombinedController',
@@ -177,6 +178,7 @@ $config = [
             'VuFind\AutocompletePluginManager' => 'VuFind\Service\Factory::getAutocompletePluginManager',
             'VuFind\CacheManager' => 'VuFind\Service\Factory::getCacheManager',
             'VuFind\Cart' => 'VuFind\Service\Factory::getCart',
+            'VuFind\ChannelProviderPluginManager' => 'VuFind\Service\Factory::getChannelProviderPluginManager',
             'VuFind\Config' => 'VuFind\Service\Factory::getConfig',
             'VuFind\ContentPluginManager' => 'VuFind\Service\Factory::getContentPluginManager',
             'VuFind\ContentAuthorNotesPluginManager' => 'VuFind\Service\Factory::getContentAuthorNotesPluginManager',
@@ -331,6 +333,14 @@ $config = [
                     'solrreservesautocomplete' => 'SolrReserves',
                     'tagautocomplete' => 'Tag',
                 ],
+            ],
+            'channelprovider' => [
+                'factories' => [
+                    'facets' => 'VuFind\ChannelProvider\Factory::getFacets',
+                    'listitems' => 'VuFind\ChannelProvider\Factory::getListItems',
+                    'random' => 'VuFind\ChannelProvider\Factory::getRandom',
+                    'similaritems' => 'VuFind\ChannelProvider\Factory::getSimilarItems',
+                ]
             ],
             'content' => [
                 'factories' => [
@@ -500,6 +510,7 @@ $config = [
                 ],
                 'invokables' => [
                     'alphabrowselink' => 'VuFind\Recommend\AlphaBrowseLink',
+                    'channels' => 'VuFind\Recommend\Channels',
                     'doi' => 'VuFind\Recommend\DOI',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
@@ -569,6 +580,7 @@ $config = [
                     'worldcatsimilar' => 'VuFind\Related\Factory::getWorldCatSimilar',
                 ],
                 'invokables' => [
+                    'channels' => 'VuFind\Related\Channels',
                     'editions' => 'VuFind\Related\Deprecated',
                     'worldcateditions' => 'VuFind\Related\Deprecated',
                 ],
@@ -803,7 +815,9 @@ $staticRoutes = [
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic', 'Cart/doExport',
     'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk',
-    'Cart/Processor', 'Cart/Save', 'Cart/SearchResultsBulk', 'Collections/ByTitle',
+    'Cart/Processor', 'Cart/Save', 'Cart/SearchResultsBulk',
+    'Channels/Home', 'Channels/Record', 'Channels/Search',
+    'Collections/ByTitle',
     'Collections/Home', 'Combined/Home', 'Combined/Results', 'Combined/SearchBox',
     'Confirm/Confirm', 'Cover/Show', 'Cover/Unavailable',
     'EDS/Advanced', 'EDS/Home', 'EDS/Search',

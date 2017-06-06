@@ -39,7 +39,6 @@
 
       <? $iteration = 0; ?>
       <? foreach ($this->recordList as $resource): ?>
-        <hr/>
         <? $iteration++; ?>
         <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="row result">
