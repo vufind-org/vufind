@@ -1261,9 +1261,14 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         ];
 
         foreach ($validServices as $service => $validMethods) {
+            $typeLabel = 'dueDateAlert' === $service
+                ? $this->translate(
+                    "messaging_settings_type_dueDateAlertEmail"
+                )
+                : $this->translate("messaging_settings_type_$service");
             $data = [
                 'active' => false,
-                'type' => $this->translate("messaging_settings_type_$service"),
+                'type' => $typeLabel,
                 'sendMethods' => []
             ];
             if ($this->messagingSettings[$service]) {
@@ -1308,8 +1313,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 foreach ($userCached['messagingServices'][$serviceType]
                     ['sendMethods'] as $key => &$data) {
 
-                    $typeLabel
-                        = $this->translate("messaging_settings_type_$serviceType");
                     $methodLabel
                         = $this->translate("messaging_settings_method_$key");
 

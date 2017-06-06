@@ -1,0 +1,117 @@
+<!-- START of: finna - myresearch/checkouthistory.phtml -->
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Checkout History'));
+
+    // Set up myresearch menu
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'checkouthistory']);
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Checkout History') . '</li>';
+
+    $user = $this->auth()->isLoggedIn();
+?>
+<div class="row">
+  <div class="col-md-10 col-lg-9 myresearch-grid-list">
+    <? if (!$this->translationEmpty('checkout_history_instructions_html')): ?><p class="no-content-message"><?=$this->translate('checkout_history_instructions_html')?></p><? endif; ?>
+    <?=$this->flashmessages()?>
+    <div class="useraccount-header">
+    <?=$this->transEsc('Checkout History')?>
+    (<?=count($this->transactions);?>)
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
+    <? if (isset($this->noSupport)): ?>
+      <? if ($user->getLibraryCards()->count() > 1): ?>
+        <div class="support-notice">
+          <p><?=$this->transEsc("no_ils_support_description") ?></p>
+        </div>
+      <? endif; ?>
+    <? else: ?>
+      <? if ($template = $this->content()->findTemplateForLng('content/Additions/checkout-history-pre-list')): ?>
+        <div class="checkout-history-pre-list"><?=$this->render($template)?></div>
+      <? endif; ?>
+      <? if (!empty($this->transactions)): ?>
+        <div class="toolbar row">
+          <div class="col-xs-5 myresearch-notification"></div>
+          <div class="col-xs-7 text-right">
+            <?=$this->render('search/controls/sort.phtml')?>
+          </div>
+        </div>
+        <? $i = 0; foreach ($this->transactions as $resource): ?>
+          <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
+          <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="row myresearch-row">
+            <div class="col-sm-1 text-left hidden-xs">
+              <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
+                <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+              <? else: ?>
+                <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+              <? endif; ?>
+            </div>
+            <div class="col-sm-7 col-xs-12">
+              <?
+                // If this is a non-missing Solr record, we should display a link:
+                if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
+                  // Use ILS title if available since it may contain e.g. issue number
+                  if (!empty($ilsDetails['title'])) {
+                    $title = trim($ilsDetails['title'], '/: ');
+                  } else {
+                    $title = $resource->getTitle();
+                    $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
+                  }
+                  echo '<h3><a href="' . $this->recordLink()->getUrl($resource) .
+                    '" class="record-title">' . $title . '</a></h3>';
+                } else if (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
+                  // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
+                  echo '<h3 class="record-title">' . $this->escapeHtml($ilsDetails['title']) . '</h3>';
+                } else {
+                  // Last resort -- indicate that no title could be found.
+                  echo '<h3 class="record-title">' . $this->transEsc('Title not available') . '</h3>';
+                }
+              ?>
+              <div class="record-authors">
+              <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
+                <?=$this->record($resource)->getFormatList() ?>
+                <br/>
+              <? endif; ?>
+              <? $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
+                <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
+              <? endif; ?>
+
+              <? if (!empty($ilsDetails['volume'])): ?>
+                <strong><?=$this->transEsc('Issue')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
+                <br />
+              <? endif; ?>
+
+              <? if (!empty($ilsDetails['publication_year'])): ?>
+                <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
+                <br />
+              <? endif; ?>
+              </div>
+            </div>
+            <div class="col-xs-2 visible-xs"></div>
+            <div class="col-xs-10 col-sm-4 checkedout-status-information">
+              <? if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
+                <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], [], $ilsDetails['institution_name'])?></strong>
+                <br />
+              <? endif; ?>
+
+              <? if (!empty($ilsDetails['borrowingLocation'])): ?>
+                <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['borrowingLocation'], [], $ilsDetails['borrowingLocation'])?>
+                <br />
+              <? endif; ?>
+
+              <? if (!empty($ilsDetails['duedate'])): ?>
+                <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><? endif; ?></strong>
+              <? endif; ?>
+            </div>
+          </div>
+        <? endforeach; ?>
+        <? if ($template = $this->content()->findTemplateForLng("content/Additions/checkout-history-post-list")): ?>
+          <div class="checkout-history-post-list"><?=$this->render($template)?></div>
+        <? endif; ?>
+      <? else: ?>
+        <h4><?=$this->transEsc('You do not have any items in the checkout history')?>.</h4>
+      <? endif; ?>
+    <? endif; ?>
+  </div>
+</div>
+<!-- END of: finna - myresearch/checkouthistory.phtml -->

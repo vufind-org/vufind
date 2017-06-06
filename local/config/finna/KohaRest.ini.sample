@@ -35,6 +35,29 @@ excludePickupLocations = 1:6:10:15:29:32:34:37:38:39:53:79:87:88
 [changePickupLocation]
 method = driver
 
+; Changing of checkout history state is enabled if method parameter is set. Only
+; valid value is 'driver'.
+[updateTransactionHistoryState]
+method = driver
+options[0] = checkout_history_forever
+options[1] = checkout_history_default
+options[2] = checkout_history_never
+
+; Changing of messaging settings is enabled if method parameter is set. Only valid
+; value for Koha is 'driver'.
+[updateMessagingSettings]
+method = driver
+
+; Changing of SMS alert number is enabled if method parameter is set. Only valid
+; value for Koha is 'driver'.
+[updateSmsNumber]
+method = driver
+
+; Due date reminder settings
+[dueDateReminder]
+; By default due date reminder is disabled in Finna since the ILS does the job
+enabled = false
+
 ; Uncomment the following lines to enable password (PIN) change
 [changePassword]
 ; PIN change parameters. The default limits are taken from the interface documentation.

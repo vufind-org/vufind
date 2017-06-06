@@ -451,7 +451,7 @@ $staticRoutes = [
     'Browse/Database', 'Browse/Journal',
     'LocationService/Modal',
     'MetaLib/Home', 'MetaLib/Search', 'MetaLib/Advanced',
-    'MyResearch/SaveCustomOrder',
+    'MyResearch/CheckoutHistory', 'MyResearch/SaveCustomOrder',
     'OrganisationInfo/Home',
     'PCI/Home', 'PCI/Search', 'PCI/Record',
     'Search/StreetSearch'

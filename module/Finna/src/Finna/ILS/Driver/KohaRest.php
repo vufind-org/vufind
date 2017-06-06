@@ -43,6 +43,19 @@ use VuFind\Exception\ILS as ILSException;
 class KohaRest extends \VuFind\ILS\Driver\KohaRest
 {
     /**
+     * Mappings from Koha messaging preferences
+     *
+     * @var array
+     */
+    protected $messagingPrefTypeMap = [
+        'Advance_Notice' => 'dueDateAlert',
+        'Hold_Filled' => 'pickUpNotice',
+        'Item_Check_in' => 'checkinNotice',
+        'Item_Checkout' => 'checkoutNotice',
+        'Item_Due' => 'dueDateNotice'
+    ];
+
+    /**
      * Get Holding
      *
      * This is responsible for retrieving the holding information of a certain
@@ -128,10 +141,93 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             ? $this->dateConverter->convertToDisplayDate(
                 'Y-m-d', $result['dateexpiry']
             ) : '';
+
+        $guarantor = [];
+        $guarantees = [];
+        if (!empty($result['guarantorid'])) {
+            $guarantorRecord = $this->makeRequest(
+                ['v1', 'patrons', $result['guarantorid']], false, 'GET', $patron
+            );
+            if ($guarantorRecord) {
+                $guarantor['firstname'] = $guarantorRecord['firstname'];
+                $guarantor['lastname'] = $guarantorRecord['surname'];
+            }
+        } else {
+            // Assume patron can have guarantees only if there is no guarantor
+            $guaranteeRecords = $this->makeRequest(
+                ['v1', 'patrons'], ['guarantorid' => $patron['id']], 'GET',
+                $patron
+            );
+            foreach ($guaranteeRecords as $guarantee) {
+                $guarantees[] = [
+                    'firstname' => $guarantee['firstname'],
+                    'lastname' => $guarantee['surname']
+                ];
+            }
+        }
+
+        $messagingPrefs = $this->makeRequest(
+            ['v1', 'messaging_preferences'],
+            ['borrowernumber' => $patron['id']],
+            'GET',
+            $patron
+        );
+
+        $messagingSettings = [];
+        foreach ($messagingPrefs as $type => $prefs) {
+            $typeName = isset($this->messagingPrefTypeMap[$type])
+                ? $this->messagingPrefTypeMap[$type] : $type;
+            $settings = [
+                'type' => $typeName
+            ];
+            if (isset($prefs['transport_types'])) {
+                $settings['settings']['transport_types'] = [
+                    'type' => 'multiselect'
+                ];
+                foreach ($prefs['transport_types'] as $key => $active) {
+                    $settings['settings']['transport_types']['options'][$key] = [
+                        'active' => $active
+                    ];
+                }
+            }
+            if (isset($prefs['digest'])) {
+                $settings['settings']['digest'] = [
+                    'type' => 'boolean',
+                    'name' => '',
+                    'active' => $prefs['digest']['value'],
+                    'readonly' => !$prefs['digest']['configurable']
+                ];
+            }
+            if (isset($prefs['days_in_advance'])
+                && ($prefs['days_in_advance']['configurable']
+                || null !== $prefs['days_in_advance']['value'])
+            ) {
+                $options = [];
+                for ($i = 0; $i <= 30; $i++) {
+                    $options[$i] = [
+                        'name' => $this->translate(
+                            1 === $i ? 'messaging_settings_num_of_days'
+                            : 'messaging_settings_num_of_days_plural',
+                            ['%%days%%' => $i]
+                        ),
+                        'active' => $i == $prefs['days_in_advance']['value']
+                    ];
+                }
+                $settings['settings']['days_in_advance'] = [
+                    'type' => 'select',
+                    'value' => $prefs['days_in_advance']['value'],
+                    'options' => $options,
+                    'readonly' => !$prefs['days_in_advance']['configurable']
+                ];
+            }
+            $messagingSettings[$type] = $settings;
+        }
+
         return [
             'firstname' => $result['firstname'],
             'lastname' => $result['surname'],
             'phone' => $result['mobile'],
+            'smsnumber' => $result['smsalertnumber'],
             'email' => $result['email'],
             'address1' => $result['address'],
             'address2' => $result['address2'],
@@ -140,8 +236,195 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             'country' => $result['country'],
             'expiration_date' => $expirationDate,
             'hold_identifier' => $result['othernames'],
+            'guarantor' => $guarantor,
+            'guarantees' => $guarantees,
+            'checkout_history' => $result['privacy'],
+            'messagingServices' => $messagingSettings,
             'full_data' => $result
         ];
+    }
+
+    /**
+     * Get Patron Transaction History
+     *
+     * This is responsible for retrieving all historical transactions
+     * (i.e. checked out items)
+     * by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Retrieval params that may contain the following keys:
+     *   start  Start offset (0-based)
+     *   limit  Maximum number of records to return
+     *   sort   Sorting order, one of:
+     *          checkout asc
+     *          checkout desc
+     *          due asc
+     *          due desc
+     *
+     * @throws DateException
+     * @throws ILSException
+     * @return array        Array of the patron's transactions on success.
+     */
+    public function getMyTransactionHistory($patron, $params)
+    {
+        $transactions = $this->makeRequest(
+            ['v1', 'checkouts', 'history'],
+            ['borrowernumber' => $patron['id']],
+            'GET',
+            $patron
+        );
+
+        // Filter out any empty records
+        $transactions = array_filter(
+            $transactions,
+            function ($entry) {
+                return !empty($entry['itemnumber']);
+            }
+        );
+
+        if (empty($transactions)) {
+            return [
+                'count' => 0,
+                'transactions' => []
+            ];
+        }
+
+        // Sort first
+        $sort = explode(
+            ' ', !empty($params['sort']) ? $params['sort'] : 'checkout desc', 2
+        );
+        if ($sort[0] == 'checkout') {
+            $sortkey = 'issuedate';
+        } else {
+            $sortKey = 'date_due';
+        }
+        $ascending = !empty($sort[1]) && 'asc' === $sort[1];
+        usort(
+            $transactions,
+            function ($a, $b) use ($sortKey, $ascending) {
+                $akey = $a[$sortKey];
+                $bkey = $b[$sortKey];
+                $res = $ascending ? strcmp($akey, $bkey) : strcmp($bkey, $akey);
+                if (0 === $res) {
+                    $res = $a['itemnumber'] - $b['itemnumber'];
+                }
+                return $res;
+            }
+        );
+
+        $result = [
+            'count' => count($transactions),
+            'transactions' => []
+        ];
+
+        // Handle start and limit
+        if (!empty($params['start']) || !empty($params['limit'])) {
+            $transactions = array_slice(
+                $transactions,
+                !empty($params['start']) ? $params['start'] : 0,
+                !empty($params['limit']) ? $params['limit'] : null
+            );
+        }
+
+        foreach ($transactions as $entry) {
+            try {
+                $item = $this->getItem($entry['itemnumber']);
+            } catch (\Exception $e) {
+                $item = [];
+            }
+            $volume = isset($item['enumchron'])
+                ? $item['enumchron'] : '';
+            $title = '';
+            if (!empty($item['biblionumber'])) {
+                $bib = $this->getBibRecord($item['biblionumber']);
+                if (!empty($bib['title'])) {
+                    $title = $bib['title'];
+                }
+                if (!empty($bib['title_remainder'])) {
+                    $title .= ' ' . $bib['title_remainder'];
+                    $title = trim($title);
+                }
+            }
+
+            $dueStatus = false;
+            $now = time();
+            $dueTimeStamp = strtotime($entry['date_due']);
+            if (is_numeric($dueTimeStamp)) {
+                if ($now > $dueTimeStamp) {
+                    $dueStatus = 'overdue';
+                } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
+                    $dueStatus = 'due';
+                }
+            }
+
+            $renewable = $entry['renewable'];
+            $message = '';
+            if (!$renewable) {
+                $message = $this->mapRenewalBlockReason(
+                    $entry['renewability_error']
+                );
+            }
+
+            $transaction = [
+                'id' => isset($item['biblionumber']) ? $item['biblionumber'] : '',
+                'checkout_id' => $entry['issue_id'],
+                'item_id' => $entry['itemnumber'],
+                'title' => $title,
+                'volume' => $volume,
+                'duedate' => $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d\TH:i:sP', $entry['date_due']
+                ),
+                'dueStatus' => $dueStatus,
+                'renew' => $entry['renewals'],
+                'renewLimit' => $entry['max_renewals'],
+                'renewable' => $renewable,
+                'message' => $message
+            ];
+
+            $result['transactions'][] = $transaction;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Update Patron Transaction History State
+     *
+     * Enable or disable patron's transaction history
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param mixed $state  Any of the configured values
+     *
+     * @return array Associative array of the results
+     */
+    public function updateTransactionHistoryState($patron, $state)
+    {
+        $request = [
+            'privacy' => (int)$state
+        ];
+
+        list($code, $result) = $this->makeRequest(
+            ['v1', 'patrons', $patron['id']],
+            json_encode($request),
+            'PATCH',
+            $patron,
+            true
+        );
+        if (!in_array($code, [200, 202, 204])) {
+            return  [
+                'success' => false,
+                'status' => 'Changing the checkout history state failed',
+                'sys_message' => isset($result['error']) ? $result['error'] : $code
+            ];
+        }
+
+        return [
+            'success' => true,
+            'status' => $code == 202
+                ? 'request_change_done' : 'request_change_accepted',
+            'sys_message' => ''
+        ];
+
     }
 
     /**
@@ -162,11 +445,49 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         list($code, $result) = $this->makeRequest(
             ['v1', 'patrons', $patron['id']],
             json_encode($request),
-            'PUT',
+            'PATCH',
             $patron,
             true
         );
-        if ($code != 202 && $code != 204) {
+        if (!in_array($code, [200, 202, 204])) {
+            return  [
+                'success' => false,
+                'status' => 'Changing the phone number failed',
+                'sys_message' => isset($result['error']) ? $result['error'] : $code
+            ];
+        }
+
+        return [
+            'success' => true,
+            'status' => $code == 202
+                ? 'request_change_done' : 'request_change_accepted',
+            'sys_message' => ''
+        ];
+    }
+
+    /**
+     * Update patron's SMS alert number
+     *
+     * @param array  $patron Patron array
+     * @param string $number SMS alert number
+     *
+     * @throws ILSException
+     *
+     * @return array Associative array of the results
+     */
+    public function updateSmsNumber($patron, $number)
+    {
+        $request = [
+            'smsalertnumber' => $number
+        ];
+        list($code, $result) = $this->makeRequest(
+            ['v1', 'patrons', $patron['id']],
+            json_encode($request),
+            'PATCH',
+            $patron,
+            true
+        );
+        if (!in_array($code, [200, 202, 204])) {
             return  [
                 'success' => false,
                 'status' => 'Changing the phone number failed',
@@ -200,11 +521,11 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         list($code, $result) = $this->makeRequest(
             ['v1', 'patrons', $patron['id']],
             json_encode($request),
-            'PUT',
+            'PATCH',
             $patron,
             true
         );
-        if ($code != 202 && $code != 204) {
+        if (!in_array($code, [200, 202, 204])) {
             return  [
                 'success' => false,
                 'status' => 'Changing the email address failed',
@@ -262,6 +583,76 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             return  [
                 'success' => false,
                 'status' => 'Changing the contact information failed',
+                'sys_message' => isset($result['error']) ? $result['error'] : $code
+            ];
+        }
+
+        return [
+            'success' => true,
+            'status' => $code == 202
+                ? 'request_change_done' : 'request_change_accepted',
+            'sys_message' => ''
+        ];
+    }
+
+    /**
+     * Update patron messaging settings
+     *
+     * @param array $patron  Patron array
+     * @param array $details Associative array of messaging settings
+     *
+     * @throws ILSException
+     *
+     * @return array Associative array of the results
+     */
+    public function updateMessagingSettings($patron, $details)
+    {
+        $messagingPrefs = $this->makeRequest(
+            ['v1', 'messaging_preferences'],
+            ['borrowernumber' => $patron['id']],
+            'GET',
+            $patron
+        );
+
+        $messagingSettings = [];
+        foreach ($details as $prefId => $pref) {
+            $result = [];
+            foreach ($pref['settings'] as $settingId => $setting) {
+                if (!empty($setting['readonly'])) {
+                    continue;
+                }
+                if ('boolean' === $setting['type']) {
+                    $result[$settingId] = [
+                        'value' => $setting['active']
+                    ];
+                } elseif ('select' === $setting['type']) {
+                    $result[$settingId] = [
+                        'value' => ctype_digit($setting['value'])
+                            ? (int)$setting['value'] : $setting['value']
+                    ];
+                } else {
+                    foreach ($setting['options'] as $optionId => $option) {
+                        $result[$settingId][$optionId] = $option['active'];
+                    }
+                }
+            }
+            $messagingSettings[$prefId] = $result;
+        }
+
+        list($code, $result) = $this->makeRequest(
+            ['v1', 'messaging_preferences'],
+            [
+                'borrowernumber' => $patron['id'],
+                '##body##' => json_encode($messagingSettings)
+            ],
+            'PUT',
+            $patron,
+            true
+        );
+        if ($code >= 300) {
+            return  [
+                'success' => false,
+                'status' => 'Changing the preferences failed',
                 'sys_message' => isset($result['error']) ? $result['error'] : $code
             ];
         }
