@@ -267,40 +267,6 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
      */
     public function getMyTransactionHistory($patron, $params)
     {
-        $transactions = $this->makeRequest(
-            ['v1', 'checkouts', 'history'],
-            ['borrowernumber' => $patron['id']],
-            'GET',
-            $patron
-        );
-
-        $transactionDetails = [];
-        foreach ($transactions as $transaction) {
-            $data = $this->makeRequest(
-                ['v1', 'checkouts', 'history', $transaction['issue_id']],
-                false,
-                'GET',
-                $patron
-            );
-            $transactionDetails[] = $data;
-        }
-
-        // Filter out any empty records
-        $transactionDetails = array_filter(
-            $transactionDetails,
-            function ($entry) {
-                return !empty($entry['itemnumber']);
-            }
-        );
-
-        if (empty($transactionDetails)) {
-            return [
-                'count' => 0,
-                'transactions' => []
-            ];
-        }
-
-        // Sort first
         $sort = explode(
             ' ', !empty($params['sort']) ? $params['sort'] : 'checkout desc', 2
         );
@@ -309,35 +275,34 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         } else {
             $sortKey = 'date_due';
         }
-        $ascending = !empty($sort[1]) && 'asc' === $sort[1];
-        usort(
-            $transactionDetails,
-            function ($a, $b) use ($sortKey, $ascending) {
-                $akey = $a[$sortKey];
-                $bkey = $b[$sortKey];
-                $res = $ascending ? strcmp($akey, $bkey) : strcmp($bkey, $akey);
-                if (0 === $res) {
-                    $res = $a['issue_id'] - $b['issue_id'];
-                }
-                return $res;
-            }
+        $direction = (isset($sort[1]) && 'desc' === $sort[1]) ? 'desc' : 'asc';
+
+        $queryParams = [
+            'borrowernumber' => $patron['id'],
+            'sort' => $sortKey,
+            'order' => $direction
+        ];
+
+        if (!empty($params['start'])) {
+            $queryParams['offset'] = $params['start'];
+        }
+        if (!empty($params['limit'])) {
+            $queryParams['limit'] = $params['limit'];
+        }
+
+        $transactions = $this->makeRequest(
+            ['v1', 'checkouts', 'history'],
+            $queryParams,
+            'GET',
+            $patron
         );
 
         $result = [
-            'count' => count($transactionDetails),
+            'count' => $transactions['total'],
             'transactions' => []
         ];
 
-        // Handle start and limit
-        if (!empty($params['start']) || !empty($params['limit'])) {
-            $transactionDetails = array_slice(
-                $transactionDetails,
-                !empty($params['start']) ? $params['start'] : 0,
-                !empty($params['limit']) ? $params['limit'] : null
-            );
-        }
-
-        foreach ($transactionDetails as $entry) {
+        foreach ($transactions['records'] as $entry) {
             try {
                 $item = $this->getItem($entry['itemnumber']);
             } catch (\Exception $e) {
