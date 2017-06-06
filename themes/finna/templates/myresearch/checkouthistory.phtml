@@ -99,6 +99,10 @@
                 <br />
               <? endif; ?>
 
+              <? if (!empty($ilsDetails['date'])): ?>
+                <strong><?=$this->transEsc('Checkout Date')?>: <?=$this->escapeHtml($ilsDetails['date'])?></strong>
+                <br>
+              <? endif; ?>
               <? if (!empty($ilsDetails['duedate'])): ?>
                 <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><? endif; ?></strong>
               <? endif; ?>

@@ -274,15 +274,26 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             $patron
         );
 
+        $transactionDetails = [];
+        foreach ($transactions as $transaction) {
+            $data = $this->makeRequest(
+                ['v1', 'checkouts', 'history', $transaction['issue_id']],
+                false,
+                'GET',
+                $patron
+            );
+            $transactionDetails[] = $data;
+        }
+
         // Filter out any empty records
-        $transactions = array_filter(
-            $transactions,
+        $transactionDetails = array_filter(
+            $transactionDetails,
             function ($entry) {
                 return !empty($entry['itemnumber']);
             }
         );
 
-        if (empty($transactions)) {
+        if (empty($transactionDetails)) {
             return [
                 'count' => 0,
                 'transactions' => []
@@ -294,39 +305,39 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             ' ', !empty($params['sort']) ? $params['sort'] : 'checkout desc', 2
         );
         if ($sort[0] == 'checkout') {
-            $sortkey = 'issuedate';
+            $sortKey = 'issuedate';
         } else {
             $sortKey = 'date_due';
         }
         $ascending = !empty($sort[1]) && 'asc' === $sort[1];
         usort(
-            $transactions,
+            $transactionDetails,
             function ($a, $b) use ($sortKey, $ascending) {
                 $akey = $a[$sortKey];
                 $bkey = $b[$sortKey];
                 $res = $ascending ? strcmp($akey, $bkey) : strcmp($bkey, $akey);
                 if (0 === $res) {
-                    $res = $a['itemnumber'] - $b['itemnumber'];
+                    $res = $a['issue_id'] - $b['issue_id'];
                 }
                 return $res;
             }
         );
 
         $result = [
-            'count' => count($transactions),
+            'count' => count($transactionDetails),
             'transactions' => []
         ];
 
         // Handle start and limit
         if (!empty($params['start']) || !empty($params['limit'])) {
-            $transactions = array_slice(
-                $transactions,
+            $transactionDetails = array_slice(
+                $transactionDetails,
                 !empty($params['start']) ? $params['start'] : 0,
                 !empty($params['limit']) ? $params['limit'] : null
             );
         }
 
-        foreach ($transactions as $entry) {
+        foreach ($transactionDetails as $entry) {
             try {
                 $item = $this->getItem($entry['itemnumber']);
             } catch (\Exception $e) {
@@ -357,28 +368,20 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 }
             }
 
-            $renewable = $entry['renewable'];
-            $message = '';
-            if (!$renewable) {
-                $message = $this->mapRenewalBlockReason(
-                    $entry['renewability_error']
-                );
-            }
-
             $transaction = [
                 'id' => isset($item['biblionumber']) ? $item['biblionumber'] : '',
                 'checkout_id' => $entry['issue_id'],
                 'item_id' => $entry['itemnumber'],
                 'title' => $title,
                 'volume' => $volume,
+                'date' => $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d\TH:i:sP', $entry['issuedate']
+                ),
                 'duedate' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d\TH:i:sP', $entry['date_due']
                 ),
                 'dueStatus' => $dueStatus,
-                'renew' => $entry['renewals'],
-                'renewLimit' => $entry['max_renewals'],
-                'renewable' => $renewable,
-                'message' => $message
+                'renew' => $entry['renewals']
             ];
 
             $result['transactions'][] = $transaction;
