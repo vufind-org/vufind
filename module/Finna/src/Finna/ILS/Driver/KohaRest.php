@@ -134,21 +134,6 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     public function getMyProfile($patron)
     {
         $result = $this->makeRequest(
-            ['v1', 'checkouts', 'history'],
-            ['borrowernumber' => $patron['id']],
-            'GET',
-            $patron
-        );
-        foreach ($result as $loan) {
-            $loanDetails = $this->makeRequest(
-                ['v1', 'checkouts', 'history', $loan['issue_id']],
-                false,
-                'GET',
-                $patron
-            );
-        }
-
-        $result = $this->makeRequest(
             ['v1', 'patrons', $patron['id']], false, 'GET', $patron
         );
 
@@ -242,6 +227,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             'firstname' => $result['firstname'],
             'lastname' => $result['surname'],
             'phone' => $result['mobile'],
+            'smsnumber' => $result['smsalertnumber'],
             'email' => $result['email'],
             'address1' => $result['address'],
             'address2' => $result['address2'],
@@ -459,11 +445,49 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         list($code, $result) = $this->makeRequest(
             ['v1', 'patrons', $patron['id']],
             json_encode($request),
-            'PUT',
+            'PATCH',
             $patron,
             true
         );
-        if ($code != 202 && $code != 204) {
+        if (!in_array($code, [200, 202, 204])) {
+            return  [
+                'success' => false,
+                'status' => 'Changing the phone number failed',
+                'sys_message' => isset($result['error']) ? $result['error'] : $code
+            ];
+        }
+
+        return [
+            'success' => true,
+            'status' => $code == 202
+                ? 'request_change_done' : 'request_change_accepted',
+            'sys_message' => ''
+        ];
+    }
+
+    /**
+     * Update patron's SMS alert number
+     *
+     * @param array  $patron Patron array
+     * @param string $number SMS alert number
+     *
+     * @throws ILSException
+     *
+     * @return array Associative array of the results
+     */
+    public function updateSmsNumber($patron, $number)
+    {
+        $request = [
+            'smsalertnumber' => $number
+        ];
+        list($code, $result) = $this->makeRequest(
+            ['v1', 'patrons', $patron['id']],
+            json_encode($request),
+            'PATCH',
+            $patron,
+            true
+        );
+        if (!in_array($code, [200, 202, 204])) {
             return  [
                 'success' => false,
                 'status' => 'Changing the phone number failed',
@@ -497,11 +521,11 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         list($code, $result) = $this->makeRequest(
             ['v1', 'patrons', $patron['id']],
             json_encode($request),
-            'PUT',
+            'PATCH',
             $patron,
             true
         );
-        if ($code != 202 && $code != 204) {
+        if (!in_array($code, [200, 202, 204])) {
             return  [
                 'success' => false,
                 'status' => 'Changing the email address failed',

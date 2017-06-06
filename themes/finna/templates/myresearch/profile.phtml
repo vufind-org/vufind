@@ -16,12 +16,13 @@
 
     $updateAddress = $this->ils()->checkFunction('updateAddress', compact($user));
     $updatePhone = $this->ils()->checkFunction('updatePhone', compact($user));
+    $updateSmsNumber = $this->ils()->checkFunction('updateSmsNumber', compact($user));
     $updateEmail = $this->ils()->checkFunction('updateEmail', compact($user));
     $updateCheckoutHistory = $this->ils()->checkFunction('updateTransactionHistoryState', compact($user));
 
     $updateAddressLink = '';
     if ($updateAddress) {
-      $linkText = $this->translate(($updatePhone || $updateEmail) ? 'request_address_change' : 'request_contact_information_change');
+      $linkText = $this->translate(($updatePhone || $updateEmail || $updateSmsNumber) ? 'request_address_change' : 'request_contact_information_change');
       ob_start();
 ?>
         <? if ($updateAddress['method'] == 'email' || $updateAddress['method'] == 'driver'): ?>
@@ -174,6 +175,17 @@
           <? else: ?>
             <div class="col-sm-4 profile-title"><?=$this->transEsc('Phone') ?>:</div>
             <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['phone']) ?></div>
+          <? endif; ?>
+        <? endif; ?>
+        <? if (!empty($this->profile['smsnumber']) || $updateSmsNumber): ?>
+          <? if ($updateSmsNumber): ?>
+            <div class="col-sm-4 profile-title"><?=$this->transEsc('SMS Number') ?>:</div>
+            <div class="col-sm-8">
+              <input class="form-control" type="tel" name="profile_sms_number" value="<?=empty($this->profile['smsnumber']) ? '' : $this->escapeHtml($this->profile['smsnumber']) ?>" title="<?=$this->transEsc('SMS Number') ?>" />
+            </div>
+          <? else: ?>
+            <div class="col-sm-4 profile-title"><?=$this->transEsc('SMS Number') ?>:</div>
+            <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['smsnumber']) ?></div>
           <? endif; ?>
         <? endif; ?>
         <? if (!empty($this->profile['email']) || $updateEmail): ?>

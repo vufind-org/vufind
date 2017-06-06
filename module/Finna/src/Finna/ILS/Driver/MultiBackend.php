@@ -134,6 +134,30 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     }
 
     /**
+     * Update patron's SMS number
+     *
+     * @param array  $patron Patron array
+     * @param string $number SMS number
+     *
+     * @throws ILSException
+     *
+     * @return array Associative array of the results
+     */
+    public function updateSmsNumber($patron, $number)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver
+            && $this->methodSupported($driver, 'updatePhone', [$patron, $number])
+        ) {
+            return $driver->updateSmsNumber(
+                $this->stripIdPrefixes($patron, $source), $number
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
      * Update patron's email address
      *
      * @param array  $patron Patron array

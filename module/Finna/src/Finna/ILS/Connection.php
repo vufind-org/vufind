@@ -290,6 +290,42 @@ class Connection extends \VuFind\ILS\Connection
     }
 
     /**
+     * Check for updateSmsNumber
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports updating phone
+     * number.
+     *
+     * @param array $functionConfig The configuration values
+     * @param array $params         Patron data
+     *
+     * @return mixed On success, array of configuration data; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodupdateSmsNumber($functionConfig, $params)
+    {
+        if (!isset($functionConfig['method'])) {
+            return false;
+        }
+        if ($functionConfig['method'] == 'driver'
+            && !empty($functionConfig['emailAddress'])
+        ) {
+            return $functionConfig;
+        }
+        if ($functionConfig['method'] == 'url' && !empty($functionConfig['url'])) {
+            return $functionConfig;
+        }
+        if ($functionConfig['method'] == 'driver'
+            && $this->checkCapability('updateSmsNumber', [$params ?: []])
+        ) {
+            return $functionConfig;
+        }
+
+        return false;
+    }
+
+    /**
      * Check if catalog login is availale
      *
      * @return bool true if the login is available

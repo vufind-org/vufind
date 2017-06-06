@@ -543,6 +543,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             if (false === $catalog->checkFunction('updatePhone', $patron)) {
                 $fields['phone'] = ['label' => 'Phone'];
             }
+            if (false === $catalog->checkFunction('updateSmsNumber', $patron)) {
+                $fields['sms_number'] = ['label' => 'SMS Number'];
+            }
         }
 
         $view = $this->createViewModel();
@@ -1184,12 +1187,22 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $success = false;
             }
         }
+        // Update SMS Number
+        if (isset($values->profile_sms_number)
+            && $catalog->checkFunction('updateSmsNumber', $patron)
+        ) {
+            $result = $catalog->updateSmsNumber($patron, $values->profile_sms_number);
+            if (!$result['success']) {
+                $this->flashMessenger()->addErrorMessage($result['status']);
+                $success = false;
+            }
+        }
         // Update checkout history state
         if (isset($values->checkout_history)
             && $catalog->checkFunction('updateTransactionHistoryState', $patron)
         ) {
             $result = $catalog->updateTransactionHistoryState(
-                $patron, (bool)$values->checkout_history
+                $patron, $values->checkout_history
             );
             if (!$result['success']) {
                 $this->flashMessenger()->addErrorMessage($result['status']);
