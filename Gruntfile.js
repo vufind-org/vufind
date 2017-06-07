@@ -28,25 +28,31 @@ module.exports = function(grunt) {
   }
 
   var fontAwesomePath = '"../../bootstrap3/css/fonts"';
+  var lessFileSettings = [{
+    expand: true,
+    src: "themes/*/less/compiled.less",
+    rename: function (dest, src) {
+      return src.replace('/less/', '/css/').replace('.less', '.css');
+    }
+  }];
 
   grunt.initConfig({
     // LESS compilation
     less: {
       compile: {
+        files: lessFileSettings,
         options: {
           paths: getLoadPaths,
           compress: true,
           modifyVars: {
             'fa-font-path': fontAwesomePath
           }
-        },
-        files: [{
-          expand: true,
-          src: "themes/*/less/compiled.less",
-          rename: function (dest, src) {
-            return src.replace('/less/', '/css/').replace('.less', '.css');
-          }
-        }]
+        }
+      }
+    },
+    // Less with maps
+    lessdev: {
+      less: {
       }
     },
     // Less with maps
@@ -151,6 +157,7 @@ module.exports = function(grunt) {
   grunt.registerMultiTask('lessdev', function lessWithMaps() {
     grunt.config.set('less', {
       dev: {
+        files: lessFileSettings,
         options: {
           paths: getLoadPaths,
           sourceMap: true,
@@ -158,14 +165,7 @@ module.exports = function(grunt) {
           modifyVars: {
             'fa-font-path': fontAwesomePath
           }
-        },
-        files: [{
-          expand: true,
-          src: "themes/*/less/compiled.less",
-          rename: function (dest, src) {
-            return src.replace('/less/', '/css/').replace('.less', '.css');
-          }
-        }]
+        }
       }
     });
     grunt.task.run('less');
