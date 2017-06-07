@@ -112,6 +112,13 @@ class Loader extends \VuFind\ImageLoader
     protected $upc = null;
 
     /**
+     * User record id number parameter
+     *
+     * @var string
+     */
+    protected $recordid = null;
+
+    /**
      * User size parameter
      *
      * @var string
@@ -209,6 +216,7 @@ class Loader extends \VuFind\ImageLoader
             'issn' => null,
             'oclc' => null,
             'upc' => null,
+            'recordid' => null,
         ];
     }
 
@@ -253,6 +261,7 @@ class Loader extends \VuFind\ImageLoader
         }
         $this->oclc = $settings['oclc'];
         $this->upc = $settings['upc'];
+        $this->recordid = $settings['recordid'];
         $this->type = preg_replace('/[^a-zA-Z]/', '', $settings['type']);
         $this->size = $settings['size'];
     }
@@ -344,6 +353,9 @@ class Loader extends \VuFind\ImageLoader
         }
         if ($this->upc && strlen($this->upc) > 0) {
             $ids['upc'] = $this->upc;
+        }
+        if ($this->recordid && strlen($this->recordid) > 0) {
+            $ids['recordid'] = $this->recordid;
         }
         return $ids;
     }
@@ -557,44 +569,52 @@ class Loader extends \VuFind\ImageLoader
      */
     protected function processImageURL($url, $cache = true)
     {
-        // Attempt to pull down the image:
-        $result = $this->client->setUri($url)->send();
-        if (!$result->isSuccess()) {
-            $this->debug("Failed to retrieve image from " + $url);
-            return false;
+        // Check to see if url is filepath MOD
+        if (substr($url, 0, 5) == "file:") {
+            $imagePath = substr($url, 5);
+
+            // Display the image:
+            $this->contentType = 'image/jpeg';
+            $this->image = file_get_contents($imagePath);
+            return true;
+        } else {
+            // Attempt to pull down the image:
+            $result = $this->client->setUri($url)->send();
+            if (!$result->isSuccess()) {
+                $this->debug("Failed to retrieve image from " + $url);
+                return false;
+            }
+            $image = $result->getBody();
+
+            if ('' == $image) {
+                return false;
+            }
+
+            // Figure out file paths -- $tempFile will be used to store the
+            // image for analysis.  $finalFile will be used for long-term storage if
+            // $cache is true or for temporary display purposes if $cache is false.
+            $tempFile = str_replace('.jpg', uniqid(), $this->localFile);
+            $finalFile = $cache ? $this->localFile : $tempFile . '.jpg';
+
+            // Write image data to disk:
+            if (!@file_put_contents($tempFile, $image)) {
+                throw new \Exception("Unable to write to image directory.");
+            }
+
+            // Move temporary file to final location:
+            if (!$this->validateAndMoveTempFile($image, $tempFile, $finalFile)) {
+                return false;
+            }
+
+            // Display the image:
+            $this->contentType = 'image/jpeg';
+            $this->image = file_get_contents($finalFile);
+
+            // If we don't want to cache the image, delete it now that we're done.
+            if (!$cache) {
+                @unlink($finalFile);
+            }
+            return true;
         }
-
-        $image = $result->getBody();
-
-        if ('' == $image) {
-            return false;
-        }
-
-        // Figure out file paths -- $tempFile will be used to store the
-        // image for analysis.  $finalFile will be used for long-term storage if
-        // $cache is true or for temporary display purposes if $cache is false.
-        $tempFile = str_replace('.jpg', uniqid(), $this->localFile);
-        $finalFile = $cache ? $this->localFile : $tempFile . '.jpg';
-
-        // Write image data to disk:
-        if (!@file_put_contents($tempFile, $image)) {
-            throw new \Exception("Unable to write to image directory.");
-        }
-
-        // Move temporary file to final location:
-        if (!$this->validateAndMoveTempFile($image, $tempFile, $finalFile)) {
-            return false;
-        }
-
-        // Display the image:
-        $this->contentType = 'image/jpeg';
-        $this->image = file_get_contents($finalFile);
-
-        // If we don't want to cache the image, delete it now that we're done.
-        if (!$cache) {
-            @unlink($finalFile);
-        }
-
-        return true;
     }
 }

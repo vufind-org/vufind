@@ -368,6 +368,7 @@ $config = [
                     'buchhandel' => 'VuFind\Content\Covers\Factory::getBuchhandel',
                     'contentcafe' => 'VuFind\Content\Covers\Factory::getContentCafe',
                     'syndetics' => 'VuFind\Content\Covers\Factory::getSyndetics',
+                    'localfile' => 'VuFind\Content\Covers\Factory::getLocalFile',
                 ],
                 'invokables' => [
                     'google' => 'VuFind\Content\Covers\Google',
