@@ -43,22 +43,6 @@ use Zend\Db\Adapter\Adapter;
 class Search extends \VuFind\Db\Table\Search
 {
     /**
-     * Constructor
-     *
-     * @param Adapter       $adapter Database adapter
-     * @param PluginManager $tm      Table manager
-     * @param array         $cfg     Zend Framework configuration
-     */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
-    {
-        parent::__construct($adapter, $tm, $cfg, 'search');
-        $resultSetPrototype = $this->getResultSetPrototype();
-        $resultSetPrototype->setArrayObjectPrototype(
-            $this->initializeRowPrototype('Finna\Db\Row\Search')
-        );
-    }
-
-    /**
      * Get distinct view URLs with scheduled alerts.
      *
      * @return array URLs

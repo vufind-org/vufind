@@ -241,6 +241,20 @@ $config = [
                     'solr' => 'Finna\Autocomplete\Factory::getSolr'
                 ]
             ],
+            'db_row' => [
+                'factories' => [
+                    'commentsinappropriate' => 'Finna\Db\Row\Factory::getCommentsInappropriate',
+                    'commentsrecord' => 'Finna\Db\Row\Factory::getCommentsRecord',
+                    'duedatereminder' => 'Finna\Db\Row\Factory::getDueDateReminder',
+                    'fee' => 'Finna\Db\Row\Factory::getFee',
+                    'finnacache' => 'Finna\Db\Row\Factory::getFinnaCache',
+                    'privateuser' => 'Finna\Db\Row\Factory::getPrivateUser',
+                    'search' => 'Finna\Db\Row\Factory::getSearch',
+                    'transaction' => 'Finna\Db\Row\Factory::getTransaction',
+                    'user' => 'Finna\Db\Row\Factory::getUser',
+                    'userlist' => 'Finna\Db\Row\Factory::getUserList',
+                ],
+            ],
             'db_table' => [
                 'factories' => [
                     'comments' => 'Finna\Db\Table\Factory::getComments',
