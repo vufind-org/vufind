@@ -1,4 +1,5 @@
 /*global htmlEncode, userIsLoggedIn, VuFind */
+/*exported checkSaveStatuses, checkSaveStatusesCallback */
 
 function checkSaveStatuses(_container) {
   if (!userIsLoggedIn) {
@@ -53,6 +54,11 @@ function checkSaveStatuses(_container) {
       }
     });
   }
+}
+
+function checkSaveStatusesCallback() {
+  // Make sure no event parameter etc. is passed to checkSaveStatuses()
+  checkSaveStatuses();
 }
 
 $(document).ready(function checkSaveStatusFail() {

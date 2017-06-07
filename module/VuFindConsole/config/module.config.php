@@ -59,7 +59,7 @@ $routes = [
     'util/index_reserves' => 'util index_reserves [--help|-h] [-d=s] [-t=s] [-f=s]',
     'util/optimize' => 'util optimize [<core>]',
     'util/sitemap' => 'util sitemap',
-    'util/suppressed' => 'util suppressed [--help|-h] [--authorities]',
+    'util/suppressed' => 'util suppressed [--help|-h] [--authorities] [--outfile=s]',
     'util/switch_db_hash' => 'util switch_db_hash [<newhash>] [<newkey>]',
 ];
 
