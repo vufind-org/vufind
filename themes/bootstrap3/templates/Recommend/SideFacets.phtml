@@ -4,6 +4,7 @@
   $results = $this->recommend->getResults();
   $options = $this->searchOptions($this->searchClassId);
 ?>
+<button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><i class="fa fa-angle-left"></i> <?=$this->transEsc('back') ?></button>
 <? if ($results->getResultTotal() > 0): ?>
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
 <? endif; ?>

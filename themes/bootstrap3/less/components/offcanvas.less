@@ -4,6 +4,15 @@
 .offcanvas-overlay,
 .offcanvas-toggle {display: none;}
 
+.search-filter-toggle {
+  display: block;
+  margin-top: 1rem;
+  padding: .5rem;
+  border-top: 1px solid @gray;
+  border-bottom: 1px solid @gray-light;
+  text-align: center;
+}
+
 @media screen and (max-width: 767px) {
   body.offcanvas {
     overflow-x: hidden; /* Prevent scroll on narrow devices */
@@ -62,7 +71,7 @@
       z-index: 3;
     }
     .offcanvas-toggle {
-      display: block;
+      // display: block;
       position: fixed;
       top: 0;
       width: calc(@offcanvas-padding - 5px);
