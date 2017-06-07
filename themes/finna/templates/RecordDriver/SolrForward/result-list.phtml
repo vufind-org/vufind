@@ -25,9 +25,9 @@
 ?>
 <div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
   <div class="media">
-    <div class="col-xs-9 <? if ($thumbnailAlignment == 'left'): ?><?= $combinedView ? 'col-sm-10 col-sm-push-2' : 'col-sm-8 col-sm-push-3 col-md-9 col-md-push-2' ?><? elseif ($thumbnailAlignment == 'right'): ?><?= $combinedView ? 'col-sm-10' : 'col-sm-8 col-md-9' ?><? endif; ?>">
+    <div class="col-xs-9 <? if ($thumbnailAlignment == 'left'): ?><?= $combinedView ? 'col-sm-10 col-sm-push-2' : 'col-sm-9 col-sm-push-3' ?><? elseif ($thumbnailAlignment == 'right'): ?><?= $combinedView ? 'col-sm-10' : 'col-sm-8 col-md-9' ?><? endif; ?>">
       <div class="media-body">
-        <div>
+        <div class="title-container">
           <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title" data-view="<?=isset($this->params) ? $this->params->getOptions()->getListViewOption() : 'list' ?>">
             <?=$this->record($this->driver)->getTitleHtml()?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
           </a><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
@@ -150,9 +150,44 @@
         <? if ($this->layout()->templateDir === 'list'): ?>
           <?=$this->render('list/list-notes.phtml')?>
         <? endif; ?>
+
+        <div class="hidden-print add-to-favorite-col">
+            <? /* Display qrcode if appropriate: */ ?>
+            <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+                <?
+                // Add JS Variables for QrCode
+                $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
+                ?>
+              <div class="<?= $combinedView ? 'hidden' : '' ?> hidden-xs">
+                <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="finnaQrcodeLink"><i class="fa fa-qr-code" aria-hidden="true"></i></a>
+                <div class="qrcode hidden">
+                  <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+                </div>
+              </div>
+            <? endif; ?>
+
+            <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+                <? /* Add to favorites */ ?>
+              <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart" aria-hidden="true"></i> <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span> <span class="sr-only hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
+            <? endif; ?>
+            <? /* Hierarchy tree link */ ?>
+            <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+                <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
+                <div class="hierarchyTreeLink">
+                  <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
+                  <i class="fa fa-sitemap" aria-hidden="true"></i>
+                  <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
+                      <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
+                  </a>
+                </div>
+                <? endforeach; ?>
+            <? endif; ?>
+
+            <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
+        </div>
       </div>
     </div>
-    <div class="media-<?=$thumbnailAlignment ?> col-xs-3 <? if ($thumbnailAlignment == 'left'): ?><?= $combinedView ? 'col-sm-2 col-sm-pull-10' : 'col-sm-3 col-sm-pull-8 col-md-2 col-md-pull-9' ?><? elseif ($thumbnailAlignment == 'right'): ?><?= $combinedView ? 'col-sm-2' : 'col-sm-3 col-md-2' ?><? endif; ?> resultThumb">
+    <div class="media-<?=$thumbnailAlignment ?> col-xs-3 <? if ($thumbnailAlignment == 'left'): ?><?= $combinedView ? 'col-sm-2 col-sm-pull-10' : 'col-sm-3 col-sm-pull-9' ?><? elseif ($thumbnailAlignment == 'right'): ?><?= $combinedView ? 'col-sm-2' : 'col-sm-3 col-md-2' ?><? endif; ?> resultThumb">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
     <? if ($thumbnail): ?>
@@ -160,41 +195,7 @@
     <? endif; ?>
     </div>
     <div class="clearfix visible-xs"></div>
-    <div class="col-xs-12 <?= $combinedView ? 'col-sm-10 col-sm-push-2' : 'col-sm-1' ?> hidden-print add-to-favorite-col">
-      <? /* Display qrcode if appropriate: */ ?>
-      <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
-        <?
-          // Add JS Variables for QrCode
-          $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
-        ?>
-        <div class="hidden-xs">
-          <i class="fa fa-qrcode" aria-hidden="true"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
-          <div class="qrcode hidden">
-            <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
-          </div><br/>
-        </div>
-      <? endif; ?>
-
-      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? /* Add to favorites */ ?>
-        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record <?= $combinedView ? 'pull-left combined-save-record' : '' ?>" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart" aria-hidden="true"></i> <span class="<?= $combinedView ? 'combined-save-record-text' : 'hidden-sm hidden-md hidden-lg' ?>"><?=$this->transEsc('Add to favorites')?></span> <span class="sr-only hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
-      <? endif; ?>
-      <? /* Hierarchy tree link */ ?>
-      <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
-        <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
-          <div class="hierarchyTreeLink">
-            <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
-            <i class="fa fa-sitemap" aria-hidden="true"></i>
-            <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
-              <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
-            </a>
-          </div>
-        <? endforeach; ?>
-      <? endif; ?>
-
-      <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
-    </div>
-    <div class="col-xs-12 col-sm-8 col-sm-push-3 col-md-9 col-md-push-2">
+    <div class="col-xs-12 col-sm-9 col-sm-push-3">
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
       <? /* Saved lists */ ?>
       <div class="savedLists alert alert-info hidden">
