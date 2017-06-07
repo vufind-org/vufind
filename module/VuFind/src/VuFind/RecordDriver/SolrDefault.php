@@ -1198,7 +1198,7 @@ class SolrDefault extends AbstractBase
     public function getRealTimeHoldings()
     {
         // Not supported by the Solr index -- implement in child classes.
-        return [];
+        return ['holdings' => []];
     }
 
     /**
