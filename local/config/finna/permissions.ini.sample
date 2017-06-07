@@ -113,7 +113,8 @@
 ;authenticationStrategy[] = Shibboleth
 ;authenticationStrategy[] = ILS
 ;authenticationStrategy[] = ILS-statCode
-;permission = finna.authorized
+;permission[] = finna.authorized
+;permission[] = access.EDSExtendedResults
 
 ; Admin access to finna cache clearing function. Normally no local configuration
 ; override needed.
@@ -128,8 +129,8 @@ permission = finna.cache
 ;require = ANY
 ;ipRange[] = 127.0.0.1
 ;ipRange[] = ::1
-;permission = access.api.Search
-;permission = access.api.Record
+;permission[] = access.api.Search
+;permission[] = access.api.Record
 
 ; Acess to Finna Authentication API
 ;[access.finna.api.auth]

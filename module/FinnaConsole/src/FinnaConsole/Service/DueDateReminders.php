@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2013-2016.
+ * Copyright (C) The National Library of Finland 2013-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @package  Service
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -39,6 +40,7 @@ use Zend\View\Resolver\TemplatePathStack;
  * @package  Service
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -193,6 +195,13 @@ class DueDateReminders extends AbstractService
         $this->dueDateReminderTable = $dueDateReminderTable;
         $this->catalog = $catalog;
         $this->mainConfig = $configReader->get('config');
+
+        if (isset($this->mainConfig->Catalog->loadNoILSOnFailure)
+            && $this->mainConfig->Catalog->loadNoILSOnFailure
+        ) {
+            throw new \Exception('Catalog/loadNoILSOnFailure must not be enabled');
+        }
+
         $this->datasourceConfig = $configReader->get('datasources');
         $this->configReader = $configReader;
         $this->renderer = $renderer;
@@ -225,13 +234,17 @@ class DueDateReminders extends AbstractService
         $this->msg('Processing ' . count($users) . ' users');
 
         foreach ($users as $user) {
-            $remindLoans = $this->getReminders($user);
-            if ($remindCnt = count($remindLoans)) {
+            $results = $this->getReminders($user);
+            $errors = $results['errors'];
+            $remindLoans = $results['remindLoans'];
+            $remindCnt = count($remindLoans);
+            $errorCnt = count($errors);
+            if ($remindCnt || $errorCnt) {
                 $this->msg(
-                    "$remindCnt new loans to remind for user {$user->username}"
-                    . " (id {$user->id})"
+                    "$remindCnt reminders and $errorCnt errors to send for user"
+                    . " {$user->username} (id {$user->id})"
                 );
-                $this->sendReminder($user, $remindLoans);
+                 $this->sendReminder($user, $remindLoans, $errors);
             } else {
                 $this->msg(
                     "No loans to remind for user {$user->username} (id {$user->id})"
@@ -246,7 +259,7 @@ class DueDateReminders extends AbstractService
      *
      * @param \Finna\Db\Table\Row\User $user User.
      *
-     * @return array Array of loans to be reminded.
+     * @return array Array of loans to be reminded and possible login errors.
      */
     protected function getReminders($user)
     {
@@ -259,28 +272,63 @@ class DueDateReminders extends AbstractService
         }
 
         $remindLoans = [];
+        $errors = [];
         foreach ($user->getLibraryCards() as $card) {
-            if (!$card['id']) {
+            if (!$card->id || $card->finna_due_date_reminder == 0) {
                 continue;
             }
-            $patron = null;
-            $card = $user->getLibraryCard($card['id']);
-            try {
-                $patron = $this->catalog->patronLogin(
-                    $card['cat_username'], $card['cat_password']
-                );
-            } catch (\Exception $e) {
-                $this->err('Catalog login error: ' . $e->getMessage());
-            }
-
-            if (!$patron) {
+            $ddrConfig = $this->catalog->getConfig(
+                'dueDateReminder',
+                ['cat_username' => $card->cat_username]
+            );
+            // Assume ddrConfig['enabled'] may contain also something else than a
+            // boolean..
+            if (isset($ddrConfig['enabled']) && $ddrConfig['enabled'] !== true) {
+                // Due date reminders disabled for the source
                 $this->warn(
-                    "Catalog login failed for user {$user->username}"
+                    "Due date reminders disabled for source, user {$user->username}"
                     . " (id {$user->id}), card {$card->cat_username}"
                     . " (id {$card->id})"
                 );
                 continue;
             }
+
+            $patron = null;
+            // Retrieve a complete UserCard object
+            $card = $user->getLibraryCard($card['id']);
+            try {
+                $patron = $this->catalog->patronLogin(
+                    $card->cat_username, $card->cat_password
+                );
+            } catch (\Exception $e) {
+                $this->err(
+                    "Catalog login error for user {$user->username}"
+                    . " (id {$user->id}), card {$card->cat_username}"
+                    . " (id {$card->id}): " . $e->getMessage()
+                );
+                continue;
+            }
+
+            if (null === $patron) {
+                $this->warn(
+                    "Catalog login failed for user {$user->username}"
+                    . " (id {$user->id}), card {$card->cat_username}"
+                    . " (id {$card->id}) -- disabling due date reminders for the"
+                    . ' card'
+                );
+                $errors[] = ['card' => $card['cat_username']];
+                // Disable due date reminders for this card
+                if ($user->cat_username == $card->cat_username) {
+                    // Card is the active one, update via user
+                    $user->setFinnaDueDateReminder(0);
+                } else {
+                    // Update just the card
+                    $card->finna_due_date_reminder = 0;
+                    $card->save();
+                }
+                continue;
+            }
+
             $todayTime = new \DateTime();
             try {
                 $loans = $this->catalog->getMyTransactions($patron);
@@ -297,7 +345,7 @@ class DueDateReminders extends AbstractService
                 $dueDate = new \DateTime($loan['duedate']);
                 $dayDiff = $dueDate->diff($todayTime)->days;
                 if ($todayTime >= $dueDate
-                    || $dayDiff <= $user->finna_due_date_reminder
+                    || $dayDiff <= $card->finna_due_date_reminder
                 ) {
                     $params = [
                        'user_id' => $user->id,
@@ -339,7 +387,7 @@ class DueDateReminders extends AbstractService
                 }
             }
         }
-        return $remindLoans;
+        return ['remindLoans' => $remindLoans, 'errors' => $errors];
     }
 
     /**
@@ -347,10 +395,11 @@ class DueDateReminders extends AbstractService
      *
      * @param \Finna\Db\Table\Row\User $user        User.
      * @param array                    $remindLoans Loans to be reminded.
+     * @param array                    $errors      Errors in due date checking.
      *
      * @return boolean success.
      */
-    protected function sendReminder($user, $remindLoans)
+    protected function sendReminder($user, $remindLoans, $errors)
     {
         if (!$user->email || trim($user->email) == '') {
             $this->msg(
@@ -404,14 +453,14 @@ class DueDateReminders extends AbstractService
         $key = $this->dueDateReminderTable->getUnsubscribeSecret(
             $this->hmac, $user, $user->id
         );
-        $params = [
+        $urlParams = [
             'id' => $user->id,
             'type' => 'reminder',
             'key' => $key
         ];
         $unsubscribeUrl
             = $this->urlHelper->__invoke('myresearch-unsubscribe')
-            . '?' . http_build_query($params);
+            . '?' . http_build_query($urlParams);
 
         $urlParts = explode('/', $this->currentViewPath);
         $urlView = array_pop($urlParts);
@@ -421,13 +470,32 @@ class DueDateReminders extends AbstractService
         if ($urlView != $this::DEFAULT_PATH) {
             $baseUrl .= "/$urlView";
         }
+        $serviceName = $urlInstitution . '.finna.fi';
+        $lastLogin = new \DateTime($user->finna_last_login);
+        $loginMethod = strtolower($user->finna_auth_method);
+        $dateFormat = isset($this->currentSiteConfig['Site']['displayDateFormat'])
+            ? $this->currentSiteConfig['Site']['displayDateFormat']
+            : $this->mainConfig->Site->displayDateFormat;
+
         $params = [
-             'loans' => $remindLoans,
-             'url' => $baseUrl . $this->urlHelper->__invoke('myresearch-checkedout'),
-             'unsubscribeUrl' => $baseUrl . $unsubscribeUrl,
-             'baseUrl' => $baseUrl
+            'loans' => $remindLoans,
+            'unsubscribeUrl' => $baseUrl . $unsubscribeUrl,
+            'baseUrl' => $baseUrl,
+            'lastLogin' => $lastLogin->format($dateFormat),
+            'loginMethod' => $loginMethod,
+            'serviceName' => $serviceName
         ];
-        $subject = $this->translator->translate('due_date_email_subject');
+
+        if (!empty($errors)) {
+            $subject = $this->translator->translate('due_date_email_error');
+            $params['url'] = $baseUrl
+                . $this->urlHelper->__invoke('librarycards-home');
+            $params['errors'] = $errors;
+        } else {
+            $subject = $this->translator->translate('due_date_email_subject');
+            $params['url'] = $baseUrl
+                . $this->urlHelper->__invoke('myresearch-checkedout');
+        }
         $message = $this->renderer->render("Email/due-date-reminder.phtml", $params);
         try {
             $to = $user->email;

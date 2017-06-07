@@ -204,7 +204,66 @@ JS;
       // Set up default search box if no data was provided from the template;
       // this covers case 1.  Cases 2 and 3 are then covered by logic below.
       if (!isset($this->layout()->searchbox)) {
-        $this->layout()->searchbox = $this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => isset($this->layout()->ignoreHiddenFilterMemory) ? $this->layout()->ignoreHiddenFilterMemory : false]);
+        $url = $this->searchMemory()->getLastSearchUrl();
+        if ($this->layout()->templateDir != 'record' || !$url) {
+            $this->layout()->searchbox = $this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => isset($this->layout()->ignoreHiddenFilterMemory) ? $this->layout()->ignoreHiddenFilterMemory : false]);
+        } else {
+          $searchId = $this->searchMemory()->getLastSearchId();
+          $searchType = $this->searchMemory()->getLastSearchType();
+          $lookfor = $this->searchMemory()->getLastSearchLookfor();
+
+          //parse querystring to variables
+          parse_str($url, $parsed);
+
+          if ($searchType == 'advanced') {
+            $this->layout()->searchbox = $this->context($this)->renderInContext(
+                "search/searchbox.phtml",
+                [
+                  'searchType' => "advanced",
+                  'ignoreHiddenFilterMemory' => isset($this->layout()->ignoreHiddenFilterMemory) ? $this->layout()->ignoreHiddenFilterMemory : false
+                ]
+            );
+
+            $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
+                'search/header.phtml',
+                [
+                  'searchType' => $searchType,
+                  'searchId' => $searchId,
+                  'lookfor' => $lookfor,
+                  'onRecordPage' => true
+                ]
+            );
+          } else {
+            $filters = [];
+            foreach ($parsed as $key => $filter) {
+              if (strpos($key, 'filter') !== false) {
+                //used filters to filterArray
+                foreach ($filter as $value) {
+                  $filterArray = explode(':', $value);
+                  $filterKey = $filterArray[0];
+                  $filterValue = trim($filterArray[1], '"');
+                  if (array_key_exists($filterKey, $filters)) {
+                    array_push($filters[$filterKey], $filterValue);
+                  } else {
+                    $filters[$filterKey] = [$filterValue];
+                  }
+                }
+              } elseif (strpos($key, 'type') !== false) {
+                $type = explode('#', $filter)[0];
+              }
+            }
+
+            $this->layout()->searchbox = $this->context($this)->renderInContext(
+                "search/searchbox.phtml",
+                [
+                  'lookfor' => isset($lookfor) ? $lookfor : '',
+                  'filterList' => isset($filters) ? $filters : [],
+                  'ignoreHiddenFilterMemory' => isset($this->layout()->ignoreHiddenFilterMemory) ? $this->layout()->ignoreHiddenFilterMemory : false,
+                  'searchIndex' => isset($type) ? $type : ''
+                ]
+            );
+          }
+        }
       }
     ?>
     <header class="hidden-print">

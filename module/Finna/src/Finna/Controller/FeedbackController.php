@@ -53,11 +53,15 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
     {
         $view = $this->createViewModel();
         $view->useRecaptcha = $this->recaptcha()->active('feedback');
-        $category = $this->params()->fromPost('category');
-        $name = $this->params()->fromPost('name');
-        $users_email = $this->params()->fromPost('email');
-        $comments = $this->params()->fromPost('comments');
-        $url = $this->params()->fromPost('url');
+        $view->category = $this->params()->fromPost(
+            'category', $this->params()->fromQuery('category')
+        );
+        $view->name = $this->params()->fromPost('name');
+        $view->users_email = $this->params()->fromPost('email');
+        $view->comments = $this->params()->fromPost(
+            'comments', $this->params()->fromQuery('comments')
+        );
+        $view->url = $this->params()->fromPost('url');
         $captcha = $this->params()->fromPost('captcha');
 
         // Support the old captcha mechanism for now
@@ -67,11 +71,13 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
 
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
-            if (empty($comments)) {
+            if (empty($view->comments)) {
                 throw new \Exception('Missing data.');
             }
             $validator = new \Zend\Validator\EmailAddress();
-            if (!empty($users_email) && !$validator->isValid($users_email)) {
+            if (!empty($view->users_email)
+                && !$validator->isValid($view->users_email)
+            ) {
                 throw new \Exception('Email address is invalid');
             }
 
@@ -85,7 +91,7 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
                 ? $feedback->recipient_name : 'Your Library';
             $email_subject = isset($feedback->email_subject)
                 ? $feedback->email_subject : 'VuFind Feedback';
-            $email_subject .= ' (' . $this->translate($category) . ')';
+            $email_subject .= ' (' . $this->translate($view->category) . ')';
             $sender_email = isset($feedback->sender_email)
                 ? $feedback->sender_email : 'noreply@vufind.org';
             $sender_name = isset($feedback->sender_name)
@@ -97,23 +103,23 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             }
 
             $email_message = $this->translate('feedback_category') . ': '
-                . $this->translate($category) . "\n";
+                . $this->translate($view->category) . "\n";
             $email_message .= $this->translate('feedback_name') . ': '
-                . ($name ? $name : '-') . "\n";
+                . ($view->name ? $view->name : '-') . "\n";
             $email_message .= $this->translate('feedback_email') . ': '
-                . ($users_email ? $users_email : '-') . "\n";
+                . ($view->users_email ? $view->users_email : '-') . "\n";
             $email_message .= $this->translate('feedback_url') . ': '
-                . ($url ? $url : '-') . "\n";
+                . ($view->url ? $view->url : '-') . "\n";
             $email_message .= "\n" . $this->translate('feedback_message') . ":\n";
-            $email_message .= "----------\n\n$comments\n\n----------\n";
+            $email_message .= "----------\n\n$view->comments\n\n----------\n";
 
             // This sets up the email to be sent
             $mail = new Mail\Message();
             $mail->setEncoding('UTF-8');
             $mail->setBody($email_message);
             $mail->setFrom($sender_email, $sender_name);
-            if (!empty($users_email)) {
-                $mail->setReplyTo($users_email, $name);
+            if (!empty($view->users_email)) {
+                $mail->setReplyTo($view->users_email, $view->name);
             }
             $mail->addTo($recipient_email, $recipient_name);
             $mail->setSubject($email_subject);

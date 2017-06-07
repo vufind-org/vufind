@@ -95,7 +95,7 @@
               if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
                 // Use ILS title if available since it may contain e.g. issue number
                 if (!empty($ilsDetails['title'])) {
-                  $title = $ilsDetails['title'];
+                  $title = trim($ilsDetails['title'], '/: ');
                 } else {
                   $title = $resource->getTitle();
                   $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
@@ -120,7 +120,7 @@
             <? endif; ?>
 
             <? if (!empty($ilsDetails['volume'])): ?>
-              <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
+              <strong><?=$this->transEsc('Issue')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
               <br />
             <? endif; ?>
 
@@ -156,10 +156,12 @@
             <? endif; ?>
 
             <? if (isset($ilsDetails['renew'])): ?>
-              <strong><?=$this->transEsc('Renewed')?>:</strong> <?=$this->transEsc($ilsDetails['renew'])?>
-              <? if (isset($ilsDetails['renewLimit'])): ?>
-                / <?=$this->transEsc($ilsDetails['renewLimit'])?>
-              <? endif; ?>
+               <? if (isset($ilsDetails['renewLimit']) && $ilsDetails['renewLimit'] >= $ilsDetails['renew']): ?>
+                  <strong><?=$this->transEsc('renewals_remaining', ['%%count%%' => $ilsDetails['renewLimit'] - $ilsDetails['renew']]);?></strong>
+               <? else: ?>
+                  <strong><?=$this->transEsc('Renewed')?>:
+                  <?=$this->transEsc($ilsDetails['renew'])?></strong>
+               <? endif; ?>
               <br />
             <? endif; ?>
             <? if (isset($ilsDetails['renewalCount']) && ($ilsDetails['renewalCount'] != 0)):?>
@@ -172,7 +174,7 @@
                 <div class="alert alert-success"><?=$this->transEsc('renew_success')?></div>
               <? else: ?>
                 <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><? endif; ?></strong>
-                <div class="alert alert-danger"><?=$this->transEsc('renew_fail')?><? if (isset($renewDetails['sysMessage'])): ?>: <?=$this->escapeHtml($renewDetails['sysMessage'])?><? endif; ?></div>
+                <div class="alert alert-danger"><?=rtrim($this->transEsc('renew_fail'), '.')?><? if (isset($renewDetails['sysMessage'])): ?>: <?=$this->escapeHtml($renewDetails['sysMessage'])?><? endif; ?></div>
               <? endif; ?>
             <? else: ?>
               <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><? endif; ?></strong>

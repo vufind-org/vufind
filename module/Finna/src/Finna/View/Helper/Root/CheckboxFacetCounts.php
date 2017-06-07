@@ -67,6 +67,12 @@ class CheckboxFacetCounts extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($checkboxFilter, $results)
     {
+        if (!is_callable([$results, 'getBackendId'])
+            || 'Solr' !== $results->getBackendId()
+        ) {
+            return -1;
+        }
+
         $ret = 0;
 
         list($field, $value) = $results->getParams()

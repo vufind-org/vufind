@@ -7,6 +7,8 @@ override_full_sections = ""
 ; Access to Finna API
 ;[finna.api]
 ;require = ANY
+;role = guest
 ;ipRange[] = 127.0.0.1
 ;ipRange[] = ::1
-;permission = finna.api
+;permission[] = access.api.Search
+;permission[] = access.api.Record

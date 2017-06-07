@@ -574,9 +574,19 @@ class AjaxController extends \VuFind\Controller\AjaxController
             $url = $driver->getDescriptionURL();
             // Get, manipulate, save and display content if available
             if ($url) {
-                if ($content = @file_get_contents($url)) {
-                    $content = preg_replace('/.*<.B>(.*)/', '\1', $content);
+                $httpService = $this->getServiceLocator()->get('VuFind\Http');
+                $result = $httpService->get($url, [], 60);
+                if ($result->isSuccess()) {
+                    $content = $result->getBody();
 
+                    $encoding = mb_detect_encoding(
+                        $content, ['UTF-8', 'ISO-8859-1']
+                    );
+                    if ('UTF-8' !== $encoding) {
+                        $content = utf8_encode($content);
+                    }
+
+                    $content = preg_replace('/.*<.B>(.*)/', '\1', $content);
                     $content = strip_tags($content);
 
                     // Replace line breaks with <br>
@@ -584,7 +594,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
                         '/(\r\n|\n|\r){3,}/', '<br><br>', $content
                     );
 
-                    $content = utf8_encode($content);
                     file_put_contents($localFile, $content);
 
                     return $this->output($content, self::STATUS_OK);
@@ -778,6 +787,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 = isset($config->autoplay) ? $config->autoplay : false;
             $settings['dots']
                 = isset($config->dots) ? $config->dots == true : true;
+            $settings['scrollSpeed']
+                = isset($config->scrollSpeed) ? $config->scrollSpeed : 750;
             $breakPoints
                 = ['desktop' => 4, 'desktop-small' => 3,
                    'tablet' => 2, 'mobile' => 1];
@@ -1134,7 +1145,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 // Who would want this?
                 continue;
             }
-            foreach ($tabs as $tab) {
+            foreach ($tabs['tabs'] as $tab) {
                 if ($tab['id'] == $recommendation) {
                     $uri = new \Zend\Uri\Uri($tab['url']);
                     $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');

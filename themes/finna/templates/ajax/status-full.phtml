@@ -6,6 +6,7 @@ $source = $driver->tryMethod('getDataSource');
 $locations = false;
 $holdings = $this->statusItems;
 $summary = array_pop($holdings);
+$onlyUnknownStatuses = true;
 if (isset($summary['total'])) {
   $itemsTotal = $summary['total'];
   $availableTotal = $summary['available'];
@@ -21,6 +22,10 @@ if (isset($summary['total'])) {
 foreach ($holdings as &$holding) {
   $holding['location']
      = $this->transEsc('location_' . $holding['location'], [], $holding['location']);
+
+  if (!empty($holding['availability']) || empty($holding['use_unknown_message'])) {
+    $onlyUnknownStatuses = false;
+  }
 }
 $this->statusItems = $holdings;
 
@@ -60,146 +65,157 @@ if ($groupBranches) {
   }
 
   $collapseThreshold = $this->holdingsSettings()->getCollapseThreshold();
-  $collapseLocations
-    = isset($collapseThreshold['location'])
-    ? $locations > $collapseThreshold['location']
-    : null
-  ;
-  $collapseBranches
-    = isset($collapseThreshold['branch'])
-    ? count($this->statusItems) > $collapseThreshold['branch']
-    : null
-  ;
+  $collapseLocations = isset($collapseThreshold['location'])
+    ? $locations > $collapseThreshold['location'] : null;
+  $collapseBranches = isset($collapseThreshold['branch'])
+    ? count($this->statusItems) > $collapseThreshold['branch'] : null;
 } else {
   // Group holdings by location
   $statusItemsFiltered = [];
   foreach ($this->statusItems as $item) {
     $location = $item['location'];
     if (!isset($statusItemsFiltered[$location])) {
-        $statusItemsFiltered[$location] = $item;
+      $statusItemsFiltered[$location] = $item;
     } else {
-        if (!empty($item['callnumber'])
-            && !empty($statusItemsFiltered[$location]['callnumber'])
-            && $item['callnumber'] != $statusItemsFiltered[$location]['callnumber']
-        ) {
-            $statusItemsFiltered[$location]['callnumbers'] = 'Multiple Locations';
+      if (!empty($item['callnumber'])
+        && !empty($statusItemsFiltered[$location]['callnumber'])
+        && $item['callnumber'] != $statusItemsFiltered[$location]['callnumber']
+      ) {
+        $statusItemsFiltered[$location]['callnumbers'] = 'Multiple Locations';
+      }
+      if ($item['availability'] > $statusItemsFiltered[$location]['availability']) {
+        // Copy keys one by one so as to not overwrite callnumbers or any other existing field
+        foreach (array_keys($item) as $key) {
+          $statusItemsFiltered[$location][$key] = $item[$key];
         }
-        if ($item['availability'] > $statusItemsFiltered[$location]['availability']) {
-            // Copy keys one by one so as to not overwrite callnumbers or any other existing field
-            foreach (array_keys($item) as $key) {
-                $statusItemsFiltered[$location][$key] = $item[$key];
-            }
-        }
+      }
     }
   }
   $this->statusItems = array_values($statusItemsFiltered);
   if ($this->holdingsSettings()->overrideSortOrder()) {
-     $items = $this->statusItems;
-     usort($items, function ($a, $b) {
-        if ($a['availability'] != $b['availability']) {
-           return $a['availability'] ? -1 : 1;
-        } else {
-           return strcasecmp($a['location'], $b['location']);
-        }
-     });
-     $this->statusItems = $items;
+    $items = $this->statusItems;
+    usort($items, function ($a, $b) {
+      if ($a['availability'] != $b['availability']) {
+        return $a['availability'] ? -1 : 1;
+      } else {
+        return strcasecmp($a['location'], $b['location']);
+      }
+    });
+    $this->statusItems = $items;
   }
 }
 ?>
 
-
 <? if ($groupBranches): ?>
-<div class="holdings-container root <?=$collapseLocations ? ' collapsible' : ''?>">
-  <div class="header <?= $availableTotal ? 'available' : ''?>">
-    <i class="fa fa-<?= $availableTotal ? 'ok' : 'remove'?>"></i>
-    <span>
-      <? if ($availableTotal): ?>
-        <?=sprintf('%s %d %s', $this->transEsc('axiell_available'), $availableTotal, $this->transEsc($journal ? 'axiell_issues' : 'axiell_branches'));?>
-      <? elseif (!empty($closestDueDate)): ?>
-        <?=sprintf('%s %s %s', $this->transEsc('status_Charged'), $this->transEsc('Due Date'), $closestDueDate);?>
-      <? elseif ($orderedTotal): ?>
-        <?=$this->transEsc('status_Ordered')?>
-      <? else: ?>
-        <?=$this->transEsc('status_Charged')?>
+  <div class="holdings-container root <?=$collapseLocations ? ' collapsible' : ''?>">
+    <div class="header<?=!empty($availableTotal) ? ' available' : ''?>">
+      <i class="fa fa-<?=!empty($availableTotal) ? 'ok' : 'remove'?>"></i>
+      <span>
+        <? if (!empty($availableTotal)): ?>
+          <?=sprintf('%s %d %s', $this->transEsc('axiell_available'), $availableTotal, $this->transEsc($journal ? 'axiell_issues' : 'axiell_branches'));?>
+        <? elseif (!empty($closestDueDate)): ?>
+          <?=sprintf('%s %s %s', $this->transEsc('status_Charged'), $this->transEsc('Due Date'), $closestDueDate);?>
+        <? elseif ($orderedTotal): ?>
+          <?=$this->transEsc('status_Ordered')?>
+        <? else: ?>
+          <?=$this->transEsc('status_Charged')?>
+        <? endif; ?>
+      </span>
+      <? if ($collapseLocations): ?><i class="fa fa-arrow-right arrow"></i><? endif; ?>
+      <? if (!$journal): ?>
+        <span class="info">
+          <? if (!empty($reservationsTotal)): ?>
+            <?=$this->translate('status_requests_html', ['%%count%%' => $reservationsTotal]);?>
+          <? endif; ?>
+          <? if (!empty($itemsTotal)): ?>
+            <?=$this->translate('status_items_total_html', ['%%count%%' => $itemsTotal]);?>
+          <? endif; ?>
+        </span>
       <? endif; ?>
-    </span>
-    <? if ($collapseLocations): ?><i class="fa fa-arrow-right arrow"></i><? endif; ?>
-    <? if (!$journal): ?>
-    <span class="info">
-    <? if (!empty($reservationsTotal)): ?>
-      <?=sprintf('%s: %d', $this->transEsc('Requests'), $reservationsTotal);?>
-    <? endif; ?>
-    <? if (!empty($itemsTotal)): ?>
-      <?=sprintf('%s: %d', ucfirst($this->transEsc('axiell_items')), $itemsTotal);?>
-    <? endif; ?>
-    </span>
-    <? endif; ?>
-  </div>
-  <div class="holdings<?=$collapseLocations ? ' collapsed' : ''?> root">
+    </div>
+    <div class="holdings<?=$collapseLocations ? ' collapsed' : ''?> root">
 <? else: ?>
-    <? if (isset($availableTotal) && $availableTotal > 0): ?>
-    <div class="available-total"><i class="fa fa-ok"></i><span><?=$availableTotal?> <?=$this->translate('axiell_available')?></span></div>
-    <? endif; ?>
-    <? $truncateLimit = $this->holdingsSettings()->getTruncateLimit(); ?>
-    <div class="holdings<?=!empty($truncateLimit) ? (' truncate-field" data-rows="' . $truncateLimit) : ''?>">
+  <div class="header holdings<?=!empty($availableTotal) ? ' available' : ''?>">
+    <div class="row">
+      <div class="col-xs-12">
+      <? if (!empty($availableTotal)): ?>
+        <span class="available-total">
+          <i class="fa fa-ok"></i> <span><?=$this->translate('status_items_available_html', ['%%count%%' => $availableTotal])?></span>
+        </span>
+      <? endif; ?>
+      <span class="info">
+        <? if (!empty($reservationsTotal)): ?>
+          <?=$this->translate('status_requests_html', ['%%count%%' => $reservationsTotal]);?>
+        <? endif; ?>
+      </span>
+      </div>
+    </div>
+  </div>
+  <? $truncateLimit = $this->holdingsSettings()->getTruncateLimit(); ?>
+  <div class="holdings<?=!empty($truncateLimit) ? (' truncate-field" data-rows="' . $truncateLimit) : ''?>">
 <? endif; ?>
 
 <?
 $currentLocation = $prevLocation = $currentOrganisation = $prevOrganisation = null;
+$currentRow = 0;
 foreach ($this->statusItems as $item):
+  ++$currentRow;
   $newLocation = false;
   $newOrganisation = false;
   if ($currentLocation != $item['location']) {
     $prevLocation = $currentLocation;
     $currentLocation = $item['location'];
     $newLocation = true;
+    if ($groupBranches) {
+      $currentRow = 0;
+    }
   } else if ($journal && $currentOrganisation != $item['journalInfo']['location']) {
     $prevOrganisation = $currentOrganisation;
     $currentOrganisation = $item['journalInfo']['location'];
     $newOrganisation = true;
+    $currentRow = 0;
   }
-?>
 
-<? if ($groupBranches && $newLocation && $prevLocation): ?>
-  </div></div>
-<? endif; ?>
-<? if ($groupBranches && $newLocation): ?>
-  <div class="holdings-container<?=$collapseBranches ? ' collapsible' : ''?>">
-    <div class="header">
+  if ($groupBranches && $newLocation && $prevLocation): ?>
+    </div></div>
+  <? endif; ?>
+  <? if ($groupBranches && $newLocation): ?>
+    <div class="holdings-container<?=$collapseBranches ? ' collapsible' : ''?>">
+      <div class="header">
         <? if ($collapseBranches): ?><i class="fa fa-arrow-right arrow"></i><? endif; ?>
         <?=$currentLocation?>
         <? if ($collapseBranches): ?>
-        <span>
-          <? if (!empty($availableLocations[$item['location']])): ?>
-            <?=sprintf('(%s %d %s)', $this->transEsc('axiell_available'), $availableLocations[$item['location']], $this->transEsc($journal ? 'axiell_issues' : 'axiell_branches'));?>
-          <? elseif (!empty($closestDueDateInLocation[$item['location']])): ?>
-            (<?= str_replace('%%date%%', $closestDueDateInLocation[$item['location']], $this->transEsc('closest_due_date')); ?>)
-          <? else: ?>
-            (<?=$this->transEsc('status_' . $item['status'])?>)
-          <? endif; ?>
-        </span>
+          <span>
+            <? if (!empty($availableLocations[$item['location']])): ?>
+              <?=sprintf('(%s %d %s)', $this->transEsc('axiell_available'), $availableLocations[$item['location']], $this->transEsc($journal ? 'axiell_issues' : 'axiell_branches'));?>
+            <? elseif (!empty($closestDueDateInLocation[$item['location']])): ?>
+              (<?= str_replace('%%date%%', $closestDueDateInLocation[$item['location']], $this->transEsc('closest_due_date')); ?>)
+            <? else: ?>
+              (<?=$this->transEsc('status_' . $item['status'])?>)
+            <? endif; ?>
+          </span>
         <? endif; ?>
-      <span class="info text-right"><?=$this->callnumber()->callnumber($source, $driver->getFullTitle(), $item['callnumber'], isset($item['collection']) ? $item['collection'] : null, isset($item['location']) ? $item['location'] : null, $this->layout()->userLang, 'results')?></span>
-    </div>
-  <div class="holdings<?=$collapseBranches ? ' collapsible collapsed' : ''?>">
-<? endif; ?>
-    <?
-      $classes = null;
-      if (!empty($item['availability'])) {
-        $classes = ['ok', 'success'];
-      }
-      if (!$classes && !empty($item['use_unknown_message']) && $item['use_unknown_message']) {
-        $classes = ['status-unknown', 'warning'];
-      }
-      if (!$classes) {
-        $classes = ['remove', 'error'];
-      }
-      $location
-        = $groupBranches
-        ? '<span class="branch">' . ($this->transEsc($item['branch']) . '</span>, <span class="department">' . $this->transEsc($item['department']) . '</span>')
-        : '<span class="branch">' . $this->transEsc($item['location'], [], $item['location']) . '</span>';
-    ?>
-    <div class="row">
+        <span class="info text-right"><?=$this->callnumber()->callnumber($source, $driver->getFullTitle(), $item['callnumber'], isset($item['collection']) ? $item['collection'] : null, isset($item['location']) ? $item['location'] : null, $this->layout()->userLang, 'results')?></span>
+      </div>
+    <div class="holdings<?=$collapseBranches ? ' collapsible collapsed' : ''?>">
+  <? endif; ?>
+  <?
+    $classes = null;
+    if (!empty($item['availability'])) {
+      $classes = ['ok', 'success'];
+    }
+    if (!$classes && !empty($item['use_unknown_message']) && $item['use_unknown_message']) {
+      $classes = $onlyUnknownStatuses ? ['status-unknown-no-icon warning'] : ['status-unknown', 'warning'];
+    }
+    if (!$classes) {
+      $classes = ['remove', 'error'];
+    }
+    $location
+      = $groupBranches
+      ? '<span class="branch">' . ($this->transEsc($item['branch']) . '</span>, <span class="department">' . $this->transEsc($item['department']) . '</span>')
+      : '<span class="branch">' . $this->transEsc($item['location'], [], $item['location']) . '</span>';
+  ?>
+    <div class="row <?=$currentRow % 2 == 0 ? 'even' : 'odd'?>">
       <div class="<?=$groupBranches ? 'col-sm-8' : 'no-branches'?> col-xs-12">
         <div class="groupLocation <?= $prevOrganisation && $newOrganisation ? ' new-organisation' : ''; ?>">
           <i class="fa fa-<?=$classes[0]?> text-<?=$classes[1]?>"></i> <span class="text-<?=$classes[0]?>"><?=$location?></span>

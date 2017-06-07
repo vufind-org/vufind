@@ -71,7 +71,12 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
         foreach ($this->getRequiredAttributes() as $key => $value) {
             $attrValue = $this->getServerParam($request, $key);
             if (!preg_match('/' . $value . '/', $attrValue)) {
-                throw new AuthException('authentication_error_denied');
+                $this->logError(
+                    "Shibboleth login failed for request: attribute '$key' contents"
+                    . " '$attrValue' did not match regexp /$value/ in request: "
+                    . print_r($request->getServer()->toArray(), true)
+                );
+                throw new AuthException('authentication_error_invalid_attributes');
             }
         }
 

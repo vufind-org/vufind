@@ -233,6 +233,35 @@ class SearchController extends \VuFind\Controller\SearchController
     }
 
     /**
+     * Save a search to the history in the database.
+     * Save search Id and type to memory
+     *
+     * @param \VuFind\Search\Base\Results $results Search results
+     *
+     * @return void
+     */
+    public function saveSearchToHistory($results)
+    {
+        parent::saveSearchToHistory($results);
+        $this->getSearchMemory()->rememberSearchData(
+            $results->getSearchId(),
+            $results->getParams()->getSearchType(),
+            $results->getUrlQuery()->isQuerySuppressed()
+                ? '' : $results->getParams()->getDisplayQuery()
+        );
+    }
+
+    /**
+     * Get the search memory
+     *
+     * @return \Finna\Search\Memory
+     */
+    public function getSearchMemory()
+    {
+        return $this->getServiceLocator()->get('Finna\Search\Memory');
+    }
+
+    /**
      * Handler for database and journal browse actions.
      *
      * @param string $type Browse type

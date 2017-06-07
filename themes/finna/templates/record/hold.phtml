@@ -90,7 +90,7 @@
                 $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
               }
             ?>
-            <? if ($card->cat_username == $user->cat_username): ?>
+            <? if (strcasecmp($card->cat_username, $user->cat_username) === 0): ?>
              <div class="col-sm-9" style="padding-top: 7px"><?=$display ?></div>
              <? break; ?>
             <? endif; ?>

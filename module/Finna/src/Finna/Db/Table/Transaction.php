@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Db_Table
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -35,6 +36,7 @@ use Zend\Db\Adapter\Adapter;
  * @category VuFind
  * @package  Db_Table
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -113,7 +115,7 @@ class Transaction extends \VuFind\Db\Table\Gateway
      * interrupted by the user.
      *
      * @return mixed true if payment is permitted,
-     * error message if payment is not permitted, false on error
+     * error message if payment is not permitted
      */
     public function isPaymentPermitted($patronId, $transactionMaxDuration)
     {
@@ -154,13 +156,25 @@ class Transaction extends \VuFind\Db\Table\Gateway
     /**
      * Get paid transactions whose registration failed.
      *
-     * @return array transactions or false on error.
+     * @param int $minimumPaidAge How old a paid transaction must be (in seconds) for
+     * it to be considered failed
+     *
+     * @return array transactions
      */
-    public function getFailedTransactions()
+    public function getFailedTransactions($minimumPaidAge = 120)
     {
-        $callback = function ($select) {
-            $select->where->equalTo('complete', self::STATUS_REGISTRATION_FAILED);
-            $select->where->greaterThan('paid', 0);
+        $callback = function ($select) use ($minimumPaidAge) {
+            $select->where->nest
+                ->equalTo('complete', self::STATUS_REGISTRATION_FAILED)
+                ->greaterThan('paid', '2000-01-01 00:00:00')
+                ->unnest
+                ->or->nest
+                ->equalTo('complete', self::STATUS_PAID)
+                ->greaterThan('paid', '2000-01-01 00:00:00')
+                ->lessThan(
+                    'paid', date('Y-m-d H:i:s', time() - $minimumPaidAge)
+                );
+
             $select->order('user_id');
         };
 
@@ -176,7 +190,7 @@ class Transaction extends \VuFind\Db\Table\Gateway
      *
      * @param int $interval Minimum hours since last report was sent.
      *
-     * @return array transactions or false on error.
+     * @return array transactions
      */
     public function getUnresolvedTransactions($interval)
     {

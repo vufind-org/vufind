@@ -4,31 +4,23 @@
   $deduplicated = count($dedupData) > 1;
 ?>
 
-<div class="holding-details<?= $deduplicated ? ' deduplicated' : ''?>">
+<div class="holding-details<?=$deduplicated ? ' deduplicated' : ''?>">
   <?
   /* Display information on duplicate records if available */
+  $recordSource = $this->driver->tryMethod('getDataSource');
+
   if ($deduplicated): ?>
     <div class="dedupInformation">
-        <select class="dedup-select form-control" role="listbox" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
-          <? foreach ($dedupData as $source => $current): ?>
-            <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>" role="option"><?=$this->transEsc("source_$source", null, $source) ?></option>
-          <? endforeach; ?>
-        </select>
+      <select class="dedup-select form-control" role="listbox" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
+        <? foreach ($dedupData as $source => $current): ?>
+          <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>" role="option"<? if ($recordSource === $source): ?> selected="selected"<? endif; ?>><?=$this->transEsc("source_$source", null, $source) ?></option>
+        <? endforeach; ?>
+      </select>
     </div>
-  <? else: ?>
-    <?
-      if (!empty($dedupData)) {
-        reset($dedupData);
-        $source = key($dedupData);
-      } else {
-        $source = $this->driver->tryMethod('getDataSource');
-      }
-    ?>
-    <? if ($source): ?>
-      <div class="dedupInformation">
-        <strong><?=$this->transEsc("source_$source", null, $source) ?></strong>
-      </div>
-    <? endif; ?>
+  <? elseif ($recordSource): ?>
+    <div class="dedupInformation">
+      <strong><?=$this->transEsc("source_$recordSource", null, $recordSource) ?></strong>
+    </div>
   <? endif; ?>
 
   <div class="callnumAndLocation ajax-availability<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">

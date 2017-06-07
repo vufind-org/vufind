@@ -78,6 +78,20 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
     protected $count = 5;
 
     /**
+     * Boost multiplier for full string match when using the MoreLikeThis Handler
+     *
+     * @var string
+     */
+    protected $fullMatchBoostMultiplier = 10;
+
+    /**
+     * Characters that need to be escaped in a Solr query
+     *
+     * @var string
+     */
+    protected $escapedChars = '+-&|!(){}[]^"~*?:\\/';
+
+    /**
      * Constructor.
      *
      * @param \Zend\Config\Config $searchConfig Search config
@@ -101,6 +115,9 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
             if (isset($mlt->count)) {
                 $this->count = $mlt->count;
             }
+            if (isset($mlt->fullMatchBoostMultiplier)) {
+                $this->fullMatchBoostMultiplier = $mlt->fullMatchBoostMultiplier;
+            }
         }
     }
 
@@ -109,18 +126,24 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
     /**
      * Return SOLR search parameters based on interesting terms.
      *
-     * @param array $interestingTerms Interesting terms to use in the query
+     * @param array $record Interesting terms to use in the query
      *
      * @return ParamBag
      */
-    public function buildInterestingTermQuery($interestingTerms)
+    public function buildInterestingTermQuery($record)
     {
         $params = new ParamBag();
 
         $boost = true;
         $settings = [];
-        $specs = 'title^75,title_short^100,callnumber-label^400,topic^300'
-            . ',language^30,author^75,publishDate';
+        $specs = [
+            'title^75',
+            'title_short^100',
+            'callnumber-label^400',
+            'topic^300',
+            'language^30',
+            'author^75','publishDate'
+        ];
         if ($this->handlerParams) {
             if (preg_match('/boost=([^\s]+)/', $this->handlerParams, $matches)) {
                 $boost = $matches[1] === 'true';
@@ -138,12 +161,31 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
             }
         }
         $query = [];
-        foreach ($interestingTerms as $term) {
-            list($field, $value) = explode(':', $term[0], 2);
-            if (isset($settings[$field])) {
-                $boostValue = round($settings[$field] * $term[1]);
-                $query[] = "$field:($value)^$boostValue";
+        foreach ($settings as $field => $boostValue) {
+            if (isset($record[$field])) {
+                $count = 0;
+                foreach ((array)$record[$field] as $values) {
+                    if (strlen($values) < 3) {
+                        continue;
+                    }
+                    $escaped = addcslashes($values, $this->escapedChars);
+                    $fullBoost = $this->fullMatchBoostMultiplier * $boostValue;
+                    $query[] = "$field:($escaped)^$fullBoost";
+                    foreach (explode(' ', $values) as $value) {
+                        if (strlen($value) < 3) {
+                            continue;
+                        }
+                        $escaped = addcslashes($value, $this->escapedChars);
+                        $query[] = "$field:($escaped)^$boostValue";
+                        if (++$count > 15) {
+                            break;
+                        }
+                    }
+                }
             }
+        }
+        if (!$query) {
+            $query[] = 'noproperinterestingtermsfound';
         }
         $params->set('q', implode(' OR ', $query));
 

@@ -31,6 +31,19 @@ namespace Finna\Module\Configuration;
 $config = [
     'router' => [
         'routes' => [
+            'cache-file' => [
+                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/cache/[:file]',
+                    'constraints' => [
+                        'file'     => '[.a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Cache',
+                        'action'     => 'File',
+                    ]
+                ],
+            ],
             'comments-inappropriate' => [
                 'type'    => 'Zend\Mvc\Router\Http\Segment',
                 'options' => [
@@ -150,7 +163,9 @@ $config = [
     'controllers' => [
         'factories' => [
             'browse' => 'Finna\Controller\Factory::getBrowseController',
+            'cache' => 'Finna\Controller\Factory::getCacheController',
             'record' => 'Finna\Controller\Factory::getRecordController',
+            'cart' => 'Finna\Controller\Factory::getCartController',
         ],
         'invokables' => [
             'ajax' => 'Finna\Controller\AjaxController',
@@ -187,6 +202,7 @@ $config = [
             'Finna\LocationService' => 'Finna\Service\Factory::getLocationService',
             'Finna\OnlinePayment' => 'Finna\Service\Factory::getOnlinePayment',
             'Finna\OrganisationInfo' => 'Finna\Service\Factory::getOrganisationInfo',
+            'Finna\Search\Memory' => 'Finna\Service\Factory::getSearchMemory',
             'VuFind\AutocompletePluginManager' => 'Finna\Service\Factory::getAutocompletePluginManager',
             'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
             'VuFind\CookieManager' => 'Finna\Service\Factory::getCookieManager',
@@ -198,6 +214,8 @@ $config = [
             'VuFind\SearchSpecsReader' => 'Finna\Service\Factory::getSearchSpecsReader',
             'VuFind\SearchTabsHelper' => 'Finna\Service\Factory::getSearchTabsHelper',
             'VuFind\YamlReader' => 'Finna\Service\Factory::getYamlReader',
+            'VuFind\Cart' => 'Finna\Service\Factory::getCart',
+            'VuFind\Mailer' => 'Finna\Mailer\Factory',
         ],
         'invokables' => [
             'VuFind\HierarchicalFacetHelper' => 'Finna\Search\Solr\HierarchicalFacetHelper',
@@ -230,6 +248,7 @@ $config = [
                     'comments-record' => 'Finna\Db\Table\Factory::getCommentsRecord',
                     'due-date-reminder' => 'Finna\Db\Table\Factory::getDueDateReminder',
                     'fee' => 'Finna\Db\Table\Factory::getFee',
+                    'finnacache' => 'Finna\Db\Table\Factory::getFinnaCache',
                     'resource' => 'Finna\Db\Table\Factory::getResource',
                     'search' => 'Finna\Db\Table\Factory::getSearch',
                     'session' => 'Finna\Db\Table\Factory::getSession',
@@ -243,7 +262,9 @@ $config = [
                 'factories' => [
                     'axiellwebservices' => 'Finna\ILS\Driver\Factory::getAxiellWebServices',
                     'demo' => 'Finna\ILS\Driver\Factory::getDemo',
+                    'koharest' => 'Finna\ILS\Driver\Factory::getKohaRest',
                     'multibackend' => 'Finna\ILS\Driver\Factory::getMultiBackend',
+                    'sierrarest' => 'Finna\ILS\Driver\Factory::getSierraRest',
                     'voyager' => 'Finna\ILS\Driver\Factory::getVoyager',
                     'voyagerrestful' => 'Finna\ILS\Driver\Factory::getVoyagerRestful'
                 ],
@@ -297,6 +318,7 @@ $config = [
             ],
             'recorddriver' => [
                 'factories' => [
+                    'eds' => 'Finna\RecordDriver\Factory::getEDS',
                     'solrdefault' => 'Finna\RecordDriver\Factory::getSolrDefault',
                     'solrmarc' => 'Finna\RecordDriver\Factory::getSolrMarc',
                     'solread' => 'Finna\RecordDriver\Factory::getSolrEad',
@@ -322,6 +344,15 @@ $config = [
             ],
         ],
         'recorddriver_tabs' => [
+            'Finna\RecordDriver\EDS' => [
+                'tabs' => [
+                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
+                    'Details' => 'StaffViewArray',
+                ],
+                'defaultTab' => null,
+            ],
             'Finna\RecordDriver\SolrDefault' => [
                 'tabs' => [
                     'Holdings' => 'HoldingsILS',
@@ -420,7 +451,7 @@ $staticRoutes = [
     'Browse/Database', 'Browse/Journal',
     'LocationService/Modal',
     'MetaLib/Home', 'MetaLib/Search', 'MetaLib/Advanced',
-    'MyResearch/SaveCustomOrder',
+    'MyResearch/CheckoutHistory', 'MyResearch/SaveCustomOrder',
     'OrganisationInfo/Home',
     'PCI/Home', 'PCI/Search', 'PCI/Record',
     'Search/StreetSearch'
@@ -430,49 +461,5 @@ $routeGenerator = new \VuFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
 $routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);
-
-// API routes
-/*$config['router']['routes']['searchApi'] = [
-    'type' => 'Zend\Mvc\Router\Http\Literal',
-    'verb' => 'get,post,options',
-    'options' => [
-        'route'    => '/api/search',
-        'defaults' => [
-            'controller' => 'SearchApi',
-            'action'     => 'search',
-        ]
-    ],
-];
-$config['router']['routes']['searchApiv1'] = [
-    'type' => 'Zend\Mvc\Router\Http\Literal',
-    'verb' => 'get,post,options',
-    'options' => [
-        'route'    => '/v1/search',
-        'defaults' => [
-            'controller' => 'SearchApi',
-            'action'     => 'search',
-        ]
-    ]
-];
-$config['router']['routes']['searchApiRecord'] = [
-    'type' => 'Zend\Mvc\Router\Http\Literal',
-    'options' => [
-        'route'    => '/api/record',
-        'defaults' => [
-            'controller' => 'SearchApi',
-            'action'     => 'record',
-        ]
-    ]
-];
-$config['router']['routes']['searchApiRecordv1'] = [
-    'type' => 'Zend\Mvc\Router\Http\Literal',
-    'options' => [
-        'route'    => '/v1/record',
-        'defaults' => [
-            'controller' => 'SearchApi',
-            'action'     => 'record',
-        ]
-    ]
-];*/
 
 return $config;

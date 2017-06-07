@@ -711,7 +711,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      */
     public function changePickupLocation($patron, $holdDetails)
     {
-        global $configArray;
         $username = $patron['cat_username'];
         $password = $patron['cat_password'];
         $pickupLocationId = $holdDetails['pickupLocationId'];
@@ -1080,7 +1079,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             if ($this->singleReservationQueue
                 && isset($item['availabilityInfo']['reservations'])
             ) {
-                $reservationsTotal = $item['availabilityInfo']['reservations'];
+                $reservationsTotal
+                    = max(
+                        $reservationsTotal, $item['availabilityInfo']['reservations']
+                    );
             }
             $locations[$item['location']] = true;
             if (!$journal && $item['is_holdable']) {
@@ -1259,9 +1261,14 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         ];
 
         foreach ($validServices as $service => $validMethods) {
+            $typeLabel = 'dueDateAlert' === $service
+                ? $this->translate(
+                    "messaging_settings_type_dueDateAlertEmail"
+                )
+                : $this->translate("messaging_settings_type_$service");
             $data = [
                 'active' => false,
-                'type' => $this->translate("messaging_settings_type_$service"),
+                'type' => $typeLabel,
                 'sendMethods' => []
             ];
             if ($this->messagingSettings[$service]) {
@@ -1306,8 +1313,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 foreach ($userCached['messagingServices'][$serviceType]
                     ['sendMethods'] as $key => &$data) {
 
-                    $typeLabel
-                        = $this->translate("messaging_settings_type_$serviceType");
                     $methodLabel
                         = $this->translate("messaging_settings_method_$key");
 
@@ -1607,6 +1612,11 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'publication_year' =>
                    isset($reservation->catalogueRecord->publicationYear)
                        ? $reservation->catalogueRecord->publicationYear : '',
+                'requestGroup' =>
+                   isset($reservation->reservationType)
+                   && $this->requestGroupsEnabled
+                   ? "axiell_$reservation->reservationType"
+                   : '',
                 'title' => $title
             ];
             $holdsList[] = $hold;
@@ -2260,7 +2270,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'isOverdue'             => 'renew_item_overdue',
             'maxNofRenewals'        => 'renew_item_limit',
             'patronIsDeniedLoan'    => 'fine_limit_patron',
-            'patronHasDebt'         => 'fine_limit_patron',
+            'patronHasDebt'         => 'renew_debt',
             'patronIsInvoiced'      => 'renew_item_patron_is_invoiced',
             'renewalIsDenied'       => 'renew_denied',
             'ReservationDenied'     => 'hold_error_denied'

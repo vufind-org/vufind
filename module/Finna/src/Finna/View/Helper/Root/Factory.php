@@ -83,6 +83,18 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the Citation helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Citation
+     */
+    public static function getCitation(ServiceManager $sm)
+    {
+        return new Citation($sm->getServiceLocator()->get('VuFind\DateConverter'));
+    }
+
+    /**
      * Construct the CheckboxFacetCounts helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -93,6 +105,19 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     {
         $configReader = $sm->getServiceLocator()->get('VuFind\Config');
         return new CheckboxFacetCounts($configReader);
+    }
+
+    /**
+     * Construct EDS view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return EDS
+     */
+    public static function getEDS(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('EDS');
+        return new EDS($config);
     }
 
     /**
@@ -109,23 +134,6 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $locator->get('VuFindTheme\ThemeInfo'),
             $locator->get('Request'),
             $locator->get('VuFind\Cache\Manager')
-        );
-    }
-
-    /**
-     * Construct the HeadScript helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return HeadScript
-     */
-    public static function getHeadScript(ServiceManager $sm)
-    {
-        $locator = $sm->getServiceLocator();
-        return new HeadScript(
-            $locator->get('VuFindTheme\ThemeInfo'),
-            \VuFindTheme\View\Helper\Factory::getPipelineConfig($sm),
-            $locator->get('Request')
         );
     }
 
@@ -347,6 +355,19 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $locator->get('VuFind\SessionManager'),
             $locator->get('VuFind\DbTablePluginManager')
         );
+    }
+
+    /**
+     * Construct Summon view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Summon
+     */
+    public static function getSummon(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('Summon');
+        return new Summon($config);
     }
 
     /**
@@ -579,5 +600,19 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     public static function getOnlinePayment(ServiceManager $sm)
     {
         return new OnlinePayment();
+    }
+
+    /**
+     * Construct the SearchMemory helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SearchMemory
+     */
+    public static function getSearchMemory(ServiceManager $sm)
+    {
+        return new SearchMemory(
+            $sm->getServiceLocator()->get('Finna\Search\Memory')
+        );
     }
 }

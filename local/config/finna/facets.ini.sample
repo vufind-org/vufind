@@ -5,6 +5,7 @@
 sector_str_mv      = Sector
 ;institution        = Institution
 building           = Organisation
+;building_sub_str_mv = Department
 format             = Format
 
 ; Use callnumber-first for LC call numbers, dewey-hundreds for Dewey Decimal:
@@ -181,6 +182,7 @@ special_facets   = "daterange"
 ; translated -- uncomment or add lines below to turn on this feature.
 translated_facets[] = institution
 translated_facets[] = building
+translated_facets[] = building_sub_str_mv:department
 translated_facets[] = format
 translated_facets[] = language
 translated_facets[] = genre_facet

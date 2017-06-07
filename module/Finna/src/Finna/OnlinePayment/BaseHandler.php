@@ -28,10 +28,9 @@
  * @link     http://docs.paytrail.com/ Paytrail API documentation
  */
 namespace Finna\OnlinePayment;
-use Finna\Db\Row\Transaction,
-    Finna\OnlinePayment\OnlinePaymentHanderInterface,
-    Zend\Log\LoggerAwareInterface,
-    Zend\Log\LoggerInterface;
+use Finna\Db\Row\Transaction;
+use Zend\I18n\Translator\TranslatorInterface;
+use Zend\Log\LoggerAwareInterface;
 
 /**
  * Payment base handler
@@ -44,8 +43,8 @@ use Finna\Db\Row\Transaction,
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  * @link     http://docs.paytrail.com/ Paytrail API documentation
  */
-abstract class BaseHandler
-implements OnlinePaymentHandlerInterface, LoggerAwareInterface
+abstract class BaseHandler implements OnlinePaymentHandlerInterface,
+    LoggerAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait {
         getDbTable as getTable;
@@ -55,27 +54,37 @@ implements OnlinePaymentHandlerInterface, LoggerAwareInterface
     /**
      * Configuration.
      *
-     * @var array
+     * @var \Zend\Config\Config
      */
     protected $config;
 
     /**
      * HTTP service.
      *
-     * @var \VuFind\Http
+     * @var \VuFindHttp\HttpService
      */
     protected $http;
 
     /**
+     * Translator
+     *
+     * @var TranslatorInterface
+     */
+    protected $translator;
+
+    /**
      * Constructor
      *
-     * @param array        $config Configuration as key-value pairs.
-     * @param \VuFind\Http $http   HTTP service
+     * @param \Zend\Config\Config     $config     Configuration as key-value pairs.
+     * @param \VuFindHttp\HttpService $http       HTTP service
+     * @param TranslatorInterface     $translator Translator
      */
-    public function __construct($config, $http)
-    {
+    public function __construct(\Zend\Config\Config $config,
+        \VuFindHttp\HttpService $http, TranslatorInterface $translator
+    ) {
         $this->config = $config;
         $this->http = $http;
+        $this->translator = $translator;
     }
 
     /**
@@ -86,18 +95,6 @@ implements OnlinePaymentHandlerInterface, LoggerAwareInterface
     public function getName()
     {
         return $this->config->onlinePayment->handler;
-    }
-
-    /**
-     * Set logger instance
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
     }
 
     /**
@@ -167,7 +164,7 @@ implements OnlinePaymentHandlerInterface, LoggerAwareInterface
      *
      * @return array Array:
      * - true|false success
-     * - string|Finna\Db\Table\Row\Transaction 
+     * - string|Finna\Db\Table\Row\Transaction
      * Transaction or error message (translation key).
      */
     protected function getStartedTransaction($id)

@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
@@ -33,6 +34,7 @@ namespace FinnaConsole\Controller;
  * @category VuFind
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
@@ -56,6 +58,26 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     public function encryptCatalogPasswordsAction()
     {
         return $this->runService('Finna\EncryptCatalogPasswords');
+    }
+
+    /**
+     * Command-line tool to clear unwanted entries
+     * from finna cache database table.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function expireFinnaCacheAction()
+    {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
+            return $this->expirationHelp('cache entries');
+        }
+
+        return $this->expire(
+            'FinnaCache',
+            '%%count%% expired cache entries deleted.',
+            'No expired cache entries to delete.'
+        );
     }
 
     /**
@@ -118,7 +140,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     protected function runService($service)
     {
         $arguments = $this->getRequest()->getParams()->toArray();
-        $arguments = array_splice($arguments, 2);
+        $arguments = array_splice($arguments, 2, -2);
         $sl = $this->getServiceLocator();
         // Disable sharing of mailer so that every time an instance is requested a
         // new one is created. This avoids sharing an SMTP connection that might time

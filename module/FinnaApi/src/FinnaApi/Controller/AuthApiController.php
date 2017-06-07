@@ -93,28 +93,26 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
 
         $backends = [];
         $catalog = $this->getILS();
-        if ($catalog->checkCapability('getLoginDrivers')) {
-            $targets = $catalog->getLoginDrivers();
-            foreach ($targets as $target) {
-                $config = [];
-                try {
-                    $config = $catalog->getConfig(
-                        'patronLogin', ['cat_username' => "$target.username"]
-                    );
-                } catch (\Exception $e) {
-                    // nevermind
-                }
-
-                $backend = [
-                    'id' => $target,
-                    'name' => $this->translate("source_$target", null, $target)
-                ];
-                if (!empty($config['secondary_login_field_label'])) {
-                    $backend['secondary_login_field_label']
-                        = $this->translate($config['secondary_login_field_label']);
-                }
-                $backends[] = $backend;
+        $targets = $this->getAvailableLoginTargets();
+        foreach ($targets as $target) {
+            $config = [];
+            try {
+                $config = $catalog->getConfig(
+                    'patronLogin', ['cat_username' => "$target.username"]
+                );
+            } catch (\Exception $e) {
+                // nevermind
             }
+
+            $backend = [
+                'id' => $target,
+                'name' => $this->translate("source_$target", null, $target)
+            ];
+            if (!empty($config['secondary_login_field_label'])) {
+                $backend['secondary_login_field_label']
+                    = $this->translate($config['secondary_login_field_label']);
+            }
+            $backends[] = $backend;
         }
 
         return $this->output(['targets' => $backends], self::STATUS_OK);
@@ -135,9 +133,14 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
             return $result;
         }
 
+        $catalog = $this->getILS();
+        $defaultTarget = $catalog->checkCapability('getDefaultLoginDriver')
+            ? $catalog->getDefaultLoginDriver()
+            : '';
+
         $request = $this->getRequest();
         $target = trim(
-            $request->getPost('target', $request->getQuery('target'))
+            $request->getPost('target', $request->getQuery('target', $defaultTarget))
         );
         $username = trim(
             $request->getPost('username', $request->getQuery('username'))
@@ -155,12 +158,8 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
             );
         }
 
-        $catalog = $this->getILS();
         if (!empty($target)) {
-            $targets = [];
-            if ($catalog->checkCapability('getLoginDrivers')) {
-                $targets = $catalog->getLoginDrivers();
-            }
+            $targets = $this->getAvailableLoginTargets();
             if (!in_array($target, $targets)) {
                 return $this->output(
                     [], self::STATUS_ERROR, 400, 'Invalid login target'
@@ -196,5 +195,35 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
     {
         // Auth API endpoints are not published
         return '{}';
+    }
+
+    /**
+     * Get a list of available login targets
+     *
+     * @return array
+     */
+    protected function getAvailableLoginTargets()
+    {
+        $targets = [];
+        $catalog = $this->getILS();
+        if ($catalog->checkCapability('getLoginDrivers')) {
+            $targets = $catalog->getLoginDrivers();
+        }
+        $config = $this->getConfig();
+        if (!empty($config['Authentication']['include_api_targets'])) {
+            $include = array_map(
+                'trim',
+                explode(',', $config['Authentication']['include_api_targets'])
+            );
+            $targets = array_intersect($targets, $include);
+        }
+        if (!empty($config['Authentication']['exclude_api_targets'])) {
+            $exclude = array_map(
+                'trim',
+                explode(',', $config['Authentication']['exclude_api_targets'])
+            );
+            $targets = array_diff($targets, $exclude);
+        }
+        return $targets;
     }
 }

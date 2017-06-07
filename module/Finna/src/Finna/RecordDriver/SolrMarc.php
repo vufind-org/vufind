@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  RecordDrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -33,6 +34,7 @@ namespace Finna\RecordDriver;
  * @category VuFind
  * @package  RecordDrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -647,9 +649,16 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                         $field, ['a', 'b', 'c']
                     );
                     $dates = $this->getSubfieldArray($field, ['d']);
+
+                    $altSubfields = $this->getLinkedMarcFieldContents(
+                        $field, ['a', 'b', 'c']
+                    );
+                    $altSubfields = $this->stripTrailingPunctuation($altSubfields);
+
                     if (!empty($subfields)) {
                         $result[] = [
                             'name' => $this->stripTrailingPunctuation($subfields[0]),
+                            'name_alt' => $altSubfields,
                             'date' => !empty($dates) ? $dates[0] : '',
                             'role' => $role
                         ];
@@ -848,9 +857,10 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
 
         // First check the 440, 800 and 830 fields for series information:
         $primaryFields = [
-            '440' => ['a', 'p'],
-            '800' => ['a', 'b', 'c', 'd', 'f', 'p', 'q', 't'],
-            '830' => ['a', 'p', 'x']];
+            '440' => ['a', 'n', 'p'],
+            '800' => ['a', 'b', 'c', 'd', 'f', 'n', 'p', 'q', 't', 'l', 'v'],
+            '830' => ['a', 'v']
+        ];
         $matches = $this->getSeriesFromMARC($primaryFields);
 
         if (empty($matches)) {
@@ -862,12 +872,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         // Still no results found?  Resort to the Solr-based method just in case!
         if (empty($matches)) {
             $matches = parent::getSeries();
-        }
-
-        foreach ($matches as &$match) {
-            if (isset($match['number'])) {
-                $match['number'] = $this->stripTrailingPunctuation($match['number']);
-            }
         }
 
         return $matches;
@@ -891,6 +895,30 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             return $objectId;
         }
         return '';
+    }
+
+    /**
+     * Get the short (pre-subtitle) title of the record in alternative script.
+     *
+     * @return string
+     */
+    public function getShortTitleAltScript()
+    {
+        if (!($title = $this->getLinkedMarcFieldContents('245', ['a']))) {
+            $title = $this->getLinkedMarcFieldContents('240', ['a', 'n', 'p']);
+        }
+        return $this->stripTrailingPunctuation($title);
+    }
+
+    /**
+     * Get the subtitle of the record in alternative script.
+     *
+     * @return string
+     */
+    public function getSubtitleAltScript()
+    {
+        $title = $this->getLinkedMarcFieldContents('245', ['b', 'n', 'p']);
+        return $this->stripTrailingPunctuation($title);
     }
 
     /**
@@ -1221,6 +1249,60 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
+     * Get selected subfields from a MARC field
+     *
+     * @param \File_MARC_Data_Field $field     Field
+     * @param array                 $subfields Subfields
+     *
+     * @return string
+     */
+    protected function getFieldSubfields(\File_MARC_Data_Field $field, $subfields)
+    {
+        $result = [];
+        foreach ($field->getSubfields() as $code => $content) {
+            if (in_array($code, $subfields)) {
+                $result[] = $content->getData();
+            }
+        }
+        return implode(' ', $result);
+    }
+
+    /**
+     * Get linked MARC field contents
+     *
+     * @param string|\File_MARC_Field $field     Field tag or actual field
+     * @param array                   $subfields Subfields
+     *
+     * @return string
+     */
+    protected function getLinkedMarcFieldContents($field, $subfields)
+    {
+        $marc = $this->getMarcRecord();
+        if (is_string($field)) {
+            $field = $marc->getField($field);
+        }
+        if (!$field) {
+            return '';
+        }
+        $link = $field->getSubfield('6');
+        if (!$link) {
+            return '';
+        }
+        $parts = explode('-', $link->getData());
+        if (count($parts) != 2) {
+            return '';
+        }
+        $linkedFieldCode = $parts[0];
+        $linkedFieldNum = (int)$parts[1] - 1;
+        $linkedFields = $marc->getFields($linkedFieldCode);
+        if (!isset($linkedFields[$linkedFieldNum])) {
+            return '';
+        }
+        $data = $this->getFieldSubfields($linkedFields[$linkedFieldNum], $subfields);
+        return $data;
+    }
+
+    /**
      * Support method for getSeries() -- given a field specification, look for
      * series information in the MARC record.
      *
@@ -1249,21 +1331,36 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                         ];
                         $currentArray['additional'] = implode(' ', $name);
 
-                        // Can we find a number in subfield v?  (Note that number is
+                        // Can we find an ISSN in subfield x? (Note that ISSN is
                         // always in subfield v regardless of whether we are dealing
                         // with 440, 490, 800 or 830 -- hence the hard-coded array
                         // rather than another parameter in $fieldInfo).
-                        $number = $this->getSubfieldArray($currentField, ['v']);
-                        if (isset($number[0])) {
-                            $currentArray['number'] = $number[0];
-                        }
-
-                        // Can we find an ISSN in subfield x? (same note as above)
                         $issn = $this->getSubfieldArray($currentField, ['x']);
                         if (isset($issn[0])) {
                             $currentArray['issn'] = $this->stripTrailingPunctuation(
                                 $issn[0]
                             );
+                        }
+
+                        // Subfields n and p to show number of part/section of a
+                        // series and name of that part/section for 830
+                        if ($field == '830') {
+                            $partName = $this->getSubfieldArray(
+                                $currentField, ['p']
+                            );
+                            if (isset($partName[0])) {
+                                $currentArray['partName']
+                                    = $this->stripTrailingPunctuation($partName[0]);
+                            }
+                            $partNumber = $this->getSubfieldArray(
+                                $currentField, ['n']
+                            );
+                            if (isset($partNumber[0])) {
+                                $currentArray['partNumber']
+                                    = $this->stripTrailingPunctuation(
+                                        $partNumber[0]
+                                    );
+                            }
                         }
 
                         // Save the current match:
@@ -1291,7 +1388,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             $input = [$input];
         }
         foreach ($input as &$str) {
-            $str = preg_replace("/[\s\/:;\,=\($additional]+\$/", '', $str);
+            $str = mb_ereg_replace("[\s\/:;\,=\($additional]+\$", '', $str);
             // Don't replace an initial letter (e.g. string "Smith, A.") followed by
             // period
             $thirdLast = substr($str, -3, 1);
@@ -1336,5 +1433,121 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         }
 
         return true;
+    }
+
+    /**
+     * Get an array of all acquisition information.
+     *
+     * @return array
+     */
+    public function getAcquisitionSource()
+    {
+        $results = [];
+        foreach ($this->getMarcRecord()->getFields('037') as $field) {
+            foreach ($field->getSubfields('b') as $acq) {
+                $results[] = $this->stripTrailingPunctuation($acq->getData());
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * Get an array of all event information.
+     *
+     * @return array
+     */
+    public function getEventNotice()
+    {
+        $results = [];
+        foreach ($this->getMarcRecord()->getFields('518') as $field) {
+            foreach ($field->getSubfields('a') as $event) {
+                $results[] = $this->stripTrailingPunctuation($event->getData());
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * Get an composition information from field 382.
+     *
+     * @return string
+     */
+    public function getMusicComposition()
+    {
+        $result = '';
+        foreach ($this->getMarcRecord()->getFields('382') as $field) {
+            foreach ($field->getSubfields('a') as $compose) {
+                $subfields[] = $this->stripTrailingPunctuation($compose->getData());
+            }
+            $result = implode(', ', $subfields);
+        }
+        return $result;
+    }
+
+    /**
+     * Get first lines of song lyrics from field 031 t.
+     *
+     * @return array
+     */
+    public function getFirstLyrics()
+    {
+        $results = [];
+        foreach ($this->getMarcRecord()->getFields('031') as $field) {
+            foreach ($field->getSubfields('t') as $lyric) {
+                $results[] = $this->stripTrailingPunctuation($lyric->getData());
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * Get methodologoy from field 567.
+     *
+     * @return array
+     */
+    public function getMethodology()
+    {
+        $results = [];
+        foreach ($this->getMarcRecord()->getFields('567') as $field) {
+            foreach ($field->getSubfields('a') as $method) {
+                $results[] = $this->stripTrailingPunctuation($method->getData());
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * Get format of notated music from field 348, subfields a, b and 2.
+     *
+     * @return string
+     */
+    public function getNotatedMusicFormat()
+    {
+        $results = '';
+        $fields = ['348' => ['a', 'b', '2']];
+        $matches = $this->getSeriesFromMARC($fields);
+        foreach ($matches as $match) {
+            $subfields[] =  $this->stripTrailingPunctuation($match);
+        }
+        if (!empty($subfields)) {
+            $results = implode(', ', $subfields[0]);
+        }
+        return $results;
+    }
+
+    /**
+     * Get trade availability note from field 366.
+     *
+     * @return array
+     */
+    public function getTradeAvailabilityNote()
+    {
+        $results = [];
+        foreach ($this->getMarcRecord()->getFields('366') as $field) {
+            foreach ($field->getSubfields('e') as $note) {
+                $results[] = $this->stripTrailingPunctuation($note->getData());
+            }
+        }
+        return $results;
     }
 }

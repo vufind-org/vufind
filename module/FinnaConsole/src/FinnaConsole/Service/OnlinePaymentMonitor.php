@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind2
  * @package  Service
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -36,6 +37,7 @@ use Finna\Db\Table\Transaction,
  * @category VuFind2
  * @package  Service
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -119,6 +121,13 @@ class OnlinePaymentMonitor extends AbstractService
     protected $reportIntervalHours;
 
     /**
+     * Minimum age of paid transactions before they're considered failed.
+     *
+     * @var int
+     */
+    protected $minimumPaidAge;
+
+    /**
      * Constructor
      *
      * @param \Finna\ILS\Connection             $catalog          Catalog connection
@@ -155,12 +164,13 @@ class OnlinePaymentMonitor extends AbstractService
         }
 
         $this->collectScriptArguments($arguments);
-        $this->msg("OnlinePayment monitor started");
+        $this->msg('OnlinePayment monitor started');
 
         $expiredCnt = $failedCnt = $registeredCnt = $remindCnt = 0;
         $report = [];
         $user = false;
-        $failed = $this->transactionTable->getFailedTransactions();
+        $failed = $this->transactionTable
+            ->getFailedTransactions($this->minimumPaidAge);
         foreach ($failed as $t) {
             $this->processTransaction(
                 $t, $report, $registeredCnt, $expiredCnt, $failedCnt, $user
@@ -191,7 +201,7 @@ class OnlinePaymentMonitor extends AbstractService
 
         $this->sendReports($report);
 
-        $this->msg("OnlinePayment monitor completed");
+        $this->msg('OnlinePayment monitor completed');
 
         return true;
     }
@@ -211,7 +221,10 @@ class OnlinePaymentMonitor extends AbstractService
     protected function processTransaction(
         $t, &$report, &$registeredCnt, &$expiredCnt, &$failedCnt, &$user
     ) {
-        $this->msg("  Registering transaction id {$t->id} / {$t->transaction_id}");
+        $this->msg(
+            "  Registering transaction id {$t->id} / {$t->transaction_id}"
+            . " (status: {$t->complete} / {$t->status}, paid: {$t->paid})"
+        );
 
         // Check if the transaction has not been registered for too long
         $now = new \DateTime();
@@ -284,7 +297,9 @@ class OnlinePaymentMonitor extends AbstractService
             }
 
             try {
-                $this->catalog->markFeesAsPaid($patron, $t->amount);
+                $this->catalog->markFeesAsPaid(
+                    $patron, $t->amount, $t->transaction_id
+                );
                 $result = $this->transactionTable->setTransactionRegistered(
                     $t->transaction_id
                 );
@@ -415,6 +430,7 @@ class OnlinePaymentMonitor extends AbstractService
         $this->expireHours = $arguments[0];
         $this->fromEmail = $arguments[1];
         $this->reportIntervalHours = $arguments[2];
+        $this->minimumPaidAge = isset($arguments[3]) ? $arguments[3] : 120;
     }
 
     /**
@@ -427,13 +443,17 @@ class OnlinePaymentMonitor extends AbstractService
 // @codingStandardsIgnoreStart
         return <<<EOT
 Usage:
-  php index.php util online_payment_monitor <expire_hours> <from_email> <report_interval_hours>
+  php index.php util online_payment_monitor <expire_hours> <from_email>
+    <report_interval_hours> [minimum_paid_age]
 
   Validates unregistered online payment transactions.
     expire_hours          Number of hours before considering unregistered
                           transaction to be expired.
-    from_email            Sender email address for notification of expired transactions
+    from_email            Sender email address for notification of expired
+                          transactions
     report_interval_hours Interval when to re-send report of unresolved transactions
+    minimum_paid_age      Minimum age of transactions in 'paid' status until they are
+                          considered failed (seconds, default 120)
 
 EOT;
 // @codingStandardsIgnoreEnd

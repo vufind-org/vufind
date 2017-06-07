@@ -17,19 +17,21 @@
     $advSearch = $options->getAdvancedSearchAction();
     $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
     $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
+    $searchType = isset($this->params) ? $this->params->getsearchType() : $searchType;
+    $searchId = isset($this->results) ? $this->results->getSearchId() : $searchId;
 ?>
-<div class="col-sm-9 <?=$this->params->getsearchType() != 'advanced' ? 'hidden-xs' : '' ;?>">
+<div class="col-sm-9 <?=$searchType != 'advanced' ? 'hidden-xs' : '' ;?>">
   <h1 class="search-result-header">
-  <? if ($this->recordsFound): ?>
+  <? if ($this->recordsFound || isset($onRecordPage)): ?>
     <? if (isset($this->overrideSearchHeading)): ?>
       <?=$this->overrideSearchHeading?>
-    <? elseif ($this->params->getsearchType() == 'basic'): ?>
+    <? elseif ($searchType == 'basic'): ?>
       <? if (empty($lookfor)): ?>
         <?=$this->transEsc('history_empty_search');?>
       <? else: ?>
         <?=$this->transEsc('Search')?>: <strong><?=$this->escapeHtml($lookfor); ?></strong>
       <? endif; ?>
-    <? elseif ($this->params->getsearchType() == 'advanced'): ?>
+    <? elseif ($searchType == 'advanced'): ?>
       <span class="adv_search_terms"><?=$this->transEsc("Your search terms")?>: <strong><?=$this->escapeHtml($this->lookfor)?></strong></span>
     <? endif; ?>
     <? else: ?>
@@ -44,11 +46,11 @@
 </div>
 <div class="col-sm-3"></div>
 
-<? if ($this->params->getsearchType() == 'advanced'): ?>
+<? if ($searchType == 'advanced'): ?>
 <div class="col-xs-12">
   <div id="searchForm hidden-print">
     <div class="adv_search_links">
-      <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->results->getSearchId())?>"><i class="fa fa-pen"></i> <?=$this->transEsc("Edit this Advanced Search")?></a>
+      <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($searchId)?>"><i class="fa fa-pen"></i> <?=$this->transEsc("Edit this Advanced Search")?></a>
       <a href="<?=$this->url($advSearch)?>"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Start a new Advanced Search")?></a>
       <a href="<?=$this->url($searchHome)?>"><i class="fa fa-search"></i> <?=$this->transEsc("Start a new Basic Search")?></a>
     </div>

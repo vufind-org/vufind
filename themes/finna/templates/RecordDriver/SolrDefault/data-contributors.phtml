@@ -1,0 +1,11 @@
+<? //Don't add START and END comments ?>
+<? if (!empty($data)): ?>
+  <div class="truncate-field">
+    <? foreach ($data as $index => $author): ?>
+      <?=($index > 0 ? '<br/> ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><? endif; ?><? if (!empty($author['role'])): ?><span class="author-role">, <?=mb_strtolower($this->transEsc('CreatorRoles::' . $author['role']), 'UTF-8') ?></span><? endif; ?>
+    <? if (!empty($author['description'])): ?>
+      <span class="author-description"> (<?=$this->escapeHtml($author['description'])?>)</span>
+    <? endif; ?>
+    <? endforeach; ?>
+  </div>
+<? endif; ?>

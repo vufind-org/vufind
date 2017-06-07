@@ -6,7 +6,7 @@
 <? else: ?>
   <a href="<?=$this->url('home');?>" class="finnalogo"><span class="sr-only"><?=$this->transEsc('Home');?></span></a>
 <? endif; ?>
-<? if ($this->layout()->templateName === 'home') : ?>
+<? if ($this->layout()->templateName === 'home' && $this->layout()->templateDir == 'search') : ?>
 <hr>
 <? endif; ?>
 <!-- END of: finna - search/logosection.phtml -->

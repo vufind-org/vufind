@@ -86,13 +86,44 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
      */
     public function getLargeImage($index = 0, $params = [], $canonical = false)
     {
-        $images = $this->record->getAllImages('');
+        $images = $this->record->getAllImages($this->view->layout()->userLang);
         if (!isset($images[$index])) {
             return false;
         }
         $urlHelper = $this->getView()->plugin('url');
         $imageParams = isset($images[$index]['urls']['large'])
             ? $images[$index]['urls']['large'] : $images[$index]['urls']['medium'];
+        $imageParams = array_merge($imageParams, $params);
+
+        return $urlHelper(
+            'cover-show', [], $canonical ? ['force_canonical' => true] : []
+        ) . '?' . http_build_query($imageParams);
+    }
+
+    /**
+     * Return URL to master record image.
+     *
+     * @param int   $index     Record image index.
+     * @param array $params    Optional array of image parameters.
+     *                         See RecordImage::render.
+     * @param bool  $canonical Whether to return a canonical URL instead of relative
+     *
+     * @return mixed string URL or false if no
+     * image with the given index was found.
+     */
+    public function getMasterImage($index = 0, $params = [], $canonical = false)
+    {
+        $images = $this->record->getAllImages($this->view->layout()->userLang);
+        if (!isset($images[$index])) {
+            return false;
+        }
+        if (!isset($images[$index]['urls']['master'])) {
+            // Fall back to large image
+            return $this->getLargeImage($index, $params, $canonical);
+        }
+        $urlHelper = $this->getView()->plugin('url');
+
+        $imageParams = $images[$index]['urls']['master'];
         $imageParams = array_merge($imageParams, $params);
 
         return $urlHelper(
@@ -119,7 +150,8 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
         $imageParams = [
             'small' => [],
             'medium' => [],
-            'large' => []
+            'large' => [],
+            'master' => [],
         ];
         foreach ($params as $size => $sizeParams) {
             $imageParams[$size] = $sizeParams;
@@ -127,7 +159,7 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
 
         $urlHelper = $this->getView()->plugin('url');
 
-        $imageTypes = ['small', 'medium', 'large'];
+        $imageTypes = ['small', 'medium', 'large', 'master'];
 
         $images = $this->record->getAllImages($language, $thumbnails);
         foreach ($images as $idx => &$image) {

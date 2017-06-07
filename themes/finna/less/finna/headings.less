@@ -1,0 +1,58 @@
+h1, .h1,
+h2, .h2,
+h3, .h3 {
+  margin-top: @line-height-computed;
+  margin-bottom: (@line-height-computed);
+}
+
+// Typography for content pages
+// -------------------------------
+h1.content-header { padding: 5px 0; }
+.main.template-dir-feedcontent.template-name-content,
+.main.template-dir-content.template-name-content {
+  & .finna-main-header {
+    margin-bottom: 25px;
+  }
+  & h1 {
+    font-size: @content-headings-font-size-h1;
+  }
+  & h2 {
+    font-size: @content-headings-font-size-h2;
+    line-height: @content-headings-line-height;
+    margin-top: 0; padding-top: 0.7em; padding-bottom: 0.1em;
+  }
+  & h3, h4 {
+    line-height: (@content-headings-line-height * 1.1);
+    margin-top: 0;
+  }
+  & h5, h6 {
+    line-height: @content-line-height-base;
+  }
+  & h3 {
+    font-size: @content-headings-font-size-h3;
+    margin: 0; padding-top: 0.2em; padding-bottom: 1em;
+  }
+  & h4 {
+    font-size: @content-headings-font-size-h4;
+    margin: 0; padding-top: 0.6em; padding-bottom: 1.2em;
+  }
+  & h5 {
+    font-size: @content-headings-font-size-h5;
+    margin: 0; padding-top: 0; padding-bottom: 0;
+  }
+  & h6 {
+    font-size: @content-headings-font-size-h6;
+    text-transform: uppercase;
+    margin: 0; padding-top: 0.4em; padding-bottom: 0em;
+  }
+  & p {
+    font-size: @content-font-size-base;
+    line-height: @content-line-height-base;
+    margin-bottom: 15px;
+  }
+}
+
+// Finna text styles
+.finna-main-header h3 {
+  margin: 0;
+}

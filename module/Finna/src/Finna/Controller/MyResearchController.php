@@ -189,6 +189,92 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
+     * Send list of checkout history to view.
+     *
+     * @return mixed
+     */
+    public function checkoutHistoryAction()
+    {
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        if ($view = $this->createViewIfUnsupported('getMyTransactionHistory')) {
+            return $view;
+        }
+
+        $view = $this->createViewModel();
+
+        // Connect to the ILS:
+        $catalog = $this->getILS();
+
+        // Display account blocks, if any:
+        $this->addAccountBlocksToFlashMessenger($catalog, $patron);
+
+        // Get page and page size:
+        $page = $this->params()->fromQuery('page', 1);
+        $config = $this->getConfig();
+        $limit = isset($config->Catalog->checkout_history_page_size)
+            ? $config->Catalog->checkout_history_page_size : 50;
+
+        // Handle sorting
+        $currentSort = $this->getRequest()->getQuery('sort', 'duedate desc');
+        $view->sortList = [
+            'duedate desc' => [
+                'desc' => 'sort_duedate_desc',
+                'url' => '?sort=duedate%20desc',
+                'selected' => $currentSort == 'duedate desc'
+            ],
+            'duedate asc' => [
+                'desc' => 'sort_duedate_asc',
+                'url' => '?sort=duedate%20asc',
+                'selected' => $currentSort == 'duedate asc'
+            ],
+            'checkout desc' => [
+                'desc' => 'sort_checkout_date_desc',
+                'url' => '?sort=checkout%20desc',
+                'selected' => $currentSort == 'checkout desc'
+            ],
+            'checkout asc' => [
+                'desc' => 'sort_checkout_date_asc',
+                'url' => '?sort=checkout%20asc',
+                'selected' => $currentSort == 'checkout asc'
+            ]
+        ];
+        // Get checkout history details:
+        $params = [
+            'start' => ($page - 1) * $limit,
+            'limit' => $limit,
+            'sort' => $currentSort
+        ];
+        $result = $catalog->getMyTransactionHistory($patron, $params);
+
+        // Build paginator if needed:
+        if ($limit > 0 && $limit < $result['count']) {
+            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($result);
+            $paginator = new \Zend\Paginator\Paginator($adapter);
+            $paginator->setItemCountPerPage($limit);
+            $paginator->setCurrentPageNumber($page);
+            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
+        } else {
+            $paginator = false;
+            $pageStart = 0;
+            $pageEnd = $result['count'];
+        }
+
+        $transactions = $hiddenTransactions = [];
+        foreach ($result['transactions'] as $current) {
+            $transactions[] = $this->getDriverForILSRecord($current);
+        }
+
+        $view->transactions = $transactions;
+        $view->paginator = $paginator;
+        return $view;
+    }
+
+    /**
      * Login Action
      *
      * @return mixed
@@ -350,13 +436,15 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         $values = $this->getRequest()->getPost();
+        if (isset($values->due_date_reminder)) {
+            $user->setFinnaDueDateReminder($values->due_date_reminder);
+            $this->flashMessenger()->setNamespace('info')
+                ->addMessage('profile_update');
+        }
         if ($this->formWasSubmitted('saveUserProfile')) {
             $validator = new \Zend\Validator\EmailAddress();
-            if ($validator->isValid($values->email)) {
+            if ('' === $values->email || $validator->isValid($values->email)) {
                 $user->email = $values->email;
-                if (isset($values->due_date_reminder)) {
-                    $user->finna_due_date_reminder = $values->due_date_reminder;
-                }
                 $user->save();
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('profile_update');
@@ -368,11 +456,13 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         $view = parent::profileAction();
         $profile = $view->profile;
+        $patron = $this->catalogLogin();
 
-        if ($this->formWasSubmitted('saveLibraryProfile')) {
-            $this->processLibraryDataUpdate($profile, $values, $user);
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('profile_update');
+        if (is_array($patron) && $this->formWasSubmitted('saveLibraryProfile')) {
+            if ($this->processLibraryDataUpdate($patron, $values, $user)) {
+                $this->flashMessenger()->setNamespace('info')
+                    ->addMessage('profile_update');
+            }
             $view = parent::profileAction();
             $profile = $view->profile;
         }
@@ -395,13 +485,20 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $view->hideDueDateReminder = $user->finna_due_date_reminder == 0
             && isset($config->Site->hideDueDateReminder)
             && $config->Site->hideDueDateReminder;
+        if (!$view->hideDueDateReminder && is_array($patron)) {
+            $catalog = $this->getILS();
+            $ddrConfig = $catalog->getConfig('dueDateReminder', $patron);
+            if (isset($ddrConfig['enabled']) && !$ddrConfig['enabled']) {
+                $view->hideDueDateReminder = true;
+            }
+        }
 
         // Check whether to hide email address in profile
         $view->hideProfileEmailAddress
             = isset($config->Site->hideProfileEmailAddress)
             && $config->Site->hideProfileEmailAddress;
 
-        if (is_array($patron = $this->catalogLogin())) {
+        if (is_array($patron)) {
             $view->blocks = $this->getILS()->getAccountBlocks($patron);
         }
 
@@ -445,6 +542,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             }
             if (false === $catalog->checkFunction('updatePhone', $patron)) {
                 $fields['phone'] = ['label' => 'Phone'];
+            }
+            if (false === $catalog->checkFunction('updateSmsNumber', $patron)) {
+                $fields['sms_number'] = ['label' => 'SMS Number'];
             }
         }
 
@@ -506,48 +606,85 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $catalog = $this->getILS();
         $profile = $catalog->getMyProfile($patron);
         $view = $this->createViewModel();
+        $config = $catalog->getConfig('updateMessagingSettings', $patron);
 
         if ($this->formWasSubmitted('messaging_update_request')) {
-            $data = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-
-            $data['pickUpNotice'] = $this->translate(
-                'messaging_settings_method_' . $data['pickUpNotice'],
-                null,
-                $data['pickUpNotice']
-            );
-            $data['overdueNotice'] = $this->translate(
-                'messaging_settings_method_' . $data['overdueNotice'],
-                null,
-                $data['overdueNotice']
-            );
-            if ($data['dueDateAlert'] == 0) {
-                $data['dueDateAlert']
-                    = $this->translate('messaging_settings_method_none');
-            } elseif ($data['dueDateAlert'] == 1) {
-                $data['dueDateAlert']
-                    = $this->translate('messaging_settings_num_of_days');
+            if (isset($config['method']) && 'driver' === $config['method']) {
+                $data = $profile['messagingServices'];
+                $request = $this->getRequest();
+                // Collect results from the POST request and update settings
+                foreach ($data as $serviceId => &$service) {
+                    foreach ($service['settings'] as $settingId => &$setting) {
+                        if (!empty($setting['readonly'])) {
+                            continue;
+                        }
+                        if ('boolean' == $setting['type']) {
+                            $setting['active'] = (bool)$request->getPost(
+                                $serviceId . '_' . $settingId, false
+                            );
+                        } elseif ('select' == $setting['type']) {
+                            $setting['value'] = $request->getPost(
+                                $serviceId . '_' . $settingId, ''
+                            );
+                        } elseif ('multiselect' == $setting['type']) {
+                            foreach ($setting['options'] as $optionId
+                                => &$option
+                            ) {
+                                $option['active'] = (bool)$request->getPost(
+                                    $serviceId . '_' . $settingId . '_' . $optionId,
+                                    false
+                                );
+                            }
+                        }
+                    }
+                }
+                $result = $catalog->updateMessagingSettings($patron, $data);
+                if ($result['success']) {
+                    $this->flashMessenger()->addSuccessMessage($result['status']);
+                    $view->requestCompleted = true;
+                } else {
+                    $this->flashMessenger()->addErrorMessage($result['status']);
+                }
             } else {
-                $data['dueDateAlert'] = $this->translate(
-                    'messaging_settings_num_of_days_plural',
-                    ['%%days%%' => $data['dueDateAlert']]
+                if (!isset($config['emailAddress'])) {
+                    throw new \Exception(
+                        'Missing emailAddress in ILS updateMessagingSettings'
+                    );
+                }
+                $data = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+                $data['pickUpNotice'] = $this->translate(
+                    'messaging_settings_method_' . $data['pickUpNotice'],
+                    null,
+                    $data['pickUpNotice']
                 );
-            }
-
-            $config = $this->getILS()->getConfig('updateMessagingSettings', $patron);
-            if (!isset($config['emailAddress'])) {
-                throw new \Exception(
-                    'Missing emailAddress in ILS updateMessagingSettings'
+                $data['overdueNotice'] = $this->translate(
+                    'messaging_settings_method_' . $data['overdueNotice'],
+                    null,
+                    $data['overdueNotice']
                 );
-            }
-            $recipient = $config['emailAddress'];
+                if ($data['dueDateAlert'] == 0) {
+                    $data['dueDateAlert']
+                        = $this->translate('messaging_settings_method_none');
+                } elseif ($data['dueDateAlert'] == 1) {
+                    $data['dueDateAlert']
+                        = $this->translate('messaging_settings_num_of_days');
+                } else {
+                    $data['dueDateAlert'] = $this->translate(
+                        'messaging_settings_num_of_days_plural',
+                        ['%%days%%' => $data['dueDateAlert']]
+                    );
+                }
 
-            $this->sendChangeRequestEmail(
-                $patron,  $profile, $data, [], $recipient,
-                'Viestiasetusten muutospyyntö', 'change-messaging-settings'
-            );
-            $this->flashMessenger()
-                ->addSuccessMessage('request_change_done');
-            $view->requestCompleted = true;
+                $recipient = $config['emailAddress'];
+
+                $this->sendChangeRequestEmail(
+                    $patron, $profile, $data, [], $recipient,
+                    'Viestiasetusten muutospyyntö', 'change-messaging-settings'
+                );
+                $this->flashMessenger()
+                    ->addSuccessMessage('request_change_done');
+                $view->requestCompleted = true;
+            }
         }
 
         if (isset($profile['messagingServices'])) {
@@ -569,7 +706,12 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $view->days = [1, 2, 3, 4, 5];
             $view->profile = $profile;
         }
-        $view->setTemplate('myresearch/change-messaging-settings');
+        if (isset($config['method']) && 'driver' === $config['method']) {
+            $view->setTemplate('myresearch/change-messaging-settings-driver');
+            $view->approvalRequired = !empty($config['approvalRequired']);
+        } else {
+            $view->setTemplate('myresearch/change-messaging-settings');
+        }
         return $view;
     }
 
@@ -821,8 +963,15 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 if ($key !== $secret) {
                     throw new \Exception('Invalid parameters.');
                 }
-                $user->finna_due_date_reminder = 0;
-                $user->save();
+                $user->setFinnaDueDateReminder(0);
+                // Remove due date reminder from all cards too
+                foreach ($user->getLibraryCards() as $card) {
+                    if ($card->finna_due_date_reminder != 0) {
+                        $card = $user->getLibraryCard($card->id);
+                        $card->finna_due_date_reminder = 0;
+                        $card->save();
+                    }
+                }
             }
             $view->success = true;
         } else {
@@ -1002,28 +1151,67 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
-     * Change phone number and email from library info.
+     * Change phone number, email and checkout history state from library info.
      *
-     * @param array  $profile patron data
-     * @param object $values  form values
+     * @param array  $patron patron data
+     * @param object $values form values
      *
      * @return bool
      */
-    protected function processLibraryDataUpdate($profile, $values)
+    protected function processLibraryDataUpdate($patron, $values)
     {
         // Connect to the ILS:
         $catalog = $this->getILS();
 
-        $validator = new \Zend\Validator\EmailAddress();
-        $result = true;
-        if ($validator->isValid($values->profile_email)) {
-            //Update Email
-            $result = $catalog->updateEmail($profile, $values->profile_email);
+        $success = true;
+        if (isset($values->profile_email)) {
+            $validator = new \Zend\Validator\EmailAddress();
+            if ($validator->isValid($values->profile_email)
+                && $catalog->checkFunction('updateEmail', $patron)
+            ) {
+                // Update email
+                $result = $catalog->updateEmail($patron, $values->profile_email);
+                if (!$result['success']) {
+                    $this->flashMessenger()->addErrorMessage($result['status']);
+                    $success = false;
+                }
+            }
         }
-        // Update Phone
-        $result = $result && $catalog->updatePhone($profile, $values->profile_tel);
-
-        return $result;
+        // Update phone
+        if (isset($values->profile_tel)
+            && $catalog->checkFunction('updatePhone', $patron)
+        ) {
+            $result = $catalog->updatePhone($patron, $values->profile_tel);
+            if (!$result['success']) {
+                $this->flashMessenger()->addErrorMessage($result['status']);
+                $success = false;
+            }
+        }
+        // Update SMS Number
+        if (isset($values->profile_sms_number)
+            && $catalog->checkFunction('updateSmsNumber', $patron)
+        ) {
+            $result = $catalog->updateSmsNumber(
+                $patron, $values->profile_sms_number
+            );
+            if (!$result['success']) {
+                $this->flashMessenger()->addErrorMessage($result['status']);
+                $success = false;
+            }
+        }
+        // Update checkout history state
+        if (isset($values->checkout_history)
+            && $catalog->checkFunction('updateTransactionHistoryState', $patron)
+        ) {
+            $result = $catalog->updateTransactionHistoryState(
+                $patron, $values->checkout_history
+            );
+            if (!$result['success']) {
+                $this->flashMessenger()->addErrorMessage($result['status']);
+                $success = false;
+            }
+        }
+        return $success;
     }
 
     /**
@@ -1145,9 +1333,15 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $tag['tag'];
         };
 
+        $setupCallback = function ($searchRunner, $params, $runningSearchId) {
+            $params->setLimit(1000);
+        };
+
         $userLists = [];
         foreach ($user->getLists() as $list) {
-            $listRecords = $runner->run(['id' => $list->id], 'Favorites');
+            $listRecords = $runner->run(
+                ['id' => $list->id], 'Favorites', $setupCallback
+            );
             $outputList = [
                 'title' => $list->title,
                 'description' => $list->description,

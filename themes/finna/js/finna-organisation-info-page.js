@@ -12,8 +12,9 @@ finna.organisationInfoPage = (function() {
     var consortium = false;
 
     var loadOrganisationList = function(buildings, id) {
-        service.getOrganisations('page', parent, buildings, function(response) {
+        service.getOrganisations('page', parent, buildings, {id: id}, function(response, params) {
             if (response) {
+                var id = params.id;
                 holder.find('.loading').toggleClass('loading', false);
 
                 var cnt = 0;
@@ -32,9 +33,7 @@ finna.organisationInfoPage = (function() {
                     // if theres only one service point, hide searchbox and ignore initSearch
                     if (cnt == 1) {
                         holder.find('.office-search .searchbox-office,.show-all').hide();
-                        var id = Object.keys(organisationList)[0];
-                        updateSelectedOrganisation(id);
-                        id = undefined;
+                        id = Object.keys(organisationList)[0];
                     } else {
                         // IE opens Delay initing autocomplete menu to prevent IE from opening it automatically at
                         initSearch();
@@ -204,9 +203,11 @@ finna.organisationInfoPage = (function() {
             .attr( 'id', hash )
             .appendTo(holder);
 
-        // Set hash first to empty value, so that onhashchange is triggered when
-        // the same menu item is re-selected.
-        window.location.hash = '';
+        if (hash == window.location.hash) {
+            // Set hash first to empty value, so that onhashchange is triggered when
+            // the same menu item is re-selected.
+            window.location.hash = '';
+        }
         window.location.hash = hash;
     };
 
@@ -247,7 +248,7 @@ finna.organisationInfoPage = (function() {
         holder.find('.error, .info-element').hide();
         infoWidget.showDetails(id, '', true);
         $('#office-search').val('');
-        
+
         var notification = holder.find('.office-search-notifications .notification');
         if (id in organisationList) {
             var data = organisationList[id];
@@ -261,6 +262,8 @@ finna.organisationInfoPage = (function() {
                 setOfficeInformationLoader(false);
             }
             return;
+        } else {
+            setOfficeInformationLoader(false);
         }
     };
 

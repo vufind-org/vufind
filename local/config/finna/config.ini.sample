@@ -252,7 +252,7 @@ title_level_holds_mode = "driver"
 ;
 ; You may use multiple group keys (delimited by comma), e.g.,
 ; - item_agency_id,location
-;holdings_grouping = holdings_id
+holdings_grouping = holdings_id,location
 
 ; Whether support for multiple library cards is enabled. Default is false.
 library_cards = true
@@ -261,6 +261,10 @@ library_cards = true
 ; memory problems for users with huge numbers of items). Default = 50.
 ; N.B. Values other than 0 are not supported in the finna theme.
 checked_out_page_size = 0
+
+; The number of checkedout history items to display per page; 0 for no limit (may
+; cause memory problems for users with huge numbers of items). Default = 50.
+;checkout_history_page_size = 50
 
 ; This section allows you to determine how the users will authenticate.
 ; You can use an LDAP directory, the local ILS, the VuFind database (Database),
@@ -323,6 +327,11 @@ maximum_password_length = 32
 ; pattern. May be text or a translation key. The "numeric" and "alphanumeric"
 ; patterns have translated default hints.
 ;password_hint = "local_login_password_hint"
+
+; Include only the listed ILS drivers in the authentication API
+;include_api_targets = ils1,ils2
+; Exclude the listed ILS drivers from the authentication API
+;exclude_api_targets = ils3,ils4
 
 [ChoiceAuth]
 choice_order = Database,Shibboleth,MultiILS
@@ -1153,6 +1162,19 @@ url_blacklist[] = '/booky\.fi\/(image\.php\?|description\.php\?)/'
 
 ; Allow image links from Kirjavälitys (default is false)
 ;kirjavalitys_links = true
+
+; Whether to sort data sources by name. Default is false (use the priority defined
+; in searches.ini).
+;sort_sources = true
+
+; Video source configuration. First element is data source ID, second is media type
+; and third is the URL. {videoname} in the URL is replaced with the video ID.
+;video_sources[] = "kavi|application/dash+xml|http://elo.salama.tv.funet.fi/vod/_definst_/mp4:{videoname}/manifest.mpd"
+;video_sources[] = "kavi|application/x-mpegURL|http://elo.salama.tv.funet.fi/vod/_definst_/mp4:{videoname}/playlist.m3u8"
+
+; Video poster source configuration keyed by data source. {filename} is replaced with
+; the actual filename.
+;poster_sources[kavi] = "http://www.elonet.fi/tenho/media/{filename}"
 
 ; The following two sections control the Alphabetic Browse module.
 [AlphaBrowse]

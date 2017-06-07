@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -55,7 +55,8 @@ class Factory extends \VuFindTheme\View\Helper\Factory
             $locator->get('VuFindTheme\ThemeInfo'),
             Factory::getPipelineConfig($sm),
             $locator->get('Request'),
-            $locator->get('VuFind\Cache\Manager')
+            $locator->get('VuFind\Cache\Manager'),
+            $locator->get('VuFind\DbTablePluginManager')->get('FinnaCache')
         );
     }
 
@@ -72,7 +73,8 @@ class Factory extends \VuFindTheme\View\Helper\Factory
         return new HeadScript(
             $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
             Factory::getPipelineConfig($sm),
-            $locator->get('Request')
+            $locator->get('Request'),
+            $locator->get('VuFind\DbTablePluginManager')->get('FinnaCache')
         );
     }
 }

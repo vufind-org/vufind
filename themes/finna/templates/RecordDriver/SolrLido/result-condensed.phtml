@@ -50,13 +50,15 @@
   </div>
   <div class="clearfix"></div>
   <div class="media condensed-collapse-data col-xs-12">
-    <div class="media-body col-xs-7<? if ($thumbnailAlignment == 'left'): ?> col-sm-push-4<? endif; ?>">
-    <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
-    <? if ($summary): ?>
-      <div class="truncate-field wide">
-        <p class="summary"><?=$summary?></p>
+    <div class="col-xs-7<? if ($thumbnailAlignment == 'left'): ?> col-sm-push-4<? endif; ?>">
+      <div class="media-body">
+        <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
+        <? if ($summary): ?>
+          <div class="truncate-field wide">
+            <p class="summary"><?=$summary?></p>
+          </div>
+        <? endif; ?>
       </div>
-    <? endif; ?>
     </div>
     <div class="media-<?=$thumbnailAlignment ?> col-xs-5 col-sm-4<? if ($thumbnailAlignment == 'left'): ?> col-sm-pull-7<? endif; ?> resultThumb">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />

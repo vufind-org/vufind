@@ -443,14 +443,14 @@ class ScheduledAlerts extends AbstractService
             $lastExecutionDate = $lastTime->format($iso8601);
             if ($newestRecordDate < $lastExecutionDate) {
                 $this->msg(
-                    "      No new results for search $searchId: "
+                    "      No new results for search {$s->id} ($searchId): "
                     . "$newestRecordDate < $lastExecutionDate"
                 );
                 continue;
             }
 
             $this->msg(
-                "      New results for search $searchId: "
+                "      New results for search {$s->id} ($searchId): "
                 . "$newestRecordDate >= $lastExecutionDate"
             );
 
@@ -562,13 +562,13 @@ class ScheduledAlerts extends AbstractService
         $appPath = APPLICATION_PATH;
         return <<<EOT
 Usage:
-  VUFIND_LOCAL_MODULES='FinnaTheme,FinnaSearch,Finna,FinnaConsole'
-  php $appPath/util/scheduled_alerts.php
-    <view base directory>
-    <VuFind local configuration directory>
+  php $appPath/util/scheduled_alerts.php <view_base> <local_conf>
 
-            For example:
-  VUFIND_LOCAL_MODULES='FinnaTheme,FinnaSearch,Finna,FinnaConsole'
+  Sends scheduled alerts.
+    view_base  View base directory
+    local_conf VuFind local configuration directory
+
+For example:
   php $appPath/util/scheduled_alerts.php /tmp/finna /tmp/NDL-VuFind2/local
 
 EOT;

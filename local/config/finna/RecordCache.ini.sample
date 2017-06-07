@@ -20,7 +20,11 @@
 [Default]
 Solr[operatingMode] = fallback
 Primo[operatingMode] = fallback
+EDS[operatingMode] = fallback
+Summon[operatingMode] = fallback
 
 [Favorite]
 Solr[operatingMode] = fallback
 Primo[operatingMode] = primary
+EDS[operatingMode] = fallback
+Summon[operatingMode] = fallback

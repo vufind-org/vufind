@@ -1,5 +1,5 @@
 <?
-echo $this->partial('RecordDriver/SolrDefault/export-refworks-format.phtml');
+echo $this->record($this->driver)->getExportFormat('refworks');
 
 $title = rtrim($this->driver->getTitle(), " /");
 echo "T1 $title\n";

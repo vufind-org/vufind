@@ -63,6 +63,9 @@ finna.imagePopup = (function(finna) {
 
         // Open image-popup from medium size record image.
         $(".image-popup-trigger").click(function(e) {
+            if ($(this).hasClass('no-image')) {
+                return;
+            }
             openPopup($(this));
             e.preventDefault();
         });

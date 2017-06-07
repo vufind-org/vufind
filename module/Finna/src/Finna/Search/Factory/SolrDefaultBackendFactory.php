@@ -89,6 +89,14 @@ class SolrDefaultBackendFactory
     {
         parent::createListeners($backend);
 
+        // Apply deduplication also if it's not enabled by default (could be enabled
+        // by a special filter):
+        $search = $this->config->get($this->searchConfig);
+        if (!isset($search->Records->deduplication)) {
+            $events = $this->serviceLocator->get('SharedEventManager');
+            $this->getDeduplicationListener($backend, false)->attach($events);
+        }
+
         $events = $this->serviceLocator->get('SharedEventManager');
 
         // Finna Solr Extensions

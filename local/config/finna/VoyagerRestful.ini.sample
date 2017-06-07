@@ -183,7 +183,6 @@ checkLoans = true
 ;helpText = "Help text for all languages."
 ;helpText[en-gb] = "Help text for English language."
 
-
 ; This section controls call slip behavior. To enable, uncomment (at minimum) the
 ; HMACKeys and extraFields settings below.
 [StorageRetrievalRequests]
@@ -258,7 +257,7 @@ defaultRequiredDate = 0:1:0
 ; priority. The sample values below make "Missing" most important and drop request
 ; statuses below others so that e.g. "On Hold" is displayed instead of
 ; "Hold Request".
-;[StatusRankings]
+[StatusRankings]
 Missing = 0
 Recall Request = 99
 Hold Request = 99

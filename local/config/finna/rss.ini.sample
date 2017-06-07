@@ -7,6 +7,7 @@
 ;items = [number of newest items to read from the feed, default 0 means all items]
 ;itemsPerPage = [number of visible items in the carousel, has no effect on lists]
 ;scrolledItems = [number of items to scroll -- defaults to itemsPerPage]
+;scrollSpeed = [milliseconds -- carousel scroll speed(optional), default value = 750ms]
 ;images = [true or false -- whether to render images, has no effect on carousels]
 ;moreLink = [true or false, whether to render a "more" link, useful for news feeds]
 

@@ -1,0 +1,9 @@
+<? //Don't add START and END comments ?>
+<? if (!empty($data)): ?>
+  <?
+    $containerSource = $this->driver->getSourceIdentifier();
+    $containerID = $this->driver->getContainerRecordID();
+  ?>
+  <a href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('journaltitle', $data))?>"><?=$this->escapeHtml($data)?></a>
+  <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
+<? endif; ?>

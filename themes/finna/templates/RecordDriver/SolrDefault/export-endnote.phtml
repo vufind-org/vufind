@@ -1,5 +1,5 @@
 <?
-echo $this->partial('RecordDriver/SolrDefault/export-endnote-format.phtml');
+echo $this->record($this->driver)->getExportFormat('endnote');
 
 $author = $this->driver->tryMethod('getPrimaryAuthor');
 if (!empty($author)) {

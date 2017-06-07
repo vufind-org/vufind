@@ -61,6 +61,25 @@ class Factory
     }
 
     /**
+     * Factory for KohaRest driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return KohaRest
+     */
+    public static function getKohaRest(ServiceManager $sm)
+    {
+        $sessionFactory = function ($namespace) use ($sm) {
+            $manager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            return new \Zend\Session\Container("KohaRest_$namespace", $manager);
+        };
+        return new KohaRest(
+            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+            $sessionFactory
+        );
+    }
+
+    /**
      * Factory for MultiBackend driver.
      *
      * @param ServiceManager $sm Service manager.
@@ -78,6 +97,30 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
         );
         return $mb;
+    }
+
+    /**
+     * Factory for Sierra REST driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SierraRest
+     */
+    public static function getSierraRest(ServiceManager $sm)
+    {
+        $sessionFactory = function ($namespace) use ($sm) {
+            $manager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            return new \Zend\Session\Container("SierraRest_$namespace", $manager);
+        };
+
+        $driver = new SierraRest(
+            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+            $sessionFactory
+        );
+        $driver->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+        return $driver;
     }
 
     /**

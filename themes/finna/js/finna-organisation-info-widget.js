@@ -18,7 +18,7 @@ finna = $.extend(finna, {
 
             toggleSpinner(true);
             holder.find('.error,.info-element').hide();
-            service.getOrganisations(holder.data('target'), parent, buildings, function(response) {
+            service.getOrganisations(holder.data('target'), parent, buildings, {}, function(response) {
                 if (response === false) {
                     holder.html('<!-- Organisation info could not be loaded');
                 } else {
@@ -68,7 +68,7 @@ finna = $.extend(finna, {
             var input = toggle.find('input');
             var id = input.val();
             var name = holder.find('.organisation ul.dropdown-menu li input[value="' + id + '"]').parent('li').text();
-            
+
             toggle.find('span').text(name);
             showDetails(id, name, false);
 
@@ -88,14 +88,14 @@ finna = $.extend(finna, {
                 var parent = holder.data('parent');
                 var id = holder.data('id');
                 var dir = parseInt($(this).data('dir'));
-                
+
                 holder.find('.week-text .num').text(holder.data('week-num') + dir);
                 $(this).attr('data-classes', $(this).attr('class'));
                 $(this).removeClass('fa-arrow-right fa-arrow-left');
                 $(this).addClass('fa-spinner fa-spin');
-                
+
                 service.getSchedules(
-                    holder.data('target'), parent, id, holder.data('period-start'), dir, false, false, 
+                    holder.data('target'), parent, id, holder.data('period-start'), dir, false, false,
                     function(response) {
                         schedulesLoaded(id, response);
                     }
@@ -110,12 +110,13 @@ finna = $.extend(finna, {
             var parent = holder.data('parent');
             var data = service.getDetails(id);
             if (!data) {
+                detailsLoaded(id, null);
                 return;
             }
 
             holder.data('id', id);
 
-            if ('openTimes' in data && 'openNow' in data 
+            if ('openTimes' in data && 'openNow' in data
                 && 'schedules' in data.openTimes && data.openTimes.schedules.length
             ) {
                 holder.find('.is-open' + (data.openNow ? '.open' : '.closed')).show();
@@ -141,8 +142,8 @@ finna = $.extend(finna, {
             }
 
             service.getSchedules(
-                holder.data('target'), parent, id, 
-                holder.data('period-start'), null, true, allServices, 
+                holder.data('target'), parent, id,
+                holder.data('period-start'), null, true, allServices,
                 function(response) {
                     if (response) {
                         schedulesLoaded(id, response);
@@ -171,13 +172,13 @@ finna = $.extend(finna, {
                 updateWeekNum(week);
             }
             updatePrevBtn(response);
-            
+
             var schedulesHolder = holder.find('.schedules .opening-times-week');
             schedulesHolder.find('> div').not('.template').remove();
-            
+
             var data = organisationList[id];
-            var hasSchedules 
-                = 'openTimes' in response && 'schedules' in response.openTimes 
+            var hasSchedules
+                = 'openTimes' in response && 'schedules' in response.openTimes
                 && response.openTimes.schedules.length > 0;
 
             if (hasSchedules) {
@@ -222,9 +223,9 @@ finna = $.extend(finna, {
                                 timeRow.find('.date').text(date);
                                 timeRow.find('.name').text(day);
                                 timeRow.find('.info').text(info);
-                            
+
                                 timeRow.find('.opens').text(timeOpens);
-                                timeRow.find('.closes').text(timeCloses);                        
+                                timeRow.find('.closes').text(timeCloses);
 
                                 if (selfserviceAvail && selfservice != currentSelfservice) {
                                     timeRow.toggleClass('staff', !selfservice);
@@ -237,7 +238,7 @@ finna = $.extend(finna, {
                             } else {
                                 var timePeriod = currentTimeRow.find('.time-template').eq(0).clone();
                                 timePeriod.find('.opens').text(timeOpens);
-                                timePeriod.find('.closes').text(timeCloses);                        
+                                timePeriod.find('.closes').text(timeCloses);
                                 currentTimeRow.find('.time-container').append(timePeriod);
                             }
 
@@ -256,10 +257,10 @@ finna = $.extend(finna, {
                         timeRow.find('.period, .name-staff').hide();
                         timeRow.find('.closed-today').removeClass('hide');
                         dayRow.append(timeRow);
-                        
+
                         dayRow.toggleClass('is-closed', true);
                     }
-                    
+
                     dayCnt = 0;
                     schedulesHolder.append(dayRow);
                     dayRow = dayRowTpl.clone();
@@ -272,7 +273,7 @@ finna = $.extend(finna, {
                 if (data.mobile) {
                     linkHolder.show();
                     if ('links' in data.details) {
-                        $.each(data.details.links, function(ind, obj) {                            
+                        $.each(data.details.links, function(ind, obj) {
                             var link = holder.find('.mobile-schedule-link-template').eq(0).clone();
                             link.removeClass('hide mobile-schedule-link-template');
                             link.find('a').attr('href', obj.url).text(obj.name);
@@ -301,9 +302,12 @@ finna = $.extend(finna, {
             holder.find('.week-navi-holder').toggle(hasSchedules);
             schedulesHolder.stop(true, false).fadeTo(200, 1);
         };
-        
+
         var detailsLoaded = function(id, response) {
             toggleSpinner(false);
+            if (null === response) {
+                return;
+            }
 
             if ('periodStart' in response) {
                 holder.data('period-start', response['periodStart']);
@@ -355,8 +359,8 @@ finna = $.extend(finna, {
 
         var updatePrevBtn = function(response) {
             var prevBtn = holder.find('.week-navi.prev-week');
-            if ('openTimes' in response 
-                && 'currentWeek' in response.openTimes 
+            if ('openTimes' in response
+                && 'currentWeek' in response.openTimes
                 && response.openTimes.currentWeek
             ) {
                 prevBtn.unbind('click').fadeTo(200, 0);

@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace FinnaTheme\View\Helper;
+use Finna\Db\Table\FinnaCache;
 use VuFindTheme\ThemeInfo;
 use Zend\Http\Request;
 
@@ -48,16 +49,26 @@ class HeadScript extends \VuFindTheme\View\Helper\HeadScript
     protected $request;
 
     /**
+     * FinnaCache table
+     *
+     * @var FinnaCache
+     */
+    protected $finnaCache;
+
+    /**
      * Constructor
      *
-     * @param ThemeInfo   $themeInfo Theme information service
-     * @param string|bool $plconfig  Whether or not to concatenate
-     * @param Request     $request   Request
+     * @param ThemeInfo   $themeInfo  Theme information service
+     * @param string|bool $plconfig   Whether or not to concatenate
+     * @param Request     $request    Request
+     * @param FinnaCache  $finnaCache FinnaCache table
      */
-    public function __construct(ThemeInfo $themeInfo, $plconfig, Request $request)
-    {
+    public function __construct(ThemeInfo $themeInfo, $plconfig, Request $request,
+        FinnaCache $finnaCache
+    ) {
         parent::__construct($themeInfo, $plconfig);
         $this->request = $request;
+        $this->finnaCache = $finnaCache;
     }
 
     /**
@@ -82,5 +93,16 @@ class HeadScript extends \VuFindTheme\View\Helper\HeadScript
             }
         }
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
+    }
+
+    /**
+     * Get the minifier that can handle these file types
+     * Required by ConcatTrait
+     *
+     * @return \FinnaTheme\Minify\JS
+     */
+    protected function getMinifier()
+    {
+        return new \FinnaTheme\Minify\JS($this->finnaCache);
     }
 }

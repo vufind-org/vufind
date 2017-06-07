@@ -1,0 +1,31 @@
+<? //Don't add START and END comments ?>
+<? $mainFormat = $this->driver->getMainFormat(); ?>
+<? foreach ($data as $eventType => $events): ?>
+<tr class="recordEvents">
+  <th><?=$this->transEsc("lido_event_type_{$mainFormat}_$eventType")?>:</th>
+  <td>
+    <div class="truncate-field">
+    <? foreach ($events as $event): ?>
+      <? if ($event != $events[0]): ?><br/><? endif; ?>
+      <? if (!empty($event['name'])): ?><?=$this->escapeHtml($event['name'])?><br/><? endif; ?>
+      <? if (!empty($event['date'])): ?><?=$this->escapeHtml($event['date'])?><br/><? elseif ($event['type'] != 'käyttö' && $event['type'] != 'näyttely'): ?> <?=$this->transEsc('undated')?><? endif; ?>
+      <? if (!empty($event['method'])): ?><?=$this->escapeHtml($event['method'])?><br/><? endif; ?>
+      <? if (!empty($event['materials'])): ?>
+        <?=implode('<br/>', array_map([$this, 'escapeHtml'], $event['materials']))?><br/>
+      <? endif; ?>
+      <? if (!empty($event['places'])): ?>
+        <?=implode('<br/>', array_map([$this, 'escapeHtml'], $event['places']))?><br/>
+      <? endif; ?>
+      <? if (!empty($event['culture'])): ?><?=$this->escapeHtml($event['culture'])?><br/><? endif; ?>
+      <? if (!empty($event['actors'])): ?>
+        <? foreach ($event['actors'] as $actor): ?>
+          <?=$this->escapeHtml($actor['name'])?><? if (!empty($actor['role'])): ?>, <?=$this->escapeHtml($actor['role'])?><? endif; ?>
+        <? endforeach; ?>
+        <br/>
+      <? endif; ?>
+      <? if (!empty($event['description'])): ?><?=$this->escapeHtml($event['description'])?><br/><? endif; ?>
+    <? endforeach; ?>
+    </div>
+  </td>
+</tr>
+<? endforeach; ?>

@@ -83,6 +83,7 @@ class VerifyRecordLinks extends AbstractService implements ConsoleServiceInterfa
      */
     public function run($arguments)
     {
+        $this->msg('Record link verification started');
         $count = $fixed = 0;
         $comments = $this->commentsTable->select();
         if (!count($comments)) {
@@ -139,7 +140,10 @@ class VerifyRecordLinks extends AbstractService implements ConsoleServiceInterfa
             }
         }
 
-        $this->msg("$count comments checked, $fixed fixed");
+        $this->msg(
+            "Record link verification completed with $count comments checked, $fixed"
+            . " fixed"
+        );
         return true;
     }
 }

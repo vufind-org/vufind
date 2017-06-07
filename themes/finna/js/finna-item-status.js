@@ -43,11 +43,6 @@ finna.itemStatus = (function() {
           var details = item.find('.locationDetails');
           details.empty().append(result.full_status);
           details.removeClass('hidden');
-          details.find('.holdings').on('truncate-done', function() {
-              if (!$(this).hasClass('truncated')) {
-                  details.find('.available-total').hide();
-              }
-          });
           finna.layout.initTruncate(details);
 
           details.find('.holdings-container.collapsible > .header').click(function () {
@@ -74,7 +69,7 @@ finna.itemStatus = (function() {
               && result.locationList[x].status_unknown
             ) {
               if (result.locationList[x].location) {
-                locationListHTML += '<i class="fa fa-ok text-warning"></i> <span class="text-warning">' 
+                locationListHTML += '<i class="fa fa-ok text-warning"></i> <span class="text-warning">'
                   + result.locationList[x].location + '</span> ';
               }
             } else {

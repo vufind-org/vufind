@@ -52,6 +52,13 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     ];
 
     /**
+     * Primary author relator codes (mapped)
+     *
+     * @var array
+     */
+    protected $primaryAuthorRelators = ['drt'];
+
+    /**
      * Presenter author relator codes.
      *
      * @var array
@@ -252,41 +259,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      */
     public function getURLs()
     {
-        $results = [];
-        foreach ($this->getAllRecordsXML() as $xml) {
-            foreach ($xml->ProductionEvent as $event) {
-                $attributes = $event->ProductionEventType->attributes();
-                if (empty($attributes->{'elokuva-elonet-materiaali-video-url'})) {
-                    continue;
-                }
-                $url = (string)$attributes->{'elokuva-elonet-materiaali-video-url'};
-                $type = '';
-                $description = '';
-                if ($xml->Title->PartDesignation->Value) {
-                    $attributes = $xml->Title->PartDesignation->Value->attributes();
-                    $type = ucfirst((string)$attributes->{'video-tyyppi'});
-                    $description = (string)$attributes->{'video-lisatieto'};
-                }
-                $description = $description ? $description : $type;
-                if ($this->urlBlacklisted($url, $description)) {
-                    continue;
-                }
-
-                $embed = '';
-                if (strpos($url, 'elonet.fi') > 0 && strpos($url, '/video/') > 0) {
-                    $url = str_replace('/video/', '/embed/', $url);
-                    $url = str_replace('http://', '//', $url);
-                    $embed = 'iframe';
-                }
-
-                $results[] = [
-                    'url' => $url,
-                    'desc' => $description,
-                    'embed' => $embed
-                ];
-            }
-        }
-        return $results;
+        return $this->getVideoUrls();
     }
 
     /**
@@ -511,13 +484,48 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Get all authors apart from presenters
+     * Get all primary authors apart from presenters
      *
      * @return array
      */
-    public function getNonPresenterAuthors()
+    public function getNonPresenterPrimaryAuthors()
     {
-        return $this->getAuthorsByRelators($this->nonPresenterAuthorRelators);
+        return $this->getNonPresenterAuthors(true);
+    }
+
+    /**
+     * Get all secondary authors apart from presenters
+     *
+     * @return array
+     */
+    public function getNonPresenterSecondaryAuthors()
+    {
+        return $this->getNonPresenterAuthors(false);
+    }
+
+    /**
+     * Get all authors apart from presenters
+     *
+     * @param mixed $primary Whether to return only primary or secondary authors or
+     * all (null)
+     *
+     * @return array
+     */
+    public function getNonPresenterAuthors($primary = null)
+    {
+        $authors = $this->getAuthorsByRelators($this->nonPresenterAuthorRelators);
+        if (null === $primary) {
+            return $authors;
+        }
+        $result = [];
+        foreach ($authors as $author) {
+            $isPrimary = isset($author['role'])
+                && in_array($author['role'], $this->primaryAuthorRelators);
+            if ($isPrimary === $primary) {
+                $result[] = $author;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -529,19 +537,21 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      */
     public function getOnlineURLs($raw = false)
     {
-        if (!isset($this->fields['online_urls_str_mv'])) {
-            return [];
+        $videoUrls = $this->getVideoUrls();
+        $urls = [];
+        foreach ($videoUrls as $videoUrl) {
+            $urls[] = json_encode($videoUrl);
         }
-        $urls = $this->fields['online_urls_str_mv'];
-        foreach ($urls as &$urlJson) {
-            $url = json_decode($urlJson, true);
-            if (strpos($url['url'], 'elonet.fi') > 0
-                && strpos($url['url'], '/video/') > 0
-            ) {
-                $url['url'] = str_replace('/video/', '/embed/', $url['url']);
-                $url['url'] = str_replace('http://', '//', $url['url']);
-                $url['embed'] = 'iframe';
-                $urlJson = json_encode($url);
+        if ($videoUrls && !empty($this->fields['online_urls_str_mv'])) {
+            // Filter out video URLs
+            foreach ($this->fields['online_urls_str_mv'] as $urlJson) {
+                $url = json_decode($urlJson, true);
+                if ($videoUrls && strpos($url['url'], 'elonet.fi') > 0
+                    && strpos($url['url'], '/video/') > 0
+                ) {
+                    continue;
+                }
+                $urls[] = $urlJson;
             }
         }
         return $raw ? $urls : $this->mergeURLArray($urls, true);
@@ -569,15 +579,49 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Get presenters
+     * Get credited presenters
      *
      * @return array
      */
-    public function getPresenters()
+    public function getCreditedPresenters()
     {
+        return $this->getPresenters(false);
+    }
+
+    /**
+     * Get uncredited presenters
+     *
+     * @return array
+     */
+    public function getUncreditedPresenters()
+    {
+        return $this->getPresenters(true);
+    }
+
+    /**
+     * Get presenters
+     *
+     * @param mixed $uncredited Whether to return only uncredited (true) or credited
+     * authors (false) or all (null).
+     *
+     * @return array
+     */
+    public function getPresenters($uncredited = null)
+    {
+        $presenters = $this->getAuthorsByRelators($this->presenterAuthorRelators);
+        if (null !== $uncredited) {
+            $result = [];
+            foreach ($presenters as $presenter) {
+                $isUncredited = isset($presenter['uncredited'])
+                    && $presenter['uncredited'];
+                if ($isUncredited === $uncredited) {
+                    $result[] = $presenter;
+                }
+            }
+            $presenters = $result;
+        }
         return [
-            'presenters'
-                => $this->getAuthorsByRelators($this->presenterAuthorRelators)
+            'presenters' => $presenters
         ];
     }
 
@@ -813,6 +857,11 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 $uncredited = true;
             }
 
+            $description = '';
+            if (!empty($nameAttrs->{'elokuva-elotekija-selitys'})) {
+                $description = (string)$nameAttrs->{'elokuva-elotekija-selitys'};
+            }
+
             $name = (string)$agent->AgentName;
             if (empty($name)
                 && !empty($nameAttrs->{'elokuva-elokreditoimatontekija-nimi'})
@@ -825,6 +874,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 'name' => $name,
                 'role' => $role,
                 'roleName' => $roleName,
+                'description' => $description,
                 'uncredited' => $uncredited,
                 'idx' => $primary ? $idx : 10000 * $idx
             ];
@@ -914,5 +964,96 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     {
         $records = $this->getAllRecordsXML();
         return reset($records);
+    }
+
+    /**
+     * Get video URLs
+     *
+     * @return array
+     */
+    protected function getVideoUrls()
+    {
+        // Get video URLs, if any
+        $source = $this->getSource();
+        $source = isset($source[0]) ? $source[0] : '';
+        if (empty($this->recordConfig->Record->video_sources)) {
+            return [];
+        }
+        $sourceConfigs = [];
+        foreach ($this->recordConfig->Record->video_sources as $current) {
+            $settings = explode('|', $current, 3);
+            if (!isset($settings[2]) || $source !== $settings[0]) {
+                continue;
+            }
+            $sourceConfigs[$settings[1]] = $settings[2];
+        }
+        if (empty($sourceConfigs)) {
+            return [];
+        }
+        $posterSource = isset($this->recordConfig->Record->poster_sources[$source])
+            ? $this->recordConfig->Record->poster_sources[$source] : '';
+
+        $videoUrls = [];
+        foreach ($this->getAllRecordsXML() as $xml) {
+            foreach ($xml->Title as $title) {
+                if (!isset($title->TitleText)) {
+                    continue;
+                }
+
+                $videoUrl = (string)$title->TitleText;
+                if (strtolower(substr($videoUrl, -4)) !== '.mp4') {
+                    continue;
+                }
+
+                $poster = '';
+                $videoType = 'elokuva';
+                $description = '';
+                if (isset($title->PartDesignation->Value)) {
+                    $attributes = $title->PartDesignation->Value->attributes();
+                    if (!empty($attributes['video-tyyppi'])) {
+                        $videoType = (string)$attributes->{'video-tyyppi'};
+                    }
+                    $description = (string)$attributes->{'video-lisatieto'};
+
+                    $posterFilename = (string)$title->PartDesignation->Value;
+                    if ($posterFilename) {
+                        $poster = str_replace(
+                            '{filename}', $posterFilename, $posterSource
+                        );
+                    }
+                }
+
+                $videoSources = [];
+                foreach ($sourceConfigs as $type => $src) {
+                    $src = str_replace(
+                        '{videoname}', $videoUrl, $src
+                    );
+                    $videoSources[] = [
+                        'src' => $src,
+                        'type' => $type
+                    ];
+                }
+
+                $eventAttrs = $xml->ProductionEvent->ProductionEventType
+                    ->attributes();
+                $url = (string)$eventAttrs->{'elokuva-elonet-materiaali-video-url'};
+
+                if ($this->urlBlacklisted($url, $description)) {
+                    continue;
+                }
+
+                $videoUrls[] = [
+                    'url' => $url,
+                    'posterUrl' => $poster,
+                    'videoSources' => $videoSources,
+                    // Include both 'text' and 'desc' for online and normal urls
+                    'text' => $description ? $description : $videoType,
+                    'desc' => $description ? $description : $videoType,
+                    'source' => $source,
+                    'embed' => 'video'
+                ];
+            }
+        }
+        return $videoUrls;
     }
 }

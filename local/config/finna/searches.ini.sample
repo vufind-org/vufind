@@ -6,12 +6,12 @@ default_handler      = AllFields    ; Search handler to use if none is specified
 ; specific setting was present in the [DefaultSortingByType] section below; the
 ; selected option should be one of the options present in the [Sorting] section
 ; below.
-default_sort         = relevance
+default_sort         = "relevance,id asc"
 
 ; This setting controls the sort order to be used for empty search when relevance
 ; sort is selected. Since relevance doesn't have a meaningful function with an empty
 ; search, this can be set to e.g. "title".
-empty_search_relevance_override = "last_indexed desc"
+empty_search_relevance_override = "last_indexed desc,id asc"
 
 ; This setting controls the default view for search results; the selected option
 ; should be one of the options present in the [Views] section below.
@@ -24,6 +24,8 @@ default_view         = list
 ; WARNING: using large limits may require you to raise your PHP memory limits to
 ; avoid errors.
 default_limit        = 20
+default_limit_grid   = 50
+default_limit_condensed = 100;
 limit_options        = 20,50,100
 
 ; If this setting is true, boolean operators in searches (AND/OR/NOT) will only
@@ -56,7 +58,7 @@ highlighting = true
 
 ; Set this to restrict the list of fields that will be highlighted (the hl.fl
 ; Solr parameter); default = '*' for all fields:
-highlighting_fields = "artist_str_mv,author,author2,author_additional,author_fuller,building,category_str_mv,classification_str_mv,collection,container_title,contents,culture,description,designer_str_mv,dewey-full,edition,era,exhibition_str_mv,genre,geographic,holdings_txtP_mv,institution,isbn,ismn_isn_mv,issn,language,lccn,linking_issn_str_mv,main_date_str,manufacturer_str_mv,material,measurements,original_lng_str_mv,other_issn_str_mv,photographer_str_mv,physical,publication_place_txt_mv,publishDate,publisher,rights,sector_str_mv,series,series2,subtitle_lng_str_mv,title,title_alt,title_full,title_new,title_old,topic,url"
+highlighting_fields = "author,author2,author_additional,author_fuller,container_title,contents,culture,description,dewey-full,edition,era,genre,geographic,institution,isbn,issn,language,lccn,material,measurements,publication_place_txt_mv,publisher,series,series2,title,title_alt,title_full,title_new,title_old,topic"
 
 ; Set this to true in order to include a text snippet in the search results when
 ; a keyword match is found in a field that is not normally displayed as part of
@@ -132,7 +134,7 @@ PublicationPlace    = adv_search_publication_place
 ;       "publishDateSort", "author_sort" and "title_sort" Solr fields; you can use
 ;       either form in this file.
 [Sorting]
-relevance = sort_relevance
+relevance,id asc = sort_relevance
 main_date_str desc = sort_year
 main_date_str asc = "sort_year asc"
 
@@ -144,7 +146,7 @@ callnumber = sort_callnumber
 
 author = sort_author
 title = sort_title
-last_indexed desc = sort_last_indexed
+last_indexed desc,id asc = sort_last_indexed
 
 ; This section allows you to specify the default sort order for specific types of
 ; searches.  Each key in this section should correspond with a key in the
@@ -383,7 +385,7 @@ result_pages = 10
 ; IMPORTANT: In order for first_indexed and last_indexed sorting to work properly,
 ;            you need to index record change dates; see the Wiki page at
 ;            http://vufind.org/wiki/tracking_record_changes
-sort = "last_indexed desc"
+sort = "last_indexed desc,id asc"
 
 ; The following two sections control the behavior of the autocomplete drop-downs
 ; associated with search boxes.  The [Autocomplete] section contains global default
@@ -593,9 +595,9 @@ container_title = "Journal Title"
 ;0 = "format:\"Book\" OR format:\"Journal\""
 ;1 = "language:\"English\" OR language:\"French\""
 
-; This section is an extension to [RawHiddenFilters] when you need to create 
+; This section is an extension to [RawHiddenFilters] when you need to create
 ; additional advanced types of filters -- i.e. complex boolean queries -- applied
-; only when the API functions are used (in addition to any HiddenFilters or 
+; only when the API functions are used (in addition to any HiddenFilters or
 ; RawHiddenFilters. Keys are ignored, but increasing numeric values (1, 2, 3...) are
 ; recommended.  Values are fully-formed filter queries.
 [ApiHiddenFilters]

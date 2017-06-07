@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,11 +22,12 @@
  * @category VuFind
  * @package  Content
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\OnlinePayment;
-use Zend\Config\Config;
+use Zend\I18n\Translator\TranslatorInterface;
 
 /**
  * Online payment service
@@ -34,6 +35,7 @@ use Zend\Config\Config;
  * @category VuFind
  * @package  Content
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -42,30 +44,37 @@ class OnlinePayment
     /**
      * Configuration.
      *
-     * @var array
+     * @var \Zend\Config\Config
      */
     protected $config;
 
     /**
      * Table manager
      *
-     * @var DbTablePluginManager
+     * @var \VuFind\Db\Table\PluginManager
      */
     protected $tableManager;
 
     /**
      * Logger
      *
-     * @var Logger
+     * @var \VuFind\Log\Logger
      */
     protected $logger;
 
     /**
      * HTTP service.
      *
-     * @var VuFind\Http
+     * @var \VuFindHttp\HttpService
      */
     protected $http;
+
+    /**
+     * Translator
+     *
+     * @var TranslatorInterface
+     */
+    protected $translator;
 
     /**
      * Constructor.
@@ -74,13 +83,18 @@ class OnlinePayment
      * @param DbTablePluginManager $tableManager Table manager
      * @param Logger               $logger       Logger
      * @param Config               $config       Configuration
+     * @param TranslatorInterface  $translator   Translator
      */
-    public function __construct($http, $tableManager, $logger, $config)
-    {
+    public function __construct(\VuFindHttp\HttpService $http,
+        \VuFind\Db\Table\PluginManager $tableManager,
+        \VuFind\Log\Logger $logger, \Zend\Config\Config $config,
+        TranslatorInterface $translator
+    ) {
         $this->http = $http;
         $this->tableManager = $tableManager;
         $this->logger = $logger;
         $this->config = $config;
+        $this->translator = $translator;
     }
 
     /**
@@ -101,7 +115,8 @@ class OnlinePayment
         }
         $handler = new $class(
             $this->getConfig($source),
-            $this->http
+            $this->http,
+            $this->translator
         );
         $handler->setDbTableManager($this->tableManager);
         $handler->setLogger($this->logger);

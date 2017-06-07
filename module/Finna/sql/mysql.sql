@@ -37,6 +37,12 @@ CREATE INDEX `finna_user_due_date_reminder_key` ON user (`finna_due_date_reminde
 CREATE INDEX `finna_user_email` ON user (`email`);
 
 --
+-- Additional columns for user_card
+--
+ALTER TABLE `user_card` ADD COLUMN `finna_due_date_reminder` int(11) NOT NULL DEFAULT 0;
+--To initialize: UPDATE user_card SET finna_due_date_reminder=(SELECT finna_due_date_reminder FROM user WHERE user.id=user_card.user_id);
+
+--
 -- Additional columns for user_list
 --
 ALTER TABLE user_list ADD COLUMN `finna_updated` datetime DEFAULT NULL;
@@ -128,6 +134,19 @@ CREATE TABLE `finna_fee` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `finna_fee_ibfk1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
   CONSTRAINT `finna_fee_ibfk2` FOREIGN KEY (`transaction_id`) REFERENCES `finna_transaction` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `finna_cache` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `resource_id` varchar(255) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `mtime` int(11) NOT NULL,
+  `data` longblob,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `resource_id` (`resource_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

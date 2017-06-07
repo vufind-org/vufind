@@ -81,7 +81,7 @@ class Factory extends \VuFind\Service\Factory
     public static function getCookieManager(ServiceManager $sm)
     {
         if (Console::isConsole()) {
-            return false;
+            return new \VuFind\Cookie\CookieManager([]);
         }
 
         $config = $sm->get('VuFind\Config')->get('config');
@@ -208,7 +208,8 @@ class Factory extends \VuFind\Service\Factory
             $sm->get('VuFind\Http'),
             $sm->get('VuFind\DbTablePluginManager'),
             $sm->get('VuFind\Logger'),
-            $sm->get('VuFind\Config')->get('datasources')
+            $sm->get('VuFind\Config')->get('datasources'),
+            $sm->get('VuFind\Translator')
         );
     }
 
@@ -278,6 +279,40 @@ class Factory extends \VuFind\Service\Factory
     {
         return new \Finna\Config\YamlReader(
             $sm->get('VuFind\CacheManager')
+        );
+    }
+
+    /**
+     * Construct the cart.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Cart
+     */
+    public static function getCart(ServiceManager $sm)
+    {
+        $config = $sm->get('VuFind\Config')->get('config');
+        $active = isset($config->Site->showBookBag)
+            ? (bool)$config->Site->showBookBag : false;
+        $size = isset($config->Site->bookBagMaxSize)
+            ? $config->Site->bookBagMaxSize : 100;
+        return new \VuFind\Cart(
+            $sm->get('VuFind\RecordLoader'), $sm->get('VuFind\CookieManager'),
+            $size, $active
+        );
+    }
+
+    /**
+     * Construct the SearchMemory helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SearchMemory
+     */
+    public static function getSearchMemory(ServiceManager $sm)
+    {
+        return new \Finna\Search\Memory(
+            new \Zend\Session\Container('Search', $sm->get('VuFind\SessionManager'))
         );
     }
 }
