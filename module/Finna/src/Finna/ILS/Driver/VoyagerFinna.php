@@ -27,9 +27,11 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace Finna\ILS\Driver;
-use VuFind\Exception\ILS as ILSException,
-    Finna\ILS\SIP2,
-    PDO;
+
+use Finna\ILS\SIP2;
+use VuFind\Exception\ILS as ILSException;
+use PDO;
+use Zend\Validator\EmailAddress as EmailAddressValidator;
 
 /**
  * Voyager/VoyagerRestful Common Trait
@@ -474,6 +476,83 @@ trait VoyagerFinna
             return parent::getConfig($function, $params);
         }
         return false;
+    }
+
+    /**
+     * Get Patron Profile
+     *
+     * This is responsible for retrieving the profile for a specific patron.
+     *
+     * @param array $patron The patron array
+     *
+     * @throws ILSException
+     * @return array        Array of the patron's profile data on success.
+     */
+    public function getMyProfile($patron)
+    {
+        $sql = "SELECT PATRON.LAST_NAME, PATRON.FIRST_NAME, " .
+               "PATRON.HISTORICAL_CHARGES, PATRON_ADDRESS.ADDRESS_LINE1, " .
+               "PATRON_ADDRESS.ADDRESS_LINE2, PATRON_ADDRESS.ZIP_POSTAL, " .
+               "PATRON_ADDRESS.CITY, PATRON_ADDRESS.COUNTRY, " .
+               "PATRON_PHONE.PHONE_NUMBER, PATRON_GROUP.PATRON_GROUP_NAME, " .
+               "to_char(PATRON.EXPIRE_DATE, 'MM-DD-YYYY') as EXPIRE_DATE " .
+               "FROM $this->dbName.PATRON, $this->dbName.PATRON_ADDRESS, " .
+               "$this->dbName.PATRON_PHONE, $this->dbName.PATRON_BARCODE, " .
+               "$this->dbName.PATRON_GROUP " .
+               "WHERE PATRON.PATRON_ID = PATRON_ADDRESS.PATRON_ID (+) " .
+               "AND PATRON_ADDRESS.ADDRESS_ID = PATRON_PHONE.ADDRESS_ID (+) " .
+               "AND PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID (+) " .
+               "AND PATRON_BARCODE.PATRON_GROUP_ID = " .
+               "PATRON_GROUP.PATRON_GROUP_ID (+) " .
+               "AND PATRON.PATRON_ID = :id";
+        try {
+            $sqlStmt = $this->executeSQL($sql, [':id' => $patron['id']]);
+            $patron = [];
+            while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
+                if (!empty($row['FIRST_NAME'])) {
+                    $patron['firstname'] = utf8_encode($row['FIRST_NAME']);
+                }
+                if (!empty($row['LAST_NAME'])) {
+                    $patron['lastname'] = utf8_encode($row['LAST_NAME']);
+                }
+                if (!empty($row['PHONE_NUMBER'])) {
+                    $patron['phone'] = utf8_encode($row['PHONE_NUMBER']);
+                }
+                if (!empty($row['PATRON_GROUP_NAME'])) {
+                    $patron['group'] = utf8_encode($row['PATRON_GROUP_NAME']);
+                }
+                $validator = new EmailAddressValidator();
+                $addr1 = utf8_encode($row['ADDRESS_LINE1']);
+                if ($validator->isValid($addr1)) {
+                    $patron['email'] = $addr1;
+                } else if (!isset($patron['address1'])) {
+                    if (!empty($addr1)) {
+                        $patron['address1'] = $addr1;
+                    }
+                    if (!empty($row['ADDRESS_LINE2'])) {
+                        $patron['address2'] = utf8_encode($row['ADDRESS_LINE2']);
+                    }
+                    if (!empty($row['ZIP_POSTAL'])) {
+                        $patron['zip'] = utf8_encode($row['ZIP_POSTAL']);
+                    }
+                    if (!empty($row['CITY'])) {
+                        $patron['city'] = utf8_encode($row['CITY']);
+                    }
+                    if (!empty($row['COUNTRY'])) {
+                        $patron['country'] = utf8_encode($row['COUNTRY']);
+                    }
+                }
+                if (!empty($row['EXPIRE_DATE'])) {
+                    $patron['expiration_date']
+                        = $this->dateFormat->convertToDisplayDate(
+                            'm-d-Y', $row['EXPIRE_DATE']
+                        );
+                }
+            }
+            return (empty($patron) ? null : $patron);
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
     }
 
     /**
