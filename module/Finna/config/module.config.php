@@ -293,6 +293,9 @@ $config = [
             ],
             'search_options' => [
                 'abstract_factories' => ['Finna\Search\Options\PluginFactory'],
+                'factories' => [
+                    'eds' => 'Finna\Search\Options\Factory::getEDS',
+                ],
             ],
             'search_params' => [
                 'abstract_factories' => ['Finna\Search\Params\PluginFactory'],

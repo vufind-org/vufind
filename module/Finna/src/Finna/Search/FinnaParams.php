@@ -337,7 +337,10 @@ trait FinnaParams
     protected function initLimit($request)
     {
         // Check for a limit parameter in the url.
-        $defaultLimit = $this->getOptions()->getDefaultLimitByView($this->view);
+        $options = $this->getOptions();
+        $defaultLimit = is_callable([$options, 'getDefaultLimitByView'])
+            ? $options->getDefaultLimitByView($this->view)
+            : $options->getDefaultLimit();
 
         if (($limit = $request->get('limit')) != $defaultLimit) {
             // make sure the url parameter is a valid limit -- either
