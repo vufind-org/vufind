@@ -65,4 +65,23 @@ class Factory extends \VuFind\Db\Table\Factory
             $className, $sm, $rowName, $args
         );
     }
+
+    /**
+     * Construct the UserList table.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return UserList
+     */
+    public static function getUserList(ServiceManager $sm)
+    {
+        // For user anonymization console utility
+        if (Console::isConsole()) {
+            $session = new \Zend\Session\Container('List');
+        } else {
+            $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            $session = new \Zend\Session\Container('List', $sessionManager);
+        }
+        return static::getGenericTable('UserList', $sm, 'userlist', [$session]);
+    }
 }
