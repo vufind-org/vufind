@@ -258,6 +258,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
      *   sort   Sorting order, one of:
      *          checkout asc
      *          checkout desc
+     *          return asc
+     *          return desc
      *          due asc
      *          due desc
      *
@@ -272,6 +274,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         );
         if ($sort[0] == 'checkout') {
             $sortKey = 'issuedate';
+        } elseif ($sort[0] == 'return') {
+            $sortKey = 'returndate';
         } else {
             $sortKey = 'date_due';
         }
@@ -339,13 +343,16 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 'item_id' => $entry['itemnumber'],
                 'title' => $title,
                 'volume' => $volume,
-                'date' => $this->dateConverter->convertToDisplayDate(
+                'checkoutdate' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d\TH:i:sP', $entry['issuedate']
                 ),
                 'duedate' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d\TH:i:sP', $entry['date_due']
                 ),
                 'dueStatus' => $dueStatus,
+                'returndate' => $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d\TH:i:sP', $entry['returndate']
+                ),
                 'renew' => $entry['renewals']
             ];
 

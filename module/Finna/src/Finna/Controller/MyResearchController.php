@@ -219,18 +219,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             ? $config->Catalog->checkout_history_page_size : 50;
 
         // Handle sorting
-        $currentSort = $this->getRequest()->getQuery('sort', 'duedate desc');
+        $currentSort = $this->getRequest()->getQuery('sort', 'checkout desc');
         $view->sortList = [
-            'duedate desc' => [
-                'desc' => 'sort_duedate_desc',
-                'url' => '?sort=duedate%20desc',
-                'selected' => $currentSort == 'duedate desc'
-            ],
-            'duedate asc' => [
-                'desc' => 'sort_duedate_asc',
-                'url' => '?sort=duedate%20asc',
-                'selected' => $currentSort == 'duedate asc'
-            ],
             'checkout desc' => [
                 'desc' => 'sort_checkout_date_desc',
                 'url' => '?sort=checkout%20desc',
@@ -240,6 +230,26 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 'desc' => 'sort_checkout_date_asc',
                 'url' => '?sort=checkout%20asc',
                 'selected' => $currentSort == 'checkout asc'
+            ],
+            'return desc' => [
+                'desc' => 'sort_return_date_desc',
+                'url' => '?sort=return%20desc',
+                'selected' => $currentSort == 'return desc'
+            ],
+            'return asc' => [
+                'desc' => 'sort_return_date_asc',
+                'url' => '?sort=return%20asc',
+                'selected' => $currentSort == 'return asc'
+            ],
+            'duedate desc' => [
+                'desc' => 'sort_duedate_desc',
+                'url' => '?sort=duedate%20desc',
+                'selected' => $currentSort == 'duedate desc'
+            ],
+            'duedate asc' => [
+                'desc' => 'sort_duedate_asc',
+                'url' => '?sort=duedate%20asc',
+                'selected' => $currentSort == 'duedate asc'
             ]
         ];
         // Get checkout history details:
