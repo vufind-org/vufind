@@ -26,8 +26,6 @@
  * @link     https://vufind.org Main Page
  */
 namespace Finna\Db\Table;
-use VuFind\Db\Table\PluginManager;
-use Zend\Db\Adapter\Adapter;
 
 /**
  * Table Definition for user_list

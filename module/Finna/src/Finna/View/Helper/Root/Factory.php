@@ -165,7 +165,6 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         );
     }
 
-
     /**
      * Construct the Holdings Details Mode helper.
      *

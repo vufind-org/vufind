@@ -243,7 +243,6 @@ class Bootstrapper
         $this->events->attach('dispatch', $callback, 9000);
     }
 
-
     /**
      * Initialize the base url for the application from an environment variable
      *
