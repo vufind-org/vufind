@@ -46,10 +46,9 @@ function saveQueueAjax(obj, el) {
     .done(function checkSaveStatusDone(response) {
       for (var id in response.data) {
         if (response.data.hasOwnProperty(id)) {
-          displaySaveStatus(response.data[id], saveStatusEls[id]);
+          displaySaveStatus(response.data[id + ''], saveStatusEls[id + '']);
         }
       }
-      saveStatusEls = {};
       saveStatusObjs = [];
     })
     .fail(function checkItemStatusFail(response, textStatus) {
@@ -73,8 +72,8 @@ function checkSaveStatus(el) {
     return null;
   }
   saveQueueAjax({
-    id: $id.val(),
-    source: $source.val()
+    id: $id.val() + '',
+    source: $source.val() + ''
   }, $item);
 }
 

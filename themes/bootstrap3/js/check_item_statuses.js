@@ -13,6 +13,7 @@ function linkCallnumbers(callnumber, callnumber_handler) {
 }
 function displayItemStatus(result, $item) {
   $item.find('.status').empty().append(result.availability_message);
+  $item.find('.ajax-availability').removeClass('ajax-availability hidden');
   if (typeof(result.full_status) != 'undefined'
     && result.full_status.length > 0
     && $item.find('.callnumAndLocation').length > 0
@@ -62,15 +63,14 @@ function displayItemStatus(result, $item) {
         : result.location
     );
   }
-  $item.find('.ajax-availability').removeClass('ajax-availability hidden');
 }
 function itemStatusFail(response, textStatus) {
-  $('.ajax-availability.ajax-pending').empty();
+  $('.ajax-pending').empty();
   if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') {
     return;
   }
   // display the error message on each of the ajax status place holder
-  $('.ajax-availability.ajax-pending').addClass('text-danger').append(response.responseJSON.data);
+  $('.ajax-pending').addClass('text-danger').append(response.responseJSON.data);
 }
 
 var itemStatusIds = [];
@@ -90,9 +90,8 @@ function itemQueueAjax(id, el) {
     })
     .done(function checkItemStatusDone(response) {
       for (var j = 0; j < response.data.length; j++) {
-        displayItemStatus(response.data[j], itemStatusEls[response.data[j].id]);
+        displayItemStatus(response.data[j], itemStatusEls[response.data[j].id + '']);
       }
-      itemStatusEls = {};
       itemStatusIds = [];
     })
     .fail(function checkItemStatusFail(response, textStatus) {
@@ -110,7 +109,7 @@ function checkItemStatus(el) {
     return false;
   }
   var id = $item.find('.hiddenId').val();
-  itemQueueAjax(id, $item);
+  itemQueueAjax(id + '', $item);
 }
 
 function checkItemStatuses(_container) {
