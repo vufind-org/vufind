@@ -92,6 +92,8 @@ function itemQueueAjax(id, el) {
       for (var j = 0; j < response.data.length; j++) {
         displayItemStatus(response.data[j], itemStatusEls[response.data[j].id]);
       }
+      itemStatusEls = {};
+      itemStatusIds = [];
     })
     .fail(function checkItemStatusFail(response, textStatus) {
       itemStatusFail(response, textStatus);
@@ -99,8 +101,6 @@ function itemQueueAjax(id, el) {
     for (var i = 0; i < itemStatusIds.length; i++) {
       itemStatusEls[itemStatusIds[i]].find('.ajax-availability').addClass('ajax-pending');
     }
-    itemStatusIds = [];
-    itemStatusEls = {};
   }, itemStatusDelay);
 }
 
@@ -131,7 +131,7 @@ function checkItemStatuses(_container) {
 var itemStatusObserver = null;
 $(document).ready(function checkItemStatusReady() {
   itemStatusObserver = new Hunt(
-    $('.ajaxItem').toArray(), {
-      enter: checkItemStatus
-    });
+    $('.ajaxItem').toArray(),
+    { enter: checkItemStatus }
+  );
 });

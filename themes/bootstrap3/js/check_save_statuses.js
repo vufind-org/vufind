@@ -49,6 +49,8 @@ function saveQueueAjax(obj, el) {
           displaySaveStatus(response.data[id], saveStatusEls[id]);
         }
       }
+      saveStatusEls = {};
+      saveStatusObjs = [];
     })
     .fail(function checkItemStatusFail(response, textStatus) {
       saveStatusFail(response, textStatus);
@@ -56,8 +58,6 @@ function saveQueueAjax(obj, el) {
     for (var j = 0; j < saveStatusObjs.length; j++) {
       saveStatusEls[saveStatusObjs[j].id].find('.ajax-availability').addClass('ajax-pending');
     }
-    saveStatusObjs = [];
-    saveStatusEls = {};
   }, saveStatusDelay);
 }
 
@@ -96,7 +96,6 @@ function checkSaveStatuses(_container) {
       }, $(ajaxItems[i]));
     }
   }
-
   // Stop looking for a scroll loader
   if (saveStatusObserver) {
     saveStatusObserver.disconnect();
@@ -111,7 +110,7 @@ function checkSaveStatusesCallback() {
 var saveStatusObserver = null;
 $(document).ready(function checkSaveStatusFail() {
   saveStatusObserver = new Hunt(
-    $('.result,.record').toArray(), {
-      enter: checkSaveStatus
-    });
+    $('.result,.record').toArray(),
+    { enter: checkSaveStatus }
+  );
 });
