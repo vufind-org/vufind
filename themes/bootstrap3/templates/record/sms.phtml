@@ -16,28 +16,24 @@ JS;
 ?>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $validatorCallback, 'SET'); ?>
 <h2><?=$this->transEsc('Text this') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></h2>
-<form method="post" name="smsRecord" class="form-horizontal"<? if(isset($this->validation) && !empty($this->validation)):?> data-lightbox-onsubmit="phoneNumberValidation"<? endif; ?>>
+<form method="post" name="smsRecord" class="form-record-sms"<? if(isset($this->validation) && !empty($this->validation)):?> data-lightbox-onsubmit="phoneNumberValidation"<? endif; ?>>
   <?=$this->flashmessages()?>
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
-    <div class="col-sm-9">
-      <input id="sms_to" type="tel" name="to" placeholder="<?=$this->transEsc('sms_phone_number')?>" class="form-control"/>
-      <div class="help-block with-errors"></div>
-    </div>
+    <label class="control-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
+    <input id="sms_to" type="tel" name="to" placeholder="<?=$this->transEsc('sms_phone_number')?>" class="form-control"/>
+    <div class="help-block with-errors"></div>
   </div>
   <? if (is_array($this->carriers) && count($this->carriers) > 1): ?>
     <div class="form-group">
-      <label class="col-sm-3 control-label" for="sms_provider"><?=$this->transEsc('Provider')?>:</label>
-      <div class="col-sm-9">
-        <select id="sms_provider" name="provider" class="form-control">
-          <option selected="selected" value=""><?=$this->transEsc('Select your carrier')?></option>
-          <? foreach ($this->carriers as $val => $details): ?>
-            <option value="<?=$this->escapeHtmlAttr($val)?>"><?=$this->escapeHtml($details['name'])?></option>
-          <? endforeach; ?>
-        </select>
-      </div>
+      <label class="control-label" for="sms_provider"><?=$this->transEsc('Provider')?>:</label>
+      <select id="sms_provider" name="provider" class="form-control">
+        <option selected="selected" value=""><?=$this->transEsc('Select your carrier')?></option>
+        <? foreach ($this->carriers as $val => $details): ?>
+          <option value="<?=$this->escapeHtmlAttr($val)?>"><?=$this->escapeHtml($details['name'])?></option>
+        <? endforeach; ?>
+      </select>
     </div>
   <? else: ?>
     <? $keys = is_array($this->carriers) ? array_keys($this->carriers) : []; ?>
@@ -45,8 +41,6 @@ JS;
   <? endif; ?>
   <?=$this->recaptcha()->html($this->useRecaptcha) ?>
   <div class="form-group">
-    <div class="col-sm-9 col-sm-offset-3">
-      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send Text')?>"/>
-    </div>
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send Text')?>"/>
   </div>
 </form>
