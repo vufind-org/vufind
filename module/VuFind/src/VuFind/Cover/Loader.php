@@ -569,12 +569,12 @@ class Loader extends \VuFind\ImageLoader
      */
     protected function processImageURL($url, $cache = true)
     {
-        // Check to see if url is filepath MOD
-        if (substr($url, 0, 5) == "file:") {
-            $imagePath = substr($url, 5);
+        // Check to see if url is a file path
+        if (substr($url, 0, 7) == "file://") {
+            $imagePath = substr($url, 7);
 
             // Display the image:
-            $this->contentType = 'image/jpeg';
+            $this->contentType =  mime_content_type($imagePath);
             $this->image = file_get_contents($imagePath);
             return true;
         } else {

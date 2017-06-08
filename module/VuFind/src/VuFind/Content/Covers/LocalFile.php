@@ -38,27 +38,12 @@ namespace VuFind\Content\Covers;
  */
 class LocalFile extends \VuFind\Content\AbstractCover
 {
-
     /**
-     * Base filepath for LocalFile
+     * VuFind configuration
      *
-     * @var string
+     * @var Config
      */
-    protected $basePath;
-
-    /**
-     * Filename for LocalFile
-     *
-     * @var string
-     */
-    protected $fileName;
-
-    /**
-     * Image type for LocalFile
-     *
-     * @var string
-     */
-    protected $imageType;
+    protected $config;
 
     /**
      * Does this plugin support the provided ID array?
@@ -71,13 +56,6 @@ class LocalFile extends \VuFind\Content\AbstractCover
     {
         return true;
     }
-
-    /**
-     * VuFind configuration
-     *
-     * @var Config
-     */
-    protected $config;
 
     /**
      * Constructor
@@ -101,18 +79,12 @@ class LocalFile extends \VuFind\Content\AbstractCover
      */
     public function getUrl($key, $size, $ids)
     {
-        //Get settings from config.ini file
-        $config = $this->config;
-        $basePath = isset($config->$key->filepath)
-            ? $config->$key->filepath : null;
-        $fileNameToken = isset($config->$key->filename)
-            ? $config->$key->filename : null;
-        $imageType = isset($config->LocalFile->imagetype)
-            ? $config->$key->imagetype : null;
-
-        if (!isset($basePath) || !isset($fileNameToken) || !isset($imageType)) {
+        // Check if key is set
+        if (!isset($key)) {
             return false;
         }
+        // Get filepath for cover images
+        $basePath = $key;
 
         // Check base path for $VUFIND env variables
         $vufindHome =  getenv('VUFIND_HOME');
@@ -120,31 +92,63 @@ class LocalFile extends \VuFind\Content\AbstractCover
         $basePath = str_replace("\$VUFIND_HOME", $vufindHome, $basePath);
         $basePath = str_replace("\$VUFIND_LOCAL_DIR", $vufindLocal, $basePath);
 
-        // Add slash to basePath if it doesn’t exist
-        if (substr($basePath, -1) != "/") {
-            $basePath = $basePath."/";
+        // convert file path tokens to id array values
+        foreach ($ids as $key => $val) {
+            $tokens[] = '%' . $key . '%';
+            $replacements[] = $val;
         }
+        $fileName = str_replace($tokens, $replacements, $basePath);
 
-        // match fileName to information in $ids array
-        if (isset($ids[$fileNameToken])) {
-            $fileName = $ids[$fileNameToken];
+        // convert file extension tokens to values
+        $allowed_imageTypes = [
+             "anyimage", "gif", "jpg", "jpeg", "png", "tif", "tiff"
+        ];
+        if (preg_match("/(.*)(\%.*\%)/", $fileName, $matches) !== 1) {
+             return false;
         } else {
-            return false;
+             $imageType = substr($matches[2], 1, -1);
         }
-        // strip punctuation from imageType
-        $imageType = strtolower(preg_replace("/(\.)(.*)/", "$0 --> $2", $imageType));
 
-        // validate that imageType is allowed
-        $allowed_imageTypes = [ "gif", "jpg", "jpeg", "png", "tif", "tiff" ];
+        // make sure image type is allowed
         if (!in_array($imageType, $allowed_imageTypes)) {
             throw new \Exception(
                 "Illegal file-extension '$imageType' for image '$fileName'"
             );
             return false;
         }
+        // Replace token with value
+        foreach ($allowed_imageTypes as $val) {
+            $tokens[] = '%' . $val . '%';
+            $replacements[] = $val;
+        }
+        $fileName = str_replace($tokens, $replacements, $fileName);
 
-        $filepath="file:" . $basePath . $fileName . "." . $imageType;
-        return $filepath;
+        // If anyimage is specified, then we loop through
+        // all image extensions to find the right filename
+        if ($imageType == "anyimage") {
+            $check_imageTypes = array_slice($allowed_imageTypes, 1);
+            $checkPath = substr($fileName, 0, -8);
+            foreach ($check_imageTypes as $val) {
+                $checkFile = $checkPath . $val;
+                if (file_exists($checkFile)) {
+                     $fileName = $checkFile;
+                     $imageType = $val;
+                }
+            }
+        }
+        // Check if Mime type and file extension match.
+        $allowedFileExtensions = [
+             "gif" => "image/gif",
+             "jpeg" => "image/jpeg", "jpg" => "image/jpeg",
+             "png" => "image/png",
+             "tiff" => "image/tiff", "tif" => "image/tiff"
+         ];
+        $mimeType = mime_content_type($fileName);
+        if ($allowedFileExtensions[$imageType] !== $mimeType) {
+            return false;
+        }
+        $filePath="file://" . $fileName;
+        return $filePath;
     }
 }
 
