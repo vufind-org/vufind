@@ -55,7 +55,7 @@
           $coverDetails = $this->record($resource)->getCoverDetails('illrequests', 'small', $this->recordLink()->getUrl($resource));
           $cover = $coverDetails['html'];
           $thumbnail = false;
-          $thumbnailAlignment = $this->record($resource)->getThumbnailAlignment('list');
+          $thumbnailAlignment = $this->record($resource)->getThumbnailAlignment('account');
           if ($cover):
             ob_start(); ?>
             <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
