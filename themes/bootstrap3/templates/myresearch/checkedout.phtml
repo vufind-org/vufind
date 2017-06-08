@@ -75,7 +75,7 @@
         <? endif; ?>
 
         <?
-          $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'medium', $this->recordLink()->getUrl($resource));
+          $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLink()->getUrl($resource));
           $cover = $coverDetails['html'];
           $thumbnail = false;
           $thumbnailAlignment = $this->record($resource)->getThumbnailAlignment('list');
