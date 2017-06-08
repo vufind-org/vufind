@@ -3,13 +3,13 @@ namespace VuFindConsole\Module\Configuration;
 
 $config = [
     'controllers' => [
-        'invokables' => [
-            'generate' => 'VuFindConsole\Controller\GenerateController',
-            'harvest' => 'VuFindConsole\Controller\HarvestController',
-            'import' => 'VuFindConsole\Controller\ImportController',
-            'language' => 'VuFindConsole\Controller\LanguageController',
-            'redirect' => 'VuFindConsole\Controller\RedirectController',
-            'util' => 'VuFindConsole\Controller\UtilController',
+        'factories' => [
+            'generate' => 'VuFindConsole\Controller\Factory::getGenerateController',
+            'harvest' => 'VuFindConsole\Controller\Factory::getHarvestController',
+            'import' => 'VuFindConsole\Controller\Factory::getImportController',
+            'language' => 'VuFindConsole\Controller\Factory::getLanguageController',
+            'redirect' => 'VuFindConsole\Controller\Factory::getRedirectController',
+            'util' => 'VuFindConsole\Controller\Factory::getUtilController',
         ],
     ],
     'console' => [
@@ -59,7 +59,7 @@ $routes = [
     'util/index_reserves' => 'util index_reserves [--help|-h] [-d=s] [-t=s] [-f=s]',
     'util/optimize' => 'util optimize [<core>]',
     'util/sitemap' => 'util sitemap',
-    'util/suppressed' => 'util suppressed [--help|-h] [--authorities]',
+    'util/suppressed' => 'util suppressed [--help|-h] [--authorities] [--outfile=s]',
     'util/switch_db_hash' => 'util switch_db_hash [<newhash>] [<newkey>]',
 ];
 

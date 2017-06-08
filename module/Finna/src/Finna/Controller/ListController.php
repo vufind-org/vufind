@@ -64,7 +64,7 @@ class ListController extends \Finna\Controller\MyResearchController
         }
 
         try {
-            $results = $this->getServiceLocator()
+            $results = $this->serviceLocator
                 ->get('VuFind\SearchResultsPluginManager')->get('Favorites');
             $params = $results->getParams();
 
@@ -144,7 +144,7 @@ class ListController extends \Finna\Controller\MyResearchController
      */
     protected function createNoAccessView()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
         $view = $this->createViewModel();
         $view->setTemplate('list/no_access');
         $view->email = $config->Site->email;

@@ -56,12 +56,6 @@ class Factory extends \VuFind\Db\Row\Factory
      */
     public static function getGenericRow($name, ServiceManager $sm, $args = [])
     {
-        // Special case for User or PrivateUser
-        if ('VuFind\Db\Row\User' === $name) {
-            $name = 'User';
-        } elseif ('VuFind\Db\Row\PrivateUser' === $name) {
-            $name = 'PrivateUser';
-        }
         // Prepend the current namespace unless we receive a FQCN:
         $class = (strpos($name, '\\') === false)
             ? __NAMESPACE__ . '\\' . $name : $name;

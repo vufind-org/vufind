@@ -196,7 +196,7 @@ JS;
       <?=$this->render($template)?>
     <? endif; ?>
   </head>
-  <body>
+  <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><? if ($this->layout()->rtl): ?> rtl<? endif; ?>">
     <? // Set up the search box -- there are three possible cases:
       // 1. No search box was set; we should default to the normal box
       // 2. It was set to false; we should display nothing
@@ -354,6 +354,7 @@ JS;
         <? endif; ?>
       </div>
     </section>
+    <? // TODO: get rid of template-dir-* and template-name-* here ?>
     <section role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?><?=$this->browse ? ' browse' : '' ?><?=$currentTabClass?>">
       <? if (!empty($this->layout()->finnaMainHeader)): ?>
       <div class="container-fluid finna-main-header">

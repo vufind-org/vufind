@@ -61,7 +61,7 @@ trait RecordControllerTrait
      */
     protected function modifyLastSearchURL()
     {
-        $memory  = $this->getServiceLocator()->get('VuFind\Search\Memory');
+        $memory  = $this->serviceLocator->get('VuFind\Search\Memory');
 
         if ($last = $memory->retrieve()) {
             $parts = parse_url($last);

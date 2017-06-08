@@ -41,8 +41,31 @@ use Zend\ServiceManager\ServiceManager;
  *
  * @codeCoverageIgnore
  */
-class Factory
+class Factory extends \VuFind\Controller\Factory
 {
+    /**
+     * Construct a generic controller.
+     *
+     * @param string         $name Name of table to construct (fully qualified
+     * class name, or else a class name within the current namespace)
+     * @param ServiceManager $sm   Service manager
+     *
+     * @return object
+     */
+    public static function getGenericController($name, ServiceManager $sm)
+    {
+        // Prepend the current namespace unless we receive a FQCN:
+        $class = (strpos($name, '\\') === false)
+            ? __NAMESPACE__ . '\\' . $name : $name;
+        if (!class_exists($class) && strpos($name, '\\') === false) {
+            $class = parent::__NAMESPACE__ . '\\' . $name;
+        }
+        if (!class_exists($class)) {
+            throw new \Exception('Cannot construct ' . $class);
+        }
+        return new $class($sm->getServiceLocator());
+    }
+
     /**
      * Construct the BrowseController.
      *
@@ -52,8 +75,10 @@ class Factory
      */
     public static function getBrowseController(ServiceManager $sm)
     {
+        $serviceLocator = $sm->getServiceLocator();
         return new BrowseController(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+            $serviceLocator,
+            $serviceLocator->get('VuFind\Config')->get('config')
         );
     }
 
@@ -66,10 +91,11 @@ class Factory
      */
     public static function getCacheController(ServiceManager $sm)
     {
+        $serviceLocator = $sm->getServiceLocator();
         return new CacheController(
-            $sm->getServiceLocator()->get('VuFind\DbTablePluginManager')
-                ->get('FinnaCache'),
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+            $serviceLocator,
+            $serviceLocator->get('VuFind\DbTablePluginManager')->get('FinnaCache'),
+            $serviceLocator->get('VuFindTheme\ThemeInfo')
         );
     }
 
@@ -82,8 +108,10 @@ class Factory
      */
     public static function getRecordController(ServiceManager $sm)
     {
+        $serviceLocator = $sm->getServiceLocator();
         return new RecordController(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+            $serviceLocator,
+            $serviceLocator->get('VuFind\Config')->get('config')
         );
     }
 
@@ -96,10 +124,12 @@ class Factory
      */
     public static function getCartController(ServiceManager $sm)
     {
+        $serviceLocator = $sm->getServiceLocator();
         return new CartController(
+            $serviceLocator,
             new \Zend\Session\Container(
                 'cart_followup',
-                $sm->getServiceLocator()->get('VuFind\SessionManager')
+                $serviceLocator->get('VuFind\SessionManager')
             )
         );
     }

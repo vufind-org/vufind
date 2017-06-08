@@ -57,7 +57,7 @@ class LoaderTest extends TestCase
     public function testMissingRecord()
     {
         $collection = $this->getCollection([]);
-        $service = $this->getMock('VuFindSearch\Service');
+        $service = $this->createMock('VuFindSearch\Service');
         $service->expects($this->once())->method('retrieve')
             ->with($this->equalTo('Solr'), $this->equalTo('test'))
             ->will($this->returnValue($collection));
@@ -73,12 +73,12 @@ class LoaderTest extends TestCase
     public function testToleratedMissingRecord()
     {
         $collection = $this->getCollection([]);
-        $service = $this->getMock('VuFindSearch\Service');
+        $service = $this->createMock('VuFindSearch\Service');
         $service->expects($this->once())->method('retrieve')
             ->with($this->equalTo('Solr'), $this->equalTo('test'))
             ->will($this->returnValue($collection));
         $missing = $this->getDriver('missing', 'Missing');
-        $factory = $this->getMock('VuFind\RecordDriver\PluginManager');
+        $factory = $this->createMock('VuFind\RecordDriver\PluginManager');
         $factory->expects($this->once())->method('get')
             ->with($this->equalTo('Missing'))
             ->will($this->returnValue($missing));
@@ -96,7 +96,7 @@ class LoaderTest extends TestCase
     {
         $driver = $this->getDriver();
         $collection = $this->getCollection([$driver]);
-        $service = $this->getMock('VuFindSearch\Service');
+        $service = $this->createMock('VuFindSearch\Service');
         $service->expects($this->once())->method('retrieve')
             ->with($this->equalTo('Solr'), $this->equalTo('test'))
             ->will($this->returnValue($collection));
@@ -120,12 +120,12 @@ class LoaderTest extends TestCase
         $collection2 = $this->getCollection([$driver3]);
         $collection3 = $this->getCollection([]);
 
-        $factory = $this->getMock('VuFind\RecordDriver\PluginManager');
+        $factory = $this->createMock('VuFind\RecordDriver\PluginManager');
         $factory->expects($this->once())->method('get')
             ->with($this->equalTo('Missing'))
             ->will($this->returnValue($missing));
 
-        $service = $this->getMock('VuFindSearch\Service');
+        $service = $this->createMock('VuFindSearch\Service');
         $service->expects($this->at(0))->method('retrieveBatch')
             ->with($this->equalTo('Solr'), $this->equalTo(['test1', 'test2']))
             ->will($this->returnValue($collection1));
@@ -154,7 +154,7 @@ class LoaderTest extends TestCase
      */
     protected function getDriver($id = 'test', $source = 'Solr')
     {
-        $driver = $this->getMock('VuFind\RecordDriver\AbstractBase');
+        $driver = $this->createMock('VuFind\RecordDriver\AbstractBase');
         $driver->expects($this->any())->method('getUniqueId')
             ->will($this->returnValue($id));
         $driver->expects($this->any())->method('getSourceIdentifier')
@@ -173,7 +173,7 @@ class LoaderTest extends TestCase
     protected function getLoader(SearchService $service, RecordFactory $factory = null)
     {
         if (null === $factory) {
-            $factory = $this->getMock('VuFind\RecordDriver\PluginManager');
+            $factory = $this->createMock('VuFind\RecordDriver\PluginManager');
         }
         return new Loader($service, $factory);
     }
@@ -187,7 +187,7 @@ class LoaderTest extends TestCase
      */
     protected function getCollection($records)
     {
-        $collection = $this->getMock('VuFindSearch\Response\RecordCollectionInterface');
+        $collection = $this->createMock('VuFindSearch\Response\RecordCollectionInterface');
         $collection->expects($this->any())->method('getRecords')->will($this->returnValue($records));
         $collection->expects($this->any())->method('count')->will($this->returnValue(count($records)));
         return $collection;

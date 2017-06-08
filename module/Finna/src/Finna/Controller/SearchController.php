@@ -258,7 +258,7 @@ class SearchController extends \VuFind\Controller\SearchController
      */
     public function getSearchMemory()
     {
-        return $this->getServiceLocator()->get('Finna\Search\Memory');
+        return $this->serviceLocator->get('Finna\Search\Memory');
     }
 
     /**
@@ -270,7 +270,7 @@ class SearchController extends \VuFind\Controller\SearchController
      */
     protected function browse($type)
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('browse');
+        $config = $this->serviceLocator->get('VuFind\Config')->get('browse');
         if (!isset($config['General'][$type]) || !$config['General'][$type]) {
             throw new \Exception("Browse action $type is disabled");
         }
@@ -280,7 +280,7 @@ class SearchController extends \VuFind\Controller\SearchController
         }
 
         // Preserve last result view
-        $configLoader = $this->getServiceLocator()->get('VuFind\Config');
+        $configLoader = $this->serviceLocator->get('VuFind\Config');
         $options = new Options($configLoader);
 
         $config = $config[$type];
@@ -437,7 +437,7 @@ class SearchController extends \VuFind\Controller\SearchController
      */
     protected function processOpenURL($params, $hiddenFilters = [])
     {
-        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
         $results = false;
 
         // Journal first..

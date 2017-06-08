@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Db\Table;
+use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Table\PluginManager;
 use Zend\Db\Adapter\Adapter;
 
@@ -48,11 +49,11 @@ class FinnaCache extends \VuFind\Db\Table\Gateway
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
      * @param array         $cfg     Zend Framework configuration
-     * @param string        $rowObj  Row prototype object (null for default)
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        $rowObj = null, $table = 'finna_cache'
+        RowGateway $rowObj = null, $table = 'finna_cache'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }

@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
+use VuFind\Db\Row\RowGateway;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Predicate\Predicate;
@@ -55,12 +56,12 @@ class Tags extends Gateway
      * @param Adapter       $adapter       Database adapter
      * @param PluginManager $tm            Table manager
      * @param array         $cfg           Zend Framework configuration
-     * @param string        $rowObj        Row prototype object (null for default)
+     * @param RowGateway    $rowObj        Row prototype object (null for default)
      * @param bool          $caseSensitive Are tags case sensitive?
      * @param string        $table         Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        $rowObj = null, $caseSensitive = false, $table = 'tags'
+        RowGateway $rowObj = null, $caseSensitive = false, $table = 'tags'
     ) {
         $this->caseSensitive = $caseSensitive;
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);

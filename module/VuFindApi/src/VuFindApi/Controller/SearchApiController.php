@@ -29,6 +29,7 @@ namespace VuFindApi\Controller;
 
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Search API Controller
@@ -84,11 +85,14 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     /**
      * Constructor
      *
-     * @param RecordFormatter $rf Record formatter
-     * @param FacetFormatter  $ff Facet formatter
+     * @param ServiceLocatorInterface $sm Service manager
+     * @param RecordFormatter         $rf Record formatter
+     * @param FacetFormatter          $ff Facet formatter
      */
-    public function __construct(RecordFormatter $rf, FacetFormatter $ff)
-    {
+    public function __construct(ServiceLocatorInterface $sm, RecordFormatter $rf,
+        FacetFormatter $ff
+    ) {
+        parent::__construct($sm);
         $this->recordFormatter = $rf;
         $this->facetFormatter = $ff;
         foreach ($rf->getRecordFields() as $fieldName => $fieldSpec) {
@@ -185,7 +189,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             return $this->output([], self::STATUS_ERROR, 400, 'Missing id');
         }
 
-        $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        $loader = $this->serviceLocator->get('VuFind\RecordLoader');
         try {
             if (is_array($request['id'])) {
                 $results = $loader->loadBatchForSource($request['id']);
@@ -249,7 +253,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             ? $facetConfig->SpecialFacets->hierarchical->toArray()
             : [];
 
-        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
         try {
             $results = $runner->run(
                 $request,
@@ -328,7 +332,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
 
         $facetResults = $results->getFullFieldFacets($facets, false, -1, 'count');
 
-        $facetHelper = $this->getServiceLocator()
+        $facetHelper = $this->serviceLocator
             ->get('VuFind\HierarchicalFacetHelper');
 
         $facetList = [];

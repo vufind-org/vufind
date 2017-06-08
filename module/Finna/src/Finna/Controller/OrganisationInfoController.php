@@ -45,7 +45,7 @@ class OrganisationInfoController extends \VuFind\Controller\AbstractBase
      */
     public function homeAction()
     {
-        $config = $this->getServiceLocator()
+        $config = $this->serviceLocator
             ->get('VuFind\Config')->get('OrganisationInfo');
 
         $id = $this->params()->fromQuery('id');
@@ -62,7 +62,7 @@ class OrganisationInfoController extends \VuFind\Controller\AbstractBase
         }
 
         $organisation = "0/{$id}/";
-        $translator = $this->getServiceLocator()->get('VuFind\Translator');
+        $translator = $this->serviceLocator->get('VuFind\Translator');
 
         $consortiumInfo = isset($config->OrganisationPage->consortiumInfo)
             ? $config->OrganisationPage->consortiumInfo : false;
@@ -76,7 +76,7 @@ class OrganisationInfoController extends \VuFind\Controller\AbstractBase
             $translator->translate($title)
         );
 
-        $facetConfig = $this->getServiceLocator()->get('VuFind\Config')
+        $facetConfig = $this->serviceLocator->get('VuFind\Config')
             ->get('facets');
 
         $buildingOperator = '';

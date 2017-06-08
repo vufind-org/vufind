@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace Finna\Controller;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Loads cached files
@@ -55,16 +56,17 @@ class CacheController extends \VuFind\Controller\AbstractBase
     /**
      * Constructor
      *
+     * @param ServiceLocatorInterface    $sm         Service manager
      * @param \Finna\Db\Table\FinnaCache $finnaCache Finna cache table
      * @param \VuFindTheme\ThemeInfo     $themeInfo  Theme info
      */
-    public function __construct(\Finna\Db\Table\FinnaCache $finnaCache,
-        \VuFindTheme\ThemeInfo $themeInfo
+    public function __construct(ServiceLocatorInterface $sm,
+        \Finna\Db\Table\FinnaCache $finnaCache, \VuFindTheme\ThemeInfo $themeInfo
     ) {
-        parent::__construct();
-
         $this->finnaCache = $finnaCache;
         $this->themeInfo = $themeInfo;
+
+        parent::__construct($sm);
     }
 
     /**

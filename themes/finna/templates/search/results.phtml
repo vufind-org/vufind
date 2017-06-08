@@ -61,9 +61,12 @@
   //$this->layout()->finnaMainTabs = '...';
 
   // Enable cart if appropriate:
-  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive();
-  // Enable bulk options if appropriate:
   $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
+  // Checkboxes if appropriate:
+  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive()
+    && ($this->showBulkOptions || !$this->cart()->isActiveInSearch());
+  // Enable bulk options if appropriate:
+  $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_save_statuses.js");
@@ -78,7 +81,7 @@
 
   $topRecommendations = $this->results->getRecommendations('top');
 ?>
-<? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+    <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
       <? foreach ($this->results->getRecommendations('top') as $current): ?>
         <?=$this->recommend($current)?>
       <? endforeach; ?>
@@ -93,10 +96,18 @@
           <?=$this->render('search/controls/limit.phtml')?>
         </div>
         <? endif; ?>
+        <? $resultsStr = $this->translate(
+          $browse ? 'browse_extended_' . ucfirst($browse) . '_html' : 'showing_results_of_html',
+          [
+            '%%start%%' => $this->results->getStartRecord(),
+            '%%end%%' => $this->results->getEndRecord(),
+            '%%total%%' => $recordTotal
+          ]
+        );?>
         <div<?= !$browse ? ' class="col-sm-5 col-md-4 col-sm-pull-7 col-md-pull-8"' : ' class="col-xs-12"' ?>>
-            <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results, 'label' => $browse ? "browse_extended_" . ucfirst($browse) : 'Showing'])?>
+            <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results, 'label' => $resultsStr])?>
         </div>
-        <? $this->layout()->srmessage = $this->transEsc('Showing') . ' ' . $this->results->getStartRecord() . ' - ' . $this->results->getEndRecord() . " / $recordTotal"; ?>
+        <? $this->layout()->srmessage = strip_tags($resultsStr); ?>
         <? if ($this->fromStreetSearch): ?>
           <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right hidden-print">
             <div class="update-location-button">
@@ -115,7 +126,7 @@
       <? $this->layout()->srmessage = $this->transEsc('primo_no_searchword'); ?>
       <h4 class="no-results"><?=$this->layout()->srmessage ?></h4>
     <? else: ?>
-      <? $this->layout()->srmessage = $this->transEsc('nohit_prefix') . ' - <strong>' . $this->escapeHtml($lookfor) . '</strong> - ' . $this->transEsc('nohit_suffix'); ?>
+      <? $this->layout()->srmessage = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]); ?>
       <h4 class="no-results"><?=$this->layout()->srmessage ?></h4>
     <? endif; ?>
     <? if (isset($this->parseError)): ?>

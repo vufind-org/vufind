@@ -90,7 +90,7 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $privacy = isset($config->Authentication->privacy)
             && $config->Authentication->privacy;
-        $rowClass = 'VuFind\Db\Row\\' . ($privacy ? 'PrivateUser' : 'User');
+        $rowClass = $privacy ? 'PrivateUser' : 'User';
         $prototype = static::getGenericRow($rowClass, $sm);
         $prototype->setConfig($config);
         if ($privacy) {

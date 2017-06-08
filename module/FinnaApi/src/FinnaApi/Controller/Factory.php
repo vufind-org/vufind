@@ -53,7 +53,7 @@ class Factory
      */
     public static function getApiController(ServiceManager $sm)
     {
-        $controller = new \VuFindApi\Controller\ApiController();
+        $controller = new \VuFindApi\Controller\ApiController($sm);
         $controller->addApi($sm->get('AdminApi'));
         $controller->addApi($sm->get('SearchApi'));
         $controller->addApi($sm->get('AuthApi'));
@@ -69,7 +69,7 @@ class Factory
      */
     public static function getAuthApiController(ServiceManager $sm)
     {
-        $result = new AuthApiController();
+        $result = new AuthApiController($sm);
         $result->setLogger($sm->getServiceLocator()->get('VuFind\Logger'));
         return $result;
     }
@@ -88,7 +88,7 @@ class Factory
         $helperManager = $sm->getServiceLocator()->get('ViewHelperManager');
         $translator = $sm->getServiceLocator()->get('translator');
         $rf = new RecordFormatter($recordFields, $helperManager, $translator);
-        $controller = new SearchApiController($rf, new FacetFormatter());
+        $controller = new SearchApiController($sm, $rf, new FacetFormatter());
         return $controller;
     }
 }

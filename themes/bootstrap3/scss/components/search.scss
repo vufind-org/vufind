@@ -86,6 +86,16 @@ header .container.navbar { margin-bottom: 0; }
     .media-left { padding-right: 0; }
   }
 
+  .btn-bookbag-toggle {
+    form { display: inline; }
+    .fa {
+      color: $text-color;
+      /* .fa-fw */
+      width: 1.28571429em;
+      text-align: center;
+    }
+  }
+
   .format {
     @extend .label;
     @extend .label-info;
@@ -145,4 +155,15 @@ header .container.navbar { margin-bottom: 0; }
 .geoItem {
     font-size: .9em;
     margin: 0px 0px 10px;
+}
+
+@media (max-width: 767px) {
+  .top-row {
+    padding-left: $grid-gutter-width;
+    padding-right: $grid-gutter-width;
+  }
+  .top-row > span {
+    padding: 0;
+    white-space: nowrap;
+  }
 }
