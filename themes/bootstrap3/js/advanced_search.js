@@ -27,7 +27,7 @@ function addSearch(group, _fieldValues) {
     $newSearch.find('select.adv-term-type option[value="' + fieldValues.field + '"]').attr('selected', 1);
   }
   if (typeof fieldValues.op !== "undefined") {
-    $newSearch.find('select.op option[value="' + fieldValues.op + '"]').attr('selected', 1);
+    $newSearch.find('select.adv-term-op option[value="' + fieldValues.op + '"]').attr('selected', 1);
   }
   // Insert it
   $("#group" + group + "Holder").before($newSearch);
@@ -36,9 +36,9 @@ function addSearch(group, _fieldValues) {
     $newSearch.find('.first-op')
       .attr('name', 'op' + group + '[]')
       .removeClass('hidden');
-    $newSearch.find('select.op').remove();
+    $newSearch.find('select.adv-term-op').remove();
   } else {
-    $newSearch.find('select.op')
+    $newSearch.find('select.adv-term-op')
       .attr('id', 'search_op' + group + '_' + groupLength[group])
       .attr('name', 'op' + group + '[]')
       .removeClass('hidden');
