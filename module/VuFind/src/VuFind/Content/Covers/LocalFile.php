@@ -175,4 +175,3 @@ class LocalFile extends \VuFind\Content\AbstractCover
         return $fName;
     }
 }
-
