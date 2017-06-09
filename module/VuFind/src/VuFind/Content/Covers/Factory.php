@@ -111,19 +111,6 @@ class Factory
     }
 
     /**
-     * Create Local File loader
-     *
-     * @param ServiceManager $sm Service manager
-     *
-     * @return mixed
-     */
-    public static function getLocalFile(ServiceManager $sm)
-    {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        return new LocalFile($config);
-    }
-
-    /**
      * Create a Syndetics loader
      *
      * @param ServiceManager $sm Service manager
