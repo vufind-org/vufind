@@ -73,7 +73,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
 
         // Check base path for $VUFIND env variables
         $vufindHome =  getenv('VUFIND_HOME');
-        $vufindLocal =  getenv('VUFIND_LOCAL_DIR') 
+        $vufindLocal =  getenv('VUFIND_LOCAL_DIR');
         $basePath = str_replace("\$VUFIND_HOME", $vufindHome, $basePath);
         $basePath = str_replace("\$VUFIND_LOCAL_DIR", $vufindLocal, $basePath);
 
