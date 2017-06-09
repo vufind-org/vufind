@@ -13,10 +13,10 @@
     <label class="adv-group-label"><?=$this->transEsc("adv_search_label")?>:</label>
     <? for ($search = 0; $search < 3; $search++): ?>
       <? if ($search === 0): ?>
-        <input type="hidden" value="AND" class="first-op"/>
         <div id="new_search_template">
       <? endif; ?>
       <div class="adv-search">
+        <? if ($search === 0): ?><input type="hidden" value="AND" class="first-op"/><? endif; ?>
         <select id="search_op0_<?=$search ?>" name="op0[]" class="adv-term-op form-control">
           <option value="AND"><?=$this->transEsc("AND")?></option>
           <option value="OR"><?=$this->transEsc("OR")?></option>
