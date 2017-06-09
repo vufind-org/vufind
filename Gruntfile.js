@@ -28,25 +28,31 @@ module.exports = function(grunt) {
   }
 
   var fontAwesomePath = '"../../bootstrap3/css/fonts"';
+  var lessFileSettings = [{
+    expand: true,
+    src: "themes/*/less/compiled.less",
+    rename: function (dest, src) {
+      return src.replace('/less/', '/css/').replace('.less', '.css');
+    }
+  }];
 
   grunt.initConfig({
     // LESS compilation
     less: {
       compile: {
+        files: lessFileSettings,
         options: {
           paths: getLoadPaths,
           compress: true,
           modifyVars: {
             'fa-font-path': fontAwesomePath
           }
-        },
-        files: [{
-          expand: true,
-          src: "themes/*/less/compiled.less",
-          rename: function (dest, src) {
-            return src.replace('/less/', '/css/').replace('.less', '.css');
-          }
-        }]
+        }
+      }
+    },
+    // Less with maps
+    lessdev: {
+      less: {
       }
     },
     // SASS compilation
@@ -132,12 +138,34 @@ module.exports = function(grunt) {
         files: 'themes/*/less/**/*.less',
         tasks: ['less']
       },
+      lessdev: {
+        files: 'themes/*/less/**/*.less',
+        tasks: ['lessdev']
+      },
       scss: {
         files: 'themes/*/scss/**/*.scss',
         tasks: ['scss']
       }
     }
   });
+
+  grunt.registerMultiTask('lessdev', function lessWithMaps() {
+    grunt.config.set('less', {
+      dev: {
+        files: lessFileSettings,
+        options: {
+          paths: getLoadPaths,
+          sourceMap: true,
+          sourceMapFileInline: true,
+          modifyVars: {
+            'fa-font-path': fontAwesomePath
+          }
+        }
+      }
+    });
+    grunt.task.run('less');
+  });
+
   grunt.registerMultiTask('scss', function sassScan() {
     var sassConfig = {},
       path = require('path'),
