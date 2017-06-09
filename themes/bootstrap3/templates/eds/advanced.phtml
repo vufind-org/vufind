@@ -13,6 +13,7 @@
     <label class="adv-group-label"><?=$this->transEsc("adv_search_label")?>:</label>
     <? for ($search = 0; $search < 3; $search++): ?>
       <? if ($search === 0): ?>
+        <input type="hidden" value="AND" class="first-op"/>
         <div id="new_search_template">
       <? endif; ?>
       <div class="adv-search">
