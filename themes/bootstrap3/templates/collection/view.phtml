@@ -65,7 +65,7 @@
 
 <?=$this->record($this->driver)->getToolbar()?>
 
-<div class="record row">
+<div class="record">
   <div class="<?=$tree ? 'col-sm-12' : $this->layoutClass('mainbody') ?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />

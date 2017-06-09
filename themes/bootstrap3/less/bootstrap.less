@@ -85,6 +85,22 @@ img {max-width: 100%;}
   }
 }
 
+/* --- Layout --- */
+@media (min-width: 768px) {
+  .mainbody { width: 75%; }
+  .sidebar { width: 25%; }
+  .mainbody.left,
+  .sidebar.left {
+    float: left;
+    padding-right: 1rem;
+  }
+  .mainbody.right,
+  .sidebar.right {
+    float: right;
+    padding-left: 1rem;
+  }
+}
+
 /* --- Form Errors --- */
 .has-error {margin-bottom: 0;}
 .sms-error {.has-error;}
