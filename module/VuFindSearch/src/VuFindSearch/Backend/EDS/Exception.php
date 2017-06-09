@@ -35,7 +35,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class EbscoEdsApiException extends Exception
+class EbscoEdsApiException extends \VuFindSearch\Backend\Exception\BackendException
 {
     /**
      * Error message details returned from the API
