@@ -94,12 +94,14 @@ VuFind.register('embedded', function embedded() {
     var result = $link.closest('.result');
     var mediaBody = result.find('.media-body');
     var shortNode = mediaBody.find('.result-body');
+    var linksNode = mediaBody.find('.result-links');
     var longNode = mediaBody.find('.long-view');
     // Insert new elements
     if (!$link.hasClass('js-setup')) {
       $link.prependTo(mediaBody);
       result.addClass('embedded');
       shortNode.addClass('collapse');
+      linksNode.addClass('collapse');
       longNode = $('<div class="long-view collapse"></div>');
       // Add loading status
       shortNode
@@ -179,6 +181,7 @@ VuFind.register('embedded', function embedded() {
         longNode.collapse('show');
       }
       shortNode.collapse('hide');
+      linksNode.collapse('hide');
       if (!$link.hasClass('auto')) {
         addToStorage(divID, $(longNode).find('.list-tab-toggle.active').attr('id'));
       } else {
@@ -186,6 +189,7 @@ VuFind.register('embedded', function embedded() {
       }
     } else {
       shortNode.collapse('show');
+      linksNode.collapse('show');
       longNode.collapse('hide');
       removeFromStorage(divID);
     }
