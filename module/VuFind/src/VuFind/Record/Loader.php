@@ -203,12 +203,12 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      * separated source|id strings), load all of the requested records in the
      * requested order.
      *
-     * @param array $ids                        Array of associative arrays with
+     * @param array $ids                       Array of associative arrays with
      * id/source keys or strings in source|id format.  In associative array formats,
      * there is also an optional "extra_fields" key which can be used to pass in data
      * formatted as if it belongs to the Solr schema; this is used to create
      * a mock driver object if the real data source is unavailable.
-     * @param bool   $tolerateBackendExceptions Whether to tolerate backend
+     * @param bool  $tolerateBackendExceptions Whether to tolerate backend
      * exceptions that may be caused by e.g. connection issues or changes in
      * subcscriptions
      *
