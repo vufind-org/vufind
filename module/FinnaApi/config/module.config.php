@@ -4,13 +4,11 @@ namespace FinnaApi\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
+            'adminapi' => 'FinnaApi\Controller\Factory::getAdminApiController',
             'api' => 'FinnaApi\Controller\Factory::getApiController',
             'authapi' => 'FinnaApi\Controller\Factory::getAuthApiController',
-            'searchapi' => 'FinnaApi\Controller\Factory::getSearchApiController'
+            'searchapi' => 'FinnaApi\Controller\Factory::getSearchApiController',
         ],
-        'invokables' => [
-            'adminapi' => 'FinnaApi\Controller\AdminApiController'
-        ]
     ],
     'router' => [
         'routes' => [

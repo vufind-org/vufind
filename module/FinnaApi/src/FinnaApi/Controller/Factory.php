@@ -45,6 +45,18 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Construct the AdminApiController.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return AdminApiController
+     */
+    public static function getAdminApiController(ServiceManager $sm)
+    {
+        return new AdminApiController($sm);
+    }
+
+    /**
      * Construct the ApiController.
      *
      * @param ServiceManager $sm Service manager.
