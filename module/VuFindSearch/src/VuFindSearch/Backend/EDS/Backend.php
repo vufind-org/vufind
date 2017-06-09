@@ -314,6 +314,10 @@ class Backend extends AbstractBackend
                     throw new BackendException($e->getMessage(), $e->getCode(), $e);
                 }
                 break;
+            case 135:
+                // DbId not in profile, fall through to treat as "record not found"
+                $response = [];
+                break;
             default:
                 throw $e;
             }
