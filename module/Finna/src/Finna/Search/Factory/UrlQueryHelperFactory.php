@@ -55,7 +55,9 @@ class UrlQueryHelperFactory extends \VuFind\Search\Factory\UrlQueryHelperFactory
         $options = $params->getOptions();
         return [
             'handler' => $options->getDefaultHandler(),
-            'limit' => $options->getDefaultLimitByView($params->getView()),
+            'limit' => is_callable([$options, 'getDefaultLimitByView'])
+                ? $options->getDefaultLimitByView($params->getView())
+                : $options->getDefaultLimit(),
             'selectedShards' => $options->getDefaultSelectedShards(),
             'sort' => $params->getDefaultSort(),
             'view' => $options->getDefaultView(),

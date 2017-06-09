@@ -99,8 +99,12 @@
                 <br />
               <? endif; ?>
 
-              <? if (!empty($ilsDetails['date'])): ?>
-                <strong><?=$this->transEsc('Checkout Date')?>: <?=$this->escapeHtml($ilsDetails['date'])?></strong>
+              <? if (!empty($ilsDetails['checkoutdate'])): ?>
+                <strong><?=$this->transEsc('Checkout Date')?>: <?=$this->escapeHtml($ilsDetails['checkoutdate'])?></strong>
+                <br>
+              <? endif; ?>
+              <? if (!empty($ilsDetails['returndate'])): ?>
+                <strong><?=$this->transEsc('Return Date')?>: <?=$this->escapeHtml($ilsDetails['returndate'])?></strong>
                 <br>
               <? endif; ?>
               <? if (!empty($ilsDetails['duedate'])): ?>

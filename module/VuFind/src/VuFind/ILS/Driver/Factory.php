@@ -148,10 +148,14 @@ class Factory
             $manager = $sm->getServiceLocator()->get('VuFind\SessionManager');
             return new \Zend\Session\Container("KohaRest_$namespace", $manager);
         };
-        return new KohaRest(
+        $kohaRest = new KohaRest(
             $sm->getServiceLocator()->get('VuFind\DateConverter'),
             $sessionFactory
         );
+        $kohaRest->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+        return $kohaRest;
     }
 
     /**

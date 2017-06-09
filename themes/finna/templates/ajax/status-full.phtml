@@ -121,7 +121,7 @@ if ($groupBranches) {
           <?=$this->transEsc('status_Charged')?>
         <? endif; ?>
       </span>
-      <? if ($collapseLocations): ?><i class="fa fa-arrow-right arrow"></i><? endif; ?>
+      <? if ($collapseLocations): ?><i class="fa fa-arrow-down arrow down"></i><? endif; ?>
       <? if (!$journal): ?>
         <span class="info">
           <? if (!empty($reservationsTotal)): ?>
@@ -182,7 +182,7 @@ foreach ($this->statusItems as $item):
   <? if ($groupBranches && $newLocation): ?>
     <div class="holdings-container<?=$collapseBranches ? ' collapsible' : ''?>">
       <div class="header">
-        <? if ($collapseBranches): ?><i class="fa fa-arrow-right arrow"></i><? endif; ?>
+        <? if ($collapseBranches): ?><i class="fa fa-arrow-right arrow right"></i><? endif; ?>
         <?=$currentLocation?>
         <? if ($collapseBranches): ?>
           <span>

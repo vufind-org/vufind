@@ -102,3 +102,39 @@
   display: inline;
   padding-left: 0px;
 }
+
+.list-view .media {
+  @media (max-width: @screen-md-min){
+    margin-left: 15px;
+  }
+}
+
+.add-to-favorite-col {
+  @media (min-width: @screen-sm) {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+    margin-right: 5px;
+  }
+
+  .qrcode {
+    width: 90px;
+    height: 90px;
+  }
+  .finnaQrcodeLink {
+    background-color: @body-bg;
+  }
+  .qr-box {
+    box-shadow: 0 6px 12px @gray-mid-light;
+    border: 1px solid @gray-mid-light;
+    border-radius: 10px;
+    padding: 5px;
+    background: #fff;
+  }
+}
+
+.title-container {
+  @media(min-width: @screen-xs-max){
+    padding-right: 20px;
+  }
+}

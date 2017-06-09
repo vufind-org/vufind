@@ -181,6 +181,19 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Method to ensure uniform cache keys for cached VuFind objects.
+     *
+     * @param string|null $suffix Optional suffix that will get appended to the
+     * object class name calling getCacheKey()
+     *
+     * @return string
+     */
+    protected function getCacheKey($suffix = null)
+    {
+        return 'KohaRest' . '-' . md5($this->config['Catalog']['host'] . $suffix);
+    }
+
+    /**
      * Get Status
      *
      * This is responsible for retrieving the status information of a certain
@@ -1253,11 +1266,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         $statuses = [];
         foreach ($result[0]['item_availabilities'] as $i => $item) {
-            $location = $this->translate(
-                'location_' . $item['holdingbranch'],
-                null,
-                $item['holdingbranch']
-            );
+            $location = $this->getBranchName($item['holdingbranch']);
             $avail = $item['availability'];
             $available = $avail['available'];
             $statusCodes = $this->getItemStatusCodes($item);
@@ -1600,5 +1609,33 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         return isset($this->renewalBlockMappings[$reason])
             ? $this->renewalBlockMappings[$reason] : 'renew_denied';
+    }
+
+    /**
+     * Map a Koha branch id to its name
+     *
+     * @param string $id Branch id
+     *
+     * @return string
+     */
+    protected function getBranchName($id)
+    {
+        $name = $this->translate("location_$id");
+        if ($name !== "location_$id") {
+            return $name;
+        }
+
+        $branches = $this->getCachedData('branches');
+        if (null === $branches) {
+            $result = $this->makeRequest(
+                ['v1', 'libraries'], false, 'GET'
+            );
+            $branches = [];
+            foreach ($result as $branch) {
+                $branches[$branch['branchcode']] = $branch['branchname'];
+            }
+            $this->putCachedData('branches', $branches);
+        }
+        return isset($branches[$id]) ? $branches[$id] : $id;
     }
 }

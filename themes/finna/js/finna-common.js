@@ -45,12 +45,35 @@ finna.common = (function() {
            }
         });
     };
+
+    var initQrCodeLink = function() {
+        // handle finna QR code links
+        $('a.finnaQrcodeLink').click(function qrcodeToggle() {
+            if ($(this).hasClass("active")) {
+                $(this).html("<i class='fa fa-qr-code' aria-hidden='true'></i>").removeClass("active");
+                $(this).parent().removeClass('qr-box');
+            } else {
+                $(this).html(VuFind.translate('qrcode_hide')).addClass("active");
+                $(this).parent().addClass('qr-box');
+            }
+
+            var holder = $(this).next('.qrcode');
+            if (holder.find('img').length === 0) {
+                // We need to insert the QRCode image
+                var template = holder.find('.qrCodeImgTag').html();
+                holder.html(template);
+            }
+            holder.toggleClass('hidden');
+            return false;
+        });
+    };
     
     var my = {
         decodeHtml: decodeHtml,
         getField: getField,
         init: function() {
             initSearchInputListener();
+            initQrCodeLink();
         }
     };
 
