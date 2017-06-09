@@ -17,49 +17,48 @@
   </div>
 <? endif; ?>
   <? if (!isset($this->requestCompleted) || !$this->requestCompleted): ?>
-    <form name="changeMessagingSettings" method="post" action="<?=$this->url('myresearch-changemessagingsettings') ?>" class="form-horizontal messaging-settings-form profile-form">
+    <form name="changeMessagingSettings" method="post" action="<?=$this->url('myresearch-changemessagingsettings') ?>" class="messaging-settings-form profile-form">
       <? foreach ($this->services as $serviceId => $service): ?>
         <div class="form-group">
-          <div class="col-sm-12">
-            <h3><?=$this->transEsc('messaging_settings_type_' . $service['type'], null, $service['type'])?></h3>
-          </div>
+          <h3><?=$this->transEsc('messaging_settings_type_' . $service['type'], null, $service['type'])?></h3>
         </div>
         <? foreach ($service['settings'] as $settingId => $setting): ?>
           <? if (!empty($setting['readonly'])) { continue; } ?>
           <div class="form-group">
             <? $name = !empty($setting['name']) ? $setting['name'] : $settingId; ?>
-            <div class="col-sm-4">
-              <label<?='select' == $setting['type'] ? ' class="control-label"' : ''?>><?=$this->transEsc("messaging_settings_setting_$name", null, $name) ?>:</label>
-            </div>
-            <div class="col-sm-8">
-              <? if ('boolean' == $setting['type']): ?>
-                <input type="checkbox" name="<?=$this->escapeHtmlAttr($serviceId . '_' . $settingId)?>" value="1"<? if ($setting['active']): ?> checked<? endif; ?><? if (!empty($setting['readonly'])): ?> disabled<? endif; ?>>
-              <? elseif ('multiselect' == $setting['type']): ?>
+            <label<?='select' == $setting['type'] ? ' class="control-label"' : ''?>><?=$this->transEsc("messaging_settings_setting_$name", null, $name) ?>:</label>
+            <? if ('boolean' == $setting['type']): ?>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="<?=$this->escapeHtmlAttr($serviceId . '_' . $settingId)?>" value="1"<? if ($setting['active']): ?> checked<? endif; ?><? if (!empty($setting['readonly'])): ?> disabled<? endif; ?>>
+                  <?=$this->transEsc("messaging_settings_setting_$name", null, $name) ?> <?=$this->transEsc("messaging_settings_option_active");?>
+                </label>
+              </div>
+            <? elseif ('multiselect' == $setting['type']): ?>
                 <? foreach($setting['options'] as $optionId => $option): ?>
                   <? $fullId = $serviceId . '_' . $settingId . '_' . $optionId; ?>
-                  <input type="checkbox" id="<?=$this->escapeHtmlAttr($fullId)?>" name="<?=$this->escapeHtmlAttr($fullId)?>" value="1"<? if ($option['active']): ?> checked<? endif; ?><? if (!empty($setting['readonly'])): ?> disabled<? endif; ?>>
-                  <? $name = isset($option['name']) ? $option['name'] : $optionId; ?>
-                  <label for="<?=$this->escapeHtmlAttr($fullId)?>" class="checkbox-label">
-                    <?=$this->transEsc("messaging_settings_option_$name", null, $name) ?>
-                  </label>
-                  <br>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" id="<?=$this->escapeHtmlAttr($fullId)?>" name="<?=$this->escapeHtmlAttr($fullId)?>" value="1"<? if ($option['active']): ?> checked<? endif; ?><? if (!empty($setting['readonly'])): ?> disabled<? endif; ?>>
+                      <? $name = isset($option['name']) ? $option['name'] : $optionId; ?>
+                      <?=$this->transEsc("messaging_settings_option_$name", null, $name) ?>
+                    </label>
+                  </div>
                 <? endforeach; ?>
-              <? elseif ('select' == $setting['type']): ?>
-                <select name="<?=$this->escapeHtmlAttr($serviceId . '_' . $settingId)?>" class="form-control" <? if (!empty($setting['readonly'])): ?> readonly<? endif; ?>>
-                  <? foreach($setting['options'] as $optionId => $option): ?>
-                    <? $name = isset($option['name']) ? $option['name'] : $optionId; ?>
-                    <option value="<?=$this->escapeHtmlAttr($optionId)?>"<? if ($optionId == $setting['value']): ?> selected<? endif; ?>><?=$this->transEsc("messaging_settings_option_$name", null, $name)?></option>
-                  <? endforeach; ?>
-                </select>
-              <? endif; ?>
-            </div>
+              </div>
+            <? elseif ('select' == $setting['type']): ?>
+              <select name="<?=$this->escapeHtmlAttr($serviceId . '_' . $settingId)?>" class="form-control" <? if (!empty($setting['readonly'])): ?> readonly<? endif; ?>>
+                <? foreach($setting['options'] as $optionId => $option): ?>
+                  <? $name = isset($option['name']) ? $option['name'] : $optionId; ?>
+                  <option value="<?=$this->escapeHtmlAttr($optionId)?>"<? if ($optionId == $setting['value']): ?> selected<? endif; ?>><?=$this->transEsc("messaging_settings_option_$name", null, $name)?></option>
+                <? endforeach; ?>
+              </select>
+            <? endif; ?>
           </div>
         <? endforeach; ?>
       <? endforeach; ?>
       <div class="form-group">
-        <div class="col-sm-offset-4 col-sm-8">
-          <input name="messaging_update_request" class="btn btn-primary" type="submit" value="<?=$this->transEsc('Send') ?>" />
-        </div>
+        <input name="messaging_update_request" class="btn btn-primary" type="submit" value="<?=$this->transEsc('Send') ?>" />
       </div>
     </form>
   <? endif; ?>
