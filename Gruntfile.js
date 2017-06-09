@@ -55,11 +55,6 @@ module.exports = function(grunt) {
       less: {
       }
     },
-    // Less with maps
-    lessdev: {
-      less: {
-      }
-    },
     // SASS compilation
     scss: {
       sass: {
