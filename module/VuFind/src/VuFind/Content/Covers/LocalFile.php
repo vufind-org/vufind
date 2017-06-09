@@ -90,7 +90,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
         if (!in_array($mimeType, $allowedMimeTypes)) {
             return false;
         }
-        $filePath="file://" . $fileName;
+        $filePath = "file://" . $fileName;
         return $filePath;
     }
 
