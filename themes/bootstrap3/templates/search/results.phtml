@@ -58,8 +58,13 @@
     <? endforeach; ?>
   <? endif; ?>
   <?=$this->flashmessages()?>
+<<<<<<< HEAD
   <div class="hidden-print search-controls clearfix">
     <div class="pull-left">
+=======
+  <nav class="search-header hidden-print">
+    <div class="search-stats">
+>>>>>>> origin/master
       <? if ($recordTotal > 0): ?>
         <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
       <? else: ?>
@@ -68,13 +73,23 @@
     </div>
 
     <? if ($recordTotal > 0): ?>
+<<<<<<< HEAD
       <div class="pull-right text-right">
+=======
+      <div class="search-controls">
+>>>>>>> origin/master
         <?=$this->render('search/controls/limit.phtml')?>
         <?=$this->render('search/controls/sort.phtml')?>
         <?=$this->render('search/controls/view.phtml')?>
       </div>
     <? endif; ?>
+<<<<<<< HEAD
   </div>
+=======
+  </nav>
+  <? /* End Listing Options */ ?>
+
+>>>>>>> origin/master
   <? if ($recordTotal < 1): ?>
     <p>
       <? if (isset($this->overrideEmptyMessage)): ?>

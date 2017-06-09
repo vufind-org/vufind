@@ -55,6 +55,7 @@
         ?>
         <?=$this->translate('showing_items_of_html', $transParams); ?>
       <? endif; ?>
+<<<<<<< HEAD
       <? if ($recordTotal > 0): ?>
         <?=$this->transEsc("Showing")?>
         <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
@@ -82,6 +83,30 @@
   <? else: ?>
     <p><?=$this->transEsc('You do not have any saved resources')?></p>
   <? endif; ?>
+=======
+    </div>
+  </div>
+<? if ($list && !empty($list->description)): ?>
+  <p><?=$this->escapeHtml($list->description)?></p>
+<? endif; ?>
+  <? if ($recordTotal > 0): ?>
+    <div class="resulthead">
+      <div class="pull-right flip">
+        <?=$this->render('search/controls/limit.phtml')?>
+        <?=$this->render('search/controls/sort.phtml')?>
+      </div>
+    </div>
+    <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account])?>
+      <? foreach ($this->results->getResults() as $i=>$current): ?>
+        <?=$this->record($current)->getListEntry($list, $user)?>
+      <? endforeach; ?>
+    </form>
+    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results])?>
+  <? else: ?>
+    <p><?=$this->transEsc('You do not have any saved resources')?></p>
+  <? endif; ?>
+>>>>>>> origin/master
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">
