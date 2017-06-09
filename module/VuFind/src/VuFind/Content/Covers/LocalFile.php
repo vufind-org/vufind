@@ -39,13 +39,6 @@ namespace VuFind\Content\Covers;
 class LocalFile extends \VuFind\Content\AbstractCover
 {
     /**
-     * VuFind configuration
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * Does this plugin support the provided ID array?
      *
      * @param array $ids IDs that will later be sent to load() -- see below.
@@ -54,17 +47,9 @@ class LocalFile extends \VuFind\Content\AbstractCover
      */
     public function supports($ids)
     {
+        // We won't know what we need until we parse the path string; accept
+        // everything at this stage:
         return true;
-    }
-
-    /**
-     * Constructor
-     *
-     * @param Config $config VuFind configuration
-     */
-    public function __construct($config)
-    {
-        $this->config = $config;
     }
 
     /**
