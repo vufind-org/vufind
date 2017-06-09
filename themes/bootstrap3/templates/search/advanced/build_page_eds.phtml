@@ -2,11 +2,11 @@ $(document).ready(function() {
   // Switch and prepare for JS mode
   $('#groupPlaceHolder').addClass('hidden');
   $('#new_search_template').addClass('hidden').detach().appendTo('[role="main"]');
-  $('#new_search_template').find('.search').removeAttr('id');
+  $('#new_search_template').find('.adv-search').removeAttr('id');
   $('#new_search_template').find('input').removeAttr('value');
   $('#new_search_template').find('option').removeAttr('selected');
   $('#new_group_template').addClass('hidden').detach().appendTo('[role="main"]');
-  $('#new_group_template .search').remove();
+  $('#new_group_template .adv-search').remove();
   $('#advSearchForm .no-js').remove();
   $('#groupJoin').remove();
   // Build page
