@@ -6,64 +6,69 @@
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
         . '<li class="active">' . $this->transEsc('Interlibrary Loan Requests') . '</li>';
 ?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('Interlibrary Loan Requests') ?></h2>
 
-<div class="row">
-  <div class="<?=$this->layoutClass('mainbody')?>">
-    <h2><?=$this->transEsc('Interlibrary Loan Requests') ?></h2>
+  <?=$this->flashmessages()?>
 
-    <?=$this->flashmessages()?>
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
 
-    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
+  <? if (!empty($this->recordList)): ?>
+    <? if ($this->cancelForm): ?>
+      <form name="cancelForm" class="inline" method="post" id="cancelILLRequest">
+        <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
+        <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
+        <div class="btn-group">
+          <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEsc("ill_request_cancel_selected") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown"/>
+          <ul class="dropdown-menu">
+            <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_selected_text") ?></a></li>
+            <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelSelected');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+            <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+          </ul>
+        </div>
+        <div class="btn-group">
+          <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEsc("ill_request_cancel_all") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown"/>
+          <ul class="dropdown-menu">
+            <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_all_text") ?></a></li>
+            <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelAll');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+            <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+          </ul>
+        </div>
+    <? endif; ?>
 
-    <? if (!empty($this->recordList)): ?>
-      <? if ($this->cancelForm): ?>
-        <form name="cancelForm" class="inline" method="post" id="cancelILLRequest">
-          <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
-          <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
-          <div class="btn-group">
-            <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEsc("ill_request_cancel_selected") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown"/>
-            <ul class="dropdown-menu">
-              <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_selected_text") ?></a></li>
-              <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelSelected');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-              <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-            </ul>
-          </div>
-          <div class="btn-group">
-            <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEsc("ill_request_cancel_all") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown"/>
-            <ul class="dropdown-menu">
-              <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_all_text") ?></a></li>
-              <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelAll');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-              <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-            </ul>
-          </div>
-      <? endif; ?>
-
-      <? $iteration = 0; ?>
-      <? foreach ($this->recordList as $resource): ?>
-        <hr/>
-        <? $iteration++; ?>
-        <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-        <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="row result">
-          <? if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
-            <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
+    <? $iteration = 0; ?>
+    <? foreach ($this->recordList as $resource): ?>
+      <? $iteration++; ?>
+      <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
+      <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="result">
+        <? if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
+          <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
+          <div class="checkbox">
             <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" />
-            <div class="pull-left flip">
+            <label>
               <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" />
-            </div>
-          <? endif; ?>
-          <? $cover = $this->record($resource)->getCover('illrequests', 'small'); ?>
-          <? if ($cover): ?>
-            <div class="col-sm-2 text-center">
-            <? /* Display thumbnail if appropriate: */ ?>
-            <? if($cover): ?>
-              <?=$cover?>
-            <? endif; ?>
-            </div>
+            </label>
+          </div>
+        <? endif; ?>
 
-            <div class="col-sm-6">
-         <? else: ?>
-            <div class="col-sm-9">
-         <? endif; ?>
+        <?
+          $coverDetails = $this->record($resource)->getCoverDetails('illrequests', 'small', $this->recordLink()->getUrl($resource));
+          $cover = $coverDetails['html'];
+          $thumbnail = false;
+          $thumbnailAlignment = $this->record($resource)->getThumbnailAlignment('account');
+          if ($cover):
+            ob_start(); ?>
+            <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+              <?=$cover ?>
+            </div>
+            <? $thumbnail = ob_get_contents(); ?>
+          <? ob_end_clean(); ?>
+        <? endif; ?>
+        <div class="media">
+          <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+            <?=$thumbnail ?>
+          <? endif ?>
+          <div class="media-body">
             <?
               // If this is a non-missing Solr record, we should display a link:
               if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
@@ -155,15 +160,18 @@
             <? endif; ?>
 
           </div>
+          <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+            <?=$thumbnail ?>
+          <? endif ?>
         </div>
-      <? endforeach; ?>
-      <? if ($this->cancelForm): ?></form><? endif; ?>
-    <? else: ?>
-      <?=$this->transEsc('You do not have any interlibrary loan requests placed') ?>.
-    <? endif; ?>
-  </div>
+      </div>
+    <? endforeach; ?>
+    <? if ($this->cancelForm): ?></form><? endif; ?>
+  <? else: ?>
+    <?=$this->transEsc('You do not have any interlibrary loan requests placed') ?>.
+  <? endif; ?>
+</div>
 
-  <div class="<?=$this->layoutClass('sidebar')?>">
-    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'ILLRequests'])?>
-  </div>
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'ILLRequests'])?>
 </div>
