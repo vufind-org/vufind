@@ -106,25 +106,23 @@ class LocalFile extends \VuFind\Content\AbstractCover
      */
     protected function replaceIdTokens($filePath, $ids)
     {
-        $fileName = $filePath;
+        $tokens = $replacements = [];
+        // Only create tokens for strings, not objects:
         foreach ($ids as $key => $val) {
-            if (is_string($key)) {
+            if (is_string($val)) {
                 $tokens[] = '%' . $key . '%';
                 $replacements[] = $val;
             }
         }
-        $fileName = str_replace($tokens, $replacements, $filePath);
-
+        // Special-case handling for ISBN object:
         if (isset($ids['isbn'])) {
             $tokens[] = '%isbn10%';
             $replacements[] = $ids['isbn']->get10();
-            $fileName = str_replace($tokens, $replacements, $basePath);
 
             $tokens[] = '%isbn13%';
             $replacements[] = $ids['isbn']->get13();
-            $fileName = str_replace($tokens, $replacements, $basePath);
         }
-        return $fileName;
+        return str_replace($tokens, $replacements, $filePath);
     }
 
     /**
