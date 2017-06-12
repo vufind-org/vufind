@@ -39,6 +39,15 @@ namespace VuFind\Content\Covers;
 class LocalFile extends \VuFind\Content\AbstractCover
 {
     /**
+     * MIME types allowed to be loaded from disk.
+     *
+     * @var array
+     */
+    protected $allowedMimeTypes = [
+        "image/gif", "image/jpeg", "image/png", "image/tiff"
+    ];
+
+    /**
      * Does this plugin support the provided ID array?
      *
      * @param array $ids IDs that will later be sent to load() -- see below.
@@ -64,34 +73,18 @@ class LocalFile extends \VuFind\Content\AbstractCover
      */
     public function getUrl($key, $size, $ids)
     {
-        // Get filepath for cover images
-        $basePath = $key;
-
-        // Check base path for $VUFIND env variables
-        $tokens = ['%vufind-home%', '%vufind-local-dir%'];
-        $replacements = [APPLICATION_PATH, LOCAL_OVERRIDE_DIR];
-        $filePath = str_replace($tokens, $replacements, $basePath);
-
-        // convert file path tokens to id array values
-        $fileName = $this->replaceIdTokens($filePath, $ids);
-
-        // convert image type tokens to values
-        $fileName = $this->replaceImageTypeTokens($fileName);
-        if (!$fileName) {
-            return false;
+        // convert all of the tokens:
+        $fileName = $this->replaceImageTypeTokens(
+            $this->replaceEnvironmentAndIdTokens($key, $ids)
+        );
+        // Validate MIME type if we have a valid file path.
+        if ($fileName && file_exists($fileName)) {
+            if (in_array(mime_content_type($fileName), $this->allowedMimeTypes)) {
+                return "file://" . $fileName;
+            }
         }
-
-        // Validate Mime type.
-        $allowedMimeTypes = [
-             "image/gif", "image/jpeg",
-             "image/png", "image/tiff"
-         ];
-        $mimeType = mime_content_type($fileName);
-        if (!in_array($mimeType, $allowedMimeTypes)) {
-            return false;
-        }
-        $filePath = "file://" . $fileName;
-        return $filePath;
+        // If we got this far, we couldn't find a match.
+        return false;
     }
 
     /**
@@ -104,9 +97,12 @@ class LocalFile extends \VuFind\Content\AbstractCover
      *
      * @return string
      */
-    protected function replaceIdTokens($filePath, $ids)
+    protected function replaceEnvironmentAndIdTokens($filePath, $ids)
     {
-        $tokens = $replacements = [];
+        // Seed the token array with standard environment variables:
+        $tokens = ['%vufind-home%', '%vufind-local-dir%'];
+        $replacements = [APPLICATION_PATH, LOCAL_OVERRIDE_DIR];
+
         // Only create tokens for strings, not objects:
         foreach ($ids as $key => $val) {
             if (is_string($val)) {
