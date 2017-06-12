@@ -121,22 +121,24 @@ header .form-control:focus {
   padding: 0;
   border-bottom: 1px solid @moon-gray;
   font-size: @reduced-font-size;
-}
-.result .record-checkbox {
-  flex-basis: @result-checkbox-width;
-  text-align: center;
-}
-.result .title { font-size: 1rem; }
-.result .callnumAndLocation {
-  margin-top: .25rem;
-  margin-bottom: .25rem;
-  font-size: 12px;
-}
-.result .format,
-.result .label {
-  display: inline-block;
-  padding: 4px .75rem;
-  font-size: 11px;
+
+  .record-checkbox {
+    flex-basis: @result-checkbox-width;
+    text-align: center;
+  }
+  .title { font-size: 1rem; }
+  .callnumAndLocation {
+    margin-top: .25rem;
+    margin-bottom: .25rem;
+    font-size: 12px;
+  }
+  .format,
+  .label {
+    display: inline-block;
+    padding: 4px .75rem;
+    font-size: 11px;
+  }
+  .savedLists { margin-bottom: 0; }
 }
 .result.checked {
   color: #fff;
