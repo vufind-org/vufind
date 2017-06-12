@@ -104,7 +104,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
      *
      * @return string
      */
-    public function replaceIdTokens($filePath, $ids)
+    protected function replaceIdTokens($filePath, $ids)
     {
         $fileName = $filePath;
         foreach ($ids as $key => $val) {
@@ -134,7 +134,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
      *
      * @return bool|string
      */
-    public function replaceImageTypeTokens($fileName)
+    protected function replaceImageTypeTokens($fileName)
     {
         // convert file extension tokens to values
         $allowed_imageTypes = ["anyimage", "gif",
