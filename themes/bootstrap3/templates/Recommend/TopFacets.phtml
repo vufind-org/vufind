@@ -34,21 +34,17 @@
           <? if ($allowExclude): ?>
             <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><i class="fa fa-times" aria-hidden="true"></i></a>
           <? endif; ?>
-        </span>
-        <? /* More link */ ?>
-        <? if ($index == $limit): ?>
-          <span id="more-NarrowGroupHidden_<?=$this->escapeHtml($title)?>" class="narrow-toggle">
-            <a href="#" onclick="moreFacets('NarrowGroupHidden_<?=$this->escapeHtml($title)?>'); return false;">
-              <?=$this->transEsc('more') ?> ...
-            </a>
           </span>
         <? endif; ?>
-      <? endforeach; ?>
-      <? if (count($cluster['list']) > $limit): ?>
-        <a class="narrow-toggle <?=$moreClass ?>" href="#" onclick="lessFacets('NarrowGroupHidden_<?=$title ?>'); return false;">
-          <?=$this->transEsc('less') ?> ...
-        </a>
+      </span>
+      <? /* Close rows */ ?>
+      <? if ($iter%$topFacetSettings['cols'] == 0 && $iter > 0): ?></div><div class="row top-row<? if(++$row > $topFacetSettings['rows']) echo $moreClass ?>"><? endif; ?>
+      <? /* Less link */ ?>
+      <? if (count($cluster['list']) > $corner && $iter == count($cluster['list'])): ?>
+        <a class="col-sm-12 narrow-toggle" href="#" onclick="lessFacets('NarrowGroupHidden_<?=$title ?>'); return false;"><?=$this->transEsc('less') ?> ...</a>
       <? endif; ?>
+      <? $iter++; ?>
+    <? endforeach; ?>
     </div>
   <? endforeach; ?>
 <? endif; ?>

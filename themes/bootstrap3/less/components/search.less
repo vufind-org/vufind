@@ -45,7 +45,17 @@ header .container.navbar { margin-bottom: 0; }
   .grid { min-height: 250px; }
 }
 .result {
+  display: flex;
+  flex-direction: row;
   padding-top: 1.5rem;
+  .record-number {
+    flex: 0 2rem;
+    text-align: center;
+  }
+  .record-checkbox {
+    flex: 0;
+    cursor: pointer;
+  }
   .checkbox { float: left; }
   .media,
   .media-body { overflow: visible; }
