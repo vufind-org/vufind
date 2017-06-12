@@ -211,7 +211,7 @@ class Results extends BaseResults
         }
 
         $this->recordLoader->setCacheContext(Cache::CONTEXT_FAVORITE);
-        $this->results = $this->recordLoader->loadBatch($recordsToRequest);
+        $this->results = $this->recordLoader->loadBatch($recordsToRequest, true);
     }
 
     /**

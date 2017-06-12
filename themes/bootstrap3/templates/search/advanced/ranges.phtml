@@ -2,7 +2,7 @@
   <? $params = $this->searchParams($this->searchClassId); $params->activateAllFacets(); ?>
   <? foreach ($this->ranges as $current): $escField = $this->escapeHtmlAttr($current['field']); ?>
     <? $extraInputAttribs = ($current['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
-    <fieldset class="col-sm-4">
+    <fieldset class="range">
       <legend><?=$this->transEsc($params->getFacetLabel($current['field']))?></legend>
       <input type="hidden" name="<?=$this->escapeHtmlAttr($current['type'])?>range[]" value="<?=$escField?>"/>
       <div class="row">
@@ -69,7 +69,7 @@ $('#{$escField}from, #{$escField}to').change(function () {
 JS;
         ?>
         <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-      </fieldset>
-    <? endif; ?>
+      <? endif; ?>
+    </fieldset>
   <? endforeach; ?>
 <? endif; ?>

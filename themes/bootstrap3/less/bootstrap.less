@@ -70,6 +70,7 @@ img {max-width: 100%;}
     font-weight: normal;
   }
   .form-control { max-width: 400px; }
+  #modal .form-control { max-width: none; }
 }
 @media (max-width: 767px) {
   h2 { font-size: 20px; }
@@ -81,6 +82,22 @@ img {max-width: 100%;}
     max-width: 60%;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+}
+
+/* --- Layout --- */
+@media (min-width: 768px) {
+  .mainbody { width: 75%; }
+  .sidebar { width: 25%; }
+  .mainbody.left,
+  .sidebar.left {
+    float: left;
+    padding-right: 1rem;
+  }
+  .mainbody.right,
+  .sidebar.right {
+    float: right;
+    padding-left: 1rem;
   }
 }
 
