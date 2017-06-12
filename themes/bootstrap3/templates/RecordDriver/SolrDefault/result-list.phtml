@@ -137,10 +137,6 @@
         <? endif; ?>
       <? endif; ?>
 
-      <? if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
-        <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
-      <? endif; ?>
-
       <?=$this->record($this->driver)->getFormatList() ?>
 
       <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
@@ -165,6 +161,10 @@
             </script>
           </div><br/>
         </span>
+      <? endif; ?>
+
+      <? if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
+        <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
       <? endif; ?>
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>

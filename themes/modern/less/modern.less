@@ -4,6 +4,7 @@
 @import "rtl";
 
 @reduced-font-size: 14px;
+@result-checkbox-width: 28px;
 @search-tab-height: 1.6rem;
 
 html { font-size: 16px; }
@@ -122,7 +123,7 @@ header .form-control:focus {
   font-size: @reduced-font-size;
 }
 .result .record-checkbox {
-  flex-basis: 1.5rem;
+  flex-basis: @result-checkbox-width;
   text-align: center;
 }
 .result .title { font-size: 1rem; }
@@ -137,16 +138,19 @@ header .form-control:focus {
   padding: 4px .75rem;
   font-size: 11px;
 }
-.result .media-body { padding-left: .5rem; }
 .result.checked {
   color: #fff;
   background-color: @brand-primary;
+  border-color: @white;
   a { color: #fff; }
   .format,
   .label {
     color: @brand-primary;
     background-color: #fff;
   }
+  .cart-link-icon { color: inherit; }
+  .alert { background-color: @white; }
+  .alert a { color: @black; }
 }
 .result-body,
 .result-links {
@@ -199,10 +203,11 @@ header .form-control:focus {
   .result-link-icon,
   .result .cart-link-icon {
     width: auto;
-    margin-right: .25rem;
+    margin-left: 3px;
+    margin-right: .5rem;
     padding: 0;
     font-size: inherit;
-    color: inherit;
+    color: @gray-darker;
   }
   .result-link-label,
   .result .cart-link-label { display: inline; }
@@ -223,6 +228,26 @@ header .form-control:focus {
 .list-group-item.active:focus {
   border-color: @active-filter-bg;
   background-color: @active-filter-bg;
+}
+.bulkActionButtons > .checkbox {
+  input[type="checkbox"] { display: none; }
+  label { padding-left: 0; }
+  label::before {
+    display: inline-block;
+    width: @result-checkbox-width;
+    padding: .25rem;
+    font-family: "FontAwesome";
+    font-size: @reduced-font-size;
+    background-color: @gray-lighter;
+    color: @gray-light;
+    content: "\f00c";
+    text-align: center;
+    border-radius: @border-radius-base;
+  }
+  :checked ~ label::before {
+    background-color: @brand-primary;
+    color: @white;
+  }
 }
 
 .searchHomeContent {
