@@ -330,8 +330,10 @@ class Loader extends \VuFind\ImageLoader
             return $this->getCachePath($this->size, 'OCLC' . $ids['oclc']);
         } else if (isset($ids['upc'])) {
             return $this->getCachePath($this->size, 'UPC' . $ids['upc']);
+        } else if (isset($ids['recordid'])) {
+            return $this->getCachePath($this->size, 'ID' . $ids['recordid']);
         }
-        throw new \Exception('Unexpected code path reached!');
+        throw new \Exception('Cannot determine local file path.');
     }
 
     /**
