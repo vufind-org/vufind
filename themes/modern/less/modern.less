@@ -122,10 +122,6 @@ header .form-control:focus {
   border-bottom: 1px solid @moon-gray;
   font-size: @reduced-font-size;
 
-  .record-checkbox {
-    flex-basis: @result-checkbox-width;
-    text-align: center;
-  }
   .title { font-size: 1rem; }
   .callnumAndLocation {
     margin-top: .25rem;
@@ -140,7 +136,17 @@ header .form-control:focus {
   }
   .savedLists { margin-bottom: 0; }
 }
-.result.checked {
+
+.grid-result {
+  padding-bottom: 1rem;
+  padding-right: 1rem;
+  text-align: center;
+
+  .title { font-size: @reduced-font-size; }
+}
+
+.result.checked,
+.grid-result.checked {
   color: #fff;
   background-color: @brand-primary;
   border-color: @white;
@@ -176,25 +182,32 @@ header .form-control:focus {
 .result-link-label,
 .result .cart-link-label { display: none; }
 
-.result .record-checkbox input { display: none; }
-.result .record-checkbox .checkbox-icon::before {
-  display: block;
-  width: 100%;
-  height: 100px;
-  margin-top: 1rem;
-  font-family: "FontAwesome";
-  line-height: 100px;
-  color: @gray-light;
-  content: "\f00c";
-  cursor: pointer;
-  background-color: @gray-lighter;
-  border-top-left-radius: @border-radius-base;
-  border-bottom-left-radius: @border-radius-base;
+.result .record-checkbox,
+.grid-result .grid-checkbox {
+  flex-basis: @result-checkbox-width;
+  text-align: center;
+
+  input { display: none; }
+  .checkbox-icon::before {
+    display: block;
+    width: 100%;
+    height: 100px;
+    font-family: "FontAwesome";
+    line-height: 100px;
+    color: @gray-light;
+    content: "\f00c";
+    cursor: pointer;
+    background-color: @gray-lighter;
+    border-top-left-radius: @border-radius-base;
+    border-bottom-left-radius: @border-radius-base;
+  }
+  :checked ~ .checkbox-icon::before {
+    color: #fff;
+    background-color: transparent;
+  }
 }
-.result .record-checkbox :checked ~ .checkbox-icon::before {
-  color: #fff;
-  background-color: transparent;
-}
+.result .record-checkbox .checkbox-icon::before { margin-top: 1rem; }
+.grid-result .grid-checkbox label { width: 100%; }
 @media (min-width: 768px) {
   .result { padding-right: 1rem; }
   .result-body { width: 75%; }
