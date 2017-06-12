@@ -39,6 +39,13 @@ namespace VuFind\Content\Covers;
 class LocalFile extends \VuFind\Content\AbstractCover
 {
     /**
+     * Image file extensions to look for when using %anyimage% token.
+     *
+     * @var array
+     */
+    protected $imageExtensions = ["gif", "jpg", "jpeg", "png", "tif", "tiff"];
+
+    /**
      * MIME types allowed to be loaded from disk.
      *
      * @var array
@@ -130,42 +137,19 @@ class LocalFile extends \VuFind\Content\AbstractCover
      */
     protected function replaceImageTypeTokens($fileName)
     {
-        // convert file extension tokens to values
-        $allowed_imageTypes = ["anyimage", "gif",
-        "jpg", "jpeg", "png", "tif", "tiff"
-        ];
-        if (preg_match("/(.*)(\%.*\%)/", $fileName, $matches) !== 1) {
-             return false;
-        } else {
-             $imageType = substr($matches[2], 1, -1);
-        }
-
-        // make sure image type is allowed
-        if (!in_array($imageType, $allowed_imageTypes)) {
-            throw new \Exception(
-                "Illegal file-extension '$imageType' for image '$fileName'"
-            );
-            return false;
-        }
-        // Replace token with value
-        foreach ($allowed_imageTypes as $val) {
-            $tokens[] = '%' . $val . '%';
-            $replacements[] = $val;
-        }
-        $fName = str_replace($tokens, $replacements, $fileName);
-
         // If anyimage is specified, then we loop through all
         // image extensions to find the right filename
-        if ($imageType == "anyimage") {
-            $check_imageTypes = array_slice($allowed_imageTypes, 1);
-            $checkPath = substr($fName, 0, -8);
-            foreach ($check_imageTypes as $val) {
-                $checkFile = $checkPath . $val;
-                if (file_exists($checkFile)) {
-                     $fName = $checkFile;
+        if (strstr($fileName, '%anyimage%')) {
+            foreach ($this->imageExtensions as $val) {
+                foreach ([$val, strtoupper($val), ucwords($val)] as $finalVal) {
+                    $checkFile = str_replace('%anyimage%', $finalVal, $fileName);
+                    if (file_exists($checkFile)) {
+                         return $checkFile;
+                    }
                 }
             }
         }
-        return $fName;
+        // Default behavior: do not modify filename:
+        return $fileName;
     }
 }
