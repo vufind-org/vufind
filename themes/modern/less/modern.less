@@ -6,8 +6,9 @@
 @reduced-font-size: 14px;
 @search-tab-height: 1.6rem;
 
+html { font-size: 16px; }
 body {
-  font-size: 16px;
+  font-size: 1rem;
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; // native font stack
   color: @near-black;
 }
@@ -188,6 +189,24 @@ header .form-control:focus {
   color: #fff;
   background-color: transparent;
 }
+@media (min-width: 768px) {
+  .result { padding-right: 1rem; }
+  .result-body { width: 75%; }
+  .result-links {
+    width: 25%;
+    text-align: left;
+  }
+  .result-link-icon,
+  .result .cart-link-icon {
+    width: auto;
+    margin-right: .25rem;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+  }
+  .result-link-label,
+  .result .cart-link-label { display: inline; }
+}
 
 .top-facets,
 .search-header { font-size: @reduced-font-size; }
@@ -262,23 +281,6 @@ header .form-control:focus {
       border-color: @white;
     }
   }
-
-  .result { margin: 0; }
-  .result-body { width: 75%; }
-  .result-links {
-    width: 25%;
-    text-align: left;
-  }
-  .result-link-icon,
-  .result .cart-link-icon {
-    width: auto;
-    margin-right: .25rem;
-    padding: 0;
-    font-size: inherit;
-    color: inherit;
-  }
-  .result-link-label,
-  .result .cart-link-label { display: inline; }
 }
 
 /* --- Sidebar --- */
