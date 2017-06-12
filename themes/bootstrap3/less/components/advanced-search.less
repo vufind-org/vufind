@@ -13,11 +13,16 @@
     margin-top: 4px;
   }
 }
+.add_search_link,
 .adv-group-close {
   display: inline-block;
-  padding-top: .5rem;
-  padding-bottom: .5rem;
-  color: @brand-danger;
+  padding-top: .25rem;
+  padding-bottom: .25rem;
+}
+.adv-group-close {
+  position: absolute;
+  bottom: 1rem;
+  left: 75%;
 }
 .adv-search,
 .adv-search .input-group { width: 100%; }
@@ -76,11 +81,19 @@
   .fieldset {
     float: left;
     width: 33%;
-    padding: 1rem .5rem;
+    padding-right: 1rem;
+    padding-bottom: 1rem;
   }
-  .solr-facets {
+  .solr-facets,
+  .summon-facets {
     float: none;
     width: auto;
+    margin-top: 1rem;
+  }
+  .summon-facets .facet-fieldset {
+    float: left;
+    width: 50%;
+    padding-right: 1rem;
   }
 }
 

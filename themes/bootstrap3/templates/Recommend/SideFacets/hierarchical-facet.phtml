@@ -1,5 +1,5 @@
 <? $this->headScript()->appendFile('vendor/jsTree/jstree.min.js'); ?>
-<? if (!in_array($this->title, $collapsedFacets)): ?>
+<? if (!in_array($this->title, $this->collapsedFacets)): ?>
   <?
     $script = <<<JS
 $(document).ready(function() {
@@ -21,7 +21,7 @@ JS;
 <li id="facet_<?=$this->escapeHtml($this->title)?>" class="jstree-facet"
     data-facet="<?=$this->escapeHtmlAttr($this->title)?>"
     data-path="<?=$this->currentPath()?>"
-    data-exclude="<?=$allowExclude?>"
+    data-exclude="<?=$this->allowExclude?>"
     data-operator="<?=$this->recommend->getFacetOperator($this->title)?>"
     data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
     data-sort="<?=isset($this->sortOptions) ? $this->sortOptions : ''?>">

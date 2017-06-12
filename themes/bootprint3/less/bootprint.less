@@ -18,7 +18,6 @@ body {
 #commentList .comment:nth-child(even) { background: @gray-lighter; }
 #dateVisColorSettings { stroke: @brand-primary; }
 #hierarchyRecord { background: #fff; }
-h2 { margin: 0 8px 8px; }
 
 /* --- Layout --- */
 @media (min-width: 768px) {
@@ -68,6 +67,7 @@ header .searchbox .tab-content .navbar-text { margin: 5px 10px 5px 0; }
     margin-bottom: 2px
   }
 }
+header .breadcrumbs { padding: 0; }
 header .breadcrumb {
   border: 1px solid @gray-lighter;
   border-radius: 0;
@@ -90,6 +90,15 @@ footer ul { padding-left: 30px; }
 
 /* --- Browse --- */
 [id^=list].list-group .col-sm-9 { margin: 0; }
+
+/* --- Channels --- */
+.channel { margin-bottom: 2rem; }
+.channel-title {
+  margin-top: 1rem;
+  margin-left: -56px;
+}
+.channel-title .fa { margin-top: 4px; }
+.channel-title h2 { padding-left: 50px; }
 
 /* --- Offcanvas --- */
 body.offcanvas {

@@ -1230,7 +1230,9 @@ class MyResearchController extends AbstractBase
                     ? $row['source'] : DEFAULT_SEARCH_BACKEND;
                 $row['driver'] = $this->serviceLocator
                     ->get('VuFind\RecordLoader')->load($row['id'], $source);
-                $row['title'] = $row['driver']->getShortTitle();
+                if (empty($row['title'])) {
+                    $row['title'] = $row['driver']->getShortTitle();
+                }
             } catch (\Exception $e) {
                 if (!isset($row['title'])) {
                     $row['title'] = null;
