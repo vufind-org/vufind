@@ -1,8 +1,13 @@
+/* Border radius changes */
+@list-group-border-radius: 0;
+@border-radius-large: 0; /* modal */
+
 /* Common element changes */
 h1, h2, h3, h4 { margin: 1rem 0; }
 table { font-size: @reduced-font-size; }
 
 /* Bootstrap class overrides */
+
 .btn {
   height: 34px;
   border-radius: .25rem;
@@ -62,3 +67,25 @@ select.form-control {
 }
 
 .label { font-weight: 400; }
+
+@pagination-border: transparent;
+@pagination-hover-border: transparent;
+.pagination {
+  &:extend(.clearfix all);
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: @reduced-font-size;
+  border-radius: 0;
+}
+.pagination > li > a,
+.pagination > li > span {
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  &.page-prev,
+  &.page-next {
+    font-weight: bold;
+    color: @brand-primary;
+  }
+}
