@@ -265,7 +265,7 @@ class Bootstrapper
                 $request->setBaseUrl($baseUrl);
             }
         };
-        $this->events->attach('bootstrap', $callback, 10000);
+        $this->events->attach('route', $callback, 9000);
     }
 
     /**
