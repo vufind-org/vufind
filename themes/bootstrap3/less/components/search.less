@@ -57,14 +57,8 @@ header .container.navbar { margin-bottom: 0; }
   display: flex;
   padding-top: 1rem;
 
-  .record-number {
-    flex: 0 2rem;
-    text-align: center;
-  }
-  .record-checkbox {
-    flex: 0;
-    cursor: pointer;
-  }
+  .record-checkbox,
+  .record-number { display: none; }
 
   .media {
     flex: 1;
@@ -95,14 +89,6 @@ header .container.navbar { margin-bottom: 0; }
         max-width: none;
       }
     }
-    @media (min-width: 768px) {
-      &.small > a,
-      &.small > img { width: @thumbnail-width-small; }
-      &.medium > a,
-      &.medium > img { width: @thumbnail-width-medium; }
-      &.large > a,
-      &.large > img { width: @thumbnail-width-large; }
-    }
   }
   .title {font-weight: bold;}
   .list-tab-content.record .img-col { display: none; }
@@ -119,6 +105,21 @@ header .container.navbar { margin-bottom: 0; }
     .media-right {
       padding-right: 10px;
       padding-left: 10px;
+
+      &.small > a,
+      &.small > img { width: @thumbnail-width-small; }
+      &.medium > a,
+      &.medium > img { width: @thumbnail-width-medium; }
+      &.large > a,
+      &.large > img { width: @thumbnail-width-large; }
+    }
+    .record-checkbox {
+      flex: 0;
+      cursor: pointer;
+    }
+    .record-number {
+      flex: 0 2rem;
+      text-align: center;
     }
   }
   @media (max-width: 767px) {
