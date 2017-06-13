@@ -1,47 +1,73 @@
-/* Sidebar rounded corners */
-.narrow-toggle { text-align: center; }
-.sidebar {
-  label:not(.list-group-item) {margin-left: 20px;}
-  .list-group.facet .list-group-item.title {
-    cursor: pointer;
-    &.collapsed {
-      border-radius: @border-radius-base;
-      &:after {content: '\25BC';}
+.facet-group {
+  display: block;
+  margin-bottom: 1rem;
+  border: 1px solid @list-group-border;
+
+  .facet,
+  .title {
+    display: block;
+    padding: 10px 15px;
+    border-bottom: 1px solid @list-group-border;
+
+    .badge,
+    .status { float: right; }
+    .badge {
+      max-height: 19px;
+      line-height: 1.1rem;
     }
-    &:after {
+  }
+  .title { font-weight: bold; }
+  .facet:last-child { border-bottom: 0; }
+
+  [data-toggle="collapse"] {
+    cursor: pointer;
+    &::after {
       content: '\25B2';
       float: right;
     }
   }
-  .collapse,.collapsing {
-    .list-group-item {
-      border-top-left-radius: 0px;
-      border-top-right-radius: 0px;
-      &[id^=more] {
-        border-bottom-left-radius: @border-radius-base;
-        border-bottom-right-radius: @border-radius-base;
-      }
+  .collapsed::after {content: '\25BC';}
+
+  .excludable {
+    display: flex;
+    flex-direction: row-reverse;
+    padding-right: 0;
+
+    .text {
+      flex-grow: 1;
+      padding-left: 0.5rem;
+      text-indent: -0.5rem;
+    }
+    .badge { flex-shrink: 0; }
+    .exclude {
+      flex-basis: 2rem;
+      flex-shrink: 0;
+      text-align: center;
     }
   }
-  #side-collapse-publishDate .list-group-item {
-    border-bottom-left-radius: @border-radius-base;
-    border-bottom-right-radius: @border-radius-base;
-  }
-  .checkbox-filter {
-    display: block;
-    padding-bottom: 1rem;
-    font-weight: bold;
-    color: @text-color;
-  }
 }
-label.list-group-item {
-  margin-top: 0;
-  padding-left: 35px;
-  font-weight: normal;
-  border-radius: 0;
+
+.checkbox-filter {
+  display: block;
+  padding-bottom: 1rem;
+  font-weight: bold;
+  color: @text-color;
 }
-.list-group-item.title {font-weight: bold;}
-.sidebar .facet a {text-decoration: none;}
+
+.active-filters .facet,
+.facet-group .active {
+  background-color: @brand-primary;
+  color: #fff;
+
+  a { color: #fff; }
+}
+.facet-group .active .badge {
+  background-color: #fff;
+  color: @brand-primary;
+}
+
+.narrow-toggle { text-align: center; }
+
 .sidebar .format {
   &:extend(.label);
   &:extend(.label-info);

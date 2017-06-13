@@ -329,12 +329,12 @@ function keyboardShortcuts() {
 function setupFacets() {
   // Advanced facets
   $('.facetAND a,.facetOR a').click(function facetBlocking() {
-    $(this).closest('.collapse').html('<div class="list-group-item">' + VuFind.translate('loading') + '...</div>');
+    $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
     window.location.assign($(this).attr('href'));
   });
 
   // Side facet status saving
-  $('.facet.list-group .collapse').each(function openStoredFacets(index, item) {
+  $('.facet-group .collapse').each(function openStoredFacets(index, item) {
     var source = $('#result0 .hiddenSource').val();
     var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
     if (storedItem) {
