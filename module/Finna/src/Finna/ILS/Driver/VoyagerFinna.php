@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -547,6 +547,13 @@ trait VoyagerFinna
                         = $this->dateFormat->convertToDisplayDate(
                             'm-d-Y', $row['EXPIRE_DATE']
                         );
+                    $date = $this->dateFormat->convertFromDisplayDate(
+                        'U', $patron['expiration_date']
+                    );
+                    $dateLimit = strtotime('+10 years');
+                    if ($date > $dateLimit) {
+                        unset($patron['expiration_date']);
+                    }
                 }
             }
             return (empty($patron) ? null : $patron);
