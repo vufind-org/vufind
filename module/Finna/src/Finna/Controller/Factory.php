@@ -58,7 +58,7 @@ class Factory extends \VuFind\Controller\Factory
         $class = (strpos($name, '\\') === false)
             ? __NAMESPACE__ . '\\' . $name : $name;
         if (!class_exists($class) && strpos($name, '\\') === false) {
-            $class = parent::__NAMESPACE__ . '\\' . $name;
+            $class = "\\VuFind\\Controller\\$name";
         }
         if (!class_exists($class)) {
             throw new \Exception('Cannot construct ' . $class);
