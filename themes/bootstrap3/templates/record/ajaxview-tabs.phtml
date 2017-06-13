@@ -51,7 +51,7 @@
   <? if (!empty($coreMetadata)): ?>
     <div class="list-tab-content record tab-pane<? if($this->defaultTab === 'information'): ?> active<? endif; ?>" id="information_<?=$idSuffix?>-content">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffix?>" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
       <?=$coreMetadata ?>
     </div>
   <? endif; ?>
