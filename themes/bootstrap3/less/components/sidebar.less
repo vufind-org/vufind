@@ -1,13 +1,11 @@
 .facet-group {
   display: block;
   margin-bottom: 1rem;
-  border: 1px solid @list-group-border;
 
   .facet,
   .title {
     display: block;
     padding: 10px 15px;
-    border-bottom: 1px solid @list-group-border;
 
     .badge,
     .status { float: right; }
@@ -16,17 +14,27 @@
       line-height: 1.1rem;
     }
   }
-  .title { font-weight: bold; }
-  .facet:last-child { border-bottom: 0; }
+  .facet { border-bottom: 1px solid @list-group-border; }
+  .title {
+    border: 1px solid @list-group-border;
+    font-weight: bold;
+  }
 
   [data-toggle="collapse"] {
     cursor: pointer;
+
     &::after {
       content: '\25B2';
       float: right;
     }
   }
   .collapsed::after {content: '\25BC';}
+
+  .collapse,
+  .collapsing {
+    border-left: 1px solid @list-group-border;
+    border-right: 1px solid @list-group-border;
+  }
 
   .excludable {
     display: flex;
