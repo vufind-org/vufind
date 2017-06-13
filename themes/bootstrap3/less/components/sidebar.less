@@ -36,17 +36,18 @@
     border-right: 1px solid @list-group-border;
   }
 
+  .facetOR .text {
+    display: inline-block;
+    padding-left: 0.5rem;
+    text-indent: -0.5rem;
+  }
+
   .excludable {
     display: flex;
     flex-direction: row-reverse;
     padding-right: 0;
-
-    .text {
-      flex-grow: 1;
-      padding-left: 0.5rem;
-      text-indent: -0.5rem;
-    }
     .badge { flex-shrink: 0; }
+    .text { flex-grow: 1; }
     .exclude {
       flex-basis: 2rem;
       flex-shrink: 0;

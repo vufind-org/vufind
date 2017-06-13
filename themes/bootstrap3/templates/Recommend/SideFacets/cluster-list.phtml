@@ -44,6 +44,8 @@
 
   <? if ($this->allowExclude): ?>
     <a href="<?=$affectiveURL ?>" class="text">
+  <? else: ?>
+    <span class="text">
   <? endif; ?>
 
   <? if ($thisFacet['operator'] == 'OR'): ?>
@@ -52,9 +54,16 @@
 
   <?=$this->escapeHtml($thisFacet['displayText'])?>
 
-  </a>
+  <? if ($this->allowExclude): ?>
+    </a>
+  <? else: ?>
+    </span>
+  <? endif; ?>
+
   <? if ($this->allowExclude): ?>
     </div>
+  <? else: ?>
+    </a>
   <? endif; ?>
 <? endforeach; ?>
 

@@ -128,28 +128,29 @@ header .container.navbar { margin-bottom: 0; }
     }
   }
 }
-.result-body { padding-left: 1rem; }
-.result-links { padding: 1rem; }
+.result-body {
+  padding: 0;
+  padding-bottom: .25rem;
+}
 .result-links .alert { margin: 0; }
+.btn-bookbag-toggle {
+  form { display: inline; }
+  .fa {
+    color: @text-color;
+    /* .fa-fw */
+    width: 1.28571429em;
+    text-align: center;
+  }
+}
 @media (min-width: 768px) {
   .result-body {
     float: left;
     width: 75%;
-    padding: 0;
   }
   .result-links {
     float: left;
     width: 25%;
     padding: 0;
-  }
-  .btn-bookbag-toggle {
-    form { display: inline; }
-    .fa {
-      color: @text-color;
-      /* .fa-fw */
-      width: 1.28571429em;
-      text-align: center;
-    }
   }
 }
 .result.embedded {
