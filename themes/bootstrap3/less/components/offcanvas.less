@@ -5,14 +5,8 @@
 .offcanvas-toggle {display: none;}
 
 .search-filter-toggle {
-  display: block;
-  margin-left: -1rem;
-  margin-top: 1rem;
-  margin-right: -1rem;
-  padding: .5rem;
-  border-top: 1px solid @gray;
-  border-bottom: 1px solid @gray-light;
-  text-align: center;
+  &:extend(.btn all);
+  &:extend(.btn-default all);
 }
 
 @media screen and (min-width: 768px) {

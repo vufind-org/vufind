@@ -69,16 +69,18 @@
       </div>
 
       <? if ($recordTotal > 0): ?>
-        <div class="pull-right text-right">
+        <div class="hidden-xs pull-right">
           <?=$this->render('search/controls/limit.phtml')?>
           <?=$this->render('search/controls/sort.phtml')?>
           <?=$this->render('search/controls/view.phtml')?>
         </div>
+        <div class="visible-xs">
+          <a class="search-filter-toggle" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand') ?>">
+            <?=$this->transEsc('Narrow Search') ?> <i class="fa fa-angle-double-right"></i>
+          </a>
+        </div>
       <? endif; ?>
     </div>
-    <a class="search-filter-toggle" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand') ?>">
-      <?=$this->transEsc('Narrow Search') ?> <i class="fa fa-angle-double-right"></i>
-    </a>
     <? /* End Listing Options */ ?>
 
     <? if ($recordTotal < 1): ?>
