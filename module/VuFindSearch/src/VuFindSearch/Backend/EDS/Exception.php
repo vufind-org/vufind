@@ -35,7 +35,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class EbscoEdsApiException extends Exception
+class EbscoEdsApiException extends \VuFindSearch\Backend\Exception\BackendException
 {
     /**
      * Error message details returned from the API
@@ -53,7 +53,10 @@ class EbscoEdsApiException extends Exception
     {
         if (is_array($apiErrorMessage)) {
             $this->setApiError($apiErrorMessage);
-            parent::__construct();
+            parent::__construct(
+                isset($this->apiErrorDetails['Description'])
+                ? $this->apiErrorDetails['Description'] : ''
+            );
         } else {
             parent::__construct($apiErrorMessage);
         }
@@ -83,7 +86,6 @@ class EbscoEdsApiException extends Exception
             $this->apiErrorDetails['Description'] = $message['ErrorDescription'];
             $this->apiErrorDetails['DetailedDescription']
                 = $message['DetailedErrorDescription'];
-
         }
     }
 

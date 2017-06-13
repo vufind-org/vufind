@@ -26,8 +26,6 @@
  * @link     https://vufind.org Main Page
  */
 namespace Finna\Db\Table;
-use VuFind\Db\Table\PluginManager;
-use Zend\Db\Adapter\Adapter;
 
 /**
  * Table Definition for user_list
@@ -40,25 +38,6 @@ use Zend\Db\Adapter\Adapter;
  */
 class UserList extends \VuFind\Db\Table\UserList
 {
-    /**
-     * Constructor
-     *
-     * @param Adapter                 $adapter Database adapter
-     * @param PluginManager           $tm      Table manager
-     * @param array                   $cfg     Zend Framework configuration
-     * @param \Zend\Session\Container $session Session container (must use same
-     * namespace as container provided to \VuFind\View\Helper\Root\UserList).
-     */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        \Zend\Session\Container $session
-    ) {
-        parent::__construct($adapter, $tm, $cfg, $session);
-        $resultSetPrototype = $this->getResultSetPrototype();
-        $resultSetPrototype->setArrayObjectPrototype(
-            $this->initializeRowPrototype('Finna\Db\Row\UserList')
-        );
-    }
-
     /**
      * Retrieve user's list object by title.
      *

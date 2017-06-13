@@ -111,11 +111,12 @@ class Solr extends AbstractBase
      * Search Solr.
      *
      * @param string $q    Search query
-     * @param int    $rows Max rows to retrieve (default = int max)
+     * @param int    $rows Max rows to retrieve (default = int max / 2 since Solr
+     * may choke with higher values)
      *
      * @return array
      */
-    protected function searchSolr($q, $rows = 2147483647)
+    protected function searchSolr($q, $rows = 1073741823)
     {
         $params = new ParamBag(
             [

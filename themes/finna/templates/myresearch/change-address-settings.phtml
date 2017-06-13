@@ -16,25 +16,21 @@
 <h2><?=$this->escapeHtml($title) ?></h2>
 <?=$this->flashmessages()?>
 <? if (!isset($this->requestCompleted) || !$this->requestCompleted): ?>
-  <form  name="requestAddressChange" method="post" action="<?=$this->url('myresearch-changeprofileaddress')?>" class="form-horizontal address-form profile-form">
+  <form  name="requestAddressChange" method="post" action="<?=$this->url('myresearch-changeprofileaddress')?>" class="address-form profile-form">
     <? foreach ($this->fields as $field => $data): ?>
       <div class="form-group">
-        <label class="col-sm-3 control-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
-        <div class="col-sm-9">
-          <?
-            $value = isset($this->profile[$field]) ? $this->profile[$field] : '';
-            if (!$value) {
-              $value = isset($this->profile['full_data'][$field]) ? $this->profile['full_data'][$field] : '';
-            }
-          ?>
-          <input id="<?=$this->escapeHtmlAttr($field)?>" name="<?=$this->escapeHtmlAttr($field)?>" type="text" value="<?=$this->escapeHtmlAttr($value) ?>" class="form-control"/>
-        </div>
+        <label class="control-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
+        <?
+          $value = isset($this->profile[$field]) ? $this->profile[$field] : '';
+          if (!$value) {
+            $value = isset($this->profile['full_data'][$field]) ? $this->profile['full_data'][$field] : '';
+          }
+        ?>
+        <input id="<?=$this->escapeHtmlAttr($field)?>" name="<?=$this->escapeHtmlAttr($field)?>" type="text" value="<?=$this->escapeHtmlAttr($value) ?>" class="form-control"/>
       </div>
     <? endforeach; ?>
     <div class="form-group">
-      <div class="col-sm-offset-3 col-sm-9">
-        <input name="address_change_request" class="btn btn-primary" type="submit" value="<?=$this->transEsc('Send') ?>" />
-      </div>
+      <input name="address_change_request" class="btn btn-primary" type="submit" value="<?=$this->transEsc('Send') ?>" />
     </div>
   </form>
 <? endif; ?>

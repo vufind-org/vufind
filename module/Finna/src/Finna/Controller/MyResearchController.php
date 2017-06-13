@@ -142,7 +142,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             ]
         ];
 
-        $date = $this->getServiceLocator()->get('VuFind\DateConverter');
+        $date = $this->serviceLocator->get('VuFind\DateConverter');
         $sortFunc = function ($a, $b) use ($currentSort, $date) {
             $aDetails = $a->getExtraDetail('ils_details');
             $bDetails = $b->getExtraDetail('ils_details');
@@ -407,7 +407,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         // If we got this far, we just need to display the favorites:
         try {
-            $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+            $runner = $this->serviceLocator->get('VuFind\SearchRunner');
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
@@ -955,7 +955,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $user = $this->getTable('User')->getById($search->user_id);
 
                 $secret = $search->getUnsubscribeSecret(
-                    $this->getServiceLocator()->get('VuFind\HMAC'), $user
+                    $this->serviceLocator->get('VuFind\HMAC'), $user
                 );
                 if ($key !== $secret) {
                     throw new \Exception('Invalid parameters.');
@@ -968,7 +968,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 }
                 $dueDateTable = $this->getTable('due-date-reminder');
                 $secret = $dueDateTable->getUnsubscribeSecret(
-                    $this->getServiceLocator()->get('VuFind\HMAC'), $user, $user->id
+                    $this->serviceLocator->get('VuFind\HMAC'), $user, $user->id
                 );
                 if ($key !== $secret) {
                     throw new \Exception('Invalid parameters.');
@@ -1306,7 +1306,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $subject = $this->getConfig()->Site->title . ": $subject";
         $from = $this->getConfig()->Site->email;
 
-        $this->getServiceLocator()->get('VuFind\Mailer')->send(
+        $this->serviceLocator->get('VuFind\Mailer')->send(
             $recipient, $from, $subject, $message
         );
     }
@@ -1337,7 +1337,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     protected function exportUserLists($userId)
     {
         $user = $this->getTable('User')->getById($userId);
-        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
 
         $getTag = function ($tag) {
             return $tag['tag'];

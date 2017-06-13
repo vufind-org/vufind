@@ -109,10 +109,24 @@ class Factory
             ? (bool)$config->Site->showBookBag : false;
         $size = isset($config->Site->bookBagMaxSize)
             ? $config->Site->bookBagMaxSize : 100;
+        $activeInSearch = isset($config->Site->bookbagTogglesInSearch)
+            ? $config->Site->bookbagTogglesInSearch : true;
         return new \VuFind\Cart(
             $sm->get('VuFind\RecordLoader'), $sm->get('VuFind\CookieManager'),
-            $size, $active
+            $size, $active, $activeInSearch
         );
+    }
+
+    /**
+     * Construct the Channel Provider Plugin Manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\ChannelProvider\PluginManager
+     */
+    public static function getChannelProviderPluginManager(ServiceManager $sm)
+    {
+        return static::getGenericPluginManager($sm, 'ChannelProvider');
     }
 
     /**
@@ -278,6 +292,18 @@ class Factory
     }
 
     /**
+     * Construct the Db\Row Plugin Manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Db\Row\PluginManager
+     */
+    public static function getDbRowPluginManager(ServiceManager $sm)
+    {
+        return static::getGenericPluginManager($sm, 'Db\Row');
+    }
+
+    /**
      * Construct the Db\Table Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.
@@ -318,9 +344,7 @@ class Factory
         $configKey = strtolower(str_replace('\\', '_', $ns));
         $config = $sm->get('Config');
         return new $className(
-            new \Zend\ServiceManager\Config(
-                $config['vufind']['plugin_managers'][$configKey]
-            )
+            $sm, $config['vufind']['plugin_managers'][$configKey]
         );
     }
 
@@ -660,7 +684,7 @@ class Factory
         );
         $registry = $sm->createScopedServiceManager();
         $smConfig->configureServiceManager($registry);
-        $manager  = new \VuFind\Search\BackendManager($registry);
+        $manager = new \VuFind\Search\BackendManager($registry);
 
         return $manager;
     }
@@ -725,7 +749,22 @@ class Factory
     public static function getSearchRunner(ServiceManager $sm)
     {
         return new \VuFind\Search\SearchRunner(
-            $sm->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\SearchResultsPluginManager'),
+            new \Zend\EventManager\EventManager($sm->get('SharedEventManager'))
+        );
+    }
+
+    /**
+     * Construct the search service.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFindSearch\Service
+     */
+    public static function getSearchService(ServiceManager $sm)
+    {
+        return new \VuFindSearch\Service(
+            new \Zend\EventManager\EventManager($sm->get('SharedEventManager'))
         );
     }
 

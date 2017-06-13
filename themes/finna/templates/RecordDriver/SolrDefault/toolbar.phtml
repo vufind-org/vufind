@@ -8,8 +8,6 @@
   }
 
   // Set up some variables for convenience:
-  $cart = $this->cart();
-  $cartId = $this->driver->getSourceIdentifier() . '|' . $this->driver->getUniqueId();
   $largeThumb = $this->record($this->driver)->getThumbnail('large');
 ?>
 <div class="row hidden-xs">
@@ -53,23 +51,7 @@
       </div>
     </li>
   <? endif; ?>
-  <? if ($cart->isActive()): ?>
-    <li class="bookbag-menu">
-      <input class="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($cartId)?>" />
-      <a class="cart-add hidden<? if(!$cart->contains($cartId)): ?> correct<? endif ?>" href="#"><i class="fa fa-plus"></i> <?=$this->transEsc('Add to Book Bag') ?></a>
-      <a class="cart-remove hidden<? if($cart->contains($cartId)): ?> correct<? endif ?>" href="#"><i class="fa fa-minus"></i> <?=$this->transEsc('Remove from Book Bag') ?></a>
-      <noscript>
-        <form method="post" name="addForm" action="<?=$this->url('cart-processor')?>">
-          <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($cartId)?>" />
-          <? if ($cart->contains($cartId)): ?>
-            <input class="btn btn-default" type="submit" name="delete" value="<?=$this->transEsc('Remove from Book Bag')?>"/>
-          <? else: ?>
-            <input class="btn btn-default" type="submit" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
-          <? endif; ?>
-        </form>
-      </noscript>
-    </li>
-  <? endif; ?>
+  <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
   </ul>
 </div>
 </div>

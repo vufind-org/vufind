@@ -95,21 +95,21 @@ class Loader extends \VuFind\Record\Loader
     }
 
     /**
-     * Given an array of associative arrays with id and source keys (or pipe-
-     * separated source|id strings), load all of the requested records in the
-     * requested order.
+     * Given an array of IDs and a record source, load a batch of records for
+     * that source.
      *
-     * @param array $ids Array of associative arrays with id/source keys or
-     * strings in source|id format.  In associative array formats, there is
-     * also an optional "extra_fields" key which can be used to pass in data
-     * formatted as if it belongs to the Solr schema; this is used to create
-     * a mock driver object if the real data source is unavailable.
+     * @param array  $ids                       Record IDs
+     * @param string $source                    Record source
+     * @param bool   $tolerateBackendExceptions Whether to tolerate backend
+     * exceptions that may be caused by e.g. connection issues or changes in
+     * subcscriptions
      *
      * @throws \Exception
-     * @return array     Array of record drivers
+     * @return array
      */
-    public function loadBatch($ids)
-    {
+    public function loadBatchForSource($ids, $source = DEFAULT_SEARCH_BACKEND,
+        $tolerateBackendExceptions = false
+    ) {
         // Separate MetaLib ids that are loaded separately
         $loadIds = $metalibIds = $recIds = [];
         foreach ($ids as $key => $data) {
@@ -129,7 +129,7 @@ class Loader extends \VuFind\Record\Loader
 
         $result = [];
 
-        $records = parent::loadBatch($loadIds);
+        $records = parent::loadBatch($loadIds, $source, $tolerateBackendExceptions);
 
         // Check the results for missing MetaLib records and try to load them with
         // their old MetaLib IDs

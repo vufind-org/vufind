@@ -176,7 +176,7 @@ class Factory extends \VuFind\Service\Factory
             $config = $sm->get('VuFind\Config')->get('OrganisationInfo'),
             $sm->get('VuFind\CacheManager'),
             $sm->get('VuFind\Http'),
-            $sm->get('viewmanager')->getRenderer(),
+            $sm->get('ViewRenderer'),
             $sm->get('VuFind\Translator')
         );
     }
@@ -279,26 +279,6 @@ class Factory extends \VuFind\Service\Factory
     {
         return new \Finna\Config\YamlReader(
             $sm->get('VuFind\CacheManager')
-        );
-    }
-
-    /**
-     * Construct the cart.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Cart
-     */
-    public static function getCart(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config')->get('config');
-        $active = isset($config->Site->showBookBag)
-            ? (bool)$config->Site->showBookBag : false;
-        $size = isset($config->Site->bookBagMaxSize)
-            ? $config->Site->bookBagMaxSize : 100;
-        return new \VuFind\Cart(
-            $sm->get('VuFind\RecordLoader'), $sm->get('VuFind\CookieManager'),
-            $size, $active
         );
     }
 

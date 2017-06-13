@@ -2,8 +2,10 @@
 @import "finna-variables";
 
 //importing finna extensions
+@import "finna/advanced-search";
 @import "finna/autocomplete";
 @import "finna/facets";
+@import "finna/channels";
 @import "finna/date-range";
 @import "finna/tabs";
 @import "finna/image-popup";
@@ -357,6 +359,22 @@ input[type=number].input-year::-webkit-outer-spin-button {
     margin: 0;
 }
 /* Results */
+/* --- Layout --- */
+@media (min-width: @screen-sm-min) {
+  .mainbody { width: 75%; }
+  .sidebar { width: 25%; }
+  .mainbody.left,
+  .sidebar.left {
+    float: left;
+    padding-right: 1rem;
+  }
+  .mainbody.right,
+  .sidebar.right {
+    float: right;
+    padding-left: 1rem;
+  }
+}
+
 .template-name-results, .template-name-search {
     @media (max-width: @screen-xs-max) {
         & .finna-main-header {
@@ -832,15 +850,13 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .bulkActionButtons {
   margin-left: -40px;
   @media (max-width: @screen-xs-max) {
-    margin-left: 0px;
-    .checkbox {
-      margin-left: -33px;
-    }
+    margin-left: -22px;
   }
   @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
     margin-left: -25px;
   }
   .checkbox {
+    padding-left: 24px;
     display: inline-block;
     input[type="checkbox"] {
       float: none;
@@ -855,6 +871,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 .result {
   .checkbox {
+    padding-left: 24px;
     margin-top: 0;
     margin-left: -25px;
     position: absolute;
@@ -863,7 +880,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
       margin-left: -10px;
     }
     @media (max-width: @screen-xs-max) {
-      margin-left: -18px;
+      margin-left: -7px;
     }
   }
   a.title {
@@ -934,228 +951,6 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 .cart-controls .btn {
   margin-bottom: 1em;
-}
-
-/* --- Advanced Search --- */
-.adv_search_links {
-    margin-top: 15px;
-    & a {
-        margin-right: 15px;
-        font-weight: bold;
-        font-size: 1.1em;
-        color: darken(@link-color, 5%);
-        @media (max-width:@screen-xs-max) {
-            display: block;
-        }
-    }
-}
-.template-name-advanced {
-    & ::-webkit-input-placeholder {
-        color: @gray-mid-light;
-    }
-    & :-moz-placeholder { /* Firefox 18- */
-        color: @gray-mid-light;
-    }
-    & ::-moz-placeholder {  /* Firefox 19+ */
-        color: @gray-mid-light;
-    }
-    :-ms-input-placeholder {
-        color: @gray-mid-light;
-    }
-    #advSearchForm {
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-    & .responsive-field {
-        min-width: 45%;
-    }
-    & .applied-adv-search-filters {
-        margin-top: 15px;
-    }
-    .group {
-        position: relative;
-        background: #f5f5f5;
-        border-radius: @border-radius-base;
-        margin-top: 5px;
-        margin-bottom: .5em !important;
-        .add_search_link {
-          display: inline-block;
-          margin-top: 4px;
-        }
-        & .responsive-field {
-            max-width: 49%;
-        }
-        & .match {
-            @media (min-width: @screen-sm-min) {
-                &:before {
-                    content: '\2014';
-                    position: absolute;
-                    top: 16%;
-                    left: -17px;
-                    color: @gray-mid-light;
-                }
-            }
-            @media (max-width: @screen-xs-max) {
-                margin: 15px 0px 30px;
-                text-align: center;
-            }
-        }
-        & .group-close {
-          position: absolute;
-          bottom: 15px;
-          right: 15px;
-          z-index: 1;
-        }
-        .search, .primo-advanced-search-fields {
-          margin-bottom: 0px;
-          padding-top: 3px;
-          & select, input {
-            margin-bottom: 3px;
-          }
-          .close {opacity: .8;}
-          @media (max-width: @screen-xs-max) {
-            margin-bottom: 10px;
-            & select:first-child {
-                display: block;
-            }
-          }
-        }
-        .search {
-          @media (min-width: @screen-sm-min) {
-              border-right: 1px solid @gray-mid-light;
-              &:first-child:after {
-                color: @gray-mid-light;
-                content: '\2014';
-                position: absolute;
-                right: 14px;
-                height: 100%;
-                top: -10px;
-              }
-              &:last-of-type:after {
-                color: @gray-mid-light;
-                content: '\2014';
-                position: absolute;
-                right: 14px;
-                margin-top: 25px;
-              }
-              &:only-of-type {
-                  border-right: none;
-                  &:after {
-                    content: '';
-                  }
-              }
-          }
-        }
-        & .primo-advanced-search-fields {
-            & .responsive-field {
-                min-width: inherit;
-            }
-        }
-        & .primo-add-search {
-            display: inline-block;
-            margin-top: 4px;
-        }
-        [class^=col-] {padding-left: 15px;}
-      }
-      #groupPlaceHolder {
-        float:left;
-        display:block;
-        padding:6px;
-        margin-left: 15px;
-      }
-      #groupJoin {
-        padding: 0px 0px 20px;
-        border: 1px solid @gray-mid-light;
-        border-top: none;
-        margin-top: -10px;
-        margin-bottom: 30px;
-        & #groupJoinOptions {
-            margin-bottom: -56px;
-        }
-      }
-      & .slider.slider-horizontal {
-        margin-top: 6px;
-        width: 95%;
-        margin-left: 10px;
-        display: inline-block;
-        vertical-align: middle;
-        position: relative;
-      }
-      & .slider {
-          & .slider-selection {
-              top: 0;
-              bottom: 0;
-              position: absolute;
-          }
-          & .slider-track {
-              height: 10px;
-              width: 100%;
-              margin-top: -5px;
-              top: 10px;
-              left: 0;
-              position: absolute;
-              cursor: pointer;
-              border-bottom-left-radius: 4px;
-              border-bottom-right-radius: 4px;
-              border-top-left-radius: 4px;
-              border-top-right-radius: 4px;
-          }
-          & .slider-handle {
-              position: absolute;
-              width: 20px;
-              height: 20px;
-              margin-left: -10px;
-              margin-top: -20px;
-              z-index: 2;
-          }
-          .slider-tick-label-container {
-              text-align: center;
-              margin-top: 20px;
-          }
-          .slider-tick {
-              background: @gray-mid-light;
-              height: 8px;
-              margin-left: 0;
-              margin-top: -4px;
-              width: 1px;
-              position: absolute;
-          }
-          & .tooltip.top {
-              margin-top: -36px;
-          }
-      }
-      & .primo-advanced-search-fields {
-        margin-bottom: 10px;
-        & label {
-            @media(max-width: @screen-xs-max) {
-                margin-top: 10px;
-                margin-bottom: 20px;
-            }
-        }
-      }
-      & .limit-to {
-        & .ranges-container, .limit-container {
-            margin-top: 10px;
-            & label {
-                padding-top: 5px;
-            }
-        }
-        & .year-input-container {
-            margin: 5px 0px;
-        }
-        & label {
-            display: block;
-        }
-        & .language-container, .format-container {
-            @media(max-width: @screen-xs-max) {
-                & .btn-group {
-                        width: 100%;
-                        text-align: left;
-                    }
-                }
-                margin-bottom: 15px;
-            }
-        }
 }
 
 /* --- OpenURLs --- */

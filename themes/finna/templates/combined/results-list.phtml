@@ -3,7 +3,7 @@
   $view = $currentSearch['view'];
   $results = $view->results;
   $params = $results->getParams();
-  $lookfor = $params->getDisplayQuery();
+  $lookfor = $results->getUrlQuery()->isQuerySuppressed() ? '' : $params->getDisplayQuery();
   $recordTotal = $results->getResultTotal();
   $filtersActive
      = $this->layout()->savedTabs
@@ -88,7 +88,7 @@
     <? if (isset($view->overrideEmptyMessage)): ?>
       <?=$view->overrideEmptyMessage?>
     <? else: ?>
-      <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
+      <?=$this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]) ?>
     <? endif; ?>
   </p>
   <? if (isset($view->parseError)): ?>
@@ -111,6 +111,7 @@
       'params' => $params,
       'showCartControls' => $this->showCartControls,
       'showBulkOptions' => $this->showBulkOptions,
+      'showCheckboxes' => $this->showCartControls || $this->showBulkOptions,
       'searchClassId' => $searchClassId
     ];
   ?>

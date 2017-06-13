@@ -84,7 +84,7 @@ trait SearchControllerTrait
 
         $minSO = $search->getSearchObject();
         $savedSearch = $minSO->deminify(
-            $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+            $this->serviceLocator->get('VuFind\SearchResultsPluginManager')
         );
         $params = $savedSearch->getUrlQuery()->getParamArray();
         foreach ($params as $key => $value) {

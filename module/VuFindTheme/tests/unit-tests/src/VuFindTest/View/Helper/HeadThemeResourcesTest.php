@@ -90,7 +90,7 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockView()
     {
-        $view = $this->getMock('Zend\View\Renderer\PhpRenderer');
+        $view = $this->createMock('Zend\View\Renderer\PhpRenderer');
         $view->expects($this->at(0))->method('plugin')
             ->with($this->equalTo('headmeta'))
             ->will($this->returnValue($this->getMockHeadMeta()));

@@ -483,7 +483,7 @@ class SolrDefault extends AbstractBase
         $authors = [];
         foreach (['primary', 'secondary', 'corporate'] as $type) {
             $authors[$type] = $this->getAuthorDataFields($type, $dataFields);
-        };
+        }
 
         // deduplicate
         $dedup = function (&$array1, &$array2) {
@@ -1198,7 +1198,7 @@ class SolrDefault extends AbstractBase
     public function getRealTimeHoldings()
     {
         // Not supported by the Solr index -- implement in child classes.
-        return [];
+        return ['holdings' => []];
     }
 
     /**

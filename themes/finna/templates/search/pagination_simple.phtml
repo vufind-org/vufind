@@ -5,10 +5,18 @@
     <? if (isset($this->previous)): ?>
       <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><span class="sr-only"><?=$this->transEsc('Previous Page')?></span><i class="fa fa-arrow-left"></i></a></li>
     <? endif; ?>
-    <li><span class="hidden-sm"><?=$this->transEsc($this->label ?: 'Showing')?></span> <strong><span class="index"><?=$this->results->getStartRecord() ?></span> - <?=$this->results->getEndRecord() ?></strong> / <span class="total"><?=$this->localizedNumber($this->results->getResultTotal())?></span></li> 
+    <li>
+      <?=$this->label ?: $this->translate(
+        'showing_results_of_html', [
+          '%%start%%' => $this->results->getStartRecord(),
+          '%%end%%' => $this->results->getEndRecord(),
+          '%%total%%' => $this->localizedNumber($this->results->getResultTotal())
+        ]
+      );?>
+    </li>
     <? if (isset($this->next)): ?>
       <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><span class="sr-only"><?=$this->transEsc('Next Page')?></span><i class="fa fa-arrow-right"></i></a></li>
     <? endif; ?>
   </ul>
-<? endif; ?>     
+<? endif; ?>
 <!-- END of: finna - search/pagination_simple.phtml -->

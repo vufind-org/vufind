@@ -81,7 +81,7 @@ class CommentsController extends \Finna\Controller\AjaxController
         if (!$user) {
             $session = new SessionContainer(
                 'inappropriateComments',
-                $this->getServiceLocator()->get('VuFind\SessionManager')
+                $this->serviceLocator->get('VuFind\SessionManager')
             );
             if (!isset($session->comments)) {
                 $session->comments = [];

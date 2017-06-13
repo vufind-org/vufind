@@ -2,7 +2,7 @@
 finna.advSearch = (function() {
 
     var initForm = function() {
-        var form = $('.main.template-dir-search #advSearchForm');
+        var form = $('.template-dir-search #advSearchForm');
         var container = form.find('.ranges-container .slider-container').closest('.row');
         var field = container.find('input[name="daterange[]"]').eq(0).val();
         var fromField = container.find('#' + field + 'from');
@@ -23,7 +23,7 @@ finna.advSearch = (function() {
                     toField.addClass('invalid');
                     event.preventDefault();
                     return;
-                } 
+                }
             }
             // Convert date range from/to fields into a "[from TO to]" query
             container.find('input[type="hidden"]').attr('disabled', 'disabled');
@@ -47,10 +47,10 @@ finna.advSearch = (function() {
             fromField.attr('max', toField.val());
         });
     };
-    
+
     /**
      * Initialize advanced search map
-     * 
+     *
      * @param options Array of options:
      *   tileLayer     L.tileLayer Tile layer
      *   center        L.LatLng    Map center point
@@ -77,24 +77,24 @@ finna.advSearch = (function() {
         items: []
       };
       options = $.extend(defaults, options);
-      
+
       var drawnItems = new L.FeatureGroup();
       $.each(options.items, function (idx, item) {
         var matches = item.match(/pt=([\d.]+),([\d.]+) d=([\d.]+)/);
         if (matches) {
-          var circle = new L.Circle([matches[1], matches[2]], matches[3] * 1000); 
+          var circle = new L.Circle([matches[1], matches[2]], matches[3] * 1000);
           addRemoveButton(circle, drawnItems);
           drawnItems.addLayer(circle);
         }
       });
-      
+
       map = new L.Map(mapCanvas.get(0), {
         layers: [options.tileLayer, drawnItems],
         center: options.center,
         zoom: options.zoom,
         zoomControl: false
       });
-      
+
       finna.layout.initMap(map);
 
       if (options.items.length > 0) {
@@ -105,7 +105,7 @@ finna.advSearch = (function() {
         };
         options.tileLayer.on('load', onLoad);
       }
-      
+
       FinnaMapButton = L.Control.extend({
         options: {
           position: 'bottomright'
@@ -133,9 +133,9 @@ finna.advSearch = (function() {
          var htmlElem = $('<div><i class="fa fa-crosshairs"></i>');
          $('<span/>').text(' ' + VuFind.translate('circleCaption')).appendTo(htmlElem);
           var button = this.createButton('map-button-circle', htmlElem.html(), function() {
-           $('.map-button-circle').addClass('active');  
+           $('.map-button-circle').addClass('active');
             new L.Draw.Circle(map, {}).on('disabled', function() {
-              $('.map-button-circle').removeClass('active');  
+              $('.map-button-circle').removeClass('active');
             }).enable();
           });
           $(button).css('top', '-10px');
@@ -149,21 +149,21 @@ finna.advSearch = (function() {
         addRemoveButton(layer, drawnItems);
         drawnItems.addLayer(layer);
       });
-      
+
       map.on('popupopen', function(e) {
         e.popup._source.setStyle({opacity: 0.8, fillOpacity: 0.5});
       });
       map.on('popupclose', function(e) {
         e.popup._source.setStyle({opacity: 0.5, fillOpacity: 0.2});
       });
-      
+
       mapCanvas.closest('form').submit(function() {
         var filters = '';
         drawnItems.eachLayer(function(layer) {
-          var latlng = layer.getLatLng(); 
+          var latlng = layer.getLatLng();
           var value = '{!geofilt sfield=location_geo pt=' + latlng.lat + ',' + latlng.lng + ' d=' + (layer.getRadius() / 1000) + '}';
           if (filters) {
-            filters += ' OR ';  
+            filters += ' OR ';
           }
           filters += value;
         });
@@ -183,7 +183,7 @@ finna.advSearch = (function() {
       $('<span/>').text(VuFind.translate('removeCaption')).appendTo(button);
       layer.bindPopup(button.get(0), {closeButton: false});
     };
-    
+
     var my = {
         init: function() {
             initForm();

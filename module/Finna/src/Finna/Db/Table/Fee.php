@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Db\Table;
+use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Table\PluginManager;
 use Zend\Db\Adapter\Adapter;
 
@@ -46,12 +47,13 @@ class Fee extends \VuFind\Db\Table\Gateway
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
      * @param array         $cfg     Zend Framework configuration
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg)
-    {
-        parent::__construct(
-            $adapter, $tm, $cfg, 'finna_fee', 'Finna\Db\Row\Fee'
-        );
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj = null, $table = 'finna_fee'
+    ) {
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**

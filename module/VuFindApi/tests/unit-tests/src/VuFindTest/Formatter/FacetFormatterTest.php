@@ -156,7 +156,7 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
 
         $results = [];
         $helper = new \VuFind\Search\Solr\HierarchicalFacetHelper();
-        $configManager = $this->getMock('VuFind\Config\PluginManager');
+        $configManager = $this->createMock('VuFind\Config\PluginManager');
         $params = new Params(new Options($configManager), $configManager);
         $requestParams = new \Zend\StdLib\Parameters($request);
         $params->initFromRequest($requestParams);
@@ -181,7 +181,7 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
      */
     protected function getFakeResults($request, $facetData)
     {
-        $configManager = $this->getMock('VuFind\Config\PluginManager');
+        $configManager = $this->createMock('VuFind\Config\PluginManager');
         $params = new Params(new Options($configManager), $configManager);
         $params->initFromRequest(new \Zend\Stdlib\Parameters($request));
         $ss = $this->getMockBuilder('VuFindSearch\Service')

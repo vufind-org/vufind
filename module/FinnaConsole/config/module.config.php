@@ -3,9 +3,9 @@ namespace FinnaConsole\Module\Configuration;
 
 $config = [
     'controllers' => [
-        'invokables' => [
-            'util' => 'FinnaConsole\Controller\UtilController',
-        ],
+        'factories' => [
+            'util' => 'FinnaConsole\Controller\Factory::getUtilController',
+        ]
     ],
     'service_manager' => [
         'factories' => [

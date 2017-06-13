@@ -99,6 +99,9 @@ sidebarOnLeft = true
 showBookBag = false
 ; Set the maximum amount of items allowed in the Book Bag - Default is 100
 bookBagMaxSize = 100
+; Show individual add/remove bookbag buttons in search results? (Supersedes cart
+; checkboxes and bulk action buttons unless showBulkOptions is true).
+bookbagTogglesInSearch = true
 ; Display bulk items (export, save, etc.) and checkboxes on search result screens?
 showBulkOptions = false
 ; Should users be allowed to save searches in their accounts?

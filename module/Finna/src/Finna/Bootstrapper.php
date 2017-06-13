@@ -244,6 +244,31 @@ class Bootstrapper
     }
 
     /**
+     * Initialize the base url for the application from an environment variable
+     *
+     * @return void
+     */
+    protected function initBaseUrl()
+    {
+        if (Console::isConsole()) {
+            return;
+        }
+        $callback = function ($event) {
+            $application = $event->getApplication();
+            $request = $application->getRequest();
+            $baseUrl = $request->getServer('FINNA_BASE_URL');
+
+            if (!empty($baseUrl)) {
+                $baseUrl = '/' . trim($baseUrl, '/');
+                $router = $application->getServiceManager()->get('Router');
+                $router->setBaseUrl($baseUrl);
+                $request->setBaseUrl($baseUrl);
+            }
+        };
+        $this->events->attach('bootstrap', $callback, 10000);
+    }
+
+    /**
      * Check if we're processing an API route
      *
      * @param MvcEvent $event Event being handled

@@ -100,6 +100,13 @@ class OnlinePaymentMonitor extends AbstractService
     protected $viewManager = null;
 
     /**
+     * View renderer
+     *
+     * @var Zend\View\Renderer\PhpRenderer
+     */
+    protected $viewRenderer = null;
+
+    /**
      * Number of hours before considering unregistered transactions to be expired.
      *
      * @var int
@@ -136,9 +143,10 @@ class OnlinePaymentMonitor extends AbstractService
      * @param \VuFind\Config                    $configReader     Config reader
      * @param \VuFind\Mailer                    $mailer           Mailer
      * @param \Zend\Mvc\View\Console\ViewManage $viewManager      View manager
+     * @param Zend\View\Renderer\PhpRenderer    $viewRenderer     View renderer
      */
-    public function __construct(
-        $catalog, $transactionTable, $userTable, $configReader, $mailer, $viewManager
+    public function __construct($catalog, $transactionTable, $userTable,
+        $configReader, $mailer, $viewManager, $viewRenderer
     ) {
         $this->catalog = $catalog;
         $this->datasourceConfig = $configReader->get('datasources');
@@ -147,6 +155,7 @@ class OnlinePaymentMonitor extends AbstractService
         $this->userTable = $userTable;
         $this->mailer = $mailer;
         $this->viewManager = $viewManager;
+        $this->viewRenderer = $viewRenderer;
     }
 
     /**
@@ -371,8 +380,6 @@ class OnlinePaymentMonitor extends AbstractService
      */
     protected function sendReports($report)
     {
-        $renderer = $this->viewManager->getRenderer();
-
         $subject
             = 'Finna: ilmoitus tietokannan %s epäonnistuneista verkkomaksuista';
 
@@ -399,8 +406,8 @@ class OnlinePaymentMonitor extends AbstractService
                 ];
                 $messageSubject = sprintf($subject, $driver);
 
-                $message
-                    = $renderer->render('Email/online-payment-alert.phtml', $params);
+                $message = $this->viewRenderer
+                    ->render('Email/online-payment-alert.phtml', $params);
 
                 try {
                     $this->mailer->send(

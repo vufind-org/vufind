@@ -25,11 +25,11 @@
   <property name="selenium_browser" value="firefox" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
-  <property name="solr_version" value="5.5.0" />
+  <property name="solr_version" value="6.4.2" />
   <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use,eof_ending" />
 
 
-  <property name="version" value="3.1.2" />
+  <property name="version" value="3.1.3" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -248,7 +248,7 @@
         <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
 
         <!-- configure VuFind -->
-        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini.tmp" />
+        <property name="db_connection_string" value="pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}" />
       </then>
       <else>
         <!-- build database -->
@@ -259,13 +259,19 @@
         <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
 
         <!-- configure VuFind -->
-        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini.tmp" />
+        <property name="db_connection_string" value="mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}" />
       </else>
     </if>
 
-    <!-- Turn on exception logging -->
-    <exec command="sed -e &quot;s!;file           = /var/log/vufind.log:alert,error,notice,debug!file = ${srcdir}/vufind-exception.log:alert-5,error-5!&quot; ${srcdir}/local/config/vufind/config.ini.tmp &gt; ${srcdir}/local/config/vufind/config.ini" />
-    <delete file="${srcdir}/local/config/vufind/config.ini.tmp" />
+    <!-- Update config.ini to activate DB connection and exception logging -->
+    <copy file="${srcdir}/config/vufind/config.ini" tofile="${srcdir}/local/config/vufind/config.ini">
+      <filterchain>
+        <replaceregexp>
+          <regexp pattern="mysql://root@localhost/vufind" replace="${db_connection_string}" />
+          <regexp pattern=";file\s+= /var/log/vufind.log:alert,error,notice,debug" replace="file = ${srcdir}/vufind-exception.log:alert-5,error-5" />
+        </replaceregexp>
+      </filterchain>
+    </copy>
     <exec command="touch ${srcdir}/vufind-exception.log" />
     <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 

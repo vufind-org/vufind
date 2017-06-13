@@ -83,7 +83,7 @@ trait OnlinePaymentControllerTrait
      */
     protected function getOnlinePaymentHandler($driver)
     {
-        $onlinePayment = $this->getServiceLocator()->get('Finna\OnlinePayment');
+        $onlinePayment = $this->serviceLocator->get('Finna\OnlinePayment');
         if (!$onlinePayment->isEnabled($driver)) {
             return false;
         }
@@ -108,7 +108,7 @@ trait OnlinePaymentControllerTrait
     {
         return new SessionContainer(
             'OnlinePayment',
-            $this->getServiceLocator()->get('VuFind\SessionManager')
+            $this->serviceLocator->get('VuFind\SessionManager')
         );
     }
 
@@ -135,7 +135,7 @@ trait OnlinePaymentControllerTrait
         }
 
         // Check if payment handler is configured in datasources.ini
-        $onlinePayment = $this->getServiceLocator()->get('Finna\OnlinePayment');
+        $onlinePayment = $this->serviceLocator->get('Finna\OnlinePayment');
         if (!$onlinePayment->isEnabled($patron['source'])) {
             return;
         }
@@ -463,7 +463,7 @@ trait OnlinePaymentControllerTrait
      */
     protected function handleError($msg)
     {
-        $this->setLogger($this->getServiceLocator()->get('VuFind\Logger'));
+        $this->setLogger($this->serviceLocator->get('VuFind\Logger'));
         $this->logError($msg);
     }
 
@@ -476,7 +476,7 @@ trait OnlinePaymentControllerTrait
      */
     protected function handleException($e)
     {
-        $this->setLogger($this->getServiceLocator()->get('VuFind\Logger'));
+        $this->setLogger($this->serviceLocator->get('VuFind\Logger'));
         if (!Console::isConsole()) {
             $this->logger->logException($e, new \Zend\Stdlib\Parameters());
         } else {

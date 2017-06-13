@@ -57,7 +57,7 @@ class Factory
 
         $catalog = \Finna\Service\Factory::getILSConnection($sm);
         $configReader = $sm->get('VuFind\Config');
-        $renderer = $sm->get('viewmanager')->getRenderer();
+        $renderer = $sm->get('ViewRenderer');
         $loader = $sm->get('VuFind\RecordLoader');
         $hmac = $sm->get('VuFind\HMAC');
         $translator = $sm->get('VuFind\Translator');
@@ -113,10 +113,11 @@ class Factory
         $configReader = $sm->get('VuFind\Config');
         $mailer = $sm->get('VuFind\Mailer');
         $viewManager = $sm->get('viewmanager');
+        $viewRenderer = $sm->get('ViewRenderer');
 
         return new OnlinePaymentMonitor(
-            $catalog, $transactionTable, $userTable,
-            $configReader, $mailer, $viewManager
+            $catalog, $transactionTable, $userTable, $configReader, $mailer,
+            $viewManager, $viewRenderer
         );
     }
 

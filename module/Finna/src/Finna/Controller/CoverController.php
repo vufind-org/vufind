@@ -138,17 +138,17 @@ class CoverController extends \VuFind\Controller\CoverController
     {
         // Construct object for loading cover images if it does not already exist:
         if (!$this->loader) {
-            $cacheDir = $this->getServiceLocator()->get('VuFind\CacheManager')
+            $cacheDir = $this->serviceLocator->get('VuFind\CacheManager')
                 ->getCache('cover')->getOptions()->getCacheDir();
             $this->loader = new Loader(
                 $this->getConfig(),
-                $this->getServiceLocator()->get('VuFind\ContentCoversPluginManager'),
-                $this->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
-                $this->getServiceLocator()->get('VuFind\Http')->createClient(),
+                $this->serviceLocator->get('VuFind\ContentCoversPluginManager'),
+                $this->serviceLocator->get('VuFindTheme\ThemeInfo'),
+                $this->serviceLocator->get('VuFind\Http')->createClient(),
                 $cacheDir
             );
             \VuFind\ServiceManager\Initializer::initInstance(
-                $this->loader, $this->getServiceLocator()
+                $this->loader, $this->serviceLocator
             );
         }
         return $this->loader;

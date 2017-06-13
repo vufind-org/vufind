@@ -58,7 +58,7 @@
            $numRows = 3;
         }
       ?>
-        <div class="group well col-sm-10 col-lg-9" id="group<?=$i?>">
+        <div class="adv-group well col-sm-10 col-lg-9" id="group<?=$i?>">
           <input type="hidden" name="bool<?=$i?>[]" value="AND" />
           <? for ($j = 0; $j < $numRows; $j++): ?>
             <? $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>

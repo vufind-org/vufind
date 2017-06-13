@@ -52,7 +52,7 @@ class LayoutClass extends \VuFind\View\Helper\Bootstrap3\LayoutClass
     public function __invoke($class)
     {
         $result = parent::__invoke($class);
-        if ($class == 'sidebar' && $this->left) {
+        if ($class == 'sidebar' && $this->sidebarOnLeft) {
             $result .= ' sidebar-on-left';
         }
         return $result;

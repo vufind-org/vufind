@@ -126,9 +126,7 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
             [
                 'uri' => $serverUrl($imageUrl),
                 'type' => 'image/jpeg',
-                // TODO: this should be zero, but the item renderer doesn't currently
-                // allow that (see https://github.com/zendframework/zend-feed/pull/5)
-                'length' => 1
+                'length' => 0
             ]
         );
         $entry->setCommentCount(count($record->getComments()));

@@ -45,38 +45,25 @@ class Factory extends \VuFind\Db\Table\Factory
     /**
      * Construct a generic table object.
      *
-     * @param string         $name Name of table to construct (fully qualified
+     * @param string         $name    Name of table to construct (fully qualified
      * class name, or else a class name within the current namespace)
-     * @param ServiceManager $sm   Service manager
-     * @param array          $args Extra constructor arguments for table object
+     * @param ServiceManager $sm      Service manager
+     * @param string         $rowName Name of custom row prototype object to
+     * retrieve (null for none).
+     * @param array          $args    Extra constructor arguments for table object
      *
      * @return object
      */
-    public static function getGenericTable($name, ServiceManager $sm, $args = [])
-    {
-        return parent::getGenericTable("\\Finna\\Db\\Table\\$name", $sm, $args);
-    }
-
-    /**
-     * Construct the User table.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return User
-     */
-    public static function getUser(ServiceManager $sm)
-    {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        // Use a special row class when we're in privacy mode:
-        $privacy = isset($config->Authentication->privacy)
-            && $config->Authentication->privacy;
-        $rowClass = 'Finna\Db\Row\\' . ($privacy ? 'PrivateUser' : 'User');
-        $session = null;
-        if ($privacy) {
-            $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
-            $session = new \Zend\Session\Container('Account', $sessionManager);
+    public static function getGenericTable($name, ServiceManager $sm,
+        $rowName = null, $args = []
+    ) {
+        $className = "\\Finna\\Db\\Table\\$name";
+        if (!class_exists($className)) {
+            $className = $name;
         }
-        return static::getGenericTable('User', $sm, [$config, $rowClass, $session]);
+        return parent::getGenericTable(
+            $className, $sm, $rowName, $args
+        );
     }
 
     /**
@@ -95,6 +82,6 @@ class Factory extends \VuFind\Db\Table\Factory
             $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
             $session = new \Zend\Session\Container('List', $sessionManager);
         }
-        return static::getGenericTable('UserList', $sm, [$session]);
+        return static::getGenericTable('UserList', $sm, 'userlist', [$session]);
     }
 }

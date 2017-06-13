@@ -320,7 +320,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      */
     public function patronLogin($username, $password, $secondary = null)
     {
-        $cacheKey = "patron|$username";
+        $cacheKey = "patron|$username|$password";
         $item = $this->getCachedData($cacheKey);
         if ($item !== null) {
             return $item;
