@@ -119,6 +119,13 @@ class Loader extends \VuFind\ImageLoader
     protected $recordid = null;
 
     /**
+     * User record source parameter
+     *
+     * @var string
+     */
+    protected $source = null;
+
+    /**
      * User size parameter
      *
      * @var string
@@ -217,6 +224,7 @@ class Loader extends \VuFind\ImageLoader
             'oclc' => null,
             'upc' => null,
             'recordid' => null,
+            'source' => null,
         ];
     }
 
@@ -262,6 +270,7 @@ class Loader extends \VuFind\ImageLoader
         $this->oclc = $settings['oclc'];
         $this->upc = $settings['upc'];
         $this->recordid = $settings['recordid'];
+        $this->source = $settings['source'];
         $this->type = preg_replace('/[^a-zA-Z]/', '', $settings['type']);
         $this->size = $settings['size'];
     }
@@ -330,8 +339,11 @@ class Loader extends \VuFind\ImageLoader
             return $this->getCachePath($this->size, 'OCLC' . $ids['oclc']);
         } else if (isset($ids['upc'])) {
             return $this->getCachePath($this->size, 'UPC' . $ids['upc']);
-        } else if (isset($ids['recordid'])) {
-            return $this->getCachePath($this->size, 'ID' . $ids['recordid']);
+        } else if (isset($ids['recordid']) && isset($ids['source'])) {
+            return $this->getCachePath(
+                $this->size,
+                'ID' . md5($ids['source'] . '|' . $ids['recordid'])
+            );
         }
         throw new \Exception('Cannot determine local file path.');
     }
@@ -358,6 +370,9 @@ class Loader extends \VuFind\ImageLoader
         }
         if ($this->recordid && strlen($this->recordid) > 0) {
             $ids['recordid'] = $this->recordid;
+        }
+        if ($this->source && strlen($this->source) > 0) {
+            $ids['source'] = $this->source;
         }
         return $ids;
     }
