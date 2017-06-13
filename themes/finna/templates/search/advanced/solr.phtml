@@ -7,7 +7,7 @@
   </div>
   <div class="row">
     <div class="col-xs-12">
-    <fieldset class="well limit-to">
+    <fieldset class="adv-search well limit-to">
       <? if (!empty($this->checkboxFacets)): ?>
         <?=$this->render('search/advanced/checkbox-filters.phtml')?>
       <? endif; ?>
@@ -61,7 +61,7 @@
   </div>
   <div class="row">
     <div class="col-xs-12 map-container">
-      <fieldset class="well map">
+      <fieldset class="adv-search well map">
         <?=$this->render('search/advanced/map.phtml', ['searchClassId' => $searchClassId, 'saved' => $this->saved])?>
       </fieldset>
     </div>
@@ -69,7 +69,7 @@
 </div>
 <? if (isset($this->illustratedLimit)): ?>
   <div class="row">
-    <fieldset class="col-sm-4">
+    <fieldset class="adv-search col-sm-4">
       <legend><?=$this->transEsc("Illustrated")?>:</legend>
       <? foreach ($this->illustratedLimit as $current): ?>
         <input id="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtmlAttr($current['value'])?>"<?=$current['selected']?' checked="checked"':''?>/>
