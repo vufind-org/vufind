@@ -48,7 +48,7 @@
     </a>
   <? endif; ?>
   <? if ($user = $this->auth()->isLoggedIn()): ?>
-    <a href="<?=$this->url('myresearch-logout')?>" class="">
+    <a href="<?=$this->url('myresearch-logout')?>">
       <i class="fa fa-fw fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?>
     </a>
   <? endif; ?>
@@ -69,12 +69,12 @@
     </a>
     <? $lists = $user->getLists() ?>
     <? foreach ($lists as $list): ?>
-        <a href="<?=$this->url('userList', ['id' => $list['id']])?>"<?=$this->active == 'list' . $list['id'] ? ' class="active"' : ''?>">
-          <?=$this->escapeHtml($list['title'])?>
-          <span class="badge"><?=$list->cnt?></span>
-        </a>
+      <a href="<?=$this->url('userList', ['id' => $list['id']])?>"<?=$this->active == 'list' . $list['id'] ? ' class="active"' : ''?>">
+        <?=$this->escapeHtml($list['title'])?>
+        <span class="badge"><?=$list->cnt?></span>
+      </a>
     <? endforeach; ?>
-    <a href="<?=$this->url('editList', ['id'=>'NEW'])?>" class="">
+    <a href="<?=$this->url('editList', ['id'=>'NEW'])?>">
       <i class="fa fa-fw fa-plus" aria-hidden="true"></i> <?=$this->transEsc('Create a List') ?>
     </a>
   </div>
