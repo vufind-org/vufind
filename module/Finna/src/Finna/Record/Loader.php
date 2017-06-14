@@ -110,29 +110,23 @@ class Loader extends \VuFind\Record\Loader
     public function loadBatchForSource($ids, $source = DEFAULT_SEARCH_BACKEND,
         $tolerateBackendExceptions = false
     ) {
-        // Separate MetaLib ids that are loaded separately
-        $loadIds = $metalibIds = $recIds = [];
-        foreach ($ids as $key => $data) {
-            if (!is_array($data)) {
-                $parts = explode('|', $data, 2);
-                $data = ['source' => $parts[0], 'id' => $parts[1]];
+        if ('MetaLib' === $source) {
+            $result = [];
+            foreach ($ids as $recId) {
+                $record = $this->recordFactory->get('Missing');
+                $record->setRawData(['id' => $recId]);
+                $record->setSourceIdentifier('MetaLib');
+                $result[] = $record;
             }
-            $recId = $data['id'];
-            $metalib = isset($data['source']) && $data['source'] == 'MetaLib';
-            if ($metalib) {
-                $metalibIds[] = $recId;
-            } else {
-                $loadIds[] = $data;
-            }
-            $recIds[] = $recId;
+            return $result;
         }
 
-        $result = [];
+        $records = parent::loadBatchForSource(
+            $ids, $source, $tolerateBackendExceptions
+        );
 
-        $records = parent::loadBatch($loadIds, $source, $tolerateBackendExceptions);
-
-        // Check the results for missing MetaLib records and try to load them with
-        // their old MetaLib IDs
+        // Check the results for missing MetaLib IRD records and try to load them
+        // with their old MetaLib IDs
         foreach ($records as &$record) {
             if ($record instanceof \VuFind\RecordDriver\Missing
                 && $record->getSourceIdentifier() == 'Solr'
@@ -144,19 +138,7 @@ class Loader extends \VuFind\Record\Loader
             }
         }
 
-        $metalibIds = array_flip($metalibIds);
-        foreach ($recIds as $recId) {
-            if (isset($metalibIds[$recId])) {
-                $record = $this->recordFactory->get('Missing');
-                $record->setRawData(['id' => $recId]);
-                $record->setSourceIdentifier('MetaLib');
-                $result[] = $record;
-            } else {
-                $result[] = array_shift($records);
-            }
-        }
-
-        return $result;
+        return $records;
     }
 
     /**
