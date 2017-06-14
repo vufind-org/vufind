@@ -75,6 +75,13 @@
   padding: 1rem;
 }
 
+.date-fields {
+  display: flex;
+
+  .date-from { padding-right: .25rem; }
+  .date-to { padding-left: .25rem; }
+}
+
 /* --- Fieldsets --- */
 @media (min-width: 768px) {
   fieldset,
@@ -138,3 +145,10 @@
   line-height: @input-height-base;
   padding-right: 1rem;
 }
+
+/* --- Solr --- */
+.solr-facet-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+.solr-adv-facet { flex: 1 25%; }
