@@ -1054,7 +1054,8 @@ class AjaxController extends AbstractBase
                         $msg = $results['status'];
                         $results = $results['valid'];
                     } else {
-                        $msg = $results ? 'request_place_text' : 'hold_error_blocked';
+                        $msg = $results ? 'request_place_text'
+                            : 'hold_error_blocked';
                         break;
                     }
                 }
