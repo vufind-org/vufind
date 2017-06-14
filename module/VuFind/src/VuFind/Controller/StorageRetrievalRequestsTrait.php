@@ -90,7 +90,7 @@ trait StorageRetrievalRequestsTrait
         $validRequest = $catalog->checkStorageRetrievalRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
         );
-        if (!$validRequest) {
+        if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
             return $this->blockedStorageRetrievalRequestAction();
         }
 

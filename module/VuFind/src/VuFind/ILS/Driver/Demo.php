@@ -1456,14 +1456,23 @@ class Demo extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
         $this->checkIntermittentFailure();
-        return !$this->isFailing(__METHOD__, 10);
+        if ($this->isFailing(__METHOD__, 10)) {
+            return [
+                'valid' => false,
+                'status' => rand() % 3 == 0
+                    ? 'hold_items_available' : 'hold_error_blocked'
+            ];
+        }
+        return rand() % 2 == 0 ? ['valid' => true] : true;
     }
 
     /**
@@ -1559,7 +1568,9 @@ class Demo extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -1567,7 +1578,10 @@ class Demo extends AbstractBase
     {
         $this->checkIntermittentFailure();
         if (!$this->storageRetrievalRequests || $this->isFailing(__METHOD__, 10)) {
-            return false;
+            return [
+                'valid' => false,
+                'status' => 'storage_retrieval_request_error_blocked'
+            ];
         }
         return true;
     }
@@ -1664,7 +1678,9 @@ class Demo extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

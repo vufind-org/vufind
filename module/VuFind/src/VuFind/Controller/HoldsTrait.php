@@ -87,8 +87,12 @@ trait HoldsTrait
         $validRequest = $catalog->checkRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
         );
-        if (!$validRequest) {
-            return $this->blockedholdAction();
+        if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
+            $this->flashMessenger()->addErrorMessage(
+                is_array($validRequest)
+                    ? $validRequest['status'] : 'hold_error_blocked'
+            );
+            return $this->redirectToRecord('#top');
         }
 
         // Send various values to the view so we can build the form:
