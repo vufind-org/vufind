@@ -118,3 +118,23 @@
     text-align: center;
   }
 }
+
+/* --- Primo --- */
+.primo-adv-search .search { margin-bottom: .5rem; }
+.primo-adv-search .search-container { width: 100%; }
+.primo.adv-group,
+.primo-adv-search .search {
+  display: flex;
+
+  select {
+    flex-grow: 0;
+    flex-shrink: 1;
+    margin-right: .5rem;
+  }
+  .primo-adv-input { flex-shrink: 0; }
+}
+.primo-adv-label {
+  flex-shrink: 0;
+  line-height: @input-height-base;
+  padding-right: 1rem;
+}
