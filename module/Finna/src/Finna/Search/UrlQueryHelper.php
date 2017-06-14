@@ -149,4 +149,18 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
             return $this->getParams(false);
         }
     }
+
+    /**
+     * Get the current search parameters without page param as a GET query.
+     *
+     * @param bool $escape Should we escape the string for use in the view?
+     *
+     * @return string
+     */
+    public function getParamsWithoutPage($escape = true)
+    {
+        $params = $this->urlParams;
+        unset($params['page']);
+        return '?' . $this->buildQueryString($params, $escape);
+    }
 }
