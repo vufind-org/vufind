@@ -8,6 +8,21 @@
   .result .checkbox { display: none; }
 }
 
+.searchHomeContent { &:extend(.clearfix all); }
+.search-home-facets { display: flex; }
+.home-facet { flex-basis: 25%; }
+.home-facet-list {
+  padding-left: 0;
+  padding-right: 1rem;
+  list-style: none;
+}
+.home-facet.callnumber-first {
+  flex-basis: 50%;
+  flex-shrink: 1;
+
+  .home-facet-container { display: flex; }
+}
+
 .searchForm {
   margin: 0;
   padding: 0;
