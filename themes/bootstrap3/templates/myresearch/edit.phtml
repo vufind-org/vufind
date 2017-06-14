@@ -4,9 +4,6 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Edit') . '</li>';
-
-  // Load Javascript dependencies into header:
-  $this->headScript()->appendFile("bulk_actions.js");
 ?>
 <div class="record">
   <h2><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h2>
