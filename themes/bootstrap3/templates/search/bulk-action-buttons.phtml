@@ -1,6 +1,6 @@
 <? if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
   <div class="bulkActionButtons hidden-print">
-    <div class="checkbox">
+    <div class="bulk-checkbox">
       <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/>
       <label for="<?=$this->idPrefix?>addFormCheckboxSelectAll">
         <?=$this->transEsc('select_page')?>
