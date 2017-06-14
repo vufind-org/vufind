@@ -1148,7 +1148,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         // Send request and retrieve response
         $startTime = microtime(true);
         $client->setMethod($method);
-        $response = $client->send();
+        try {
+            $response = $client->send();
+        } catch (\Exception $e) {
+            $this->error(
+                "$method request for '$apiUrl' failed: " . $e->getMessage()
+            );
+            throw new ILSException('Problem with Koha REST API.');
+        }
+
         // If we get a 401, we need to renew the access token and try again
         if ($response->getStatusCode() == 401) {
             if (!$this->renewPatronCookie($patron)) {
@@ -1157,7 +1165,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $client->clearCookies();
             $client->addCookie($this->sessionCache->patronCookie);
             $this->debug('Session renewed');
-            $response = $client->send();
+            try {
+                $response = $client->send();
+            } catch (\Exception $e) {
+                $this->error(
+                    "$method request for '$apiUrl' failed: " . $e->getMessage()
+                );
+                throw new ILSException('Problem with Koha REST API.');
+            }
         }
 
         $result = $response->getBody();
@@ -1218,7 +1233,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             ]
         );
 
-        $response = $client->setMethod('POST')->send();
+        try {
+            $response = $client->setMethod('POST')->send();
+        } catch (\Exception $e) {
+            $this->error(
+                "POST request for '$apiUrl' failed: " . $e->getMessage()
+            );
+            throw new ILSException('Problem with Koha REST API.');
+        }
         if (!$response->isSuccess()) {
             if ($response->getStatusCode() == 401) {
                 return false;
