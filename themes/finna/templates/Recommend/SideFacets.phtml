@@ -137,7 +137,7 @@
           $fromVal = $toVal = $type = null;
           $queryHelper = $results->getUrlQuery();
           $queryHelper->removeDefaultParameter("{$daterangeFacetField}_type");
-          $searchParams = $formParams = $queryHelper->getParams(false);
+          $searchParams = $formParams = $queryHelper->getParamsWithoutPage(false);
           if ($dateRangeFilter) {
             $formParams = $queryHelper->removeFacet($dateRangeFilter['field'], $dateRangeFilter['value'], 'AND');
             $spatialFilter = $results->getParams()->parseDateRangeFilter($dateRangeFilter['value']);
