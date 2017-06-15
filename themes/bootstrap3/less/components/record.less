@@ -49,4 +49,13 @@
   white-space: pre-wrap;
 }
 
-.comment-form textarea.form-control { display: block; }
+.comment-form,
+.comment { display: flex; }
+.comment-label,
+.comment-name { min-width: 25%; }
+.comment-form .text-form { width: 100%; }
+.comment-form > label { flex: 0 0 auto; }
+.comment-form textarea {
+  display: block;
+  width: 100%;
+}

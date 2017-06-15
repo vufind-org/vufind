@@ -3,8 +3,8 @@
   <div class="alert alert-info"><?=$this->transEsc('Be the first to leave a comment')?>!</div>
 <? else: ?>
   <? foreach ($comments as $comment): ?>
-    <div class="comment row">
-      <div class="col-sm-3 name">
+    <div class="comment">
+      <div class="comment-name">
         <strong><?=$this->escapeHtml(trim($comment->firstname . ' ' . $comment->lastname))?></strong><br/>
         <small>
           <?=$this->escapeHtml($comment->created)?>
@@ -13,7 +13,7 @@
           <? endif; ?>
         </small>
       </div>
-      <div class="col-sm-9">
+      <div class="comment-text">
         <?=$this->escapeHtml($comment->comment)?>
       </div>
     </div>
