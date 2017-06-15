@@ -16,7 +16,7 @@
 <div class="row">
   <div class="col-md-10 col-lg-9">
     <?=$this->flashmessages()?>
-    <form id="purgecheckouthistory" method="post" role="form">
+    <form id="purgecheckouthistory" action="<?=$this->url('myresearch-purgecheckouthistory')?>" method="post" role="form">
       <p><?=$this->translate('checkout_history_purge_prompt_html')?></p>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->csrf)?>" name="csrf"/>
       <div class="form-group">
