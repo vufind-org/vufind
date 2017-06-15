@@ -1,4 +1,8 @@
 [Catalog]
+; An optional catalog id that is used in the translation string when translating
+; location names and opac messages (e.g. location_{id}_ADU)
+id = "outi"
+; URL of the Koha Rest API without the version
 host = "http://koha-server/api"
 
 [Holds]

@@ -1288,7 +1288,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         $statuses = [];
         foreach ($result[0]['item_availabilities'] as $i => $item) {
-            $location = $this->getBranchName($item['holdingbranch']);
+            $location = $this->getItemLocationName($item);
             $avail = $item['availability'];
             $available = $avail['available'];
             $statusCodes = $this->getItemStatusCodes($item);
@@ -1310,7 +1310,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'status' => $status,
                 'status_array' => $statusCodes,
                 'reserve' => 'N',
-                'callnumber' => $item['itemcallnumber'],
+                'callnumber' => $this->getItemCallNumber($item),
                 'duedate' => $duedate,
                 'number' => $item['enumchron'],
                 'barcode' => $item['barcode'],
@@ -1634,30 +1634,42 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Map a Koha branch id to its name
+     * Return a location for a Koha item
      *
-     * @param string $id Branch id
+     * @param array $item Item
      *
      * @return string
      */
-    protected function getBranchName($id)
+    protected function getItemLocationName($item)
     {
-        $name = $this->translate("location_$id");
-        if ($name !== "location_$id") {
-            return $name;
-        }
-
-        $branches = $this->getCachedData('branches');
-        if (null === $branches) {
-            $result = $this->makeRequest(
-                ['v1', 'libraries'], false, 'GET'
-            );
-            $branches = [];
-            foreach ($result as $branch) {
-                $branches[$branch['branchcode']] = $branch['branchname'];
+        $branchId = $item['holdingbranch'];
+        $name = $this->translate("location_$branchId");
+        if ($name === "location_$branchId") {
+            $branches = $this->getCachedData('branches');
+            if (null === $branches) {
+                $result = $this->makeRequest(
+                    ['v1', 'libraries'], false, 'GET'
+                );
+                $branches = [];
+                foreach ($result as $branch) {
+                    $branches[$branch['branchcode']] = $branch['branchname'];
+                }
+                $this->putCachedData('branches', $branches);
             }
-            $this->putCachedData('branches', $branches);
+            $name = isset($branches[$branchId]) ? $branches[$branchId] : $branchId;
         }
-        return isset($branches[$id]) ? $branches[$id] : $id;
+        return $name;
+    }
+
+    /**
+     * Return a call number for a Koha item
+     *
+     * @param array $item Item
+     *
+     * @return string
+     */
+    protected function getItemCallNumber($item)
+    {
+        return $item['itemcallnumber'];
     }
 }

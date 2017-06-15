@@ -822,4 +822,36 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
            'location' => null
         ];
     }
+
+    /**
+     * Return a call number for a Koha item
+     *
+     * @param array $item Item
+     *
+     * @return string
+     */
+    protected function getItemCallNumber($item)
+    {
+        return $this->translateLocation($item['location']);
+    }
+
+    /**
+     * Translate location name
+     *
+     * @param string $location Location code
+     *
+     * @return string
+     */
+    protected function translateLocation($location)
+    {
+        $prefix = 'location_';
+        if (!empty($this->config['Catalog']['id'])) {
+            $prefix .= $this->config['Catalog']['id'] . '_';
+        }
+        return $this->translate(
+            "$prefix$location",
+            null,
+            $location
+        );
+    }
 }
