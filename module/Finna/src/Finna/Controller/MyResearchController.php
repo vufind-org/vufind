@@ -55,8 +55,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     /**
      * Constructor
      *
-     * @param ServiceLocatorInterface $sm        Service manager
-     * @param Container               $container Session container
+     * @param ServiceLocatorInterface $sm             Service manager
+     * @param SessionManager          $sessionManager Session manager
      */
     public function __construct(ServiceLocatorInterface $sm,
         SessionManager $sessionManager
