@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,6 +27,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Controller;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Session\SessionManager;
 
 /**
  * Controller for the user account area.
@@ -42,6 +44,26 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 {
     use OnlinePaymentControllerTrait;
     use CatalogLoginTrait;
+
+    /**
+     * Session manager
+     *
+     * @var SessionManager
+     */
+    protected $sessionManager;
+
+    /**
+     * Constructor
+     *
+     * @param ServiceLocatorInterface $sm        Service manager
+     * @param Container               $container Session container
+     */
+    public function __construct(ServiceLocatorInterface $sm,
+        SessionManager $sessionManager
+    ) {
+        parent::__construct($sm);
+        $this->sessionManager = $sessionManager;
+    }
 
     /**
      * Catalog Login Action
@@ -260,19 +282,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         ];
         $result = $catalog->getMyTransactionHistory($patron, $params);
 
-        // Build paginator if needed:
-        if ($limit > 0 && $limit < $result['count']) {
-            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($result);
-            $paginator = new \Zend\Paginator\Paginator($adapter);
-            $paginator->setItemCountPerPage($limit);
-            $paginator->setCurrentPageNumber($page);
-            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
-            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
-        } else {
-            $paginator = false;
-            $pageStart = 0;
-            $pageEnd = $result['count'];
-        }
+        $adapter = new \Zend\Paginator\Adapter\NullFill($result['count']);
+        $paginator = new \Zend\Paginator\Paginator($adapter);
+        $paginator->setItemCountPerPage($limit);
+        $paginator->setCurrentPageNumber($page);
 
         $transactions = $hiddenTransactions = [];
         foreach ($result['transactions'] as $current) {
@@ -281,6 +294,57 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         $view->transactions = $transactions;
         $view->paginator = $paginator;
+        $view->count = $result['count'];
+        return $view;
+    }
+
+    /**
+     * Purge checkout history action.
+     *
+     * @return mixed
+     */
+    public function purgeCheckoutHistoryAction()
+    {
+        if ($this->formWasSubmitted('cancel', false)) {
+            return $this->redirect()->toRoute('myresearch-checkouthistory');
+        }
+
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        if ($view = $this->createViewIfUnsupported('purgeTransactionHistory')) {
+            return $view;
+        }
+
+        // Set up CSRF:
+        $this->csrf = new \Zend\Validator\Csrf(
+            [
+                'session' => new \Zend\Session\Container(
+                    'csrf', $this->sessionManager
+                ),
+                'salt' => isset($this->config->Security->HMACkey)
+                    ? $this->config->Security->HMACkey : 'VuFindCsrfSalt',
+            ]
+        );
+
+        if ($this->formWasSubmitted('submit', false)) {
+            $csrf = $this->getRequest()->getPost()->get('csrf');
+            if (!$this->csrf->isValid($csrf)) {
+                throw new \Exception('An error has occurred');
+            }
+            $catalog = $this->getILS();
+            $result = $catalog->purgeTransactionHistory($patron);
+            $this->flashMessenger()->addMessage(
+                $result['status'], $result['success'] ? 'error' : 'info'
+            );
+            return $this->redirect()->toRoute('myresearch-checkouthistory');
+        }
+
+        $view = $this->createViewModel();
+        $view->csrf = $this->csrf->getHash(true);
+
         return $view;
     }
 

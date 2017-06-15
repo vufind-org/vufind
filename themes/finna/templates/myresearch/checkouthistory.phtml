@@ -16,8 +16,7 @@
     <? if (!$this->translationEmpty('checkout_history_instructions_html')): ?><p class="no-content-message"><?=$this->translate('checkout_history_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
     <div class="useraccount-header">
-    <?=$this->transEsc('Checkout History')?>
-    (<?=count($this->transactions);?>)
+    <?=$this->transEsc('Checkout History')?> (<?=$this->count;?>)
     <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
     <? if (isset($this->noSupport)): ?>
       <? if ($user->getLibraryCards()->count() > 1): ?>
@@ -31,9 +30,14 @@
       <? endif; ?>
       <? if (!empty($this->transactions)): ?>
         <div class="toolbar row">
-          <div class="col-xs-5 myresearch-notification"></div>
-          <div class="col-xs-7 text-right">
+          <div class="col-xs-8 col-xs-push-4 col-sm-4 col-sm-push-8 col-md-5 col-md-push-7 text-right hidden-print">
             <?=$this->render('search/controls/sort.phtml')?>
+          </div>
+          <div class="col-xs-4 col-xs-pull-8 col-sm-4 col-sm-pull-0 col-md-3 hidden-print">
+            <a class="btn btn-primary" href="<?=$this->url('myresearch-purgecheckouthistory');?>" data-lightbox><?=$this->transEsc('checkout_history_purge')?></a>
+          </div>
+          <div class="col-xs-12 col-sm-4 col-sm-pull-8 col-md-4 col-md-pull-8">
+            <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination-simple.phtml') : ''?>
           </div>
         </div>
         <? $i = 0; foreach ($this->transactions as $resource): ?>
@@ -113,6 +117,7 @@
             </div>
           </div>
         <? endforeach; ?>
+        <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml') : ''?>
         <? if ($template = $this->content()->findTemplateForLng("content/Additions/checkout-history-post-list")): ?>
           <div class="checkout-history-post-list"><?=$this->render($template)?></div>
         <? endif; ?>

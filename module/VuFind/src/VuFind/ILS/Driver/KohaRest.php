@@ -1117,7 +1117,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         // Add params
         if (false !== $params) {
-            if ($method == 'GET') {
+            if ('GET' === $method || 'DELETE' === $method) {
                 $client->setParameterGet($params);
             } else {
                 $body = '';
