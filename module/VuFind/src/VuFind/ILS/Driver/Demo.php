@@ -1468,11 +1468,14 @@ class Demo extends AbstractBase
         if ($this->isFailing(__METHOD__, 10)) {
             return [
                 'valid' => false,
-                'status' => rand() % 3 == 0
-                    ? 'hold_items_available' : 'hold_error_blocked'
+                'status' => rand() % 3 != 0
+                    ? 'hold_error_blocked' : 'Demonstrating a custom failure'
             ];
         }
-        return rand() % 2 == 0 ? ['valid' => true] : true;
+        return [
+            'valid' => true,
+            'status' => 'request_place_text'
+        ];
     }
 
     /**
@@ -1580,10 +1583,15 @@ class Demo extends AbstractBase
         if (!$this->storageRetrievalRequests || $this->isFailing(__METHOD__, 10)) {
             return [
                 'valid' => false,
-                'status' => 'storage_retrieval_request_error_blocked'
+                'status' => rand() % 3 != 0
+                    ? 'storage_retrieval_request_error_blocked'
+                    : 'Demonstrating a custom failure'
             ];
         }
-        return true;
+        return [
+            'valid' => true,
+            'status' => 'storage_retrieval_request_place_text'
+        ];
     }
 
     /**
@@ -1688,9 +1696,16 @@ class Demo extends AbstractBase
     {
         $this->checkIntermittentFailure();
         if (!$this->ILLRequests || $this->isFailing(__METHOD__, 10)) {
-            return false;
+            return [
+                'valid' => false,
+                'status' => rand() % 3 != 0
+                    ? 'ill_request_error_blocked' : 'Demonstrating a custom failure'
+            ];
         }
-        return true;
+        return [
+            'valid' => true,
+            'status' => 'ill_request_place_text'
+        ];
     }
 
     /**

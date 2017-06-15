@@ -39,17 +39,6 @@ namespace VuFind\Controller;
 trait HoldsTrait
 {
     /**
-     * Action for dealing with blocked holds.
-     *
-     * @return mixed
-     */
-    public function blockedholdAction()
-    {
-        $this->flashMessenger()->addMessage('hold_error_blocked', 'error');
-        return $this->redirectToRecord('#top');
-    }
-
-    /**
      * Action for dealing with holds.
      *
      * @return mixed
