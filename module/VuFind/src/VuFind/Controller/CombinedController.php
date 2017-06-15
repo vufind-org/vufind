@@ -118,7 +118,10 @@ class CombinedController extends AbstractSearch
                     && isset($general->Site->showBulkOptions)
                     && $general->Site->showBulkOptions
             ];
-            $html = $this->getViewRenderer()->render(
+            // Load custom CSS, if necessary:
+            $html = $this->getViewRenderer()->plugin('headLink')->__invoke();
+            // Render content:
+            $html .= $this->getViewRenderer()->render(
                 'combined/results-list.phtml',
                 $viewParams
             );
@@ -245,7 +248,10 @@ class CombinedController extends AbstractSearch
             return $this->redirect()->toUrl($base . '?' . http_build_query($params));
         case 'External':
             $lookfor = $this->params()->fromQuery('lookfor');
-            return $this->redirect()->toUrl($target . urlencode($lookfor));
+            $finalTarget = (false === strpos($target, '%%lookfor%%'))
+                ? $target . urlencode($lookfor)
+                : str_replace('%%lookfor%%', urlencode($lookfor), $target);
+            return $this->redirect()->toUrl($finalTarget);
         default:
             // If parameters are completely missing, just redirect to home instead
             // of throwing an error; this is possibly a misbehaving crawler that
