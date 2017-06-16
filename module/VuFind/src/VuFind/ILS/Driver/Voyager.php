@@ -349,7 +349,7 @@ class Voyager extends AbstractBase
     {
         // Expressions
         $sqlExpressions = [
-            "BIB_ITEM.BIB_ID", "ITEM.ITEM_ID",
+            "BIB_ITEM.BIB_ID", "ITEM.ITEM_ID",  "MFHD_MASTER.MFHD_ID",
             "ITEM.ON_RESERVE", "ITEM_STATUS_DESC as status",
             "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
                 "LOCATION.LOCATION_NAME) as location",
@@ -406,7 +406,7 @@ class Voyager extends AbstractBase
         // Expressions
         $sqlExpressions = [
             "BIB_MFHD.BIB_ID",
-            "1 as ITEM_ID", "'N' as ON_RESERVE",
+            "null as ITEM_ID", "MFHD_MASTER.MFHD_ID", "'N' as ON_RESERVE",
             "'No information available' as status",
             "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
                 "LOCATION.LOCATION_NAME) as location",
@@ -458,8 +458,10 @@ class Voyager extends AbstractBase
         $data = [];
 
         foreach ($sqlRows as $row) {
-            if (!isset($data[$row['ITEM_ID']])) {
-                $data[$row['ITEM_ID']] = [
+            $rowId = null !== $row['ITEM_ID']
+                ? $row['ITEM_ID'] : 'MFHD' . $row['MFHD_ID'];
+            if (!isset($data[$rowId])) {
+                $data[$rowId] = [
                     'id' => $row['BIB_ID'],
                     'status' => $row['STATUS'],
                     'status_array' => [$row['STATUS']],
@@ -475,10 +477,10 @@ class Voyager extends AbstractBase
                 ];
             } else {
                 $statusFound = in_array(
-                    $row['STATUS'], $data[$row['ITEM_ID']]['status_array']
+                    $row['STATUS'], $data[$rowId]['status_array']
                 );
                 if (!$statusFound) {
-                    $data[$row['ITEM_ID']]['status_array'][] = $row['STATUS'];
+                    $data[$rowId]['status_array'][] = $row['STATUS'];
                 }
             }
         }
@@ -693,7 +695,7 @@ EOT;
                 "LOCATION.LOCATION_NAME) as location",
             "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
             "BIB_MFHD.BIB_ID", "MFHD_MASTER.MFHD_ID",
-            "null as duedate", "0 AS TEMP_LOCATION",
+            "null as duedate", "null as RETURNDATE", "0 AS TEMP_LOCATION",
             "0 as PERM_LOCATION",
             "0 as ITEM_SEQUENCE_NUMBER",
             $this->getItemSortSequenceSQL('LOCATION.LOCATION_ID')
@@ -754,7 +756,8 @@ EOT;
 
             // Concat wrapped rows (MARC data more than 300 bytes gets split
             // into multiple rows)
-            $rowId = isset($row['ITEM_ID']) ? $row['ITEM_ID'] : $row['MFHD_ID'];
+            $rowId = isset($row['ITEM_ID'])
+                ? $row['ITEM_ID'] : 'MFHD' . $row['MFHD_ID'];
             if (isset($data[$rowId][$number])) {
                 // We don't want to concatenate the same MARC information to
                 // itself over and over due to a record with multiple status
