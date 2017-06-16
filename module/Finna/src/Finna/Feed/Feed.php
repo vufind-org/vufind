@@ -227,7 +227,7 @@ class Feed implements \Zend\Log\LoggerAwareInterface
 
         $type = $config->type;
 
-        $cacheKey = $config->toArray();
+        $cacheKey = $feedConfig->toArray();
         $cacheKey['language'] = $this->translator->getLocale();
 
         $modal = false;
