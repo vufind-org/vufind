@@ -205,6 +205,7 @@ class Feed implements \Zend\Log\LoggerAwareInterface
      */
     public function readFeedFromUrl($id, $url, $config, $urlHelper, $viewUrl)
     {
+        $config = new \Zend\Config\Config($config);
         return $this->processReadFeed($config, $urlHelper, $viewUrl, $id);
     }
 
@@ -226,7 +227,7 @@ class Feed implements \Zend\Log\LoggerAwareInterface
 
         $type = $config->type;
 
-        $cacheKey = $feedConfig;
+        $cacheKey = (array)$feedConfig;
         $cacheKey['language'] = $this->translator->getLocale();
 
         $modal = false;
