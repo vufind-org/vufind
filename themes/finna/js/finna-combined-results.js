@@ -7,6 +7,7 @@ finna.combinedResults = (function() {
             finna.openUrl.initLinks(container);
             finna.itemStatus.initItemStatuses(container);
             VuFind.lightbox.bind(container);
+            VuFind.cart.init(container);
             checkSaveStatuses(container);
         },
     };

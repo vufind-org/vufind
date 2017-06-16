@@ -41,6 +41,9 @@
       </ul>
   </li>
   <? endif; ?>
+  <li>
+      <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
+  </li>
   <? if (!empty($addThis)): ?>
     <li class="addthis-share-buttons">
       <div class="addthis_toolbox addthis_default_style">
@@ -51,7 +54,6 @@
       </div>
     </li>
   <? endif; ?>
-  <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
   </ul>
 </div>
 </div>
