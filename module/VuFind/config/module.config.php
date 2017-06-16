@@ -372,6 +372,7 @@ $config = [
                 'invokables' => [
                     'google' => 'VuFind\Content\Covers\Google',
                     'librarything' => 'VuFind\Content\Covers\LibraryThing',
+                    'localfile' => 'VuFind\Content\Covers\LocalFile',
                     'openlibrary' => 'VuFind\Content\Covers\OpenLibrary',
                     'summon' => 'VuFind\Content\Covers\Summon',
                 ],
