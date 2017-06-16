@@ -532,9 +532,9 @@ class Holds
      */
     protected function getHoldingsGroupKey($copy)
     {
-        // Group by holdings id unless configured otherwise
+        // Group by holdings id and location unless configured otherwise
         $grouping = isset($this->config->Catalog->holdings_grouping)
-            ? $this->config->Catalog->holdings_grouping : 'holdings_id';
+            ? $this->config->Catalog->holdings_grouping : 'holdings_id,location';
 
         $groupKey = "";
 
