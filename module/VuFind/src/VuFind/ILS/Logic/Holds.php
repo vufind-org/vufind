@@ -115,9 +115,7 @@ class Holds
     {
         $retVal = [];
 
-        // Handle purchase history alongside other textual fields
         $textFieldNames = $this->catalog->getHoldingsTextFieldNames();
-        $textFieldNames[] = 'purchase_history';
 
         foreach ($holdings as $groupKey => $items) {
             $retVal[$groupKey] = [
@@ -153,6 +151,16 @@ class Holds
                             if (empty($targetRef) || !in_array($field, $targetRef)) {
                                 $targetRef[] = $field;
                             }
+                        }
+                    }
+                }
+
+                // Handle purchase history
+                if (!empty($item['purchase_history'])) {
+                    $targetRef = & $retVal[$groupKey]['purchase_history'];
+                    foreach ((array)$item['purchase_history'] as $field) {
+                        if (empty($targetRef) || !in_array($field, $targetRef)) {
+                            $targetRef[] = $field;
                         }
                     }
                 }
