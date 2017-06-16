@@ -4,5 +4,11 @@
       <? foreach ($data as $index => $item): ?>
         <?=$index > 0 ? '<br/>' : '' ?><?=$this->escapeHtml($item['name']) ?>
       <? endforeach; ?>
+      <? $cost = $this->driver->getProductionCost(); if (!empty($cost)): ?><br/>
+        <tr>
+          <th><?=$this->transEsc('Production Costs') ?>:</th>
+          <td> <?= $cost; ?></td>
+        </tr>
+      <? endif; ?>
     </div>
 <? endif; ?>

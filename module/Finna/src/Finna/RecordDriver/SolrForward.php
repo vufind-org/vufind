@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  RecordDrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -33,6 +34,7 @@ namespace Finna\RecordDriver;
  * @category VuFind
  * @package  RecordDrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -1055,5 +1057,293 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
             }
         }
         return $videoUrls;
+    }
+
+    /**
+     * Return production cost
+     *
+     * @return string
+     */
+    public function getProductionCost()
+    {
+        return $this->getProductionEventAttribute('elokuva-tuotantokustannukset');
+    }
+
+    /**
+     * Return premier night theaters and places
+     *
+     * @return array
+     */
+    public function getPremiereTheaters()
+    {
+        $results = [];
+        foreach ($this->getAllRecordsXML() as $xml) {
+            foreach ($xml->ProductionEvent as $event) {
+                if ($event->ProductionEventType == 'PRE') {
+                    $theater = (string)$event->Region->RegionName;
+                    $results = explode(';', $theater);
+                }
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * Return opening night time
+     *
+     * @return string
+     */
+    public function getPremiereTime()
+    {
+        foreach ($this->getAllRecordsXML() as $xml) {
+            foreach ($xml->ProductionEvent as $event) {
+                if ($event->ProductionEventType == 'PRE') {
+                    $time = (string)$event->DateText;
+                    return $time;
+                }
+            }
+        }
+    }
+
+    /**
+     * Return television broadcasting dates, channels and amount of viewers
+     *
+     * @return array
+     */
+    public function getBroadcastingInfo()
+    {
+        $results = [];
+        foreach ($this->getAllRecordsXML() as $xml) {
+            foreach ($xml->ProductionEvent as $event) {
+                $time = $place = $viewers = '';
+                $attributes = $event->ProductionEventType->attributes();
+                if (!empty($attributes->{'elokuva-elotelevisioesitys-esitysaika'})) {
+                    $time = (string)$attributes->{
+                        'elokuva-elotelevisioesitys-esitysaika'
+                    };
+                }
+                if (!empty($attributes->{'elokuva-elotelevisioesitys-paikka'})) {
+                    $place = (string)$attributes->{
+                        'elokuva-elotelevisioesitys-paikka'
+                    };
+                }
+                if (!empty($attributes->{'elokuva-elotelevisioesitys-katsojamaara'})
+                ) {
+                    $viewers = (string)$attributes->{
+                        'elokuva-elotelevisioesitys-katsojamaara'
+                    };
+                }
+                if (empty($attributes->{'elokuva-elotelevisioesitys-esitysaika'})) {
+                    continue;
+                }
+
+                $results[] = [
+                    'time' => $time,
+                    'place' => $place,
+                    'viewers' => $viewers
+                ];
+            }
+        }
+        $results = array_filter($results);
+        return $results;
+    }
+
+    /**
+     * Return filmfestival attendance information
+     *
+     * @return array
+     */
+    public function getFestivalInfo()
+    {
+        $results = [];
+        foreach ($this->getAllRecordsXML() as $xml) {
+            foreach ($xml->ProductionEvent as $event) {
+                $atr = $event->ProductionEventType->attributes();
+                if (!empty($atr->{'elokuva-elofestivaaliosallistuminen-aihe'})) {
+                    $name = (string)$atr->{
+                        'elokuva-elofestivaaliosallistuminen-aihe'
+                    };
+                    if (!empty($event->Region->RegionName)) {
+                        $region = (string)$event->Region->RegionName;
+                    }
+                    if (!empty($event->DateText)) {
+                        $date = (string)$event->DateText;
+                    }
+                }
+                if (empty($atr->{'elokuva-elofestivaaliosallistuminen-aihe'})) {
+                    continue;
+                }
+                $results[] = [
+                    'name' => $name,
+                    'region' => $region,
+                    'date' => $date
+                ];
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * Return foreign distributors and countries
+     *
+     * @return array
+     */
+    public function getForeignDistribution()
+    {
+        $results = [];
+        foreach ($this->getAllRecordsXML() as $xml) {
+            foreach ($xml->ProductionEvent as $event) {
+                $atr = $event->ProductionEventType->attributes();
+                if (!empty($atr->{'elokuva-eloulkomaanmyynti-levittaja'})) {
+                    $name = (string)$atr->{
+                        'elokuva-eloulkomaanmyynti-levittaja'
+                    };
+                    if (!empty($event->Region->RegionName)) {
+                        $region = (string)$event->Region->RegionName;
+                    }
+                }
+                if (empty($atr->{'elokuva-eloulkomaanmyynti-levittaja'})) {
+                    continue;
+                }
+                $results[] = [
+                    'name' => $name,
+                    'region' => $region
+                ];
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * Return number of film copies
+     *
+     * @return string
+     */
+    public function getNumberOfCopies()
+    {
+        return $this->getProductionEventAttribute('elokuva-teatterikopioidenlkm');
+    }
+
+    /**
+     * Return other screening occasions
+     *
+     * @return array
+     */
+    public function getOtherScreenings()
+    {
+        $results = [];
+        foreach ($this->getAllRecordsXML() as $xml) {
+            foreach ($xml->ProductionEvent as $event) {
+                $atr = $event->ProductionEventType->attributes();
+                if (!empty($atr->{'elokuva-muuesitys-aihe'})) {
+                    $name = (string)$atr->{
+                        'elokuva-muuesitys-aihe'
+                    };
+                    if (!empty($event->Region->RegionName)) {
+                        $region = (string)$event->Region->RegionName;
+                    }
+                    if (!empty($event->DateText)) {
+                        $date = (string)$event->DateText;
+                    }
+                }
+                if (empty($atr->{'elokuva-muuesitys-aihe'})) {
+                    continue;
+                }
+                $results[] = [
+                    'name' => $name,
+                    'region' => $region,
+                    'date' => $date
+                ];
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * Return movie inspection details
+     *
+     * @return array
+     */
+    public function getInspectionDetails()
+    {
+        $results = [];
+        foreach ($this->getAllRecordsXML() as $xml) {
+            foreach ($xml->ProductionEvent as $event) {
+                $atr = $event->ProductionEventType->attributes();
+                if (!empty($atr->{'elokuva-tarkastus-tarkastusnro'})
+                    || !empty($atr->{'elokuva-tarkastus-tarkastuselin'})
+                    || !empty($atr->{'elokuva-tarkastus-tarkastusilmoitus'})
+                ) {
+                    $office = $reason = $length = $subject = $notification = '';
+                    $format = $part = $tax = $type  = $date = $inspector = $age = '';
+                    $number = $time = '';
+                    if (!empty($atr->{'elokuva-tarkastus-tarkastusnro'})) {
+                        $number = (string)$atr->{'elokuva-tarkastus-tarkastusnro'};
+                    }
+                    if (!empty($atr->{'elokuva-tarkastus-tarkastamolaji'})) {
+                        $type = (string)$atr->{'elokuva-tarkastus-tarkastamolaji'};
+                    }
+                    if (!empty($atr->{'elokuva-tarkastus-pituus'})) {
+                        $length = (string)$atr->{'elokuva-tarkastus-pituus'};
+                    }
+                    if (!empty($atr->{'elokuva-tarkastus-veroluokka'})) {
+                        $tax = (string)$atr->{'elokuva-tarkastus-veroluokka'};
+                    }
+                    if (!empty($atr->{'elokuva-tarkastus-ikaraja'})) {
+                        $age = (string)$atr->{'elokuva-tarkastus-ikaraja'};
+                    }
+                    if (!empty($atr->{'elokuva-tarkastus-formaatti'})) {
+                        $format = (string)$atr->{'elokuva-tarkastus-formaatti'};
+                    }
+                    if (!empty($atr->{'elokuva-tarkastus-osalkm'})) {
+                        $part = (string)$atr->{'elokuva-tarkastus-osalkm'};
+                    }
+                    if (!empty($atr->{'elokuva-tarkastus-tarkastuttaja'})) {
+                        $office = (string)$atr->{'elokuva-tarkastus-tarkastuttaja'};
+                    }
+                    if (!empty($atr->{'elokuva-tarkastus-kesto'})) {
+                        $time = (string)$atr->{'elokuva-tarkastus-kesto'};
+                    }
+                    if (!empty($atr->{'elokuva-tarkastus-tarkastusaihe'})) {
+                        $subject = (string)$atr->{'elokuva-tarkastus-tarkastusaihe'};
+                    }
+                    if (!empty($atr->{'elokuva-tarkastus-tarkastusaihe'})) {
+                        $reason = (string)$atr->{'elokuva-tarkastus-perustelut'};
+                    }
+                    if (!empty($atr->{'elokuva-tarkastus-tarkastusilmoitus'})) {
+                        $notification = (string)$atr->{
+                            'elokuva-tarkastus-tarkastusilmoitus'
+                        };
+                    }
+                    if (!empty($atr->{'elokuva-tarkastus-tarkastuselin'})) {
+                        $inspector = (string)$atr->{
+                            'elokuva-tarkastus-tarkastuselin'
+                        };
+                    }
+                    if (!empty($event->DateText)
+                        && strpos($event->DateText, '0000') == false
+                    ) {
+                        $date = (string)$event->DateText;
+                    }
+                    $results[] = [
+                        'inspector' => $inspector,
+                        'number' => $number,
+                        'format' => $format,
+                        'length' => $length,
+                        'taxclass' => $tax,
+                        'agerestriction' => $age,
+                        'inspectiontype' => $type,
+                        'part' => $part,
+                        'office' => $office,
+                        'runningtime' => $time,
+                        'subject' => $subject,
+                        'date' => $date,
+                        'reason' => $reason,
+                        'notification' => $notification
+                    ];
+                }
+            }
+        }
+        return $results;
     }
 }

@@ -1,0 +1,22 @@
+<? //Don't add START and END comments ?>
+<? if(!empty($data)): ?>
+    <? foreach ($data as $field): ?>
+            <div class="truncate-field">
+                <? if (!empty($field['date'])): ?><?=$this->transEsc('kavi_date')?>: <?=$this->escapeHtml($field['date'])?><br/> <? endif; ?>
+                <? if (!empty($field['inspector'])): ?><?=$this->transEsc('kavi_inspector')?>: <?=$this->escapeHtml($field['inspector'])?><br/><? endif; ?>
+                <? if (!empty($field['number'])): ?><?=$this->transEsc('kavi_number')?>: <?=$this->escapeHtml($field['number'])?><br/><? endif; ?>
+                <? if (!empty($field['format'])): ?><?=$this->transEsc('kavi_format')?>: <?=$this->escapeHtml($field['format'])?><br/><? endif; ?>
+                <? if (!empty($field['reason'])): ?><?=$this->transEsc('kavi_reason')?>: <?=$this->escapeHtml($field['reason'])?><br/><? endif; ?>
+                <? if (!empty($field['length'])): ?><?=$this->transEsc('kavi_length')?>: <?=$this->escapeHtml($field['length'])?><br/><? endif; ?>
+                <? if (!empty($field['runningtime'])): ?><?=$this->transEsc('kavi_runningtime')?>: <?=$this->escapeHtml($field['runningtime'])?><br/><? endif; ?>
+                <? if (!empty($field['taxclass'])): ?><?=$this->transEsc('kavi_tax')?>: <?=$this->escapeHtml($field['taxclass'])?><br/><? endif; ?>
+                <? if (!empty($field['agerestriction'])): ?><?=$this->transEsc('kavi_age')?>: <?=$this->escapeHtml($field['agerestriction'])?><br/><? endif; ?>
+                <? if (!empty($field['inspectiontype'])): ?><?=$this->transEsc('kavi_type')?>: <?=$this->escapeHtml($field['inspectiontype'])?><br/><? endif; ?>
+                <? if (!empty($field['part'])): ?><?=$this->transEsc('kavi_parts')?>: <?=$this->escapeHtml($field['part'])?><br/><? endif; ?>
+                <? if (!empty($field['office'])): ?><?=$this->transEsc('kavi_office')?>: <?=$this->escapeHtml($field['office'])?><br/><? endif; ?>
+                <? if (!empty($field['subject'])): ?><?=$this->transEsc('kavi_subject')?>: <?=$this->escapeHtml($field['subject'])?><? endif; ?>
+                <? if (!empty($field['notification'])): ?><?=$this->transEsc('kavi_notification')?>: <?=$this->escapeHtml($field['notification'])?><? endif; ?>
+            </div>
+            <br>
+    <? endforeach; ?>
+<? endif; ?>
