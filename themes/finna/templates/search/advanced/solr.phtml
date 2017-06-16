@@ -1,5 +1,22 @@
 <!-- START of: finna - search/advanced/solr.phtml -->
 <? if (!empty($this->facetList) || !empty($this->checkboxFacets)): ?>
+<?
+    if (isset($this->saved) && is_object($this->saved)) {
+      $searchFilters = $this->saved->getParams()->getFilterList(true);
+      $checkboxFilters = $this->saved->getParams()->getCheckboxFacets();
+      $usedCheckboxFilters = [];
+      foreach ($checkboxFilters as $filter) {
+          if ($filter['selected']) {
+              array_push($usedCheckboxFilters, $filter);
+          }
+      }
+      // Remove date range filter (search_daterange_mv) and geographic filters so that
+      // they don't get included in the list of active filters
+      $searchFilters = $this->saved->getParams()->removeDateRangeFilter($searchFilters);
+      $searchFilters = $this->saved->getParams()->removeGeographicFilters($searchFilters);
+      $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
+    }
+?>
   <div class="row">
     <div class="col-xs-12">
       <h4><?=$this->transEsc('Limit To')?></h4>
@@ -50,6 +67,12 @@
         </div>
       </div>
     </fieldset>
+    <? if (!empty($searchFilters) || !empty($usedCheckboxFilters)): ?>
+      <h4><?=$this->transEsc("adv_search_filters")?></h4>
+      <fieldset class="adv-search well limit-to">
+        <?=$this->render('search/advanced/filters.phtml', ['usedCheckboxFilters' => $usedCheckboxFilters, 'searchFilters' => $searchFilters])?>
+      </fieldset>
+    <? endif; ?>
     </div>
   </div>
 <? endif; ?>

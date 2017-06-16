@@ -24,11 +24,6 @@
     }
     $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
 
-    $searchFilters = $this->saved->getParams()->getFilterList();
-    // Remove date range filter (search_daterange_mv) and geographic filters so that
-    // they don't get included in the list of active filters
-    $searchFilters = $this->saved->getParams()->removeDateRangeFilter($searchFilters);
-    $searchFilters = $this->saved->getParams()->removeGeographicFilters($searchFilters);
     $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
   } else {
     $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
@@ -157,7 +152,7 @@
       <? if (isset($this->extraAdvancedControls)): ?>
         <?=$this->extraAdvancedControls ?>
       <? endif; ?>
-      <div class="col-xs-12">
+      <div>
         <span class="limit-container">
           <?=$this->render('search/advanced/limit.phtml')?>
         </span>
@@ -167,32 +162,6 @@
     <? if ($hasDefaultsApplied): ?>
       <input type="hidden" name="dfApplied" value="1" />
     <? endif ?>
-    <? if (!empty($searchFilters)): ?>
-      <div class="row">
-        <div class="col-sm-6 applied-adv-search-filters sidebar">
-          <h4><?=$this->transEsc("adv_search_filters")?></h4>
-          <div class="col-xs-12">
-            <label>
-              <input type="checkbox" checked="checked" class="checkbox-select-all" />
-              <?=$this->transEsc("adv_search_select_all")?>
-            </label>
-            <br>
-            <br>
-          </div>
-          <div class="col-xs-12">
-            <? foreach ($searchFilters as $field => $data): ?>
-              <? foreach ($data as $value): ?>
-                <div>
-                  <label>
-                    <input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?>
-                  </label>
-                </div>
-              <? endforeach; ?>
-            <? endforeach; ?>
-          </div>
-        </div>
-      </div>
-    <? endif; ?>
   </div>
   <? if ($template = $this->content()->findTemplateForLng("content/Additions/solr-advanced-post")): ?>
     <?=$this->render($template)?>
