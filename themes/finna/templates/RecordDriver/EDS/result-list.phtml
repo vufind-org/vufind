@@ -164,12 +164,17 @@
 
           <? if ($this->userlist()->getMode() !== 'disabled'): ?>
               <? /* Add to favorites */ ?>
-            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record hidden-print" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>">
-              <i class="fa fa-heart"></i>
-              <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span>
-              <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span>
-            </a>
-            <br/>
+            <div>
+              <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record hidden-print" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>">
+                <i class="fa fa-heart"></i>
+                <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span>
+                <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span>
+              </a>
+            </div>
+          <? endif; ?>
+
+          <? if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
+              <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
           <? endif; ?>
 
           <? /* Hierarchy tree link */ ?>

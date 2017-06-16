@@ -82,9 +82,6 @@ body {
                  margin-left: -15px;
             }
         }
-        & .sidebar {
-            padding-left: 0;
-        }
         & .hidden-print.add-to-favorite-col {
             margin-left: -15px;
         }
@@ -362,19 +359,27 @@ input[type=number].input-year::-webkit-outer-spin-button {
 }
 /* Results */
 /* --- Layout --- */
+.mainbody {
+    padding-left: 15px;
+    padding-right: 15px;
+}
 @media (min-width: @screen-sm-min) {
   .mainbody { width: 75%; }
   .sidebar { width: 25%; }
   .mainbody.left,
   .sidebar.left {
     float: left;
-    padding-right: 1rem;
   }
   .mainbody.right,
   .sidebar.right {
     float: right;
-    padding-left: 1rem;
   }
+}
+
+@media (max-width: @screen-md-min) {
+    .sidebar.right {
+        padding-right: 15px;
+    }
 }
 
 .template-name-results, .template-name-search {
@@ -406,7 +411,7 @@ mark, .highlight {
     padding: 0;
 }
 .savedLists.alert {
-    margin: 15px 0px 0px;
+    margin: 0px;
 }
 .container.resultListDisplay {
     margin-top: 30px;
@@ -453,7 +458,6 @@ mark, .highlight {
     }
 }
 .result .save-record {
-    float: right;
     font-size: medium;
     @media(max-width: @screen-xs-max) {
         font-size: 1em;
@@ -850,11 +854,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 /* --- Search --- */
 .bulkActionButtons {
-  margin-left: -40px;
   @media (max-width: @screen-xs-max) {
     margin-left: -22px;
   }
-  @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+  @media (min-width: @screen-sm-min) {
     margin-left: -25px;
   }
   .checkbox {
@@ -875,10 +878,9 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   .checkbox {
     padding-left: 24px;
     margin-top: 0;
-    margin-left: -25px;
     position: absolute;
     z-index: 2;
-    @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+    @media (min-width: @screen-sm-min) {
       margin-left: -10px;
     }
     @media (max-width: @screen-xs-max) {
