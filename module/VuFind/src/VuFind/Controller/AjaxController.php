@@ -1028,20 +1028,36 @@ class AjaxController extends AbstractBase
                 switch ($requestType) {
                 case 'ILLRequest':
                     $results = $catalog->checkILLRequestIsValid($id, $data, $patron);
-                    $msg = $results
-                        ? 'ill_request_place_text' : 'ill_request_error_blocked';
+                    if (is_array($results)) {
+                        $msg = $results['status'];
+                        $results = $results['valid'];
+                    } else {
+                        $msg = $results
+                            ? 'ill_request_place_text' : 'ill_request_error_blocked';
+                    }
                     break;
                 case 'StorageRetrievalRequest':
                     $results = $catalog->checkStorageRetrievalRequestIsValid(
                         $id, $data, $patron
                     );
-                    $msg = $results ? 'storage_retrieval_request_place_text'
-                        : 'storage_retrieval_request_error_blocked';
+                    if (is_array($results)) {
+                        $msg = $results['status'];
+                        $results = $results['valid'];
+                    } else {
+                        $msg = $results ? 'storage_retrieval_request_place_text'
+                            : 'storage_retrieval_request_error_blocked';
+                    }
                     break;
                 default:
                     $results = $catalog->checkRequestIsValid($id, $data, $patron);
-                    $msg = $results ? 'request_place_text' : 'hold_error_blocked';
-                    break;
+                    if (is_array($results)) {
+                        $msg = $results['status'];
+                        $results = $results['valid'];
+                    } else {
+                        $msg = $results ? 'request_place_text'
+                            : 'hold_error_blocked';
+                        break;
+                    }
                 }
                 return $this->output(
                     ['status' => $results, 'msg' => $this->translate($msg)],
