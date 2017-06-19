@@ -32,7 +32,7 @@ return [
                 => 'Finna\View\Helper\Root\Factory::getOrganisationsList',
             'piwik' => 'Finna\View\Helper\Root\Factory::getPiwik',
             'primo' => 'Finna\View\Helper\Root\Factory::getPrimo',
-            'recaptcha' => 'VuFind\View\Helper\Root\Factory::getRecaptcha',
+            'recaptcha' => 'Finna\View\Helper\Root\Factory::getRecaptcha',
             'record' => 'Finna\View\Helper\Root\Factory::getRecord',
             'recordDataFormatter' => 'Finna\View\Helper\Root\RecordDataFormatterFactory',
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',

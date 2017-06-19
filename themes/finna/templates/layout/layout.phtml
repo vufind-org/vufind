@@ -395,9 +395,6 @@ JS;
     </div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
-    <? if ($this->recaptcha()->active()): ?>
-      <?=$this->inlineScript(\Zend\View\Helper\HeadScript::FILE, "https://www.google.com/recaptcha/api.js?onload=recaptchaOnLoad&render=explicit&hl=" . $this->layout()->userLang, 'SET')?>
-    <? endif; ?>
     <? if ($template = $this->content()->findTemplateForLng("content/Additions/general-post-body")): ?>
       <div class="container-fluid general-post-body">
         <div class="container">

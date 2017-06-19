@@ -10,7 +10,7 @@
 <h2><?=$this->transEsc('Create New Account')?></h2>
 <?=$this->flashmessages()?>
 
-<form method="post" name="accountForm" id="accountForm" data-toggle="validator">
+<form method="post" name="accountForm" id="accountForm" class="form-user-create" data-toggle="validator">
   <?=$this->auth()->getCreateFields()?>
   <div class="form-group">
     <?=$this->recaptcha()->html($this->useRecaptcha) ?>
