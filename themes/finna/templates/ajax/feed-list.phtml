@@ -1,6 +1,7 @@
 <!-- START of: finna - ajax/feed-list.phtml -->
 <div class="list-feed<?= $this->images ? ' with-image' : ''; ?>">
 <? if ($this->title || $this->translateTitle): ?><h2 class="feed-header"><?= $this->translateTitle ? $this->transEsc($this->translateTitle) : $this->title; ?></h2><? endif; ?>
+<? if (isset($this->description)): ?><p class="additional-description"><?= $this->translate($this->description)?></p><? endif; ?>
   <ul>
     <? foreach($this->items as $item): ?>
     <li>
