@@ -255,3 +255,16 @@ header .container.navbar { margin-bottom: 0; }
     font-size: .9em;
     margin: 0px 0px 10px;
 }
+
+/* --- Combined --- */
+.template-dir-combined.template-name-results .main > .container { width: auto; }
+@media (min-width: 768px) {
+  .combined-search-container { display: flex; }
+  .combined-column {
+    flex: 0 1 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .combined-column:first-child { padding-left: 0; }
+  .combined-column:last-child { padding-right: 0; }
+}
