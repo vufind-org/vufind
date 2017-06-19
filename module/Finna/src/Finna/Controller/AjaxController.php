@@ -306,36 +306,47 @@ class AjaxController extends \VuFind\Controller\AjaxController
                                 $id, $item, $patron
                             );
 
-                            $msg = $result
-                                ? $this->translate('ill_request_place_text')
-                                : $this->translate('ill_request_error_blocked');
+                            if (is_array($result)) {
+                                $msg = $result['status'];
+                                $result = $result['valid'];
+                            } else {
+                                $msg = $result
+                                    ? 'ill_request_place_text'
+                                    : 'ill_request_error_blocked';
+                            }
                             break;
                         case 'StorageRetrievalRequest':
                             $result = $catalog->checkStorageRetrievalRequestIsValid(
                                 $id, $item, $patron
                             );
 
-                            $msg = $result
-                                ? $this->translate(
-                                    'storage_retrieval_request_place_text'
-                                )
-                                : $this->translate(
-                                    'storage_retrieval_request_error_blocked'
-                                );
+                            if (is_array($result)) {
+                                $msg = $result['status'];
+                                $result = $result['valid'];
+                            } else {
+                                $msg = $result
+                                    ? 'storage_retrieval_request_place_text'
+                                    : 'storage_retrieval_request_error_blocked';
+                            }
                             break;
                         default:
                             $result = $catalog->checkRequestIsValid(
                                 $id, $item, $patron
                             );
 
-                            $msg = $result
-                                ? $this->translate('request_place_text')
-                                : $this->translate('hold_error_blocked');
+                            if (is_array($result)) {
+                                $msg = $result['status'];
+                                $result = $result['valid'];
+                            } else {
+                                $msg = $result
+                                    ? 'request_place_text'
+                                    : 'hold_error_blocked';
+                            }
                             break;
                         }
                         $results[] = [
                             'status' => $result,
-                            'msg' => $msg
+                            'msg' => $this->translate($msg)
                         ];
                     }
                     return $this->output($results, self::STATUS_OK);
