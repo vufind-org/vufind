@@ -773,7 +773,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
@@ -788,7 +790,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'GET',
                 $patron
             );
-            return !empty($result[0]['availability']['available']);
+            if (!empty($result[0]['availability']['available'])) {
+                return [
+                    'valid' => true,
+                    'status' => 'title_hold_place'
+                ];
+            }
+            return [
+                'valid' => false,
+                'status' => $this->getHoldBlockReason($result)
+            ];
         }
         $result = $this->makeRequest(
             ['v1', 'availability', 'item', 'hold'],
@@ -796,7 +807,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'GET',
             $patron
         );
-        return !empty($result[0]['availability']['available']);
+        if (!empty($result[0]['availability']['available'])) {
+            return [
+                'valid' => true,
+                'status' => 'hold_place'
+            ];
+        }
+        return [
+            'valid' => false,
+            'status' => $this->getHoldBlockReason($result)
+        ];
     }
 
     /**
@@ -1672,5 +1692,42 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function getItemCallNumber($item)
     {
         return $item['itemcallnumber'];
+    }
+
+    /**
+     * Get a reason for why a hold cannot be placed
+     *
+     * @param array $result Hold check result
+     *
+     * @return string
+     */
+    protected function getHoldBlockReason($result)
+    {
+        if (!empty($result[0]['availability']['unavailabilities'])) {
+            foreach ($result[0]['availability']['unavailabilities']
+                as $key => $reason
+            ) {
+                switch ($key) {
+                case 'Biblio::NoAvailableItems':
+                    return 'hold_error_not_holdable';
+                case 'Item::NotForLoan':
+                case 'Hold::NotAllowedInOPAC':
+                case 'Hold::ZeroHoldsAllowed':
+                case 'Hold::NotAllowedByLibrary':
+                case 'Hold::NotAllowedFromOtherLibraries':
+                case 'Item::Restricted':
+                case 'Hold::ItemLevelHoldNotAllowed':
+                    return 'hold_error_item_not_holdable';
+                case 'Hold::MaximumHoldsForRecordReached':
+                case 'Hold::MaximumHoldsReached':
+                    return 'hold_error_too_many_holds';
+                case 'Item::AlreadyHeldForThisPatron':
+                    return 'hold_error_already_held';
+                case 'Hold::OnShelfNotAllowed':
+                    return 'hold_error_on_shelf_blocked';
+                }
+            }
+        }
+        return 'hold_error_blocked';
     }
 }
