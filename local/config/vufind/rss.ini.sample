@@ -14,6 +14,9 @@
 ; title = "[rss|<translation-key>]" Feed title:
 ;    'rss' = Use <title> element from feed
 ;    '<translation-key>' = Use local translation
+; description = "Feed description|<translation-key>"
+;    A free-form description text that may include HTML, or a translation key. Also
+;    the translation may include HTML. Description is displayed below the title.
 
 ; linkTarget  = "[_blank|_self|_parent|_top|framename]" Link target for item links.
 
@@ -54,7 +57,7 @@
 ; content[image] = 0
 ; content[date] = 0
 ; content[contentDate] = 0
- 
+
 ;; Optional list settings:
 
 ; moreLink = [0|1] Display a "more" link.
@@ -72,15 +75,15 @@
 ; Number of visible items in the carousel
 
 ; itemsPerPage[desktop] = 4
-; itemsPerPage[desktop-small] = 4 
-; itemsPerPage[tablet] = 2 
+; itemsPerPage[desktop-small] = 4
+; itemsPerPage[tablet] = 2
 ; itemsPerPage[mobile] = 1
 
 ; Number of items to scroll, defaults to itemsPerPage
 
 ; scrolledItems[desktop] = 3
-; scrolledItems[desktop-small] = 2 
-; scrolledItems[tablet] = 2 
+; scrolledItems[desktop-small] = 2
+; scrolledItems[tablet] = 2
 ; scrolledItems[mobile] = 1
 
 ; Elements to hide, by default all elements are shown
@@ -100,8 +103,8 @@ title = 'rss'
 height = 350
 
 itemsPerPage[desktop] = 4
-itemsPerPage[desktop-small] = 3 
-itemsPerPage[tablet] = 2 
+itemsPerPage[desktop-small] = 3
+itemsPerPage[tablet] = 2
 itemsPerPage[mobile] = 1
 
 [carousel-small]
@@ -113,7 +116,7 @@ height = 150
 titlePosition = "bottom"
 
 itemsPerPage[desktop] = 8
-itemsPerPage[desktop-small] = 8 
+itemsPerPage[desktop-small] = 8
 itemsPerPage[tablet] = 6
 itemsPerPage[mobile] = 2
 
@@ -131,13 +134,13 @@ height = 200
 content[text] = 0
 
 itemsPerPage[desktop] = 2
-itemsPerPage[desktop-small] = 2 
-itemsPerPage[tablet] = 2 
+itemsPerPage[desktop-small] = 2
+itemsPerPage[tablet] = 2
 itemsPerPage[mobile] = 1
 
 scrolledItems[desktop] = 2
 scrolledItems[desktop-small] = 2
-scrolledItems[tablet] = 2 
+scrolledItems[tablet] = 2
 scrolledItems[mobile] = 1
 
 [news]
