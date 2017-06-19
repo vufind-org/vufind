@@ -776,6 +776,10 @@ class AjaxController extends \VuFind\Controller\AjaxController
             }
         }
 
+        if (isset($config->description)) {
+            $feed['description'] = $config->description;
+        }
+
         if (isset($config->linkTarget)) {
             $feed['linkTarget'] = $config->linkTarget;
         }
