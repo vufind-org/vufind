@@ -5,7 +5,7 @@
   $results = $this->recommend->getResults();
 ?>
 <? if (isset($topFacetSet)): ?>
-  <? $row=0; foreach($topFacetSet as $title => $cluster): ?>
+  <? foreach($topFacetSet as $title => $cluster): ?>
     <? $moreClass = ' NarrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <div class="top-facets">
