@@ -2,7 +2,8 @@
 <?
   $combinedView = !$this->layout()->templateDir || $this->layout()->templateDir === 'combined';
 ?>
-<div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?>">
+<div class="record-container list-view<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?>">
+  <div class="media">
     <div>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
@@ -207,5 +208,6 @@
     <? endif; ?>
     </div>
     <div class="clearfix visible-xs"></div>
+  </div>
 </div>
 <!-- END of: finna - RecordDriver/Primo/result-list.phtml -->
