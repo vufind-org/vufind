@@ -28,7 +28,6 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace Finna\View\Helper\Root;
-use Zend\View\Helper\AbstractHelper;
 
 /**
  * Recaptcha view helper
