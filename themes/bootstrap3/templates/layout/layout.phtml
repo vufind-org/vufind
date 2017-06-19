@@ -171,12 +171,7 @@ JS;
         <?=$this->layout()->content ?>
       </div>
     </div>
-    <footer class="hidden-print">
-      <div class="container">
-        <?=$this->render('footer.phtml')?>
-        <?=$this->layout()->poweredBy ?>
-      </div>
-    </footer>
+    <?=$this->render('footer.phtml')?>
     <!-- MODAL IN CASE WE NEED ONE -->
     <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
       <div class="modal-dialog">

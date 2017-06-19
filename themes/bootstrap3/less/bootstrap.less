@@ -91,6 +91,13 @@ img {max-width: 100%;}
 }
 
 /* --- Layout --- */
+footer { &:extend(.container all); }
+.footer-container {
+  display: flex;
+  width: 100%;
+}
+.footer-column { flex: 0 1 100%; }
+
 @media (min-width: 768px) {
   .mainbody { width: 75%; }
   .sidebar { width: 25%; }
