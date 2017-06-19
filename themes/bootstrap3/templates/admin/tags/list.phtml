@@ -14,55 +14,48 @@
 
     <div class="tagForm">
       <form class="form-tags-list" action="<?= $this->url('admin/tags', array('action' => 'List'))?>" method="get">
-
-        <fieldset>
-          <legend><?=$this->translate('filter_tags')?></legend>
-
-          <div class="row">
-            <div class="col-sm-3">
-              <label for="user_id"><?=$this->translate('Username')?></label>
-              <select name="user_id" id="user_id" class="form-control">
-                <option value="ALL"><?=$this->translate('All')?></option>
-                <? foreach($this->uniqueUsers as $user):?>
-                  <option value="<?= $user['user_id'] ?>"<? if(isset($this->params['user_id']) && $user['user_id'] == $this->params['user_id']): ?> selected="selected"<? endif;?>>
-                    <?=$user['username'] ?>
-                  </option>
-                <? endforeach;?>
-              </select>
-            </div>
-            <div class="col-sm-3">
-              <label for="tag_id"><?=$this->translate('Tag')?></label>
-              <select name="tag_id" id="tag_id" class="form-control">
-                <option value="ALL"><?=$this->translate('All')?></option>
-                <? foreach($this->uniqueTags as $tag):?>
-                <option value="<?= $tag['tag_id'] ?>"<? if(isset($this->params['tag_id']) && $tag['tag_id'] == $this->params['tag_id']): ?> selected="selected"<? endif;?>>
-                    <?=$tag['tag'] ?>
+        <h3><?=$this->translate('filter_tags')?></h3>
+        <div class="tag-controls">
+          <label for="user_id">
+            <?=$this->translate('Username')?>
+            <select name="user_id" id="user_id" class="form-control">
+              <option value="ALL"><?=$this->translate('All')?></option>
+              <? foreach($this->uniqueUsers as $user):?>
+                <option value="<?= $user['user_id'] ?>"<? if(isset($this->params['user_id']) && $user['user_id'] == $this->params['user_id']): ?> selected="selected"<? endif;?>>
+                  <?=$user['username'] ?>
                 </option>
-                <? endforeach;?>
-              </select>
-            </div>
-            <div class="col-sm-3">
-              <label for="resource_id"><?=$this->translate('Title')?></label>
-              <select name="resource_id" id="resource_id" class="form-control">
-                <option value="ALL"><?=$this->translate('All')?></option>
-                <? foreach($this->uniqueResources as $resource):?>
-                <option value="<?= $resource['resource_id']; ?>" title="<?=$resource['title'] ?>"<? if(isset($this->params['resource_id']) && $resource['resource_id'] == $this->params['resource_id']): ?> selected="selected"<? endif;?>>
-                    <?=$this->truncate($resource['title'], 80) ?> (<?=$resource['resource_id'] ?>)
-                </option>
-                <? endforeach;?>
-              </select>
-            </div>
-            <div class="col-sm-3">
-              <label for="taglistsubmit">&nbsp;</label><br />
-              <input type="submit" id="taglistsubmit" value="<?=$this->transEsc('Filter')?>" class="btn btn-primary">
-              <? if((isset($this->params['user_id']) && !is_null($this->params['user_id'])) || (isset($this->params['tag_id']) && !is_null($this->params['tag_id'])) || (isset($this->params['resource_id']) && !is_null($this->params['resource_id']))):?>
-                <a href="<?= $this->url('admin/tags', array('action' => 'List')); ?>"><?=$this->translate('clear_tag_filter')?></a>
-              <? endif;?>
-            </div>
-          </div>
-
-        </fieldset>
-
+              <? endforeach;?>
+            </select>
+          </label>
+          <label for="tag_id">
+            <?=$this->translate('Tag')?>
+            <select name="tag_id" id="tag_id" class="form-control">
+              <option value="ALL"><?=$this->translate('All')?></option>
+              <? foreach($this->uniqueTags as $tag):?>
+              <option value="<?= $tag['tag_id'] ?>"<? if(isset($this->params['tag_id']) && $tag['tag_id'] == $this->params['tag_id']): ?> selected="selected"<? endif;?>>
+                  <?=$tag['tag'] ?>
+              </option>
+              <? endforeach;?>
+            </select>
+          </label>
+          <label for="resource_id">
+            <?=$this->translate('Title')?>
+            <select name="resource_id" id="resource_id" class="form-control">
+              <option value="ALL"><?=$this->translate('All')?></option>
+              <? foreach($this->uniqueResources as $resource):?>
+              <option value="<?= $resource['resource_id']; ?>" title="<?=$resource['title'] ?>"<? if(isset($this->params['resource_id']) && $resource['resource_id'] == $this->params['resource_id']): ?> selected="selected"<? endif;?>>
+                  <?=$this->truncate($resource['title'], 80) ?> (<?=$resource['resource_id'] ?>)
+              </option>
+              <? endforeach;?>
+            </select>
+          </label>
+          <label for="taglistsubmit">
+            <input type="submit" id="taglistsubmit" value="<?=$this->transEsc('Filter')?>" class="btn btn-primary">
+            <? if((isset($this->params['user_id']) && !is_null($this->params['user_id'])) || (isset($this->params['tag_id']) && !is_null($this->params['tag_id'])) || (isset($this->params['resource_id']) && !is_null($this->params['resource_id']))):?>
+              <a href="<?= $this->url('admin/tags', array('action' => 'List')); ?>"><?=$this->translate('clear_tag_filter')?></a>
+            <? endif;?>
+          </label>
+        </div>
       </form>
     </div>
 
@@ -76,17 +69,21 @@
 
           <table class="table table-striped">
             <tr>
-              <th>&nbsp;</th>
-              <th><?=$this->translate('Username')?></th>
               <th><?=$this->translate('Tag')?></th>
+              <th><?=$this->translate('Username')?></th>
               <th><?=$this->translate('Title')?></th>
             </tr>
 
             <? foreach ($this->results as $tag): ?>
               <tr>
-                <td><?=$this->render('admin/tags/checkbox', array('tag'=>$tag)) ; ?></td>
+                <td>
+                  <label for="<?=$this->prefix?>checkbox_<?=$tag['id']?>">
+                    <input id="<?=$this->prefix?>checkbox_<?=$tag['id']?>" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($tag['id'])?>" class="checkbox_ui"/>
+                    <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($tag['id'])?>" />
+                    <?=$tag->tag?> (<?= $tag->tag_id?>)
+                  </label>
+                </td>
                 <td><?=$tag->username ?> (<?= $tag->user_id?>)</td>
-                <td><?=$tag->tag?> (<?= $tag->tag_id?>)</td>
                 <td><?=$tag->title?> (<?= $tag->resource_id?>)</td>
               </tr>
             <? endforeach;?>
