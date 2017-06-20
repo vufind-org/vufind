@@ -15,14 +15,13 @@
   list-style: none;
 }
 @media (min-width: 768px) {
-  .search-home-facets { display: flex; }
-  .home-facet { flex-basis: 25%; }
-  .home-facet.callnumber-first {
-    flex-basis: 50%;
-    flex-shrink: 1;
-
-    .home-facet-container { display: flex; }
+  .search-home-facets,
+  .home-facet-container { display: flex; }
+  .home-facet {
+    flex: 1 1 100%;
+    flex-basis: auto;
   }
+  .home-facet-list { flex: 0 1 100%; }
 }
 
 .searchForm {
