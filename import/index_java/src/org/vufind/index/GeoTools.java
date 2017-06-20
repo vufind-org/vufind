@@ -8,7 +8,6 @@ package org.vufind.index;
  *
  * code adapted from xrosecky - Moravian Library
  * https://github.com/moravianlibrary/VuFind-2.x/blob/master/import/index_scripts/geo.bsh
- * and incorporates legacy VuFind functionality for GoogleMap display.
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -89,36 +88,6 @@ public class GeoTools
             }
         }
         return geo_coordinates;
-    }
-
-    /**
-     * Get point coordinates for GoogleMap display.
-     *
-     * @param  Record record
-     * @return List   coordinates
-     */
-    public List<String> getPointCoordinates(Record record) {
-        List<String> coordinates = new ArrayList<String>();
-        List<VariableField> list034 = record.getVariableFields("034");
-        if (list034 != null) {
-            for (VariableField vf : list034) {
-                HashMap<Character, String> coords = getCoordinateValues(vf);
-                // Check for null coordinates
-                if (validateCoordinateValues(record, coords)) {
-                    // Check to see if we have a point coordinate
-                    if (coords.get('d').equals(coords.get('e')) && coords.get('f').equals(coords.get('g'))) {
-                        // Convert N (f_coord) and E (e_coord) coordinates to decimal degrees
-                        Double long_val = convertCoordinate(coords.get('e'));
-                        Double lat_val = convertCoordinate(coords.get('f'));
-                        String longlatCoordinate = Double.toString(long_val) + ',' + Double.toString(lat_val);
-                        coordinates.add(longlatCoordinate);
-                    }
-                } else {
-                    logger.error(".......... Not indexing INVALID Point coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
-                }
-            }
-        }
-        return coordinates;
     }
 
     /**
@@ -406,51 +375,5 @@ public class GeoTools
             return false;
         }
         return true;
-    }
-
-    /**
-     * THIS FUNCTION HAS BEEN DEPRECATED.
-     * Determine the longitude and latitude of the items location.
-     *
-     * @param  record current MARC record
-     * @return string of form "longitude, latitude"
-     * @deprecated
-     */
-    public String getLongLat(Record record) {
-        // Check 034 subfield d and f
-        List<VariableField> fields = record.getVariableFields("034");
-        Iterator<VariableField> fieldsIter = fields.iterator();
-        if (fields != null) {
-            DataField physical;
-            while(fieldsIter.hasNext()) {
-                physical = (DataField) fieldsIter.next();
-                String val = null;
-
-                List<Subfield> subfields_d = physical.getSubfields('d');
-                Iterator<Subfield> subfieldsIter_d = subfields_d.iterator();
-                if (subfields_d != null) {
-                    while (subfieldsIter_d.hasNext()) {
-                        val = subfieldsIter_d.next().getData().trim();
-                        if (!val.matches("-?\\d+(.\\d+)?")) {
-                            return null;
-                        }
-                    }
-                }
-                List<Subfield> subfields_f = physical.getSubfields('f');
-                Iterator<Subfield> subfieldsIter_f = subfields_f.iterator();
-                if (subfields_f != null) {
-                    while (subfieldsIter_f.hasNext()) {
-                        String val2 = subfieldsIter_f.next().getData().trim();
-                        if (!val2.matches("-?\\d+(.\\d+)?")) {
-                            return null;
-                        }
-                        val = val + ',' + val2;
-                    }
-                }
-                return val;
-            }
-        }
-        //otherwise return null
-        return null;
     }
 }
