@@ -21,20 +21,19 @@
 
 html { font-size: 14px; }
 a { cursor: pointer; }
-.alert.alert-info a {text-decoration: underline;}
-.btn.disabled {
-  &:active,
-  &:focus,
-  &:hover {color: #000;}
-}
+.alert.alert-info a { text-decoration: underline; }
+.btn.disabled:active,
+.btn.disabled:focus,
+.btn.disabled:hover { color: #000; }
 header .dropdown form { display: none; }
-.list-unstyled {margin: 0;}
-.highlight,mark {
+.list-unstyled { margin: 0; }
+.highlight,
+mark {
   background: lighten(#FF0, 20%);
   padding: .1em .2em;
 }
-.icon-bar {background-color: #888;}
-img {max-width: 100%;}
+.icon-bar { background-color: #888; }
+img { max-width: 100%; }
 .label {
   padding: .25rem .5rem;
   font-size: 12px;
@@ -51,7 +50,8 @@ img {max-width: 100%;}
     background-color: @nav-link-hover-bg;
   }
 }
-.popover {width: 250px;}
+.popover { width: 250px; }
+.resulthead { &:extend(.clearfix all); }
 .sub-breadcrumb {
   padding: 5px 10px;
   white-space: nowrap;
@@ -91,12 +91,17 @@ img {max-width: 100%;}
 }
 
 /* --- Layout --- */
-footer { &:extend(.container all); }
-.footer-container {
-  display: flex;
-  width: 100%;
+footer {
+  &:extend(.container all);
+  padding-top: 1rem;
 }
-.footer-column { flex: 0 1 100%; }
+@media (min-width: 768px) {
+  .footer-container {
+    display: flex;
+    width: 100%;
+  }
+  .footer-column { flex: 0 1 100%; }
+}
 
 @media (min-width: 768px) {
   .mainbody { width: 75%; }
@@ -133,11 +138,13 @@ footer { &:extend(.container all); }
 .badge a {color: #fff;}
 
 /* --- Browse --- */
-.browse-container { display: flex; }
-.browse-list {
-  flex-basis: 25%;
-  padding-left: .5rem;
-  padding-right: .5rem;
+@media (min-width: 768px) {
+  .browse-container { display: flex; }
+  .browse-list {
+    flex-basis: 25%;
+    padding-left: .5rem;
+    padding-right: .5rem;
+  }
 }
 .browse-item {
   position: relative;
@@ -172,11 +179,13 @@ footer { &:extend(.container all); }
 }
 
 /* --- Collections --- */
-.collection-hierarchytree { display: flex; }
-.collection-hierarchytree .tree-panel,
-#tree-preview {
-  flex-basis: 50%;
-  padding: 1rem;
+@media (min-width: 768px) {
+  .collection-hierarchytree { display: flex; }
+  .collection-hierarchytree .tree-panel,
+  #tree-preview {
+    flex-basis: 50%;
+    padding: 1rem;
+  }
 }
 
 /* --- Devtools --- */
@@ -189,10 +198,12 @@ footer { &:extend(.container all); }
 }
 
 /* --- Facets --- */
-.author-facets {
-  display: flex;
+@media (min-width: 768px) {
+  .author-facets {
+    display: flex;
 
-  .author { flex: 0 1 33.3%; }
+    .author { flex: 0 1 33.3%; }
+  }
 }
 
 /* --- MyResearch --- */
@@ -215,7 +226,7 @@ footer { &:extend(.container all); }
 /* --- PubDateVis --- */
 #dateVisColorSettings {
   background-color: #fff; // background of box
-  fill: rgb(234,234,234); // fillColor
+  fill: #eee;             // fillColor
   outline-color: #c38835; // selection color
   stroke: @brand-primary; // color
 }

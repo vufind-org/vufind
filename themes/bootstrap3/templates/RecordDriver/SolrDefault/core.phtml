@@ -1,22 +1,23 @@
 <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
-  <? $QRCode = $this->record($this->driver)->getQRCode("core");
-     $cover = $this->record($this->driver)->getCover('core', 'medium', $this->record($this->driver)->getThumbnail('large'));
-     $preview = $this->record($this->driver)->getPreviews(); ?>
+  <?
+    $QRCode = $this->record($this->driver)->getQRCode("core");
+    $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium', $this->recordLink()->getUrl($this->driver));
+    $cover = $coverDetails['html'];
+    $preview = $this->record($this->driver)->getPreviews();
+  ?>
   <? if ($QRCode || $cover || $preview): ?>
-    <div class="media-left img-col">
-      <div class="text-center">
-        <? /* Display thumbnail if appropriate: */ ?>
-        <? if($cover): ?>
-          <?=$cover?>
-        <? endif; ?>
+    <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?> img-col">
+      <? /* Display thumbnail if appropriate: */ ?>
+      <? if($cover): ?>
+        <?=$cover?>
+      <? endif; ?>
 
-        <? /* Display qrcode if appropriate: */ ?>
-        <? if($QRCode): ?>
-          <span class="hidden-xs">
-            <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
-          </span>
-        <? endif; ?>
-      </div>
+      <? /* Display qrcode if appropriate: */ ?>
+      <? if($QRCode): ?>
+        <span class="hidden-xs">
+          <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+        </span>
+      <? endif; ?>
 
       <? // if you have a preview tab but want to move or remove the preview link
          // from this area of the record view, this can be split into

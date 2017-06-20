@@ -19,11 +19,6 @@
   padding-top: .25rem;
   padding-bottom: .25rem;
 }
-.adv-group-close {
-  position: absolute;
-  bottom: 1rem;
-  left: 75%;
-}
 .adv-search,
 .adv-search .input-group { width: 100%; }
 .adv-search {
@@ -55,6 +50,11 @@
   .adv-group-match {
     float: right;
     width: 25%;
+  }
+  .adv-group-close {
+    position: absolute;
+    bottom: 1rem;
+    left: 75%;
   }
   .adv-search {
     margin-bottom: 0;
@@ -129,26 +129,30 @@
 /* --- Primo --- */
 .primo-adv-search .search { margin-bottom: .5rem; }
 .primo-adv-search .search-container { width: 100%; }
-.primo.adv-group,
-.primo-adv-search .search {
-  display: flex;
-
-  select {
-    flex-grow: 0;
-    flex-shrink: 1;
-    margin-right: .5rem;
-  }
-  .primo-adv-input { flex-shrink: 0; }
-}
 .primo-adv-label {
-  flex-shrink: 0;
   line-height: @input-height-base;
   padding-right: 1rem;
 }
+@media (min-width: 768px) {
+  .primo.adv-group,
+  .primo-adv-search .search {
+    display: flex;
+
+    select {
+      flex-grow: 0;
+      flex-shrink: 1;
+      margin-right: .5rem;
+    }
+    .primo-adv-input { flex-shrink: 0; }
+  }
+  .primo-adv-label { flex-shrink: 0; }
+}
 
 /* --- Solr --- */
-.solr-facet-container {
-  display: flex;
-  flex-wrap: wrap;
+@media (min-width: 768px) {
+  .solr-facet-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .solr-adv-facet { flex: 1 25%; }
 }
-.solr-adv-facet { flex: 1 25%; }
