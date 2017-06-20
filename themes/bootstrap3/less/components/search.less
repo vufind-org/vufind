@@ -79,7 +79,7 @@ header .container.navbar { margin-bottom: 0; }
   .record-checkbox,
   .record-number { display: none; }
 
-  .title {font-weight: bold;}
+  .title { font-weight: bold; }
   .list-tab-content.record .img-col { display: none; }
   .list-tab-content.record .info-col { width: 100%; }
   .format {
@@ -178,6 +178,16 @@ header .container.navbar { margin-bottom: 0; }
     float: left;
     width: 25%;
     padding: 0;
+  }
+}
+body.rtl {
+  .result .btn-bookbag-toggle .fa {
+    margin-left: .3rem;
+    margin-right: 0;
+  }
+  @media (min-width: 768px) {
+    .result-body,
+    .result-links { float: right; }
   }
 }
 .result.embedded {

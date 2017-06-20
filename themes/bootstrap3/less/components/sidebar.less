@@ -26,6 +26,8 @@
     &::after {
       content: '\25B2';
       float: right;
+
+      body.rtl & { float: left; }
     }
   }
   .collapsed::after {content: '\25BC';}
