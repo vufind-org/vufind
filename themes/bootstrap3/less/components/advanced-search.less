@@ -115,6 +115,12 @@
     float: left;
     width: 16%;
     margin-right: 1%;
+
+    body.rtl & {
+      float: right;
+      margin-left: 0;
+      margin-right: 1%;
+    }
   }
   .eds-adv .adv-search:first-of-type .adv-term-input { margin-left: 17%; }
   .eds-adv .adv-term-input {
@@ -157,4 +163,28 @@
     flex-wrap: wrap;
   }
   .solr-adv-facet { flex: 1 25%; }
+}
+
+/* -- Right to left --- */
+body.rtl {
+  fieldset,
+  .fieldset,
+  .adv-search .adv-term-input,
+  .adv-search .adv-term-type,
+  .eds-adv .help-block,
+  .summon-facets .facet-fieldset { float: right; }
+  .adv-submit .clear-btn,
+  .adv-group-match { float: left; }
+  .adv-search .adv-term-input {
+    margin-left: 2%;
+    margin-right: 0;
+  }
+  .date-from {
+    padding-left: .25rem;
+    padding-right: 0;
+  }
+  .date-to {
+    padding-left: 0;
+    padding-right: .25rem;
+  }
 }
