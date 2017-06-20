@@ -91,4 +91,33 @@ class PrimoController extends \VuFind\Controller\PrimoController
 
         return $view;
     }
+
+    /**
+     * Save a search to the history in the database.
+     * Save search Id and type to memory
+     *
+     * @param \VuFind\Search\Base\Results $results Search results
+     *
+     * @return void
+     */
+    public function saveSearchToHistory($results)
+    {
+        parent::saveSearchToHistory($results);
+        $this->getSearchMemory()->rememberSearchData(
+            $results->getSearchId(),
+            $results->getParams()->getSearchType(),
+            $results->getUrlQuery()->isQuerySuppressed()
+                ? '' : $results->getParams()->getDisplayQuery()
+        );
+    }
+
+    /**
+     * Get the search memory
+     *
+     * @return \Finna\Search\Memory
+     */
+    public function getSearchMemory()
+    {
+        return $this->serviceLocator->get('Finna\Search\Memory');
+    }
 }
