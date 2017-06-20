@@ -46,12 +46,18 @@
     display: flex;
     flex-direction: row-reverse;
     padding-right: 0;
+
     .badge { flex-shrink: 0; }
     .text { flex-grow: 1; }
     .exclude {
       flex-basis: 2rem;
       flex-shrink: 0;
       text-align: center;
+    }
+
+    body.rtl & {
+      padding-left: 0;
+      padding-right: 15px;
     }
   }
 }
