@@ -269,15 +269,22 @@ header .form-control:focus {
   &:extend(.clearfix all);
   position: relative;
   margin-top: 2rem;
+  margin-right: calc(~"-50vw + 50%");
   margin-bottom: 2rem;
+  margin-left: calc(~"-50vw + 50%");
   padding: 6rem 3rem;
+  padding-left: calc(~"-50% + 50vw");
   background-color: @header-light;
-  background-image: url('https://source.unsplash.com/collection/803311/800x300');
+  background-image: url('https://source.unsplash.com/collection/803311/1000x300');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center top;
   box-shadow: 0 .5rem 2rem rgba(0,0,0,.1);
-  .btn-link { text-shadow: 0 1px 0 @white; }
+  .btn-link,
+  .nav-tabs a {
+    color: @white;
+    text-shadow: 0 1px 0 @black;
+  }
 }
 .searchHomeContent::before {
   position: absolute;
