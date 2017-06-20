@@ -266,14 +266,25 @@ header .container.navbar { margin-bottom: 0; }
 }
 
 /* --- Combined --- */
-.template-dir-combined.template-name-results .main > .container { width: auto; }
+.combined-search-container { // Full width for combined search columns
+  margin-left: calc(~"-49vw + 50%");
+  margin-right: calc(~"-49vw + 50%");
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: #fff;
+
+  .result { margin-left: 0; }
+  .result-body,
+  .result-links {
+    float: none;
+    width: auto;
+  }
+}
 @media (min-width: 768px) {
   .combined-search-container { display: flex; }
   .combined-column {
     flex: 0 1 100%;
     padding-left: 1rem;
-    padding-right: 1rem;
   }
-  .combined-column:first-child { padding-left: 0; }
-  .combined-column:last-child { padding-right: 0; }
+  .combined-column:last-child { padding-right: 1rem; }
 }
