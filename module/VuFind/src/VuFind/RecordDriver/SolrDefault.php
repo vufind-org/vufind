@@ -1821,17 +1821,6 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get longitude/latitude values (or empty array if not available).
-     *
-     * @return array
-     */
-    public function getLongLat()
-    {
-        return isset($this->fields['long_lat'])
-            ? $this->fields['long_lat'] : [];
-    }
-
-    /**
      * Get schema.org type mapping, an array of sub-types of
      * http://schema.org/CreativeWork, defaulting to CreativeWork
      * itself if nothing else matches.
