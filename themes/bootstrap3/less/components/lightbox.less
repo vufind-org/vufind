@@ -1,8 +1,5 @@
-.lightbox-only { display: none; }
-#modal .lightbox-only { display: initial; }
-
 #modal { background-color: rgba(0,0,0,.2); }
-#modal .modal-content > .close {
+#modal .modal-content > .close { // Fancy side X button
   position: absolute;
   right: -50px;
   top: 0;
@@ -27,5 +24,10 @@
 #modal .cart-controls ~ hr { margin-top: 0; }
 .lightbox-scroll { overflow-y: auto; }
 
+// Loading spinner
 .modal-loading { float: right; }
 body.rtl .modal-loading { float: left; }
+
+// Utility classes
+.lightbox-only { display: none; }
+#modal .lightbox-only { display: initial; }

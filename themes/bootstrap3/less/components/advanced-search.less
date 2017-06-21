@@ -1,3 +1,4 @@
+// Group of multiple searches
 .adv-group {
   .clearfix();
   position: relative;
@@ -6,7 +7,7 @@
   border: 1px solid @panel-default-border;
   border-radius: @border-radius-base;
 
-  & ~ & { margin-top: 1rem; }
+  & ~ & { margin-top: 1rem; } // Spacing between groups
 
   .add_search_link {
     display: inline-block;
@@ -32,7 +33,7 @@
   max-width: 80%;
 }
 .adv-term-remove {
-  &:extend(.close);
+  &:extend(.close); // borrow the X from bootstrap close
   float: left;
   width: 20%;
   height: 30px;
@@ -75,13 +76,6 @@
 #groupPlaceHolder {
   display: block;
   padding: 1rem;
-}
-
-.date-fields {
-  display: flex;
-
-  .date-from { padding-right: .25rem; }
-  .date-to { padding-left: .25rem; }
 }
 
 /* --- Fieldsets --- */
