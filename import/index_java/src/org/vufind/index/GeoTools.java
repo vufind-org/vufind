@@ -51,7 +51,7 @@ public class GeoTools
     static Logger logger = Logger.getLogger(GeoTools.class.getName());
 
     /**
-     * Convert MARC coordinates into location_geo format.
+     * Convert MARC coordinates into long_lat format.
      *
      * @param  Record record
      * @return List   geo_coordinates

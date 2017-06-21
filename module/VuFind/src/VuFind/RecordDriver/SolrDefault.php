@@ -1938,8 +1938,8 @@ class SolrDefault extends AbstractBase
      */
     public function getGeoLocation()
     {
-        return isset($this->fields['location_geo'])
-            ? $this->fields['location_geo'] : [];
+        return isset($this->fields['long_lat'])
+            ? $this->fields['long_lat'] : [];
     }
 
     /**

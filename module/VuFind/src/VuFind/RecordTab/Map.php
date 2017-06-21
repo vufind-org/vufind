@@ -140,7 +140,7 @@ class Map extends AbstractBase
             return [];
         }
         $coordarray = [];
-        /* Extract coordinates from location_geo field */
+        /* Extract coordinates from long_lat field */
         foreach ($geoCoords as $value) {
             $match = [];
             if (preg_match('/ENVELOPE\((.*),(.*),(.*),(.*)\)/', $value, $match)) {

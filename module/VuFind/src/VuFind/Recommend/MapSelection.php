@@ -52,7 +52,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      *
      * @var string
      */
-    protected $geoField = 'location_geo';
+    protected $geoField = 'long_lat';
 
     /**
      * Height of search map pane
