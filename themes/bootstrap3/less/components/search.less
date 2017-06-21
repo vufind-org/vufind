@@ -10,7 +10,7 @@
   .result .checkbox { display: none; }
 }
 
-.searchHomeContent { &:extend(.clearfix all); }
+.searchHomeContent { .clearfix(); }
 .home-facet-list {
   padding-left: 0;
   padding-right: 1rem;
@@ -57,7 +57,7 @@ header .container.navbar { margin-bottom: 0; }
 .bulk-checkbox,
 .bulkActionButtons label { display: inline-block; }
 .bulkActionButtons label input { margin-top: 2px; }
-.bulkActionButtons { &:extend(.clearfix all); }
+.bulkActionButtons { .clearfix(); }
 @media (max-width: 767px) {
   .grid { min-height: 250px; }
 }

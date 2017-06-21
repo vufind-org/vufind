@@ -54,7 +54,7 @@ img { max-width: 100%; }
   font-size: 12px;
 }
 .popover { width: 250px; }
-.resulthead { &:extend(.clearfix all); }
+.resulthead { .clearfix(); }
 .sub-breadcrumb {
   padding: 5px 10px;
   white-space: nowrap;
@@ -93,7 +93,7 @@ h3 { font-size: 16px; }
 
 /* ------ Layout ------ */
 footer {
-  &:extend(.container all);
+  &:extend(.container);
   padding-top: 1rem;
 }
 @media (min-width: 768px) {
@@ -157,7 +157,7 @@ footer {
   border-bottom: 0;
   word-wrap: break-word;
 }
-.browse-item:hover { background-color: @state-info-bg; }
+.browse-item:hover { background-color: @nav-link-hover-bg; }
 .browse-item:last-child { border-bottom: 1px solid @list-group-border; }
 
 .browse-item.with-badge {
@@ -246,19 +246,23 @@ footer {
 /* ------ MyResearch ------ */
 .form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
 .myresearch-menu a {
-  &:extend(.nav>li>a all);
+  display: block;
+  padding: 10px 15px;
+  &:hover,
+  &:focus { background-color: @nav-link-hover-bg; }
+
   .badge { float: right; }
 }
 .myresearch-menu a.active {
-  &:extend(.nav-pills>li.active>a all);
+  background-color: @brand-primary;
+  color: #fff;
+
   .badge {
     background-color: #fff;
     color: @gray-darker;
   }
 }
-.list-edit-container {
-  &:extend(.clearfix all);
-}
+.list-edit-container { .clearfix(); }
 
 /* ------ PubDateVis ------ */
 #dateVisColorSettings {
