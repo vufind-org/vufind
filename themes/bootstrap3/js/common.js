@@ -351,8 +351,8 @@ function setupFacets() {
       }
     }
   });
-  $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
-  $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
+  $('.facet-group').on('shown.bs.collapse', facetSessionStorage);
+  $('.facet-group').on('hidden.bs.collapse', facetSessionStorage);
 }
 
 function setupIeSupport() {
