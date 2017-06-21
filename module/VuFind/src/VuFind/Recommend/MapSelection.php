@@ -294,20 +294,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     }
 
     /**
-     * GetSearchParams no question mark at end
-     *
-     * Return search params without leading question mark and colon.
-     * Copied from ResultGoogleMapAjax.php and chngd name to add NoQ.LMG
-     *
-     * @return string
-     */
-    public function getSearchParamsNoQ()
-    {
-        // Get search parameters and return them minus the leading ?:
-           return substr($this->searchObject->getUrlQuery()->getParams(false), 1);
-    }
-
-    /**
      * GetGeoField
      *
      * Return Solr field to use for geographic search
