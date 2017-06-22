@@ -21,9 +21,15 @@ body {
 
 /* --- Layout --- */
 @media (min-width: 768px) {
-  .main .mainbody { padding: 1rem; }
+  .main .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .main .mainbody,
   .main .sidebar { padding: 0; }
+  .mainbody.right,
   .sidebar.left { padding-left: 1rem; }
+  .mainbody.left,
   .sidebar.right { padding-right: 1rem; }
 }
 
@@ -33,10 +39,7 @@ header .fa.fa-bars { font-size: 21px; }
 header .navbar {
   border-radius: 5px 5px 0 0;
   padding: 0 10px;
-  &.search {
-    border-radius: 0;
-    padding-bottom: 4px;
-  }
+  &.search { border-radius: 0; }
   .navbar-brand {
     height: 65px;
     width: 170px;

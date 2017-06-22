@@ -1,14 +1,14 @@
-.container {
-  background: #FFF;
-  padding: 0;
-}
-
 a,
 .btn-link {
   color: #06C;
   &:hover { color: #09F; }
 }
 .alert { padding: 8px; }
+.breadcrumb {
+  margin-top: .25rem;
+  margin-bottom: .25rem;
+  padding-left: 1rem;
+}
 .btn { padding: 3px 5px 2px; }
 .btn.btn-default {
   background: @gray-lighter;
@@ -28,8 +28,12 @@ a,
 .btn-success:hover { border-color:darken(@brand-success, 12%); }
 .btn-warning,
 .btn-warning:hover { border-color:darken(@brand-warning, 12%); }
+.container {
+  padding: 0;
+  background: #fff;
+}
 
-h2 { margin: 0 8px 8px; }
+h2 { margin: 8px 0; }
 
 input[type=radio],
 input[type=checkbox] {
@@ -43,8 +47,8 @@ input[type=checkbox] {
 }
 .navbar { min-height: 1px; }
 .navbar-form {
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin-top: .5rem;
+  margin-bottom: .5rem;
 }
 .pagination {
   display: table;
