@@ -67,8 +67,9 @@
       'showBulkOptions' => $this->showBulkOptions
     ];
   ?>
-  <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>
-  <? $recs = $combinedResults->getRecommendations('bottom'); if (!empty($recs)): ?>
+  <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+  <? $recs = $combinedResults->getRecommendations('bottom'); ?>
+  <? if (!empty($recs)): ?>
     <div>
       <? foreach ($recs as $current): ?>
         <?=$this->recommend($current)?>

@@ -64,3 +64,38 @@
 
 .template-dir-eds.template-name-advanced h2,
 .template-dir-search.template-name-advanced h2 { margin-top: 3px; }
+
+/* --- Combined --- */
+.template-dir-combined.template-name-results {
+  margin-left: 1rem;
+  margin-right: 1rem;
+
+  .main .container {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  header,
+  .breadcrumbs,
+  .main,
+  footer { background-color: #fff; }
+
+  header { border-radius: 5px 5px 0 0; }
+  footer {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 0 0 5px 5px;
+
+    .footer-container,
+    .poweredby { &:extend(.container); }
+  }
+
+  .breadcrumbs {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
+  .breadcrumbs .container { border: 0; }
+
+  .bulkActionButtons { padding-left: 1rem; }
+}

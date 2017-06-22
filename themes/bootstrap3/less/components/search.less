@@ -243,8 +243,26 @@ header .container.navbar { margin-bottom: 0; }
   font-style: italic;
 }
 
-.wikipedia img { margin-right: 1rem; }
+/* ------ COMBINED ------ */
+@media (min-width: 768px) {
+  .combined-search-container {
+    display: flex;
 
+    .result { margin-left: 0; }
+    .result-body {
+      float: none;
+      width: auto;
+    }
+    .result-links { display: none; }
+  }
+  .combined-column {
+    flex: 0 1 100%;
+    padding-left: 1rem;
+  }
+  .combined-column:last-child { padding-right: 1rem; }
+}
+
+.wikipedia img { margin-right: 1rem; }
 .geoItem {
     font-size: .9em;
     margin: 0px 0px 10px;
