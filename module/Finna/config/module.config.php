@@ -170,6 +170,7 @@ $config = [
             'comments' => 'Finna\Controller\Factory::getCommentsController',
             'content' => 'Finna\Controller\Factory::getContentController',
             'cover' => 'Finna\Controller\Factory::getCoverController',
+            'eds' => 'Finna\Controller\Factory::getEdsController',
             'error' => 'Finna\Controller\Factory::getErrorController',
             'externalauth' => 'Finna\Controller\Factory::getExternalAuthController',
             'feedback' => 'Finna\Controller\Factory::getFeedbackController',

@@ -142,6 +142,12 @@
         display: inline-block;
         vertical-align: middle;
         position: relative;
+        .slider-tick-container {
+          position: relative;
+          .slider-tick {
+            margin-left: 0px;
+          }
+        }
       }
       & .slider {
           & .slider-selection {
@@ -246,15 +252,22 @@
 .adv-term-input.form-control, .adv-term-type.form-control {
     display: initial;
 }
-fieldset.eds {
-    float: left;
-    width: 32%;
-    padding: 0;
-    margin: 0;
-    border: 0;
-    min-width: 0;
-    padding-right: 1%;
-}
 .template-dir-eds .template-name-advanced .slider .slider-handle {
     margin-top: 0px;
+}
+.template-dir-eds .template-name-advanced {
+  ranges-container{
+    overflow: auto;
+  }
+  .checkbox-label {
+    padding-left: 0px;
+    font-weight: normal;
+  }
+
+  & .year-input-container {
+    margin: 5px 0px;
+  }
+  input.input-year{
+    width: 5em;
+  }
 }
