@@ -175,6 +175,27 @@ footer {
   .author-list { flex: 0 1 100%; }
 }
 
+/* ------ MyResearch ------ */
+.form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
+.myresearch-menu a {
+  display: block;
+  padding: 10px 15px;
+  &:hover,
+  &:focus { background-color: @nav-link-hover-bg; }
+
+  .badge { float: right; }
+}
+.myresearch-menu a.active {
+  background-color: @brand-primary;
+  color: #fff;
+
+  .badge {
+    background-color: #fff;
+    color: @gray-darker;
+  }
+}
+.list-edit-container { .clearfix(); }
+
 /* --- PubDateVis --- */
 #dateVisColorSettings {
   background-color: #fff; // background of box
