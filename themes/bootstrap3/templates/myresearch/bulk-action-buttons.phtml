@@ -4,11 +4,9 @@
 <? endif; ?>
 <? $user = $this->auth()->isLoggedIn(); ?>
 <div class="bulkActionButtons">
-  <div class="checkbox">
-    <label>
-      <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
-      <?=$this->transEsc('select_page')?> | <?=$this->transEsc('with_selected')?>:
-    </label>
+  <div class="bulk-checkbox">
+    <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll"/>
+    <label for="myresearchCheckAll"><?=$this->transEsc('select_page')?> | <?=$this->transEsc('with_selected')?>:</label>
   </div>
   <div class="btn-group">
     <input class="btn btn-default" type="submit" name="email" value="<?=$this->transEsc('Email')?>" title="<?=$this->transEsc('email_selected')?>"/>

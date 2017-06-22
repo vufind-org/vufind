@@ -4,9 +4,9 @@
     <? if (!empty($this->checkboxFacets)): ?>
       <?=$this->render('search/advanced/checkbox-filters.phtml')?>
     <? endif; ?>
-    <div class="row">
+    <div class="solr-facet-container">
       <? foreach ($this->facetList as $field => $list): ?>
-        <div class="col-sm-<?=floor(12/count($this->facetList)) ?>">
+        <div class="solr-adv-facet">
           <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
           <select class="form-control" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
             <? if (is_array($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>

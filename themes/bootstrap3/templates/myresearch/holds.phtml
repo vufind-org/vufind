@@ -78,7 +78,7 @@
                   . '" class="title">' . $title . '</a>';
               } else if (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
                 // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
-                echo $this->escapeHtml($ilsDetails['title']);
+                echo '<span class="title">' . $this->escapeHtml($ilsDetails['title']) . '</span>';
               } else {
                 // Last resort -- indicate that no title could be found.
                 echo $this->transEsc('Title not available');
@@ -158,7 +158,6 @@
             <? if (isset($ilsDetails['cancel_link'])): ?>
               <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("hold_cancel") ?></a></p>
             <? endif; ?>
-
           </div>
           <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
             <?=$thumbnail ?>

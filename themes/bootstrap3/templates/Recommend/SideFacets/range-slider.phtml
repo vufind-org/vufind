@@ -1,16 +1,16 @@
-<div class="list-group-item">
+<div class="facet">
   <form name="<?=$this->escapeHtmlAttr($this->title)?>Filter" id="<?=$this->escapeHtmlAttr($this->title)?>Filter">
     <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./", 'filter' => "/^{$this->title}:.*/"])?>
     <input type="hidden" name="<?=$this->escapeHtmlAttr($this->facet['type'])?>range[]" value="<?=$this->escapeHtmlAttr($this->title)?>"/>
-    <div class="row">
+    <div class="date-fields">
       <? $extraInputAttribs = ($this->facet['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
-      <div class="col-sm-6">
+      <div class="date-from">
         <label for="<?=$this->escapeHtmlAttr($this->title)?>from">
           <?=$this->transEsc('date_from')?>:
         </label>
         <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($this->title)?>from" id="<?=$this->escapeHtmlAttr($this->title)?>from" value="<?=isset($this->facet['values'][0])?$this->escapeHtmlAttr($this->facet['values'][0]):''?>" <?=$extraInputAttribs?>/>
       </div>
-      <div class="col-sm-6">
+      <div class="date-to">
         <label for="<?=$this->escapeHtmlAttr($this->title)?>to">
           <?=$this->transEsc('date_to')?>:
         </label>

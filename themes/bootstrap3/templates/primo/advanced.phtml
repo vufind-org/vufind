@@ -23,7 +23,7 @@
         $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
     }
 ?>
-<form id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>">
+<form class="primo-adv-search" id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>">
   <input type="hidden" name="join" value="AND" />
   <div class="<?=$this->layoutClass('mainbody')?>">
     <h3><?=$this->transEsc('Advanced Search')?></h3>
@@ -37,9 +37,9 @@
     ?>
     <? for ($i = 0; $i < $numGroups; $i++): ?>
       <input type="hidden" name="bool<?=$i?>[]" value="AND" />
-      <div class="group well row" id="group<?=$i?>">
-        <div class="col-sm-2" id="group<?=$i?>SearchHolder"><label><?=$this->transEsc("adv_search_label")?>:</label></div>
-        <div class="col-sm-10">
+      <div class="primo adv-group" id="group<?=$i?>">
+        <label class="primo-adv-label" id="group<?=$i?>SearchHolder"><?=$this->transEsc("adv_search_label")?>:</label>
+        <div class="search-container">
           <?
             if (isset($groups[$i])) {
               $currentGroup = $groups[$i]->getQueries();
@@ -53,24 +53,18 @@
           ?>
           <? for ($j = 0; $j < $numRows; $j++): ?>
             <? $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>
-            <div class="row">
-              <div class="col-sm-3">
-                <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control">
+            <div class="search">
+              <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control">
                 <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                   <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
                 <? endforeach; ?>
-                </select>
-              </div>
-              <div class="col-sm-3">
-                <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-control">
-                  <? foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
-                    <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
-                  <? endforeach; ?>
-                </select>
-              </div>
-              <div class="col-sm-6">
-                <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="form-control"/>
-              </div>
+              </select>
+              <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-control">
+                <? foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
+                  <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                <? endforeach; ?>
+              </select>
+                <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="form-control primo-adv-input"/>
             </div>
           <? endfor; ?>
         </div>
