@@ -85,8 +85,19 @@ img {max-width: 100%;}
   }
 }
 
-/* --- Layout --- */
+/* ------ Layout ------ */
+footer {
+  &:extend(.container);
+  padding: 1rem;
+}
 @media (min-width: 768px) {
+  .footer-container {
+    display: flex;
+    width: 100%;
+  }
+  .footer-column { flex: 0 1 100%; }
+
+  // Main content and sidebar widths and float
   .mainbody { width: 75%; }
   .sidebar { width: 25%; }
   .mainbody.left,

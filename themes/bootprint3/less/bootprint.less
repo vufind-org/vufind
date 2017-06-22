@@ -21,7 +21,7 @@ body {
 
 /* --- Layout --- */
 @media (min-width: 768px) {
-  .main .mainbody { padding: 1rem; }
+  .main .container { padding-top: 1rem; }
   .main .sidebar { padding: 0; }
   .sidebar.left { padding-left: 1rem; }
   .sidebar.right { padding-right: 1rem; }
@@ -67,22 +67,12 @@ header .searchbox .tab-content .navbar-text { margin: 5px 10px 5px 0; }
     margin-bottom: 2px
   }
 }
-header .breadcrumbs { padding: 0; }
-header .breadcrumb {
-  border: 1px solid @gray-lighter;
-  border-radius: 0;
-  border-width: 1px 0;
-  font-size: 12px;
-  margin-bottom: 0;
-  padding: .5rem 1rem;
-}
 
 /* --- Footer --- */
-footer { margin-bottom: 36px; }
-footer .container {
+footer {
+  margin-bottom: 2rem;
   border-radius: 0 0 5px 5px;
   border-top: 1px solid @nav-tabs-border-color;
-  padding-top: 18px;
 }
 footer hr { display: none; }
 footer p { margin: 0; }
