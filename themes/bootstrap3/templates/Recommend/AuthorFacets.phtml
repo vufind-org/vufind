@@ -1,8 +1,8 @@
 <? if ($this->recommend->getResults()->getResultTotal() > 0): ?>
   <? $similarAuthors = $this->recommend->getSimilarAuthors(); ?>
   <? if (!empty($similarAuthors['list'])): ?>
+    <p class="author-label"><?=$this->transEsc('Author Results for')?> <strong><?=$this->escapeHtml($this->recommend->getSearchTerm()) ?></strong></p>
     <div class="author-facets">
-      <p class="author-label"><?=$this->transEsc('Author Results for')?> <strong><?=$this->escapeHtml($this->recommend->getSearchTerm()) ?></strong></p>
       <div class="author-list">
       <? foreach($similarAuthors['list'] as $i => $author): ?>
         <? if ($i == 5): ?>
