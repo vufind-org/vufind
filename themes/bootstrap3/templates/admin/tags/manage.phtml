@@ -2,11 +2,12 @@
   // Set page title.
   $this->headTitle($this->translate('VuFind Administration - Tag Maintenance'));
 ?>
+
+<h2><?=$this->translate('Tag Management')?></h2>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->translate('Tag Management')?></h2>
   <h3><?=$this->translate('Manage Tags')?></h3>
 
-  <?=$this->render("admin/tags/menu.phtml")?>
+  <?=$this->render("admin/tags/menu.phtml", ['active' => 'manage'])?>
 
   <?=$this->flashmessages()?>
 
