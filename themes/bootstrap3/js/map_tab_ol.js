@@ -186,6 +186,10 @@ function loadMapTab(mapData, popupTitle) {
           document.getElementById(target).style.cursor = "default";
         }
       });
+      // close popup if zoom in / out occurs
+      map.getView().on('change:resolution', function closePopupsOnZoom() {
+        $(element).popover('destroy');
+      });
     }
   };
   init();
