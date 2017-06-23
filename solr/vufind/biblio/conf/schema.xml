@@ -189,9 +189,8 @@
    <field name="era" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="era_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
    <field name="illustrated" type="string" indexed="true" stored="true" multiValued="false"/>
-   <!-- Used for geographic map display -->
-   <!-- long_lat only used for Google Maps display of point features -->
-   <field name="long_lat" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+   <!-- Used for geographic search and display fields -->
+   <field name="long_lat" type="geo" indexed="true" stored="true" multiValued="true" />
    <field name="long_lat_display" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="long_lat_label" type="string" indexed="false" stored="true" multiValued="true"/>
    <!-- Container fields (i.e. for describing journal containing an article) -->
@@ -231,8 +230,8 @@
    <dynamicField name="*_txtP_mv" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="*_random" type="random" />
    <dynamicField name="*_boolean" type="boolean" indexed="true" stored="true"/>
-   <!-- add geo field to handle geographic search and display capabilities -->
-   <dynamicField name="*_geo" type="geo" indexed="true" stored="true" multiValued="true" />
+   <dynamicField name="*_geo" type="geo" indexed="true" stored="true" multiValued="false" />
+   <dynamicField name="*_geo_mv" type="geo" indexed="true" stored="true" multiValued="true" />
  </fields>
  <uniqueKey>id</uniqueKey>
  <!-- CopyFields for Spelling -->

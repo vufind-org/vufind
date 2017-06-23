@@ -572,6 +572,16 @@ class Upgrade
                 . 'longer supported due to changes in Google APIs.'
             );
         }
+        if (isset($newConfig['Content']['recordMap'])
+            && 'google' == strtolower($newConfig['Content']['recordMap'])
+        ) {
+            unset($newConfig['Content']['recordMap']);
+            unset($newConfig['Content']['googleMapApiKey']);
+            $this->addWarning(
+                'Google Maps is no longer a supported Content/recordMap option;'
+                . ' please review your config.ini.'
+            );
+        }
         if (isset($newConfig['GoogleAnalytics']['apiKey'])) {
             if (!isset($newConfig['GoogleAnalytics']['universal'])
                 || !$newConfig['GoogleAnalytics']['universal']

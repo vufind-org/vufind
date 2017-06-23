@@ -12,7 +12,7 @@ function addSearch(group, _fieldValues) {
   $newSearch.find('input.form-control')
     .attr('id', 'search_lookfor' + inputID)
     .attr('name', 'lookfor' + group + '[]')
-    .attr('value', '');
+    .val('');
   $newSearch.find('select.adv-term-type option:first-child').attr('selected', 1);
   $newSearch.find('select.adv-term-type')
     .attr('id', 'search_type' + inputID)
@@ -21,7 +21,7 @@ function addSearch(group, _fieldValues) {
     .attr('onClick', 'return deleteSearch(' + group + ',' + groupLength[group] + ')');
   // Preset Values
   if (typeof fieldValues.term !== "undefined") {
-    $newSearch.find('input.form-control').attr('value', fieldValues.term);
+    $newSearch.find('input.form-control').val(fieldValues.term);
   }
   if (typeof fieldValues.field !== "undefined") {
     $newSearch.find('select.adv-term-type option[value="' + fieldValues.field + '"]').attr('selected', 1);
