@@ -454,17 +454,21 @@ trait FullMarcTrait
      */
     public function getPrimaryAuthor()
     {
-        return trim($this->getFirstFieldValue('100', ['a']));
+        return trim($this->getFirstFieldValue('100', ['a','d']));
     }
 
     /**
      * Get the main authors of the record.
      *
-     * @return string
+     * @return array
      */
     public function getPrimaryAuthors()
     {
-        return $this->getFieldArray('100', 'a', true);
+        $author = $this->getFieldArray('100', 'a', true);
+        if ($this->getFirstFieldValue('100', ['d'])) {
+            $author[0] .= " " . $this->getFirstFieldValue('100', ['d']);
+        }
+        return $author;
     }
 
     /**
@@ -530,6 +534,10 @@ trait FullMarcTrait
         if (strpos($shortTitle, '@') !== false) {
             $occurrence = strpos($shortTitle, '@');
             $shortTitle = substr_replace($shortTitle, '', $occurrence, 1);
+        }
+
+        if ($this->getFirstFieldValue('245', ['c'], false)) {
+            $shortTitle .= " / " . $this->getFirstFieldValue('245', ['c'], false);
         }
 
         return trim($shortTitle);
