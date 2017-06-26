@@ -5,8 +5,10 @@
 .offcanvas-toggle {display: none;}
 
 .search-filter-toggle {
-  &:extend(.btn all);
-  &:extend(.btn-default all);
+  &:extend(.btn);
+  &:extend(.btn-default);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 @media screen and (min-width: 768px) {
@@ -21,7 +23,10 @@
       height: 100%;
       top: 0;
       width: @offcanvas-offset;
+      padding: 1rem;
       overflow-y: auto;
+      background-color: #fff;
+
       h4 {padding-left: @padding-base-horizontal;}
       .checkbox {margin-left: 20px + @padding-base-horizontal;}
       .list-group, .list-group-item {
@@ -29,6 +34,7 @@
         border-right: 0;
         border-radius: 0 !important;
       }
+      .search-sort { padding-bottom: 1rem; }
     }
     &.active {overflow-y: hidden;}
     &.offcanvas-left {

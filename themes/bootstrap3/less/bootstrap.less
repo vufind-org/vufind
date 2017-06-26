@@ -85,6 +85,33 @@ img {max-width: 100%;}
   }
 }
 
+/* ------ Layout ------ */
+footer {
+  &:extend(.container);
+  padding: 1rem;
+}
+@media (min-width: 768px) {
+  .footer-container {
+    display: flex;
+    width: 100%;
+  }
+  .footer-column { flex: 0 1 100%; }
+
+  // Main content and sidebar widths and float
+  .mainbody { width: 75%; }
+  .sidebar { width: 25%; }
+  .mainbody.left,
+  .sidebar.left {
+    float: left;
+    padding-right: 1rem;
+  }
+  .mainbody.right,
+  .sidebar.right {
+    float: right;
+    padding-left: 1rem;
+  }
+}
+
 /* --- Form Errors --- */
 .has-error {margin-bottom: 0;}
 .sms-error {.has-error;}
@@ -93,6 +120,12 @@ img {max-width: 100%;}
   padding-top: @padding-base-vertical;
   padding-bottom: @padding-base-vertical;
   &:empty {padding: 0;}
+}
+
+/* ------ Admin ------ */
+.form-admin-maintenance .form-control {
+  display: inline-block;
+  width: 100px;
 }
 
 /* --- Badges - blend the links in --- */
@@ -123,6 +156,51 @@ img {max-width: 100%;}
   font-size: 12px;
   white-space: pre;
 }
+
+/* ------ Facets ------ */
+.date-fields {
+  display: flex;
+
+  .date-from { padding-right: .25rem; }
+  .date-to   { padding-left:  .25rem; }
+}
+.top-facets {
+  margin-left: -.5rem;
+  margin-right: -.5rem;
+}
+.top-facets .facet,
+.top-facets .narrow-toggle,
+.top-facets > strong {
+  display: inline-block;
+  padding: .25rem .5rem;
+  white-space: nowrap;
+}
+.top-facets .narrow-toggle { text-decoration: underline; }
+@media (min-width: 768px) {
+  .author-facets { display: flex; }
+  .author-list { flex: 0 1 100%; }
+}
+
+/* ------ MyResearch ------ */
+.form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
+.myresearch-menu a {
+  display: block;
+  padding: 10px 15px;
+  &:hover,
+  &:focus { background-color: @nav-link-hover-bg; }
+
+  .badge { float: right; }
+}
+.myresearch-menu a.active {
+  background-color: @brand-primary;
+  color: #fff;
+
+  .badge {
+    background-color: #fff;
+    color: @gray-darker;
+  }
+}
+.list-edit-container { .clearfix(); }
 
 /* --- PubDateVis --- */
 #dateVisColorSettings {

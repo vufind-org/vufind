@@ -8,6 +8,31 @@
 .citation th {text-align: right;}
 .item-notes ul { padding-left: 2rem; }
 .recordcover {max-height: 300px;}
+
+/* ------ Comments ------ */
+.comment-label,
+.comment-name { font-style: italic; }
+.comment { margin-bottom: 1rem; }
+.comment-name .delete { color: @state-danger-text; }
+@media (min-width: 768px) {
+  .comment-form,
+  .comment {
+    display: flex;
+    margin-bottom: 0;
+  }
+  .comment-label,
+  .comment-name {
+    min-width: 25%;
+    font-style: unset;
+  }
+  .comment-form .text-form { width: 100%; }
+  .comment-form > label { flex: 0 0 auto; }
+  .comment-form textarea {
+    display: block;
+    width: 100%;
+  }
+}
+
 .tagList {
   .tag {
     display: inline-block;
