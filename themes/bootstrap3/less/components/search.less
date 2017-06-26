@@ -31,6 +31,12 @@
 
 header .container.navbar { margin-bottom: 0; }
 
+.search-sort { display: flex; }
+.search-sort label {
+  line-height: @input-height-base;
+  padding-right: .5rem;
+}
+
 .top-facets {
   margin-left: -.5rem;
   margin-right: -.5rem;
@@ -54,7 +60,7 @@ header .container.navbar { margin-bottom: 0; }
   .search-stats { line-height: 2; }
 }
 
-.bulkActionButtons .checkbox,
+.bulk-checkbox,
 .bulkActionButtons label { display: inline-block; }
 .bulkActionButtons label input { margin-top: 2px; }
 @media (max-width: 767px) {
