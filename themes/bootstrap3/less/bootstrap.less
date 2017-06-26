@@ -131,15 +131,50 @@ footer {
 /* --- Badges - blend the links in --- */
 .badge a {color: #fff;}
 
-/* --- Browse --- */
-.browse.list-group .list-group-item {
-  word-wrap: break-word;
-  &.view-record {
-    padding: 2px 4px;
-    font-size: 85%;
-    text-align: right;
-    border-top: 0;
+/* ------ Browse ------ */
+// Layout
+@media (min-width: 768px) {
+  .browse-container { display: flex; }
+  .browse-list {
+    flex-basis: 25%;
+    padding-left: .5rem;
+    padding-right: .5rem;
   }
+}
+// List item styling
+.browse-item {
+  position: relative;
+  display: block;
+  padding: .5rem 1rem;
+  border: 1px solid @list-group-border;
+  border-bottom: 0;
+  word-wrap: break-word;
+}
+.browse-item.active {
+  background-color: @brand-primary;
+  color: #fff;
+
+  .badge {
+    background-color: #fff;
+    color: @gray-darker;
+  }
+}
+.browse-item:hover { background-color: @nav-link-hover-bg; }
+.browse-item:last-child { border-bottom: 1px solid @list-group-border; }
+
+.browse-item.with-badge {
+  padding-right: 3rem; // Prevent text from overlapping badge
+  .badge {
+    position: absolute;
+    top: .5rem;
+    right: .25rem;
+  }
+}
+.browse-item.view-record {
+  padding: 2px 4px;
+  font-size: 85%;
+  text-align: right;
+  border-top: 0;
 }
 
 /* --- Cart --- */
