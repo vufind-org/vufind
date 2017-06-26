@@ -1,7 +1,9 @@
-@thumbnail-width-small: 60px;
+// Thumbnail sizes for media items: search results, list entries, record views
+@thumbnail-width-small:   60px;
 @thumbnail-width-medium: 100px;
-@thumbnail-width-large: 160px;
+@thumbnail-width-large:  160px;
 
+// Hide these on mobile
 @media (max-width: 767px) {
   .bulkActionButtons,
   #datevispublishDatexWrapper,
@@ -36,90 +38,63 @@ header .container.navbar { margin-bottom: 0; }
   line-height: @input-height-base;
   padding-right: .5rem;
 }
+.search-stats {
+  display: block;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
 
-.top-facets {
-  margin-left: -.5rem;
-  margin-right: -.5rem;
-}
-.top-facets .facet,
-.top-facets .narrow-toggle,
-.top-facets > strong {
-  display: inline-block;
-  padding: .25rem .5rem;
-  white-space: nowrap;
-}
-.top-facets .narrow-toggle { text-decoration: underline; }
-
-.search-header { .clearfix(); }
-.search-stats { float: left; }
-.search-controls {
-  float: right;
-  text-align: right;
-}
 @media (min-width: 768px) {
-  .search-stats { line-height: 2; }
+  .search-header { display: flex; }
+  .search-stats {
+    flex-grow: 1;
+    padding: 0;
+    line-height: 2.5;
+  }
+  .search-controls { text-align: right; }
 }
 
 .bulk-checkbox,
 .bulkActionButtons label { display: inline-block; }
 .bulkActionButtons label input { margin-top: 2px; }
+.bulkActionButtons { .clearfix(); }
 @media (max-width: 767px) {
   .grid { min-height: 250px; }
 }
 .result {
   display: flex;
-  flex-direction: row;
-  padding-top: 1.5rem;
+  padding-top: 1rem;
 
-  .record-number {
-    flex: 0 2rem;
-    text-align: center;
-  }
-  .record-checkbox {
-    flex: 0;
-    cursor: pointer;
-  }
+  .record-checkbox,
+  .record-number { display: none; }
 
-  .title {font-weight: bold;}
+  .title { font-weight: bold; }
   .list-tab-content.record .img-col { display: none; }
   .list-tab-content.record .info-col { width: 100%; }
-
-  @media (min-width: 768px) {
-    .media-left,
-    .media-right {
-      padding-right: 10px;
-      padding-left: 10px;
-    }
+  .format {
+    &:extend(.label);
+    &:extend(.label-info);
   }
+
+  .checkbox-select-item { float: left; }
+
   @media (max-width: 767px) {
-    border-bottom: 1px solid @btn-default-border;
-    .media-left,
-    .media-right {
-      max-width: 25%;
-    }
     a {
       max-width: 100%;
       text-decoration: underline;
     }
-    img { max-width: 100%; }
   }
-  @media (max-width: 530px) {
-    .media-left { padding-right: 0; }
-  }
-
-  .btn-bookbag-toggle {
-    form { display: inline; }
-    .fa {
-      color: @text-color;
-      /* .fa-fw */
-      width: 1.28571429em;
+  @media (min-width: 768px) {
+    .record-checkbox {
+      display: block;
+      flex: 0;
+      cursor: pointer;
+    }
+    .record-number {
+      display: block;
+      flex: 0 2rem;
       text-align: center;
     }
-  }
-
-  .format {
-    &:extend(.label);
-    &:extend(.label-info);
   }
 }
 .record,
@@ -176,13 +151,24 @@ header .container.navbar { margin-bottom: 0; }
     }
   }
 }
-.result-body { padding-left: 1rem; }
-.result-links { padding: 1rem; }
+.result-body {
+  padding: 0;
+  padding-bottom: .25rem;
+}
+.result-links .alert { margin: 0; }
+
+.btn-bookbag-toggle form { display: inline; }
+.btn-bookbag-toggle .fa { margin-right: .3rem; }
+.result .btn-bookbag-toggle .fa {
+  color: @text-color;
+  /* .fa-fw */
+  width: 1.28571429em;
+  text-align: center;
+}
 @media (min-width: 768px) {
   .result-body {
     float: left;
     width: 75%;
-    padding: 0;
   }
   .result-links {
     float: left;
@@ -190,6 +176,17 @@ header .container.navbar { margin-bottom: 0; }
     padding: 0;
   }
 }
+body.rtl {
+  .result .btn-bookbag-toggle .fa {
+    margin-left: .3rem;
+    margin-right: 0;
+  }
+  @media (min-width: 768px) {
+    .result-body,
+    .result-links { float: right; }
+  }
+}
+/* ------ EMBEDDED RESULTS STYLE ------ */
 .result.embedded {
   .getFull {
     display: block;
@@ -230,6 +227,7 @@ header .container.navbar { margin-bottom: 0; }
   .list-tab-content { padding: 1rem; }
 }
 
+/* ------ GRID VIEW ------ */
 .search-grid::after {
   display: table;
   clear: both;
@@ -259,10 +257,9 @@ header .container.navbar { margin-bottom: 0; }
   .grid-small-break { display: none; }
 }
 
-.searchtools a {padding: 0 .5rem;}
-.title-in-heading {
-  font-size: inherit;
-  font-style: italic;
+.searchtools a {
+  padding: 0 .5rem;
+  white-space: nowrap;
 }
 
 /* ------ COMBINED ------ */
@@ -288,4 +285,8 @@ header .container.navbar { margin-bottom: 0; }
 .geoItem {
     font-size: .9em;
     margin: 0px 0px 10px;
+}
+.title-in-heading {
+  font-size: inherit;
+  font-style: italic;
 }
