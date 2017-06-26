@@ -228,7 +228,12 @@ VuFind.register('cart', function Cart() {
     _registerToggles();
     // Search results
     _registerUpdate();
-    $("#updateCart, #bottom_updateCart").popover({content: '', html: true, trigger: 'manual'});
+    $("#updateCart, #bottom_updateCart").popover({
+      content: '',
+      html: true,
+      trigger: 'manual',
+      placement: $(document.body).hasClass('rtl') ? 'left' : 'right'
+    });
     updateCount();
   }
 
