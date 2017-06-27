@@ -264,6 +264,15 @@ body.rtl {
 }
 
 /* ------ COMBINED ------ */
+// No sidebar in combined:
+.template-dir-combined.template-name-results.offcanvas {
+  margin-left: .5rem;
+  margin-right: .5rem;
+  padding: 0;
+}
+
+.combined-column { padding-left: 1rem; }
+
 @media (min-width: 768px) {
   .combined-search-container {
     display: flex;
@@ -275,10 +284,7 @@ body.rtl {
     }
     .result-links { display: none; }
   }
-  .combined-column {
-    flex: 0 1 100%;
-    padding-left: 1rem;
-  }
+  .combined-column { flex: 0 1 100%; }
   .combined-column:last-child { padding-right: 1rem; }
 }
 
