@@ -23,7 +23,11 @@
          // from this area of the record view, this can be split into
          // getPreviewData() (should stay here) and
          // getPreviewLink() (can go in your desired tab) ?>
-      <? if ($preview): ?><?=$preview?><? endif; ?>
+      <? if ($preview): ?>
+        <div class="record-previews">
+          <?=$preview?>
+        </div>
+      <? endif; ?>
     </div>
   <? endif; ?>
   <div class="media-body">

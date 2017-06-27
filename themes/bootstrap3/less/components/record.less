@@ -1,12 +1,19 @@
-.record .media-body h3 { margin-top: 0; }
-.recordcover { max-height: 300px; }
+.record .media-body h3 { margin-top: 0; } // Align title with top of image
+.recordcover { max-height: 300px; } // Keep the image from getting out of control
 @media (max-width: 767px) {
   .record .media-left,
   .record .media-right { display: block; }
+  .record .media-body { // Add a gap between the thumbnail and the info
+    display: block;
+    width: auto;
+    margin-top: 1rem;
+  }
 }
+// Comma-separate formatting
 .result .record .format::after,
 .record .format:last-child::after { content: ""; }
 .record .format::after { content: ", "; }
+.record-previews { margin-top: .5rem; }
 
 /* ------ Nav ------ */
 .record-nav.nav { margin-bottom: 1rem; }
