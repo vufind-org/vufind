@@ -99,10 +99,20 @@ legend {
 .template-dir-search.template-name-advanced h2 { margin-top: 3px; }
 
 /* --- Combined --- */
-.template-dir-combined.template-name-results {
-  margin-left: 1rem;
-  margin-right: 1rem;
+.combined-column {
+  padding-left: 1rem;
+  padding-right: 1rem;
 
+  .result {
+    margin-right: -1rem;
+    padding-right: .5rem;
+  }
+}
+.template-dir-combined.template-name-results {
+  &.offcanvas {
+    margin-left: .5rem;
+    margin-right: .5rem;
+  }
   .main .container {
     width: 100%;
     padding-left: 0;
@@ -131,4 +141,14 @@ legend {
   .breadcrumbs .container { border: 0; }
 
   .bulkActionButtons { padding-left: 1rem; }
+
+}
+@media (min-width: 768px) {
+  .template-dir-combined.template-name-results {
+    &,
+    &.offcanvas { // overcoming specificity
+      margin-left: 1rem;
+      margin-right: 1rem;
+    }
+  }
 }
