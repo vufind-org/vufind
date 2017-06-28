@@ -53,7 +53,8 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new Sfx(
             $config->OpenURL->url,
-            $sm->getServiceLocator()->get('VuFind\Http')->createClient()
+            $sm->getServiceLocator()->get('VuFind\Http')->createClient(),
+            $config
         );
     }
 }
