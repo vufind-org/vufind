@@ -254,19 +254,21 @@ public class GeoTools
         boolean validLines = true;
         boolean validExtent = true;
         boolean validNorthSouth = true;
+        boolean validEastWest = true;
         boolean validCoordDist = true;
 
         if (validateValues(record, west, east, north, south)) {
             validLines = validateLines(record, west, east, north, south);
             validExtent = validateExtent(record, west, east, north, south);
             validNorthSouth = validateNorthSouth(record, north, south);
+            validEastWest = validateEastWest(record, east, west);
             validCoordDist = validateCoordinateDistance(record, west, east, north, south);
         } else {
             return false;
         }
 
         // Validate all coordinate combinations
-        if (!validLines || !validExtent || !validNorthSouth || !validCoordDist) {
+        if (!validLines || !validExtent || !validNorthSouth || !validEastWest || !validCoordDist) {
             return false;
         } else {
             return true;
@@ -343,6 +345,33 @@ public class GeoTools
         String recNum = recID.getData();
         logger.error("Record ID: " + recNum.trim() + " - North < South.");
         return false;
+    }
+    return true;
+   }
+
+    /**
+    * Check decimal degree coordinates to make sure that east is not less than west.
+    *
+    * @param  Record record
+    * @param  Double east, west
+    * @return boolean
+    */
+   public boolean validateEastWest(Record record, Double east, Double west) {
+    if (east < west) {
+       // Convert to 360 degree grid
+       if (east < 0) {
+           east = 360 + east;
+       }
+       if (west < 0) {
+           west = 360 + west;
+       }
+       // Check again
+       if (east < west) {
+           ControlField recID = (ControlField) record.getVariableField("001");
+           String recNum = recID.getData();
+           logger.error("Record ID: " + recNum.trim() + " - East < West.");
+           return false;
+       }
     }
     return true;
    }
