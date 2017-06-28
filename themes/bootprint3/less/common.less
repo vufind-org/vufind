@@ -1,21 +1,26 @@
-.container {
-  background: #FFF;
-  padding: 0;
-}
-
 a,
 .btn-link {
   color: #06C;
   &:hover { color: #09F; }
 }
 .alert { padding: 8px; }
+.breadcrumbs .container {
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+.breadcrumb {
+  margin-top: .25rem;
+  margin-bottom: .25rem;
+  padding-left: 0;
+  font-size: 12px;
+}
 .btn { padding: 3px 5px 2px; }
 .btn.btn-default {
   background: @gray-lighter;
-  background-image: linear-gradient(#FFF, @nav-tabs-border-color);
+  background-image: linear-gradient(#fff, @nav-tabs-border-color);
   border: 1px solid @gray;
   color: @gray-darker;
-  text-shadow: 0 1px 0 #FFF;
+  text-shadow: 0 1px 0 #fff;
 }
 .btn:not(.btn-default) { font-weight:bold; }
 .btn-danger,
@@ -28,6 +33,18 @@ a,
 .btn-success:hover { border-color:darken(@brand-success, 12%); }
 .btn-warning,
 .btn-warning:hover { border-color:darken(@brand-warning, 12%); }
+.container {
+  padding: 0;
+  background: #fff;
+}
+
+h2 { margin: 8px 0; }
+
+.container {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  background: #fff;
+}
 
 input[type=radio],
 input[type=checkbox] {
@@ -41,8 +58,8 @@ input[type=checkbox] {
 }
 .navbar { min-height: 1px; }
 .navbar-form {
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin-top: .5rem;
+  margin-bottom: .5rem;
 }
 .pagination {
   display: table;
@@ -79,13 +96,9 @@ input[type=checkbox] {
 }
 
 @media (max-width: 767px) {
-  body { padding: 6px; }
-  header { margin-top: 0; }
   .label { font-size: 85%; }
 }
 @media (min-width: 768px) {
-  .main .mainbody { padding: 1rem; }
-  .main .sidebar { padding: 0; }
   .badge {
     font-size: 85%;
     margin-top: 1px;

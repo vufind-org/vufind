@@ -406,6 +406,18 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
                 $warnings
             )
         );
+        $this->assertTrue(
+            in_array(
+                'Google Maps is no longer a supported Content/recordMap option;'
+                . ' please review your config.ini.',
+                $warnings
+            )
+        );
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config.ini']['Content']['recordMap']));
+        $this->assertFalse(
+            isset($results['config.ini']['Content']['googleMapApiKey'])
+        );
     }
 
     /**

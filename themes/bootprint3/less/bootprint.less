@@ -18,13 +18,12 @@ body {
 #commentList .comment:nth-child(even) { background: @gray-lighter; }
 #dateVisColorSettings { stroke: @brand-primary; }
 #hierarchyRecord { background: #fff; }
+.cart-controls .checkbox { line-height: 2rem; }
 
 /* --- Layout --- */
+.main .container { padding-top: 1rem; }
 @media (min-width: 768px) {
-  .main .mainbody { padding: 1rem; }
   .main .sidebar { padding: 0; }
-  .sidebar.left { padding-left: 1rem; }
-  .sidebar.right { padding-right: 1rem; }
 }
 
 /* --- Header --- */
@@ -33,10 +32,7 @@ header .fa.fa-bars { font-size: 21px; }
 header .navbar {
   border-radius: 5px 5px 0 0;
   padding: 0 10px;
-  &.search {
-    border-radius: 0;
-    padding-bottom: 4px;
-  }
+  &.search { border-radius: 0; }
   .navbar-brand {
     height: 65px;
     width: 170px;
@@ -67,22 +63,12 @@ header .searchbox .tab-content .navbar-text { margin: 5px 10px 5px 0; }
     margin-bottom: 2px
   }
 }
-header .breadcrumbs { padding: 0; }
-header .breadcrumb {
-  border: 1px solid @gray-lighter;
-  border-radius: 0;
-  border-width: 1px 0;
-  font-size: 12px;
-  margin-bottom: 0;
-  padding: .5rem 1rem;
-}
 
 /* --- Footer --- */
-footer { margin-bottom: 36px; }
-footer .container {
+footer {
+  margin-bottom: 2rem;
   border-radius: 0 0 5px 5px;
   border-top: 1px solid @nav-tabs-border-color;
-  padding-top: 18px;
 }
 footer hr { display: none; }
 footer p { margin: 0; }
@@ -141,48 +127,6 @@ ul.random.image li img { margin: 0 auto; }
   float: left;
   margin: 5px 10px 5px 0;
 }
-
-/* --- Record --- */
-.tagList button {
-  margin-top: 0;
-  padding-top: 0;
-  padding-bottom: 4px;
-  font-size: 95%;
-  vertical-align: initial;
-}
-.tagList button .fa-close { margin-top: 3px; }
-
-/* --- Search --- */
-.bulkActionButtons { padding-bottom: 1rem; }
-.top-facets .facet a { vertical-align: middle; }
-.result {
-  padding: 1rem;
-  margin-left: -1rem; // Bring result to the edge of the container
-  &:nth-child(even) { background-color: @gray-lighter; }
-  &.embedded .getFull.expanded {
-    margin-top: -6px;
-    padding-top: .5rem;
-    padding-bottom: .5rem;
-  }
-}
-.result > p {padding:0 1em;}
-.result .label {
-  display: inline-block;
-  margin-bottom: 4px;
-}
-.result .long-view .tab-content {background: #fff;}
-.result .media { margin: 0; }
-.result .row { padding: 0; }
-.result .savedLists {
-  margin: 0 0 4px;
-  padding: 4px 0 4px 6px;
-}
-.result .savedLists ul { padding-left: 18px; }
-.search-controls label {
-  margin: 0;
-  vertical-align: middle;
-}
-.search-stats { color: @gray; }
 
 /* --- Sidebar --- */
 .sidebar {

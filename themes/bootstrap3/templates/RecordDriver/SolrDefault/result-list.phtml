@@ -137,14 +137,19 @@
         <? endif; ?>
       <? endif; ?>
 
-      <?=$this->record($this->driver)->getFormatList() ?>
+      <div class="result-formats">
+        <?=$this->record($this->driver)->getFormatList() ?>
 
-      <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
-        <span class="status ajax-availability hidden">
-          <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
-        </span>
-      <? endif; ?>
-      <?=$this->record($this->driver)->getPreviews()?>
+        <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
+          <span class="status ajax-availability hidden">
+            <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
+          </span>
+        <? endif; ?>
+      </div>
+
+      <div class="result-previews">
+        <?=$this->record($this->driver)->getPreviews()?>
+      </div>
     </div>
     <div class="result-links hidden-print">
       <? /* Display qrcode if appropriate: */ ?>
