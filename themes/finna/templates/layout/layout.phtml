@@ -321,29 +321,31 @@ JS;
           && !empty($this->layout()->breadcrumbs)
           && $this->layout()->breadcrumbs !== false
         ): ?>
-          <div class="row">
-          <div class="col-sm-10 col-md-8 col-lg-8 hidden-print">
-          <ul class="breadcrumb">
-          <? if(is_array($this->layout()->breadcrumbs)): ?>
-            <? if(count($this->layout()->breadcrumbs) > 1): ?>
-              <?=$this->render('breadcrumbs/multi.phtml', [
-                  'parents' => $this->layout()->breadcrumbs,
-                  'title'   => $this->layout()->title,
-                  'end'     => $this->layout()->breadcrumbEnd,
-                  'from'    => $this->layout()->from
-                ]) ?>
-            <? else: ?>
-              <?=$this->render('breadcrumbs/default.phtml', [
-                  'parents' => $this->layout()->breadcrumbs,
-                  'title'   => $this->layout()->title
-                ]) ?>
-            <? endif; ?>
-          <? else: ?>
-            <?=$this->layout()->breadcrumbs ?>
-          <? endif; ?>
-          </ul>
-          </div>
-          </div>
+          <nav class="breadcrumbs">
+            <div class="row">
+              <div class="col-sm-10 col-md-8 col-lg-8 hidden-print">
+                <ul class="breadcrumb">
+                  <? if(is_array($this->layout()->breadcrumbs)): ?>
+                    <? if(count($this->layout()->breadcrumbs) > 1): ?>
+                      <?=$this->render('breadcrumbs/multi.phtml', [
+                          'parents' => $this->layout()->breadcrumbs,
+                          'title'   => $this->layout()->title,
+                          'end'     => $this->layout()->breadcrumbEnd,
+                          'from'    => $this->layout()->from
+                        ]) ?>
+                    <? else: ?>
+                      <?=$this->render('breadcrumbs/default.phtml', [
+                          'parents' => $this->layout()->breadcrumbs,
+                          'title'   => $this->layout()->title
+                        ]) ?>
+                    <? endif; ?>
+                  <? else: ?>
+                    <?=$this->layout()->breadcrumbs ?>
+                  <? endif; ?>
+                </ul>
+              </div>
+            </div>
+          </nav>
         <? endif; ?>
         <? if (!empty($this->layout()->searchbox) && $this->layout()->searchbox !== false): ?>
         <div class="row">

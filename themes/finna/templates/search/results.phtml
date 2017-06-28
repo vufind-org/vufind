@@ -117,9 +117,9 @@
         <? endif; ?>
       </div>
     <? endif; ?>
-<div class="row results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
+<div class="results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
   <? if ($recordTotal < 1): ?>
-  <div class="col-sm-9">
+  <p>
     <? if (isset($this->overrideEmptyMessage)): ?>
     <p><?=$this->overrideEmptyMessage?></p>
     <? elseif ($lookfor == '' && $this->params->getSearchClassId() == 'Primo'): ?>
@@ -144,7 +144,7 @@
         </div>
       </div>
     <? endif; ?>
-  </div>
+  </p>
   <? endif; ?>
   <div class="<?=$recordTotal < 1 ? "col-sm-9" : $this->layoutClass('mainbody')?>">
     <? /* End Listing Options */ ?>

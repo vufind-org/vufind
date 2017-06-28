@@ -10,7 +10,7 @@ function getRecord(recordID)
     dataType: 'html'
   })
   .done(function(response) {
-    $('#hierarchyRecord').html(html_entity_decode(response));
+    $('#tree-preview').html(html_entity_decode(response));
     // Remove the old path highlighting
     $('#hierarchyTree a').removeClass("jstree-highlight");
     // Add Current path highlighting

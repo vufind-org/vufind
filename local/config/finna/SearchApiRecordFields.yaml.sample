@@ -187,7 +187,7 @@ genres:
   items:
     type: string
 geoLocations:
-  vufind.method: getGeoLocation
+  vufind.method: getGeoLocations
   description: Geographic locations (e.g. points, bounding boxes)
   type: array
   items:
