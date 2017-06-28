@@ -719,7 +719,14 @@ finna.layout = (function() {
                     markup: '<div class="mfp-iframe-scaler">'
                         + '<div class="mfp-close"></div>'
                         + '<iframe class="mfp-iframe" frameborder="0" allowfullscreen></iframe>'+
-                        + '</div>'
+                        + '</div>',
+                    patterns: {
+                        youtube_short: {
+                            index: 'youtu.be/',
+                            id: 'youtu.be/',
+                            src: '//www.youtube.com/embed/%id%?autoplay=1'
+                        }
+                    }
                 },
                 callbacks: {
                     open: function() {

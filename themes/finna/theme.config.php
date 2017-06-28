@@ -45,6 +45,7 @@ return [
             'systemMessages' => 'Finna\View\Helper\Root\Factory::getSystemMessages',
             'translation' => 'Finna\View\Helper\Root\Factory::getTranslation',
             'proxyurl' => 'Finna\View\Helper\Root\Factory::getProxyUrl',
+            'recordlink' =>  'Finna\View\Helper\Root\Factory::getRecordLink',
         ],
         'invokables' => [
             'markdown' => 'Finna\View\Helper\Root\Markdown',

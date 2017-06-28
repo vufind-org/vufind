@@ -74,6 +74,7 @@
             <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="_blank"
               <? if (!empty($url['videoSources'])): ?> data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<? endif; ?>
               <? if (!empty($url['posterUrl'])): ?> data-poster-url="<?= $this->escapeHtmlAttr($url['posterUrl']) ?>"<? endif; ?>
+              <?= $this->recordLink()->getEmbeddedVideo($current['url']) ?>
               <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
             >
               <i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate('link_' . $current['desc'], null, $current['desc']))?>

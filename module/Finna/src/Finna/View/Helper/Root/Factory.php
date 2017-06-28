@@ -641,4 +641,16 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $sm->getServiceLocator()->get('Finna\Search\Memory')
         );
     }
+
+    /**
+     * Construct the RecordLink helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return RecordLink
+     */
+    public static function getRecordLink(ServiceManager $sm)
+    {
+        return new RecordLink($sm->getServiceLocator()->get('VuFind\RecordRouter'));
+    }
 }
