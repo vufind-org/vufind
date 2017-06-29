@@ -100,6 +100,9 @@ header .form-control:focus {
 #cartSummary strong { font-weight: inherit; }
 .btn-bookbag-toggle .fa { color: @link-color; }
 
+/* --- MyResearch --- */
+.myresearch-menu a:hover { background-color: @white; }
+
 /* --- Record --- */
 .record-nav {
   display: table;
@@ -137,7 +140,7 @@ header .form-control:focus {
     background-color: @brand-primary;
   }
 }
-.search-header { padding-top: 0; }
+.search-stats { padding: 0; }
 .result {
   margin-right: -1rem;
   padding-top: 1rem;
@@ -147,6 +150,7 @@ header .form-control:focus {
 
   .media-left { padding-left: 0; }
   .media-right { padding-right: 0; }
+  .record-cover img { border: 1px solid @gray-lighter; }
   .record-number {
     font-size: @reduced-font-size;
     font-weight: bold;
@@ -273,26 +277,6 @@ header .form-control:focus {
   border-color: @active-filter-bg;
   background-color: @active-filter-bg;
 }
-.bulkActionButtons > .checkbox {
-  input[type="checkbox"] { display: none; }
-  label { padding-left: 0; }
-  label::before {
-    display: inline-block;
-    width: @result-checkbox-width;
-    padding: .25rem;
-    font-family: "FontAwesome";
-    font-size: @reduced-font-size;
-    background-color: @gray-lighter;
-    color: @gray-light;
-    content: "\f00c";
-    text-align: center;
-    border-radius: @border-radius-base;
-  }
-  :checked ~ label::before {
-    background-color: @brand-primary;
-    color: @white;
-  }
-}
 
 .searchHomeContent {
   &:extend(.clearfix all);
@@ -361,16 +345,37 @@ header .form-control:focus {
 
 /* --- Sidebar --- */
 .sidebar {
-  padding-left: 1rem;
-  padding-right: 1rem;
   font-size: @reduced-font-size;
   background-color: @light-gray;
-  .title::after { color: @gray-light; }
-
-  /* Collapsed arrows */
-  .list-group.facet .list-group-item.title::after {
-    font-family: "FontAwesome";
-    content: '\f106';
+  .title::after {
+    color: @gray-light;
   }
-  .list-group.facet .list-group-item.title.collapsed::after { content: '\f107'; }
+
+  .facet-group {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    background-color: @white;
+
+    /* Collapsed arrows */
+    .title::after {
+      width: 1rem;
+      font-family: "FontAwesome";
+      text-align: center;
+      content: '\f106';
+    }
+    .title.collapsed::after { content: '\f107'; }
+
+    .facet .badge {
+      max-height: 15px;
+      margin-top: 5px;
+      line-height: .8;
+    }
+  }
 }
+.sidebar.left,
+.sidebar.right {
+  padding-left: 0;
+  padding-right: 0;
+}
+.sidebar .checkbox-filter,
+.sidebar > h4 { margin-left: 1rem; }
