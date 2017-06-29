@@ -116,11 +116,42 @@ header .form-control:focus {
 
 /* --- Search --- */
 .list-group-item.title { color: @dark-gray; }
+.bulkActionButtons {
+  .checkbox-select-all { display: none; }
+  label::before {
+    display: inline-block;
+    width: 28px;
+    margin-right: .5rem;
+    padding: .25rem;
+    font-size: @reduced-font-size;
+    font-family: "FontAwesome";
+    text-align: center;
+    color: @gray-light;
+    content: "\f00c";
+    cursor: pointer;
+    background-color: @gray-lighter;
+    border-radius: @border-radius-base;
+  }
+  :checked ~ label::before {
+    color: #fff;
+    background-color: @brand-primary;
+  }
+}
+.search-header { padding-top: 0; }
 .result {
   margin-right: -1rem;
-  padding: 0;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid @moon-gray;
   font-size: @reduced-font-size;
+
+  .media-left { padding-left: 0; }
+  .media-right { padding-right: 0; }
+  .record-number {
+    font-size: @reduced-font-size;
+    font-weight: bold;
+    color: @gray;
+  }
 
   .title { font-size: 1rem; }
   .callnumAndLocation {
@@ -158,6 +189,7 @@ header .form-control:focus {
   }
   .cart-link-icon { color: inherit; }
   .alert { background-color: @white; }
+  .record-number { color: @white; }
   .alert a { color: @black; }
 }
 .result-body,
@@ -206,7 +238,6 @@ header .form-control:focus {
     background-color: transparent;
   }
 }
-.result .record-checkbox .checkbox-icon::before { margin-top: 1rem; }
 .grid-result .grid-checkbox label { width: 100%; }
 @media (min-width: 768px) {
   .result { padding-right: 1rem; }
@@ -217,9 +248,7 @@ header .form-control:focus {
   }
   .result-link-icon,
   .result .cart-link-icon {
-    width: auto;
-    margin-left: 3px;
-    margin-right: .5rem;
+    margin-right: .2rem;
     padding: 0;
     font-size: inherit;
     color: @gray-darker;
