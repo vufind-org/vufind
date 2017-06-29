@@ -102,7 +102,7 @@
 <?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
 <? if ($results->getResultTotal() > 0): ?>
   <span class="facet-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...</span>
-  <span class="facet-load-failed hidden"> <?=$this->transEsc('An error occurred during execution; please try again later.')?></span>
+  <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
 </div>
 <? endif; ?>
 <!-- END of: finna - Recommend/SideFacetsDeferred.phtml -->
