@@ -7,23 +7,19 @@
   <?=$this->render('record/comments-list.phtml')?>
 </div>
 <form class="comment-form" name="commentRecord" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post">
-  <div class="row">
-    <div class="col-sm-3 name">
-      <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
-      <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>"/>
-      <strong><?=$this->transEsc("Your Comment")?></strong>
-    </div>
-    <div class="col-sm-9">
-      <? $user = $this->auth()->isLoggedIn() ?>
-      <? if($user): ?>
-        <textarea name="comment" class="form-control" rows="3" required></textarea><br/>
-        <? if ($this->tab->isRecaptchaActive()): ?>
-          <?=$this->recaptcha()->html(true, false) ?><br/>
-        <? endif; ?>
-        <input class="btn btn-primary" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
-      <? else: ?>
-        <a href="<?=$this->url('myresearch-userlogin') ?>" class="btn btn-primary" data-lightbox title="Login"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("You must be logged in first") ?></a>
+  <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
+  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>"/>
+  <label class="comment-label"><?=$this->transEsc("Your Comment")?></label>
+  <? $user = $this->auth()->isLoggedIn() ?>
+  <? if($user): ?>
+    <div class="text-form">
+      <textarea name="comment" class="form-control" rows="3" required></textarea>
+      <? if ($this->tab->isRecaptchaActive()): ?>
+        <?=$this->recaptcha()->html(true, false) ?>
       <? endif; ?>
+      <input class="btn btn-primary" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
     </div>
-  </div>
+  <? else: ?>
+    <a href="<?=$this->url('myresearch-userlogin') ?>" class="btn btn-primary" data-lightbox title="Login"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("You must be logged in first") ?></a>
+  <? endif; ?>
 </form>

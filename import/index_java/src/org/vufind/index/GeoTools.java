@@ -8,7 +8,6 @@ package org.vufind.index;
  *
  * code adapted from xrosecky - Moravian Library
  * https://github.com/moravianlibrary/VuFind-2.x/blob/master/import/index_scripts/geo.bsh
- * and incorporates legacy VuFind functionality for GoogleMap display.
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -52,7 +51,7 @@ public class GeoTools
     static Logger logger = Logger.getLogger(GeoTools.class.getName());
 
     /**
-     * Convert MARC coordinates into location_geo format.
+     * Convert MARC coordinates into long_lat format.
      *
      * @param  Record record
      * @return List   geo_coordinates
@@ -89,36 +88,6 @@ public class GeoTools
             }
         }
         return geo_coordinates;
-    }
-
-    /**
-     * Get point coordinates for GoogleMap display.
-     *
-     * @param  Record record
-     * @return List   coordinates
-     */
-    public List<String> getPointCoordinates(Record record) {
-        List<String> coordinates = new ArrayList<String>();
-        List<VariableField> list034 = record.getVariableFields("034");
-        if (list034 != null) {
-            for (VariableField vf : list034) {
-                HashMap<Character, String> coords = getCoordinateValues(vf);
-                // Check for null coordinates
-                if (validateCoordinateValues(record, coords)) {
-                    // Check to see if we have a point coordinate
-                    if (coords.get('d').equals(coords.get('e')) && coords.get('f').equals(coords.get('g'))) {
-                        // Convert N (f_coord) and E (e_coord) coordinates to decimal degrees
-                        Double long_val = convertCoordinate(coords.get('e'));
-                        Double lat_val = convertCoordinate(coords.get('f'));
-                        String longlatCoordinate = Double.toString(long_val) + ',' + Double.toString(lat_val);
-                        coordinates.add(longlatCoordinate);
-                    }
-                } else {
-                    logger.error(".......... Not indexing INVALID Point coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
-                }
-            }
-        }
-        return coordinates;
     }
 
     /**
@@ -285,19 +254,21 @@ public class GeoTools
         boolean validLines = true;
         boolean validExtent = true;
         boolean validNorthSouth = true;
+        boolean validEastWest = true;
         boolean validCoordDist = true;
 
         if (validateValues(record, west, east, north, south)) {
             validLines = validateLines(record, west, east, north, south);
             validExtent = validateExtent(record, west, east, north, south);
             validNorthSouth = validateNorthSouth(record, north, south);
+            validEastWest = validateEastWest(record, east, west);
             validCoordDist = validateCoordinateDistance(record, west, east, north, south);
         } else {
             return false;
         }
 
         // Validate all coordinate combinations
-        if (!validLines || !validExtent || !validNorthSouth || !validCoordDist) {
+        if (!validLines || !validExtent || !validNorthSouth || !validEastWest || !validCoordDist) {
             return false;
         } else {
             return true;
@@ -379,6 +350,33 @@ public class GeoTools
    }
 
     /**
+    * Check decimal degree coordinates to make sure that east is not less than west.
+    *
+    * @param  Record record
+    * @param  Double east, west
+    * @return boolean
+    */
+   public boolean validateEastWest(Record record, Double east, Double west) {
+    if (east < west) {
+       // Convert to 360 degree grid
+       if (east < 0) {
+           east = 360 + east;
+       }
+       if (west < 0) {
+           west = 360 + west;
+       }
+       // Check again
+       if (east < west) {
+           ControlField recID = (ControlField) record.getVariableField("001");
+           String recNum = recID.getData();
+           logger.error("Record ID: " + recNum.trim() + " - East < West.");
+           return false;
+       }
+    }
+    return true;
+   }
+
+    /**
      * Check decimal degree coordinates to make sure they are not too close.
      * Coordinates too close will cause Solr to run out of memory during indexing.
      *
@@ -406,51 +404,5 @@ public class GeoTools
             return false;
         }
         return true;
-    }
-
-    /**
-     * THIS FUNCTION HAS BEEN DEPRECATED.
-     * Determine the longitude and latitude of the items location.
-     *
-     * @param  record current MARC record
-     * @return string of form "longitude, latitude"
-     * @deprecated
-     */
-    public String getLongLat(Record record) {
-        // Check 034 subfield d and f
-        List<VariableField> fields = record.getVariableFields("034");
-        Iterator<VariableField> fieldsIter = fields.iterator();
-        if (fields != null) {
-            DataField physical;
-            while(fieldsIter.hasNext()) {
-                physical = (DataField) fieldsIter.next();
-                String val = null;
-
-                List<Subfield> subfields_d = physical.getSubfields('d');
-                Iterator<Subfield> subfieldsIter_d = subfields_d.iterator();
-                if (subfields_d != null) {
-                    while (subfieldsIter_d.hasNext()) {
-                        val = subfieldsIter_d.next().getData().trim();
-                        if (!val.matches("-?\\d+(.\\d+)?")) {
-                            return null;
-                        }
-                    }
-                }
-                List<Subfield> subfields_f = physical.getSubfields('f');
-                Iterator<Subfield> subfieldsIter_f = subfields_f.iterator();
-                if (subfields_f != null) {
-                    while (subfieldsIter_f.hasNext()) {
-                        String val2 = subfieldsIter_f.next().getData().trim();
-                        if (!val2.matches("-?\\d+(.\\d+)?")) {
-                            return null;
-                        }
-                        val = val + ',' + val2;
-                    }
-                }
-                return val;
-            }
-        }
-        //otherwise return null
-        return null;
     }
 }

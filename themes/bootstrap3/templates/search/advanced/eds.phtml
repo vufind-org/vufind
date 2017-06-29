@@ -76,12 +76,12 @@
   <fieldset class="eds">
     <legend><?=$this->transEsc('adv_search_year')?></legend>
     <input type="hidden" name="daterange[]" value="PublicationDate"/>
-    <div class="row">
-      <div class="col-sm-6">
+    <div class="date-fields">
+      <div class="date-from">
         <label for="PublicationDatefrom"><?=$this->transEsc('date_from')?>:</label>
         <input type="text" name="PublicationDatefrom" id="PublicationDatefrom" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[0])?>" class="form-control"/>
       </div>
-      <div class="col-sm-6">
+      <div class="date-to">
         <label for="PublicationDateto"><?=$this->transEsc('date_to')?>:</label>
         <input type="text" name="PublicationDateto" id="PublicationDateto" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[1])?>" class="form-control"/>
       </div>

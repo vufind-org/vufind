@@ -12,9 +12,9 @@
     text-decoration: inherit;
     speak: none;
   }
-  .jstree-open > .jstree-ocl:before {content: "\f0d7";}
-  .jstree-closed > .jstree-ocl:before {content: "\f0da";}
-  .jstree-leaf > .jstree-ocl:before {content: " ";}
+  .jstree-open > .jstree-ocl:before   {content: "\f0d7";} // .fa-caret-down
+  .jstree-closed > .jstree-ocl:before {content: "\f0da";} // .fa-caret-right
+  .jstree-leaf > .jstree-ocl:before   {content: " ";}
   .jstree-icon {
     width: 16px;
     color: #000;
@@ -37,7 +37,7 @@
   }
   .jstree-search a {
     font-style: italic;
-    color: #8b0000 ;
+    color: #8b0000;
     font-weight: bold;
   }
 }
@@ -88,11 +88,9 @@
   }
 }
 li.jstree-facet,
-li.jstree-node {
-  list-style: none;
-}
-li.jstree-facet .badge {cursor: text;}
-li.jstree-facet ul {padding-left: 20px;}
+li.jstree-node { list-style: none; }
+li.jstree-facet .badge { cursor: text; }
+li.jstree-facet ul { padding-left: 20px; }
 
 .list-group.facet .jstree-node.list-group-item { padding-left: 19px; }
 .list-group.facet .jstree-icon::before { margin-left: -12px; }
