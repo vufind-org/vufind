@@ -35,10 +35,12 @@
   .collapsed::after {content: '\25BC';}
 
   .collapse,
-  .collapsing {
+  .collapsing,
+  & > .facet {
     border-left: 1px solid @list-group-border;
     border-right: 1px solid @list-group-border;
   }
+  & > .facet:first-child { border-top: 1px solid @list-group-border; }
 
   .facetOR .text {
     display: inline-block;
