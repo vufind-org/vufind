@@ -103,20 +103,6 @@
               <br />
             <? endif; ?>
 
-            <? if (count($resource->getFormats()) > 0): ?>
-              <?=$this->record($resource)->getFormatList() ?>
-              <br/>
-            <? endif; ?>
-            <? if (isset($ilsDetails['volume']) && !empty($ilsDetails['volume'])): ?>
-              <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
-              <br />
-            <? endif; ?>
-
-            <? if (isset($ilsDetails['publication_year']) && !empty($ilsDetails['publication_year'])): ?>
-              <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
-              <br />
-            <? endif; ?>
-
             <? /* Depending on the ILS driver, the "location" value may be a string or an ID; figure out the best
                value to display... */ ?>
             <? $pickupDisplay = ''; ?>

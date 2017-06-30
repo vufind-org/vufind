@@ -5,6 +5,7 @@
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Storage Retrieval Requests') . '</li>';
 ?>
+
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('Storage Retrieval Requests') ?></h2>
 
@@ -86,6 +87,20 @@
             <? $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
               <?=$this->transEsc('by')?>:
               <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><? if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?><br/>
+            <? endif; ?>
+
+            <? if (count($resource->getFormats()) > 0): ?>
+              <?=$this->record($resource)->getFormatList() ?>
+              <br/>
+            <? endif; ?>
+            <? if (isset($ilsDetails['volume']) && !empty($ilsDetails['volume'])): ?>
+              <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
+              <br />
+            <? endif; ?>
+
+            <? if (isset($ilsDetails['publication_year']) && !empty($ilsDetails['publication_year'])): ?>
+              <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
+              <br />
             <? endif; ?>
 
             <? /* Depending on the ILS driver, the "location" value may be a string or an ID; figure out the best
