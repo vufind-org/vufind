@@ -29,9 +29,9 @@ function channelAddLinkButtons(elem) {
   for (var i = 0; i < links.length; i++) {
     $cont.append(
       $('<a/> ', {
-        href: links[i].url,
-        class: links[i].label + " btn btn-default",
-        html: '<i class="fa ' + links[i].icon + '"></i> ' + VuFind.translate(links[i].label)
+        'href': links[i].url,
+        'class': links[i].label + " btn btn-default",
+        'html': '<i class="fa ' + links[i].icon + '"></i> ' + VuFind.translate(links[i].label)
       })
     );
   }
