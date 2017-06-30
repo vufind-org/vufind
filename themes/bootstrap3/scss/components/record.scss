@@ -1,3 +1,93 @@
+.record .media-body h3 { margin-top: 0; } // Align title with top of image
+.recordcover { max-height: 300px; } // Keep the image from getting out of control
+@media (max-width: 767px) {
+  .record .media-left,
+  .record .media-right { display: block; }
+  .record .media-body { // Add a gap between the thumbnail and the info
+    display: block;
+    width: auto;
+    margin-top: 1rem;
+  }
+}
+// Comma-separate formatting
+.result .record .format::after,
+.record .format:last-child::after { content: ""; }
+.record .format::after { content: ", "; }
+.record-previews { margin-top: .5rem; }
+
+/* ------ Nav ------ */
+.record-nav.nav { margin-bottom: 1rem; }
+.record-nav > li,
+.btn-bookbag-toggle { width: 100%; }
+.record-nav > li > a { padding: .5rem; }
+.record-nav > li > a,
+.btn-bookbag-toggle { text-align: center; }
+@media(min-width: 768px) {
+  .record-nav > li,
+  .btn-bookbag-toggle { width: auto; }
+  .record-nav > li > a { padding: $nav-link-padding; }
+  .record-nav > li > a,
+  .btn-bookbag-toggle { text-align: left; }
+}
+
+/* ------ Comments ------ */
+.comment-label,
+.comment-name { font-style: italic; }
+.comment { margin-bottom: 1rem; }
+.comment-name .delete { color: $state-danger-text; }
+@media (min-width: 768px) {
+  .comment-form,
+  .comment {
+    display: flex;
+    margin-bottom: 0;
+  }
+  .comment-label,
+  .comment-name {
+    min-width: 25%;
+    font-style: unset;
+  }
+  .comment-form .text-form { width: 100%; }
+  .comment-form > label { flex: 0 0 auto; }
+  .comment-form textarea {
+    display: block;
+    width: 100%;
+  }
+}
+
+/* ------ Tags ------ */
+.tagList button {
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 4px;
+  font-size: 95%;
+  vertical-align: initial;
+}
+.tagList button .fa-close { margin-top: 3px; }
+.tagList {
+  .tag {
+    display: inline-block;
+    margin: 0 1px 1px;
+    border-radius: 4px;
+    // Use bootstrap mixin to make tags look like buttons
+    @include button-size($padding-base-vertical, $padding-base-vertical, $font-size-base, $line-height-base, $border-radius-base);
+    &.selected {
+      background-color: $btn-primary-bg;
+      a { color: #fff; }
+      .badge {
+        color: $gray-darker;
+        background-color: #fff;
+        &:hover { color: #a94442; }
+      }
+    }
+
+    .badge .fa { width: 12px; }
+  }
+  button { border: 0; }
+  .tag-form { display: inline; }
+}
+.tagList.loggedin .tag:not(.selected) .badge:hover { background-color: $brand-success; }
+
+
 .citation .pace-car {
   th,
   td {
@@ -5,31 +95,9 @@
     padding: 0;
   }
 }
-.citation th {text-align: right;}
-.item-notes ul { padding-left: 2rem; }
-.recordcover {max-height: 300px;}
-.tagList {
-  .tag {
-    display: inline-block;
-    margin: 0 1px 1px;
-    border-radius: 4px;
-    &.selected {
-      background-color: $btn-primary-bg;
-      a {color: #fff;}
-      .badge {
-        color: $gray-darker;
-        background-color: #fff;
-        &:hover {color: #a94442;}
-      }
-    }
+.citation th { text-align: right; }
 
-    @include button-size($padding-base-vertical, $padding-base-vertical, $font-size-base, $line-height-base, $border-radius-base);
-    .badge .fa {width: 12px;}
-  }
-  button {border: 0;}
-  .tag-form {display: inline;}
-}
-.tagList.loggedin .tag:not(.selected) .badge:hover {background-color: $brand-success;}
+.item-notes ul { padding-left: 2rem; }
 
 .subject-line:hover { color: #999; }
 .subject-line:hover a { color: $link-hover-color; }
@@ -38,15 +106,9 @@
   text-decoration: none;
 }
 
-.record .format::after { content: ", "; }
-.result .record .format::after,
-.record .format:last-child::after { content: ""; }
-
 .marc-row-LEADER,
 .marc-row-006,
 .marc-row-007,
 .marc-row-008 {
   white-space: pre-wrap;
 }
-
-.comment-form textarea.form-control { display: block; }
