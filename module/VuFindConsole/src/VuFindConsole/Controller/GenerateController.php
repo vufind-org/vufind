@@ -342,9 +342,9 @@ class GenerateController extends AbstractBase
      */
     protected function getAbsolutePath($path)
     {
-        $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
+        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
         $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
-        $absolutes = array();
+        $absolutes = [];
         foreach ($parts as $part) {
             if ('.' == $part) {
                 continue;
