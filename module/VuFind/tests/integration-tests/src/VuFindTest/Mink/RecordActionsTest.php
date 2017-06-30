@@ -132,15 +132,15 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
         // "Add" empty comment
         $this->findCss($page, 'form.comment-form .btn-primary')->click();
-        $this->assertNull($page->find('css', '.comment.row'));
+        $this->assertNull($page->find('css', '.comment'));
         // Add comment
         $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
         $this->findCss($page, 'form.comment-form .btn-primary')->click();
-        $this->findCss($page, '.comment.row');
+        $this->findCss($page, '.comment');
         // Remove comment
-        $this->findCss($page, '.comment.row .delete')->click();
+        $this->findCss($page, '.comment .delete')->click();
         $this->snooze(); // wait for UI update
-        $this->assertNull($page->find('css', '.comment.row'));
+        $this->assertNull($page->find('css', '.comment'));
         // Logout
         $this->findCss($page, '.logoutOptions a.logout')->click();
     }

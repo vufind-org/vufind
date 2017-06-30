@@ -13,10 +13,17 @@
   <? endforeach; ?>
   <div class="clearfix hidden-print">
     <div class="pull-left flip">
-      <?=$this->transEsc("Showing")?>
-      <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
+      <?
+        $transParams = [
+          '%%start%%' => $this->localizedNumber($results->getStartRecord()),
+          '%%end%%'   => $this->localizedNumber($results->getEndRecord()),
+          '%%total%%' => $this->localizedNumber($recordTotal)
+        ];
+      ?>
       <? if (!isset($this->skipTotalCount)): ?>
-        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong> <?=$this->transEsc('Items')?>
+        <?=$this->translate('showing_items_of_html', $transParams); ?>
+      <? else: ?>
+        <?=$this->translate('showing_items_html', $transParams); ?>
       <? endif; ?>
     </div>
     <div class="pull-right flip">
