@@ -603,7 +603,7 @@ class RecordDataFormatterFactory
             ]
         );
         $spec->setTemplateLine(
-            'Lyrics', 'getFirstLyrics', 'data-escapeHtml.phtml',
+            'First Lyrics', 'getFirstLyrics', 'data-escapeHtml.phtml',
             [
                 'context' => ['class' => 'recordFirstLyrics']
             ]
