@@ -125,7 +125,7 @@
       <div class="record-authors" property="author">
         <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
           <span class="recordFormat">
-            <?=$this->record($this->driver)->getFormatList()?><br>
+            <?=$this->record($this->driver)->getFormatList()?><br/>
           </span>
         <? endif; ?>
         <? $results = $this->driver->getNonPresenterAuthors(); $containerTitle = $this->driver->getContainerTitle(); ?>
@@ -150,10 +150,25 @@
               <?
                 $containerSource = $this->driver->getSourceIdentifier();
                 $containerID = $this->driver->getContainerRecordID();
+                $hostRecords = $this->driver->tryMethod('getHostRecords');
               ?>
               <span class="recordContainerReference">
-                <?=$this->transEsc('Published in')?> <a href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('title', $containerTitle))?>"><?=$this->escapeHtml($containerTitle)?></a>
-                <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
+                <br/><?=$this->transEsc('Published in')?>
+                <? if ($hostRecords): ?>
+                  <? foreach ($hostRecords as $i => $hostRecord): ?>
+                    <?=$i > 0 ? '<br/>' : ''?>
+                    <? if ($hostRecord['id'] || $hostRecord['title']): ?>
+                      <? // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
+                      <? $link = $hostRecord['id'] ? $this->escapeHtmlAttr($this->url('record') . urlencode($hostRecord['id'])) : $this->record($this->driver)->getLink('title', $hostRecord['title']); ?>
+                      <a href="<?=$link?>"><?=$hostRecord['title']?></a>
+                    <? endif; ?>
+                    <?=$this->escapeHtml($hostRecord['reference']); ?>
+                  <? endforeach; ?>
+                <? else: ?>
+                  <? $link = $containerID ? $this->escapeHtmlAttr($this->url('record') . urlencode($containerID)) : $this->record($this->driver)->getLink('title', $containerTitle); ?>
+                  <a href="<?=$link?>"><?=$this->escapeHtml($containerTitle)?></a>
+                  <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
+                <? endif; ?>
               </span>
             <? endif; ?>
           </div>
