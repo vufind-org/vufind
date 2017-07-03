@@ -192,7 +192,12 @@ trait ConcatTrait
      */
     protected function getResourceCacheDir()
     {
-        return $this->themeInfo->getBaseDir() . '/../local/cache/public/';
+        if (!defined('LOCAL_CACHE_DIR')) {
+            throw new \Exception(
+                'Asset pipeline feature depends on the LOCAL_CACHE_DIR constant.'
+            );
+        }
+        return LOCAL_CACHE_DIR . '/public/';
     }
 
     /**
@@ -291,8 +296,13 @@ trait ConcatTrait
     protected function isPipelineActive()
     {
         if ($this->usePipeline) {
-            $cacheDir = $this->getResourceCacheDir();
-            if (!is_writable($cacheDir)) {
+            try {
+                $cacheDir = $this->getResourceCacheDir();
+            } catch (\Exception $e) {
+                $this->usePipeline = $cacheDir = false;
+                error_log($e->getMessage());
+            }
+            if ($cacheDir && !is_writable($cacheDir)) {
                 $this->usePipeline = false;
                 error_log("Cannot write to $cacheDir; disabling asset pipeline.");
             }
