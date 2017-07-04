@@ -190,6 +190,12 @@ class RecordDataFormatterFactory
             ]
         );
         $spec->setTemplateLine(
+            'Age Limit', 'getAgeLimit', 'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'recordAgeLimit']
+            ]
+        );
+        $spec->setTemplateLine(
             'Language', 'getLanguages', 'data-transEsc.phtml',
             [
                 'context' => ['class' => 'recordLanguage']

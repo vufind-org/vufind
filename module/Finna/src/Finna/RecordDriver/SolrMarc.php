@@ -1596,4 +1596,20 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         }
         return $results;
     }
+
+    /**
+     * Get age limit from field 049.
+     *
+     * @return array
+     */
+    public function getAgeLimit()
+    {
+        $results = [];
+        foreach ($this->getMarcRecord()->getFields('049') as $field) {
+            foreach ($field->getSubfields('c') as $note) {
+                $results[] = $this->stripTrailingPunctuation($note->getData());
+            }
+        }
+        return $results;
+    }
 }
