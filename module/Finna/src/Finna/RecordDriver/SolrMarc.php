@@ -355,6 +355,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             $partAuthors = [];
             $uniformTitle = '';
             $duration = '';
+            $partTitle = '';
             $subfields = $field->getSubfields();
             foreach ($subfields as $subfield) {
                 $subfieldCode = $subfield->getCode();
