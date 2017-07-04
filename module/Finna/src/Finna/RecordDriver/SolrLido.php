@@ -502,7 +502,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                     $type = isset($attributes->type) ? $attributes->type : '';
                     if ($type) {
                         $results[] = (string)$classificationNode->term
-                            . " $type)";
+                            . " ($type)";
                     } else {
                         $results[] = (string)$classificationNode->term;
                     }
