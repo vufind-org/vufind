@@ -457,7 +457,7 @@ class BrowseController extends AbstractBase
             'era'          => 'By Era'
         ];
 
-        return $this->performBrowse('Author', $categoryList, false);
+        return $this->performBrowse('Author', $categoryList, true);
     }
 
     /**
