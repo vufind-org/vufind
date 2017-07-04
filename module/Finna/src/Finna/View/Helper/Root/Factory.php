@@ -496,14 +496,20 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $url = isset($config->Piwik->url) ? $config->Piwik->url : false;
-        $siteId = isset($config->Piwik->site_id) ? $config->Piwik->site_id : 1;
+        $options = [
+            'siteId' => isset($config->Piwik->site_id) ? $config->Piwik->site_id : 1,
+            'searchPrefix' => isset($config->Piwik->searchPrefix)
+                ? $config->Piwik->searchPrefix : null
+        ];
         $customVars = isset($config->Piwik->custom_variables)
             ? $config->Piwik->custom_variables
             : false;
         $request = $sm->getServiceLocator()->get('Request');
         $router = $sm->getServiceLocator()->get('Router');
         $translator = $sm->getServiceLocator()->get('VuFind\Translator');
-        return new Piwik($url, $siteId, $customVars, $router, $request, $translator);
+        return new Piwik(
+            $url, $options, $customVars, $router, $request, $translator
+        );
     }
 
     /**
