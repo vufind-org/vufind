@@ -177,4 +177,22 @@ class Factory
         );
         return $aws;
     }
+
+    /**
+     * Factory for Gemini driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Gemini
+     */
+    public static function getGemini(ServiceManager $sm)
+    {
+        $gemini = new Gemini(
+            $sm->getServiceLocator()->get('VuFind\DateConverter')
+        );
+        $gemini->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+        return $gemini;
+    }
 }
