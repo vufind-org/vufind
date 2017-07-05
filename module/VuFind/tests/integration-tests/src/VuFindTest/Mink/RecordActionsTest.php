@@ -102,11 +102,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddComment()
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
-
         // Go to a record view
         $page = $this->gotoRecord();
         // Click add comment without logging in
@@ -152,11 +147,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddTag()
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
-
         // Go to a record view
         $page = $this->gotoRecord();
         // Click to add tag
@@ -249,11 +239,10 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddSensitiveTag()
     {
-        // Change the theme:
+        // Set up configs:
         $this->changeConfigs(
             [
                 'config' => [
-                    'Site' => ['theme' => 'bootstrap3'],
                     'Social' => ['case_sensitive_tags' => 'true']
                 ]
             ]
@@ -284,11 +273,10 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testEmail()
     {
-        // Change the theme:
+        // Set up configs:
         $this->changeConfigs(
             [
                 'config' => [
-                    'Site' => ['theme' => 'bootstrap3'],
                     'Mail' => ['testOnly' => 1],
                 ]
             ]
@@ -357,11 +345,10 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testSMS()
     {
-        // Change the theme:
+        // Set up configs:
         $this->changeConfigs(
             [
                 'config' => [
-                    'Site' => ['theme' => 'bootstrap3'],
                     'Mail' => ['testOnly' => 1],
                 ]
             ]

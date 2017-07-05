@@ -94,11 +94,6 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAdvancedSearch()
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
-
         // Go to the advanced search page
         $session = $this->getMinkSession();
         $path = '/Search/Advanced';
