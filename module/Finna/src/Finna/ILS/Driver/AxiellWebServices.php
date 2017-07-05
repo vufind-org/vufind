@@ -74,6 +74,13 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     protected $defaultPickUpLocation;
 
     /**
+    * Excluded pickup locations
+    *
+    * @var array
+    */
+    protected $excludePickUpLocations;
+
+    /**
      * Default request group
      *
      * @var bool|string
@@ -326,6 +333,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $this->defaultPickUpLocation = false;
         }
 
+        $this->excludePickUpLocations
+            = isset($this->config['Holds']['excludePickUpLocations'])
+            ? explode(':', $this->config['Holds']['excludePickUpLocations']) : [];
+
         $this->defaultRequestGroup
             = isset($this->config['Holds']['defaultRequestGroup'])
             ? $this->config['Holds']['defaultRequestGroup'] : false;
@@ -452,15 +463,26 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             // should be included in the location name
 
             if (is_object($organisation->branches->branch)) {
+                $locationID
+                    = $organisationID . '.' . $organisation->branches->branch->id;
+                if (in_array($locationID, $this->excludePickUpLocations)) {
+                    continue;
+                }
+
                 $locationsList[] = [
-                    'locationID' =>
-                       $organisationID . '.' . $organisation->branches->branch->id,
+                    'locationID' => $locationID,
                     'locationDisplay' => $organisation->branches->branch->name
                 ];
             } else {
                 foreach ($organisation->branches->branch as $branch) {
+                    $locationID
+                        = $organisationID . '.' . $branch->id;
+                    if (in_array($locationID, $this->excludePickUpLocations)) {
+                        continue;
+                    }
+
                     $locationsList[] = [
-                        'locationID' => $organisationID . '.' . $branch->id,
+                        'locationID' => $locationID,
                         'locationDisplay' => $branch->name
                     ];
                 }

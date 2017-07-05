@@ -46,6 +46,9 @@ extraHoldFields = pickUpLocation
 ; the Location IDs returned by getPickUpLocations()
 defaultPickUpLocation = 1.001
 
+; A colon-separated list used to exclude certain pick up locations
+;excludePickUpLocations = "1.001:7.115:12.160"
+
 ; A request group ID used to pre-select the request group drop down list and
 ; provide a default option if others are not available. Must be one of the following:
 ; 1) empty string to indicate that the first group is default (default setting is
