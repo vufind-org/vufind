@@ -4,6 +4,8 @@
 
 /* ------ Common element changes ------ */
 h1, h2, h3, h4 { margin: 1rem 0; }
+.highlight,
+mark { background-color: @highlighter-color; }
 table { font-size: @reduced-font-size; }
 
 /* ------ Bootstrap class overrides ------ */
@@ -23,7 +25,11 @@ table { font-size: @reduced-font-size; }
 }
 .btn-link,
 .btn-primary { border-color: transparent; }
-.btn-primary:hover { border-color: @brand-primary; }
+.btn-primary:hover {
+  background-color: @action-hover-bg;
+  color: @action-color;
+  border-color: @brand-primary;
+}
 .btn-link { color: @brand-primary; }
 
 .form-control { box-shadow: none; }

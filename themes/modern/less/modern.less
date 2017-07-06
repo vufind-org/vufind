@@ -5,10 +5,6 @@
 @import "search";
 @import "rtl";
 
-@reduced-font-size: 14px;
-@result-checkbox-width: 28px;
-@search-tab-height: 1.6rem;
-
 html {
   font-size: 16px;
   overflow-x: hidden;
@@ -31,6 +27,19 @@ body {
 
   a { color: #fff; }
 }
+.banner .navbar-right { margin-top: calc((@banner-height-sm - 50px) / 2); } // Put right nav in the middle
+.banner .navbar-brand {
+  width: (170 / 65) * @banner-height-sm;
+  height: @banner-height-sm;
+}
+@media (min-width: 768px) {
+  .banner .navbar-right { margin-top: calc((@banner-height - 50px) / 2); }
+  .banner .navbar-brand {
+    width: (170 / 65) * @banner-height;
+    height: @banner-height;
+  }
+}
+
 header {
   background-color: @header-bg;
   font-size: @reduced-font-size;
@@ -138,28 +147,40 @@ header {
 .sidebar {
   font-size: @reduced-font-size;
   background-color: @light-gray;
-  .title::after {
-    color: @gray-light;
-  }
 
   .facet-group {
     margin-left: 1rem;
     margin-right: 1rem;
-    background-color: @white;
 
     /* Collapsed arrows */
+    .title {
+      background-color: @sidebar-title-bg;
+      color: @sidebar-title-color;
+    }
     .title::after {
       width: 1rem;
       font-family: "FontAwesome";
       text-align: center;
+      color: @sidebar-title-icon-color;
       content: '\f106';
     }
     .title.collapsed::after { content: '\f107'; }
 
+    .facet {
+      background-color: @sidebar-item-bg;
+      color: @sidebar-item-color;
+
+      &.active {
+        background-color: @sidebar-active-bg;
+        color: @sidebar-active-color;
+      }
+    }
+    a.facet:hover { background-color: @sidebar-item-hover-bg; }
     .facet .badge {
       max-height: 15px;
       margin-top: 5px;
       line-height: .8;
+      background-color: @sidebar-item-badge;
     }
   }
 }

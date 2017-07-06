@@ -5,6 +5,10 @@
 .list-group-item.title { color: @dark-gray; }
 .bulkActionButtons {
   .checkbox-select-all { display: none; }
+  label {
+    font-weight: 500;
+    color: @mid-gray;
+  }
   label::before {
     display: inline-block;
     width: 28px;
@@ -97,7 +101,7 @@
 .result-link-icon,
 .result .cart-link-icon {
   width: 100%;
-  font-size: 1.5rem;
+  font-size: @result-sm-icon-size;
   padding-top: .5rem;
   padding-bottom: .5rem;
   color: @brand-secondary;
@@ -114,9 +118,9 @@
   .checkbox-icon::before {
     display: block;
     width: 100%;
-    height: 100px;
+    height: @result-checkbox-height;
+    line-height: @result-checkbox-height;
     font-family: "FontAwesome";
-    line-height: 100px;
     color: @gray-light;
     content: "\f00c";
     cursor: pointer;
@@ -161,8 +165,8 @@
 .list-group-item.active,
 .list-group-item.active:hover,
 .list-group-item.active:focus {
-  border-color: @active-filter-bg;
-  background-color: @active-filter-bg;
+  border-color: @sidebar-active-bg;
+  background-color: @sidebar-active-bg;
 }
 
 .searchHomeContent {
@@ -235,4 +239,8 @@
 
 /* ------ Combined ------ */
 #content > [name="bulkActionForm"] .bulkActionButtons { padding-top: 1rem; }
-.combined-search-container { .full-width(); }
+.combined-search-container {
+  .full-width();
+
+  .result { margin-right: 0; }
+}
