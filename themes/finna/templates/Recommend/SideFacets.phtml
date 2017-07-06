@@ -43,7 +43,6 @@
         }
     }
     ?>
-  <div class="checkboxFilter<?if($shown == 0):?> hidden<? endif; ?>"><?=$html ?></div>
   <?if ($checkboxesShown):?>
     <div class="checkboxFilter">
       <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results, 'availableRecords' => $availableRecords]); ?>
@@ -147,25 +146,34 @@ $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
         <? elseif (isset($rangeFacets[$title])): ?>
           <?=$this->context($this)->renderInContext('Recommend/SideFacets/range-facet.phtml', ['results' => $results, 'title' => $title, 'facet' => $rangeFacets[$title]]); ?>
         <? else: ?>
-          <? if (in_array($title, $hierarchicalFacets)): ?>
-          <?=$this->context($this)->renderInContext('Recommend/SideFacets/hierarchical-facet.phtml', ['title' => $title, 'sortOptions' => $hierarchicalFacetSortOptions[$title]]); ?>
-        <noscript>
-          <? endif; ?>
           <? $contextVars = [
-              'options' => $options,
-              'allowExclude' => $this->recommend->excludeAllowed($title),
-              'facets_before_more' => $this->recommend->getShowMoreSetting($title),
-              'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($title)
+            'allowExclude' => $this->recommend->excludeAllowed($title),
+            'title' => $title,
+            'sortOptions' => isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : '',
+            'collapsedFacets' => $collapsedFacets,
+            'results' => $results
           ]; ?>
-          <?=$this->context($this)->renderInContext('Recommend/SideFacets/cluster-list.phtml', array_merge($contextVars, ['results' => $results, 'title' => $title, 'cluster' => $cluster])); ?>
+          <? if (in_array($title, $hierarchicalFacets)): ?>
+            <?=$this->context($this)->renderInContext('Recommend/SideFacets/hierarchical-facet.phtml', $contextVars); ?>
+            <noscript>
           <? endif; ?>
-        <? if ($title == 'usage_rights_str_mv'): ?>
-          <div class="list-group-item usage-rights-info">
-            <i class="fa fa-info-big"></i><div class="info"><?=$this->translate('usage_rights_info')?></div><a class="more-info" href="<?=$this->url('content-page', ['page' => 'terms'])?>#terms"><?=$this->translate('usage_rights_info_more')?></a>
-          </div>
-        <? endif; ?>
-        <? if (in_array($title, $hierarchicalFacets)): ?>
-          </noscript>
+          <? if ($title == 'usage_rights_str_mv'): ?>
+            <div class="list-group-item usage-rights-info">
+              <i class="fa fa-info-big"></i><div class="info"><?=$this->translate('usage_rights_info')?></div><a class="more-info" href="<?=$this->url('content-page', ['page' => 'terms'])?>#terms"><?=$this->translate('usage_rights_info_more')?></a>
+            </div>
+          <? endif; ?>
+
+          <? $contextVars = [
+            'options' => $options,
+            'allowExclude' => $this->recommend->excludeAllowed($title),
+            'facets_before_more' => $this->recommend->getShowMoreSetting($title),
+            'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($title),
+            'results' => $results
+          ]; ?>
+          <?=$this->context($this)->renderInContext('Recommend/SideFacets/cluster-list.phtml', array_merge($contextVars, ['title' => $title, 'cluster' => $cluster])); ?>
+          <? if (in_array($title, $hierarchicalFacets)): ?>
+            </noscript>
+          <? endif; ?>
         <? endif; ?>
       </div>
     </div>
