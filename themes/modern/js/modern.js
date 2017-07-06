@@ -10,15 +10,14 @@ $(document).ready(function modernTweaks() {
   var boxes = $('.record-checkbox input,.grid-checkbox input');
   for (var i = 0; i < boxes.length; i++) {
     $(boxes[i]).change(function toggleChecked(e) {
-      console.log('change');
       toggleResultChecked(e.target);
     });
     toggleResultChecked(boxes[i]);
   }
   $('.checkbox-select-all').change(function toggleAllCheckboxes() {
-    var boxes = $('.record-checkbox input,.grid-checkbox input');
-    for (var i = 0; i < boxes.length; i++) {
-      toggleResultChecked(boxes[i]);
+    var subboxes = $('.record-checkbox input,.grid-checkbox input');
+    for (var j = 0; j < boxes.length; j++) {
+      toggleResultChecked(subboxes[j]);
     }
   });
 });

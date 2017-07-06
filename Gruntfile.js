@@ -101,7 +101,6 @@ module.exports = function(grunt) {
             { // Remove unquote
               pattern: /(\s+)unquote\("([^"]+)"\)/gi,
               replacement: function mixinCommas(match, space, $1) {
-                console.log(match, $1);
                 return space + $1;
               },
               order: 3
