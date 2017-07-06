@@ -381,6 +381,20 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
+     * Get Funds
+     *
+     * Return a list of funds which may be used to limit the getNewItems list.
+     *
+     * @throws ILSException
+     * @return array An associative array with key = fund ID, value = fund name.
+     */
+    public function getFunds()
+    {
+        // Does not work while ILS offline:
+        return [];
+    }
+
+    /**
      * Get Departments
      *
      * Obtain a list of departments for use in limiting the reserves list.
@@ -437,6 +451,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst, $dept)
     {
