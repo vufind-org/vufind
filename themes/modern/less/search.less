@@ -166,15 +166,12 @@
 }
 
 .searchHomeContent {
+  .full-width();
   &:extend(.clearfix all);
   position: relative;
-  margin-top: 2rem;
-  margin-right: calc(~"-50vw + 50%");
-  margin-bottom: 2rem;
-  margin-left: calc(~"-50vw + 50%");
   padding: 6rem 3rem;
-  padding-left: calc(~"-50% + 50vw");
-  background-color: @header-light;
+  padding-left: calc(~"50vw - 50%"); // Align searchbox with container
+  background-color: @header-bg;
   background-image: url('https://source.unsplash.com/collection/803311/1000x300');
   background-repeat: no-repeat;
   background-size: cover;
@@ -192,6 +189,7 @@
   left: 0;
   background-color: rgba(255,255,255,.5);
 }
+.template-dir-search.template-name-home .breadcrumbs { border: 0; }
 
 @media (min-width: 768px) {
   #searchForm_lookfor,
@@ -212,7 +210,7 @@
     }
     .nav-tabs a {
       height: @search-tab-height;
-      padding-top: 0;
+      padding-top: 1px;
       padding-bottom: 0;
       border: 0;
       border-bottom: 3px solid transparent;
@@ -231,6 +229,10 @@
   }
 }
 
-/* --- Advanced --- */
+/* ------ Advanced ------ */
 .solr-adv-facet { padding-right: 1rem; }
 .solr-adv-facet:last-child { padding-right: 0; }
+
+/* ------ Combined ------ */
+#content > [name="bulkActionForm"] .bulkActionButtons { padding-top: 1rem; }
+.combined-search-container { .full-width(); }

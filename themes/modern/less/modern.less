@@ -8,7 +8,10 @@
 @result-checkbox-width: 28px;
 @search-tab-height: 1.6rem;
 
-html { font-size: 16px; }
+html {
+  font-size: 16px;
+  overflow-x: hidden;
+}
 body {
   font-size: 1rem;
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; // native font stack
@@ -67,10 +70,7 @@ header {
   a { color: #fff; }
 }
 header .form-control { border: 0; }
-header .form-control:focus {
-  padding-bottom: (@padding-base-vertical - 3px);
-  border-bottom: 3px solid @gold;
-}
+header .form-control:focus { border-bottom: 3px solid @gold; }
 .breadcrumbs {
   border-bottom: 1px solid @header-light;
   background-color: @header-light;
