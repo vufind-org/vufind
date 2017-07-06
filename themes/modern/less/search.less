@@ -192,10 +192,10 @@
 
 .searchHomeContent {
   .full-width();
-  &:extend(.clearfix all);
+  .clearfix();
   position: relative;
   padding: 6rem 3rem;
-  padding-left: calc(~"50vw - 50%"); // Align searchbox with container
+  padding-left: ~"calc(50vw - 50%)"; // Align searchbox with container
   background-color: @header-bg;
   background-image: url('https://source.unsplash.com/collection/803311/1000x300');
   background-repeat: no-repeat;
@@ -269,7 +269,10 @@
 .adv_search_links a { text-decoration: underline; }
 
 /* ------ Combined ------ */
-#content > [name="bulkActionForm"] .bulkActionButtons { padding-top: 1rem; }
+#content > [name="bulkActionForm"] .bulkActionButtons {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
 .combined-search-container {
   .full-width();
 
