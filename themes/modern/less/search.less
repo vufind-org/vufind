@@ -33,8 +33,10 @@
 .author-facets { font-size: @reduced-font-size; }
 
 .result {
+  margin-left: -1rem;
   margin-right: -1rem;
   padding-top: 1rem;
+  padding-left: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid @moon-gray;
   font-size: @reduced-font-size;
@@ -60,7 +62,19 @@
     padding: 4px .75rem;
     font-size: 11px;
   }
-  .savedLists { margin-bottom: 0; }
+  .savedLists {
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+  .savedLists > ol,
+  .savedLists > ul { padding-left: 1rem; }
+}
+@media (min-width: 768px) {
+  .result {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+  }
 }
 
 .grid-result {
@@ -73,19 +87,21 @@
 
 .result.checked,
 .grid-result.checked {
-  color: #fff;
-  background-color: @brand-primary;
+  color: @search-row-selected-color;
+  background-color: @search-row-selected-bg;
   border-color: @white;
-  a { color: #fff; }
+  a {
+    color: @search-row-selected-color;
+    text-decoration: underline;
+  }
   .format,
   .label {
     color: @brand-primary;
     background-color: #fff;
   }
-  .cart-link-icon { color: inherit; }
-  .alert { background-color: @white; }
-  .record-number { color: @white; }
-  .alert a { color: @black; }
+  .record-number { color: @search-row-selected-color; }
+  .alert { background-color: @search-row-selected-color; }
+  .alert a { color: @search-row-selected-color; }
 }
 .result-body,
 .result-links {
@@ -98,16 +114,19 @@
   width: 15%;
   text-align: center;
 }
-.result-link-icon,
-.result .cart-link-icon {
-  width: 100%;
-  font-size: @result-sm-icon-size;
-  padding-top: .5rem;
-  padding-bottom: .5rem;
-  color: @brand-secondary;
+.cart-link-icon { color: @dark-gray; }
+@media (max-width: 767px) {
+  .result-link-icon,
+  .result .cart-link-icon {
+    width: 100%;
+    font-size: @result-sm-icon-size;
+    margin: 0;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+  }
+  .result-link-label,
+  .result .cart-link-label { display: none; }
 }
-.result-link-label,
-.result .cart-link-label { display: none; }
 
 .result .record-checkbox,
 .grid-result .grid-checkbox {
@@ -129,8 +148,8 @@
     border-bottom-left-radius: @border-radius-base;
   }
   :checked ~ .checkbox-icon::before {
-    color: #fff;
-    background-color: transparent;
+    color: @search-row-selected-color;
+    background-color: @search-row-selected-bg;
   }
 }
 .grid-result .grid-checkbox label { width: 100%; }
@@ -148,6 +167,7 @@
     font-size: inherit;
     color: @gray-darker;
   }
+  .result-link-icon { margin-right: 0; }
   .result-link-label,
   .result .cart-link-label { display: inline; }
 }
@@ -195,42 +215,49 @@
 }
 .template-dir-search.template-name-home .breadcrumbs { border: 0; }
 
+.search { border: 0; }
+#searchForm {
+  padding-top: .5rem;
+  padding-bottom: calc(@search-tab-height + 1.5rem);
+}
+.nav.searchbox,
+#searchForm {
+  position: relative;
+  width: 100%;
+
+  .nav-tabs {
+    position: absolute;
+    bottom: 0;
+    border: 0;
+  }
+  .nav-tabs a {
+    height: calc(@search-tab-height + .5rem);
+    line-height: calc(@search-tab-height + .5rem);
+    padding: 0 1rem;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    background-color: transparent;
+  }
+  .nav-tabs a:hover {
+    border-color: transparent;
+    color: @header-light;
+    background-color: transparent;
+  }
+  .nav-tabs .active a {
+    color: #fff;
+    border-color: @white;
+  }
+}
 @media (min-width: 768px) {
   #searchForm_lookfor,
-  #searchForm_type {
-    margin-bottom: 0;
-  }
-
-  .nav.searchbox,
-  #searchForm {
-    position: relative;
-    width: 100%;
-    padding-top: .7rem;
-    padding-bottom: @search-tab-height;
-
-    .nav-tabs {
-      position: absolute;
-      bottom: 0;
-      border: 0;
-    }
-    .nav-tabs a {
-      height: @search-tab-height;
-      padding-top: 1px;
-      padding-bottom: 0;
-      border: 0;
-      border-bottom: 3px solid transparent;
-      border-radius: 0;
-      background-color: transparent;
-    }
-    .nav-tabs a:hover {
-      border-color: transparent;
-      color: @header-light;
-      background-color: transparent;
-    }
-    .nav-tabs .active a {
-      color: #fff;
-      border-color: @white;
-    }
+  #searchForm_type { margin-bottom: 0; }
+  #searchForm { padding-bottom: @search-tab-height; }
+  .nav.searchbox .nav-tabs a,
+  #searchForm .nav-tabs a {
+    height: @search-tab-height;
+    padding-bottom: 3px;
+    line-height: @search-tab-height;
   }
 }
 

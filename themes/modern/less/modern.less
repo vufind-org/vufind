@@ -83,7 +83,7 @@ header {
 
   .form-control { border: 0; }
   .form-control:focus {
-    padding-bottom: 4px;
+    padding-bottom: 3px; // Smaller font-size means smaller jump
     border-bottom: 3px solid @gold;
   }
 
@@ -127,7 +127,6 @@ header {
 
 /* --- Cart --- */
 #cartSummary strong { font-weight: inherit; }
-.btn-bookbag-toggle .fa { color: @link-color; }
 
 /* --- MyResearch --- */
 .myresearch-menu a:hover { background-color: @white; }
@@ -145,6 +144,15 @@ header {
   font-weight: 500;
 }
 .record .sidebar { margin-top: 1rem; }
+.comment-list { margin-top: .5rem; }
+.comment { margin-bottom: .5rem; }
+.comment .delete { font-size: @reduced-font-size; }
+.comment-form .btn-primary { margin-top: .25rem; }
+.tagList { line-height: 2rem; }
+.tagList .tag .badge {
+  font-size: 12px;
+  font-weight: 900;
+}
 
 /* --- Sidebar --- */
 .sidebar {

@@ -3,7 +3,10 @@
 @border-radius-large: 0; // modal
 
 /* ------ Common element changes ------ */
-h1, h2, h3, h4 { margin: 1rem 0; }
+h1, h2, h3, h4 {
+  margin: 0;
+  margin-bottom: 1rem;
+}
 .highlight,
 mark { background-color: @highlighter-color; }
 table { font-size: @reduced-font-size; }
@@ -36,7 +39,7 @@ table { font-size: @reduced-font-size; }
 .form-control:hover,
 .form-control:focus { border-color: @brand-primary; }
 .form-control:focus {
-  padding-bottom: (@padding-base-vertical - 3px);
+  padding-bottom: 4px; // Prevent jumping
   border-bottom: 3px solid @brand-secondary;
   box-shadow: none;
 }
@@ -53,8 +56,21 @@ select.form-control {
 .navbar-form { box-shadow: none; }
 
 .alert {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   border: 0;
   color: @black;
+
+  .btn {
+    color: @mid-gray;
+    background-color: @white;
+    border-color: @gray;
+  }
+  .btn-primary {
+    color: @action-color;
+    background-color: @white;
+    border-color: @action-color;
+  }
 }
 .alert-info,
 .alert-info:hover {
@@ -66,7 +82,7 @@ select.form-control {
 .alert-success:hover {
   color: @dark-green;
   background-color: @light-green;
-  a { color: @green; }
+  a { color: @white; }
 }
 .alert-danger,
 .alert-danger:hover {

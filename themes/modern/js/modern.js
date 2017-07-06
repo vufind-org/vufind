@@ -16,7 +16,7 @@ $(document).ready(function modernTweaks() {
     toggleResultChecked(boxes[i]);
   }
   $('.checkbox-select-all').change(function toggleAllCheckboxes() {
-    var boxes = $('.record-checkbox input');
+    var boxes = $('.record-checkbox input,.grid-checkbox input');
     for (var i = 0; i < boxes.length; i++) {
       toggleResultChecked(boxes[i]);
     }
