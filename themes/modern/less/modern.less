@@ -1,5 +1,6 @@
 @import "bootstrap";
 @import "colors";
+@import "variables";
 @import "common";
 @import "search";
 @import "rtl";
@@ -23,11 +24,19 @@ body {
 .mainbody { padding-top: 1rem; }
 
 /* --- Header --- */
+.navbar { border-radius: 0; }
+.banner {
+  width: auto;
+  color: #fff;
+
+  a { color: #fff; }
+}
 header {
   background-color: @header-bg;
   font-size: @reduced-font-size;
   font-weight: 500;
   color: @white;
+
   .navbar-nav { margin-top: 0; }
   a,
   .nav a,
@@ -62,15 +71,26 @@ header {
   }
   .dropdown-menu .active a,
   .dropdown-menu .active a:hover { background-color: @header-bg; }
+
+  .form-control { border: 0; }
+  .form-control:focus { border-bottom: 3px solid @gold; }
+
+  .navbar-brand {
+    width: 200px;
+    height: 100%;
+    margin-top: 5px;
+    .background-image('vufind_logo_dark.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    &,
+    &:active,
+    &:hover,
+    &:focus { color: transparent; }
+    &.lang-ar { .background-image('vufind_logo_ar_dark.png'); }
+  }
 }
-.navbar { border-radius: 0; }
-.banner {
-  width: auto;
-  color: #fff;
-  a { color: #fff; }
-}
-header .form-control { border: 0; }
-header .form-control:focus { border-bottom: 3px solid @gold; }
+
 .breadcrumbs {
   border-bottom: 1px solid @header-light;
   background-color: @header-light;
