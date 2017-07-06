@@ -394,6 +394,24 @@ class UpgradeController extends AbstractBase
                 ->updateModifiedColumns($modifiedCols, $this->logsql);
         }
 
+        // Check for missing constraints.
+        $missingConstraints = $this->dbUpgrade()->getMissingConstraints($mT);
+        if (!empty($missingConstraints)) {
+            // Only manipulate DB if we're not in logging mode:
+            if (!$this->logsql) {
+                if (!$this->hasDatabaseRootCredentials()) {
+                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                }
+                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                $this->session->warnings->append(
+                    "Added constraint(s) to table(s): "
+                    . implode(', ', array_keys($missingConstraints))
+                );
+            }
+            $sql .= $this->dbUpgrade()
+                ->createMissingConstraints($missingConstraints, $this->logsql);
+        }
+
         // Check for encoding problems.
         $encProblems = $this->dbUpgrade()->getEncodingProblems();
         if (!empty($encProblems)) {
