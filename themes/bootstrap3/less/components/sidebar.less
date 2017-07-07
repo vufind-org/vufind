@@ -9,7 +9,11 @@
     line-height: 1.5rem;
 
     .badge,
-    .status { float: right; }
+    .status {
+      float: right;
+
+      body.rtl & { float: left; }
+    }
     .badge {
       max-height: 19px;
       line-height: 1.1rem;
@@ -112,3 +116,10 @@
 }
 
 .full-facet-list { margin-top: 1rem; }
+.full-facet-list .active .fa {
+  float: right;
+  margin-top: .25rem;
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+}
+body.rtl .full-facet-list .active .fa { float: left; }
