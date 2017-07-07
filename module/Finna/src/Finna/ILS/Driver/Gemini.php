@@ -248,10 +248,10 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         $availableTotal = 0;
         $holdableTotal = false;
         $locations = [];
+        $holdings = [];
 
         // Build Holdings Array
         foreach ($response->MarcRecord->Item as $item) {
-
             $department = (string) $item->Department;
             $branch = (string) $item->PlacedAtUnit;
             $branchId = (int) $item->PlacedAtUnitId;
@@ -377,6 +377,14 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         $lastname = $names[0];
         $firstname = isset($names[1]) ? $names[1] : '';
 
+        $activatedServices = [
+            'pickUpNotice' => (int) $info->SendRes,
+            'overdueNotice' => (int) $info->SendRemind,
+            'dueDateNotice' => (int) $info->SendRecall
+        ];
+
+        $messagingSettings = $this->processMessagingSettings($activatedServices);
+
         $user = [
             'id' => (string) $info->PatronId,
             'cat_username' => $username,
@@ -392,7 +400,8 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
             'phoneLocalCode' => null,
             'phoneAreaCode' => null,
             'major' => null,
-            'college' => null
+            'college' => null,
+            'messagingServices' => $messagingSettings
         ];
 
         return $user;
@@ -675,7 +684,6 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         }
 
         foreach ($response->Unit as $unit) {
-
             foreach ($unit->description as $description) {
                 $lang = (string) $description->attributes()['lang'];
 
@@ -735,7 +743,6 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         }
 
         foreach ($response->Unit as $unit) {
-
             foreach ($unit->description as $description) {
                 $lang = (string) $description->attributes()['lang'];
 
@@ -893,7 +900,6 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         $results = [];
 
         foreach ($cancelDetails['details'] as $details) {
-
             $params = [
                 'barcode'         => $username,
                 'pincode'         => $password,
@@ -987,6 +993,67 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
             ];
 
         }
+    }
+
+    /**
+     * Process messaging settings
+     *
+     * @param array $activatedServices Array of IDs for actived services
+     *
+     * @throws ILSException
+     * @return array The messaging settings of the patron
+     */
+    protected function processMessagingSettings($activatedServices)
+    {
+        $messagingSettings = [];
+        // Get the choice of messaging settings from the backend
+        $response = $this->makeRequest('GetMessTypeChoices', null);
+
+        // Mappings from Gemini messaging services
+        $messagingServiceMap = [
+            'sendres' => 'pickUpNotice',
+            'sendremind' => 'overdueNotice',
+            'sendrecall' => 'dueDateNotice'
+        ];
+
+        $messagingOptions = ['letter', 'email', 'sms'];
+
+        foreach ($response->MessTypeChoices as $messTypeChoice) {
+            $messagingService
+                = $messagingServiceMap[(string) $messTypeChoice['MessageType']];
+            $messagingServiceLabel
+                = $this->translate("messaging_settings_type_$messagingService");
+
+            $sendMethods = [];
+
+            $messagingSettings[$messagingService] =  [
+                'active' => true,
+                'type' => $messagingServiceLabel,
+                'sendMethods' => []
+            ];
+
+            for ($i = 0; $i <= 3; $i++) {
+                if ('1' == substr((string) $messTypeChoice->Choices, $i, 1)) {
+                    // dueDateNotice supports messaging option 'none'
+                    // instead of 'letter'
+                    if (!$messagingService == 'dueDateNotice' && $i == 0) {
+                        $messagingMethod = 'none';
+                    } else {
+                        $messagingMethod = $messagingOptions[$i];
+                    }
+                    $messagingSettings[$messagingService]['sendMethods'] += [
+                        "$messagingMethod" => [
+                            'active' => $i == $activatedServices[$messagingService],
+                            'type' => $messagingMethod,
+                            'method' => $this->translate(
+                                "messaging_settings_method_$messagingMethod"
+                            )
+                        ]
+                    ];
+                }
+            }
+        }
+        return $messagingSettings;
     }
 
     /**

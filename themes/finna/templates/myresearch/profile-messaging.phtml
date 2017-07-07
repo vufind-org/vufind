@@ -9,7 +9,7 @@
             echo '<div class="col-sm-4 profile-title">' . $this->transEsc('messaging_settings_type_' . $service['type'], null, $service['type']) . ':</div>';
             echo '<div class="col-sm-8 profile-text-value">';
             if (isset($service['sendMethods'])) {
-                // Axiell
+                // Axiell, Gemini
                 $activeMethods = 0;
                 foreach ($service['sendMethods'] as $method) {
                     if ($method['active']) {

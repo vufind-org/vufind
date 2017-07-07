@@ -48,3 +48,9 @@ maxLength = 4
 [updateAddress]
 method = email
 emailAddress =
+
+; Select email method and add an emailAddress if you want them to be send via email
+; email is the only method currently supported with Gemini
+[updateMessagingSettings]
+method = email
+emailAddress =
