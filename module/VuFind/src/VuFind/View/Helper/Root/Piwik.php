@@ -53,6 +53,13 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected $siteId;
 
     /**
+     * Search prefix (see config.ini for details)
+     *
+     * @var string
+     */
+    protected $searchPrefix;
+
+    /**
      * Whether to track use custom variables to track additional information
      *
      * @var bool
@@ -100,19 +107,26 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      *
      * @param string|bool                      $url        Piwik address
      * (false if disabled)
-     * @param int                              $siteId     Piwik site ID
+     * @param int|array                        $options    Options array (or,
+     * if a single value, the Piwik site ID -- for backward compatibility)
      * @param bool                             $customVars Whether to track
      * additional information in custom variables
      * @param Zend\Mvc\Router\Http\RouteMatch  $router     Request
      * @param Zend\Http\PhpEnvironment\Request $request    Request
      */
-    public function __construct($url, $siteId, $customVars, $router, $request)
+    public function __construct($url, $options, $customVars, $router, $request)
     {
         $this->url = $url;
         if ($url && substr($url, -1) != '/') {
             $this->url .= '/';
         }
-        $this->siteId = $siteId;
+        if (is_array($options)) {
+            $this->siteId = $options['siteId'];
+            $this->searchPrefix = isset($options['searchPrefix'])
+                ? $options['searchPrefix'] : '';
+        } else {
+            $this->siteId = $options;
+        }
         $this->customVars = $customVars;
         $this->router = $router;
         $this->request = $request;
@@ -511,7 +525,7 @@ EOT;
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
     VuFindPiwikTracker.trackSiteSearch(
-        '$backendId|$searchTerms', '$searchType', $resultCount
+        '{$this->searchPrefix}$backendId|$searchTerms', '$searchType', $resultCount
     );
 
 EOT;
@@ -546,7 +560,7 @@ EOT;
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
     VuFindPiwikTracker.trackSiteSearch(
-        'Combined|$searchTerms', '$searchType', $resultCount
+        '{$this->searchPrefix}Combined|$searchTerms', '$searchType', $resultCount
     );
 
 EOT;

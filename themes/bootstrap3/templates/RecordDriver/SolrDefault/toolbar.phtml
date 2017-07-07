@@ -4,7 +4,7 @@
     $this->headScript()->appendFile('https://s7.addthis.com/js/250/addthis_widget.js?pub=' . urlencode($addThis));
   }
 ?>
-<ul class="nav nav-pills hidden-print">
+<ul class="record-nav nav nav-pills hidden-print">
   <? if (count($this->driver->getCitationFormats()) > 0): ?>
     <li><a class="cite-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite')?>" rel="nofollow"><i class="fa fa-asterisk" aria-hidden="true"></i> <?=$this->transEsc('Cite this')?></a></li>
   <? endif; ?>

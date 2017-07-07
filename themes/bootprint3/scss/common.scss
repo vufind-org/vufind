@@ -16,23 +16,23 @@ a,
 }
 .btn { padding: 3px 5px 2px; }
 .btn.btn-default {
-  background: @gray-lighter;
-  background-image: linear-gradient(#fff, @nav-tabs-border-color);
-  border: 1px solid @gray;
-  color: @gray-darker;
+  background: $gray-lighter;
+  background-image: linear-gradient(#fff, $nav-tabs-border-color);
+  border: 1px solid $gray;
+  color: $gray-darker;
   text-shadow: 0 1px 0 #fff;
 }
 .btn:not(.btn-default) { font-weight:bold; }
 .btn-danger,
-.btn-danger:hover  { border-color:darken(@brand-danger,  12%); }
+.btn-danger:hover  { border-color:darken($brand-danger,  12%); }
 .btn-info,
-.btn-info:hover    { border-color:darken(@brand-info,    12%); }
+.btn-info:hover    { border-color:darken($brand-info,    12%); }
 .btn-primary,
-.btn-primary:hover { border-color:darken(@brand-primary, 12%); }
+.btn-primary:hover { border-color:darken($brand-primary, 12%); }
 .btn-success,
-.btn-success:hover { border-color:darken(@brand-success, 12%); }
+.btn-success:hover { border-color:darken($brand-success, 12%); }
 .btn-warning,
-.btn-warning:hover { border-color:darken(@brand-warning, 12%); }
+.btn-warning:hover { border-color:darken($brand-warning, 12%); }
 .container {
   padding: 0;
   background: #fff;
@@ -73,8 +73,8 @@ input[type=checkbox] {
 .pagination > .active > span,
 .pagination > .active > span:focus,
 .pagination > .active > span:hover {
-  background: @brand-primary;
-  border-color: @brand-primary;
+  background: $brand-primary;
+  border-color: $brand-primary;
 }
 .panel-heading { padding: 0; }
 .panel-heading a {
@@ -91,7 +91,7 @@ input[type=checkbox] {
 .sub-breadcrumb { padding: 0 5px; }
 .tab-content {
   padding: 6px 8px;
-  border: 1px solid @gray-lighter;
+  border: 1px solid $gray-lighter;
   border-top: 0;
 }
 
