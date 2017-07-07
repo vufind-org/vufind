@@ -231,17 +231,20 @@
     bottom: 0;
     border: 0;
   }
+  .nav-tabs a,
+  .nav-tabs a:hover {
+    border: 0;
+    border-bottom: 3px solid transparent;
+  }
   .nav-tabs a {
     height: calc(@search-tab-height + .5rem);
     line-height: calc(@search-tab-height + .5rem);
     padding: 0 1rem;
-    border: 0;
-    border-bottom: 3px solid transparent;
     border-radius: 0;
     background-color: transparent;
   }
   .nav-tabs a:hover {
-    border-color: transparent;
+    border-color: @white-50;
     color: @header-light;
     background-color: transparent;
   }
@@ -267,6 +270,7 @@
 .solr-adv-facet:last-child { padding-right: 0; }
 .adv_search_links { margin-bottom: 0; }
 .adv_search_links a { text-decoration: underline; }
+.tab-content .adv_search_links { margin-bottom: 1.5rem; } // Advanced links with search tabs
 
 /* ------ Combined ------ */
 #content > [name="bulkActionForm"] .bulkActionButtons {
