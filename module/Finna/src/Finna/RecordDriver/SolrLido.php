@@ -969,4 +969,33 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             }
         }
     }
+
+    /**
+     * Get the displaysubject and description info to summary
+     *
+     * @return array $results with summary from displaySubject or description field
+     */
+    public function getSummary()
+    {
+        $results = [];
+        $label = null;
+        $title = str_replace([',', ';'], ' ', $this->getTitle());
+        foreach ($this->getSimpleXML()->xpath(
+            'lido/descriptiveMetadata/objectRelationWrap/subjectWrap/subjectSet'
+        ) as $node) {
+            $subject = $node->displaySubject;
+            $checkTitle = str_replace([',', ';'], ' ', (string)$subject) != $title;
+            foreach ($subject as $attributes) {
+                $label = $attributes->attributes()->label;
+                if (($label == 'aihe' || $label == null)  && $checkTitle) {
+                    $results[] = (string)$subject;
+                }
+            }
+        }
+        if (!$results && !empty($this->fields['description'])) {
+            $results[] = (string)($this->fields['description']) != $title
+                ? (string)$this->fields['description'] : '';
+        }
+        return $results;
+    }
 }
