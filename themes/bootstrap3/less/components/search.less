@@ -166,6 +166,11 @@ header .container.navbar { margin-bottom: 0; }
   width: 1.28571429em;
   text-align: center;
 }
+.savedLists {
+  &:extend(.alert);
+  &:extend(.alert-info);
+  display: none;
+}
 
 @media (min-width: 768px) {
   .result-body {
@@ -177,6 +182,7 @@ header .container.navbar { margin-bottom: 0; }
     width: 25%;
     padding: 0;
   }
+  .savedLists.loaded { display: block; }
 }
 body.rtl {
   .result .btn-bookbag-toggle .fa {
