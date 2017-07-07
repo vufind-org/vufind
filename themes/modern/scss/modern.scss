@@ -163,37 +163,43 @@ header {
   .facet-group {
     margin-left: 1rem;
     margin-right: 1rem;
-
-    /* Collapsed arrows */
-    .title {
-      background-color: $sidebar-title-bg;
-      color: $sidebar-title-color;
-    }
-    .title::after {
+  }
+  /* Collapsed arrows */
+  .facet-group .title {
+    background-color: $sidebar-title-bg;
+    color: $sidebar-title-color;
+    &::after {
       width: 1rem;
       font-family: "FontAwesome";
       text-align: center;
       color: $sidebar-title-icon-color;
       content: '\f106';
     }
-    .title.collapsed::after { content: '\f107'; }
+  }
+  .facet-group .title.collapsed::after { content: '\f107'; }
+  .active-filters .title::after { content: none; } // No arrow on active filter title
 
-    .facet {
-      background-color: $sidebar-item-bg;
-      color: $sidebar-item-color;
+  .facet {
+    background-color: $sidebar-item-bg;
+    color: $sidebar-item-color;
+  }
+  a.facet:hover { background-color: $sidebar-item-hover-bg; }
 
-      &.active {
-        background-color: $sidebar-active-bg;
-        color: $sidebar-active-color;
-      }
-    }
-    a.facet:hover { background-color: $sidebar-item-hover-bg; }
-    .facet .badge {
-      max-height: 15px;
-      margin-top: 5px;
-      line-height: .8;
-      background-color: $sidebar-item-badge;
-    }
+  .facet.active,
+  .facet.active:hover,
+  .active-filters .facet,
+  .active-filters .facet:hover,
+  .jstree-facet .jstree-container-ul > .active {
+    border-color: $sidebar-active-bg;
+    background-color: $sidebar-active-bg;
+    color: $sidebar-active-color;
+  }
+
+  .facet .badge {
+    max-height: 15px;
+    margin-top: 5px;
+    line-height: .8;
+    background-color: $sidebar-item-badge;
   }
 }
 .sidebar.left,
@@ -203,3 +209,5 @@ header {
 }
 .sidebar .checkbox-filter,
 .sidebar > h4 { margin-left: 1rem; }
+
+.jstree-facet .main .fa-check { margin-top: 3px; }
