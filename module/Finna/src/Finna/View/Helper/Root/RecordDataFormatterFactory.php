@@ -190,6 +190,13 @@ class RecordDataFormatterFactory
             ]
         );
         $spec->setTemplateLine(
+            'Extent', 'getPhysicalDescriptions',
+            'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'record-extent']
+            ]
+        );
+        $spec->setTemplateLine(
             'Age Limit', 'getAgeLimit', 'data-escapeHtml.phtml',
             [
                 'context' => ['class' => 'recordAgeLimit']
