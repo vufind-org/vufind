@@ -177,13 +177,15 @@ header {
     }
   }
   .facet-group .title.collapsed::after { content: '\f107'; }
-  .active-filters .title::after { content: none; } // No arrow on active filter title
+  .active-filters .title::after,
+  #advSearchForm & .title:after { content: none; } // No arrow on active filter title
 
   .facet {
     background-color: $sidebar-item-bg;
     color: $sidebar-item-color;
   }
-  a.facet:hover { background-color: $sidebar-item-hover-bg; }
+  a.facet:hover,
+  .facet.checkbox:hover { background-color: $sidebar-item-hover-bg; }
 
   .facet.active,
   .facet.active:hover,
@@ -193,6 +195,11 @@ header {
     border-color: $sidebar-active-bg;
     background-color: $sidebar-active-bg;
     color: $sidebar-active-color;
+
+    .badge {
+      color: $sidebar-active-bg;
+      background-color: $white;
+    }
   }
 
   .facet .badge {

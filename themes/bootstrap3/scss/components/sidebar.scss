@@ -74,16 +74,23 @@
   font-weight: bold;
   color: $text-color;
 }
+.facet-group > .checkbox,
+.sidebar .facet.checkbox {
+  margin: 0;
+  padding-left: 2rem;
+}
 
 .active-filters .facet,
 .facet-group .active {
+  padding-right: .65rem;
   background-color: $brand-primary;
   color: #fff;
 
   a { color: #fff; }
 }
-.active-filters .facet { padding-right: .65rem; }
-.facet-group .active .badge {
+.facet.active .badge,
+.jstree-node.active .badge,
+.jstree-node.active .badge .fa {
   background-color: #fff;
   color: $brand-primary;
 }

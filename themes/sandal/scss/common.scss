@@ -15,8 +15,8 @@ table { font-size: $reduced-font-size; }
 
 /* ------ Bootstrap class overrides ------ */
 .badge {
+  margin-bottom: 1px;
   font-size: 10px;
-  line-height: 1.1;
 }
 .btn {
   height: 34px;

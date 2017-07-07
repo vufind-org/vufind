@@ -83,10 +83,10 @@ module.exports = function(grunt) {
           },
           {
             expand: true,
-            cwd: 'themes/modern/less',
+            cwd: 'themes/sandal/less',
             src: ['*.less'],
             ext: '.scss',
-            dest: 'themes/modern/scss'
+            dest: 'themes/sandal/scss'
           }
         ],
         options: {
