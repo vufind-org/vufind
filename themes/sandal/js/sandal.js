@@ -6,7 +6,7 @@ function toggleResultChecked(box) {
   }
 }
 
-$(document).ready(function modernTweaks() {
+$(document).ready(function sandalTweaks() {
   var boxes = $('.record-checkbox input,.grid-checkbox input');
   for (var i = 0; i < boxes.length; i++) {
     $(boxes[i]).change(function toggleChecked(e) {
