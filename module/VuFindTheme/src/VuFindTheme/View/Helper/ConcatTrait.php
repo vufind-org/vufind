@@ -231,7 +231,6 @@ trait ConcatTrait
         $filename = md5($group['key']) . '.min.' . $this->getFileType();
         $concatPath = $this->getResourceCacheDir() . $filename;
         if (!file_exists($concatPath)) {
-            $pid = getmypid();
             $lockfile = "$concatPath.lock";
             $handle = fopen($lockfile, 'c+');
             if (!is_resource($handle)) {
@@ -243,42 +242,8 @@ trait ConcatTrait
             }
             // Check again if file exists after acquiring the lock
             if (!file_exists($concatPath)) {
-                $startTime = microtime(true);
                 try {
-                    $tempfile = "$concatPath.tmp";
-                    foreach ($group['items'] as $item) {
-                        $details = $this->themeInfo->findContainingTheme(
-                            $this->getFileType() . '/'
-                            . $this->getResourceFilePath($item),
-                            ThemeInfo::RETURN_ALL_DETAILS
-                        );
-                        if ($this->isMinifiable($details['path'])) {
-                            $minifier = $this->getMinifier();
-                            $minifier->add($details['path']);
-                            $data = $minifier->execute($concatPath);
-                        } else {
-                            $data = file_get_contents($details['path']);
-                            if (false === $data) {
-                                throw new \Exception(
-                                    "Could not read file {$details['path']}"
-                                );
-                            }
-                        }
-                        // Play it safe by terminating a script file with a semicolon
-                        // adding a line to the end of any file type.
-                        if ($this->getFileType() === 'js'
-                            && substr(trim($data), -1, 1) !== ';'
-                        ) {
-                            $data .= ';';
-                        }
-                        $data .= "\n";
-                        file_put_contents($tempfile, $data, FILE_APPEND);
-                    }
-                    if (!rename($tempfile, $concatPath)) {
-                        throw new \Exception(
-                            "Could not rename $tempfile to $concatPath"
-                        );
-                    }
+                    $this->createConcatenatedFile($concatPath, $group);
                 } catch (\Exception $e) {
                     flock($handle, LOCK_UN);
                     fclose($handle);
@@ -290,6 +255,58 @@ trait ConcatTrait
         }
 
         return $urlHelper('home') . 'cache/' . $filename;
+    }
+
+    /**
+     * Create a concatenated file from the given group of files
+     *
+     * @param string $concatPath Resulting file path
+     * @param array  $group      Object containing 'key' and stdobj file 'items'
+     *
+     * @throws \Exception
+     * @return void
+     */
+    protected function createConcatenatedFile($concatPath, $group)
+    {
+        $data = [];
+        foreach ($group['items'] as $item) {
+            $details = $this->themeInfo->findContainingTheme(
+                $this->getFileType() . '/'
+                . $this->getResourceFilePath($item),
+                ThemeInfo::RETURN_ALL_DETAILS
+            );
+            $data[] = $this->getMinifiedData($details, $concatPath);
+        }
+        // Separate each file's data with a new line so that e.g. a file
+        // ending in a comment doesn't cause the next one to also get commented out.
+        file_put_contents($concatPath, implode("\n", $data));
+    }
+
+    /**
+     * Get minified data for a file
+     *
+     * @param array  $details    File details
+     * @param string $concatPath Target path for the resulting file (used in minifier
+     * for path mapping)
+     *
+     * @throws \Exception
+     * @return string
+     */
+    protected function getMinifiedData($details, $concatPath)
+    {
+        if ($this->isMinifiable($details['path'])) {
+            $minifier = $this->getMinifier();
+            $minifier->add($details['path']);
+            $data = $minifier->execute($concatPath);
+        } else {
+            $data = file_get_contents($details['path']);
+            if (false === $data) {
+                throw new \Exception(
+                    "Could not read file {$details['path']}"
+                );
+            }
+        }
+        return $data;
     }
 
     /**
@@ -351,8 +368,7 @@ trait ConcatTrait
     protected function isMinifiable($filename)
     {
         $basename = basename($filename);
-        return strpos($basename, '.min.js') === false
-            && strpos($basename, '.min.css') === false;
+        return preg_match('/\.min\.(js|css)/', $basename) === 0;
     }
 
     /**
