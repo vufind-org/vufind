@@ -149,10 +149,7 @@ header {
 .comment .delete { font-size: $reduced-font-size; }
 .comment-form .btn-primary { margin-top: .25rem; }
 .tagList { line-height: 2rem; }
-.tagList .tag .badge {
-  font-size: 12px;
-  font-weight: 900;
-}
+.tagList .tag .fa-close { margin: 0; }
 
 /* --- Sidebar --- */
 .sidebar {
@@ -218,3 +215,15 @@ header {
 .sidebar > h4 { margin-left: 1rem; }
 
 .jstree-facet .main .fa-check { margin-top: 3px; }
+@media (min-width: 768px) and (max-width: 991px) {
+  .sidebar .facet {
+    flex-flow: wrap;
+
+    .text { width: 100%; }
+    .badge {
+      flex-grow: 1;
+      order: 1;
+    }
+    .exclude { order: 2; }
+  }
+}

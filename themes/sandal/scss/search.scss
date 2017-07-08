@@ -4,28 +4,9 @@
 }
 .list-group-item.title { color: $dark-gray; }
 .bulkActionButtons {
-  .checkbox-select-all { display: none; }
   label {
     font-weight: 500;
     color: $mid-gray;
-  }
-  label::before {
-    display: inline-block;
-    width: 28px;
-    margin-right: .5rem;
-    padding: .25rem;
-    font-size: $reduced-font-size;
-    font-family: "FontAwesome";
-    text-align: center;
-    color: $gray-light;
-    content: "\f00c";
-    cursor: pointer;
-    background-color: $gray-lighter;
-    border-radius: $border-radius-base;
-  }
-  :checked ~ label::before {
-    color: #fff;
-    background-color: $brand-primary;
   }
 }
 .search-header.search-header { padding-top: 0; } // Duplicate to increase specificity
@@ -115,44 +96,20 @@
   width: 15%;
   text-align: center;
 }
-.cart-link-icon { color: $dark-gray; }
 @media (max-width: 767px) {
   .result-link-icon,
   .result .cart-link-icon {
     width: 100%;
-    font-size: $result-sm-icon-size;
     margin: 0;
     padding-top: .5rem;
     padding-bottom: .5rem;
+    font-size: $result-sm-icon-size;
+    color: $dark-gray;
   }
   .result-link-label,
   .result .cart-link-label { display: none; }
 }
 
-.result .record-checkbox,
-.grid-result .grid-checkbox {
-  flex-basis: $result-checkbox-width;
-  text-align: center;
-
-  input { display: none; }
-  .checkbox-icon::before {
-    display: block;
-    width: 100%;
-    height: $result-checkbox-height;
-    line-height: $result-checkbox-height;
-    font-family: "FontAwesome";
-    color: $gray-light;
-    content: "\f00c";
-    cursor: pointer;
-    background-color: $gray-lighter;
-    border-top-left-radius: $border-radius-base;
-    border-bottom-left-radius: $border-radius-base;
-  }
-  :checked ~ .checkbox-icon::before {
-    color: $search-row-selected-color;
-    background-color: $search-row-selected-bg;
-  }
-}
 .grid-result .grid-checkbox label { width: 100%; }
 @media (min-width: 768px) {
   .result { padding-right: 1rem; }
