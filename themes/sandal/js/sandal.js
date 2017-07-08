@@ -7,9 +7,7 @@ function toggleResultChecked(box) {
   }
 }
 function bindModernCheckboxes(_container) {
-  $container = typeof _container === 'undefined'
-    ? $(document)
-    : $(_container);
+  var $container = typeof _container === 'undefined' ? $(document) : $(_container);
   var boxes = $container.find('.record-checkbox input,.grid-checkbox input');
   for (var i = 0; i < boxes.length; i++) {
     $(boxes[i]).change(function toggleChecked(e) {
