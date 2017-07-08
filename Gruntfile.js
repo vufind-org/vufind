@@ -80,6 +80,13 @@ module.exports = function(grunt) {
             src: ['*.less'],
             ext: '.scss',
             dest: 'themes/bootprint3/scss'
+          },
+          {
+            expand: true,
+            cwd: 'themes/sandal/less',
+            src: ['*.less'],
+            ext: '.scss',
+            dest: 'themes/sandal/scss'
           }
         ],
         options: {
@@ -88,6 +95,13 @@ module.exports = function(grunt) {
               pattern: /(\s+)@include ([^\(]+)\(([^\)]+)\);/gi,
               replacement: function mixinCommas(match, space, $1, $2) {
                 return space + '@include ' + $1 + '(' + $2.replace(/;/g, ',') + ');';
+              },
+              order: 3
+            },
+            { // Remove unquote
+              pattern: /(\s+)unquote\("([^"]+)"\)/gi,
+              replacement: function mixinCommas(match, space, $1) {
+                return space + $1;
               },
               order: 3
             },
