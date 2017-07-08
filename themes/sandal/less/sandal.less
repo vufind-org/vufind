@@ -218,3 +218,15 @@ header {
 .sidebar > h4 { margin-left: 1rem; }
 
 .jstree-facet .main .fa-check { margin-top: 3px; }
+@media (min-width: 768px) and (max-width: 991px) {
+  .sidebar .facet {
+    flex-flow: wrap;
+
+    .text { width: 100%; }
+    .badge {
+      flex-grow: 1;
+      order: 1;
+    }
+    .exclude { order: 2; }
+  }
+}
