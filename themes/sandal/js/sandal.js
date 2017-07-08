@@ -1,3 +1,4 @@
+// Highlight entire element when checked
 function toggleResultChecked(box) {
   if (box.checked) {
     $(box).closest('.result,.grid-result').addClass('checked');
@@ -5,19 +6,25 @@ function toggleResultChecked(box) {
     $(box).closest('.result,.grid-result').removeClass('checked');
   }
 }
-
-$(document).ready(function sandalTweaks() {
-  var boxes = $('.record-checkbox input,.grid-checkbox input');
+function bindModernCheckboxes(_container) {
+  $container = typeof _container === 'undefined'
+    ? $(document)
+    : $(_container);
+  var boxes = $container.find('.record-checkbox input,.grid-checkbox input');
   for (var i = 0; i < boxes.length; i++) {
     $(boxes[i]).change(function toggleChecked(e) {
       toggleResultChecked(e.target);
     });
     toggleResultChecked(boxes[i]);
   }
-  $('.checkbox-select-all').change(function toggleAllCheckboxes() {
+  $container.find('.checkbox-select-all').change(function toggleAllCheckboxes() {
     var subboxes = $('.record-checkbox input,.grid-checkbox input');
     for (var j = 0; j < boxes.length; j++) {
       toggleResultChecked(subboxes[j]);
     }
   });
+}
+
+$(document).ready(function modernTweaks() {
+  bindModernCheckboxes();
 });
