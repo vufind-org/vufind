@@ -1,16 +1,16 @@
-<div class="list-group-item">
+<div class="facet">
   <form name="<?=$this->escapeHtmlAttr($this->title)?>Filter" id="<?=$this->escapeHtmlAttr($this->title)?>Filter">
     <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./", 'filter' => "/^{$this->title}:.*/"])?>
     <input type="hidden" name="<?=$this->escapeHtmlAttr($this->facet['type'])?>range[]" value="<?=$this->escapeHtmlAttr($this->title)?>"/>
-    <div class="row">
+    <div class="date-fields">
       <? $extraInputAttribs = ($this->facet['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
-      <div class="col-sm-6">
+      <div class="date-from">
         <label for="<?=$this->escapeHtmlAttr($this->title)?>from">
           <?=$this->transEsc('date_from')?>:
         </label>
         <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($this->title)?>from" id="<?=$this->escapeHtmlAttr($this->title)?>from" value="<?=isset($this->facet['values'][0])?$this->escapeHtmlAttr($this->facet['values'][0]):''?>" <?=$extraInputAttribs?>/>
       </div>
-      <div class="col-sm-6">
+      <div class="date-to">
         <label for="<?=$this->escapeHtmlAttr($this->title)?>to">
           <?=$this->transEsc('date_to')?>:
         </label>
@@ -32,7 +32,6 @@
     $max = !empty($this->facet['values'][1]) ? max($future, $this->facet['values'][1]) : $future;
     $low  = !empty($this->facet['values'][0]) ? $this->facet['values'][0] : $min;
     $high = !empty($this->facet['values'][1]) ? $this->facet['values'][1] : $max;
-    $reversed = $this->layout()->rtl ? 'true' : 'false';
     $script = <<<JS
 $(document).ready(function() {
   var fillTexts = function() {
@@ -46,8 +45,7 @@ $(document).ready(function() {
       'max':{$max},
       'handle':"square",
       'tooltip':"hide",
-      'value':[{$low},{$high}],
-      'reversed': {$reversed}
+      'value':[{$low},{$high}]
     })
     .on('change', fillTexts)
     .data('slider');

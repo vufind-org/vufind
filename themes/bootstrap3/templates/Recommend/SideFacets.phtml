@@ -1,8 +1,9 @@
 <?
   $this->headScript()->appendFile('facets.js');
 
-  $results = $this->recommend->getResults();
-  $options = $this->searchOptions($this->searchClassId);
+  // Save results/options to $this so they are available to sub-templates:
+  $this->results = $results = $this->recommend->getResults();
+  $this->options = $options = $this->searchOptions($this->searchClassId);
 ?>
 <? if ($results->getResultTotal() > 0): ?>
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
@@ -39,8 +40,8 @@
 <? $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <? foreach ($sideFacetSet as $title => $cluster): ?>
-    <div class="list-group facet" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
-      <div class="list-group-item title<? if(in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
+    <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
+      <div class="title<? if(in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
         <?=$this->transEsc($cluster['label'])?>
       </div>
       <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<? if(!in_array($title, $collapsedFacets)): ?> in<? endif ?>">

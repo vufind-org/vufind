@@ -1349,7 +1349,9 @@ class SolrDefault extends AbstractBase
             'author'     => mb_substr($this->getPrimaryAuthor(), 0, 300, 'utf-8'),
             'callnumber' => $this->getCallNumber(),
             'size'       => $size,
-            'title'      => mb_substr($this->getTitle(), 0, 300, 'utf-8')
+            'title'      => mb_substr($this->getTitle(), 0, 300, 'utf-8'),
+            'recordid'   => $this->getUniqueID(),
+            'source'   => $this->getSourceIdentifier(),
         ];
         if ($isbn = $this->getCleanISBN()) {
             $arr['isbn'] = $isbn;
@@ -1819,17 +1821,6 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get longitude/latitude values (or empty array if not available).
-     *
-     * @return array
-     */
-    public function getLongLat()
-    {
-        return isset($this->fields['long_lat'])
-            ? $this->fields['long_lat'] : [];
-    }
-
-    /**
      * Get schema.org type mapping, an array of sub-types of
      * http://schema.org/CreativeWork, defaulting to CreativeWork
      * itself if nothing else matches.
@@ -1947,8 +1938,8 @@ class SolrDefault extends AbstractBase
      */
     public function getGeoLocation()
     {
-        return isset($this->fields['location_geo'])
-            ? $this->fields['location_geo'] : [];
+        return isset($this->fields['long_lat'])
+            ? $this->fields['long_lat'] : [];
     }
 
     /**

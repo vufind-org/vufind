@@ -1,3 +1,4 @@
+// Group of multiple searches
 .adv-group {
   .clearfix();
   position: relative;
@@ -6,7 +7,7 @@
   border: 1px solid @panel-default-border;
   border-radius: @border-radius-base;
 
-  & ~ & { margin-top: 1rem; }
+  & ~ & { margin-top: 1rem; } // Spacing between groups
 
   .add_search_link {
     display: inline-block;
@@ -19,11 +20,7 @@
   padding-top: .25rem;
   padding-bottom: .25rem;
 }
-.adv-group-close {
-  position: absolute;
-  bottom: 1rem;
-  left: 75%;
-}
+.adv-group-close { color: @state-danger-text; }
 .adv-search,
 .adv-search .input-group { width: 100%; }
 .adv-search {
@@ -37,7 +34,7 @@
   max-width: 80%;
 }
 .adv-term-remove {
-  &:extend(.close);
+  &:extend(.close); // borrow the X from bootstrap close
   float: left;
   width: 20%;
   height: 30px;
@@ -45,6 +42,8 @@
   text-align: center;
   opacity: .4;
 }
+.adv-submit { .clearfix(); }
+.adv-submit .clear-btn { float: right; }
 
 @media (min-width: 768px) {
   .adv-group-terms {
@@ -55,6 +54,12 @@
   .adv-group-match {
     float: right;
     width: 25%;
+  }
+  .adv-group-close {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    min-width: calc(25% - 1rem);
   }
   .adv-search {
     margin-bottom: 0;
@@ -106,6 +111,12 @@
     float: left;
     width: 16%;
     margin-right: 1%;
+
+    body.rtl & {
+      float: right;
+      margin-left: 0;
+      margin-right: 1%;
+    }
   }
   .eds-adv .adv-search:first-of-type .adv-term-input { margin-left: 17%; }
   .eds-adv .adv-term-input {
@@ -116,5 +127,59 @@
     float: left;
     width: 6%;
     text-align: center;
+  }
+}
+
+/* --- Primo --- */
+.primo-adv-search .search { margin-bottom: .5rem; }
+.primo-adv-search .search-container { width: 100%; }
+.primo-adv-label {
+  line-height: @input-height-base;
+  padding-right: 1rem;
+}
+@media (min-width: 768px) {
+  .primo.adv-group,
+  .primo-adv-search .search {
+    display: flex;
+
+    select {
+      flex-shrink: 2;
+      margin-right: .5rem;
+    }
+    .primo-adv-input { flex-grow: 1; }
+  }
+  .primo-adv-label { flex-shrink: 0; }
+}
+
+/* --- Solr --- */
+@media (min-width: 768px) {
+  .solr-facet-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .solr-adv-facet { flex: 1 25%; }
+}
+
+/* -- Right to left --- */
+body.rtl {
+  fieldset,
+  .fieldset,
+  .adv-search .adv-term-input,
+  .adv-search .adv-term-type,
+  .eds-adv .help-block,
+  .summon-facets .facet-fieldset { float: right; }
+  .adv-submit .clear-btn,
+  .adv-group-match { float: left; }
+  .adv-search .adv-term-input {
+    margin-left: 2%;
+    margin-right: 0;
+  }
+  .date-from {
+    padding-left: .25rem;
+    padding-right: 0;
+  }
+  .date-to {
+    padding-left: 0;
+    padding-right: .25rem;
   }
 }

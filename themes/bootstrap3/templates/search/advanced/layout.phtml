@@ -138,17 +138,17 @@
           <? endfor; ?>
         <? endif; ?>
       </div>
-      <div class="clearfix">
-        <input class="btn btn-default clear-btn" type="button" value="<?= $this->transEsc('Clear')?>">
-        <input class="btn btn-primary pull-right flip" type="submit" value="<?= $this->transEsc('Find')?>">
+      <div class="adv-submit">
+        <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEsc('Clear')?>">
+        <input class="btn btn-primary" type="submit" value="<?= $this->transEsc('Find')?>">
       </div>
       <? if (isset($this->extraAdvancedControls)): ?>
         <div class="clearfix">
           <?=$this->extraAdvancedControls ?>
         </div>
-        <div class="clearfix">
-          <input class="btn btn-default clear-btn" type="button" value="<?= $this->transEsc('Clear')?>">
-          <input class="btn btn-primary pull-right flip" type="submit" value="<?= $this->transEsc('Find')?>">
+        <div class="adv-submit">
+          <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEsc('Clear')?>">
+          <input class="btn btn-primary" type="submit" value="<?= $this->transEsc('Find')?>">
         </div>
       <? endif; ?>
     </div>
@@ -159,27 +159,25 @@
       <? endif ?>
       <? if (!empty($searchFilters)): ?>
         <h4><?=$this->transEsc("adv_search_filters")?></h4>
-        <div class="list-group">
-          <label class="list-group-item checkbox">
+        <div class="facet-group">
+          <label class="checkbox">
             <input type="checkbox" checked="checked" class="checkbox-select-all"/>
             <?=$this->transEsc("adv_search_select_all")?>
           </label>
         </div>
         <? foreach ($searchFilters as $field => $data): ?>
-          <div class="list-group">
-            <div class="list-group-item title"><?=$this->transEsc($field)?></div>
+          <div class="facet-group">
+            <div class="title"><?=$this->transEsc($field)?></div>
             <? foreach ($data as $value): ?>
-              <label class="list-group-item checkbox"><input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></label>
+              <label class="facet checkbox"><input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></label>
             <? endforeach; ?>
           </div>
         <? endforeach; ?>
       <? endif; ?>
-      <div class="sidegroup">
-        <h4><?=$this->transEsc("Search Tips")?></h4>
-        <div class="list-group">
-          <a class="list-group-item help-link" data-lightbox href="<?=$this->url('help-home')?>?topic=advsearch&amp;_=<?=time() ?>"><?=$this->transEsc("Help with Advanced Search")?></a>
-          <a class="list-group-item help-link" data-lightbox href="<?=$this->url('help-home')?>?topic=search&amp;_=<?=time() ?>"><?=$this->transEsc("Help with Search Operators")?></a>
-        </div>
+      <h4><?=$this->transEsc("Search Tips")?></h4>
+      <div class="facet-group">
+        <a class="facet help-link" data-lightbox href="<?=$this->url('help-home')?>?topic=advsearch&amp;_=<?=time() ?>"><?=$this->transEsc("Help with Advanced Search")?></a>
+        <a class="facet help-link" data-lightbox href="<?=$this->url('help-home')?>?topic=search&amp;_=<?=time() ?>"><?=$this->transEsc("Help with Search Operators")?></a>
       </div>
     </div>
   </form>

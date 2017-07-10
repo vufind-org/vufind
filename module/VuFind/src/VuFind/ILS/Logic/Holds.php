@@ -115,9 +115,7 @@ class Holds
     {
         $retVal = [];
 
-        // Handle purchase history alongside other textual fields
         $textFieldNames = $this->catalog->getHoldingsTextFieldNames();
-        $textFieldNames[] = 'purchase_history';
 
         foreach ($holdings as $groupKey => $items) {
             $retVal[$groupKey] = [
@@ -153,6 +151,16 @@ class Holds
                             if (empty($targetRef) || !in_array($field, $targetRef)) {
                                 $targetRef[] = $field;
                             }
+                        }
+                    }
+                }
+
+                // Handle purchase history
+                if (!empty($item['purchase_history'])) {
+                    $targetRef = & $retVal[$groupKey]['purchase_history'];
+                    foreach ((array)$item['purchase_history'] as $field) {
+                        if (empty($targetRef) || !in_array($field, $targetRef)) {
+                            $targetRef[] = $field;
                         }
                     }
                 }
@@ -524,9 +532,9 @@ class Holds
      */
     protected function getHoldingsGroupKey($copy)
     {
-        // Group by holdings id unless configured otherwise
+        // Group by holdings id and location unless configured otherwise
         $grouping = isset($this->config->Catalog->holdings_grouping)
-            ? $this->config->Catalog->holdings_grouping : 'holdings_id';
+            ? $this->config->Catalog->holdings_grouping : 'holdings_id,location';
 
         $groupKey = "";
 

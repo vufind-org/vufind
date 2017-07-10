@@ -24,9 +24,9 @@
       </a>
     <? endif; ?>
     <? if ($this->ils()->checkFunction('ILLRequests')): ?>
-    <a href="<?=$this->url('myresearch-illrequests')?>"<?=$this->active == 'ILLRequests' ? ' class="active"' : ''?>>
-      <i class="fa fa-fw fa-exchange" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?>
-    </a>
+      <a href="<?=$this->url('myresearch-illrequests')?>"<?=$this->active == 'ILLRequests' ? ' class="active"' : ''?>>
+        <i class="fa fa-fw fa-exchange" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?>
+      </a>
     <? endif; ?>
     <? if ($this->ils()->checkCapability('getMyFines')): ?>
       <a href="<?=$this->url('myresearch-fines')?>"<?=$this->active == 'fines' ? ' class="active"' : ''?>>
@@ -39,7 +39,8 @@
         <i class="fa fa-fw fa-user" aria-hidden="true"></i> <?=$this->transEsc('Profile')?>
       </a>
     <? endif; ?>
-    <? $user = $this->auth()->isLoggedIn(); if ($user && $user->libraryCardsEnabled()): ?>
+    <? $user = $this->auth()->isLoggedIn(); ?>
+    <? if ($user && $user->libraryCardsEnabled()): ?>
       <a href="<?=$this->url('librarycards-home')?>"<?=$this->active == 'librarycards' ? ' class="active"' : ''?>>
         <i class="fa fa-fw fa-barcode" aria-hidden="true"></i> <?=$this->transEsc('Library Cards')?>
       </a>
@@ -72,10 +73,10 @@
     </a>
     <? $lists = $user->getLists() ?>
     <? foreach ($lists as $list): ?>
-        <a href="<?=$this->url('userList', ['id' => $list['id']])?>"<?=$this->active == 'list' . $list['id'] ? ' class="active"' : ''?>>
-          <?=$this->escapeHtml($list['title'])?>
-          <span class="badge"><?=$list->cnt?></span>
-        </a>
+      <a href="<?=$this->url('userList', ['id' => $list['id']])?>"<?=$this->active == 'list' . $list['id'] ? ' class="active"' : ''?>>
+        <?=$this->escapeHtml($list['title'])?>
+        <span class="badge"><?=$list->cnt?></span>
+      </a>
     <? endforeach; ?>
     <a href="<?=$this->url('editList', ['id'=>'NEW'])?>">
       <i class="fa fa-fw fa-plus" aria-hidden="true"></i> <?=$this->transEsc('Create a List') ?>

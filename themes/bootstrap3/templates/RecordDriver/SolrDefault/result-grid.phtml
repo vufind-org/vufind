@@ -20,7 +20,9 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     <?=$this->record($this->driver)->getCover('result-grid', 'small', $this->recordLink()->getUrl($this->driver)); ?>
     <? if (!$openUrlActive && empty($urls)): ?>
       <? if ($this->driver->supportsAjaxStatus()): ?>
-        <div class="status ajax-availability hidden"><span class="label label-default"><?=$this->transEsc('Loading')?>...</span></div>
+        <div class="result-formats status ajax-availability hidden">
+          <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
+        </div>
       <? endif; ?>
     <? endif; ?>
     <div>
