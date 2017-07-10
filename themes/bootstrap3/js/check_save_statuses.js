@@ -26,7 +26,7 @@ var saveStatusDelay = 200;
 function saveQueueAjax(obj, el) {
   clearTimeout(saveStatusTimer);
   saveStatusObjs.push(obj);
-  saveStatusEls[obj.id] = el;
+  saveStatusEls[obj.source + '|' + obj.id] = el;
   saveStatusTimer = setTimeout(function delaySaveAjax() {
     var ids = [];
     var sources = [];
@@ -39,14 +39,14 @@ function saveQueueAjax(obj, el) {
       method: 'POST',
       url: VuFind.path + '/AJAX/JSON?method=getSaveStatuses',
       data: {
-        'ids': ids,
-        'sources': sources
+        'id': ids,
+        'source': sources
       }
     })
     .done(function checkSaveStatusDone(response) {
       for (var id in response.data) {
         if (response.data.hasOwnProperty(id)) {
-          displaySaveStatus(response.data[id + ''], saveStatusEls[id + '']);
+          displaySaveStatus(response.data[id], saveStatusEls[id]);
         }
       }
       saveStatusObjs = [];
@@ -54,8 +54,10 @@ function saveQueueAjax(obj, el) {
     .fail(function checkItemStatusFail(response, textStatus) {
       saveStatusFail(response, textStatus);
     });
-    for (var j = 0; j < saveStatusObjs.length; j++) {
-      saveStatusEls[saveStatusObjs[j].id].find('.ajax-availability').addClass('ajax-pending');
+    for (var sel in saveStatusEls) {
+      if (saveStatusEls.hasOwnProperty(sel)) {
+        saveStatusEls[sel].find('.ajax-availability').addClass('ajax-pending');
+      }
     }
   }, saveStatusDelay);
 }
