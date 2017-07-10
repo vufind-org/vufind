@@ -39,17 +39,6 @@ namespace VuFind\Controller;
 trait HoldsTrait
 {
     /**
-     * Action for dealing with blocked holds.
-     *
-     * @return mixed
-     */
-    public function blockedholdAction()
-    {
-        $this->flashMessenger()->addMessage('hold_error_blocked', 'error');
-        return $this->redirectToRecord('#top');
-    }
-
-    /**
      * Action for dealing with holds.
      *
      * @return mixed
@@ -87,8 +76,12 @@ trait HoldsTrait
         $validRequest = $catalog->checkRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
         );
-        if (!$validRequest) {
-            return $this->blockedholdAction();
+        if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
+            $this->flashMessenger()->addErrorMessage(
+                is_array($validRequest)
+                    ? $validRequest['status'] : 'hold_error_blocked'
+            );
+            return $this->redirectToRecord('#top');
         }
 
         // Send various values to the view so we can build the form:

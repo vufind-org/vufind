@@ -65,8 +65,8 @@
 
 <?=$this->record($this->driver)->getToolbar()?>
 
-<div class="record row">
-  <div class="<?=$tree ? 'col-sm-12' : $this->layoutClass('mainbody') ?>">
+<div class="record">
+  <div<? if (!$tree): /* in tree mode, do not constrain width with a class */ ?> class="<?=$this->layoutClass('mainbody') ?>"<? endif; ?>>
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
     <?=$this->flashmessages()?>

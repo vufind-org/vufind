@@ -6,7 +6,7 @@ function displaySaveStatus(itemLists, $item) {
     var html = '<ul>' + itemLists.map(function convertToLi(l) {
       return '<li><a href="' + l.list_url + '">' + htmlEncode(l.list_title) + '</a></li>';
     }).join('') + '</ul>';
-    $item.find('.savedLists').html($item.find('.savedLists strong')[0].outerHTML + html).removeClass('hidden');
+    $item.find('.savedLists').html($item.find('.savedLists strong')[0].outerHTML + html).addClass('loaded');
   }
 }
 

@@ -191,6 +191,10 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
         }
       }
     });
+    // close popup if zoom in / out occurs
+    map.getView().on('change:resolution', function closePopupsOnZoom() {
+      $(element).popover('destroy');
+    });
   };
   function addInteraction() {
     draw = new ol.interaction.Draw ({
