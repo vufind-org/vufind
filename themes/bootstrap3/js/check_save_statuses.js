@@ -108,8 +108,12 @@ function checkSaveStatusesCallback() {
 
 var saveStatusObserver = null;
 $(document).ready(function checkSaveStatusFail() {
-  saveStatusObserver = new Hunt(
-    $('.result,.record').toArray(),
-    { enter: checkSaveStatus }
-  );
+  if (typeof Hunt === 'undefined') {
+    checkSaveStatuses();
+  } else {
+    saveStatusObserver = new Hunt(
+      $('.result,.record').toArray(),
+      { enter: checkSaveStatus }
+    );
+  }
 });

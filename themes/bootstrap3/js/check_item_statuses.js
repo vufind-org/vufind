@@ -129,8 +129,12 @@ function checkItemStatuses(_container) {
 }
 var itemStatusObserver = null;
 $(document).ready(function checkItemStatusReady() {
-  itemStatusObserver = new Hunt(
-    $('.ajaxItem').toArray(),
-    { enter: checkItemStatus }
-  );
+  if (typeof Hunt === 'undefined') {
+    checkItemStatuses();
+  } else {
+    itemStatusObserver = new Hunt(
+      $('.ajaxItem').toArray(),
+      { enter: checkItemStatus }
+    );
+  }
 });
