@@ -1,12 +1,21 @@
 <? //Don't add START and END comments ?>
+<?
+  $formatFn = function($field, $url) {
+     $field = $this->escapeHtml($field);
+     if ($url) {
+        $field = '<a href="' . $field . '">' . $field . '</a>';
+     }
+     return $field;
+  };
+?>
 <?if (!empty($data)): ?>
     <? if(is_array($data)): ?>
       <div class="truncate-field" data-rows="5">
         <? foreach ($data as $field): ?>
-        <?= $this->escapeHtml($field)?><br/>
+        <?= $formatFn($field, !empty($url))?><br/>
         <? endforeach; ?>
       </div>
     <? else: ?>
-        <?=$this->escapeHtml($data)?>
+        <?= $formatFn($data, !empty($url))?><br/>
     <? endif; ?>
 <? endif; ?>

@@ -641,6 +641,13 @@ class RecordDataFormatterFactory
                 'context' => ['class' => 'recordInspection']
             ]
         );
+        $spec->setTemplateLine(
+            'Available Online', 'getWebResource', 'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'recordAvailableOnline', 'url' => true]
+            ]
+        );
+
         return $spec->getArray();
     }
 
