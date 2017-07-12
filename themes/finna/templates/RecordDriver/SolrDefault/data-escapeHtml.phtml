@@ -9,13 +9,14 @@
   };
 ?>
 <?if (!empty($data)): ?>
+    <? $url = !empty($url); ?>
     <? if(is_array($data)): ?>
       <div class="truncate-field" data-rows="5">
         <? foreach ($data as $field): ?>
-        <?= $formatFn($field, !empty($url))?><br/>
+        <?= $formatFn($field, $url)?><br/>
         <? endforeach; ?>
       </div>
     <? else: ?>
-        <?= $formatFn($data, !empty($url))?><br/>
+        <?= $formatFn($data, $url)?><br/>
     <? endif; ?>
 <? endif; ?>
