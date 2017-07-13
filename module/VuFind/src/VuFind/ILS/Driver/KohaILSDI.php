@@ -724,8 +724,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $sqlWaitingReserve = "select count(*) as WAITING from reserves "
             . "WHERE itemnumber = :item_id and found = 'W'";
         if ($this->tableExists("biblio_metadata")) {
-            $sqlHoldings =
-                "SELECT ExtractValue(( SELECT metadata FROM biblio_metadata "
+            $sqlHoldings = "SELECT "
+                . "ExtractValue(( SELECT metadata FROM biblio_metadata "
                 . "WHERE biblionumber = :id AND format='marcxml'), "
                 . "'//datafield[@tag=\"866\"]/subfield[@code=\"a\"]') AS MFHD;";
         } else {
