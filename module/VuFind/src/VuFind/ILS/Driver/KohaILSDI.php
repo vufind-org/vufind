@@ -246,6 +246,22 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Koha ILS-DI driver specific override of method to ensure uniform cache keys
+     * for cached VuFind objects.
+     *
+     * @param string|null $suffix Optional suffix that will get appended to the
+     * object class name calling getCacheKey()
+     *
+     * @return string
+     */
+    protected function getCacheKey($suffix = null)
+    {
+        return \VuFind\ILS\Driver\AbstractBase::getCacheKey(
+            md5($this->ilsBaseUrl) . $suffix
+        );
+    }
+
+    /**
      * Get Field
      *
      * Check $contents is not "", return it; else return $default.
