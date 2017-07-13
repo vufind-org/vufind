@@ -212,10 +212,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Check if a table exists in the current database.
      *
-     * @param string $table	Table to search for.
-     * @return bool 		true if table exists, false if no table found.
+     * @param string $table Table to search for.
+     *
+     * @return bool
      */
-    function tableExists($table) {
+    function tableExists($table)
+    {
         if (!$this->db) {
             $this->initDb();
         }
@@ -229,7 +231,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             return false;
         }
 
-        // Result is either boolean FALSE (no table found) or PDOStatement Object (table found)
+        // Result is FALSE (no table found) or PDOStatement Object (table found)
         return $result !== false;
     }
 
@@ -711,8 +713,9 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             . "WHERE biblionumber = :id AND found IS NULL";
         $sqlWaitingReserve = "select count(*) as WAITING from reserves "
             . "WHERE itemnumber = :item_id and found = 'W'";
-        if($this->tableExists("biblio_metadata")) {
-            $sqlHoldings = "SELECT ExtractValue(( SELECT metadata FROM biblio_metadata "
+        if ($this->tableExists("biblio_metadata")) {
+            $sqlHoldings =
+                "SELECT ExtractValue(( SELECT metadata FROM biblio_metadata "
                 . "WHERE biblionumber = :id AND format='marcxml'), "
                 . "'//datafield[@tag=\"866\"]/subfield[@code=\"a\"]') AS MFHD;";
         } else {
@@ -1456,21 +1459,21 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $this->initDb();
             }
 
-            if($this->tableExists("biblio_metadata")) {
+            if ($this->tableExists("biblio_metadata")) {
                 $sql = "SELECT biblio.biblionumber AS biblionumber
                       FROM biblio
                       JOIN biblio_metadata USING (biblionumber)
                       WHERE ExtractValue(
-                          metadata, '//datafield[@tag=\"942\"]/subfield[@code=\"n\"]' )
-                          IN ('Y', '1')
+                        metadata, '//datafield[@tag=\"942\"]/subfield[@code=\"n\"]' )
+                        IN ('Y', '1')
                       AND biblio_metadata.format = 'marcxml'";
             } else {
                 $sql = "SELECT biblio.biblionumber AS biblionumber
                       FROM biblioitems
                       JOIN biblio USING (biblionumber)
                       WHERE ExtractValue(
-                          marcxml, '//datafield[@tag=\"942\"]/subfield[@code=\"n\"]' )
-                          IN ('Y', '1')";
+                        marcxml, '//datafield[@tag=\"942\"]/subfield[@code=\"n\"]' )
+                        IN ('Y', '1')";
             }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
