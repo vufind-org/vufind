@@ -218,21 +218,31 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     function tableExists($table)
     {
+        $cacheKey = "kohailsdi-tables-$table";
+        $cachedValue = $this->getCachedData($cacheKey);
+        if ($cachedValue !== null) {
+            return $cachedValue;
+        }
+
         if (!$this->db) {
             $this->initDb();
         }
+
+        $returnValue = false;
 
         // Try a select statement against the table
         // Run it in try/catch in case PDO is in ERRMODE_EXCEPTION.
         try {
             $result = $this->db->query("SELECT 1 FROM $table LIMIT 1");
+            // Result is FALSE (no table found) or PDOStatement Object (table found)
+            $returnValue = $result !== false;
         } catch (Exception $e) {
             // We got an exception == table not found
-            return false;
+            $returnValue = false;
         }
 
-        // Result is FALSE (no table found) or PDOStatement Object (table found)
-        return $result !== false;
+        $this->putCachedData($cacheKey, $returnValue);
+        return $returnValue;
     }
 
     /**
