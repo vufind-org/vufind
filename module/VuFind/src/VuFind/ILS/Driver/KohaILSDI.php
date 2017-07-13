@@ -216,7 +216,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return bool
      */
-    function tableExists($table)
+    protected function tableExists($table)
     {
         $cacheKey = "kohailsdi-tables-$table";
         $cachedValue = $this->getCachedData($cacheKey);
