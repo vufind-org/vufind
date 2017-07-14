@@ -539,6 +539,10 @@ class UtilController extends AbstractBase
                 . ' Delete authority records instead of bibliographic records'
             );
             Console::writeLine('--help or -h => Show this message');
+            Console::writeLine(
+                '--outfile=[/path/to/file] => Write the ID list to the specified'
+                . ' file instead of updating Solr (optional)'
+            );
             return $this->getFailureResponse();
         }
 
@@ -565,11 +569,19 @@ class UtilController extends AbstractBase
             return $this->getSuccessResponse();
         }
 
-        // Get Suppressed Records and Delete from index
-        $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
-        $solr->deleteRecords($backend, $result);
-        $solr->commit($backend);
-        $solr->optimize($backend);
+        // If 'outfile' set, write the list
+        if ($file = $request->getParam('outfile')) {
+            if (!file_put_contents($file, implode("\n", $result))) {
+                Console::writeLine("Problem writing to $file");
+                return $this->getFailureResponse();
+            }
+        } else {
+            // Default behavior: Get Suppressed Records and Delete from index
+            $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
+            $solr->deleteRecords($backend, $result);
+            $solr->commit($backend);
+            $solr->optimize($backend);
+        }
         return $this->getSuccessResponse();
     }
 

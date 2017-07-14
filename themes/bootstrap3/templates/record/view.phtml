@@ -35,7 +35,10 @@
       <? endif; ?>
       <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
     <? endif; ?>
-    #<?=$this->localizedNumber($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->localizedNumber($this->scrollData['resultTotal']) . ' ' . $this->transEsc('results') ?>
+    <?=$this->transEsc('of_num_results', [
+      '%%position%%' => $this->localizedNumber($this->scrollData['currentPosition']),
+      '%%total%%' => $this->localizedNumber($this->scrollData['resultTotal'])
+    ]) ?>
     <? if ($this->scrollData['nextRecord']): ?>
       <li>
         <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>" rel="nofollow"><?=$this->transEsc('Next')?> &raquo;</a>
@@ -56,7 +59,7 @@
 
 <?=$this->record($this->driver)->getToolbar()?>
 
-<div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> row">
+<div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />

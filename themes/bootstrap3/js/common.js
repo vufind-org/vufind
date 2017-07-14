@@ -1,5 +1,5 @@
 /*global grecaptcha, isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler */
+/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler */
 
 // IE 9< console polyfill
 window.console = window.console || {log: function polyfillLog() {}};
@@ -37,8 +37,17 @@ var VuFind = (function VuFind() {
       }
     }
   };
-  var translate = function translate(op) {
-    return _translations[op] || op;
+  var translate = function translate(op, _replacements) {
+    var replacements = _replacements || [];
+    var translation = _translations[op] || op;
+    if (replacements) {
+      for (var key in replacements) {
+        if (replacements.hasOwnProperty(key)) {
+          translation = translation.replace(key, replacements[key]);
+        }
+      }
+    }
+    return translation;
   };
 
   /**
@@ -129,6 +138,26 @@ function lessFacets(id) {
   $('.' + id).addClass('hidden');
   $('#more-' + id).removeClass('hidden');
   return false;
+}
+function getUrlRoot(url) {
+  // Parse out the base URL for the current record:
+  var urlroot = null;
+  var urlParts = url.split(/[?#]/);
+  var urlWithoutFragment = urlParts[0];
+  if (VuFind.path === '') {
+    // special case -- VuFind installed at site root:
+    var chunks = urlWithoutFragment.split('/');
+    urlroot = '/' + chunks[3] + '/' + chunks[4];
+  } else {
+    // standard case -- VuFind has its own path under site:
+    var slashSlash = urlWithoutFragment.indexOf('//');
+    var pathInUrl = slashSlash > -1
+      ? urlWithoutFragment.indexOf(VuFind.path, slashSlash + 2)
+      : urlWithoutFragment.indexOf(VuFind.path);
+    var parts = urlWithoutFragment.substring(pathInUrl + VuFind.path.length + 1).split('/');
+    urlroot = '/' + parts[0] + '/' + parts[1];
+  }
+  return urlroot;
 }
 function facetSessionStorage(e) {
   var source = $('#result0 .hiddenSource').val();
@@ -300,12 +329,12 @@ function keyboardShortcuts() {
 function setupFacets() {
   // Advanced facets
   $('.facetAND a,.facetOR a').click(function facetBlocking() {
-    $(this).closest('.collapse').html('<div class="list-group-item">' + VuFind.translate('loading') + '...</div>');
+    $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
     window.location.assign($(this).attr('href'));
   });
 
   // Side facet status saving
-  $('.facet.list-group .collapse').each(function openStoredFacets(index, item) {
+  $('.facet-group .collapse').each(function openStoredFacets(index, item) {
     var source = $('#result0 .hiddenSource').val();
     var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
     if (storedItem) {
@@ -322,8 +351,8 @@ function setupFacets() {
       }
     }
   });
-  $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
-  $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
+  $('.facet-group').on('shown.bs.collapse', facetSessionStorage);
+  $('.facet-group').on('hidden.bs.collapse', facetSessionStorage);
 }
 
 function setupIeSupport() {
