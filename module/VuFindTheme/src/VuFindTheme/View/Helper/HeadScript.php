@@ -39,7 +39,9 @@ use VuFindTheme\ThemeInfo;
  */
 class HeadScript extends \Zend\View\Helper\HeadScript
 {
-    use ConcatTrait;
+    use ConcatTrait {
+        getMinifiedData as getBaseMinifiedData;
+    }
 
     /**
      * Theme information service
@@ -153,5 +155,25 @@ class HeadScript extends \Zend\View\Helper\HeadScript
     protected function getMinifier()
     {
         return new \MatthiasMullie\Minify\JS();
+    }
+
+    /**
+     * Get minified data for a file
+     *
+     * @param array  $details    File details
+     * @param string $concatPath Target path for the resulting file (used in minifier
+     * for path mapping)
+     *
+     * @throws \Exception
+     * @return string
+     */
+    protected function getMinifiedData($details, $concatPath)
+    {
+        $data = $this->getBaseMinifiedData($details, $concatPath);
+        // Play it safe by terminating a script with a semicolon
+        if (substr(trim($data), -1, 1) !== ';') {
+            $data .= ';';
+        }
+        return $data;
     }
 }
