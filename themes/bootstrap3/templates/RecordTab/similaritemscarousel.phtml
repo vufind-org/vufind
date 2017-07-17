@@ -14,33 +14,29 @@
     <!-- Wrapper for slides -->
     <div class="carousel-inner">
       <div class="item active">
-        <div class="row">
-          <? foreach ($similarRecords as $index=>$data): ?>
-            <div class="col-sm-<?=floor(12/$perPage) ?>">
-              <a class="hover-overlay" href="<?=$this->recordLink()->getUrl($data)?>">
-                <? $thumb = $this->record($data)->getThumbnail('large'); ?>
-                <img src="<?=$thumb ?>" title="<?=$data->getTitle() ?>"/>
-                <div class="content">
-                  <? $formats = $data->getFormats(); ?>
-                  <i class="fa fa-x<? if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><? endif; ?>"></i>
-                  <b><?=$this->escapeHtml($data->getTitle())?></b>
-                  <? $authors = $data->getPrimaryAuthors(); if (!empty($authors)): ?>
-                    <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><? if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
-                  <? endif; ?>
-                  <? $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
-                    <br/><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
-                  <? endif; ?>
-                </div>
-              </a>
-            </div>
-            <? if(($index+1) % $perPage == 0 && $index < count($similarRecords)-1): ?>
+        <? foreach ($similarRecords as $index=>$data): ?>
+          <div class="carousel-item">
+            <a class="hover-overlay" href="<?=$this->recordLink()->getUrl($data)?>">
+              <? $thumb = $this->record($data)->getThumbnail('large'); ?>
+              <img src="<?=$thumb ?>" title="<?=$data->getTitle() ?>"/>
+              <div class="content">
+                <? $formats = $data->getFormats(); ?>
+                <i class="fa fa-x<? if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><? endif; ?>"></i>
+                <b><?=$this->escapeHtml($data->getTitle())?></b>
+                <? $authors = $data->getPrimaryAuthors(); if (!empty($authors)): ?>
+                  <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><? if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
+                <? endif; ?>
+                <? $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
+                  <br/><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
+                <? endif; ?>
+              </div>
+            </a>
           </div>
-        </div>
-        <div class="item">
-          <div class="row">
-            <? endif; ?>
-          <? endforeach; ?>
-        </div>
+          <? if(($index+1) % $perPage == 0 && $index < count($similarRecords)-1): ?>
+      </div>
+      <div class="item">
+          <? endif; ?>
+        <? endforeach; ?>
       </div>
     </div>
 

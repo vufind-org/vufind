@@ -295,7 +295,7 @@ VuFind.register('lightbox', function Lightbox() {
       }, false);
     }
     // Loading
-    _modalBody.prepend('<i class="fa fa-spinner fa-spin pull-right" title="' + VuFind.translate('loading') + '"></i>');
+    _modalBody.prepend('<i class="modal-loading fa fa-spinner fa-spin" title="' + VuFind.translate('loading') + '"></i>');
     // Prevent multiple submission of submit button in lightbox
     if (submit.closest(_modal).length > 0) {
       submit.attr('disabled', 'disabled');

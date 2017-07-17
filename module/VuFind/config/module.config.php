@@ -111,6 +111,7 @@ $config = [
             'authority' => 'VuFind\Controller\Factory::getAuthorityController',
             'browse' => 'VuFind\Controller\Factory::getBrowseController',
             'cart' => 'VuFind\Controller\Factory::getCartController',
+            'channels' => 'VuFind\Controller\Factory::getChannelsController',
             'collection' => 'VuFind\Controller\Factory::getCollectionController',
             'collections' => 'VuFind\Controller\Factory::getCollectionsController',
             'combined' => 'VuFind\Controller\Factory::getCombinedController',
@@ -177,6 +178,7 @@ $config = [
             'VuFind\AutocompletePluginManager' => 'VuFind\Service\Factory::getAutocompletePluginManager',
             'VuFind\CacheManager' => 'VuFind\Service\Factory::getCacheManager',
             'VuFind\Cart' => 'VuFind\Service\Factory::getCart',
+            'VuFind\ChannelProviderPluginManager' => 'VuFind\Service\Factory::getChannelProviderPluginManager',
             'VuFind\Config' => 'VuFind\Service\Factory::getConfig',
             'VuFind\ContentPluginManager' => 'VuFind\Service\Factory::getContentPluginManager',
             'VuFind\ContentAuthorNotesPluginManager' => 'VuFind\Service\Factory::getContentAuthorNotesPluginManager',
@@ -259,6 +261,9 @@ $config = [
         'not_found_template'       => 'error/404',
         'exception_template'       => 'error/index',
         'template_path_stack'      => [],
+        'whoops_no_catch' => [
+            'VuFind\Exception\RecordMissing',
+        ],
     ],
     // This section contains all VuFind-specific settings (i.e. configurations
     // unrelated to specific Zend Framework 2 components).
@@ -332,6 +337,14 @@ $config = [
                     'tagautocomplete' => 'Tag',
                 ],
             ],
+            'channelprovider' => [
+                'factories' => [
+                    'facets' => 'VuFind\ChannelProvider\Factory::getFacets',
+                    'listitems' => 'VuFind\ChannelProvider\Factory::getListItems',
+                    'random' => 'VuFind\ChannelProvider\Factory::getRandom',
+                    'similaritems' => 'VuFind\ChannelProvider\Factory::getSimilarItems',
+                ]
+            ],
             'content' => [
                 'factories' => [
                     'authornotes' => 'VuFind\Content\Factory::getAuthorNotes',
@@ -362,6 +375,7 @@ $config = [
                 'invokables' => [
                     'google' => 'VuFind\Content\Covers\Google',
                     'librarything' => 'VuFind\Content\Covers\LibraryThing',
+                    'localfile' => 'VuFind\Content\Covers\LocalFile',
                     'openlibrary' => 'VuFind\Content\Covers\OpenLibrary',
                     'summon' => 'VuFind\Content\Covers\Summon',
                 ],
@@ -485,7 +499,6 @@ $config = [
                     'expandfacets' => 'VuFind\Recommend\Factory::getExpandFacets',
                     'favoritefacets' => 'VuFind\Recommend\Factory::getFavoriteFacets',
                     'mapselection' => 'VuFind\Recommend\Factory::getMapSelection',
-                    'resultgooglemapajax' => 'VuFind\Recommend\Factory::getResultGoogleMapAjax',
                     'sidefacets' => 'VuFind\Recommend\Factory::getSideFacets',
                     'randomrecommend' => 'VuFind\Recommend\Factory::getRandomRecommend',
                     'summonbestbets' => 'VuFind\Recommend\Factory::getSummonBestBets',
@@ -500,6 +513,7 @@ $config = [
                 ],
                 'invokables' => [
                     'alphabrowselink' => 'VuFind\Recommend\AlphaBrowseLink',
+                    'channels' => 'VuFind\Recommend\Channels',
                     'doi' => 'VuFind\Recommend\DOI',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
@@ -508,6 +522,7 @@ $config = [
                     'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
                     'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
                     'removefilters' => 'VuFind\Recommend\RemoveFilters',
+                    'resultgooglemapajax' => 'VuFind\Recommend\Deprecated',
                     'spellingsuggestions' => 'VuFind\Recommend\SpellingSuggestions',
                     'summonbestbetsdeferred' => 'VuFind\Recommend\SummonBestBetsDeferred',
                     'summondatabasesdeferred' => 'VuFind\Recommend\SummonDatabasesDeferred',
@@ -569,6 +584,7 @@ $config = [
                     'worldcatsimilar' => 'VuFind\Related\Factory::getWorldCatSimilar',
                 ],
                 'invokables' => [
+                    'channels' => 'VuFind\Related\Channels',
                     'editions' => 'VuFind\Related\Deprecated',
                     'worldcateditions' => 'VuFind\Related\Deprecated',
                 ],
@@ -803,7 +819,9 @@ $staticRoutes = [
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic', 'Cart/doExport',
     'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk',
-    'Cart/Processor', 'Cart/Save', 'Cart/SearchResultsBulk', 'Collections/ByTitle',
+    'Cart/Processor', 'Cart/Save', 'Cart/SearchResultsBulk',
+    'Channels/Home', 'Channels/Record', 'Channels/Search',
+    'Collections/ByTitle',
     'Collections/Home', 'Combined/Home', 'Combined/Results', 'Combined/SearchBox',
     'Confirm/Confirm', 'Cover/Show', 'Cover/Unavailable',
     'EDS/Advanced', 'EDS/Home', 'EDS/Search',
