@@ -165,7 +165,9 @@ class AdapterFactory
             'password' => $password,
             'database' => $dbName
         ];
-
+if (isset($this->config->Database->port ) ) {
+        $options['port']=$this->config->Database->port; 
+}
         return $this->getAdapterFromOptions($options);
     }
 }
