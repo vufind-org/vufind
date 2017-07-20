@@ -72,8 +72,10 @@
     </div>
   <? endif; ?>
 </div>
-<div class="search container navbar">
-  <nav class="nav searchbox hidden-print">
-    <?=$this->layout()->searchbox ?>
-  </nav>
-</div>
+<? if ($this->layout()->searchbox !== false): ?>
+  <div class="search container navbar">
+    <nav class="nav searchbox hidden-print">
+      <?=$this->layout()->searchbox ?>
+    </nav>
+  </div>
+<? endif; ?>

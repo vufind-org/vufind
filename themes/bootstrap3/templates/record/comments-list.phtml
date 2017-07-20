@@ -3,17 +3,17 @@
   <div class="alert alert-info"><?=$this->transEsc('Be the first to leave a comment')?>!</div>
 <? else: ?>
   <? foreach ($comments as $comment): ?>
-    <div class="comment row">
-      <div class="col-sm-3 name">
+    <div class="comment">
+      <div class="comment-name">
         <strong><?=$this->escapeHtml(trim($comment->firstname . ' ' . $comment->lastname))?></strong><br/>
         <small>
           <?=$this->escapeHtml($comment->created)?>
           <? if (($user = $this->auth()->isLoggedIn()) && $comment->user_id == $user->id): ?>
-            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="delete text-danger"><?=$this->transEsc('Delete')?></a>
+            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="delete"><?=$this->transEsc('Delete')?></a>
           <? endif; ?>
         </small>
       </div>
-      <div class="col-sm-9">
+      <div class="comment-text">
         <?=$this->escapeHtml($comment->comment)?>
       </div>
     </div>

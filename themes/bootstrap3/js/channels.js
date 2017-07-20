@@ -1,37 +1,15 @@
 /*global ChannelSlider, getUrlRoot, htmlEncode, VuFind */
 /*exported channelAddLinkButtons */
 
-function bindChannelAddMenu(scope) {
-  $(scope).find('.channel-add-menu .dropdown-menu a').click(function selectAddedChannel(e) {
-    $.ajax(e.target.href).done(function addChannelAjaxDone(data) {
-      var list = $(e.target).closest('.dropdown-menu');
-      $(e.target).closest('.channel').after(data);
-      $('[data-token="' + e.target.dataset.token + '"]').parent().remove();
-      $('.channel').each(setupChannelSlider);
-
-      if (list.children().length === 0) {
-        $('.channel-add-menu[data-group="' + list.closest('.channel-add-menu').data('group') + '"]').remove();
-      }
-    });
-    return false;
-  });
-  $(scope).find('.channel-add-menu .add-btn').click(function addChannels(e) {
-    var links = $(e.target).closest('.channel-add-menu').find('.dropdown-menu a');
-    for (var i = 0; i < links.length && i < 2; i++) {
-      links[i].click();
-    }
-  });
-}
-
 function channelAddLinkButtons(elem) {
   var links = JSON.parse(elem.dataset.linkJson);
   var $cont = $('<div class="channel-links pull-left"></div>');
   for (var i = 0; i < links.length; i++) {
     $cont.append(
       $('<a/> ', {
-        href: links[i].url,
-        class: links[i].label + " btn btn-default",
-        html: '<i class="fa ' + links[i].icon + '"></i> ' + VuFind.translate(links[i].label)
+        'href': links[i].url,
+        'class': links[i].label + " btn btn-default",
+        'html': '<i class="fa ' + links[i].icon + '"></i> ' + VuFind.translate(links[i].label)
       })
     );
   }
@@ -100,12 +78,35 @@ function setupChannelSlider(i, op) {
       .addClass('pull-right')
       .removeClass('hidden')
       .appendTo($(op).find('.slider-menu'));
-    bindChannelAddMenu(op);
   }
+}
+
+function bindChannelAddMenu(iteration, scope) {
+  $(scope).find('.channel-add-menu .dropdown-menu a').click(function selectAddedChannel(e) {
+    $.ajax(e.target.href).done(function addChannelAjaxDone(data) {
+      var list = $(e.target).closest('.dropdown-menu');
+      $(e.target).closest('.channel').after(data);
+      $('[data-token="' + e.target.dataset.token + '"]').parent().remove();
+      $('.channel').each(setupChannelSlider);
+      $('.channel').each(bindChannelAddMenu);
+
+      if (list.children().length === 0) {
+        $('.channel-add-menu[data-group="' + list.closest('.channel-add-menu').data('group') + '"]').remove();
+      }
+    });
+    return false;
+  });
+  $(scope).find('.channel-add-menu .add-btn').click(function addChannels(e) {
+    var links = $(e.target).closest('.channel-add-menu').find('.dropdown-menu a');
+    for (var i = 0; i < links.length && i < 2; i++) {
+      links[i].click();
+    }
+  });
 }
 
 $(document).ready(function channelReady() {
   $('.channel').each(setupChannelSlider);
+  $('.channel').each(bindChannelAddMenu);
   $('.channel').on('dragStart', function channelDrag() {
     $('[aria-describedby]').popover('hide');
   });
