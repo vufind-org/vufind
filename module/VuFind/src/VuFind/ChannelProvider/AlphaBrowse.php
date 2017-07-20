@@ -305,7 +305,7 @@ class AlphaBrowse extends AbstractChannelProvider
             ];
             $retVal['links'][] = [
                 'label' => 'channel_browse',
-                'icon' => 'fa-search-plus',
+                'icon' => 'fa-list',
                 'url' => $this->url->fromRoute('alphabrowse-home')
                     . '?source=' . urlencode($this->browseIndex)
                     . '&from=' . $from[0]
