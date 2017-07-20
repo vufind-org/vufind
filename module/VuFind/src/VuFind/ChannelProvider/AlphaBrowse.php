@@ -284,7 +284,7 @@ class AlphaBrowse extends AbstractChannelProvider
         } else {
             // If we got this far, we can safely assume that $from[0] is set
             $details = $this->solr->alphabeticBrowse(
-                $this->browseIndex, $from[0], 0, 20,
+                $this->browseIndex, $from[0], 0, $this->channelSize,
                 new ParamBag(['extras' => 'title:author:isbn:id']),
                 -$this->rowsBefore
             );
