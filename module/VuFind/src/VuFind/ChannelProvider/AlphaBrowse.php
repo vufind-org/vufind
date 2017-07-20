@@ -189,13 +189,11 @@ class AlphaBrowse extends AbstractChannelProvider
             if ($channelToken !== null && $channelToken !== $driver->getUniqueID()) {
                 continue;
             }
-            if (count($channels) < $this->maxRecordsToExamine) {
-                $channel = $this->buildChannelFromRecord($driver);
-                if (count($channel['contents']) > 0) {
-                    $channels[] = $channel;
-                }
-            } else {
-                $channels[] = $this->buildChannelFromRecord($driver, true);
+            $channel = (count($channels) < $this->maxRecordsToExamine)
+                ? $this->buildChannelFromRecord($driver)
+                : $this->buildChannelFromRecord($driver, true);
+            if (isset($channel['token']) || count($channel['contents']) > 0) {
+                $channels[] = $channel;
             }
         }
         // If the search results did not include the object we were looking for,
@@ -257,18 +255,21 @@ class AlphaBrowse extends AbstractChannelProvider
             'providerId' => $this->providerId,
             'links' => []
         ];
-        if ($tokenOnly) {
+        $raw = $driver->getRawData();
+        $from = isset($raw[$this->solrField]) ? (array)$raw[$this->solrField] : null;
+        if (empty($from[0])) {
+            // If there is no "from" value to look up, skip this so we don't
+            //generate a token that retrieves nothing later!
+            $retVal['contents'] = [];
+        } elseif ($tokenOnly) {
             $retVal['token'] = $driver->getUniqueID();
         } else {
-            $raw = $driver->getRawData();
-            $from = isset($raw[$this->solrField])
-                ? (array)$raw[$this->solrField] : null;
-            $details = !empty($from[0])
-                ? $this->solr->alphabeticBrowse(
-                    $this->browseIndex, $from[0], 0, 20,
-                    new ParamBag(['extras' => 'title:author:isbn:id']),
-                    -$this->rowsBefore
-                ) : [];
+            // If we got this far, we can safely assume that $from[0] is set
+            $details = $this->solr->alphabeticBrowse(
+                $this->browseIndex, $from[0], 0, 20,
+                new ParamBag(['extras' => 'title:author:isbn:id']),
+                -$this->rowsBefore
+            );
             $retVal['contents'] = $this->summarizeBrowseDetails($details);
             $route = $this->recordRouter->getRouteDetails($driver);
             $retVal['links'][] = [
@@ -284,15 +285,13 @@ class AlphaBrowse extends AbstractChannelProvider
                     . '?id=' . urlencode($driver->getUniqueID())
                     . '&source=' . urlencode($driver->getSourceIdentifier())
             ];
-            if (!empty($from[0])) {
-                $retVal['links'][] = [
-                    'label' => 'channel_browse',
-                    'icon' => 'fa-search-plus',
-                    'url' => $this->url->fromRoute('alphabrowse-home')
-                        . '?source=' . urlencode($this->browseIndex)
-                        . '&from=' . $from[0]
-                ];
-            }
+            $retVal['links'][] = [
+                'label' => 'channel_browse',
+                'icon' => 'fa-search-plus',
+                'url' => $this->url->fromRoute('alphabrowse-home')
+                    . '?source=' . urlencode($this->browseIndex)
+                    . '&from=' . $from[0]
+            ];
         }
         return $retVal;
     }
