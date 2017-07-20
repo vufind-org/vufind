@@ -250,9 +250,10 @@ class AlphaBrowse extends AbstractChannelProvider
     protected function buildChannelFromRecord(RecordDriver $driver,
         $tokenOnly = false
     ) {
-        $heading = $this->translate('Similar Items');
         $retVal = [
-            'title' => "{$heading}: {$driver->getBreadcrumb()}",
+            'title' => $this->translate(
+                'nearby_items', ['%%title%%' => $driver->getBreadcrumb()]
+            ),
             'providerId' => $this->providerId,
             'links' => []
         ];
@@ -283,6 +284,15 @@ class AlphaBrowse extends AbstractChannelProvider
                     . '?id=' . urlencode($driver->getUniqueID())
                     . '&source=' . urlencode($driver->getSourceIdentifier())
             ];
+            if (!empty($from[0])) {
+                $retVal['links'][] = [
+                    'label' => 'channel_browse',
+                    'icon' => 'fa-search-plus',
+                    'url' => $this->url->fromRoute('alphabrowse-home')
+                        . '?source=' . urlencode($this->browseIndex)
+                        . '&from=' . $from[0]
+                ];
+            }
         }
         return $retVal;
     }
