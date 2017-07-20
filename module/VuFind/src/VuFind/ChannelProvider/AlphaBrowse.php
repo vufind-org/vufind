@@ -218,18 +218,36 @@ class AlphaBrowse extends AbstractChannelProvider
      */
     protected function summarizeBrowseDetails($details)
     {
-        $results = [];
+        $ids = $results = [];
         if (isset($details['Browse']['items'])) {
             foreach ($details['Browse']['items'] as $item) {
                 if (!isset($item['extras']['title'][0][0])) {
                     continue;
                 }
+                // Collect a list of IDs in the result set while we create it:
+                $ids[] = $id = $item['extras']['id'][0][0];
                 $results[] = [
                     'title' => $item['extras']['title'][0][0],
                     'source' => 'Solr',
                     'thumbnail' => false, // TODO: better thumbnails!
-                    'id' => $item['extras']['id'][0][0]
+                    'id' => $id
                 ];
+            }
+        }
+        // If we have a cover router and a non-empty ID list, look up thumbnails:
+        if ($this->coverRouter && !empty($ids)) {
+            $records = $this->searchService->retrieveBatch('Solr', $ids);
+            $thumbs = [];
+            // First map record drivers to an ID => thumb array...
+            foreach ($records as $record) {
+                $thumbs[$record->getUniqueId()] = $this->coverRouter
+                    ->getUrl($record, 'medium');
+            }
+            // Now apply the thumbnails to the existing result set...
+            foreach ($results as $i => $current) {
+                if (isset($thumbs[$current['id']])) {
+                    $results[$i]['thumbnail'] = $thumbs[$current['id']];
+                }
             }
         }
         return $results;
