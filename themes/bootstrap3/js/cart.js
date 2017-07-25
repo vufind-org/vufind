@@ -53,6 +53,26 @@ VuFind.register('cart', function Cart() {
     return full;
   }
 
+  function hasItem(id, _source) {
+    var source = _source || VuFind.defaultSearchBackend;
+    return _getItems().indexOf(String.fromCharCode(65 + _getSources().indexOf(source)) + id) > -1;
+  }
+
+  function _refreshToggles() {
+    var $toggleBtns = $('.btn-bookbag-toggle');
+    if ($toggleBtns.length > 0) {
+      $toggleBtns.each(function cartIdEach() {
+        var $this = $(this);
+        $this.find('.cart-add,.cart-remove').addClass('hidden');
+        if (hasItem($this.data('cart-id'), $this.data('cart-source'))) {
+          $this.find('.cart-remove').removeClass('hidden');
+        } else {
+          $this.find('.cart-add').removeClass('hidden');
+        }
+      });
+    }
+  }
+
   function updateCount() {
     var items = VuFind.cart.getFullItems();
     $('#cartItems strong').html(items.length);
@@ -64,10 +84,6 @@ VuFind.register('cart', function Cart() {
     _refreshToggles();
   }
 
-  function hasItem(id, _source) {
-    var source = _source || VuFind.defaultSearchBackend;
-    return _getItems().indexOf(String.fromCharCode(65 + _getSources().indexOf(source)) + id) > -1;
-  }
   function addItem(id, _source) {
     var source = _source || VuFind.defaultSearchBackend;
     var cartItems = _getItems();
@@ -180,21 +196,6 @@ VuFind.register('cart', function Cart() {
     });
   }
 
-  function _refreshToggles() {
-    var $toggleBtns = $('.btn-bookbag-toggle');
-    if ($toggleBtns.length > 0) {
-      $toggleBtns.each(function cartIdEach() {
-        var $this = $(this);
-        $this.find('.cart-add,.cart-remove').addClass('hidden');
-        if (hasItem($this.data('cart-id'), $this.data('cart-source'))) {
-          $this.find('.cart-remove').removeClass('hidden');
-        } else {
-          $this.find('.cart-add').removeClass('hidden');
-        }
-      });
-    }
-  }
-
   function _registerToggles() {
     var $toggleBtns = $('.btn-bookbag-toggle');
     if ($toggleBtns.length > 0) {
@@ -228,7 +229,12 @@ VuFind.register('cart', function Cart() {
     _registerToggles();
     // Search results
     _registerUpdate();
-    $("#updateCart, #bottom_updateCart").popover({content: '', html: true, trigger: 'manual'});
+    $("#updateCart, #bottom_updateCart").popover({
+      content: '',
+      html: true,
+      trigger: 'manual',
+      placement: $(document.body).hasClass('rtl') ? 'left' : 'right'
+    });
     updateCount();
   }
 

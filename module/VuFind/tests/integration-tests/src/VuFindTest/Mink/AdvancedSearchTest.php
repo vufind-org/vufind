@@ -94,11 +94,6 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAdvancedSearch()
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
-
         // Go to the advanced search page
         $session = $this->getMinkSession();
         $path = '/Search/Advanced';
@@ -115,12 +110,12 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->findCss($page, '#search0_3');
         // No visible x next to lonely search term
-        $this->findCss($page, '#search1_0 .close.hidden');
+        $this->findCss($page, '#search1_0 .adv-term-remove.hidden');
         // Add a search term in another group
         $session->executeScript("addSearch(1)"); // add_search_link_1 click
         $this->findCss($page, '#search1_1');
         // Visible x next to lonely search term
-        $this->findCss($page, '#search1_0 .close:not(.hidden)');
+        $this->findCss($page, '#search1_0 .adv-term-remove:not(.hidden)');
 
         // Enter search for bride of the tomb
         $this->findCss($page, '#search_lookfor0_0')->setValue('bride');

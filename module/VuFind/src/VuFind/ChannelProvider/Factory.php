@@ -42,6 +42,28 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Construct the AlphaBrowse channel provider.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return AlphaBrowse
+     */
+    public static function getAlphaBrowse(ServiceManager $sm)
+    {
+        $helper = new AlphaBrowse(
+            $sm->getServiceLocator()->get('VuFind\Search'),
+            $sm->getServiceLocator()->get('VuFind\Search\BackendManager')
+                ->get('Solr'),
+            $sm->getServiceLocator()->get('ControllerPluginManager')->get('url'),
+            $sm->getServiceLocator()->get('VuFind\RecordRouter')
+        );
+        $helper->setCoverRouter(
+            $sm->getServiceLocator()->get('VuFind\Cover\Router')
+        );
+        return $helper;
+    }
+
+    /**
      * Construct the Facets channel provider.
      *
      * @param ServiceManager $sm Service manager.
