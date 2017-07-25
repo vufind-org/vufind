@@ -58,7 +58,8 @@
         "zendframework/zendrest": "2.0.2",
         "zendframework/zendservice-amazon": "2.3.0",
         "zendframework/zendservice-recaptcha": "3.0.0",
-        "zf-commons/zfc-rbac": "2.6.3"
+        "zf-commons/zfc-rbac": "2.6.3",
+        "pear/archive_tar": "^1.4"
     },
     "require-dev": {
         "behat/mink": "1.7.1",
