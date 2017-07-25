@@ -7136,7 +7136,7 @@
         },
         {
             "name": "symfony/config",
-            "version": "v2.8.24",
+            "version": "v2.8.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
@@ -7192,7 +7192,7 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.8.24",
+            "version": "v2.8.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
@@ -7253,7 +7253,7 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v3.3.4",
+            "version": "v3.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
@@ -7363,16 +7363,16 @@
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v3.2.11",
+            "version": "v3.2.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dependency-injection.git",
-                "reference": "dcec2b3ae52a6fe92154321682b01028deea6406"
+                "reference": "c1170b063674f000b154a5809bb9e373a773d4c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/dcec2b3ae52a6fe92154321682b01028deea6406",
-                "reference": "dcec2b3ae52a6fe92154321682b01028deea6406",
+                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/c1170b063674f000b154a5809bb9e373a773d4c0",
+                "reference": "c1170b063674f000b154a5809bb9e373a773d4c0",
                 "shasum": ""
             },
             "require": {
@@ -7422,11 +7422,11 @@
             ],
             "description": "Symfony DependencyInjection Component",
             "homepage": "https://symfony.com",
-            "time": "2017-06-03T15:50:21+00:00"
+            "time": "2017-07-17T14:04:01+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.8.24",
+            "version": "v2.8.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
@@ -7535,7 +7535,7 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v2.8.24",
+            "version": "v2.8.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
@@ -7643,7 +7643,7 @@
         },
         {
             "name": "symfony/process",
-            "version": "v2.8.24",
+            "version": "v2.8.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
@@ -7692,7 +7692,7 @@
         },
         {
             "name": "symfony/stopwatch",
-            "version": "v2.8.24",
+            "version": "v2.8.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/stopwatch.git",
@@ -7805,7 +7805,7 @@
         },
         {
             "name": "symfony/validator",
-            "version": "v2.8.24",
+            "version": "v2.8.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/validator.git",
