@@ -8,12 +8,6 @@
         }
     ],
     "license": "GPL-2.0",
-    "repositories": [
-        {
-            "type": "pear",
-            "url": "https://pear.php.net"
-        }
-    ],
     "require": {
         "php": ">=5.6",
         "aferrandini/phpqrcode": "1.0.1",
@@ -26,7 +20,6 @@
         "pear/file_marc": "1.1.5",
         "pear/http_request2": "2.3.0",
         "pear/validate_ispn": "dev-master",
-       "pear-pear.php.net/pear": "*",
         "phing/phing": "2.16.0",
         "serialssolutions/summon": "1.1.0",
         "symfony/yaml": "3.3.2",
