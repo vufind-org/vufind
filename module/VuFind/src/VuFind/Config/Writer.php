@@ -120,6 +120,13 @@ class Writer
             } else if (strstr($content, '=')) {
                 $contentParts = explode('=', $content, 2);
                 $key = trim($contentParts[0]);
+                // If the key we are trying to set is already present as an array,
+                // we need to clear out the multiple existing values before writing
+                // in a new one:
+                if ($key == $setting . '[]') {
+                    continue;
+                }
+                // Standard case for match on section + key:
                 if ($currentSection == $section && $key == $setting) {
                     $settingSet = true;
                     if ($value === null) {
@@ -231,6 +238,18 @@ class Writer
             $tabStr .= ' ';
         }
 
+        // Special case: if value is an array, we need to adjust the key
+        // accordingly:
+        if (is_array($value)) {
+            $retVal = '';
+            foreach ($value as $current) {
+                $retVal .= $key . '[]' . $tabStr . " = "
+                    . $this->buildContentValue($current);
+            }
+            return $retVal;
+        }
+
+        // Standard case: value is not an array:
         return $key . $tabStr . " = " . $this->buildContentValue($value);
     }
 

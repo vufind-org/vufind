@@ -177,6 +177,7 @@
             <?=$thumbnail ?>
           <? endif ?>
         </div>
+        <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="'.$this->escapeHtmlAttr($resource->getCoinsOpenUrl()).'"></span>':''?>
       </div>
     <? endforeach; ?>
     <? if ($this->renewForm): ?></form><? endif; ?>
