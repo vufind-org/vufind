@@ -332,7 +332,7 @@ class GenerateController extends AbstractBase
                 copy($source . '/' . $file, $dest . '/' . $file);
             }
         }
-        fclose($sourceHandle);
+        closedir($sourceHandle);
 
         return $success;
     }
