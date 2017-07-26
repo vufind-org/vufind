@@ -311,10 +311,10 @@ class GenerateController extends AbstractBase
         }
 
         if (!$sourceHandle) {
-            echo 'failed to copy directory: failed to open source ' . $source;
             return false;
         }
 
+        $success = true;
         while ($file = readdir($sourceHandle)) {
             if ($file == '.' || $file == '..') {
                 continue;
@@ -324,17 +324,21 @@ class GenerateController extends AbstractBase
                 if (!file_exists($dest . '/' . $file)) {
                     mkdir($dest . '/' . $file, 0755);
                 }
-                self::copyDirectory($source . '/' . $file, $dest . '/' . $file);
+                if (!$this->copyDirectory("$source/$file", "$dest/$file")) {
+                    $success = false;
+                    break;
+                }
             } else {
                 copy($source . '/' . $file, $dest . '/' . $file);
             }
         }
+        fclose($sourceHandle);
 
-        return true;
+        return $success;
     }
     /**
      * Removes // and /./ in paths and collapses /../
-     * Same as realpath, but doesn't check for file existance
+     * Same as realpath, but doesn't check for file existence
      *
      * @param string $path full path to condense
      *
@@ -388,7 +392,10 @@ class GenerateController extends AbstractBase
         Console::writeLine("\tCopying custom_theme_example");
         Console::writeLine("\t\t" . $source);
         Console::writeLine("\t\t" . $dest);
-        $this->copyDirectory($source, $dest);
+        if (!$this->copyDirectory($source, $dest)) {
+            Console::writeLine("Copy failed.");
+            return $this->getFailureResponse();
+        }
         // Enable theme
         $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
         Console::writeLine("\tUpdating $configPath...");
@@ -440,7 +447,7 @@ class GenerateController extends AbstractBase
         $writer->set('Site', 'selectable_themes', implode(',', $dropSetting));
         // Save
         if (!$writer->save()) {
-            Console::writeLine("\tWrite failed!");
+            Console::writeLine("\tConfiguration saving failed!");
             return $this->getFailureResponse();
         }
         Console::writeLine("\tFinished.");
