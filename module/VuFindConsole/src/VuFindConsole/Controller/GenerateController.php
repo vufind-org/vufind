@@ -366,7 +366,7 @@ class GenerateController extends AbstractBase
      *
      * @return \Zend\Console\Response
      */
-    public function customthemeAction()
+    public function themeAction()
     {
         // Validate command line arguments:
         $request = $this->getRequest();
