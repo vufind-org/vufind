@@ -1,46 +1,9 @@
-<?
-  // Set page title.
-  $this->headTitle($this->translate('Search Home'));
-
-  // Disable top search box -- this page has a special layout.
-  $this->layout()->searchbox = false;
-
-  // Set default value if necessary:
-  if (!isset($this->searchClassId)) {
-    $this->searchClassId = 'Solr';
-  }
-
-  // Load search actions and settings (if any):
-  $options = $this->searchOptions($this->searchClassId);
-  $basicSearch = $options->getSearchAction();
-  $advSearch = $options->getAdvancedSearchAction();
-
-  $this->layout()->breadcrumbs = false;
-?>
-
 <h1>Welcome to your custom theme!</h1>
 <div class="searchHomeContent">
-  <?
-  $ilsStatusScript = <<<JS
-      $(document).ready(function() {
-        $.ajax({
-            dataType: 'json',
-            method: 'GET',
-            data: {'offlineModeMsg':'ils_offline_home_message'},
-            url: VuFind.path + '/AJAX/JSON?method=getIlsStatus',
-            success: function(response) {
-                $('.searchHomeContent').append(response.data);
-            }
-        });
-      });
-JS;
-  ?>
-  <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $ilsStatusScript, 'SET'); ?>
   <div class="search-hero" role="search">
-    <?=$this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => true])?>
+    <? require(__DIR__ . '/../../../bootstrap3/templates/search/home.phtml'); ?>
     <div class="image-credit">
       Yosemite Valley. Photo by <a class="name" href="https://unsplash.com/@heytowner">John Towner</a>.
     </div>
   </div>
-  <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$("#searchForm_lookfor").focus();', 'SET'); ?>
 </div>
