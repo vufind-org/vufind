@@ -303,7 +303,7 @@ class GenerateController extends AbstractBase
      *
      * @return boolean true on success false otherwise
      */
-    protected static function copyDirectory($source, $dest)
+    protected function copyDirectory($source, $dest)
     {
         $sourceHandle = opendir($source);
         if (!file_exists($dest)) {
