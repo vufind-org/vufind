@@ -4,7 +4,7 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "vendor/bootstrap-accessibility/bootstrap-accessibility";
 @import "vendor/a11y";
 
-$fa-font-path: "../../../../../../themes/bootstrap3/css/fonts" !default;
+@import "components/variables";
 
 @import "components/advanced-search";
 @import "components/alphabrowse";
@@ -20,21 +20,172 @@ $fa-font-path: "../../../../../../themes/bootstrap3/css/fonts" !default;
 @import "components/similar-carousel";
 @import "components/sliders";
 
-a { cursor: pointer; }
-.alert.alert-info a {text-decoration: underline;}
-.btn.disabled {
-  &:active,
-  &:focus,
-  &:hover {color: #000;}
-}
-header .dropdown form { display: none; }
-.list-unstyled {margin: 0;}
-.highlight,mark {
+/**
+ * Notes
+ * = As of 4.0, code styles aren't enforced, but
+ *   preferred styles are outlined here: http://codeguide.co/#css
+ * = The preferred method for writing code is to put generic and mobile styles first
+ *   and surround desktop styling with media min-width queries.
+ * = Bootstrap 3 breakpoints: <768px, >=768px, >=992px, >=1200px
+ *                                xs,      sm,      md,       lg
+ * = Breakpoint of <=530px also used to target phones specifically
+ */
+
+html { font-size: 14px; } // Root font size from Bootstrap, allows consistent use of rem units
+a,
+label { cursor: pointer; }
+.alert.alert-info a { text-decoration: underline; }
+
+// Improve contrast
+.btn.disabled:active,
+.btn.disabled:focus,
+.btn.disabled:hover { color: #000; }
+.list-unstyled { margin: 0; }
+.icon-bar { background-color: #888; }
+
+// Normalize highlighting
+.highlight,
+mark {
   background: lighten(#FF0, 20%);
   padding: .1em .2em;
 }
-.icon-bar {background-color: #888;}
-img {max-width: 100%;}
+
+// Normalize
+img { max-width: 100%; }
+
+// Bootstrap overrides
+.breadcrumb {
+  margin-top: .5rem;
+  margin-bottom: .5rem;
+}
+.label { display: inline-block; }
+.popover { width: 250px; }
+.resulthead { @include clearfix(); }
+.sub-breadcrumb {
+  padding: 5px 10px;
+  white-space: nowrap;
+  li {display: inline-block;}
+  li + li:before {
+    padding-left: 5px;
+    padding-right: 5px;
+    color: $breadcrumb-color;
+    content: "#{$breadcrumb-separator}\00a0";
+  }
+}
+.tab-content { padding: 4px; }
+
+h2 { font-size: 20px; }
+h3 { font-size: 16px; }
+@media (min-width: 768px) {
+  h2 {
+    font-size: 23px;
+    font-weight: normal;
+  }
+  h3 {
+    font-size: 20px;
+    font-weight: normal;
+  }
+  .form-control { max-width: 400px; }
+  #modal .form-control { max-width: none; }
+}
+
+/* ------ Layout ------ */
+footer {
+  @extend .container;
+  padding: 1rem;
+}
+@media (min-width: 768px) {
+  .footer-container {
+    display: flex;
+    width: 100%;
+  }
+  .footer-column { flex: 0 1 100%; }
+
+  // Main content and sidebar widths and float
+  .mainbody { width: 75%; }
+  .sidebar { width: 25%; }
+  .mainbody.left,
+  .sidebar.left {
+    float: left;
+    padding-right: 1rem;
+  }
+  .mainbody.right,
+  .sidebar.right {
+    float: right;
+    padding-left: 1rem;
+  }
+}
+
+/* ------ Form Errors ------ */
+.has-error {margin-bottom: 0;}
+.sms-error { @extend .has-error; }
+.help-block.with-errors {
+  margin: 0;
+  padding-top: $padding-base-vertical;
+  padding-bottom: $padding-base-vertical;
+  &:empty {padding: 0;}
+}
+
+/* ------ Admin ------ */
+.form-admin-maintenance .form-control {
+  display: inline-block;
+  width: 100px;
+}
+
+/* ------ Badges - blend the links in ------ */
+.badge a { color: #fff; }
+
+/* ------ Browse ------ */
+// Layout
+@media (min-width: 768px) {
+  .browse-container { display: flex; }
+  .browse-list {
+    flex-basis: 25%;
+    padding-left: .5rem;
+    padding-right: .5rem;
+  }
+}
+// List item styling
+.browse-item {
+  position: relative;
+  display: block;
+  padding: .5rem 1rem;
+  border: 1px solid $list-group-border;
+  border-bottom: 0;
+  word-wrap: break-word;
+}
+.browse-item.active {
+  background-color: $brand-primary;
+  color: #fff;
+
+  .badge {
+    background-color: #fff;
+    color: $gray-darker;
+  }
+}
+.browse-item:hover { background-color: $nav-link-hover-bg; }
+.browse-item:last-child { border-bottom: 1px solid $list-group-border; }
+
+.browse-item.with-badge {
+  padding-right: 3rem; // Prevent text from overlapping badge
+  .badge {
+    position: absolute;
+    top: .5rem;
+    right: .25rem;
+  }
+}
+.browse-item.view-record {
+  padding: 2px 4px;
+  font-size: 85%;
+  text-align: right;
+  border-top: 0;
+}
+
+/* ------ Cart ------ */
+.cart-controls .checkbox {
+  line-height: 2.5rem;
+  padding-right: 1rem;
+}
 .nav .btn-bookbag-toggle { float: left; }
 .nav .btn-bookbag-toggle a {
   display: block;
@@ -47,75 +198,19 @@ img {max-width: 100%;}
     background-color: $nav-link-hover-bg;
   }
 }
-.popover {width: 250px;}
-.sub-breadcrumb {
-  padding: 5px 10px;
-  white-space: nowrap;
-  li {display: inline-block;}
-  li + li:before {
-    padding-left: 5px;
-    padding-right: 5px;
-    color: $breadcrumb-color;
-    content: "#{$breadcrumb-separator}\00a0";
-  }
-}
-.tab-content {padding: 4px;}
 
+/* ------ Collections ------ */
+// Layout
 @media (min-width: 768px) {
-  h2 {
-    font-size: 23px;
-    font-weight: normal;
-  }
-  h3 {
-    font-size: 20px;
-    font-weight: normal;
-  }
-  .form-control { max-width: 400px; }
-}
-@media (max-width: 767px) {
-  h2 { font-size: 20px; }
-  h3 { font-size: 16px; }
-}
-@media (max-width: 530px) {
-  .label {
-    display: inline-block;
-    max-width: 60%;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .collection-hierarchytree { display: flex; }
+  .collection-hierarchytree .tree-panel,
+  #tree-preview {
+    flex-basis: 50%;
+    padding: 1rem;
   }
 }
 
-/* --- Form Errors --- */
-.has-error {margin-bottom: 0;}
-.sms-error {@extend .has-error;}
-.help-block.with-errors {
-  margin: 0;
-  padding-top: $padding-base-vertical;
-  padding-bottom: $padding-base-vertical;
-  &:empty {padding: 0;}
-}
-
-/* --- Badges - blend the links in --- */
-.badge a {color: #fff;}
-
-/* --- Browse --- */
-.browse.list-group .list-group-item {
-  word-wrap: break-word;
-  &.view-record {
-    padding: 2px 4px;
-    font-size: 85%;
-    text-align: right;
-    border-top: 0;
-  }
-}
-
-/* --- Cart --- */
-.cart-controls .checkbox {
-  line-height: 2.5em;
-  padding-right: 1em;
-}
-
-/* --- Devtools --- */
+/* ------ Devtools ------ */
 .translation-output {
   width: 100%;
   max-width: none;
@@ -124,21 +219,66 @@ img {max-width: 100%;}
   white-space: pre;
 }
 
-/* --- PubDateVis --- */
+/* ------ Facets ------ */
+.date-fields {
+  display: flex;
+
+  .date-from { padding-right: .25rem; }
+  .date-to   { padding-left:  .25rem; }
+}
+.top-facets {
+  margin-left: -.5rem;
+  margin-right: -.5rem;
+}
+.top-facets .facet,
+.top-facets .narrow-toggle,
+.top-facets > strong {
+  display: inline-block;
+  padding: .25rem .5rem;
+  white-space: nowrap;
+}
+.top-facets .narrow-toggle { text-decoration: underline; }
+@media (min-width: 768px) {
+  .author-facets { display: flex; }
+  .author-list { flex: 0 1 100%; }
+}
+
+/* ------ MyResearch ------ */
+.form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
+.myresearch-menu a {
+  display: block;
+  padding: 10px 15px;
+  &:hover,
+  &:focus { background-color: $nav-link-hover-bg; }
+
+  .badge { float: right; }
+}
+.myresearch-menu a.active {
+  background-color: $brand-primary;
+  color: #fff;
+
+  .badge {
+    background-color: #fff;
+    color: $gray-darker;
+  }
+}
+.list-edit-container { @include clearfix(); }
+
+/* ------ PubDateVis ------ */
 #dateVisColorSettings {
   background-color: #fff; // background of box
-  fill: rgb(234,234,234); // fillColor
+  fill: #eee;             // fillColor
   outline-color: #c38835; // selection color
   stroke: $brand-primary; // color
 }
 
-/* --- Table wrapping to prevent horizontal overflow --- */
+/* ------ Table wrapping to prevent horizontal overflow ------ */
 .table {
   table-layout: fixed;
   word-wrap: break-word;
 }
 
-/* --- Visualization View --- */
+/* ------ Visualization View ------ */
 .node {
   position: absolute;
   box-sizing: content-box;
@@ -146,10 +286,10 @@ img {max-width: 100%;}
   overflow: hidden;
   font: 10px sans-serif;
   line-height: 12px;
-  border: 1px solid white;
+  border: 1px solid #fff;
 }
 .node div {margin-top: 0px;}
-.toplevel {border: 2px solid black;}
+.toplevel {border: 2px solid #000;}
 .node .label {
   position: absolute;
   bottom: 0;
@@ -164,9 +304,7 @@ img {max-width: 100%;}
 .notalabel {color: #000;}
 #viz-instructions {padding-top: 600px;}
 
-span[class^="services-"], span[class*=" services-"] span::before {
-  content: ", ";
-}
-span[class^="services-"], span[class*=" services-"] span:first-of-type::before {
-  content: "";
-}
+span[class^="services-"],
+span[class*=" services-"] span::before { content: ", "; }
+span[class^="services-"],
+span[class*=" services-"] span:first-of-type::before { content: ""; }
