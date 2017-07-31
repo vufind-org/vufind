@@ -72,8 +72,39 @@ class ThemeCompiler
      */
     public function compile($source, $target)
     {
-        echo "copying $source to $target\n";
-        return $this->setLastError('not implemented yet');
+        // Validate input:
+        try {
+            $this->info->setTheme($source);
+        } catch (\Exception $ex) {
+            return $this->setLastError($ex->getMessage());
+        }
+        // Validate output:
+        $baseDir = $this->info->getBaseDir();
+        $targetDir = "$baseDir/$target";
+        if (file_exists($targetDir)) {
+            return $this->setLastError('Target already exists!');
+        }
+        if (!mkdir($targetDir)) {
+            return $this->setLastError("Cannot create $targetDir");
+        }
+
+        // Copy all the files:
+        $info = $this->info->getThemeInfo();
+        $config = [];
+        do {
+            $config = $this->mergeConfig($info[$source], $config);
+            if (!$this->copyDir("$baseDir/$source", $targetDir)) {
+                return false;
+            }
+            $source = isset($info[$source]['extends'])
+                ? $info[$source]['extends']
+                : false;
+        } while ($source);
+        $configFile = "$targetDir/theme.config.php";
+        if (!file_put_contents($configFile, var_export($config, true))) {
+            return $this->setLastError("Problem exporting $configFile.");
+        }
+        return true;
     }
 
     /**
@@ -84,6 +115,67 @@ class ThemeCompiler
     public function getLastError()
     {
         return $this->lastError;
+    }
+
+    /**
+     * Copy the contents of $src into $dest if no matching files already exist.
+     *
+     * @param string $src  Source directory
+     * @param string $dest Target directory
+     *
+     * @return bool
+     */
+    protected function copyDir($src, $dest)
+    {
+        if (!is_dir($dest)) {
+            if (!mkdir($dest)) {
+                return $this->setLastError("Cannot create $dest");
+            }
+        }
+        $dir = opendir($src);
+        while ($current = readdir($dir)) {
+            if ($current === '.' || $current === '..') {
+                continue;
+            }
+            if (is_dir("$src/$current")) {
+                if (!$this->copyDir("$src/$current", "$dest/$current")) {
+                    return false;
+                }
+            } else if (!file_exists("$dest/$current")
+                && !copy("$src/$current", "$dest/$current")
+            ) {
+                return $this->setLastError(
+                    "Cannot copy $src/$current to $dest/$current."
+                );
+            }
+        }
+        closedir($dir);
+        return true;
+    }
+
+    protected function mergeConfig($src, $dest)
+    {
+        foreach ($src as $key => $value) {
+            switch ($key) {
+            case 'extends':
+                // skip "extends" configurations
+                break;
+            case 'helpers':
+                if (!isset($dest['helpers'])) {
+                    $dest['helpers'] = [];
+                }
+                $dest['helpers'] = $this->mergeConfig($value, $dest['helpers']);
+                break;
+            default:
+                if (!isset($dest[$key])) {
+                    $dest[$key] = $value;
+                } else if (is_array($dest[$key])) {
+                    $dest[$key] = array_merge($value, $dest[$key]);
+                }
+                break;
+            }
+        }
+        return $dest;
     }
 
     /**
