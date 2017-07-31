@@ -56,7 +56,7 @@ class CompileController extends AbstractBase
         if (empty($target)) {
             $target = "{$source}_compiled";
         }
-        $compiler = $this->getServiceLocator()->get('VuFindTheme\Compiler');
+        $compiler = $this->serviceLocator->get('VuFindTheme\ThemeCompiler');
         if (!$compiler->compile($source, $target)) {
             Console::writeLine($compiler->getLastError());
             return $this->getFailureResponse();

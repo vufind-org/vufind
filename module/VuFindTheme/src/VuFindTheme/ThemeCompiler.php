@@ -46,6 +46,13 @@ class ThemeCompiler
     protected $info;
 
     /**
+     * Last error message
+     *
+     * @var string
+     */
+    protected $lastError = null;
+
+    /**
      * Constructor
      *
      * @param ThemeInfo $info Theme info object
@@ -65,7 +72,30 @@ class ThemeCompiler
      */
     public function compile($source, $target)
     {
-        echo 'hello world';
-        return true;
+        echo "copying $source to $target\n";
+        return $this->setLastError('not implemented yet');
+    }
+
+    /**
+     * Get last error message.
+     *
+     * @return string
+     */
+    public function getLastError()
+    {
+        return $this->lastError;
+    }
+
+    /**
+     * Set last error message and return a boolean false.
+     *
+     * @param string $error Error message.
+     *
+     * @return bool
+     */
+    protected function setLastError($error)
+    {
+        $this->lastError = $error;
+        return false;
     }
 }
