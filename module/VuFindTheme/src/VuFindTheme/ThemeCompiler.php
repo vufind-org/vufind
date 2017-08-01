@@ -96,20 +96,18 @@ class ThemeCompiler
             return $this->setLastError("Cannot create $targetDir");
         }
 
-        // Copy all the files:
+        // Copy all the files, relying on the fact that the output of getThemeInfo
+        // includes the entire theme inheritance chain in the appropriate order:
         $info = $this->info->getThemeInfo();
         $config = [];
-        do {
-            $config = $this->mergeConfig($info[$source], $config);
+        foreach ($info as $source => $currentConfig) {
+            $config = $this->mergeConfig($currentConfig, $config);
             if (!$this->copyDir("$baseDir/$source", $targetDir)) {
                 return false;
             }
-            $source = isset($info[$source]['extends'])
-                ? $info[$source]['extends']
-                : false;
-        } while ($source);
+        }
         $configFile = "$targetDir/theme.config.php";
-        $configContents = '<?php return ' . var_export($config, true) . '; ?>';
+        $configContents = '<?php return ' . var_export($config, true) . ';';
         if (!file_put_contents($configFile, $configContents)) {
             return $this->setLastError("Problem exporting $configFile.");
         }
