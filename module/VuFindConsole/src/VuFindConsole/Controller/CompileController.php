@@ -49,7 +49,18 @@ class CompileController extends AbstractBase
         $request = $this->getRequest();
         $source = $request->getParam('source');
         if (empty($source)) {
-            Console::writeLine('Source theme parameter missing.');
+            Console::writeLine(
+                'Usage: ' . $request->getScriptName()
+                . ' compile theme [--force] SOURCE [TARGET]'
+            );
+            Console::writeLine("\tSOURCE - the source theme to compile (required)");
+            Console::writeLine(
+                "\tTARGET - the target name for the compiled theme "
+                . '(optional; defaults to SOURCE_compiled)'
+            );
+            Console::writeLine(
+                "(If TARGET exists, it will only be overwritten when --force is set)"
+            );
             return $this->getFailureResponse();
         }
         $target = $request->getParam('target');
@@ -57,7 +68,7 @@ class CompileController extends AbstractBase
             $target = "{$source}_compiled";
         }
         $compiler = $this->serviceLocator->get('VuFindTheme\ThemeCompiler');
-        if (!$compiler->compile($source, $target)) {
+        if (!$compiler->compile($source, $target, $request->getParam('force'))) {
             Console::writeLine($compiler->getLastError());
             return $this->getFailureResponse();
         }

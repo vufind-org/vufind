@@ -65,12 +65,13 @@ class ThemeCompiler
     /**
      * Compile from $source theme into $target theme.
      *
-     * @param string $source Name of source theme
-     * @param string $target Name of target theme
+     * @param string $source         Name of source theme
+     * @param string $target         Name of target theme
+     * @param bool   $forceOverwrite Should we overwrite the target if it exists?
      *
      * @return bool
      */
-    public function compile($source, $target)
+    public function compile($source, $target, $forceOverwrite = false)
     {
         // Validate input:
         try {
@@ -82,7 +83,14 @@ class ThemeCompiler
         $baseDir = $this->info->getBaseDir();
         $targetDir = "$baseDir/$target";
         if (file_exists($targetDir)) {
-            return $this->setLastError('Target already exists!');
+            if (!$forceOverwrite) {
+                return $this->setLastError(
+                    'Cannot overwrite ' . $targetDir . ' without --force switch!'
+                );
+            }
+            if (!$this->deleteDir($targetDir)) {
+                return false;
+            }
         }
         if (!mkdir($targetDir)) {
             return $this->setLastError("Cannot create $targetDir");
@@ -151,6 +159,32 @@ class ThemeCompiler
         }
         closedir($dir);
         return true;
+    }
+
+    /**
+     * Recursively delete a directory and its contents.
+     *
+     * @param string $path Directory to delete.
+     *
+     * @return bool
+     */
+    protected function deleteDir($path)
+    {
+        $dir = opendir($path);
+        while ($current = readdir($dir)) {
+            if ($current === '.' || $current === '..') {
+                continue;
+            }
+            if (is_dir("$path/$current")) {
+                if (!$this->deleteDir("$path/$current")) {
+                    return false;
+                }
+            } else if (!unlink("$path/$current")) {
+                return $this->setLastError("Cannot delete $path/$current");
+            }
+        }
+        closedir($dir);
+        return rmdir($path);
     }
 
     /**
