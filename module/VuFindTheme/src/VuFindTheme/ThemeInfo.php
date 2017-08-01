@@ -93,6 +93,18 @@ class ThemeInfo
     }
 
     /**
+     * Get the configuration file for the specified mixin.
+     *
+     * @param string $mixin Mixin name
+     *
+     * @return string
+     */
+    protected function getMixinConfig($mixin)
+    {
+        return $this->baseDir . "/$mixin/mixin.config.php";
+    }
+
+    /**
      * Get the configuration file for the specified theme.
      *
      * @param string $theme Theme name
@@ -154,7 +166,7 @@ class ThemeInfo
                 if (isset($this->allThemeInfo[$currentTheme]['mixins'])) {
                     foreach ($this->allThemeInfo[$currentTheme]['mixins'] as $mix) {
                         $this->allThemeInfo[$mix]
-                            = include $this->getThemeConfig($mix);
+                            = include $this->getMixinConfig($mix);
                     }
                 }
                 $currentTheme = $this->allThemeInfo[$currentTheme]['extends'];
