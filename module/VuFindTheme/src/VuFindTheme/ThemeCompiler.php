@@ -109,7 +109,8 @@ class ThemeCompiler
                 : false;
         } while ($source);
         $configFile = "$targetDir/theme.config.php";
-        if (!file_put_contents($configFile, var_export($config, true))) {
+        $configContents = '<?php return ' . var_export($config, true) . '; ?>';
+        if (!file_put_contents($configFile, $configContents)) {
             return $this->setLastError("Problem exporting $configFile.");
         }
         return true;
