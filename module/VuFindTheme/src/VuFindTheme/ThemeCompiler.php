@@ -153,6 +153,14 @@ class ThemeCompiler
         return true;
     }
 
+    /**
+     * Merge configurations from $src into $dest; return the result.
+     *
+     * @param array $src  Source configuration
+     * @param array $dest Destination configuration
+     *
+     * @return array
+     */
     protected function mergeConfig($src, $dest)
     {
         foreach ($src as $key => $value) {
@@ -161,12 +169,16 @@ class ThemeCompiler
                 // skip "extends" configurations
                 break;
             case 'helpers':
+                // Call this function recursively to deal with the helpers
+                // sub-array:
                 if (!isset($dest['helpers'])) {
                     $dest['helpers'] = [];
                 }
                 $dest['helpers'] = $this->mergeConfig($value, $dest['helpers']);
                 break;
             default:
+                // Default behavior: merge arrays, let existing flat settings
+                // trump new incoming ones:
                 if (!isset($dest[$key])) {
                     $dest[$key] = $value;
                 } else if (is_array($dest[$key])) {
