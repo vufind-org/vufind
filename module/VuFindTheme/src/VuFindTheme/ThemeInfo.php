@@ -149,6 +149,26 @@ class ThemeInfo
     }
 
     /**
+     * Load configuration for the specified theme (and its mixins, if any) into the
+     * allThemeInfo property.
+     *
+     * @param string $theme Name of theme to load
+     *
+     * @return void
+     */
+    protected function loadThemeConfig($theme)
+    {
+        // Load theme configuration...
+        $this->allThemeInfo[$theme] = include $this->getThemeConfig($theme);
+        // ..and if there are mixins, load those too!
+        if (isset($this->allThemeInfo[$theme]['mixins'])) {
+            foreach ($this->allThemeInfo[$theme]['mixins'] as $mix) {
+                $this->allThemeInfo[$mix] = include $this->getMixinConfig($mix);
+            }
+        }
+    }
+
+    /**
      * Get all the configuration details related to the current theme.
      *
      * @return array
@@ -161,14 +181,7 @@ class ThemeInfo
             $this->allThemeInfo = [];
             $currentTheme = $this->getTheme();
             do {
-                $this->allThemeInfo[$currentTheme]
-                    = include $this->getThemeConfig($currentTheme);
-                if (isset($this->allThemeInfo[$currentTheme]['mixins'])) {
-                    foreach ($this->allThemeInfo[$currentTheme]['mixins'] as $mix) {
-                        $this->allThemeInfo[$mix]
-                            = include $this->getMixinConfig($mix);
-                    }
-                }
+                $this->loadThemeConfig($currentTheme);
                 $currentTheme = $this->allThemeInfo[$currentTheme]['extends'];
             } while ($currentTheme);
         }
