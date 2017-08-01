@@ -216,19 +216,15 @@ class ThemeInfo
                 isset($allThemeInfo[$currentTheme]['mixins'])
                     ? $allThemeInfo[$currentTheme]['mixins'] : []
             );
-            foreach ($currentThemeSet as $currentThemeToCheck) {
+            foreach ($currentThemeSet as $theme) {
                 foreach ($allPaths as $currentPath) {
-                    $file = "$basePath/$currentThemeToCheck/$currentPath";
-                    if (file_exists($file)) {
-                        if (true === $returnType) {
-                            return $file;
-                        } else if (self::RETURN_ALL_DETAILS === $returnType) {
-                            return [
-                                'path' => $file, 'theme' => $currentThemeToCheck
-                            ];
+                    $path = "$basePath/$theme/$currentPath";
+                    if (file_exists($path)) {
+                        // Depending on return type, send back the requested data:
+                        if (self::RETURN_ALL_DETAILS === $returnType) {
+                            return compact('path', 'theme');
                         }
-                        // Default return type:
-                        return $currentThemeToCheck;
+                        return $returnType ? $path : $theme;
                     }
                 }
             }
