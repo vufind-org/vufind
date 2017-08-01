@@ -127,6 +127,18 @@ class ThemeCompiler
     }
 
     /**
+     * Remove a theme directory (used for cleanup in testing).
+     *
+     * @param string $theme Name of theme to remove.
+     *
+     * @return bool
+     */
+    public function removeTheme($theme)
+    {
+        return $this->deleteDir($this->info->getBaseDir() . '/' . $theme);
+    }
+
+    /**
      * Copy the contents of $src into $dest if no matching files already exist.
      *
      * @param string $src  Source directory
