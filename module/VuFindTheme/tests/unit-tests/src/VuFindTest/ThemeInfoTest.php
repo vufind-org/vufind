@@ -99,7 +99,14 @@ class ThemeInfoTest extends Unit\TestCase
     {
         $ti = $this->getThemeInfo();
         $ti->setTheme('child');
-        $this->assertEquals(['child' => ['extends' => 'parent'], 'parent' => ['extends' => false]], $ti->getThemeInfo());
+        $expectedChild = include "{$this->fixturePath}/child/theme.config.php";
+        $expectedParent = include "{$this->fixturePath}/parent/theme.config.php";
+        $this->assertEquals('parent', $expectedChild['extends']);
+        $this->assertEquals(false, $expectedParent['extends']);
+        $this->assertEquals(
+            ['child' => $expectedChild, 'parent' => $expectedParent],
+            $ti->getThemeInfo()
+        );
     }
 
     /**
