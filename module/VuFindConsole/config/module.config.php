@@ -4,6 +4,7 @@ namespace VuFindConsole\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
+            'compile' => 'VuFindConsole\Controller\Factory::getCompileController',
             'generate' => 'VuFindConsole\Controller\Factory::getGenerateController',
             'harvest' => 'VuFindConsole\Controller\Factory::getHarvestController',
             'import' => 'VuFindConsole\Controller\Factory::getImportController',
@@ -35,6 +36,7 @@ $config = [
 ];
 
 $routes = [
+    'compile/theme' => 'compile theme [--force] [<source>] [<target>]',
     'generate/dynamicroute' => 'generate dynamicroute [<name>] [<newController>] [<newAction>] [<module>]',
     'generate/extendservice' => 'generate extendservice [<source>] [<target>]',
     'generate/nontabrecordaction' => 'generate nontabrecordaction [<newAction>] [<module>]',
