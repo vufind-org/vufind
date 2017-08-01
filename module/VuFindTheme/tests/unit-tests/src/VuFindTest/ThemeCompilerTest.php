@@ -89,7 +89,7 @@ class ThemeCompilerTest extends Unit\TestCase
      *
      * @return void
      */
-    public function testCompiler()
+    public function testStandardCompilation()
     {
         $baseDir = $this->info->getBaseDir();
         $parentDir = $baseDir . '/parent';
@@ -134,6 +134,37 @@ class ThemeCompilerTest extends Unit\TestCase
         ];
         $mergedConfig = include "{$this->targetPath}/theme.config.php";
         $this->assertEquals($expectedConfig, $mergedConfig);
+    }
+
+    /**
+     * Test overwrite protection.
+     *
+     * @return void
+     */
+    public function testOverwriteProtection()
+    {
+        // First, compile the theme:
+        $compiler = $this->getThemeCompiler();
+        $this->assertTrue($compiler->compile('child', 'compiled'));
+
+        // Now confirm that by default, we're not allowed to recompile it on
+        // top of itself...
+        $this->assertFalse($compiler->compile('child', 'compiled'));
+        $this->assertEquals(
+            "Cannot overwrite {$this->targetPath} without --force switch!",
+            $compiler->getLastError()
+        );
+
+        // Write a file into the compiled theme so we can check that it gets
+        // removed when we force a recompile:
+        $markerFile = $this->targetPath . '/fake-marker.txt';
+        file_put_contents($markerFile, 'junk');
+        $this->assertTrue(file_exists($markerFile));
+
+        // Now recompile with "force" set to true, confirm that this succeeds,
+        // and make sure the marker file is now gone:
+        $this->assertTrue($compiler->compile('child', 'compiled', true));
+        $this->assertFalse(file_exists($markerFile));
     }
 
     /**
