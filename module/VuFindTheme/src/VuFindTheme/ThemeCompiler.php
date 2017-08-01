@@ -201,15 +201,14 @@ class ThemeCompiler
         foreach ($src as $key => $value) {
             switch ($key) {
             case 'extends':
-                // skip "extends" configurations
+                // always set "extends" to false; we're flattening, after all!
+                $dest[$key] = false;
                 break;
             case 'helpers':
                 // Call this function recursively to deal with the helpers
                 // sub-array:
-                if (!isset($dest['helpers'])) {
-                    $dest['helpers'] = [];
-                }
-                $dest['helpers'] = $this->mergeConfig($value, $dest['helpers']);
+                $dest[$key] = $this
+                    ->mergeConfig($value, isset($dest[$key]) ? $dest[$key] : []);
                 break;
             default:
                 // Default behavior: merge arrays, let existing flat settings
