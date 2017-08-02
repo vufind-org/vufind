@@ -64,6 +64,8 @@ class Module
     {
         return [
             'factories' => [
+                'VuFindTheme\MixinGenerator' =>
+                    'VuFindTheme\Module::getMixinGenerator',
                 'VuFindTheme\ThemeCompiler' =>
                     'VuFindTheme\Module::getThemeCompiler',
                 'VuFindTheme\ThemeGenerator' =>
@@ -96,6 +98,18 @@ class Module
                 'mobileurl' => 'VuFindTheme\View\Helper\Factory::getMobileUrl',
             ],
         ];
+    }
+
+    /**
+     * Factory function for MixinGenerator object.
+     *
+     * @param ServiceManager $sm Service manager
+     *
+     * @return MixinGenerator
+     */
+    public static function getMixinGenerator(ServiceManager $sm)
+    {
+        return new MixinGenerator($sm->get('VuFindTheme\ThemeInfo'));
     }
 
     /**

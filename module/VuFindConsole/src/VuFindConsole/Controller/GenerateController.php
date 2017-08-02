@@ -321,6 +321,33 @@ class GenerateController extends AbstractBase
     }
 
     /**
+     * Create a custom theme from the template.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function thememixinAction()
+    {
+        // Validate command line argument:
+        $request = $this->getRequest();
+        $name = $request->getParam('name');
+        if (empty($name)) {
+            Console::writeLine("\tNo mixin name found, using \"custom\"");
+            $name = 'custom';
+        }
+
+        // Use the theme generator to create and configure the theme:
+        $generator = $this->serviceLocator->get('VuFindTheme\MixinGenerator');
+        if (!$generator->generate($name)) {
+            Console::writeLine($generator->getLastError());
+            return $this->getFailureResponse();
+        }
+        Console::writeLine(
+            "\tFinished. Add to your theme.config.php 'mixins' setting to activate."
+        );
+        return $this->getSuccessResponse();
+    }
+
+    /**
      * Create a new subclass and factory to override a factory-generated
      * service.
      *
