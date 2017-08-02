@@ -26,8 +26,6 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
-use VuFind\Config\Locator as ConfigLocator;
-use VuFind\Config\Writer as ConfigWriter;
 use Zend\Code\Generator\ClassGenerator;
 use Zend\Code\Generator\MethodGenerator;
 use Zend\Code\Generator\FileGenerator;
@@ -296,159 +294,26 @@ class GenerateController extends AbstractBase
     }
 
     /**
-     * Copies contents from $source to $dest
-     *
-     * @param string $source full path to source directory
-     * @param string $dest   full path to copy destination
-     *
-     * @return boolean true on success false otherwise
-     */
-    protected function copyDirectory($source, $dest)
-    {
-        $sourceHandle = opendir($source);
-        if (!file_exists($dest)) {
-            mkdir($dest, 0755);
-        }
-
-        if (!$sourceHandle) {
-            return false;
-        }
-
-        $success = true;
-        while ($file = readdir($sourceHandle)) {
-            if ($file == '.' || $file == '..') {
-                continue;
-            }
-
-            if (is_dir($source . '/' . $file)) {
-                if (!file_exists($dest . '/' . $file)) {
-                    mkdir($dest . '/' . $file, 0755);
-                }
-                if (!$this->copyDirectory("$source/$file", "$dest/$file")) {
-                    $success = false;
-                    break;
-                }
-            } else {
-                copy($source . '/' . $file, $dest . '/' . $file);
-            }
-        }
-        closedir($sourceHandle);
-
-        return $success;
-    }
-    /**
-     * Removes // and /./ in paths and collapses /../
-     * Same as realpath, but doesn't check for file existence
-     *
-     * @param string $path full path to condense
-     *
-     * @return string
-     */
-    protected function getAbsolutePath($path)
-    {
-        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
-        $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
-        $absolutes = [];
-        foreach ($parts as $part) {
-            if ('.' == $part) {
-                continue;
-            }
-            if ('..' == $part) {
-                array_pop($absolutes);
-            } else {
-                $absolutes[] = $part;
-            }
-        }
-        if (substr($path, 0, 1) === DIRECTORY_SEPARATOR) {
-            return DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $absolutes);
-        }
-        return implode(DIRECTORY_SEPARATOR, $absolutes);
-    }
-
-    /**
      * Create a custom theme from the template, configure.
      *
      * @return \Zend\Console\Response
      */
     public function themeAction()
     {
-        // Validate command line arguments:
+        // Validate command line argument:
         $request = $this->getRequest();
         $name = $request->getParam('themename');
         if (empty($name)) {
             Console::writeLine("\tNo themename found, using \"custom\"");
             $name = 'custom';
         }
-        // Check for existing theme
-        $baseDir = __DIR__ . '/../../../../../themes/';
-        if (realpath($baseDir . $name)) {
-            Console::writeLine('Theme "' . $name . '" already exists');
-            return $this->getFailureResponse();
-        }
-        Console::writeLine('Creating new theme: "' . $name . '"');
-        // Copy template directory to new theme
-        $themeTemplate = 'local_theme_example';
-        $source = $this->getAbsolutePath($baseDir . $themeTemplate);
-        $dest = $this->getAbsolutePath($baseDir . $name);
-        Console::writeLine("\tCopying $themeTemplate");
-        Console::writeLine("\t\t" . $source);
-        Console::writeLine("\t\t" . $dest);
-        if (!$this->copyDirectory($source, $dest)) {
-            Console::writeLine("Copy failed.");
-            return $this->getFailureResponse();
-        }
-        // Enable theme
-        $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
-        Console::writeLine("\tUpdating $configPath...");
-        Console::writeLine("\t\t[Site] > theme = $name");
-        $writer = new ConfigWriter($configPath);
-        $writer->set('Site', 'theme', $name);
-        // Enable dropdown
-        $config = $this->getConfig();
-        $settingPrefixes = [
-            'bootstrap' => 'bs3',
-            'custom' => strtolower(str_replace(' ', '', $name))
-        ];
-        // - Set alternate_themes
-        Console::writeLine("\t\t[Site] > alternate_themes");
-        $altSetting = [];
-        if (isset($config->Site->alternate_themes)) {
-            $alts = explode(',', $config->Site->alternate_themes);
-            foreach ($alts as $a) {
-                $parts = explode(':', $a);
-                if ($parts[1] === 'bootstrap3') {
-                    $settingPrefixes['bootstrap'] = $parts[0];
-                } elseif ($parts[1] === $name) {
-                    $settingPrefixes['custom'] = $parts[0];
-                } else {
-                    $altSetting[] = $a;
-                }
-            }
-        }
-        $altSetting[] = $settingPrefixes['bootstrap'] . ':bootstrap3';
-        $altSetting[] = $settingPrefixes['custom'] . ':' . $name;
-        $writer->set('Site', 'alternate_themes', implode(',', $altSetting));
-        // - Set selectable_themes
-        Console::writeLine("\t\t[Site] > selectable_themes");
-        $dropSetting = [
-            $settingPrefixes['bootstrap'] . ':Bootstrap',
-            $settingPrefixes['custom'] . ':' . ucwords($name)
-        ];
-        if (isset($config->Site->selectable_themes)) {
-            $themes = explode(',', $config->Site->selectable_themes);
-            foreach ($themes as $t) {
-                $parts = explode(':', $t);
-                if ($parts[0] !== $settingPrefixes['bootstrap']
-                    && $parts[0] !== $settingPrefixes['custom']
-                ) {
-                    $dropSetting[] = $t;
-                }
-            }
-        }
-        $writer->set('Site', 'selectable_themes', implode(',', $dropSetting));
-        // Save
-        if (!$writer->save()) {
-            Console::writeLine("\tConfiguration saving failed!");
+
+        // Use the theme generator to create and configure the theme:
+        $generator = $this->getServiceLocator()->get('VuFindTheme\ThemeGenerator');
+        if (!$generator->generate($name)
+            || !$generator->configure($this->getConfig(), $name)
+        ) {
+            Console::writeLine($generator->getLastError());
             return $this->getFailureResponse();
         }
         Console::writeLine("\tFinished.");
