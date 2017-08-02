@@ -124,6 +124,9 @@ class ThemeCompiler extends AbstractThemeUtility
                 $dest[$key] = $this
                     ->mergeConfig($value, isset($dest[$key]) ? $dest[$key] : []);
                 break;
+            case 'mixins':
+                // Omit mixin settings entirely
+                break;
             default:
                 // Default behavior: merge arrays, let existing flat settings
                 // trump new incoming ones:

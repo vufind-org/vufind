@@ -137,6 +137,64 @@ class ThemeCompilerTest extends Unit\TestCase
     }
 
     /**
+     * Test the compiler with a mixin.
+     *
+     * @return void
+     */
+    public function testStandardCompilationWithMixin()
+    {
+        $baseDir = $this->info->getBaseDir();
+        $parentDir = $baseDir . '/parent';
+        $childDir = $baseDir . '/child';
+        $mixinDir = $baseDir . '/mixin';
+        $compiler = $this->getThemeCompiler();
+        $result = $compiler->compile('mixin_user', 'compiled');
+
+        // Did the compiler report success?
+        $this->assertEquals('', $compiler->getLastError());
+        $this->assertTrue($result);
+
+        // Was the target directory created with the expected files?
+        $this->assertTrue(is_dir($this->targetPath));
+        $this->assertTrue(file_exists("{$this->targetPath}/parent.txt"));
+        $this->assertTrue(file_exists("{$this->targetPath}/child.txt"));
+        $this->assertTrue(file_exists("{$this->targetPath}/js/mixin.js"));
+
+        // Did the right version of the  file that exists in both parent and child
+        // get copied over?
+        $this->assertEquals(
+            file_get_contents("$mixinDir/js/hello.js"),
+            file_get_contents("{$this->targetPath}/js/hello.js")
+        );
+        $this->assertNotEquals(
+            file_get_contents("$childDir/js/hello.js"),
+            file_get_contents("{$this->targetPath}/js/hello.js")
+        );
+        $this->assertNotEquals(
+            file_get_contents("$parentDir/js/hello.js"),
+            file_get_contents("{$this->targetPath}/js/hello.js")
+        );
+
+        // Did the configuration merge correctly?
+        $expectedConfig = [
+            'extends' => false,
+            'css' => ['child.css'],
+            'js' => ['hello.js', 'extra.js', 'mixin.js'],
+            'helpers' => [
+                'factories' => [
+                    'foo' => 'fooOverrideFactory',
+                    'bar' => 'barFactory',
+                ],
+                'invokables' => [
+                    'xyzzy' => 'Xyzzy',
+                ]
+            ],
+        ];
+        $mergedConfig = include "{$this->targetPath}/theme.config.php";
+        $this->assertEquals($expectedConfig, $mergedConfig);
+    }
+
+    /**
      * Test overwrite protection.
      *
      * @return void
