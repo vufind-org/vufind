@@ -146,7 +146,13 @@ class AdapterFactory
         list($type, $details) = explode('://', $connectionString);
         preg_match('/(.+)@([^@]+)\/(.+)/', $details, $matches);
         $credentials = isset($matches[1]) ? $matches[1] : null;
-        $host = isset($matches[2]) ? $matches[2] : null;
+        if (isset($matches[2])) {
+            if (strpos($matches[2], ':') !== false) {
+                list($host, $port) = explode(':', $matches[2]);
+            } else {
+                $host = $matches[2];
+            }
+        }
         $dbName = isset($matches[3]) ? $matches[3] : null;
         if (strstr($credentials, ':')) {
             list($username, $password) = explode(':', $credentials, 2);
@@ -160,12 +166,14 @@ class AdapterFactory
         // Set up default options:
         $options = [
             'driver' => $this->getDriverName($type),
-            'hostname' => $host,
+            'hostname' => isset($host) ? $host : null,
             'username' => $username,
             'password' => $password,
             'database' => $dbName
         ];
-
+        if (!empty($port)) {
+            $options['port'] = $port;
+        }
         return $this->getAdapterFromOptions($options);
     }
 }
