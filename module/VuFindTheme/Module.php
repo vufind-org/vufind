@@ -66,6 +66,8 @@ class Module
             'factories' => [
                 'VuFindTheme\ThemeCompiler' =>
                     'VuFindTheme\Module::getThemeCompiler',
+                'VuFindTheme\ThemeGenerator' =>
+                    'VuFindTheme\Module::getThemeGenerator',
                 'VuFindTheme\ThemeInfo' => 'VuFindTheme\Module::getThemeInfo',
             ],
             'invokables' => [
@@ -106,6 +108,18 @@ class Module
     public static function getThemeCompiler(ServiceManager $sm)
     {
         return new ThemeCompiler($sm->get('VuFindTheme\ThemeInfo'));
+    }
+
+    /**
+     * Factory function for ThemeGenerator object.
+     *
+     * @param ServiceManager $sm Service manager
+     *
+     * @return ThemeGenerator
+     */
+    public static function getThemeGenerator(ServiceManager $sm)
+    {
+        return new ThemeGenerator($sm->get('VuFindTheme\ThemeInfo'));
     }
 
     /**

@@ -42,6 +42,7 @@ $routes = [
     'generate/nontabrecordaction' => 'generate nontabrecordaction [<newAction>] [<module>]',
     'generate/recordroute' => 'generate recordroute [<base>] [<newController>] [<module>]',
     'generate/staticroute' => 'generate staticroute [<name>] [<module>]',
+    'generate/theme' => 'generate theme [<themename>]',
     // harvest/harvest_oai is too complex to represent here; we need to rely on default-route
     'harvest/merge-marc' => 'harvest merge-marc [<dir>]',
     'import/import-xsl' => 'import import-xsl [--test-only] [--index=] [<xml>] [<properties>]',
