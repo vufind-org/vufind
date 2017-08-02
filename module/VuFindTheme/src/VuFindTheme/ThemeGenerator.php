@@ -42,32 +42,8 @@ use Zend\Console\Console;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ThemeGenerator
+class ThemeGenerator extends AbstractThemeUtility
 {
-    /**
-     * Theme info object
-     *
-     * @var ThemeInfo
-     */
-    protected $info;
-
-    /**
-     * Last error message
-     *
-     * @var string
-     */
-    protected $lastError = null;
-
-    /**
-     * Constructor
-     *
-     * @param ThemeInfo $info Theme info object
-     */
-    public function __construct(ThemeInfo $info)
-    {
-        $this->info = $info;
-    }
-
     /**
      * Generate a new theme from a template.
      *
@@ -84,15 +60,12 @@ class ThemeGenerator
             return $this->setLastError('Theme "' . $name . '" already exists');
         }
         Console::writeLine('Creating new theme: "' . $name . '"');
-        $source = $this->getAbsolutePath($baseDir . $themeTemplate);
-        $dest = $this->getAbsolutePath($baseDir . $name);
+        $source = $baseDir . $themeTemplate;
+        $dest = $baseDir . $name;
         Console::writeLine("\tCopying $themeTemplate");
         Console::writeLine("\t\tFrom: " . $source);
         Console::writeLine("\t\tTo: " . $dest);
-        if (!$this->copyDirectory($source, $dest)) {
-            return $this->setLastError("Copy failed.");
-        }
-        return true;
+        return $this->copyDir($source, $dest);
     }
 
     /**
@@ -108,6 +81,10 @@ class ThemeGenerator
     {
         // Enable theme
         $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        if (!file_exists($configPath)) {
+            return $this
+                ->setLastError("Expected configuration file missing: $configPath");
+        }
         Console::writeLine("\tUpdating $configPath...");
         Console::writeLine("\t\t[Site] > theme = $name");
         $writer = new ConfigWriter($configPath);
@@ -159,99 +136,5 @@ class ThemeGenerator
             return $this->setLastError("\tConfiguration saving failed!");
         }
         return true;
-    }
-
-    /**
-     * Get last error message.
-     *
-     * @return string
-     */
-    public function getLastError()
-    {
-        return $this->lastError;
-    }
-
-    /**
-     * Copies contents from $source to $dest
-     *
-     * @param string $source full path to source directory
-     * @param string $dest   full path to copy destination
-     *
-     * @return boolean true on success false otherwise
-     */
-    protected function copyDirectory($source, $dest)
-    {
-        $sourceHandle = opendir($source);
-        if (!file_exists($dest)) {
-            mkdir($dest, 0755);
-        }
-
-        if (!$sourceHandle) {
-            return false;
-        }
-
-        $success = true;
-        while ($file = readdir($sourceHandle)) {
-            if ($file == '.' || $file == '..') {
-                continue;
-            }
-
-            if (is_dir($source . '/' . $file)) {
-                if (!file_exists($dest . '/' . $file)) {
-                    mkdir($dest . '/' . $file, 0755);
-                }
-                if (!$this->copyDirectory("$source/$file", "$dest/$file")) {
-                    $success = false;
-                    break;
-                }
-            } else {
-                copy($source . '/' . $file, $dest . '/' . $file);
-            }
-        }
-        closedir($sourceHandle);
-
-        return $success;
-    }
-
-    /**
-     * Removes // and /./ in paths and collapses /../
-     * Same as realpath, but doesn't check for file existence
-     *
-     * @param string $path full path to condense
-     *
-     * @return string
-     */
-    protected function getAbsolutePath($path)
-    {
-        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
-        $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
-        $absolutes = [];
-        foreach ($parts as $part) {
-            if ('.' == $part) {
-                continue;
-            }
-            if ('..' == $part) {
-                array_pop($absolutes);
-            } else {
-                $absolutes[] = $part;
-            }
-        }
-        if (substr($path, 0, 1) === DIRECTORY_SEPARATOR) {
-            return DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $absolutes);
-        }
-        return implode(DIRECTORY_SEPARATOR, $absolutes);
-    }
-
-    /**
-     * Set last error message and return a boolean false.
-     *
-     * @param string $error Error message.
-     *
-     * @return bool
-     */
-    protected function setLastError($error)
-    {
-        $this->lastError = $error;
-        return false;
     }
 }

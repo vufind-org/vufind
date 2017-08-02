@@ -36,32 +36,8 @@ namespace VuFindTheme;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ThemeCompiler
+class ThemeCompiler extends AbstractThemeUtility
 {
-    /**
-     * Theme info object
-     *
-     * @var ThemeInfo
-     */
-    protected $info;
-
-    /**
-     * Last error message
-     *
-     * @var string
-     */
-    protected $lastError = null;
-
-    /**
-     * Constructor
-     *
-     * @param ThemeInfo $info Theme info object
-     */
-    public function __construct(ThemeInfo $info)
-    {
-        $this->info = $info;
-    }
-
     /**
      * Compile from $source theme into $target theme.
      *
@@ -115,16 +91,6 @@ class ThemeCompiler
     }
 
     /**
-     * Get last error message.
-     *
-     * @return string
-     */
-    public function getLastError()
-    {
-        return $this->lastError;
-    }
-
-    /**
      * Remove a theme directory (used for cleanup in testing).
      *
      * @param string $theme Name of theme to remove.
@@ -134,68 +100,6 @@ class ThemeCompiler
     public function removeTheme($theme)
     {
         return $this->deleteDir($this->info->getBaseDir() . '/' . $theme);
-    }
-
-    /**
-     * Copy the contents of $src into $dest if no matching files already exist.
-     *
-     * @param string $src  Source directory
-     * @param string $dest Target directory
-     *
-     * @return bool
-     */
-    protected function copyDir($src, $dest)
-    {
-        if (!is_dir($dest)) {
-            if (!mkdir($dest)) {
-                return $this->setLastError("Cannot create $dest");
-            }
-        }
-        $dir = opendir($src);
-        while ($current = readdir($dir)) {
-            if ($current === '.' || $current === '..') {
-                continue;
-            }
-            if (is_dir("$src/$current")) {
-                if (!$this->copyDir("$src/$current", "$dest/$current")) {
-                    return false;
-                }
-            } else if (!file_exists("$dest/$current")
-                && !copy("$src/$current", "$dest/$current")
-            ) {
-                return $this->setLastError(
-                    "Cannot copy $src/$current to $dest/$current."
-                );
-            }
-        }
-        closedir($dir);
-        return true;
-    }
-
-    /**
-     * Recursively delete a directory and its contents.
-     *
-     * @param string $path Directory to delete.
-     *
-     * @return bool
-     */
-    protected function deleteDir($path)
-    {
-        $dir = opendir($path);
-        while ($current = readdir($dir)) {
-            if ($current === '.' || $current === '..') {
-                continue;
-            }
-            if (is_dir("$path/$current")) {
-                if (!$this->deleteDir("$path/$current")) {
-                    return false;
-                }
-            } else if (!unlink("$path/$current")) {
-                return $this->setLastError("Cannot delete $path/$current");
-            }
-        }
-        closedir($dir);
-        return rmdir($path);
     }
 
     /**
@@ -232,18 +136,5 @@ class ThemeCompiler
             }
         }
         return $dest;
-    }
-
-    /**
-     * Set last error message and return a boolean false.
-     *
-     * @param string $error Error message.
-     *
-     * @return bool
-     */
-    protected function setLastError($error)
-    {
-        $this->lastError = $error;
-        return false;
     }
 }
