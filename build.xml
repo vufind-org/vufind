@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="vufind" basedir="." default="main">
+  <property environment="env" />
   <property name="tmp" value="/tmp" />
   <property name="package"  value="${phing.project.name}" override="true" />
   <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
@@ -148,35 +149,42 @@
         <loadfile property="existing_solr_version" file="${srcdir}/solr/vendor/.installedVersion" />
       </then>
     </if>
-    <!-- only attempt to install Solr if the desired version is not already there -->
     <if>
-      <not><equals arg1="${existing_solr_version}" arg2="${solr_version}" /></not>
+      <!-- Do nothing if VUFIND_INSTALL_SOLR condition is "no". -->
+      <equals arg1="${env.VUFIND_INSTALL_SOLR}" arg2="no" />
       <then>
-        <!-- make sure we don't run out of memory during installation: -->
-        <php expression="ini_set('memory_limit', '1G');" />
-
-        <!-- download from Apache if not already present in the downloads cache -->
-        <if>
-          <not><available file="${srcdir}/downloads/solr-${solr_version}.tgz" /></not>
-           <then>
-            <mkdir dir="${srcdir}/downloads" />
-            <httpget url="http://archive.apache.org/dist/lucene/solr/${solr_version}/solr-${solr_version}.tgz" dir="${srcdir}/downloads" />
-          </then>
-        </if>
-        <!-- unpack the archive into solr/vendor -->
-        <untar file="${srcdir}/downloads/solr-${solr_version}.tgz" todir="${srcdir}/solr" />
-        <delete dir="${srcdir}/solr/vendor" includeemptydirs="true" failonerror="false" />
-        <move file="${srcdir}/solr/solr-${solr_version}" tofile="${srcdir}/solr/vendor" />
-        <!-- make scripts executable -->
-        <chmod mode="0755">
-          <fileset dir="${srcdir}/solr/vendor/bin">
-            <include name="**/**" />
-            <exclude name="**/*.cmd" />
-          </fileset>
-        </chmod>
-        <!-- update the marker file with the installed version -->
-        <echo file="${srcdir}/solr/vendor/.installedVersion" message="${solr_version}" />
+        <echo message="Environment variable VUFIND_INSTALL_SOLR is set to 'no', so Solr has not been installed." />
       </then>
+      <!-- only attempt to install Solr if the desired version is not already there. -->
+      <elseif>
+        <not><equals arg1="${existing_solr_version}" arg2="${solr_version}" /></not>
+        <then>
+          <!-- make sure we don't run out of memory during installation: -->
+          <php expression="ini_set('memory_limit', '1G');" />
+
+          <!-- download from Apache if not already present in the downloads cache -->
+          <if>
+            <not><available file="${srcdir}/downloads/solr-${solr_version}.tgz" /></not>
+            <then>
+              <mkdir dir="${srcdir}/downloads" />
+              <httpget url="http://archive.apache.org/dist/lucene/solr/${solr_version}/solr-${solr_version}.tgz" dir="${srcdir}/downloads" />
+            </then>
+          </if>
+          <!-- unpack the archive into solr/vendor -->
+          <untar file="${srcdir}/downloads/solr-${solr_version}.tgz" todir="${srcdir}/solr" />
+          <delete dir="${srcdir}/solr/vendor" includeemptydirs="true" failonerror="false" />
+          <move file="${srcdir}/solr/solr-${solr_version}" tofile="${srcdir}/solr/vendor" />
+          <!-- make scripts executable -->
+          <chmod mode="0755">
+            <fileset dir="${srcdir}/solr/vendor/bin">
+              <include name="**/**" />
+              <exclude name="**/*.cmd" />
+            </fileset>
+          </chmod>
+          <!-- update the marker file with the installed version -->
+          <echo file="${srcdir}/solr/vendor/.installedVersion" message="${solr_version}" />
+        </then>
+      </elseif>
     </if>
   </target>
 

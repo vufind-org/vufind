@@ -1,0 +1,28 @@
+#!/bin/sh
+set -e
+
+# Conditionally set environment variables.
+if [ -z "$VUFIND_MYSQL_URL" ]; then VUFIND_MYSQL_URL='mysql://root@mysql/vufind'; fi
+if [ -z "$VUFIND_SOLR_URL" ]; then VUFIND_SOLR_URL='http://solr:8983/solr'; fi
+if [ -z "$VUFIND_RUN_COMPOSER" ]; then VUFIND_RUN_COMPOSER='no'; fi
+if [ -z "$VUFIND_BASE_PATH" ]; then VUFIND_BASE_PATH='/'; fi
+
+# Build local configurations.
+if [ ! -f /usr/local/vufind/local/httpd-vufind.conf ]; then 
+  php install.php --non-interactive --basepath="$VUFIND_BASE_PATH";
+fi
+if [ ! -f /usr/local/vufind/local/config/vufind/config.ini ]; then 
+  cp /usr/local/vufind/config/vufind/config.ini /usr/local/vufind/local/config/vufind/;
+fi
+
+# Set config.ini values.
+sed -i -r -e "s/database\s+= mysql:.*/database = $(echo "$VUFIND_MYSQL_URL" | sed 's/\//\\\//g')/g" /usr/local/vufind/local/config/vufind/config.ini && echo "MySQL URL written to config.ini"
+sed -i -r -e "s/url\s+= http:.*\/solr/url = $(echo "$VUFIND_SOLR_URL" | sed 's/\//\\\//g')/g" /usr/local/vufind/local/config/vufind/config.ini && echo "Solr URL written to config.ini"
+
+if [ "$VUFIND_RUN_COMPOSER" = 'yes' ]; then composer install; fi
+
+ln -sf /usr/local/vufind/local/httpd-vufind.conf /etc/apache2/conf-enabled/vufind.conf
+sed -i -e "s/DocumentRoot \/var\/www\/html/DocumentRoot \/usr\/local\/vufind\/public/g" /etc/apache2/sites-enabled/000-default.conf
+chown -R www-data:www-data /usr/local/vufind/local/cache /usr/local/vufind/local/config
+
+exec "$@"
