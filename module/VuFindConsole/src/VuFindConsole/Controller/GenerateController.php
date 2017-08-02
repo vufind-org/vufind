@@ -376,7 +376,7 @@ class GenerateController extends AbstractBase
         $request = $this->getRequest();
         $name = $request->getParam('themename');
         if (empty($name)) {
-            Console::writeLine('\tNo themename found, using "custom"');
+            Console::writeLine("\tNo themename found, using \"custom\"");
             $name = 'custom';
         }
         // Check for existing theme
