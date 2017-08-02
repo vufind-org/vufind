@@ -309,7 +309,7 @@ class GenerateController extends AbstractBase
         }
 
         // Use the theme generator to create and configure the theme:
-        $generator = $this->getServiceLocator()->get('VuFindTheme\ThemeGenerator');
+        $generator = $this->serviceLocator->get('VuFindTheme\ThemeGenerator');
         if (!$generator->generate($name)
             || !$generator->configure($this->getConfig(), $name)
         ) {

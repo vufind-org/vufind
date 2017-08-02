@@ -79,7 +79,7 @@ class ThemeGenerator
     public function generate($name, $themeTemplate = 'local_theme_example')
     {
         // Check for existing theme
-        $baseDir = $this->info->getBaseDir();
+        $baseDir = $this->info->getBaseDir() . '/';
         if (realpath($baseDir . $name)) {
             return $this->setLastError('Theme "' . $name . '" already exists');
         }
