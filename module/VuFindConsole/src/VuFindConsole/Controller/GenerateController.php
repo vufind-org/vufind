@@ -366,7 +366,7 @@ class GenerateController extends AbstractBase
     }
 
     /**
-     * Create a custom theme from the custom_theme_example, configure.
+     * Create a custom theme from the template, configure.
      *
      * @return \Zend\Console\Response
      */
@@ -386,10 +386,11 @@ class GenerateController extends AbstractBase
             return $this->getFailureResponse();
         }
         Console::writeLine('Creating new theme: "' . $name . '"');
-        // Copy custom_theme_example
-        $source = $this->getAbsolutePath($baseDir . 'custom_theme_example');
+        // Copy template directory to new theme
+        $themeTemplate = 'local_theme_example';
+        $source = $this->getAbsolutePath($baseDir . $themeTemplate);
         $dest = $this->getAbsolutePath($baseDir . $name);
-        Console::writeLine("\tCopying custom_theme_example");
+        Console::writeLine("\tCopying $themeTemplate");
         Console::writeLine("\t\t" . $source);
         Console::writeLine("\t\t" . $dest);
         if (!$this->copyDirectory($source, $dest)) {
