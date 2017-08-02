@@ -294,6 +294,33 @@ class GenerateController extends AbstractBase
     }
 
     /**
+     * Create a custom theme from the template, configure.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function themeAction()
+    {
+        // Validate command line argument:
+        $request = $this->getRequest();
+        $name = $request->getParam('themename');
+        if (empty($name)) {
+            Console::writeLine("\tNo themename found, using \"custom\"");
+            $name = 'custom';
+        }
+
+        // Use the theme generator to create and configure the theme:
+        $generator = $this->serviceLocator->get('VuFindTheme\ThemeGenerator');
+        if (!$generator->generate($name)
+            || !$generator->configure($this->getConfig(), $name)
+        ) {
+            Console::writeLine($generator->getLastError());
+            return $this->getFailureResponse();
+        }
+        Console::writeLine("\tFinished.");
+        return $this->getSuccessResponse();
+    }
+
+    /**
      * Create a new subclass and factory to override a factory-generated
      * service.
      *
