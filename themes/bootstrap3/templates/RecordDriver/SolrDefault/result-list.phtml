@@ -168,31 +168,22 @@
         </span>
       <? endif; ?>
 
+      <? if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
+        <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
+      <? endif; ?>
+
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? $localBlock = $this->linkdisplay()->showLocalBlock('favorites.save'); ?>
         <? if ($localBlock): ?>
           <? /* Add to favorites */ ?>
-          <i class="fa fa-fw fa-star" aria-hidden="true"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+          <i class="result-link-icon fa fa-fw fa-star" aria-hidden="true"></i>
+          <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record result-link-label" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>"><?=$this->transEsc('Add to favorites')?></a><br/>
         <? else: ?>
           <? $block = $this->linkdisplay()->getDisplayBlock('favorites.save'); ?>
           <? if ($block): ?>
               <?=$block?>
           <? endif; ?>
         <? endif; ?>
-        <? /* Saved lists */ ?>
-        <div class="savedLists alert alert-info hidden">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
-        </div>
-      <? endif; ?>
-    
-      <? if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
-        <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
-      <? endif; ?>
-
-      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? /* Add to favorites */ ?>
-        <i class="result-link-icon fa fa-fw fa-star" aria-hidden="true"></i>
-        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record result-link-label" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>"><?=$this->transEsc('Add to favorites')?></a><br/>
         <? /* Saved lists */ ?>
         <div class="savedLists">
           <strong><?=$this->transEsc("Saved in")?>:</strong>
