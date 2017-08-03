@@ -164,9 +164,9 @@
           </then>
         </if>
         <!-- unpack the archive into solr/vendor -->
-        <untar file="${srcdir}/downloads/solr-${solr_version}.tgz" todir="${srcdir}/solr" />
+        <untar file="${srcdir}/downloads/solr-${solr_version}.tgz" todir="${tmp}" />
         <delete dir="${srcdir}/solr/vendor" includeemptydirs="true" failonerror="false" />
-        <move file="${srcdir}/solr/solr-${solr_version}" tofile="${srcdir}/solr/vendor" />
+        <move file="${tmp}/solr-${solr_version}" tofile="${srcdir}/solr/vendor" />
         <!-- make scripts executable -->
         <chmod mode="0755">
           <fileset dir="${srcdir}/solr/vendor/bin">

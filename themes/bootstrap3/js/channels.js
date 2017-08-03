@@ -85,10 +85,22 @@ function bindChannelAddMenu(iteration, scope) {
   $(scope).find('.channel-add-menu .dropdown-menu a').click(function selectAddedChannel(e) {
     $.ajax(e.target.href).done(function addChannelAjaxDone(data) {
       var list = $(e.target).closest('.dropdown-menu');
-      $(e.target).closest('.channel').after(data);
+      var $testEl = $(data);
+      // Make sure the channel has content
+      if ($testEl.find('.channel-record').length === 0) {
+        $(e.target).closest('.channel').after(
+          '<div class="channel-title no-results">'
+          + '<h2>' + $testEl.find('h2').html() + '</h2>'
+          + VuFind.translate('nohit_heading')
+          + '</div>'
+        );
+      } else {
+        $(e.target).closest('.channel').after(data);
+        $('.channel').each(setupChannelSlider);
+        $('.channel').each(bindChannelAddMenu);
+      }
+      // Remove dropdown link
       $('[data-token="' + e.target.dataset.token + '"]').parent().remove();
-      $('.channel').each(setupChannelSlider);
-      $('.channel').each(bindChannelAddMenu);
 
       if (list.children().length === 0) {
         $('.channel-add-menu[data-group="' + list.closest('.channel-add-menu').data('group') + '"]').remove();
