@@ -190,7 +190,7 @@ class GenerateController extends AbstractBase
         $config = include $configPath;
 
         // Append the route
-        $mainConfig = $this->getServiceLocator()->get('Config');
+        $mainConfig = $this->serviceLocator->get('Config');
         foreach ($mainConfig['router']['routes'] as $key => $val) {
             if (isset($val['options']['route'])
                 && substr($val['options']['route'], -14) == '[:id[/[:tab]]]'
@@ -290,6 +290,60 @@ class GenerateController extends AbstractBase
 
         // Write updated configuration
         $this->writeModuleConfig($configPath, $config);
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     * Create a custom theme from the template, configure.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function themeAction()
+    {
+        // Validate command line argument:
+        $request = $this->getRequest();
+        $name = $request->getParam('themename');
+        if (empty($name)) {
+            Console::writeLine("\tNo themename found, using \"custom\"");
+            $name = 'custom';
+        }
+
+        // Use the theme generator to create and configure the theme:
+        $generator = $this->serviceLocator->get('VuFindTheme\ThemeGenerator');
+        if (!$generator->generate($name)
+            || !$generator->configure($this->getConfig(), $name)
+        ) {
+            Console::writeLine($generator->getLastError());
+            return $this->getFailureResponse();
+        }
+        Console::writeLine("\tFinished.");
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     * Create a custom theme from the template.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function thememixinAction()
+    {
+        // Validate command line argument:
+        $request = $this->getRequest();
+        $name = $request->getParam('name');
+        if (empty($name)) {
+            Console::writeLine("\tNo mixin name found, using \"custom\"");
+            $name = 'custom';
+        }
+
+        // Use the theme generator to create and configure the theme:
+        $generator = $this->serviceLocator->get('VuFindTheme\MixinGenerator');
+        if (!$generator->generate($name)) {
+            Console::writeLine($generator->getLastError());
+            return $this->getFailureResponse();
+        }
+        Console::writeLine(
+            "\tFinished. Add to your theme.config.php 'mixins' setting to activate."
+        );
         return $this->getSuccessResponse();
     }
 
@@ -603,7 +657,7 @@ class GenerateController extends AbstractBase
      */
     protected function retrieveConfig(array $path)
     {
-        $config = $this->getServiceLocator()->get('config');
+        $config = $this->serviceLocator->get('config');
         foreach ($path as $part) {
             if (!isset($config[$part])) {
                 return false;

@@ -188,7 +188,7 @@ class Params extends \VuFind\Search\Base\Params
         $backendParams->set('didYouMean', $options->spellcheckEnabled());
 
         // Get the language setting:
-        $lang = $this->getServiceLocator()->get('VuFind\Translator')->getLocale();
+        $lang = $this->getOptions()->getTranslator()->getLocale();
         $backendParams->set('language', substr($lang, 0, 2));
 
         if ($options->highlightEnabled()) {
@@ -212,7 +212,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function getBackendFacetParameters()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('Summon');
+        $config = $this->configLoader->get('Summon');
         $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
             ? $config->Facet_Settings->facet_limit : 30;
         $fieldSpecificLimits = isset($config->Facet_Settings->facet_limit_by_field)
@@ -265,6 +265,13 @@ class Params extends \VuFind\Search\Base\Params
                         // from other facets.
                         $params->set(
                             'expand', strtolower(trim($safeValue)) == 'true'
+                        );
+                    } else if ($filt['field'] == 'openAccessFilter') {
+                        // Special case -- "open access filter" is a separate
+                        // parameter from other facets.
+                        $params->set(
+                            'openAccessFilter',
+                            strtolower(trim($safeValue)) == 'true'
                         );
                     } else if ($filt['field'] == 'excludeNewspapers') {
                         // Special case -- support a checkbox for excluding

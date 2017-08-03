@@ -33,6 +33,7 @@ use VuFind\Exception\Forbidden as ForbiddenException,
     VuFind\Exception\ILS as ILSException,
     Zend\Mvc\Controller\AbstractActionController,
     Zend\Mvc\MvcEvent,
+    Zend\ServiceManager\ServiceLocatorInterface,
     Zend\View\Model\ViewModel,
     ZfcRbac\Service\AuthorizationServiceAwareInterface,
     ZfcRbac\Service\AuthorizationServiceAwareTrait,
@@ -68,6 +69,16 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      * @var string
      */
     protected $accessDeniedBehavior = 'promptLogin';
+
+    /**
+     * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
+     */
+    public function __construct(ServiceLocatorInterface $sm)
+    {
+        $this->setServiceLocator($sm);
+    }
 
     /**
      * Use preDispatch event to block access when appropriate.
@@ -154,15 +165,6 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
     }
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        // Placeholder so child classes can call parent::__construct() in case
-        // of future global behavior.
-    }
-
-    /**
      * Create a new ViewModel.
      *
      * @param array $params Parameters to pass to ViewModel constructor.
@@ -193,7 +195,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
         $view = $this->createViewModel($params);
 
         // Load configuration and current user for convenience:
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
         $view->disableFrom
             = (isset($config->Mail->disable_from) && $config->Mail->disable_from);
         $view->editableSubject = isset($config->Mail->user_editable_subjects)
@@ -257,7 +259,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     protected function getAuthManager()
     {
-        return $this->getServiceLocator()->get('VuFind\AuthManager');
+        return $this->serviceLocator->get('VuFind\AuthManager');
     }
 
     /**
@@ -269,7 +271,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     protected function getAuthorizationService()
     {
-        return $this->getServiceLocator()
+        return $this->serviceLocator
             ->get('ZfcRbac\Service\AuthorizationService');
     }
 
@@ -280,7 +282,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     protected function getILSAuthenticator()
     {
-        return $this->getServiceLocator()->get('VuFind\ILSAuthenticator');
+        return $this->serviceLocator->get('VuFind\ILSAuthenticator');
     }
 
     /**
@@ -320,7 +322,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     protected function getViewRenderer()
     {
-        return $this->getServiceLocator()->get('ViewRenderer');
+        return $this->serviceLocator->get('ViewRenderer');
     }
 
     /**
@@ -426,7 +428,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     public function getConfig($id = 'config')
     {
-        return $this->getServiceLocator()->get('VuFind\Config')->get($id);
+        return $this->serviceLocator->get('VuFind\Config')->get($id);
     }
 
     /**
@@ -436,7 +438,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     public function getILS()
     {
-        return $this->getServiceLocator()->get('VuFind\ILSConnection');
+        return $this->serviceLocator->get('VuFind\ILSConnection');
     }
 
     /**
@@ -446,7 +448,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     public function getRecordLoader()
     {
-        return $this->getServiceLocator()->get('VuFind\RecordLoader');
+        return $this->serviceLocator->get('VuFind\RecordLoader');
     }
 
     /**
@@ -456,7 +458,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     public function getRecordCache()
     {
-        return $this->getServiceLocator()->get('VuFind\RecordCache');
+        return $this->serviceLocator->get('VuFind\RecordCache');
     }
 
     /**
@@ -466,7 +468,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     public function getRecordRouter()
     {
-        return $this->getServiceLocator()->get('VuFind\RecordRouter');
+        return $this->serviceLocator->get('VuFind\RecordRouter');
     }
 
     /**
@@ -478,7 +480,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     public function getTable($table)
     {
-        return $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
+        return $this->serviceLocator->get('VuFind\DbTablePluginManager')
             ->get($table);
     }
 
@@ -589,7 +591,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     protected function disableSessionWrites()
     {
-        $this->getServiceLocator()->get('VuFind\Session\Settings')->disableWrite();
+        $this->serviceLocator->get('VuFind\Session\Settings')->disableWrite();
     }
 
     /**
@@ -599,7 +601,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     public function getSearchMemory()
     {
-        return $this->getServiceLocator()->get('VuFind\Search\Memory');
+        return $this->serviceLocator->get('VuFind\Search\Memory');
     }
 
     /**
@@ -609,7 +611,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     protected function commentsEnabled()
     {
-        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
         return $check->getCommentSetting() !== 'disabled';
     }
 
@@ -620,7 +622,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     protected function listsEnabled()
     {
-        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
         return $check->getListSetting() !== 'disabled';
     }
 
@@ -631,7 +633,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     protected function tagsEnabled()
     {
-        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
         return $check->getTagSetting() !== 'disabled';
     }
 
@@ -722,7 +724,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     protected function getRecordTabConfig()
     {
-        $cfg = $this->getServiceLocator()->get('Config');
+        $cfg = $this->serviceLocator->get('Config');
         return $cfg['vufind']['recorddriver_tabs'];
     }
 }

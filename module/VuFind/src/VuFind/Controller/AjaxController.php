@@ -27,6 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Auth as AuthException;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * This controller handles global AJAX functionality
@@ -60,11 +61,14 @@ class AjaxController extends AbstractBase
 
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         // Add notices to a key in the output
         set_error_handler(['VuFind\Controller\AjaxController', "storeError"]);
+        parent::__construct($sm);
     }
 
     /**
@@ -110,7 +114,7 @@ class AjaxController extends AbstractBase
         // Process recommendations -- for now, we assume Solr-based search objects,
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
-        $rm = $this->getServiceLocator()->get('VuFind\RecommendPluginManager');
+        $rm = $this->serviceLocator->get('VuFind\RecommendPluginManager');
         $module = $rm->get($this->params()->fromQuery('mod'));
         $module->setConfig($this->params()->fromQuery('params'));
         $results = $this->getResultsManager()->get('Solr');
@@ -143,7 +147,7 @@ class AjaxController extends AbstractBase
     {
         static $hideHoldings = false;
         if ($hideHoldings === false) {
-            $logic = $this->getServiceLocator()->get('VuFind\ILSHoldLogic');
+            $logic = $this->serviceLocator->get('VuFind\ILSHoldLogic');
             $hideHoldings = $logic->getSuppressedLocations();
         }
 
@@ -709,7 +713,7 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('source', DEFAULT_SEARCH_BACKEND)
             );
             $tag = $this->params()->fromPost('tag', '');
-            $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
+            $tagParser = $this->serviceLocator->get('VuFind\Tags');
             if (strlen($tag) > 0) { // don't add empty tags
                 if ('false' === $this->params()->fromPost('remove', 'false')) {
                     $driver->addTags($user, $tagParser->parse($tag));
@@ -783,9 +787,9 @@ class AjaxController extends AbstractBase
             trim(strtolower($this->params()->fromQuery('type')))
         );
         $request = $this->getRequest();
-        $config = $this->getServiceLocator()->get('Config');
+        $config = $this->serviceLocator->get('Config');
 
-        $recordTabPlugin = $this->getServiceLocator()
+        $recordTabPlugin = $this->serviceLocator
             ->get('VuFind\RecordTabPluginManager');
         $details = $recordTabPlugin
             ->getTabDetailsForRecord(
@@ -795,7 +799,7 @@ class AjaxController extends AbstractBase
                 'Information'
             );
 
-        $rtpm = $this->getServiceLocator()->get('VuFind\RecordTabPluginManager');
+        $rtpm = $this->serviceLocator->get('VuFind\RecordTabPluginManager');
         $html = $this->getViewRenderer()
             ->render(
                 "record/ajaxview-" . $viewtype . ".phtml",
@@ -809,71 +813,6 @@ class AjaxController extends AbstractBase
                 ]
             );
         return $this->output($html, self::STATUS_OK);
-    }
-
-    /**
-     * Get map data on search results and output in JSON
-     *
-     * @param array $fields Solr fields to retrieve data from
-     *
-     * @author Chris Hallberg <crhallberg@gmail.com>
-     * @author Lutz Biedinger <lutz.biedinger@gmail.com>
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function getMapDataAjax($fields = ['long_lat'])
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        $results = $this->getResultsManager()->get('Solr');
-        $params = $results->getParams();
-        $params->initFromRequest($this->getRequest()->getQuery());
-
-        $facets = $results->getFullFieldFacets($fields, false);
-
-        $markers = [];
-        $i = 0;
-        $list = isset($facets['long_lat']['data']['list'])
-            ? $facets['long_lat']['data']['list'] : [];
-        foreach ($list as $location) {
-            $longLat = explode(',', $location['value']);
-            $markers[$i] = [
-                'title' => (string)$location['count'], //needs to be a string
-                'location_facet' =>
-                    $location['value'], //needed to load in the location
-                'lon' => $longLat[0],
-                'lat' => $longLat[1]
-            ];
-            $i++;
-        }
-        return $this->output($markers, self::STATUS_OK);
-    }
-
-    /**
-     * Get entry information on entries tied to a specific map location
-     *
-     * @author Chris Hallberg <crhallberg@gmail.com>
-     * @author Lutz Biedinger <lutz.biedinger@gmail.com>
-     *
-     * @return mixed
-     */
-    public function resultgooglemapinfoAction()
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        // Set layout to render content only:
-        $this->layout()->setTemplate('layout/lightbox');
-
-        $results = $this->getResultsManager()->get('Solr');
-        $params = $results->getParams();
-        $params->initFromRequest($this->getRequest()->getQuery());
-
-        return $this->createViewModel(
-            [
-                'results' => $results,
-                'recordSet' => $results->getResults(),
-                'recordCount' => $results->getResultTotal(),
-                'completeListUrl' => $results->getUrlQuery()->getParams()
-            ]
-        );
     }
 
     /**
@@ -982,7 +921,7 @@ class AjaxController extends AbstractBase
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $query = $this->getRequest()->getQuery();
-        $autocompleteManager = $this->getServiceLocator()
+        $autocompleteManager = $this->serviceLocator
             ->get('VuFind\AutocompletePluginManager');
         return $this->output(
             $autocompleteManager->getSuggestions($query), self::STATUS_OK
@@ -1024,20 +963,36 @@ class AjaxController extends AbstractBase
                 switch ($requestType) {
                 case 'ILLRequest':
                     $results = $catalog->checkILLRequestIsValid($id, $data, $patron);
-                    $msg = $results
-                        ? 'ill_request_place_text' : 'ill_request_error_blocked';
+                    if (is_array($results)) {
+                        $msg = $results['status'];
+                        $results = $results['valid'];
+                    } else {
+                        $msg = $results
+                            ? 'ill_request_place_text' : 'ill_request_error_blocked';
+                    }
                     break;
                 case 'StorageRetrievalRequest':
                     $results = $catalog->checkStorageRetrievalRequestIsValid(
                         $id, $data, $patron
                     );
-                    $msg = $results ? 'storage_retrieval_request_place_text'
-                        : 'storage_retrieval_request_error_blocked';
+                    if (is_array($results)) {
+                        $msg = $results['status'];
+                        $results = $results['valid'];
+                    } else {
+                        $msg = $results ? 'storage_retrieval_request_place_text'
+                            : 'storage_retrieval_request_error_blocked';
+                    }
                     break;
                 default:
                     $results = $catalog->checkRequestIsValid($id, $data, $patron);
-                    $msg = $results ? 'request_place_text' : 'hold_error_blocked';
-                    break;
+                    if (is_array($results)) {
+                        $msg = $results['status'];
+                        $results = $results['valid'];
+                    } else {
+                        $msg = $results ? 'request_place_text'
+                            : 'hold_error_blocked';
+                        break;
+                    }
                 }
                 return $this->output(
                     ['status' => $results, 'msg' => $this->translate($msg)],
@@ -1176,7 +1131,7 @@ class AjaxController extends AbstractBase
     protected function exportFavoritesAjax()
     {
         $format = $this->params()->fromPost('format');
-        $export = $this->getServiceLocator()->get('VuFind\Export');
+        $export = $this->serviceLocator->get('VuFind\Export');
         $url = $export->getBulkUrl(
             $this->getViewRenderer(), $format,
             $this->params()->fromPost('ids', [])
@@ -1212,7 +1167,7 @@ class AjaxController extends AbstractBase
         $config = $this->getConfig();
         $resolverType = isset($config->OpenURL->resolver)
             ? $config->OpenURL->resolver : 'other';
-        $pluginManager = $this->getServiceLocator()
+        $pluginManager = $this->serviceLocator
             ->get('VuFind\ResolverDriverPluginManager');
         if (!$pluginManager->has($resolverType)) {
             return $this->output(
@@ -1286,7 +1241,7 @@ class AjaxController extends AbstractBase
     protected function keepAliveAjax()
     {
         // Request ID from session to mark it active
-        $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
+        $this->serviceLocator->get('VuFind\SessionManager')->getId();
         return $this->output(true, self::STATUS_OK);
     }
 
@@ -1430,7 +1385,7 @@ class AjaxController extends AbstractBase
 
         $facetList = $facets[$facet]['data']['list'];
 
-        $facetHelper = $this->getServiceLocator()
+        $facetHelper = $this->serviceLocator
             ->get('VuFind\HierarchicalFacetHelper');
         if (!empty($sort)) {
             $facetHelper->sortFacetList($facetList, $sort == 'top');
@@ -1488,7 +1443,7 @@ class AjaxController extends AbstractBase
         }
 
         // This may be called frequently, don't leave sessions dangling
-        $this->getServiceLocator()->get('VuFind\SessionManager')->destroy();
+        $this->serviceLocator->get('VuFind\SessionManager')->destroy();
 
         return $this->output('', self::STATUS_OK);
     }
@@ -1500,7 +1455,7 @@ class AjaxController extends AbstractBase
      */
     protected function getResultsManager()
     {
-        return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
+        return $this->serviceLocator->get('VuFind\SearchResultsPluginManager');
     }
 
     /**

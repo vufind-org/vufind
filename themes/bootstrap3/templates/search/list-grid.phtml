@@ -1,8 +1,12 @@
-<div class="row">
-<? $i = 0; foreach ($this->results->getResults() as $current): ?>
-  <div id="result<?=$i++ ?>" class="col-sm-3 col-xs-6 grid">
+<div class="search-grid">
+  <? $it = 0; ?>
+  <? foreach ($this->results->getResults() as $current): ?>
     <?=$this->record($current)->getSearchResult('grid')?>
-  </div>
-  <?=($i%4==0)?'</div><div class="row">':''?>
-<? endforeach; ?>
+    <? $it++; ?>
+    <? if ($it % 4 === 0): ?>
+      <br class="grid-large-break"/>
+    <? elseif ($it % 2 === 0): ?>
+      <br class="grid-small-break"/>
+    <? endif; ?>
+  <? endforeach; ?>
 </div>

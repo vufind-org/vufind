@@ -299,7 +299,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
         $page = $this->gotoRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
-        $this->assertEquals('Login', $element->getText());
+        $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->snooze();
         $this->findCss($page, '.createAccountLink')->click();
@@ -368,7 +368,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
-        $this->assertEquals('Login', $element->getText());
+        $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test', false);
@@ -433,7 +433,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
-        $this->assertEquals('Login', $element->getText());
+        $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test', false);
@@ -469,7 +469,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
-        $this->assertEquals('Login', $element->getText());
+        $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test', false);

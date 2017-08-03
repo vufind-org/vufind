@@ -1,0 +1,234 @@
+@import "bootstrap";
+@import "colors";
+@import "variables";
+@import "common";
+@import "search";
+@import "rtl";
+
+html {
+  font-size: 16px;
+  overflow-x: hidden;
+}
+body {
+  font-size: 1rem;
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; // native font stack
+  color: @near-black;
+}
+
+/* -- Layout --- */
+.main .container { background-color: @white; }
+.mainbody { padding-top: 1rem; }
+
+/* --- Header --- */
+.navbar { border-radius: 0; }
+.banner {
+  width: auto;
+  color: #fff;
+
+  a { color: #fff; }
+}
+.banner .navbar-right { margin-top: calc((@banner-height-sm - 50px) / 2); } // Put right nav in the middle
+.banner .navbar-brand {
+  width: (170 / 65) * @banner-height-sm;
+  height: @banner-height-sm;
+}
+@media (min-width: 768px) {
+  .banner .navbar-right { margin-top: calc((@banner-height - 50px) / 2); }
+  .banner .navbar-brand {
+    width: (170 / 65) * @banner-height;
+    height: @banner-height;
+  }
+}
+
+header {
+  background-color: @header-bg;
+  font-size: @reduced-font-size;
+  font-weight: 500;
+  color: @white;
+
+  .navbar-nav { margin-top: 0; }
+  a,
+  .nav a,
+  .btn-link {
+    color: @white;
+    &:hover { color: @header-light; }
+  }
+  .btn-primary {
+    color: @black;
+    background-color: @header-light;
+  }
+  .btn-primary:hover {
+    color: @black;
+    background-color: @header-light;
+    border-color: @black;
+  }
+  .nav>li>a:hover,
+  .nav>li>a:focus {
+    color: @black;
+    background-color: @header-light;
+  }
+  .navbar-toggle {
+    margin: .5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-size: @reduced-font-size;
+  }
+  .dropdown-menu a { color: @black; }
+  .dropdown-menu a:hover {
+    background-color: @header-light;
+    color: @black;
+  }
+  .dropdown-menu .active a,
+  .dropdown-menu .active a:hover { background-color: @header-bg; }
+
+  .form-control { border: 0; }
+  .form-control:focus {
+    padding-bottom: 3px; // Smaller font-size means smaller jump
+    border-bottom: 3px solid @gold;
+  }
+
+  .navbar-brand {
+    width: 200px;
+    height: 100%;
+    margin-top: 5px;
+    .background-image('vufind_logo_dark.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    &,
+    &:active,
+    &:hover,
+    &:focus { color: transparent; }
+    &.lang-ar { .background-image('vufind_logo_ar_dark.png'); }
+  }
+}
+
+.breadcrumbs {
+  border-bottom: 1px solid @header-light;
+  background-color: @header-light;
+}
+.breadcrumb {
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
+  font-size: @reduced-font-size;
+  color: @gray;
+  background-color: transparent;
+  border-radius: 0;
+}
+.breadcrumb a { color: @link-color; }
+.breadcrumb .active { color: @black; }
+.breadcrumb .active a { color: #37474F; } /* Material Blue Grey 800 */
+.breadcrumb .active a:hover { color: @link-color-hover; } /* Material Blue Grey 900 */
+.breadcrumb > li+li::before {
+  font-weight: 900;
+  color: #fff;
+}
+
+/* --- Cart --- */
+#cartSummary strong { font-weight: inherit; }
+
+/* --- Channels --- */
+.channel-title { margin-top: 1rem; }
+.channel,
+.channel-title.no-results { margin-bottom: 2rem; }
+
+/* --- MyResearch --- */
+.myresearch-menu a:hover { background-color: @white; }
+
+/* --- Record --- */
+.record-nav {
+  display: table;
+  margin-left: auto;
+  margin-top: 1rem;
+  margin-right: auto;
+}
+.info-col { font-size: @reduced-font-size; }
+.info-col h3 {
+  margin-top: 0;
+  font-weight: 500;
+}
+.record .sidebar { margin-top: 1rem; }
+.comment-list { margin-top: .5rem; }
+.comment { margin-bottom: .5rem; }
+.comment .delete { font-size: @reduced-font-size; }
+.comment-form .btn-primary { margin-top: .25rem; }
+.tagList { line-height: 2rem; }
+.tagList .tag .fa-close { margin: 0; }
+
+/* --- Sidebar --- */
+.sidebar {
+  padding-top: 1rem;
+  font-size: @reduced-font-size;
+  background-color: @light-gray;
+
+  .facet-group {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+  /* Collapsed arrows */
+  .facet-group .title {
+    background-color: @sidebar-title-bg;
+    color: @sidebar-title-color;
+    &::after {
+      width: 1rem;
+      font-family: "FontAwesome";
+      text-align: center;
+      color: @sidebar-title-icon-color;
+      content: '\f106';
+    }
+  }
+  .facet-group .title.collapsed::after { content: '\f107'; }
+  .active-filters .title::after,
+  #advSearchForm & .title:after { content: none; } // No arrow on active filter title
+
+  .facet {
+    background-color: @sidebar-item-bg;
+    color: @sidebar-item-color;
+  }
+  a.facet:hover,
+  .facet.checkbox:hover { background-color: @sidebar-item-hover-bg; }
+
+  .facet.active,
+  .facet.active:hover,
+  .active-filters .facet,
+  .active-filters .facet:hover,
+  .jstree-facet .jstree-container-ul > .active {
+    border-color: @sidebar-active-bg;
+    background-color: @sidebar-active-bg;
+    color: @sidebar-active-color;
+
+    .badge {
+      color: @sidebar-active-bg;
+      background-color: @white;
+    }
+  }
+
+  .facet .badge {
+    max-height: 15px;
+    margin-top: 5px;
+    line-height: .8;
+    background-color: @sidebar-item-badge;
+  }
+}
+.sidebar.left,
+.sidebar.right {
+  padding-left: 0;
+  padding-right: 0;
+}
+.sidebar .checkbox-filter,
+.sidebar > h4 { margin-left: 1rem; }
+
+.jstree-facet .main .fa-check { margin-top: 3px; }
+@media (min-width: 768px) and (max-width: 991px) {
+  .sidebar .facet {
+    flex-flow: wrap;
+
+    .text { width: 100%; }
+    .badge {
+      flex-grow: 1;
+      order: 1;
+    }
+    .exclude { order: 2; }
+  }
+}

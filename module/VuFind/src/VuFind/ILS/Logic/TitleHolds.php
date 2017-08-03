@@ -120,13 +120,13 @@ class TitleHolds
             } else if ($mode == 'driver') {
                 try {
                     $patron = $this->ilsAuth->storedCatalogLogin();
+                    if (!$patron) {
+                        return false;
+                    }
+                    return $this->driverHold($id, $patron);
                 } catch (ILSException $e) {
                     return false;
                 }
-                if (!$patron) {
-                    return false;
-                }
-                return $this->driverHold($id, $patron);
             } else {
                 try {
                     $patron = $this->ilsAuth->storedCatalogLogin();
@@ -211,8 +211,10 @@ class TitleHolds
         ];
 
         if ($checkHolds != false) {
-            $valid = $this->catalog->checkRequestIsValid($id, $data, $patron);
-            if ($valid) {
+            $result = $this->catalog->checkRequestIsValid($id, $data, $patron);
+            if ((is_array($result) && $result['valid'])
+                || (is_bool($result) && $result)
+            ) {
                 return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
             }
         }

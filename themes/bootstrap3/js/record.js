@@ -1,4 +1,4 @@
-/*global deparam, grecaptcha, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind */
+/*global deparam, getUrlRoot, grecaptcha, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind */
 /*exported ajaxTagUpdate, recordDocReady */
 
 /**
@@ -159,30 +159,18 @@ function removeHashFromLocation() {
 }
 
 function ajaxLoadTab($newTab, tabid, setHash) {
-  // Parse out the base URL for the current record:
-  var urlParts = document.URL.split(/[?#]/);
-  var urlWithoutFragment = urlParts[0];
-  var path = VuFind.path;
-  var urlroot = null;
-  if (path === '') {
-    // special case -- VuFind installed at site root:
-    var chunks = urlWithoutFragment.split('/');
-    urlroot = '/' + chunks[3] + '/' + chunks[4];
-  } else {
-    // standard case -- VuFind has its own path under site:
-    var pathInUrl = urlWithoutFragment.indexOf(path, urlWithoutFragment.indexOf('//') + 2);
-    var parts = urlWithoutFragment.substring(pathInUrl + path.length + 1).split('/');
-    urlroot = '/' + parts[0] + '/' + parts[1];
-  }
-
   // Request the tab via AJAX:
   $.ajax({
-    url: path + urlroot + '/AjaxTab',
+    url: VuFind.path + getUrlRoot(document.URL) + '/AjaxTab',
     type: 'POST',
     data: {tab: tabid}
   })
-  .done(function ajaxLoadTabDone(data) {
-    $newTab.html(data);
+  .always(function ajaxLoadTabDone(data) {
+    if (typeof data === 'object') {
+      $newTab.html(data.responseText ? data.responseText : VuFind.translate('error_occurred'));
+    } else {
+      $newTab.html(data);
+    }
     registerTabEvents();
     if (typeof syn_get_widget === "function") {
       syn_get_widget();

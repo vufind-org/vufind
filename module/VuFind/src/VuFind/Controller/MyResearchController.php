@@ -29,6 +29,7 @@ namespace VuFind\Controller;
 
 use VuFind\Exception\Auth as AuthException,
     VuFind\Exception\Forbidden as ForbiddenException,
+    VuFind\Exception\ILS as ILSException,
     VuFind\Exception\Mail as MailException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
@@ -77,6 +78,37 @@ class MyResearchController extends AbstractBase
     protected function storeRefererForPostLoginRedirect()
     {
         $this->setFollowupUrlToReferer();
+    }
+
+    /**
+     * Execute the request
+     *
+     * @param \Zend\Mvc\MvcEvent $event Event
+     *
+     * @return mixed
+     * @throws Exception\DomainException
+     */
+    public function onDispatch(\Zend\Mvc\MvcEvent $event)
+    {
+        // Catch any ILSExceptions thrown during processing and display a generic
+        // failure message to the user (instead of going to the fatal exception
+        // screen). This offers a slightly more forgiving experience when there is
+        // an unexpected ILS issue. Note that most ILS exceptions are handled at a
+        // lower level in the code (see \VuFind\ILS\Connection and the config.ini
+        // loadNoILSOnFailure setting), but there are some rare edge cases (for
+        // example, when the MultiBackend driver fails over to NoILS while used in
+        // combination with MultiILS authentication) that could lead here.
+        try {
+            return parent::onDispatch($event);
+        } catch (ILSException $exception) {
+            // Always display generic message:
+            $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+            // In development mode, also show technical failure message:
+            if ('development' == APPLICATION_ENV) {
+                $this->flashMessenger()->addErrorMessage($exception->getMessage());
+            }
+            return $this->createViewModel();
+        }
     }
 
     /**
@@ -294,7 +326,7 @@ class MyResearchController extends AbstractBase
     protected function setSavedFlagSecurely($searchId, $saved, $userId)
     {
         $searchTable = $this->getTable('Search');
-        $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
+        $sessId = $this->serviceLocator->get('VuFind\SessionManager')->getId();
         $row = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
         if (empty($row)) {
             throw new ForbiddenException('Access denied.');
@@ -312,7 +344,7 @@ class MyResearchController extends AbstractBase
     public function savesearchAction()
     {
         // Fail if saved searches are disabled.
-        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
         if ($check->getSavedSearchSetting() === 'disabled') {
             throw new ForbiddenException('Saved searches disabled.');
         }
@@ -544,8 +576,8 @@ class MyResearchController extends AbstractBase
     protected function processEditSubmit($user, $driver, $listID)
     {
         $lists = $this->params()->fromPost('lists');
-        $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
-        $favorites = $this->getServiceLocator()
+        $tagParser = $this->serviceLocator->get('VuFind\Tags');
+        $favorites = $this->serviceLocator
             ->get('VuFind\Favorites\FavoritesService');
         foreach ($lists as $list) {
             $tags = $this->params()->fromPost('tags' . $list);
@@ -701,7 +733,7 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, we just need to display the favorites:
         try {
-            $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+            $runner = $this->serviceLocator->get('VuFind\SearchRunner');
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
@@ -710,7 +742,7 @@ class MyResearchController extends AbstractBase
                 + ['id' => $this->params()->fromRoute('id')];
 
             // Set up listener for recommendations:
-            $rManager = $this->getServiceLocator()
+            $rManager = $this->serviceLocator
                 ->get('VuFind\RecommendPluginManager');
             $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
                 $listener = new RecommendListener($rManager, $searchId);
@@ -902,7 +934,7 @@ class MyResearchController extends AbstractBase
         $id = isset($current['id']) ? $current['id'] : null;
         $source = isset($current['source'])
             ? $current['source'] : DEFAULT_SEARCH_BACKEND;
-        $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
+        $record = $this->serviceLocator->get('VuFind\RecordLoader')
             ->load($id, $source, true);
         $record->setExtraDetail('ils_details', $current);
         return $record;
@@ -1196,9 +1228,11 @@ class MyResearchController extends AbstractBase
                 }
                 $source = isset($row['source'])
                     ? $row['source'] : DEFAULT_SEARCH_BACKEND;
-                $row['driver'] = $this->getServiceLocator()
+                $row['driver'] = $this->serviceLocator
                     ->get('VuFind\RecordLoader')->load($row['id'], $source);
-                $row['title'] = $row['driver']->getShortTitle();
+                if (empty($row['title'])) {
+                    $row['title'] = $row['driver']->getShortTitle();
+                }
             } catch (\Exception $e) {
                 if (!isset($row['title'])) {
                     $row['title'] = null;
@@ -1301,7 +1335,7 @@ class MyResearchController extends AbstractBase
                                 . $user->verify_hash . '&auth_method=' . $method
                         ]
                     );
-                    $this->getServiceLocator()->get('VuFind\Mailer')->send(
+                    $this->serviceLocator->get('VuFind\Mailer')->send(
                         $user->email,
                         $config->Site->email,
                         $this->translate('recovery_email_subject'),

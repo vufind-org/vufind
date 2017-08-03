@@ -28,9 +28,7 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\ILS as ILSException,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Multiple Backend Driver.
@@ -44,14 +42,11 @@ use VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class MultiBackend extends AbstractBase
-    implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterface
+class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
-    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
-
     /**
      * The array of configured driver names.
      *
@@ -97,21 +92,30 @@ class MultiBackend extends AbstractBase
     /**
      * ILS authenticator
      *
-     * @param \VuFind\Auth\ILSAuthenticator
+     * @var \VuFind\Auth\ILSAuthenticator
      */
     protected $ilsAuth;
+
+    /**
+     * ILS driver manager
+     *
+     * @var PluginManager
+     */
+    protected $driverManager;
 
     /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth      ILS authenticator
+     * @param PluginManager                 $dm           ILS driver manager
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader,
-        \VuFind\Auth\ILSAuthenticator $ilsAuth
+        \VuFind\Auth\ILSAuthenticator $ilsAuth, PluginManager $dm
     ) {
         $this->configLoader = $configLoader;
         $this->ilsAuth = $ilsAuth;
+        $this->driverManager = $dm;
     }
 
     /**
@@ -211,9 +215,11 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
         if ($driver) {
-            // Don't pass on patron information belonging to another source
+            // If the patron belongs to another source, just pass on an empty array
+            // to indicate that the patron has logged in but is not available for the
+            // current catalog.
             if ($patron && $this->getSource($patron['cat_username']) !== $source) {
-                $patron = null;
+                $patron = [];
             }
             $holdings = $driver->getHolding(
                 $this->getLocalId($id),
@@ -578,7 +584,9 @@ class MultiBackend extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
@@ -609,7 +617,9 @@ class MultiBackend extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
@@ -954,7 +964,9 @@ class MultiBackend extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {
@@ -1319,7 +1331,7 @@ class MultiBackend extends AbstractBase
      *
      * @param string $id The id to be split
      *
-     * @return string  Source
+     * @return string Source
      */
     protected function getSource($id)
     {
@@ -1328,7 +1340,6 @@ class MultiBackend extends AbstractBase
             return substr($id, 0, $pos);
         }
 
-        $this->debug("Could not find source id in '$id'");
         return '';
     }
 
@@ -1361,9 +1372,6 @@ class MultiBackend extends AbstractBase
                 return $source;
             }
         }
-        $this->debug(
-            'Could not find source id in params: ' . print_r($params, true)
-        );
         return '';
     }
 
@@ -1415,7 +1423,7 @@ class MultiBackend extends AbstractBase
             $this->error("No configuration found for source '$source'");
             return null;
         }
-        $driverInst = clone($this->getServiceLocator()->get($driver));
+        $driverInst = clone($this->driverManager->get($driver));
         $driverInst->setConfig($config);
         $driverInst->init();
         return $driverInst;

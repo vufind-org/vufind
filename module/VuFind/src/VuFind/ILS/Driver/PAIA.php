@@ -335,7 +335,9 @@ class PAIA extends DAIA
                     isset($array_response['error_description'])
                         ? $array_response['error_description'] : ' '
             ];
-        } elseif ($array_response['patron'] === $post_data['patron']) {
+        } elseif (isset($array_response['patron'])
+            && $array_response['patron'] === $post_data['patron']
+        ) {
             // on success patron_id is returned
             $details = [
                 'success' => true,
@@ -624,9 +626,10 @@ class PAIA extends DAIA
     protected function getAdditionalFeeData($fee, $patron = null)
     {
         $additionalData = [];
-        // Add the item title using the about field,
-        // but only if this fee is caused by some item
-        if (isset($fee['item'])) {
+        // The title is always displayed to the user in fines view if no record can
+        // be found for current fee. So always populate the title with content of
+        // about field.
+        if (isset($fee['about'])) {
             $additionalData['title'] = $fee['about'];
         }
 
@@ -641,8 +644,6 @@ class PAIA extends DAIA
             ? $fee['about'] : null);
         $additionalData['item']       = (isset($fee['item'])
             ? $fee['item'] : null);
-        $additionalData['title']      = (isset($fee['title'])
-            ? $fee['title'] : null);
 
         return $additionalData;
     }
