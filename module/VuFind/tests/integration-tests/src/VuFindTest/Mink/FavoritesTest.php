@@ -113,11 +113,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddRecordToFavoritesNewAccount()
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
-
         $page = $this->gotoRecord();
 
         $this->findCss($page, '.save-record')->click();
@@ -170,11 +165,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddRecordToFavoritesLogin()
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
-
         $page = $this->gotoRecord();
 
         $this->findCss($page, '.save-record')->click();
@@ -222,11 +212,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddRecordToFavoritesLoggedIn()
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
-
         $page = $this->gotoRecord();
         // Login
         $this->findCss($page, '#loginOptions a')->click();
@@ -251,11 +236,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddSearchItemToFavoritesNewAccount()
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
-
         $page = $this->gotoSearch();
 
         $this->findCss($page, '.save-record')->click();
@@ -319,11 +299,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddSearchItemToFavoritesLogin()
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
-
         $page = $this->gotoSearch();
 
         $this->findCss($page, '.save-record')->click();
@@ -372,17 +347,14 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddSearchItemToFavoritesLoggedIn()
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
-
         $page = $this->gotoSearch();
         // Login
         $this->findCss($page, '#loginOptions a')->click();
         $this->snooze();
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
+        // Count lists
+        $listCount = count($page->findAll('css', '.savedLists a'));
         // Save Record
         $this->findCss($page, '.save-record')->click();
         $this->snooze();
@@ -390,6 +362,11 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
         $this->findCss($page, '.alert.alert-success');
+        // Test save status update on modal close
+        $this->findCss($page, '.modal-body .btn.btn-default')->click();
+        $this->snooze();
+        $savedLists = $page->findAll('css', '.savedLists a');
+        $this->assertEquals($listCount + 1, count($savedLists));
     }
 
     /**

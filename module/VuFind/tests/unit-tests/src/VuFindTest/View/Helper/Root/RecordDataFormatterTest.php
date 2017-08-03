@@ -157,10 +157,13 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
     {
         $formatter = $this->getFormatter();
         $spec = $formatter->getDefaults('core');
-        $spec['Building'] = ['dataMethod' => 'getBuilding', 'pos' => 0];
+        $spec['Building'] = [
+            'dataMethod' => 'getBuilding', 'pos' => 0, 'context' => ['foo' => 1],
+            'translationTextDomain' => 'prefix_'
+        ];
 
         $expected = [
-            'Building' => '0',
+            'Building' => 'prefix_0',
             'Published in' => '0',
             'Main Author' => 'Vico, Giambattista, 1668-1744.',
             'Other Authors' => 'Pandolfi, Claudia.',
@@ -182,11 +185,15 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
         // Check for expected text (with markup stripped)
         foreach ($expected as $key => $value) {
             $this->assertEquals(
-                $value, trim(preg_replace('/\s+/', ' ', strip_tags($results[$key])))
+                $value,
+                trim(preg_replace('/\s+/', ' ', strip_tags($results[$key]['value'])))
             );
         }
 
         // Check for exact markup in representative example:
-        $this->assertEquals('Italian<br />Latin', $results['Language']);
+        $this->assertEquals('Italian<br />Latin', $results['Language']['value']);
+
+        // Check for context in Building:
+        $this->assertEquals(['foo' => 1], $results['Building']['context']);
     }
 }

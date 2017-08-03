@@ -1,10 +1,11 @@
 <?php
 /**
- * AuthorInfo Recommendations Module
+ * Simple abstract recommendation module that simply passes the Results object
+ * through to the template.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,6 +22,7 @@
  *
  * @category VuFind
  * @package  Recommendations
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
@@ -28,44 +30,24 @@
 namespace VuFind\Recommend;
 
 /**
- * AuthorInfo Recommendations Module
- *
- * This class gathers information from the Wikipedia API and publishes the results
- * to a module at the top of an author's results page
+ * Simple abstract recommendation module that simply passes the Results object
+ * through to the template.
  *
  * @category VuFind
  * @package  Recommendations
- * @author   Lutz Biedinger <lutz.biedinger@gmail.com>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
- * @view     AuthorInfoFacets.phtml
  */
-class ResultGoogleMapAjax implements RecommendInterface
+class AbstractResultsPassthrough implements RecommendInterface
 {
     /**
-     * Saved search results
+     * Search results object.
      *
      * @var \VuFind\Search\Base\Results
      */
-    protected $searchObject;
-
-    /**
-     * Google Maps API key.
-     *
-     * @var string
-     */
-    protected $googleMapApiKey;
-
-    /**
-     * Constructor
-     *
-     * @param string $key API key
-     */
-    public function __construct($key)
-    {
-        $this->googleMapApiKey = $key;
-    }
+    protected $results;
 
     /**
      * Store the configuration of the recommendation module.
@@ -76,7 +58,7 @@ class ResultGoogleMapAjax implements RecommendInterface
      */
     public function setConfig($settings)
     {
-        // No special settings
+        // No settings used by default.
     }
 
     /**
@@ -93,7 +75,7 @@ class ResultGoogleMapAjax implements RecommendInterface
      */
     public function init($params, $request)
     {
-        // No action needed here.
+        // No initialization required by default.
     }
 
     /**
@@ -107,27 +89,16 @@ class ResultGoogleMapAjax implements RecommendInterface
      */
     public function process($results)
     {
-        $this->searchObject = $results;
+        $this->results = $results;
     }
 
     /**
-     * Get the Google Maps API key.
+     * Get results stored in the object.
      *
-     * @return string
+     * @return \VuFind\Search\Base\Results
      */
-    public function getGoogleMapApiKey()
+    public function getResults()
     {
-        return $this->googleMapApiKey;
-    }
-
-    /**
-     * Get search parameters
-     *
-     * @return string of params
-     */
-    public function getSearchParams()
-    {
-        // Get search parameters and return them minus the leading ?:
-        return substr($this->searchObject->getUrlQuery()->getParams(false), 1);
+        return $this->results;
     }
 }

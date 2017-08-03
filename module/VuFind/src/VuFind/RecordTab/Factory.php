@@ -180,9 +180,7 @@ class Factory
         $mapType = isset($config->Content->recordMap)
             ? $config->Content->recordMap : null;
         $options = [];
-        $optionFields = [
-            'displayCoords', 'mapLabels', 'googleMapApiKey'
-        ];
+        $optionFields = ['displayCoords', 'mapLabels'];
         foreach ($optionFields as $field) {
             if (isset($config->Content->$field)) {
                 $options[$field] = $config->Content->$field;

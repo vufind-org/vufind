@@ -8,6 +8,7 @@ if (PHP_SAPI == 'cli' && !defined('VUFIND_PHPUNIT_RUNNING')) {
     $modules[] = 'VuFindConsole';
 }
 if (APPLICATION_ENV == 'development') {
+    array_push($modules, 'Zf2Whoops');
     $modules[] = 'VuFindDevTools';
 }
 if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {
