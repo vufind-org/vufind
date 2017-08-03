@@ -625,7 +625,20 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         return $libraries;
     }
 
-    // @codingStandardsIgnoreStart
+    /**
+     * @return array with key = course ID, value = course name
+     */
+    public function getCourses() {
+        // https://developers.exlibrisgroup.com/alma/apis/courses
+        // GET /​almaws/​v1/​courses
+        $xml = $this->makeRequest('/courses');
+        $courses = [];
+        foreach ($xml as $course) {
+            $courses[$course->id] = $course->name;
+        }
+        return $courses;
+    }
+
     /**
      * @param string $courseID     Value from getCourses
      * @param string $instructorID Value from getInstructors
@@ -634,21 +647,24 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @return array With key BIB_ID - The record ID of the current reserve item.
      *               Not currently used:
      *               DISPLAY_CALL_NO, AUTHOR, TITLE, PUBLISHER, PUBLISHER_DATE
-     * /
+     */
     public function findReserves($courseID, $instructorID, $departmentID) {
         // https://developers.exlibrisgroup.com/alma/apis/courses
         // GET /​almaws/​v1/​courses/​{course_id}/​reading-lists
+        $xml = $this->makeRequest('/courses/​' . $courseID . '/​reading-lists');
+        $reserves = [];
+        foreach ($xml as $list) {
+            $listXML = $this->makeRequest(
+                "/courses/${$courseID}/reading-lists/${$list->id}/citations"
+            );
+            foreach ($listXML as $citation) {
+                $reserves[$citation->id] = $citation->metadata;
+            }
+        }
+        return $reserves;
     }
-    */
 
-    /**
-     * @return array with key = course ID, value = course name
-     * /
-    public function getCourses() {
-        // https://developers.exlibrisgroup.com/alma/apis/courses
-        // GET /​almaws/​v1/​courses
-    }
-    */
+    // @codingStandardsIgnoreStart
 
     /**
      * @return array with key = course ID, value = course name
