@@ -143,7 +143,6 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
                 }
             }
         }
-        return;
     }
 
     /**
