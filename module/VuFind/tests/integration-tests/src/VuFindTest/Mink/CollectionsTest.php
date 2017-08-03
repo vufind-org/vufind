@@ -28,7 +28,7 @@
 namespace VuFindTest\Mink;
 
 /**
- * Mink test class for basic record functionality.
+ * Mink test class for basic collection functionality.
  *
  * @category VuFind
  * @package  Tests
@@ -38,6 +38,11 @@ namespace VuFindTest\Mink;
  */
 class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    /**
+     * Go to a collection page.
+     *
+     * @return Element
+     */
     private function goToCollection()
     {
         $session = $this->getMinkSession();
@@ -46,6 +51,11 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
         return $session->getPage();
     }
 
+    /**
+     * Go to a collection's hierarchy tab.
+     *
+     * @return Element
+     */
     private function goToCollectionHierarchy()
     {
         $session = $this->getMinkSession();
@@ -54,6 +64,11 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
         return $session->getPage();
     }
 
+    /**
+     * Test that a collection contains records.
+     *
+     * @return void
+     */
     public function testBasic()
     {
         $this->changeConfigs([
@@ -68,6 +83,11 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals(7, count($results));
     }
 
+    /**
+     * Test that the keyword filter feature works correctly.
+     *
+     * @return void
+     */
     public function testKeywordFilter()
     {
         $this->changeConfigs([
@@ -78,14 +98,19 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
             ]
         ]);
         $page = $this->goToCollection();
-        $input = $this->findCSS($page, '#keywordFilter_lookfor');
+        $input = $this->findCss($page, '#keywordFilter_lookfor');
         $input->setValue('Subcollection 2');
-        $this->findCSS($page, '#keywordFilterForm .btn')->press();
+        $this->findCss($page, '#keywordFilterForm .btn')->press();
 
         $results = $page->findAll('css', '.result');
         $this->assertEquals(2, count($results));
     }
 
+    /**
+     * Test that the collection hierarchy tab interface works.
+     *
+     * @return void
+     */
     public function testContextLinks()
     {
         // link_type => 'All'
@@ -101,12 +126,12 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
 
         $page = $this->goToCollectionHierarchy();
         $this->assertEquals(
-            trim($this->findCSS($page, '#tree-preview h2')->getText()),
+            trim($this->findCss($page, '#tree-preview h2')->getText()),
             'Subcollection 1'
         );
-        $this->findCSS($page, '[recordid="colitem2"] a')->click();
+        $this->findCss($page, '[recordid="colitem2"] a')->click();
         $this->assertEquals(
-            trim($this->findCSS($page, '#tree-preview h2')->getText()),
+            trim($this->findCss($page, '#tree-preview h2')->getText()),
             'Collection item 2'
         );
         $this->assertEquals(
