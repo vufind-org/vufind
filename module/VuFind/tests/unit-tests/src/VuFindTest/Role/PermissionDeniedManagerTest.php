@@ -80,21 +80,19 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
         $expected = [
             'action' => 'showTemplate',
             'value' => 'record/ActionTest',
-        ];
-        $expectedParams = [
-            'param1' => 'noValue'
+            'params' => [
+                'param1' => 'noValue',
+            ],
         ];
         $expectedNoParams = [
             'action' => 'showTemplate',
-            'value' => 'record/ActionTest'
+            'value' => 'record/ActionTest',
+            'params' => [],
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
 
         $this->assertEquals($expected, $pm->getActionLogic('permissionDeniedTemplate'));
         $this->assertEquals($expectedNoParams, $pm->getActionLogic('permissionDeniedTemplateNoParams'));
-
-        $this->assertEquals($expectedParams, $pm->getActionLogicParameters('permissionDeniedTemplate'));
-        $this->assertEquals([], $pm->getActionLogicParameters('permissionDeniedTemplateNoParams'));
     }
 
     /**
@@ -107,12 +105,12 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
         $expected = [
             'action' => 'exception',
             'value' => 'ForbiddenException',
-            'exceptionMessage' => 'exception_message'
+            'exceptionMessage' => 'exception_message',
+            'params' => [],
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
 
         $this->assertEquals($expected, $pm->getActionLogic('permissionDeniedException'));
-        $this->assertEquals([], $pm->getActionLogicParameters('permissionDeniedException'));
     }
 
     /**
@@ -125,7 +123,9 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
     public function testEmptyConfig()
     {
         $expected = [
-            'action' => 'promptLogin'
+            'action' => 'promptLogin',
+            'value' => false,
+            'params' => [],
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
 
@@ -142,7 +142,9 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
     public function testNonExistentConfig()
     {
         $expected = [
-            'action' => 'promptLogin'
+            'action' => 'promptLogin',
+            'value' => false,
+            'params' => [],
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
 

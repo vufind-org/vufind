@@ -50,7 +50,7 @@ class PermissionDeniedManager
     /**
      * Default action for denied permissions.
      *
-     * @var String $defaultAction Defaults to 'promptLogin'
+     * @var string
      */
     protected $defaultAction = 'promptLogin';
 
@@ -87,7 +87,7 @@ class PermissionDeniedManager
      *
      * @param string $context       Context for the permission behavior
      * @param string $defaultAction Default action to use if none configured
-     * (null to use default configured in this class).
+     * (null to use default configured in this class, false to take no action).
      *
      * @return array|bool Associative array of permission behavior for the given
      *                    context (containing the keys action, value and
@@ -98,92 +98,24 @@ class PermissionDeniedManager
      */
     public function getActionLogic($context, $defaultAction = null)
     {
-        $permissionDeniedAction = null;
-        $permissionDeniedActions = $this->getPermissionDeniedLogic(
+        return $this->getPermissionDeniedLogic(
             $context, 'permissionDeniedAction', $defaultAction
         );
-        if ($permissionDeniedActions === false) {
-            $permissionDeniedAction = $permissionDeniedActions;
-        } else if ($permissionDeniedActions) {
-            $permissionDeniedAction = [
-                'action' => $permissionDeniedActions[0]
-            ];
-            if (isset($permissionDeniedActions[1])) {
-                $permissionDeniedAction['value']
-                    = $permissionDeniedActions[1];
-            }
-            if (isset($permissionDeniedActions[2])
-                && $permissionDeniedActions[0] == 'exception'
-            ) {
-                $permissionDeniedAction['exceptionMessage']
-                    = $permissionDeniedActions[2];
-            }
-        }
-
-        return $permissionDeniedAction;
     }
 
     /**
      * Get display logic
      *
-     * @param string $context Context for the permission behavior
+     * @param string $context       Context for the permission behavior
+     * @param string $defaultAction Default action to use if none configured
+     * (null to use default configured in this class, false to take no action).
      *
      * @return array|bool
      */
-    public function getDisplayLogic($context)
+    public function getDisplayLogic($context, $defaultAction = false)
     {
-        $permissionDeniedAction = null;
-        $permissionDeniedActions = $this->getPermissionDeniedLogic(
-            $context, 'permissionDeniedDisplayLogic'
-        );
-        // If $permissionDeniedActions is false, this means, that permission is
-        // denied, but there is no behaviour configured for that
-        if ($permissionDeniedActions === false) {
-            $permissionDeniedAction = $permissionDeniedActions;
-        } else if ($permissionDeniedActions) {
-            $permissionDeniedAction = [
-                'action' => $permissionDeniedActions[0]
-            ];
-            if (isset($permissionDeniedActions[1])) {
-                $permissionDeniedAction['value']
-                    = $permissionDeniedActions[1];
-            }
-            if (isset($permissionDeniedActions[2])
-                && $permissionDeniedActions[0] == 'exception'
-            ) {
-                $permissionDeniedAction['exceptionMessage']
-                    = $permissionDeniedActions[2];
-            }
-        }
-
-        return $permissionDeniedAction;
-    }
-
-    /**
-     * Get action logic parameters
-     *
-     * @param string $context Context for the permission behavior
-     *
-     * @return array|bool
-     */
-    public function getActionLogicParameters($context)
-    {
-        return $this->getPermissionDeniedParameters(
-            $context, 'permissionDeniedAction'
-        );
-    }
-
-    /**
-     * Get display logic parameters
-     *
-     * @param string $context Context for the permission behavior
-     *
-     * @return array|bool
-     */
-    public function getDisplayLogicParameters($context)
-    {
-        return $this->getPermissionDeniedParameters(
-            $context, 'permissionDeniedDisplayLogic'
+        return $this->getPermissionDeniedLogic(
+            $context, 'permissionDeniedDisplayLogic', $defaultAction
         );
     }
 
@@ -194,7 +126,7 @@ class PermissionDeniedManager
      * @param string $mode          Mode of the operation. Should be either
      * permissionDeniedAction or permissionDeniedDisplayLogic
      * @param string $defaultAction Default action to use if none configured
-     * (null to use default configured in this class).
+     * (null to use default configured in this class, false to take no action).
      *
      * @return array|bool
      */
@@ -208,50 +140,49 @@ class PermissionDeniedManager
                 'Error. ' . $mode . ' is not supported by PermissionDeniedManager.'
             );
         }
-        if (isset($this->config[$context][$mode])
-            && $this->config[$context][$mode]
-        ) {
-            return explode(':', $this->config[$context][$mode]);
-        }
-        // This context has not been configured at all
-        if ($mode == 'permissionDeniedAction') {
-            return [$defaultAction ?: $this->defaultAction];
-        } else {
-            return false;
-        }
+
+        $config = !empty($this->config[$context][$mode])
+            ? $this->config[$context][$mode]
+            : ($defaultAction === null ? $this->defaultAction : $defaultAction);
+    
+        return ($config === false) ? false : $this->processConfigString($config);
     }
 
     /**
-     * Get action logic parameters
+     * Translate a configuration string into an array.
      *
-     * @param string $context Context for the permission behavior
-     * @param string $mode    Mode of the operation. Should be either
-     *                        permissionDeniedAction or permissionDeniedDisplayLogic
+     * @param string $config Configuration string to process
      *
-     * @return array|bool
+     * @return array
      */
-    protected function getPermissionDeniedParameters($context, $mode)
+    protected function processConfigString($config)
     {
-        $params = $this->getPermissionDeniedLogic($context, $mode);
-        $p = [ ];
-        // Normally start parameters at index position 2
-        $startAtIndex = 2;
-        if (isset($params[2]) && $params[0] == 'exception') {
-            // But if this is an exception, start at index position 3
-            $startAtIndex = 3;
-        }
-        if (count($params) > $startAtIndex) {
-            for ($n = $startAtIndex; isset($params[$n]) === true; $n++) {
-                $pArray = explode('=', $params[$n]);
-                if (count($pArray) == 2) {
-                    $p[$pArray[0]] = $pArray[1];
-                } else {
-                    $p[] = $params[$n];
-                }
-            }
+        // Split config string:
+        $parts = explode(':', $config);
+
+        // Load standard values:
+        $output = [
+            'action' => array_shift($parts),
+            'value' => array_shift($parts),
+        ];
+
+        // Special case -- extra parameters for exceptions:
+        if (strtolower($output['action']) === 'exception') {
+            $output['exceptionMessage'] = array_shift($parts);
         }
 
-        return $p;
+        // Now process any remaining keypairs:
+        $params = [];
+        while ($param = array_shift($parts)) {
+            $paramParts = explode('=', $param, 2);
+            if (count($paramParts) == 2) {
+                $params[$paramParts[0]] = $paramParts[1];
+            } else {
+                $params[] = $paramParts[0];
+            }
+        }
+        $output['params'] = $params;
+        return $output;
     }
 
 }

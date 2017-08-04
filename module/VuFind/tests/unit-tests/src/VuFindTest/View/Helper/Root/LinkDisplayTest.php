@@ -100,9 +100,9 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
         $mockPmdMessage = $this->getMockPmd([
                 'displayLogic' => [
                     'action' => 'showMessage',
-                    'value' => 'dl_translatable_test'
+                    'value' => 'dl_translatable_test',
+                    'params' => [],
                 ],
-                'parameters' => []
             ]);
 
         $translator = new \VuFind\View\Helper\Root\Translate();
@@ -128,9 +128,9 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
         $mockPmd = $this->getMockPmd([
                 'displayLogic' => [
                     'action' => 'showTemplate',
-                    'value' => 'record/displayLogicTest'
+                    'value' => 'record/displayLogicTest',
+                    'params' => [],
                 ],
-                'parameters' => []
             ]);
 
         $translate = new \VuFind\View\Helper\Root\Translate();
@@ -159,9 +159,9 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
         $mockPmd = $this->getMockPmd([
                 'displayLogic' => [
                     'action' => 'showTemplate',
-                    'value' => 'ajax/status-available.phtml'
+                    'value' => 'ajax/status-available.phtml',
+                    'params' => [],
                 ],
-                'parameters' => []
             ]);
 
         $escaper = new \Zend\View\Helper\EscapeHtml();
@@ -191,8 +191,6 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
             ->getMock();
         $mockPmd->expects($this->any())->method('getDisplayLogic')
             ->will($this->returnValue($displayLogic['displayLogic']));
-        $mockPmd->expects($this->any())->method('getDisplayLogicParameters')
-            ->will($this->returnValue($displayLogic['parameters']));
         return $mockPmd;
     }
 
