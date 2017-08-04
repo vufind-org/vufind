@@ -292,7 +292,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     protected function getPermissionDeniedManager()
     {
-        return $this->getServiceLocator()->get('VuFind\PermissionDeniedManager');
+        return $this->serviceLocator->get('VuFind\PermissionDeniedManager');
     }
 
     /**
@@ -302,7 +302,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     protected function getPermissionManager()
     {
-        return $this->getServiceLocator()->get('VuFind\PermissionManager');
+        return $this->serviceLocator->get('VuFind\PermissionManager');
     }
 
     /**
