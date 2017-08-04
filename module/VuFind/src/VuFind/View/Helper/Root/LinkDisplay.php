@@ -27,8 +27,8 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\PermissionDeniedManager as PermissionDeniedManager;
-use VuFind\PermissionManager as PermissionManager;
+use VuFind\Role\PermissionDeniedManager;
+use VuFind\Role\PermissionManager;
 use Zend\View\Helper\AbstractHelper;
 
 /**

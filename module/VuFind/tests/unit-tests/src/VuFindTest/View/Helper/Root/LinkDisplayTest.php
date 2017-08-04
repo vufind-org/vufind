@@ -183,10 +183,10 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
      *
      * @param array $displayLogic DisplayLogic to return
      *
-     * @return \VuFind\PermissionDeniedManager
+     * @return \VuFind\Role\PermissionDeniedManager
      */
     protected function getMockPmd($displayLogic = false) {
-        $mockPmd = $this->getMockBuilder('\VuFind\PermissionDeniedManager')
+        $mockPmd = $this->getMockBuilder('\VuFind\Role\PermissionDeniedManager')
             ->setConstructorArgs([$this->permissionDeniedConfig])
             ->getMock();
         $mockPmd->expects($this->any())->method('getDisplayLogic')
@@ -201,10 +201,10 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
      *
      * @param array $isAuthorized isAuthorized value to return
      *
-     * @return \VuFind\PermissionManager
+     * @return \VuFind\Role\PermissionManager
      */
     protected function getMockPm($isAuthorized = false) {
-        $mockPm = $this->getMockBuilder('\VuFind\PermissionManager')
+        $mockPm = $this->getMockBuilder('\VuFind\Role\PermissionManager')
             ->disableOriginalConstructor()
             ->getMock();
         $mockPm->expects($this->any())->method('isAuthorized')

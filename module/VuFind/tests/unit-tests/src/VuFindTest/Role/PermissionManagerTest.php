@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 namespace VuFindTest\Role;
-use VuFind\PermissionManager;
+use VuFind\Role\PermissionManager;
 
 /**
  * PermissionManager Test Class

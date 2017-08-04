@@ -595,11 +595,11 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \VuFind\PermissionDeniedManager
+     * @return \VuFind\Role\PermissionDeniedManager
      */
     public static function getPermissionDeniedManager(ServiceManager $sm)
     {
-        return new \VuFind\PermissionDeniedManager(
+        return new \VuFind\Role\PermissionDeniedManager(
             $sm->get('VuFind\Config')->get('permissionBehavior')
         );
     }
@@ -609,11 +609,11 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \VuFind\PermissionManager
+     * @return \VuFind\Role\PermissionManager
      */
     public static function getPermissionManager(ServiceManager $sm)
     {
-            $permManager = new \VuFind\PermissionManager(
+            $permManager = new \VuFind\Role\PermissionManager(
                 $sm->get('VuFind\Config')->get('permissions')
             );
             $permManager->setAuthorizationService(

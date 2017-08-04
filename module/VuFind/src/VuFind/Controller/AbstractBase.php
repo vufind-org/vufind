@@ -29,7 +29,8 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\PermissionDeniedManager,
+    VuFind\Role\PermissionDeniedManager,
+    VuFind\Role\PermissionManager,
     VuFind\Exception\ILS as ILSException,
     Zend\Mvc\Controller\AbstractActionController,
     Zend\Mvc\MvcEvent,
@@ -281,21 +282,21 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
     /**
      * Get the PermissionDeniedManager
      *
-     * @return \VuFind\PermissionDeniedManager
+     * @return PermissionDeniedManager
      */
     protected function getPermissionDeniedManager()
     {
-        return $this->serviceLocator->get('VuFind\PermissionDeniedManager');
+        return $this->serviceLocator->get('VuFind\Role\PermissionDeniedManager');
     }
 
     /**
      * Get the PermissionManager
      *
-     * @return \VuFind\PermissionManager
+     * @return PermissionManager
      */
     protected function getPermissionManager()
     {
-        return $this->serviceLocator->get('VuFind\PermissionManager');
+        return $this->serviceLocator->get('VuFind\Role\PermissionManager');
     }
 
     /**
