@@ -116,7 +116,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
                 case 'exception':
                     $exceptionClass
                         = (isset($dl['value']) && class_exists($dl['value']))
-                        ? $dl['value'] : 'Exception';
+                        ? $dl['value'] : 'VuFind\Exception\Forbidden';
                     $exception = new $exceptionClass($exceptionDescription);
                     if ($exception instanceof \Exception) {
                         $this->logError(
