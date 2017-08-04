@@ -85,7 +85,9 @@ class PermissionDeniedManager
     /**
      * Get action logic
      *
-     * @param string $context Context for the permission behavior
+     * @param string $context       Context for the permission behavior
+     * @param string $defaultAction Default action to use if none configured
+     * (null to use default configured in this class).
      *
      * @return array|bool Associative array of permission behavior for the given
      *                    context (containing the keys action, value and
@@ -94,11 +96,11 @@ class PermissionDeniedManager
      *                    boolean FALSE. If the context has
      *                    no permissionDeniedAction configuration
      */
-    public function getActionLogic($context)
+    public function getActionLogic($context, $defaultAction = null)
     {
         $permissionDeniedAction = null;
         $permissionDeniedActions = $this->getPermissionDeniedLogic(
-            $context, 'permissionDeniedAction'
+            $context, 'permissionDeniedAction', $defaultAction
         );
         if ($permissionDeniedActions === false) {
             $permissionDeniedAction = $permissionDeniedActions;
@@ -188,18 +190,21 @@ class PermissionDeniedManager
     /**
      * Get permission denied logic
      *
-     * @param string $context Context for the permission behavior
-     * @param string $mode    Mode of the operation. Should be either
-     *                        permissionDeniedAction or permissionDeniedDisplayLogic
+     * @param string $context       Context for the permission behavior
+     * @param string $mode          Mode of the operation. Should be either
+     * permissionDeniedAction or permissionDeniedDisplayLogic
+     * @param string $defaultAction Default action to use if none configured
+     * (null to use default configured in this class).
      *
-     * @return array
+     * @return array|bool
      */
-    protected function getPermissionDeniedLogic($context, $mode)
-    {
+    protected function getPermissionDeniedLogic($context, $mode,
+        $defaultAction = null
+    ) {
         if ($mode !== 'permissionDeniedAction'
             && $mode !== 'permissionDeniedDisplayLogic'
         ) {
-            throw new Exception(
+            throw new \Exception(
                 'Error. ' . $mode . ' is not supported by PermissionDeniedManager.'
             );
         }
@@ -210,7 +215,7 @@ class PermissionDeniedManager
         }
         // This context has not been configured at all
         if ($mode == 'permissionDeniedAction') {
-            return [ 0 => $this->defaultAction ];
+            return [$defaultAction ?: $this->defaultAction];
         } else {
             return false;
         }

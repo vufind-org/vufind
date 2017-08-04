@@ -93,17 +93,11 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
         if ($this->accessPermission) {
             $pm = $this->getPermissionManager();
             // Make sure the current user has permission to access the module:
-            if ($pm->permissionRuleExists($this->accessPermission) !== false
-                && $pm->isAuthorized($this->accessPermission) !== true
-            ) {
+            if ($pm->isAuthorized($this->accessPermission) !== true) {
                 $pdm = $this->getPermissionDeniedManager();
-                $dl = $pdm->getActionLogic($this->accessPermission);
-                if (!is_array($dl)) {
-                    $dl = [];
-                }
-                if (!isset($dl['action'])) {
-                    $dl['action'] = $this->accessDeniedBehavior;
-                }
+                $dl = $pdm->getActionLogic(
+                    $this->accessPermission, $this->accessDeniedBehavior
+                );
                 $exceptionDescription = isset($dl['exceptionMessage'])
                     ? $dl['exceptionMessage'] : 'Access denied.';
                 switch (strtolower($dl['action'])) {
@@ -119,21 +113,20 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
                     );
                     break;
                 case 'exception':
-                    if (isset($dl['value'])
-                        && class_exists($dl['value'])
-                    ) {
-                        $exception = new $dl['value']($exceptionDescription);
-                        if (is_a($exception, 'Exception')) {
-                            $this->logError(
-                                "Custom Exception: "
-                                . $dl['value'] . "(" . $exceptionDescription
-                                . ")"
-                            );
-                            throw $exception;
-                        }
+                    $exceptionClass
+                        = (isset($dl['value']) && class_exists($dl['value']))
+                        ? $dl['value'] : 'Exception';
+                    $exception = new $exceptionClass($exceptionDescription);
+                    if ($exception instanceof \Exception) {
+                        $this->logError(
+                            "Custom Exception: "
+                            . "$exceptionClass ($exceptionDescription)"
+                        );
+                        throw $exception;
                     }
-                    // Do not break; if the if-clause is not true,
-                    // just continue with default section
+                    $this->logError("Permission configuration problem.");
+                    throw new \Exception("$exceptionClass is not an exception!");
+                    break;
                 default:
                     $this->logError(
                         "Default Exception: ForbiddenException with message: "
