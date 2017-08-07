@@ -173,16 +173,12 @@
       <? endif; ?>
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? $localBlock = $this->linkdisplay()->showLocalBlock('favorites.save'); ?>
-        <? if ($localBlock): ?>
+        <? if ($this->linkdisplay()->showLocalBlock('favorites.save')): ?>
           <? /* Add to favorites */ ?>
           <i class="result-link-icon fa fa-fw fa-star" aria-hidden="true"></i>
           <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record result-link-label" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>"><?=$this->transEsc('Add to favorites')?></a><br/>
-        <? else: ?>
-          <? $block = $this->linkdisplay()->getDisplayBlock('favorites.save'); ?>
-          <? if ($block): ?>
-              <?=$block?>
-          <? endif; ?>
+        <? elseif ($block = $this->linkdisplay()->getDisplayBlock('favorites.save')): ?>
+          <?=$block?>
         <? endif; ?>
         <? /* Saved lists */ ?>
         <div class="savedLists">
