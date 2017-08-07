@@ -96,8 +96,9 @@ class LinkDisplay extends AbstractHelper
         }
         // If we are getting to this point, we know that the permission has been
         // denied. Nevertheless show the local block if there is no
-        // permissionDeniedDisplayLogic set for this context.
-        $displayLogic = $this->permissionDeniedManager->getDisplayLogic($context);
+        // deniedTemplateBehavior set for this context.
+        $displayLogic = $this->permissionDeniedManager
+            ->getDeniedTemplateBehavior($context);
         if (!isset($displayLogic['action'])) {
             return true;
         }
@@ -113,7 +114,8 @@ class LinkDisplay extends AbstractHelper
      */
     public function getDisplayBlock($context)
     {
-        $displayLogic = $this->permissionDeniedManager->getDisplayLogic($context);
+        $displayLogic = $this->permissionDeniedManager
+            ->getDeniedTemplateBehavior($context);
 
         if ($displayLogic) {
             $return = '';

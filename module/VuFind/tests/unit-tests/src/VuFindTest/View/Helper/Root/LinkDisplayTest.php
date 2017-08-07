@@ -48,25 +48,25 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected $permissionDeniedConfig = [
         'permissionDeniedTemplate' => [
-            'permissionDeniedDisplayLogic' => "showTemplate:record/displayLogicTest:param1=noValue",
-            'permissionDeniedAction' => "showTemplate:record/ActionTest:param1=noValue"
+            'deniedTemplateBehavior' => "showTemplate:record/displayLogicTest:param1=noValue",
+            'deniedControllerBehavior' => "showTemplate:record/ActionTest:param1=noValue"
         ],
         'permissionDeniedTemplateNoParams' => [
-            'permissionDeniedDisplayLogic' => "showTemplate:record/displayLogicTest",
-            'permissionDeniedAction' => "showTemplate:record/ActionTest"
+            'deniedTemplateBehavior' => "showTemplate:record/displayLogicTest",
+            'deniedControllerBehavior' => "showTemplate:record/ActionTest"
         ],
         'permissionDeniedMessage' => [
-            'permissionDeniedDisplayLogic' => "showMessage:dl_translatable_test",
-            'permissionDeniedAction' => "showTemplate:action_translatable_test"
+            'deniedTemplateBehavior' => "showMessage:dl_translatable_test",
+            'deniedControllerBehavior' => "showTemplate:action_translatable_test"
         ],
         'permissionDeniedLogin' => [
-            'permissionDeniedAction' => "promptLogin"
+            'deniedControllerBehavior' => "promptLogin"
         ],
         'permissionDeniedException' => [
-            'permissionDeniedAction' => "exception:ForbiddenException:exception_message"
+            'deniedControllerBehavior' => "exception:ForbiddenException:exception_message"
         ],
         'permissionDeniedNonExistentException' => [
-            'permissionDeniedAction' => "exception:NonExistentException:exception_message"
+            'deniedControllerBehavior' => "exception:NonExistentException:exception_message"
         ],
         'permissionDeniedNothing' => [
         ],
@@ -98,7 +98,7 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
     public function testMessageDisplay()
     {
         $mockPmdMessage = $this->getMockPmd([
-                'displayLogic' => [
+                'deniedTemplateBehavior' => [
                     'action' => 'showMessage',
                     'value' => 'dl_translatable_test',
                     'params' => [],
@@ -126,7 +126,7 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
         $this->setExpectedException('Zend\View\Exception\RuntimeException');
 
         $mockPmd = $this->getMockPmd([
-                'displayLogic' => [
+                'deniedTemplateBehavior' => [
                     'action' => 'showTemplate',
                     'value' => 'record/displayLogicTest',
                     'params' => [],
@@ -157,7 +157,7 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
         $this->markTestSkipped();
 
         $mockPmd = $this->getMockPmd([
-                'displayLogic' => [
+                'deniedTemplateBehavior' => [
                     'action' => 'showTemplate',
                     'value' => 'ajax/status-available.phtml',
                     'params' => [],
@@ -179,23 +179,23 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
     }
 
     /**
-     * Get mock driver that returns a displayLogic.
+     * Get mock driver that returns a deniedTemplateBehavior.
      *
-     * @param array $displayLogic DisplayLogic to return
+     * @param array $config Config containing DeniedTemplateBehavior to return
      *
      * @return \VuFind\Role\PermissionDeniedManager
      */
-    protected function getMockPmd($displayLogic = false) {
+    protected function getMockPmd($config = false) {
         $mockPmd = $this->getMockBuilder('\VuFind\Role\PermissionDeniedManager')
             ->setConstructorArgs([$this->permissionDeniedConfig])
             ->getMock();
-        $mockPmd->expects($this->any())->method('getDisplayLogic')
-            ->will($this->returnValue($displayLogic['displayLogic']));
+        $mockPmd->expects($this->any())->method('getDeniedTemplateBehavior')
+            ->will($this->returnValue($config['deniedTemplateBehavior']));
         return $mockPmd;
     }
 
     /**
-     * Get mock driver that returns a displayLogic.
+     * Get mock permission manager
      *
      * @param array $isAuthorized isAuthorized value to return
      *

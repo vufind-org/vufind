@@ -46,25 +46,25 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected $permissionDeniedConfig = [
         'permissionDeniedTemplate' => [
-            'permissionDeniedDisplayLogic' => "showTemplate:record/displayLogicTest:param1=noValue",
-            'permissionDeniedAction' => "showTemplate:record/ActionTest:param1=noValue"
+            'deniedTemplateBehavior' => "showTemplate:record/displayLogicTest:param1=noValue",
+            'deniedControllerBehavior' => "showTemplate:record/ActionTest:param1=noValue"
         ],
         'permissionDeniedTemplateNoParams' => [
-            'permissionDeniedDisplayLogic' => "showTemplate:record/displayLogicTest",
-            'permissionDeniedAction' => "showTemplate:record/ActionTest"
+            'deniedTemplateBehavior' => "showTemplate:record/displayLogicTest",
+            'deniedControllerBehavior' => "showTemplate:record/ActionTest"
         ],
         'permissionDeniedMessage' => [
-            'permissionDeniedDisplayLogic' => "showMessage:dl_translatable_test",
-            'permissionDeniedAction' => "showTemplate:action_translatable_test"
+            'deniedTemplateBehavior' => "showMessage:dl_translatable_test",
+            'deniedControllerBehavior' => "showTemplate:action_translatable_test"
         ],
         'permissionDeniedLogin' => [
-            'permissionDeniedAction' => "promptLogin"
+            'deniedControllerBehavior' => "promptLogin"
         ],
         'permissionDeniedException' => [
-            'permissionDeniedAction' => "exception:ForbiddenException:exception_message"
+            'deniedControllerBehavior' => "exception:ForbiddenException:exception_message"
         ],
         'permissionDeniedNonExistentException' => [
-            'permissionDeniedAction' => "exception:NonExistentException:exception_message"
+            'deniedControllerBehavior' => "exception:NonExistentException:exception_message"
         ],
         'permissionDeniedNothing' => [
         ],
@@ -91,8 +91,8 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
 
-        $this->assertEquals($expected, $pm->getActionLogic('permissionDeniedTemplate'));
-        $this->assertEquals($expectedNoParams, $pm->getActionLogic('permissionDeniedTemplateNoParams'));
+        $this->assertEquals($expected, $pm->getDeniedControllerBehavior('permissionDeniedTemplate'));
+        $this->assertEquals($expectedNoParams, $pm->getDeniedControllerBehavior('permissionDeniedTemplateNoParams'));
     }
 
     /**
@@ -110,12 +110,12 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
 
-        $this->assertEquals($expected, $pm->getActionLogic('permissionDeniedException'));
+        $this->assertEquals($expected, $pm->getDeniedControllerBehavior('permissionDeniedException'));
     }
 
     /**
      * Test an empty permission section
-     * getActionLogic should return false as the PermissionDeniedManager
+     * getDeniedControllerBehavior should return false as the PermissionDeniedManager
      * has nothing to do
      *
      * @return void
@@ -129,12 +129,12 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
 
-        $this->assertEquals($expected, $pm->getActionLogic('permissionDeniedNothing'));
+        $this->assertEquals($expected, $pm->getDeniedControllerBehavior('permissionDeniedNothing'));
     }
 
     /**
      * Test a non existent permission section
-     * getActionLogic should return false as the PermissionDeniedManager
+     * getDeniedControllerBehavior should return false as the PermissionDeniedManager
      * has nothing to do
      *
      * @return void
@@ -148,7 +148,6 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
 
-        $this->assertEquals($expected, $pm->getActionLogic('garbage'));
+        $this->assertEquals($expected, $pm->getDeniedControllerBehavior('garbage'));
     }
-
 }

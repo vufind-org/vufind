@@ -48,11 +48,11 @@ class PermissionDeniedManager
     protected $config;
 
     /**
-     * Default action for denied permissions.
+     * Default behavior for denied permissions at the controller level.
      *
      * @var string
      */
-    protected $defaultAction = 'promptLogin';
+    protected $defaultDeniedControllerBehavior = 'promptLogin';
 
     /**
      * Constructor
@@ -62,31 +62,32 @@ class PermissionDeniedManager
     public function __construct($config)
     {
         $this->config = $config;
-        // if the config contains a parameter for the defaultAction, apply it
-        if (isset($config['global']['defaultAction'])
-            && $config['global']['defaultAction']
+        // if the config contains a defaultDeniedControllerBehavior setting, apply it
+        if (isset($config['global']['defaultDeniedControllerBehavior'])
+            && $config['global']['defaultDeniedControllerBehavior']
         ) {
-            $this->defaultAction = $config['global']['defaultAction'];
+            $this->defaultDeniedControllerBehavior
+                = $config['global']['defaultDeniedControllerBehavior'];
         }
     }
 
     /**
-     * Set the default action for a denied permission
+     * Set the default behavior for a denied controller permission
      *
-     * @param String $value Default action for a denied permission
+     * @param String $value Default behavior for a denied controller permission
      *
      * @return void
      */
-    public function setDefaultAction($value)
+    public function setDefaultDeniedControllerBehavior($value)
     {
-        $this->defaultAction = $value;
+        $this->defaultDeniedControllerBehavior = $value;
     }
 
     /**
-     * Get action logic
+     * Get behavior to apply when a controller denies a permission.
      *
-     * @param string $context       Context for the permission behavior
-     * @param string $defaultAction Default action to use if none configured
+     * @param string $context         Context for the permission behavior
+     * @param string $defaultBehavior Default behavior to use if none configured
      * (null to use default configured in this class, false to take no action).
      *
      * @return array|bool Associative array of permission behavior for the given
@@ -94,56 +95,48 @@ class PermissionDeniedManager
      *                    exceptionMessage for exceptions). If the permission
      *                    for this context is granted, this method will return
      *                    boolean FALSE. If the context has
-     *                    no permissionDeniedAction configuration
+     *                    no deniedControllerBehavior configuration
      */
-    public function getActionLogic($context, $defaultAction = null)
+    public function getDeniedControllerBehavior($context, $defaultBehavior = null)
     {
+        if ($defaultBehavior === null) {
+            $defaultBehavior = $this->defaultDeniedControllerBehavior;
+        }
         return $this->getPermissionDeniedLogic(
-            $context, 'permissionDeniedAction', $defaultAction
+            $context, 'deniedControllerBehavior', $defaultBehavior
         );
     }
 
     /**
-     * Get display logic
+     * Get behavior to apply when a template denies a permission.
      *
-     * @param string $context       Context for the permission behavior
-     * @param string $defaultAction Default action to use if none configured
+     * @param string $context         Context for the permission behavior
+     * @param string $defaultBehavior Default action to use if none configured
      * (null to use default configured in this class, false to take no action).
      *
      * @return array|bool
      */
-    public function getDisplayLogic($context, $defaultAction = false)
+    public function getDeniedTemplateBehavior($context, $defaultBehavior = false)
     {
         return $this->getPermissionDeniedLogic(
-            $context, 'permissionDeniedDisplayLogic', $defaultAction
+            $context, 'deniedTemplateBehavior', $defaultBehavior
         );
     }
 
     /**
      * Get permission denied logic
      *
-     * @param string $context       Context for the permission behavior
-     * @param string $mode          Mode of the operation. Should be either
-     * permissionDeniedAction or permissionDeniedDisplayLogic
-     * @param string $defaultAction Default action to use if none configured
-     * (null to use default configured in this class, false to take no action).
+     * @param string $context         Context for the permission behavior
+     * @param string $mode            Mode of the operation. Should be either
+     * deniedControllerBehavior or deniedTemplateBehavior
+     * @param string $defaultBehavior Default action to use if none configured
      *
      * @return array|bool
      */
-    protected function getPermissionDeniedLogic($context, $mode,
-        $defaultAction = null
-    ) {
-        if ($mode !== 'permissionDeniedAction'
-            && $mode !== 'permissionDeniedDisplayLogic'
-        ) {
-            throw new \Exception(
-                'Error. ' . $mode . ' is not supported by PermissionDeniedManager.'
-            );
-        }
-
+    protected function getPermissionDeniedLogic($context, $mode, $defaultBehavior)
+    {
         $config = !empty($this->config[$context][$mode])
-            ? $this->config[$context][$mode]
-            : ($defaultAction === null ? $this->defaultAction : $defaultAction);
+            ? $this->config[$context][$mode] : $defaultBehavior;
     
         return ($config === false) ? false : $this->processConfigString($config);
     }
@@ -184,5 +177,4 @@ class PermissionDeniedManager
         $output['params'] = $params;
         return $output;
     }
-
 }

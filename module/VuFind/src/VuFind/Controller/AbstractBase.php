@@ -96,7 +96,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
             // Make sure the current user has permission to access the module:
             if ($pm->isAuthorized($this->accessPermission) !== true) {
                 $pdm = $this->getPermissionDeniedManager();
-                $dl = $pdm->getActionLogic(
+                $dl = $pdm->getDeniedControllerBehavior(
                     $this->accessPermission, $this->accessDeniedBehavior
                 );
                 $exceptionDescription = isset($dl['exceptionMessage'])
