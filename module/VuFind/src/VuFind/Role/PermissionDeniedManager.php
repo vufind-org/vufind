@@ -160,8 +160,8 @@ class PermissionDeniedManager
     {
         $config = isset($this->config[$permission][$mode])
             ? $this->config[$permission][$mode] : $defaultBehavior;
-    
-        return ($config === false) ? false : $this->processConfigString($config);
+
+        return empty($config) ? false : $this->processConfigString($config);
     }
 
     /**
