@@ -50,9 +50,17 @@ class PermissionDeniedManager
     /**
      * Default behavior for denied permissions at the controller level.
      *
-     * @var string
+     * @var string|bool
      */
     protected $defaultDeniedControllerBehavior = 'promptLogin';
+
+    /**
+     * Default behavior for denied permissions at the template level.
+     * (False means "do nothing").
+     *
+     * @var string|bool
+     */
+    protected $defaultDeniedTemplateBehavior = false;
 
     /**
      * Constructor
@@ -63,18 +71,21 @@ class PermissionDeniedManager
     {
         $this->config = $config;
         // if the config contains a defaultDeniedControllerBehavior setting, apply it
-        if (isset($config['global']['defaultDeniedControllerBehavior'])
-            && $config['global']['defaultDeniedControllerBehavior']
-        ) {
+        if (isset($config['global']['defaultDeniedControllerBehavior'])) {
             $this->defaultDeniedControllerBehavior
                 = $config['global']['defaultDeniedControllerBehavior'];
+        }
+        // if the config contains a defaultDeniedTemplateBehavior setting, apply it
+        if (isset($config['global']['defaultDeniedTemplateBehavior'])) {
+            $this->defaultDeniedTemplateBehavior
+                = $config['global']['defaultDeniedTemplateBehavior'];
         }
     }
 
     /**
      * Set the default behavior for a denied controller permission
      *
-     * @param String $value Default behavior for a denied controller permission
+     * @param string|bool $value Default behavior for a denied controller permission
      *
      * @return void
      */
@@ -84,59 +95,71 @@ class PermissionDeniedManager
     }
 
     /**
+     * Set the default behavior for a denied template permission
+     *
+     * @param string|bool $value Default behavior for a denied template permission
+     *
+     * @return void
+     */
+    public function setDefaultDeniedTemplateBehavior($value)
+    {
+        $this->defaultDeniedTemplateBehavior = $value;
+    }
+
+    /**
      * Get behavior to apply when a controller denies a permission.
      *
-     * @param string $context         Context for the permission behavior
+     * @param string $permission      Permission that has been denied
      * @param string $defaultBehavior Default behavior to use if none configured
      * (null to use default configured in this class, false to take no action).
      *
-     * @return array|bool Associative array of permission behavior for the given
-     *                    context (containing the keys action, value and
-     *                    exceptionMessage for exceptions). If the permission
-     *                    for this context is granted, this method will return
-     *                    boolean FALSE. If the context has
-     *                    no deniedControllerBehavior configuration
+     * @return array|bool Associative array of behavior for the given
+     * permission (containing the keys 'action', 'value', 'params' and
+     * 'exceptionMessage' for exceptions) or false if no action needed.
      */
-    public function getDeniedControllerBehavior($context, $defaultBehavior = null)
+    public function getDeniedControllerBehavior($permission, $defaultBehavior = null)
     {
         if ($defaultBehavior === null) {
             $defaultBehavior = $this->defaultDeniedControllerBehavior;
         }
-        return $this->getPermissionDeniedLogic(
-            $context, 'deniedControllerBehavior', $defaultBehavior
+        return $this->getDeniedBehavior(
+            $permission, 'deniedControllerBehavior', $defaultBehavior
         );
     }
 
     /**
      * Get behavior to apply when a template denies a permission.
      *
-     * @param string $context         Context for the permission behavior
+     * @param string $permission      Permission that has been denied
      * @param string $defaultBehavior Default action to use if none configured
      * (null to use default configured in this class, false to take no action).
      *
      * @return array|bool
      */
-    public function getDeniedTemplateBehavior($context, $defaultBehavior = false)
+    public function getDeniedTemplateBehavior($permission, $defaultBehavior = null)
     {
-        return $this->getPermissionDeniedLogic(
-            $context, 'deniedTemplateBehavior', $defaultBehavior
+        if ($defaultBehavior === null) {
+            $defaultBehavior = $this->defaultDeniedTemplateBehavior;
+        }
+        return $this->getDeniedBehavior(
+            $permission, 'deniedTemplateBehavior', $defaultBehavior
         );
     }
 
     /**
      * Get permission denied logic
      *
-     * @param string $context         Context for the permission behavior
+     * @param string $permission      Permission that has been denied
      * @param string $mode            Mode of the operation. Should be either
      * deniedControllerBehavior or deniedTemplateBehavior
      * @param string $defaultBehavior Default action to use if none configured
      *
      * @return array|bool
      */
-    protected function getPermissionDeniedLogic($context, $mode, $defaultBehavior)
+    protected function getDeniedBehavior($permission, $mode, $defaultBehavior)
     {
-        $config = !empty($this->config[$context][$mode])
-            ? $this->config[$context][$mode] : $defaultBehavior;
+        $config = !empty($this->config[$permission][$mode])
+            ? $this->config[$permission][$mode] : $defaultBehavior;
     
         return ($config === false) ? false : $this->processConfigString($config);
     }
