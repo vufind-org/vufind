@@ -24,7 +24,7 @@
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://vufind.org/wiki/ Wiki
  */
 namespace VuFind\Role;
 use ZfcRbac\Service\AuthorizationServiceAwareTrait;
@@ -37,7 +37,7 @@ use ZfcRbac\Service\AuthorizationServiceAwareTrait;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://vufind.org/wiki/ Wiki
  */
 class PermissionManager
 {
