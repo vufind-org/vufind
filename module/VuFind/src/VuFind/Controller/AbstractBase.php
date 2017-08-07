@@ -67,10 +67,12 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
     /**
      * Behavior when access is denied (used unless overridden through
      * permissionBehavior.ini). Valid values are 'promptLogin' and 'exception'.
+     * Leave at null to use the defaultDeniedControllerBehavior set in
+     * permissionBehavior.ini (normally 'promptLogin' unless changed).
      *
      * @var string
      */
-    protected $accessDeniedBehavior = 'promptLogin';
+    protected $accessDeniedBehavior = null;
 
     /**
      * Constructor
