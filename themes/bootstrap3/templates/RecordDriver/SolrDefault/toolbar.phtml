@@ -27,9 +27,9 @@
 
   <? if ($this->userlist()->getMode() !== 'disabled'): ?>
     <li>
-      <? if ($this->permission()->allowDisplay('favorites.save')): ?>
+      <? if ($this->permission()->allowDisplay('feature.Favorites')): ?>
         <a class="save-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" rel="nofollow"><i class="fa fa-star" aria-hidden="true"></i> <?=$this->transEsc('Add to favorites')?></a>
-      <? elseif ($block = $this->permission()->getAlternateContent('favorites.save')): ?>
+      <? elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
         <?=$block?>
       <? endif; ?>
     </li>
