@@ -1192,7 +1192,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
                             'tab' => $tab,
                             'lookfor' => $lookfor,
                             'handler' => $params->getQuery()->getHandler(),
-                            'results' => $otherResults
+                            'results' => $otherResults,
+                            'params' => $params
                         ]
                     );
                 }
