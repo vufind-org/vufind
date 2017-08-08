@@ -27,6 +27,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace FinnaApi\Controller;
+use Finna\View\Helper\Root\RecordDataFormatterFactory;
 
 /**
  * Provides web api for different admin tasks.
@@ -69,6 +70,35 @@ class AdminApiController extends \VuFindApi\Controller\ApiController
         }
 
         return $this->output([], self::STATUS_OK);
+    }
+
+    /**
+     * Returns available core record fields as an associative array of
+     * cssClass => translated label pairs.
+     *
+     * @return array
+     */
+    public function getRecordFieldsAction()
+    {
+        $this->disableSessionWrites();
+        $this->determineOutputMode();
+
+        $factory = new RecordDataFormatterFactory();
+        $formatter = $factory->__invoke();
+        $fields = $formatter->getDefaults('core');
+
+        $data = [];
+        foreach ($fields as $key => $val) {
+            if (empty($val['context']['class'])) {
+                continue;
+            }
+            $data[] = [
+                'label' => $this->translate($key),
+                'class' => $val['context']['class']
+            ];
+        }
+
+        return $this->output(['fields' => $data], self::STATUS_OK);
     }
 
     /**

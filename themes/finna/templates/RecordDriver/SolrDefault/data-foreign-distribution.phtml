@@ -1,0 +1,7 @@
+<? //Don't add START and END comments ?>
+<? foreach($foreignDist as $fields => $keys): ?>
+  <? if (!empty($keys['name'])): ?>
+     <?=$this->escapeHtml($keys['name'])?><? if (!empty($keys['region'])): ?>,
+     <?=$this->escapeHtml($keys['region'])?><? endif; ?><br/>
+  <? endif; ?>
+<? endforeach; ?>

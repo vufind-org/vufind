@@ -397,6 +397,51 @@ class RecordDataFormatterFactory
             ]
         );
         $spec->setTemplateLine(
+            'Premiere Night', 'getPremiereTime', 'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'record-premiere-night']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Premiere Theaters', 'getPremiereTheaters', 'data-escapeHtml.phtml',
+            [
+               'context' =>
+                  ['class' => 'record-premiere-theaters'],
+            ]
+        );
+        $spec->setTemplateLine(
+            'Broadcasting Dates', 'getBroadcastingInfo',
+            'data-broadcasting-dates.phtml',
+            [
+                'context' => ['class' => 'record-broadcasting-info']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Film Festivals', 'getFestivalInfo', 'data-festival-info.phtml',
+            [
+                'context' => ['class' => 'record-festival-info']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Foreign Distribution', 'getForeignDistribution',
+            'data-foreign-distribution.phtml',
+            [
+               'context' => ['class' => 'record-foreign-distribution']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Film Copies', 'getNumberOfCopies', 'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'record-film-copies']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Other Screenings', 'getOtherScreenings', 'data-other-screenings.phtml',
+            [
+               'context' => ['class' => 'record-other-screenings']
+            ]
+        );
+        $spec->setTemplateLine(
             'Additional Information', 'getTitleStatement', 'data-addInfo.phtml',
             [
                 'context' => ['class' => 'recordTitleStatement']
