@@ -82,17 +82,13 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if ($catalog->checkCapability('getLoginDrivers')) {
             $targets = $catalog->getLoginDrivers();
             $defaultTarget = $catalog->getDefaultLoginDriver();
-            $result = $this->createViewModel(
-                [
+        }
+        $result = $this->createViewModel(
+            [
                 'targets' => $targets,
                 'defaultdriver' => $defaultTarget
-                ]
-            );
-        }
-
-        if (!($result instanceof \Zend\View\Model\ViewModel)) {
-            return $result;
-        }
+            ]
+        );
 
         // Try to find the original action and map it to the corresponding menu item
         // since we were probably forwarded here.
