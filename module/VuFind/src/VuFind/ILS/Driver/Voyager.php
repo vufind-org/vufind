@@ -172,7 +172,7 @@ class Voyager extends AbstractBase
                    ')';
             try {
                 $this->lazyDb = new Oci8(
-                    "oci:dbname=$tns;charset=US_ASCII",
+                    "oci:dbname=$tns;charset=US7ASCII",
                     $this->config['Catalog']['user'],
                     $this->config['Catalog']['password']
                 );
