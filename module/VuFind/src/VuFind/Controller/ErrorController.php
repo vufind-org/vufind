@@ -57,7 +57,9 @@ class ErrorController extends AbstractActionController
      */
     public function permissionDeniedAction()
     {
-        // no special action necessary
+        return new \Zend\View\Model\ViewModel(
+            ['msg' => $this->params()->fromQuery('msg')]
+        );
     }
 
 }

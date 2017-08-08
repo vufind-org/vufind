@@ -93,11 +93,10 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
                 $msg = empty($dl['value']) ? null : $dl['value'];
                 return $this->getController()->forceLogin($msg, [], false);
             case 'showmessage':
-                $this->getController()->flashMessenger()->addMessage(
-                    $this->translate($dl['value']), 'error'
+                return $this->getController()->redirect()->toRoute(
+                    'error-permissiondenied', [],
+                    ['query' => ['msg' => $dl['value']]]
                 );
-                return $this->getController()->redirect()
-                    ->toRoute('error-permissiondenied');
             case 'exception':
                 $exceptionClass
                     = (isset($dl['value']) && class_exists($dl['value']))

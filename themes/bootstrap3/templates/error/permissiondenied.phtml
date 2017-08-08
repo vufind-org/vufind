@@ -9,12 +9,12 @@
 ?>
 <div>
   <h2><?=$this->transEsc('permission_denied_title')?></h2>
+  <p><?=$this->flashmessages()?></p>
   <p>
     <?=$this->transEsc('permission_denied')?>
-    <?=$this->transEsc('permission_action_list_header')?>
-  </p>
-  <p>
-    <?=$this->flashmessages()?>
+    <? if (!empty($msg)): ?>
+      <div class="alert alert-danger"><?=$this->transEsc($msg)?></div>
+    <? endif; ?>
   </p>
   <p>
     <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
