@@ -23,6 +23,7 @@
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -37,6 +38,7 @@ use Zend\Session\SessionManager;
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -72,7 +74,21 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function catalogloginAction()
     {
-        $result = parent::catalogloginAction();
+        // Connect to the ILS and check if multiple target support is available
+        // Add default driver to result so we can use it on cataloglogin.phtml
+        $targets = null;
+        $defaultTarget = null;
+        $catalog = $this->getILS();
+        if ($catalog->checkCapability('getLoginDrivers')) {
+            $targets = $catalog->getLoginDrivers();
+            $defaultTarget = $catalog->getDefaultLoginDriver();
+            $result = $this->createViewModel(
+                [
+                'targets' => $targets,
+                'defaultdriver' => $defaultTarget
+                ]
+            );
+        }
 
         if (!($result instanceof \Zend\View\Model\ViewModel)) {
             return $result;
