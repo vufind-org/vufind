@@ -73,24 +73,6 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
     ];
 
     /**
-     * Standard setup method
-     *
-     * @return void
-     */
-    public function setUp()
-    {
-    }
-
-    /**
-     * Standard teardown method
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
-    }
-
-    /**
      * Test the message display
      *
      * @return void
@@ -105,11 +87,8 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
                 ],
             ]);
 
-        $translator = new \VuFind\View\Helper\Root\Translate();
-        $realView = $this->getPhpRenderer(['translate' => $translator]);
-
         $helper = new Permission($this->getMockPm(false), $mockPmdMessage);
-        $helper->setView($realView);
+        $helper->setView($this->getMockView());
 
         $displayBlock = $helper->getAlternateContent('permissionDeniedMessage');
         $this->assertEquals('dl_translatable_test', $displayBlock);
@@ -133,14 +112,8 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
                 ],
             ]);
 
-        $translate = new \VuFind\View\Helper\Root\Translate();
-        $context = new \VuFind\View\Helper\Root\Context();
-        $realView = $this->getPhpRenderer(
-            ['translate' => $translate, 'context' => $context]
-        );
-
         $helper = new Permission($this->getMockPm(false), $mockPmd);
-        $helper->setView($realView);
+        $helper->setView($this->getMockView());
 
         $displayBlock = $helper->getAlternateContent('permissionDeniedTemplate');
     }
@@ -152,10 +125,6 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
      */
     public function testExistingTemplateDisplay()
     {
-        // This test does not work properly at the moment.
-        // The problem is, if the template contains a transEsc function call
-        $this->markTestSkipped();
-
         $mockPmd = $this->getMockPmd([
                 'deniedTemplateBehavior' => [
                     'action' => 'showTemplate',
@@ -164,18 +133,13 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
                 ],
             ]);
 
-        $escaper = new \Zend\View\Helper\EscapeHtml();
-        $translator = new \VuFind\View\Helper\Root\Translate();
-        $transEsc = new \VuFind\View\Helper\Root\TransEsc();
-        $context = new \VuFind\View\Helper\Root\Context();
-        $realView = $this->getPhpRenderer(
-            ['translate' => $translator, 'escapehtml' => $escaper, 'transesc' => $transEsc, 'context' => $context]
-        );
-
         $helper = new Permission($this->getMockPm(false), $mockPmd);
-        $helper->setView($realView);
+        $helper->setView($this->getMockView());
 
-        $displayBlock = $helper->getAlternateContent('permissionDeniedTemplate');
+        $this->assertEquals(
+            '<span class="label label-success">Available</span>',
+            trim($helper->getAlternateContent('permissionDeniedTemplate'))
+        );
     }
 
     /**
@@ -222,5 +186,23 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
     {
         return $this->getMockBuilder('VuFind\View\Helper\Root\Context')
             ->disableOriginalConstructor()->getMock();
+    }
+
+    /**
+     * Return a view object populated for these test cases.
+     *
+     * @return \Zend\View\Renderer\PhpRenderer
+     */
+    protected function getMockView()
+    {
+        $escapehtml = new \Zend\View\Helper\EscapeHtml();
+        $translate = new \VuFind\View\Helper\Root\Translate();
+        $transEsc = new \VuFind\View\Helper\Root\TransEsc();
+        $context = new \VuFind\View\Helper\Root\Context();
+        $realView = $this->getPhpRenderer(
+            compact('translate', 'transEsc', 'context', 'escapehtml')
+        );
+        $transEsc->setView($realView);
+        return $realView;
     }
 }
