@@ -686,6 +686,12 @@ class RecordDataFormatterFactory
                 'context' => ['class' => 'recordInspection']
             ]
         );
+        $spec->setTemplateLine(
+            'Scale', 'getMapScale', 'data-transEsc.phtml',
+            [
+                'context' => ['class' => 'recordMapScale']
+            ]
+        );
         return $spec->getArray();
     }
 

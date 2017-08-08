@@ -1612,4 +1612,20 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         }
         return $results;
     }
+
+    /**
+     * Get the map scale from field 255, subfield a.
+     *
+     * @return string
+     */
+    public function getMapScale()
+    {
+        $scale = '';
+        foreach ($this->getMarcRecord()->getFields('255') as $field) {
+            if ($field->getSubfield('a')) {
+                $scale = $field->getSubfield('a')->getData();
+            }
+        }
+        return $this->stripTrailingPunctuation($scale);
+    }
 }
