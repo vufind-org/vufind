@@ -590,7 +590,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     public function getISBNs()
     {
         $fields = [
-            '020' => ['a'],
+            '020' => ['a', 'q'],
             '773' => ['z'],
         ];
         $isbn = [];
