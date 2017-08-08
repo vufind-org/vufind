@@ -692,6 +692,16 @@ class RecordDataFormatterFactory
                 'context' => ['class' => 'record-map-scale']
             ]
         );
+        $spec->setTemplateLine(
+            'Available Online', 'getWebResource', 'data-url.phtml',
+            [
+                'context' => [
+                    'class' => 'record-available-online',
+                    'truncateUrl' => true
+                ]
+            ]
+        );
+
         return $spec->getArray();
     }
 
