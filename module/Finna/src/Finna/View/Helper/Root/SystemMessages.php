@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -33,36 +34,75 @@ namespace Finna\View\Helper\Root;
  * @category VuFind
  * @package  View_Helpers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class SystemMessages extends \Zend\View\Helper\AbstractHelper
+    implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
-     * Configuration
+     * Core configuration
      *
      * @var array
      */
-    protected $config;
+    protected $coreConfig;
+
+    /**
+     * Local system configuration
+     *
+     * @var array
+     */
+    protected $localConfig;
 
     /**
      * Constructor
      *
-     * @param array $config Configuration
+     * @param array $coreConfig  Configuration
+     * @param array $localConfig Local configuration
      */
-    public function __construct($config)
+    public function __construct($coreConfig, $localConfig)
     {
-        $this->config = $config;
+        $this->coreConfig = $coreConfig;
+        $this->localConfig = $localConfig;
     }
 
     /**
-     * Return any system messages (translatable).
+     * Return any system messages.
      *
      * @return array
      */
     public function __invoke()
     {
-        return !empty($this->config->Site->systemMessages)
-            ? $this->config->Site->systemMessages : [];
+        $language = $this->translator->getLocale();
+
+        $getMessageFn = function ($messages, $language) {
+            if (isset($messages[$language])) {
+                return [$messages[$language]];
+            } else {
+                // Return all language versions if current locale is not defined.
+                return array_values($messages);
+            }
+        };
+
+        $messages = [];
+
+        if (!empty($this->coreConfig->Site->systemMessages)) {
+            $messages = $getMessageFn(
+                $this->coreConfig->Site->systemMessages, $language
+            );
+        }
+
+        if (!empty($this->localConfig->Site->systemMessages)) {
+            $localMessages = $getMessageFn(
+               $this->localConfig->Site->systemMessages->toArray(), $language
+            );
+
+            $messages = array_filter(array_merge($messages, $localMessages));
+        }
+
+        return $messages;
     }
 }

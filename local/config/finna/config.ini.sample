@@ -120,9 +120,11 @@ quickAddToFavorites = true
 institution =
 ; Whether index is used for new items search instead of backend driver
 indexBasedNewItems = true
-; Any system messages that need to be displayed on the top of every page. May be translation entries or
-; strings and may contain html markup.
-;systemMessages[] = development_disclaimer
+; Any system messages that need to be displayed on the top of every page. May contain html markup.
+; systemMessages[fi] = "Huom! Tämä on kehitysympäristö. Sisältö ja toiminnallisuus voivat muuttua milloin tahansa."
+; systemMessages[sv] = "Obs! Systemet är under utveckling. Innehåll och funktioner kan förändras när som helst."
+; systemMessages[en-gb] = ""
+
 ; Whether to hide due date reminder settings. Default is false
 ;hideDueDateReminder = true
 ; Whether to hide email address in patron profile. Default is false

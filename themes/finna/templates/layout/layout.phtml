@@ -281,7 +281,7 @@ JS;
         <? foreach ($messages as $message): ?>
         <div class="row">
           <div class="col-xs-12">
-            <?=$this->translate($message) // intentionally not escaped so that markup can be used ?>
+            <?=$message // intentionally not escaped so that markup can be used ?>
           </div>
         </div>
         <? endforeach; ?>

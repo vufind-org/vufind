@@ -1,0 +1,5 @@
+[Site]
+; Any local system messages that need to be displayed on the top of every page. May contain html markup.
+;systemMessages[fi] = Lorem ipsum
+;systemMessages[en-gb] = Dolores sit amet
+
