@@ -84,11 +84,11 @@ class Permission extends AbstractHelper
      */
     public function allowDisplay($context)
     {
-        // Treat a non existing permission rule in this case as a granted permssion
-        // Just return true to indicate that the default can get applied
-        if ($this->permissionManager->permissionRuleExists($context) === false) {
+        // If there is no context, assume permission is granted.
+        if (empty($context)) {
             return true;
         }
+
         // If permission has been granted, we do not need to continue
         // Just return true to indicate that the default can get applied
         if ($this->permissionManager->isAuthorized($context) === true) {
