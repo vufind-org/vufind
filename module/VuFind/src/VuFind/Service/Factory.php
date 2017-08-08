@@ -614,7 +614,7 @@ class Factory
     public static function getPermissionManager(ServiceManager $sm)
     {
             $permManager = new \VuFind\Role\PermissionManager(
-                $sm->get('VuFind\Config')->get('permissions')
+                $sm->get('VuFind\Config')->get('permissions')->toArray()
             );
             $permManager->setAuthorizationService(
                 $sm->get('ZfcRbac\Service\AuthorizationService')

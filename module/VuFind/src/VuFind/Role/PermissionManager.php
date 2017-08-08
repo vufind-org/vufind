@@ -55,7 +55,7 @@ class PermissionManager
      *
      * @param array $config configuration
      */
-    public function __construct($config)
+    public function __construct(array $config)
     {
         $this->config = $config;
     }
@@ -93,8 +93,14 @@ class PermissionManager
     public function permissionRuleExists($context)
     {
         foreach ($this->config as $key => $value) {
-            if (isset($value['permission'])
-                && $value['permission'] == $context
+            if (!isset($value['permission'])) {
+                continue;
+            }
+            if ($value['permission'] == $context) {
+                return true;
+            }
+            if (is_array($value['permission'])
+                && in_array($context, $value['permission'])
             ) {
                 return true;
             }

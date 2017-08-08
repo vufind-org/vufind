@@ -53,6 +53,9 @@ class PermissionManagerTest extends \VuFindTest\Unit\TestCase
         ],
         'permission.empty' => [
         ],
+        'permission.array' => [
+            'permission' => ['everyoneArray', 'everyoneArray2']
+        ]
     ];
 
     /**
@@ -77,6 +80,18 @@ class PermissionManagerTest extends \VuFindTest\Unit\TestCase
         $pm = new PermissionManager($this->permissionConfig);
 
         $this->assertEquals(true, $pm->permissionRuleExists('everyone'));
+    }
+
+    /**
+     * Test an existing permission section in an array
+     *
+     * @return void
+     */
+    public function testExistentPermissionInArray()
+    {
+        $pm = new PermissionManager($this->permissionConfig);
+
+        $this->assertEquals(true, $pm->permissionRuleExists('everyoneArray'));
     }
 
     /**
