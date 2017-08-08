@@ -159,6 +159,7 @@ $config = [
             'holds' => 'VuFind\Controller\Plugin\Factory::getHolds',
             'newitems' => 'VuFind\Controller\Plugin\Factory::getNewItems',
             'ILLRequests' => 'VuFind\Controller\Plugin\Factory::getILLRequests',
+            'permission' => 'VuFind\Controller\Plugin\Factory::getPermission',
             'recaptcha' => 'VuFind\Controller\Plugin\Factory::getRecaptcha',
             'reserves' => 'VuFind\Controller\Plugin\Factory::getReserves',
             'result-scroller' => 'VuFind\Controller\Plugin\Factory::getResultScroller',

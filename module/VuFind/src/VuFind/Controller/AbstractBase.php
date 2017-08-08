@@ -29,16 +29,13 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Role\PermissionDeniedManager,
-    VuFind\Role\PermissionManager,
     VuFind\Exception\ILS as ILSException,
     Zend\Mvc\Controller\AbstractActionController,
     Zend\Mvc\MvcEvent,
     Zend\ServiceManager\ServiceLocatorInterface,
     Zend\View\Model\ViewModel,
     ZfcRbac\Service\AuthorizationServiceAwareInterface,
-    ZfcRbac\Service\AuthorizationServiceAwareTrait,
-    Zend\Log\LoggerAwareInterface;
+    ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -52,10 +49,8 @@ use VuFind\Exception\Forbidden as ForbiddenException,
  *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
-class AbstractBase extends AbstractActionController implements LoggerAwareInterface
+class AbstractBase extends AbstractActionController
 {
-    use \VuFind\Log\LoggerAwareTrait;
-
     /**
      * Permission that must be granted to access this module (false for no
      * restriction)
@@ -93,51 +88,14 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      */
     public function validateAccessPermission(MvcEvent $e)
     {
+        // If there is an access permission set for this controller, pass it
+        // through the permission helper, and if the helper returns a custom
+        // response, use that instead of the normal behavior.
         if ($this->accessPermission) {
-            $pm = $this->getPermissionManager();
-            // Make sure the current user has permission to access the module:
-            if ($pm->isAuthorized($this->accessPermission) !== true) {
-                $pdm = $this->getPermissionDeniedManager();
-                $dl = $pdm->getDeniedControllerBehavior(
-                    $this->accessPermission, $this->accessDeniedBehavior
-                );
-                $exceptionDescription = isset($dl['exceptionMessage'])
-                    ? $dl['exceptionMessage'] : 'Access denied.';
-                switch (strtolower($dl['action'])) {
-                case 'promptlogin':
-                    $e->setResponse($this->forceLogin(null, [], false));
-                    break;
-                case 'showmessage':
-                    $this->flashMessenger()->addMessage(
-                        $this->translate($dl['value']), 'error'
-                    );
-                    $e->setResponse(
-                        $this->redirect()->toRoute('error-permissiondenied')
-                    );
-                    break;
-                case 'exception':
-                    $exceptionClass
-                        = (isset($dl['value']) && class_exists($dl['value']))
-                        ? $dl['value'] : 'VuFind\Exception\Forbidden';
-                    $exception = new $exceptionClass($exceptionDescription);
-                    if ($exception instanceof \Exception) {
-                        $this->logError(
-                            "Custom Exception: "
-                            . "$exceptionClass ($exceptionDescription)"
-                        );
-                        throw $exception;
-                    }
-                    $this->logError("Permission configuration problem.");
-                    throw new \Exception("$exceptionClass is not an exception!");
-                    break;
-                default:
-                    $this->logError(
-                        "Default Exception: ForbiddenException with message: "
-                        . $exceptionDescription
-                    );
-                    throw new ForbiddenException($exceptionDescription);
-                    break;
-                }
+            $response = $this->permission()
+                ->check($this->accessPermission, $this->accessDeniedBehavior);
+            if (is_object($response)) {
+                $e->setResponse($response);
             }
         }
     }
@@ -282,26 +240,6 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
     }
 
     /**
-     * Get the PermissionDeniedManager
-     *
-     * @return PermissionDeniedManager
-     */
-    protected function getPermissionDeniedManager()
-    {
-        return $this->serviceLocator->get('VuFind\Role\PermissionDeniedManager');
-    }
-
-    /**
-     * Get the PermissionManager
-     *
-     * @return PermissionManager
-     */
-    protected function getPermissionManager()
-    {
-        return $this->serviceLocator->get('VuFind\Role\PermissionManager');
-    }
-
-    /**
      * Get the user object if logged in, false otherwise.
      *
      * @return object|bool
@@ -330,10 +268,10 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      *
      * @return mixed
      */
-    protected function forceLogin($msg = null, $extras = [], $forward = true)
+    public function forceLogin($msg = null, $extras = [], $forward = true)
     {
         // Set default message if necessary.
-        if (is_null($msg)) {
+        if (null === $msg) {
             $msg = 'You must be logged in first';
         }
 
