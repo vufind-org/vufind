@@ -77,6 +77,14 @@ trait TranslatorAwareTrait
             list($domain, $str) = $this->extractTextDomain($str->getDisplayString());
         }
 
+        // Default case: deal with ordinary strings (or string-castable objects):
+        $defaultTranslation
+            = $this->translateString((string)$str, $tokens, $default, $domain);
+
+        if ($defaultTranslation !== (string)$str) {
+            return $defaultTranslation;
+        }
+
         // Try to translate a hierarchical string without the middle levels, but
         // only if this looks like a hierarchical facet that starts with a number
         // and ends with a slash
@@ -100,7 +108,6 @@ trait TranslatorAwareTrait
             }
         }
 
-        // Default case: deal with ordinary strings (or string-castable objects):
-        return $this->translateString((string)$str, $tokens, $default, $domain);
+        return $defaultTranslation;
     }
 }
