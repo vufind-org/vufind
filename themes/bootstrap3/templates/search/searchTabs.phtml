@@ -1,16 +1,12 @@
 <? if (count($searchTabs) > 0): ?>
   <ul class="nav nav-tabs">
     <? foreach ($searchTabs as $tab): ?>
-        <? $localBlock = $this->linkdisplay()->showLocalBlock($tab['permission']); ?>
-        <? if ($localBlock): ?>
+        <? if ($this->permission()->allowDisplay($tab['permission'])): ?>
           <li<?=$tab['selected'] ? ' class="active"' : ''?>>
             <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
           </li>
-        <? else: ?>
-            <? $block = $this->linkdisplay()->getDisplayBlock($tab['permission']); ?>
-            <? if ($block): ?>
-                <?=$block?>
-            <? endif; ?>
+        <? elseif ($block = $this->permission()->getAlternateContent($tab['permission'])): ?>
+            <?=$block?>
         <? endif; ?>
     <? endforeach; ?>
   </ul>

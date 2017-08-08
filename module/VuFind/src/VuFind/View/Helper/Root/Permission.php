@@ -1,10 +1,10 @@
 <?php
 /**
- * Link display helper
+ * Permission helper
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -32,7 +32,7 @@ use VuFind\Role\PermissionManager;
 use Zend\View\Helper\AbstractHelper;
 
 /**
- * Link display helper
+ * Permission helper
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,7 +41,7 @@ use Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/ Wiki
  */
-class LinkDisplay extends AbstractHelper
+class Permission extends AbstractHelper
 {
     /**
      * PermissionDenied manager for behavior on denied permissions
@@ -82,7 +82,7 @@ class LinkDisplay extends AbstractHelper
      *
      * @return bool
      */
-    public function showLocalBlock($context)
+    public function allowDisplay($context)
     {
         // Treat a non existing permission rule in this case as a granted permssion
         // Just return true to indicate that the default can get applied
@@ -99,35 +99,30 @@ class LinkDisplay extends AbstractHelper
         // deniedTemplateBehavior set for this context.
         $displayLogic = $this->permissionDeniedManager
             ->getDeniedTemplateBehavior($context);
-        if (!isset($displayLogic['action'])) {
-            return true;
-        }
-        return false;
+        return !isset($displayLogic['action']);
     }
 
     /**
-     * Get block to display
+     * Get content to display in place of blocked content
      *
      * @param string $context Name of the permission rule
      *
      * @return string
      */
-    public function getDisplayBlock($context)
+    public function getAlternateContent($context)
     {
         $displayLogic = $this->permissionDeniedManager
             ->getDeniedTemplateBehavior($context);
 
-        if ($displayLogic) {
-            $return = '';
-            if ($displayLogic['action'] == 'showMessage') {
-                $return = $this->view->translate($displayLogic['value']);
-            } elseif ($displayLogic['action'] == 'showTemplate') {
-                $return = $this->view->context($this->view)->renderInContext(
-                    $displayLogic['value'], $displayLogic['params']
-                );
-            }
-            return $return;
+        switch (isset($displayLogic['action']) ? $displayLogic['action'] : '') {
+        case 'showMessage':
+            return $this->view->transEsc($displayLogic['value']);
+        case 'showTemplate':
+            return $this->view->context($this->view)->renderInContext(
+                $displayLogic['value'], $displayLogic['params']
+            );
+        default:
+            return null;
         }
-        return null;
     }
 }

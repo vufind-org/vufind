@@ -1,6 +1,6 @@
 <?php
 /**
- * LinkDisplay view helper Test Class
+ * Permission view helper Test Class
  *
  * PHP version 5
  *
@@ -27,10 +27,10 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
-use VuFind\View\Helper\Root\LinkDisplay;
+use VuFind\View\Helper\Root\Permission;
 
 /**
- * LinkDisplay view helper Test Class
+ * Permission view helper Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -39,7 +39,7 @@ use VuFind\View\Helper\Root\LinkDisplay;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
+class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
 {
     /**
      * Sample configuration with varios config options.
@@ -108,10 +108,10 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
         $translator = new \VuFind\View\Helper\Root\Translate();
         $realView = $this->getPhpRenderer(['translate' => $translator]);
 
-        $linkDisplayHelper = new LinkDisplay($this->getMockPm(false), $mockPmdMessage);
-        $linkDisplayHelper->setView($realView);
+        $helper = new Permission($this->getMockPm(false), $mockPmdMessage);
+        $helper->setView($realView);
 
-        $displayBlock = $linkDisplayHelper->getDisplayBlock('permissionDeniedMessage');
+        $displayBlock = $helper->getAlternateContent('permissionDeniedMessage');
         $this->assertEquals('dl_translatable_test', $displayBlock);
     }
 
@@ -139,10 +139,10 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
             ['translate' => $translate, 'context' => $context]
         );
 
-        $linkDisplayHelper = new LinkDisplay($this->getMockPm(false), $mockPmd);
-        $linkDisplayHelper->setView($realView);
+        $helper = new Permission($this->getMockPm(false), $mockPmd);
+        $helper->setView($realView);
 
-        $displayBlock = $linkDisplayHelper->getDisplayBlock('permissionDeniedTemplate');
+        $displayBlock = $helper->getAlternateContent('permissionDeniedTemplate');
     }
 
     /**
@@ -172,10 +172,10 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
             ['translate' => $translator, 'escapehtml' => $escaper, 'transesc' => $transEsc, 'context' => $context]
         );
 
-        $linkDisplayHelper = new LinkDisplay($this->getMockPm(false), $mockPmd);
-        $linkDisplayHelper->setView($realView);
+        $helper = new Permission($this->getMockPm(false), $mockPmd);
+        $helper->setView($realView);
 
-        $displayBlock = $linkDisplayHelper->getDisplayBlock('permissionDeniedTemplate');
+        $displayBlock = $helper->getAlternateContent('permissionDeniedTemplate');
     }
 
     /**

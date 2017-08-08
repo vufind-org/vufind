@@ -235,15 +235,15 @@ class Factory
     }
 
     /**
-     * Construct the LinkDisplay helper.
+     * Construct the Permission helper.
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return LinkDisplayHelper
+     * @return Permission
      */
-    public static function getLinkDisplay(ServiceManager $sm)
+    public static function getPermission(ServiceManager $sm)
     {
-        $ld = new LinkDisplay(
+        $ld = new Permission(
             $sm->getServiceLocator()->get('VuFind\Role\PermissionManager'),
             $sm->getServiceLocator()->get('VuFind\Role\PermissionDeniedManager')
         );
