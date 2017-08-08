@@ -149,4 +149,20 @@ class Factory extends \VuFind\Controller\Factory
             $serviceLocator->get('VuFind\SessionManager')
         );
     }
+
+    /**
+     * Construct the ListController.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ListController
+     */
+    public static function getListController(ServiceManager $sm)
+    {
+        $serviceLocator = $sm->getServiceLocator();
+        return new ListController(
+            $serviceLocator,
+            $serviceLocator->get('VuFind\SessionManager')
+        );
+    }
 }
