@@ -135,22 +135,6 @@ class Factory extends \VuFind\Controller\Factory
     }
 
     /**
-     * Construct the MyResearchController.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return MyResearchController
-     */
-    public static function getMyResearchController(ServiceManager $sm)
-    {
-        $serviceLocator = $sm->getServiceLocator();
-        return new MyResearchController(
-            $serviceLocator,
-            $serviceLocator->get('VuFind\SessionManager')
-        );
-    }
-
-    /**
      * Construct the ListController.
      *
      * @param ServiceManager $sm Service manager.
@@ -161,6 +145,22 @@ class Factory extends \VuFind\Controller\Factory
     {
         $serviceLocator = $sm->getServiceLocator();
         return new ListController(
+            $serviceLocator,
+            $serviceLocator->get('VuFind\SessionManager')
+        );
+    }
+
+    /**
+     * Construct the MyResearchController.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return MyResearchController
+     */
+    public static function getMyResearchController(ServiceManager $sm)
+    {
+        $serviceLocator = $sm->getServiceLocator();
+        return new MyResearchController(
             $serviceLocator,
             $serviceLocator->get('VuFind\SessionManager')
         );
