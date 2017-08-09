@@ -283,7 +283,7 @@ class Holds
                             $copy['link'] = $this->getRequestDetails(
                                 $copy, $holdConfig['HMACKeys'], 'Hold'
                             );
-                            $copy['allowLightbox'] = true;
+                            $copy['linkLightbox'] = true;
                             // If we are unsure whether hold options are available,
                             // set a flag so we can check later via AJAX:
                             $copy['check'] = $copy['addLink'] === 'check';
@@ -370,7 +370,7 @@ class Holds
                                     = $this->catalog->getHoldLink(
                                         $copy['id'], $copy
                                     );
-                                $holdings[$location_key][$copy_key]['allowLightbox']
+                                $holdings[$location_key][$copy_key]['linkLightbox']
                                     = false;
                             } else {
                                 /* Build non-opac link */
@@ -378,7 +378,7 @@ class Holds
                                     = $this->getRequestDetails(
                                         $copy, $holdConfig['HMACKeys'], 'Hold'
                                     );
-                                $holdings[$location_key][$copy_key]['allowLightbox']
+                                $holdings[$location_key][$copy_key]['linkLightbox']
                                     = true;
                             }
                         }
