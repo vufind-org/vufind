@@ -483,7 +483,8 @@ class DueDateReminders extends AbstractService
             'baseUrl' => $baseUrl,
             'lastLogin' => $lastLogin->format($dateFormat),
             'loginMethod' => $loginMethod,
-            'serviceName' => $serviceName
+            'serviceName' => $serviceName,
+            'userInstitution' => $userInstitution
         ];
 
         if (!empty($errors)) {
