@@ -201,6 +201,29 @@ class Factory
     }
 
     /**
+     * Factory for KohaRest driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return KohaRest
+     */
+    public static function getKohaRest(ServiceManager $sm)
+    {
+        $sessionFactory = function ($namespace) use ($sm) {
+            $manager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            return new \Zend\Session\Container("KohaRest_$namespace", $manager);
+        };
+        $kohaRest = new KohaRest(
+            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+            $sessionFactory
+        );
+        $kohaRest->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+        return $kohaRest;
+    }
+
+    /**
      * Factory for Symphony driver.
      *
      * @param ServiceManager $sm Service manager.

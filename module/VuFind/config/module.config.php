@@ -468,6 +468,7 @@ $config = [
                     'noils' => 'VuFind\ILS\Driver\Factory::getNoILS',
                     'paia' => 'VuFind\ILS\Driver\Factory::getPAIA',
                     'kohailsdi' => 'VuFind\ILS\Driver\Factory::getKohaILSDI',
+                    'koharest' => 'VuFind\ILS\Driver\Factory::getKohaRest',
                     'symphony' => 'VuFind\ILS\Driver\Factory::getSymphony',
                     'unicorn' => 'VuFind\ILS\Driver\Factory::getUnicorn',
                     'voyager' => 'VuFind\ILS\Driver\Factory::getVoyager',
