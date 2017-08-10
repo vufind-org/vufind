@@ -259,6 +259,33 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     }
 
     /**
+     * Change Request Status
+     *
+     * Attempts to change the status of a specific hold request
+     *
+     * @param array $patron      The patron array from patronLogin
+     * @param array $holdDetails The request details
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function changeRequestStatus($patron, $holdDetails)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver
+            && $this->methodSupported(
+                $driver, 'changeRequestStatus', [$patron, $holdDetails]
+            )
+        ) {
+            return $driver->changeRequestStatus(
+                $this->stripIdPrefixes($patron, $source), $holdDetails
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
      * Return total amount of fees that may be paid online.
      *
      * @param array $patron Patron

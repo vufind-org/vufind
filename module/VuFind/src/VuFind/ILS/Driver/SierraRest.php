@@ -683,7 +683,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             }
             $holds[] = [
                 'id' => $bibId,
-                'item_id' => $this->extractId($entry['id']),
+                'requestId' => $this->extractId($entry['id']),
+                'item_id' => $itemId ? $itemId : $this->extractId($entry['id']),
                 'location' => $entry['pickupLocation']['name'],
                 'create' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['placed']
@@ -693,7 +694,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'in_transit' => $entry['status']['code'] == 't',
                 'volume' => $volume,
                 'publication_year' => $publicationYear,
-                'title' => $title
+                'title' => $title,
+                'frozen' => !empty($entry['frozen'])
             ];
         }
         return $holds;

@@ -117,4 +117,78 @@ class SierraRest extends \VuFind\ILS\Driver\SierraRest
         ];
     }
 
+    /**
+     * Change pickup location
+     *
+     * This is responsible for changing the pickup location of a hold
+     *
+     * @param string $patron      Patron array
+     * @param string $holdDetails The request details
+     *
+     * @return array Associative array of the results
+     */
+    public function changePickupLocation($patron, $holdDetails)
+    {
+        $requestId = $holdDetails['requestId'];
+        $pickUpLocation = $holdDetails['pickupLocationId'];
+
+        if (!$this->pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)) {
+            return $this->holdError('hold_invalid_pickup');
+        }
+
+        $request = [
+            'pickupLocation' => $pickUpLocation
+        ];
+
+        $result = $this->makeRequest(
+            ['v3', 'patrons', 'holds', $requestId],
+            json_encode($request),
+            'PUT',
+            $patron
+        );
+
+        if (isset($result['code']) && $result['code'] != 0) {
+            return [
+                'success' => false,
+                'status' => $this->formatErrorMessage($result['description'])
+            ];
+        }
+        return ['success' => true];
+    }
+
+    /**
+     * Change request status
+     *
+     * This is responsible for changing the status of a hold request
+     *
+     * @param string $patron      Patron array
+     * @param string $holdDetails The request details (at the moment only 'frozen'
+     * is supported)
+     *
+     * @return array Associative array of the results
+     */
+    public function changeRequestStatus($patron, $holdDetails)
+    {
+        $requestId = $holdDetails['requestId'];
+        $frozen = !empty($holdDetails['frozen']);
+
+        $request = [
+            'freeze' => $frozen
+        ];
+
+        $result = $this->makeRequest(
+            ['v3', 'patrons', 'holds', $requestId],
+            json_encode($request),
+            'PUT',
+            $patron
+        );
+
+        if (isset($result['code']) && $result['code'] != 0) {
+            return [
+                'success' => false,
+                'status' => $this->formatErrorMessage($result['description'])
+            ];
+        }
+        return ['success' => true];
+    }
 }

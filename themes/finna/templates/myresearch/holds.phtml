@@ -12,6 +12,9 @@
     $user = $this->auth()->isLoggedIn();
     // Add finna-holds.js
     $this->headScript()->appendFile('finna-holds.js');
+
+    $changePickupLocation = $this->ils()->checkFunction('changePickupLocation');
+    $changeRequestStatus = $this->ils()->checkFunction('changeRequestStatus');
 ?>
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
@@ -144,7 +147,6 @@
                  value to display... */ ?>
               <? $pickupDisplay = ''; ?>
               <? $pickupTranslate = false; ?>
-              <? $changePickupLocation = $this->ils()->checkFunction('changePickupLocation'); ?>
               <? if (isset($ilsDetails['location'])): ?>
                 <? if ($this->pickup): ?>
                   <? foreach ($this->pickup as $library): ?>
@@ -169,7 +171,7 @@
                           <span class="pickupLocationSelected"><?=$pickupTranslate ? $this->transEsc($pickupDisplay) : $this->escapeHtml($pickupDisplay)?></span> <i class="fa fa-arrow-down"></i>
                         </a>
                         <ul class="dropdown-menu pickup-locations" role="menu">
-                          <li role="menuitem" class="pickup-location-load-indicator hidden"><a><i class="fa fa-spinner fa-spin"></i> <?= $this->transEsc('Loading')?>...</a></li>
+                          <li role="menuitem" class="pickup-location-load-indicator hidden"><a><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...</a></li>
                         </ul>
                       </div>
                     </div>
@@ -214,6 +216,19 @@
                 <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("hold_cancel") ?></a></p>
               <? endif; ?>
 
+              <? if (isset($ilsDetails['available']) && !$ilsDetails['available'] && $changeRequestStatus): ?>
+                <div class="change-hold-status" data-record-id="<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" data-request-id="<?=$this->escapeHtml($ilsDetails['requestId']) ?>" >
+                  <span class="status-change-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i></span>
+                  <span class="hold-status-active<?=!empty($ilsDetails['frozen']) ? ' hidden' : '' ?>">
+                    <a class="hold-status-freeze" href="#"><?=$this->transEsc('request_freeze') ?></a>
+                  </span>
+                  <span class="hold-status-frozen<?=!empty($ilsDetails['frozen']) ? '' : ' hidden' ?>">
+                    <?=$this->transEsc('request_frozen') ?>&nbsp;-&nbsp;<a class="hold-status-release" href="#"><?=$this->transEsc('request_release') ?></a>
+                  </span>
+                </div>
+              <? elseif (!empty($ilsDetails['frozen'])): ?>
+                <strong><?=$this->transEsc('request_frozen') ?></strong>
+              <? endif; ?>
             </div>
           </div>
         <? endforeach; ?>

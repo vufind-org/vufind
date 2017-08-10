@@ -39,6 +39,11 @@ excludePickupLocations = 1:6:10:15:29:32:34:37:38:39:53:79:87:88
 [changePickupLocation]
 method = driver
 
+; Changing of hold status is enabled if method parameter is set. Only valid value
+; is 'driver'.
+[changeRequestStatus]
+method = driver
+
 ; Changing of checkout history state is enabled if method parameter is set. Only
 ; valid value is 'driver'.
 [updateTransactionHistoryState]

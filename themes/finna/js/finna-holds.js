@@ -1,12 +1,13 @@
 /*global VuFind*/
 finna.changeHolds = (function() {
     var setupChangeHolds = function () {
-        var holds = $('.changeHolds');
-        var errorOccured = $('<div></div>').attr('class', 'alert alert-danger').text(VuFind.translate('error_occurred'));
-        
-        holds.click(function() {   
+        var errorOccured = $('<div></div>').attr('class', 'alert alert-danger hold-change-error').text(VuFind.translate('error_occurred'));
+
+        var changeHolds = $('.changeHolds');
+        changeHolds.click(function() {
             var hold = $(this);
-            hold.find('.hold-change-success').remove();
+            $('.hold-change-success').remove();
+            $('.hold-change-error').remove();
             var pickupLocations = $(this).find('.pickup-locations');
             if (!pickupLocations.data('populated')) {
                 pickupLocations.data('populated', 1);
@@ -28,7 +29,7 @@ finna.changeHolds = (function() {
                 .done(function(response) {
                     $.each(response.data.locations, function() {
                         var item = $('<li class="pickupLocationItem" role="menuitem"></li>')
-                            .data('locationId', this.locationID).data('locationDisplay', this.locationDisplay).data('requestId', requestId).data('hold', hold).click(submitHandler);
+                            .data('locationId', this.locationID).data('locationDisplay', this.locationDisplay).data('requestId', requestId).data('hold', hold).click(pickupSubmitHandler);
                         var text = $('<a></a>').text(this.locationDisplay);
                         item.append(text);
                         pickupLocations.append(item);
@@ -37,20 +38,34 @@ finna.changeHolds = (function() {
                 })
                 .fail(function() {
                     spinnerLoad.addClass('hidden');
-                    holds.append(errorOccured);
+                    changeHolds.append(errorOccured);
                     pickupLocations.data('populated', 0);
                 });
             }
         });
-        
-        var submitHandler = function() {
+
+        $('.hold-status-freeze').click(function() {
+            var container = $(this).closest('.change-hold-status');
+            var requestId = container.data('request-id');
+            changeHoldStatus(container, requestId, 1);
+            return false;
+        });
+
+        $('.hold-status-release').click(function() {
+            var container = $(this).closest('.change-hold-status');
+            var requestId = container.data('request-id');
+            changeHoldStatus(container, requestId, 0);
+            return false;
+        });
+
+        var pickupSubmitHandler = function() {
             $().dropdown('toggle');
-            var selected = $(this);           
+            var selected = $(this);
             var requestId = selected.data('requestId');
             var locationId = selected.data('locationId');
-            var locationDisplay = selected.data('locationDisplay');            
+            var locationDisplay = selected.data('locationDisplay');
             var hold = selected.data('hold');
-            
+
             var spinnerChange = hold.find('.pickup-change-load-indicator');
             spinnerChange.removeClass('hidden');
 
@@ -70,20 +85,58 @@ finna.changeHolds = (function() {
             })
             .done(function(response) {
                 spinnerChange.addClass('hidden');
-                if (response.data['success']){
+                if (response.data['success']) {
                     var success = $('<div></div>').attr('class', 'alert alert-success hold-change-success').text(VuFind.translate('change_hold_success'));
                     hold.append(success);
                 } else {
                     hold.append(errorOccured);
-                }  
+                }
             })
             .fail(function() {
-                spinnerChange.addClass('hidden');        
+                spinnerChange.addClass('hidden');
                 hold.append(errorOccured);
             });
         };
+
+        var changeHoldStatus = function(container, requestId, frozen) {
+            var spinnerChange = container.find('.status-change-load-indicator');
+
+            $('.hold-change-success').remove();
+            $('.hold-change-error').remove();
+            spinnerChange.removeClass('hidden');
+
+            var params = {
+                method: 'changeRequestStatus',
+                requestId: requestId,
+                frozen: frozen
+            };
+            $.ajax({
+                data: params,
+                dataType: 'json',
+                cache: false,
+                url: VuFind.path + '/AJAX/JSON'
+            })
+            .done(function(response) {
+                spinnerChange.addClass('hidden');
+                if (response.data['success']) {
+                    if (frozen) {
+                        container.find('.hold-status-active').addClass('hidden');
+                        container.find('.hold-status-frozen').removeClass('hidden');
+                    } else {
+                        container.find('.hold-status-active').removeClass('hidden');
+                        container.find('.hold-status-frozen').addClass('hidden');
+                    }
+                } else {
+                    container.append(errorOccured);
+                }
+            })
+            .fail(function() {
+                spinnerChange.addClass('hidden');
+                container.append(errorOccured);
+            });
+        };
     }
-    
+
     var my = {
             init: function() {
                 setupChangeHolds();

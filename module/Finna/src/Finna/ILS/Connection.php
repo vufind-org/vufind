@@ -155,6 +155,34 @@ class Connection extends \VuFind\ILS\Connection
     }
 
     /**
+     * Check for changeRequestStatus
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports change of
+     * request status.
+     *
+     * @param array $functionConfig The configuration values
+     * @param array $params         Patron data
+     *
+     * @return mixed On success, array of configuration data; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodchangeRequestStatus($functionConfig, $params)
+    {
+        if (!isset($functionConfig['method'])) {
+            return false;
+        }
+
+        if ($this->checkCapability('changeRequestStatus', [$params ?: []])
+        ) {
+            return $functionConfig;
+        }
+
+        return false;
+    }
+
+    /**
      * Check for checkMethodupdateTransactionHistoryState
      *
      * A support method for checkFunction(). This is responsible for checking

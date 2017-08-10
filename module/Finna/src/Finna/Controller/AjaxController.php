@@ -247,18 +247,90 @@ class AjaxController extends \VuFind\Controller\AjaxController
             $patron = $this->getILSAuthenticator()->storedCatalogLogin();
 
             if ($patron) {
+                $result = $catalog->checkFunction('changePickupLocation');
+                if (!$result) {
+                    return $this->output(
+                        $this->translate('unavailable'),
+                        self::STATUS_ERROR,
+                        400
+                    );
+                }
+
                 $details = [
                     'requestId'    => $requestId,
                     'pickupLocationId' => $pickupLocationId
                 ];
-                $results = [];
-
                 $results = $catalog->changePickupLocation($patron, $details);
 
                 return $this->output($results, self::STATUS_OK);
             }
         } catch (\Exception $e) {
-            // Do nothing -- just fail through to the error message below.
+            $this->setLogger($this->serviceLocator->get('VuFind\Logger'));
+            $this->logError('changePickupLocation failed: ' . $e->getMessage());
+            // Fall through to the error message below.
+        }
+
+        return $this->output(
+            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
+        );
+    }
+
+    /**
+     * Change request status
+     *
+     * @return \Zend\Http\Response
+     */
+    public function changeRequestStatusAjax()
+    {
+        $requestId = $this->params()->fromQuery('requestId');
+        $frozen = $this->params()->fromQuery('frozen');
+        if (empty($requestId)) {
+            return $this->output(
+                $this->translate('bulk_error_missing'),
+                self::STATUS_ERROR,
+                400
+            );
+        }
+
+        // check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                [
+                    'status' => false,
+                    'msg' => $this->translate('You must be logged in first')
+                ],
+                self::STATUS_NEED_AUTH
+            );
+        }
+
+        try {
+            $catalog = $this->getILS();
+            $patron = $this->getILSAuthenticator()->storedCatalogLogin();
+
+            if ($patron) {
+
+                $result = $catalog->checkFunction('changeRequestStatus');
+                if (!$result) {
+                    return $this->output(
+                        $this->translate('unavailable'),
+                        self::STATUS_ERROR,
+                        400
+                    );
+                }
+
+                $details = [
+                    'requestId' => $requestId,
+                    'frozen' => $frozen
+                ];
+                $results = $catalog->changeRequestStatus($patron, $details);
+
+                return $this->output($results, self::STATUS_OK);
+            }
+        } catch (\Exception $e) {
+            $this->setLogger($this->serviceLocator->get('VuFind\Logger'));
+            $this->logError('changeRequestStatus failed: ' . $e->getMessage());
+            // Fall through to the error message below.
         }
 
         return $this->output(

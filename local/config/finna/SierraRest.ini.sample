@@ -1,0 +1,89 @@
+[Catalog]
+; An optional catalog id that is used in the translation string when translating
+; location names and opac messages (e.g. location_{id}_h01a)
+id = "helmet"
+; URL of the Sierra API without the version (e.g. /v3)
+host = "https://sandbox.iii.com/iii/sierra-api"
+; Sierra API client key
+client_key = ""
+; Sierra API client secret
+client_secret = ""
+; Timeout for HTTP requests
+http_timeout = 30
+; Redirect URL entered in Sierra for the patron-specific authentication (does not
+; need to be a properly working url)
+redirect_uri = "http://localhost:8080/vufind/MyResearch/Home?auth_method=sierra"
+
+; This section is used to define library codes and named values which are used by the
+; system to indicate the location at which a hold is to be collected. If you leave it
+; commented out, a list will automatically be generated using the getPickUpLocations
+; method.  Your system will perform better if you fill this in, since it will reduce
+; the number of database lookups necessary when presenting the hold form.
+[pickUpLocations]
+h01 = "Main Library"
+h02 = "Branch Library"
+
+; This section controls hold behavior; note that you must also ensure that Holds are
+; enabled in the [Catalog] section of config.ini in order to take advantage of these
+; settings.
+[Holds]
+; If a colon separated list of item statuses is provided here, only matching items
+; will show hold links.  Skip this setting to allow all statuses.
+; Note that VuFind-style statuses are used here.
+valid_hold_statuses = Charged:Renewed:Overdue:On Shelf:In Transit
+
+; HMACKeys - A list of hold form element names that will be analyzed for consistency
+; during hold form processing. Most users should not need to change this setting.
+HMACKeys = item_id:holdtype:level
+
+; defaultRequiredDate - A colon-separated list used to set the default "not required
+; after" date for holds in the format days:months:years
+; e.g. 0:1:0 will set a "not required after" date of 1 month from the current date
+defaultRequiredDate = 0:0:2
+
+; extraHoldFields - A colon-separated list used to display extra visible fields in the
+; place holds form. Supported values are "requiredByDate", "requestGroup"
+; (location in Sierra) and "pickUpLocation"
+extraHoldFields = requiredByDate:pickUpLocation
+
+; A Pick Up Location Code used to pre-select the pick up location drop down list and
+; provide a default option if others are not available. Must be one of the following:
+; 1) empty string to indicate that the first location is default (default setting)
+; 2) "user-selected" to indicate that the user always has to choose the location
+; 3) a value within the Location IDs returned by getPickUpLocations()
+defaultPickUpLocation = "user-selected"
+
+; By default item holds are enabled. Uncomment this setting to disable item holds.
+;enableItemHolds = false
+
+; This setting specifies which item codes disable item level holds
+item_hold_excluded_item_codes = e
+
+; This setting specifies which bib levels allow title level holds
+title_hold_bib_levels = a:b:m:d
+
+; This section allows modification of the default mapping from item status codes to
+; VuFind item statuses
+[ItemStatusMappings]
+;d = "In Processing"
+
+; Uncomment the following lines to enable password (PIN) change
+[changePassword]
+; PIN change parameters. The default limits are taken from the interface documentation.
+minLength = 4
+maxLength = 4
+; See the password_pattern/password_hint settings in the [Authentication] section
+; of config.ini for notes on these settings. When set here, these will override the
+; config.ini defaults when Voyager is used for authentication.
+pattern = "numeric"
+;hint = "Your optional custom hint can go here."
+
+; Changing of pickup location is enabled if method parameter is set. Only valid value
+; is 'driver'.
+[changePickupLocation]
+method = driver
+
+; Changing of hold status is enabled if method parameter is set. Only valid value
+; is 'driver'.
+[changeRequestStatus]
+method = driver

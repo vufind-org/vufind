@@ -257,8 +257,9 @@ foreach ($this->statusItems as $item):
 $holdingsLink = $this->recordLink()->getUrl($driver);
 $disableTitleHold = isset($summary['holdable']) && !$summary['holdable'];
 
-if ($this->holdingsSettings()->showSearchResultsTitleHold()) {
-  if ($driver && $driver->tryMethod('getHoldsAllowed') && !$disableTitleHold) {
+if (!$disableTitleHold && $this->holdingsSettings()->showSearchResultsTitleHold()
+  && $driver && $driver->tryMethod('getHoldsAllowed')
+) {
     $account = $this->auth()->getManager();
     $offlineMode = $this->ils()->getOfflineMode();
     $ilsLoginAvailable = $this->ils()->loginAvailable();
@@ -293,7 +294,6 @@ if ($this->holdingsSettings()->showSearchResultsTitleHold()) {
 ?>
     </div>
 <?
-  }
 }
 ?>
 <? if ($this->holdingsSettings()->showLinkToRecordPage()): ?>

@@ -708,6 +708,40 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     }
 
     /**
+     * Change request status
+     *
+     * This is responsible for changing the status of a hold request
+     *
+     * @param string $patron      Patron array
+     * @param string $holdDetails The request details (at the moment only 'frozen'
+     * is supported)
+     *
+     * @return array Associative array of the results
+     */
+    public function changeRequestStatus($patron, $holdDetails)
+    {
+        $requestId = $holdDetails['requestId'];
+        $frozen = !empty($holdDetails['frozen']);
+
+        $request = [
+            'suspend' => $frozen
+        ];
+
+        list($code, $result) = $this->makeRequest(
+            ['v1', 'holds', $requestId],
+            json_encode($request),
+            'PUT',
+            $patron,
+            true
+        );
+
+        if ($code >= 300) {
+            return $this->holdError($code, $result);
+        }
+        return ['success' => true];
+    }
+
+    /**
      * Return total amount of fees that may be paid online.
      *
      * @param array $patron Patron
