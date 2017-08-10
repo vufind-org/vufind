@@ -6,7 +6,7 @@
          id="<?=$this->escapeHtmlAttr(str_replace(' ', '', $current['desc']))?>"
          onclick="document.location.href='<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter']) ?>'"
         />
-        <?=$this->transEsc($current['desc']) ?>
+        <?=$this->translate($current['desc']) // Intentionally left unescaped to allow HTML in the description ?>
     </label>
   </div>
 <? endforeach; ?>
