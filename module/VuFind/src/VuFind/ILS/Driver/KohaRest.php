@@ -559,7 +559,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
-     * @todo   Support for handling frozen and pickup location change
      */
     public function getMyHolds($patron)
     {
@@ -592,6 +591,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     $title = trim($title);
                 }
             }
+            $frozen = false;
+            if (!empty($entry['suspend'])) {
+                $frozen = !empty($entry['suspend_until']) ? $entry['suspend_until']
+                    : true;
+            }
             $holds[] = [
                 'id' => $bibId,
                 'item_id' => $itemId ? $itemId : $entry['reserve_id'],
@@ -606,7 +610,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'available' => !empty($entry['waitingdate']),
                 'in_transit' => isset($entry['found']) && $entry['found'] == 't',
                 'requestId' => $entry['reserve_id'],
-                'title' => $title
+                'title' => $title,
+                'frozen' => $frozen
             ];
         }
         return $holds;
