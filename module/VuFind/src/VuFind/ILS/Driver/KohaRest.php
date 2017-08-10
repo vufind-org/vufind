@@ -1341,9 +1341,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'duedate' => $duedate,
                 'number' => $item['enumchron'],
                 'barcode' => $item['barcode'],
-                'item_notes' => [$item['itemnotes']],
                 'sort' => $i
             ];
+            if (!empty($item['itemnotes'])) {
+                $entry['item_notes'] = [$item['itemnotes']];
+            }
 
             if ($patron && $this->itemHoldAllowed($item)) {
                 $entry['is_holdable'] = true;
