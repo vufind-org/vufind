@@ -48,7 +48,7 @@
 
 <? if ($searchType == 'advanced'): ?>
 <div class="col-xs-12">
-  <div id="searchForm hidden-print">
+  <div id="searchForm" class="hidden-print">
     <div class="adv_search_links">
       <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($searchId)?>"><i class="fa fa-pen"></i> <?=$this->transEsc("Edit this Advanced Search")?></a>
       <a href="<?=$this->url($advSearch)?>"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Start a new Advanced Search")?></a>
@@ -58,10 +58,8 @@
 </div>
 <? elseif ($this->fromStreetSearch): ?>
 <div class="col-xs-12">
-  <div id="searchForm hidden-print">
-    <div class="update-location-button">
-      <a class="btn btn-primary" href="<?=$this->url('search-streetsearch')?>?go=1"><i class="fa fa-crosshairs"></i> <?=$this->transEsc('street_search_refresh')?></a>
-    </div>
+  <div id="searchForm" class="hidden-print">
+    <?=$this->render('search/street-search-header.phtml');?>
   </div>
 </div>
 <? endif; ?>

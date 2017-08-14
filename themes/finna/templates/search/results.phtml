@@ -109,10 +109,8 @@
         </div>
         <? $this->layout()->srmessage = strip_tags($resultsStr); ?>
         <? if ($this->fromStreetSearch): ?>
-          <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right hidden-print">
-            <div class="update-location-button">
-              <a class="btn btn-primary" href="<?=$this->url('search-streetsearch')?>?go=1"><i class="fa fa-crosshairs"></i> <span><?=$this->transEsc('street_search_refresh')?></span></a>
-            </div>
+          <div class="col-xs-12 hidden-sm hidden-md hidden-lg hidden-print">
+            <?=$this->render('search/street-search-header.phtml');?>
           </div>
         <? endif; ?>
       </div>
