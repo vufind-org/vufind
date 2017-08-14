@@ -13,7 +13,7 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
 <div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <? if (!isset($this->hideCartControls) && $this->cart()->isActive()): ?>
-    <?=$this->record($this->driver)->getCheckbox() ?></br>
+    <?=$this->record($this->driver)->getCheckbox() ?><br/>
   <? endif; ?>
   <div class="text-center grid-image">
     <? $img = $this->recordImage($this->record($this->driver))?>

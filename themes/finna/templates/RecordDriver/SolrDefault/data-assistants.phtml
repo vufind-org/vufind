@@ -6,7 +6,7 @@
     <? if (!empty($author['roleName'])): ?><span class="author-rolename">, <?=$this->escapeHtml($author['roleName']) ?></span>
     <? endif; ?>
     <? if (!empty($author['uncredited']) && $author['uncredited']): ?> (<?=$this->transEsc('uncredited') ?>)<? endif; ?>
-    </br>
+    <br/>
   <? endforeach; ?>
 </div>
 <? endif; ?>

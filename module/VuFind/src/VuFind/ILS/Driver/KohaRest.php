@@ -559,7 +559,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
-     * @todo   Support for handling frozen and pickup location change
      */
     public function getMyHolds($patron)
     {
