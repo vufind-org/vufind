@@ -1,9 +1,12 @@
 .combined-list {
+    margin-top: 1em;
     @media(min-width:@screen-sm-min) {
         margin-top: 70px;
     }
     .combined-titles {
-        margin-top: -50px;
+        @media(min-width:@screen-sm-min) {
+            margin-top: -50px;
+        }
         border-bottom: 4px solid @gray-lighter;
         padding-bottom: 10px;
     }
@@ -33,29 +36,6 @@
     .sub-label {
         margin-top: 10px;   
     }
-    &:first-child {
-        border-right: 4px solid @gray-lighter;
-        @media(max-width:@screen-xs-max) {
-            border-right: none;
-            & .combined-titles {
-                margin-top: 20px;
-                border-bottom: none;
-            }
-        }
-    }
-    &:last-child {
-        border-left: 4px solid @gray-lighter;
-        margin-left: -4px;
-        @media(max-width:@screen-xs-max) {
-            border-left: none;
-            border-top: 4px solid @gray-lighter;
-            margin-left: 0px;
-            & .combined-titles {
-                margin-top: 20px;
-                border-bottom: none;
-            }
-        }
-    }
     & .image-popup-trigger img {
         @media(max-width:@screen-sm-max) and (min-width: @screen-sm-min) {
             box-shadow: none;
@@ -71,4 +51,46 @@
             float: right;
         }
     }
+}
+
+/* ------ COMBINED ------ */
+@media (min-width: 768px) {
+    .combined-search-container {
+        display: flex;
+        .result { margin-left: 0; }
+        .result-body {
+            float: none;
+            width: auto;
+        }
+        .result-links { display: none; }
+    }
+    .combined-column {
+        flex: 0 1 100%;
+        padding-left: 1rem;
+        &:first-child {
+            border-right: 4px solid @gray-lighter;
+            padding-right: 1rem;
+            @media(max-width:@screen-xs-max) {
+                border-right: none;
+                & .combined-titles {
+                    margin-top: 20px;
+                    border-bottom: none;
+                }
+            }
+        }
+        &:last-child {
+            border-left: 4px solid @gray-lighter;
+            margin-left: -4px;
+            @media(max-width:@screen-xs-max) {
+                border-left: none;
+                border-top: 4px solid @gray-lighter;
+                margin-left: 0px;
+                & .combined-titles {
+                    margin-top: 20px;
+                    border-bottom: none;
+                }
+            }
+        }
+    }
+    .combined-column:last-child { padding-right: 1rem; }
 }

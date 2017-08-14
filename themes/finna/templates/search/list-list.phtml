@@ -20,7 +20,7 @@
     <? $this->headScript()->appendFile("openurl.js"); ?>
     <? $haveRecommendationHolder = true; ?>
   <? endif; ?>
-  <div id="result<?=$i++ ?>" class="row result clearfix<?=$current->supportsAjaxStatus()?' ajaxItem':''?>">
+  <div id="result<?=$i++ ?>" class="result clearfix<?=$current->supportsAjaxStatus()?' ajaxItem':''?>">
     <div class="checkbox hidden-print">
       <? if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
         <label>

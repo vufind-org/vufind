@@ -49,12 +49,12 @@
 <? endforeach; ?>
 
 <div class="mylist-error hidden"><?=$this->translate('An error has occurred'); ?></div>
-<div class="row">
+<div>
   <? if (isset($list)): ?>
   <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>" />
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>" />
   <? endif; ?>
-  <div class="col-sm-9 col-sm-push-3">
+  <div class="mainbody right">
     <div class="clearfix hidden-print">
       <div class="row">
         <div class="col-xs-12">
@@ -72,18 +72,18 @@
         </div>
       </div>
     </div>
-  <div class="row">
-  <div class="col-xs-12">
+  <div>
+  <div>
     <? if ($recordTotal > 0): ?>
-      <div class="search-controls row">
-        <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right hidden-print">
+      <div class="search-controls">
+        <div class="text-right hidden-print">
           <? if (isset($list)): ?>
           <a class="btn btn-primary" href="<?=$this->url('sortList', ['id' => $list->id]) ?>" data-backdrop=”static” data-lightbox><?=$this->transEsc('Sort manually');?></a>
           <? endif; ?>
           <?=$this->render('search/controls/sort.phtml')?>
           <?=$this->render('search/controls/limit.phtml')?>
         </div>
-        <div class="col-sm-5 col-md-4 col-sm-pull-7 col-md-pull-8">
+        <div class="pagination-container">
           <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results])?>
         </div>
       </div>
@@ -102,8 +102,8 @@
       <? endif; ?>
     </div>
     <? if ($recordTotal > 0): ?>
-    <div class="search-controls row">
-      <div class="col-xs-12 text-center">
+    <div class="">
+      <div class="text-center">
         <hr>
         <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results])?>
       </div>
@@ -111,7 +111,7 @@
     <? endif;?>
   </div>
   </div>
-  <div class="col-sm-3 col-sm-pull-9 sidebar mylist-bar">
+  <div class="sidebar mylist-bar">
   <? if ($this->userlist()->getMode() !== 'disabled' && $user = $this->auth()->isLoggedIn()): ?>
   <?= $this->partial('myresearch/mylist-navi.phtml', ['user' => $user, 'isDefaultList' => $isDefaultList, 'activeId' => $activeId, 'activePublic' => $activePublic, 'lists' => $lists, 'results' => $this->results]); ?>
   <? endif ?>

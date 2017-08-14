@@ -68,7 +68,9 @@ return [
         'vendor/bootstrap-multiselect.min.css',
         'vendor/bootstrap-datepicker3.min.css',
         'vendor/video-js.min.css',
-        'finna.css'
+        'vendor/bootstrap-slider.min.css',
+        'finna.css',
+        'flex-fallback.css:lt IE 10' // flex polyfill
     ],
     'js' => [
         'vendor/event-stub.js:lt IE 9',
@@ -95,6 +97,7 @@ return [
         'vendor/videojs.hotkeys.min.js',
         'vendor/jquery.touchSwipe.min.js',
         'vendor/bootstrap-multiselect.min.js',
+        'vendor/bootstrap-slider.min.js',
         'vendor/gauge.min.js'
     ],
     'less' => [

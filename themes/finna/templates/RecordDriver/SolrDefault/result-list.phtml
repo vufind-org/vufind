@@ -4,7 +4,8 @@
   $img = $this->recordImage($this->record($this->driver));
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
-  if ($img):
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
+if ($img):
     ob_start(); ?>
     <?=$img->render('list', ['medium' => ['w' => 250, 'h' => 250]]) ?>
     <? $thumbnail = ob_get_contents(); ?>
@@ -12,8 +13,15 @@
 <? endif; ?>
 <div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
   <div class="media">
-    <div class="col-xs-9 <? if ($thumbnailAlignment == 'left'): ?><?= $combinedView ? 'col-sm-10 col-sm-push-2' : 'col-sm-9 col-sm-push-3' ?><? elseif ($thumbnailAlignment == 'right'): ?><?= $combinedView ? 'col-sm-10' : 'col-sm-8 col-md-9' ?><? endif; ?>">
-      <div class="media-body">
+    <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+      <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?> hidden-xs">
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+            <?=$thumbnail ?>
+      </div>
+    <? endif; ?>
+    <div class="media-body">
+      <div class="result-body">
         <div class="title-container">
           <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title" data-view="<?=isset($this->params) ? $this->params->getOptions()->getListViewOption() : 'list' ?>">
             <?=$this->record($this->driver)->getTitleHtml()?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
@@ -146,6 +154,13 @@
           <?=$this->render('list/list-notes.phtml')?>
         <? endif; ?>
 
+        <div class="clearfix visible-xs"></div>
+        <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+            <? /* Saved lists */ ?>
+          <div class="savedLists alert alert-info hidden">
+            <strong><?=$this->transEsc("Saved in")?>:</strong>
+          </div>
+        <? endif; ?>
         <div class="hidden-print add-to-favorite-col">
             <? /* Display qrcode if appropriate: */ ?>
             <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
@@ -189,22 +204,13 @@
         </div>
       </div>
     </div>
-    <div class="media-<?=$thumbnailAlignment ?> col-xs-3 <? if ($thumbnailAlignment == 'left'): ?><?= $combinedView ? 'col-sm-2 col-sm-pull-10' : 'col-sm-3 col-sm-pull-9' ?><? elseif ($thumbnailAlignment == 'right'): ?><?= $combinedView ? 'col-sm-2' : 'col-sm-3 col-md-2' ?><? endif; ?> resultThumb">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
     <? if ($thumbnail): ?>
-      <?=$thumbnail ?>
-    <? endif; ?>
-    </div>
-    <div class="clearfix visible-xs"></div>
-    <div class="col-xs-12 <?= $combinedView ? 'col-sm-10 col-sm-push-2' : 'col-sm-9 col-sm-push-3'?>">
-      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-      <? /* Saved lists */ ?>
-      <div class="savedLists alert alert-info hidden">
-        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?> <?= $thumbnailAlignment == 'right' ? '' : 'hidden-sm hidden-md hidden-lg'?>">
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+          <?=$thumbnail ?>
       </div>
-      <? endif; ?>
-    </div>
+    <? endif; ?>
   </div>
 </div>
 <!-- END of: finna - RecordDriver/SolrDefault/result-list.phtml -->

@@ -1,7 +1,7 @@
 // All search control buttons
 .search-controls {
   .button-label {
-    margin-left: 10px;
+    padding: 5px;
   }
   @media(max-width:@screen-xs-max) {
     margin-top: -5px;
@@ -27,6 +27,22 @@
       }
     }
   }
+  .control-container {
+    @media(max-width: @screen-sm-min) {
+      text-align: center;
+      margin-top: 10px;
+    }
+  }
+  .pagination-container {
+    flex-grow: 1;
+    text-align: left;
+  }
+}
+
+@media (min-width: 768px) {
+  .search-header { display: flex; }
+  .search-stats { flex-grow: 1; }
+  .search-controls { text-align: right; }
 }
 
 .search-controls .pagination {

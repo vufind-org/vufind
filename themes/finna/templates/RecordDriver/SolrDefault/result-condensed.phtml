@@ -14,8 +14,8 @@
   <? ob_end_clean(); ?>
 <? endif;?>
 <div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
-  <div class="col-xs-12 condensed-collapse-toggle">
-      <div class="col-sm-6 col-md-8">
+  <div class="condensed-collapse-toggle">
+    <div class="condensed-body">
         <i class="fa fa-arrow-right"></i>
           <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
             <?=$this->record($this->driver)->getTitleHtml()?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
@@ -86,7 +86,7 @@
               <? endif; ?>
           </div>
       </div>
-      <div class="col-sm-6 col-md-4">
+      <div class="condensed-links">
         <?=$this->record($this->driver)->getOnlineUrls('results')?>
         <? $formats = $this->driver->getFormats(); ?>
         <?=$this->record($this->driver)->getPreviews()?>
@@ -100,10 +100,17 @@
       </div>
   </div>
   <div class="clearfix"></div>
-  <div class="media condensed-collapse-data col-xs-12">
+  <div class="media condensed-collapse-data">
   <? if  ($database === 'false' && $ejournal === 'false'): ?>
-    <div class="col-xs-9<? if ($thumbnailAlignment == 'left'): ?> col-sm-push-2<? endif; ?>">
-      <div class="media-body">
+    <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+      <div class="media-<?=$thumbnailAlignment ?> resultThumb hidden-xs">
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+            <?=$thumbnail ?>
+      </div>
+    <? endif; ?>
+    <div class="media-body">
+      <div class="result-body">
         <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
           <div class="resultClassification">
             <?
@@ -189,15 +196,49 @@
           <?=$this->render('list/list-notes.phtml')?>
         <? endif; ?>
         </div>
+        <div class="hidden-print add-to-favorite-col">
+            <? /* Display qrcode if appropriate: */ ?>
+            <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+                <?
+                // Add JS Variables for QrCode
+                $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
+                ?>
+              <div class="hidden-xs">
+                <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="finnaQrcodeLink" title="<?=$this->transEsc('qrcode_show')?>"><i class="fa fa-qr-code"></i></a>
+                <div class="qrcode hidden">
+                  <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+                </div><br/>
+              </div>
+            <? endif; ?>
+
+            <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+                <? /* Add to favorites */ ?>
+              <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span> <span class="sr-only hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
+            <? endif; ?>
+            <? /* Hierarchy tree link */ ?>
+            <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+                <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
+                <div class="hierarchyTreeLink">
+                  <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
+                  <i class="fa fa-sitemap"></i>
+                  <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>" data-lightbox-href="<?=$this->recordLink()->getTabUrl($this->driver, 'AjaxTab')?>?hierarchy=<?=urlencode($hierarchyID)?>" data-lightbox-post="tab=hierarchytree">
+                      <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
+                  </a>
+                </div>
+                <? endforeach; ?>
+            <? endif; ?>
+
+            <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
+        </div>
       </div>
   </div>
-  <div class="media-<?=$thumbnailAlignment ?> col-xs-3 col-sm-2<? if ($thumbnailAlignment == 'left'): ?> col-sm-pull-9<? endif; ?> resultThumb">
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
-    <? if ($thumbnail): ?>
+  <? if ($thumbnail): ?>
+    <div class="media-right resultThumb <?= $thumbnailAlignment == 'right' ? '' : 'hidden-sm hidden-md hidden-lg'?>">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
       <?=$thumbnail ?>
-    <? endif; ?>
-  </div>
+    </div>
+  <? endif; ?>
   <? endif; ?><? /* this will end layout for format other than database or e-magazines */ ?>
   <? if ($database == 'true'): ?>
     <?=$this->partial('RecordDriver/SolrDefault/result-condensed-database.phtml'); ?>
@@ -207,40 +248,6 @@
   <? endif; ?>
   <? endif; ?>
   <div class="clearfix visible-xs"></div>
-  <div class="col-xs-12 col-sm-1 hidden-print add-to-favorite-col">
-      <? /* Display qrcode if appropriate: */ ?>
-      <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
-        <?
-          // Add JS Variables for QrCode
-          $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
-        ?>
-        <div class="hidden-xs">
-          <i class="fa fa-qrcode"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
-          <div class="qrcode hidden">
-            <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
-          </div><br/>
-        </div>
-      <? endif; ?>
-
-      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? /* Add to favorites */ ?>
-        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span> <span class="sr-only hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
-      <? endif; ?>
-      <? /* Hierarchy tree link */ ?>
-      <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
-        <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
-          <div class="hierarchyTreeLink">
-            <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
-            <i class="fa fa-sitemap"></i>
-            <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>" data-lightbox-href="<?=$this->recordLink()->getTabUrl($this->driver, 'AjaxTab')?>?hierarchy=<?=urlencode($hierarchyID)?>" data-lightbox-post="tab=hierarchytree">
-              <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
-            </a>
-          </div>
-        <? endforeach; ?>
-      <? endif; ?>
-
-      <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
-  </div>
   </div>
 </div>
 <!-- END of: finna - RecordDriver/SolrDefault/result-condensed.phtml -->

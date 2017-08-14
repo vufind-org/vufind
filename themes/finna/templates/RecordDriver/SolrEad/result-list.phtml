@@ -4,7 +4,8 @@
   $img = $this->recordImage($this->record($this->driver));
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
-  if ($img):
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
+if ($img):
     ob_start(); ?>
     <?=$img->render('list', ['medium' => ['w' => 300, 'h' => 300]]) ?>
     <? $thumbnail = ob_get_contents(); ?>
@@ -12,8 +13,17 @@
 <? endif;?>
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?> list-view">
   <div class="media">
-    <div class="col-xs-9 <? if ($thumbnailAlignment == 'left'): ?><?= $combinedView ? 'col-sm-10 col-sm-push-2' : 'col-sm-9 col-sm-push-3' ?><? elseif ($thumbnailAlignment == 'right'): ?><?= $combinedView ? 'col-sm-10' : 'col-sm-8 col-md-9' ?><? endif; ?>">
-      <div class="media-body">
+    <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <div class="media-<?=$thumbnailAlignment ?> resultThumb <?=$this->escapeHtmlAttr($coverDetails['size'])?> hidden-xs">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+        <? if ($thumbnail): ?>
+            <?=$thumbnail ?>
+        <? endif; ?>
+    </div>
+    <? endif; ?>
+    <div class="media-body">
+      <div class="result-body">
         <div class="title-container">
           <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
           <?
@@ -110,52 +120,52 @@
           <? endforeach; ?>
         <? endif; ?>
         <div class="hidden-print add-to-favorite-col">
-          <? /* Display qrcode if appropriate: */ ?>
-          <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
-              <?
-              // Add JS Variables for QrCode
-              $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
-              ?>
-            <div class="<?= $combinedView ? 'hidden' : '' ?> hidden-xs">
-              <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="finnaQrcodeLink"><i class="fa fa-qr-code" aria-hidden="true"></i></a>
-              <div class="qrcode hidden">
-                <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+            <? /* Display qrcode if appropriate: */ ?>
+            <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+                <?
+                // Add JS Variables for QrCode
+                $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
+                ?>
+              <div class="<?= $combinedView ? 'hidden' : '' ?> hidden-xs">
+                <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="finnaQrcodeLink" title="<?=$this->transEsc('qrcode_show')?>"><i class="fa fa-qr-code" aria-hidden="true"></i></a>
+                <div class="qrcode hidden">
+                  <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+                </div>
               </div>
-            </div>
-          <? endif; ?>
+            <? endif; ?>
 
-          <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-              <? /* Add to favorites */ ?>
-          <div>
-            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i><span class="hidden-sm hidden-md hidden-lg"> <?=$this->transEsc('Add to favorites')?></span><span class="sr-only hidden-xs"> <?=$this->transEsc('Add to favorites')?></span></a>
-          </div>
-          <? endif; ?>
+            <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+                <? /* Add to favorites */ ?>
+              <div>
+                <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i><span class="hidden-sm hidden-md hidden-lg"> <?=$this->transEsc('Add to favorites')?></span><span class="sr-only hidden-xs"> <?=$this->transEsc('Add to favorites')?></span></a>
+              </div>
+            <? endif; ?>
 
-          <? if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
-              <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
-          <? endif; ?>
+            <? if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
+                <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
+            <? endif; ?>
 
-          <? $openUrl = $this->driver->getOpenURL(); ?>
-          <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
+            <? $openUrl = $this->driver->getOpenURL(); ?>
+            <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
         </div>
+        <div class="clearfix visible-xs"></div>
+        <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+            <? /* Saved lists */ ?>
+          <div class="savedLists alert alert-info hidden">
+            <strong><?=$this->transEsc("Saved in")?>:</strong>
+          </div>
+        <? endif; ?>
       </div>
     </div>
-    <div class="media-<?=$thumbnailAlignment ?> col-xs-3 <? if ($thumbnailAlignment == 'left'): ?><?= $combinedView ? 'col-sm-2 col-sm-pull-10' : 'col-sm-3 col-sm-pull-9' ?><? elseif ($thumbnailAlignment == 'right'): ?><?= $combinedView ? 'col-sm-2' : 'col-sm-3 col-md-2' ?><? endif; ?> resultThumb">
+    <? if ($thumbnail ): ?>
+    <div class="media-<?=$thumbnailAlignment ?> resultThumb <?=$this->escapeHtmlAttr($coverDetails['size'])?> <?= $thumbnailAlignment == 'right' ? '' : 'hidden-sm hidden-md hidden-lg'?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
-    <? if ($thumbnail): ?>
-      <?=$thumbnail ?>
+        <? if ($thumbnail): ?>
+            <?=$thumbnail ?>
+        <? endif; ?>
+    </div>
     <? endif; ?>
-    </div>
-    <div class="clearfix visible-xs"></div>
-    <div class="col-xs-12 <?= $combinedView ? 'col-sm-10 col-sm-push-2' : 'col-sm-9 col-sm-push-3'?>">
-      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? /* Saved lists */ ?>
-        <div class="savedLists alert alert-info hidden">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
-        </div>
-      <? endif; ?>
-    </div>
   </div>
 </div>
 <!-- END of: finna - RecordDriver/SolrEad/result-list.phtml -->
