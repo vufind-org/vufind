@@ -91,7 +91,7 @@ class SystemMessages extends \Zend\View\Helper\AbstractHelper
 
         if (!empty($this->coreConfig->Site->systemMessages)) {
             $messages = $getMessageFn(
-                $this->coreConfig->Site->systemMessages, $language
+                $this->coreConfig->Site->systemMessages->toArray(), $language
             );
         }
 
