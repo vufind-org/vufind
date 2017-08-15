@@ -61,7 +61,9 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
         $view->comments = $this->params()->fromPost(
             'comments', $this->params()->fromQuery('comments')
         );
-        $view->url = $this->params()->fromPost('url');
+        $view->url = $this->params()->fromPost(
+            'url', $this->params()->fromQuery('url')
+        );
         $captcha = $this->params()->fromPost('captcha');
 
         // Support the old captcha mechanism for now
