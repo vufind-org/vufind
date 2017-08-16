@@ -917,4 +917,4 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             $description
         );
     }
- }
+}
