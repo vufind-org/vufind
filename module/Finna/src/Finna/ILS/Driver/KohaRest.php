@@ -866,7 +866,12 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
      */
     protected function getItemCallNumber($item)
     {
-        return $this->translateLocation($item['location']);
+        $result = [];
+        if (!empty($item['ccode_description'])) {
+            $result[] = $this->translateLocation($item['ccode_description']);
+        }
+        $result[] = $this->translateLocation($item['location']);
+        return implode(', ', $result);
     }
 
     /**
