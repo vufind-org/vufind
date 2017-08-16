@@ -91,7 +91,10 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
         }
 
         $paramArray['filter'] = $newFilter;
-        return $this->addFacet($field, $value, $operator, $paramArray);
+        $paramArray['filter'][] = $prefix . $field . ':"' . $value . '"';
+        unset($paramArray['page']);
+
+        return new static($paramArray, $this->queryObject, $this->config, false);
     }
 
     /**
