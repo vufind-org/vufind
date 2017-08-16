@@ -218,11 +218,12 @@
         );
       ?>
       <? if (!empty($coreFields)): ?>
-      <table class="table table-finna-record record-details record-details-more" style="table-layout:initial;">
+        <table class="table table-finna-record record-details">
           <? foreach ($coreFields as $key => $current): ?>
-            <tr class="<?=$current['context']['class'];?>"><th><?=$this->transEsc($key)?>:</th><td><?=$current['value']?></td></tr>
+           <? $header = $this->transEsc(isset($current['context']['title']) ? $current['context']['title'] : $key); ?>
+           <tr class="<?=$current['context']['class'];?>"><th><?=$header !== '' ? "$header:" : ''?></th><td><?=$current['value']?></td></tr>
           <? endforeach; ?>
-      </table>
+        </table>
       <? endif; ?>
       <button class="btn show-details-button hidden"><?=$this->transesc('show_more_details');?> <i class="fa fa-arrow-down"></i></button>
       <button class="btn hide-details-button hidden"><?=$this->transesc('show_less_details');?> <i class="fa fa-arrow-up"></i></button>
