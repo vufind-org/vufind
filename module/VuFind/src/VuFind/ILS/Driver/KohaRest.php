@@ -1314,7 +1314,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         $statuses = [];
         foreach ($result[0]['item_availabilities'] as $i => $item) {
-            $location = $this->getItemLocationName($item);
             $avail = $item['availability'];
             $available = $avail['available'];
             $statusCodes = $this->getItemStatusCodes($item);
@@ -1331,7 +1330,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $entry = [
                 'id' => $id,
                 'item_id' => $item['itemnumber'],
-                'location' => $location,
+                'location' => $this->getItemLocationName($item),
                 'availability' => $available,
                 'status' => $status,
                 'status_array' => $statusCodes,
@@ -1340,7 +1339,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'duedate' => $duedate,
                 'number' => $item['enumchron'],
                 'barcode' => $item['barcode'],
-                'sort' => $i
+                'sort' => $i,
+                'requests_placed' => max(
+                    [$item['hold_queue_length'], $result[0]['hold_queue_length']]
+                )
             ];
             if (!empty($item['itemnotes'])) {
                 $entry['item_notes'] = [$item['itemnotes']];
