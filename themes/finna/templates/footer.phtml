@@ -1,6 +1,6 @@
 <!-- START of: finna - footer.phtml -->
-<div class="row">
-  <div class="col-sm-3">
+<div class="footer-container">
+  <div class="footer-column">
     <h5><strong><?=$this->transEsc('About')?></strong></h5>
     <ul>
       <li><a href="<?=$this->url('content-page', ['page' => 'about'])?>"><?=$this->transEsc('About Us')?></a></li>
@@ -10,7 +10,7 @@
       <li><a href="<?=$this->url('content-page', ['page' => 'register_details'])?>"><?=$this->transEsc('Register Details')?></a></li>
     </ul>
   </div>
-  <div class="col-sm-3">
+  <div class="footer-column">
     <h5><strong><?=$this->transEsc('Find More')?></strong></h5>
     <ul>
       <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
@@ -28,25 +28,23 @@
       <? endif; ?>
     </ul>
   </div>
-  <div class="col-sm-3">
+  <div class="footer-column">
     <h5><strong><?=$this->transEsc('Need Help?')?></strong></h5>
     <ul>
       <li><a href="<?=$this->url('content-page', ['page' => 'help'])?>" title="<?=$this->transEsc('Search Tips')?>"><?=$this->transEsc('Help')?></a></li>
       <li><a href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Feedback')?></a></li>
     </ul>
   </div>
-  <div class="col-sm-3"></div>
 </div>
 <hr>
-<div class="row">
-  <div class="col-sm-3"></div>
-  <div class="col-sm-3">
+<div class="footer-container">
+  <div class="footer-column">
     <a href="<?=$this->url('content-page', ['page' => 'about_finna'])?>"><img src="<?=$this->imageLink('powered-by-finna_' . $this->layout()->userLang . '.png')?>" alt="Finna-logo" /></a><br><br>
   </div>
-  <div class="col-sm-3">
+  <div class="footer-column">
     <a href="http://vufind.org/"><img src="<?=$this->imageLink('vufind-logo.png')?>" alt="Vufind-logo" /></a>
   </div>
-  <div class="col-sm-3">
+  <div class="footer-column">
   </div>
 </div>
 <!-- END of: finna - footer.phtml -->

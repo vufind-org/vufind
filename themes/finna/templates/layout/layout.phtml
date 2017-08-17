@@ -269,33 +269,25 @@ JS;
     <header class="hidden-print">
       <? if (!empty($_SERVER['HTTP_USER_AGENT']) && preg_match('/(?i)msie [5-8]/',$_SERVER['HTTP_USER_AGENT'])): ?>
       <div class="container-fluid system-messages">
-        <div class="row">
-          <div class="col-xs-12">
-            <?=$this->translate('outdated_browser_message_html');?>
-          </div>
-        </div>
+        <?=$this->translate('outdated_browser_message_html');?>
       </div>
       <? endif; ?>
       <? if ($messages = $this->systemMessages()): ?>
       <div class="container-fluid system-messages">
         <? foreach ($messages as $message): ?>
-        <div class="row">
-          <div class="col-xs-12">
+          <div>
             <?=$message // intentionally not escaped so that markup can be used ?>
           </div>
-        </div>
         <? endforeach; ?>
       </div>
       <? endif; ?>
       <div class="container-fluid navbar">
-        <div class="row">
-          <div class="col-xs-12">
-            <? if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
-              <span class="sr-only"><?=$this->layout()->srmessage ?></span>
-            <? endif; ?>
-            <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
-            <?=$this->render('navibar.phtml')?>
-          </div>
+        <div>
+          <? if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
+            <span class="sr-only"><?=$this->layout()->srmessage ?></span>
+          <? endif; ?>
+          <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+          <?=$this->render('navibar.phtml')?>
         </div>
       </div>
     </header>
@@ -304,17 +296,16 @@ JS;
           <a class="btn btn-primary floating-feedback-btn hidden-xs" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Give Feedback')?></a>
       <? endif; ?>
       <div class="container">
-        <div class="row">
-          <div class="logo col-xs-12 clearfix">
+        <div>
+          <div class="logo clearfix">
             <?=$this->render('search/logosection.phtml') ?>
           </div>
         </div>
         <? if (isset($this->layout()->introduction) && $this->resolver('search/introductiontext.phtml')): ?>
-        <div class="row">
-          <div class="col-xs-12 introduction clearfix">
+        <div class="introduction">
+          <div class="introduction clearfix">
             <?=$this->render('search/introductiontext.phtml') ?>
           </div>
-          <div class="col-xs-1"></div>
         </div>
         <? endif; ?>
         <? if ((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
@@ -322,34 +313,32 @@ JS;
           && $this->layout()->breadcrumbs !== false
         ): ?>
           <nav class="breadcrumbs">
-            <div class="row">
-              <div class="col-sm-10 col-md-8 col-lg-8 hidden-print">
-                <ul class="breadcrumb">
-                  <? if(is_array($this->layout()->breadcrumbs)): ?>
-                    <? if(count($this->layout()->breadcrumbs) > 1): ?>
-                      <?=$this->render('breadcrumbs/multi.phtml', [
-                          'parents' => $this->layout()->breadcrumbs,
-                          'title'   => $this->layout()->title,
-                          'end'     => $this->layout()->breadcrumbEnd,
-                          'from'    => $this->layout()->from
-                        ]) ?>
-                    <? else: ?>
-                      <?=$this->render('breadcrumbs/default.phtml', [
-                          'parents' => $this->layout()->breadcrumbs,
-                          'title'   => $this->layout()->title
-                        ]) ?>
-                    <? endif; ?>
+            <div class="hidden-print">
+              <ul class="breadcrumb">
+                <? if(is_array($this->layout()->breadcrumbs)): ?>
+                  <? if(count($this->layout()->breadcrumbs) > 1): ?>
+                    <?=$this->render('breadcrumbs/multi.phtml', [
+                        'parents' => $this->layout()->breadcrumbs,
+                        'title'   => $this->layout()->title,
+                        'end'     => $this->layout()->breadcrumbEnd,
+                        'from'    => $this->layout()->from
+                      ]) ?>
                   <? else: ?>
-                    <?=$this->layout()->breadcrumbs ?>
+                    <?=$this->render('breadcrumbs/default.phtml', [
+                        'parents' => $this->layout()->breadcrumbs,
+                        'title'   => $this->layout()->title
+                      ]) ?>
                   <? endif; ?>
-                </ul>
-              </div>
+                <? else: ?>
+                  <?=$this->layout()->breadcrumbs ?>
+                <? endif; ?>
+              </ul>
             </div>
           </nav>
         <? endif; ?>
         <? if (!empty($this->layout()->searchbox) && $this->layout()->searchbox !== false): ?>
-        <div class="row">
-          <nav class="nav searchbox col-xs-12 hidden-print">
+        <div>
+          <nav class="nav searchbox hidden-print">
             <?=$this->layout()->searchbox ?>
           </nav>
         </div>
@@ -359,18 +348,18 @@ JS;
     <? // TODO: get rid of template-dir-* and template-name-* here ?>
     <section role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?><?=$this->browse ? ' browse' : '' ?><?=$currentTabClass?>">
       <? if (!empty($this->layout()->finnaMainHeader)): ?>
-      <div class="container-fluid finna-main-header">
+      <div class="finna-main-header">
         <div class="container">
-          <div class="row">
+          <div>
             <?=$this->layout()->finnaMainHeader?>
           </div>
         </div>
       </div>
       <? endif; ?>
       <? if (!empty($this->layout()->finnaMainTabs)): ?>
-      <div class="container-fluid finna-main-tabs">
+      <div class="finna-main-tabs">
         <div class="container">
-          <div class="row">
+          <div>
               <?=$this->layout()->finnaMainTabs?>
           </div>
         </div>
@@ -400,8 +389,8 @@ JS;
     <? if ($template = $this->content()->findTemplateForLng("content/Additions/general-post-body")): ?>
       <div class="container-fluid general-post-body">
         <div class="container">
-          <div class="row">
-            <div class="col-xs-12">
+          <div>
+            <div>
               <?=$this->render($template)?>
             </div>
           </div>

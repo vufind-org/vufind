@@ -89,7 +89,7 @@
        $placeholder = $this->translate('Find') . '...';
      }
   ?>
-  <div class="col-xs-12 col-sm-10 col-md-8 col-lg-7 searchbox-container">
+  <div class="search-left">
   <form id="searchForm" role="search" class="searchForm navbar-form navbar-left  <?=$handlerCount < 2 ? 'input-field-only' :''; ?>" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
     <label for="searchForm_lookfor" class="sr-only" hidden><?=$this->transEsc("Find")?></label>
     <input class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete-finna searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?= !empty($activeTab) ? ' tab:' . $this->escapeHtmlAttr(str_replace(':', '###', $activeTab)) : ''?><?=!empty($browse) || $activeTab == 'Combined' ? ' onlySuggestions:1' : ''?><?= !$browse && in_array($activeTab, ['Combined','Primo','EDS','Summon']) ? ' suggestions:0' : ''?><?= !empty($acHandlers) ? ' handlers:' . implode('|', array_map(function($h) { return $h['handler']; }, $acHandlers)) : ''?><?= !empty($phrase) ? ' phrase:' . $this->escapeHtmlAttr($phrase) : ''?><?= !empty($acFilters) ? ' filters:' . $this->escapeHtmlAttr(implode('||', array_map(function($k, $v) { return $k . '|' . $v; }, array_keys($acFilters), $acFilters))) : ''?><? endif ?>" placeholder="<?=$this->escapeHtmlAttr($placeholder)?>" id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
@@ -185,7 +185,7 @@
   </form>
   </div>
   <? if ($advSearch): ?>
-  <div class="col-md-4 col-lg-5">
+  <div class="search-right">
     <a href="<?=$this->url($advSearch)?>" class="btn btn-link hidden-xs hidden-sm" rel="nofollow"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Advanced Search")?></a>
     <? if ($module === 'search' && !$this->translationEmpty('tooltip_local_search_html')): ?><span class="tooltip-search-local pull-right hidden-xs" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_local_search_html')?>"><i class="fa fa-info-big"></i></span><? endif; ?>
     <? if ($module === 'primo' && !$this->translationEmpty('tooltip_pci_search_html')): ?><span class="tooltip-search-pci pull-right hidden-xs" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_pci_search_html')?>"><i class="fa fa-info-big"></i></span><? endif; ?>
@@ -193,8 +193,8 @@
     <? if ($module === 'summon' && !$this->translationEmpty('tooltip_summon_search_html')): ?><span class="tooltip-search-summon pull-right hidden-xs" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_summon_search_html')?>"><i class="fa fa-info-big"></i></span><? endif; ?>
   </div>
   <? endif; ?>
-  <div class="row">
-    <div class="col-xs-12 col-sm-10 col-md-8 col-lg-7 text-right">
+  <div>
+    <div class="search-left text-right">
       <? $mainPage = $action === 'home' && in_array($module, ['combined', 'primo', 'search', 'eds', 'summon']); ?>
 
       <? if ($browse || $mainPage): ?>

@@ -26,20 +26,11 @@ header {
 }
 // fine-tune tablet layout 
 @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-    body > header, body > section, body > footer {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
     body > section.main {
         // mostly all containers on pages but not main-container
         & > .container-fluid {
             margin-left: -10px;
             margin-right: -10px;
-        }
-        // element-specific adjustments
-        & .finna-main-header, .finna-main-tabs {
-            padding-left: 10px;
-            padding-right: 10px;
         }
         & .record-view-header {
             padding-left: 25px;

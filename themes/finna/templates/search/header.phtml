@@ -20,7 +20,7 @@
     $searchType = isset($this->params) ? $this->params->getsearchType() : $searchType;
     $searchId = isset($this->results) ? $this->results->getSearchId() : $searchId;
 ?>
-<div class="col-sm-9 <?=$searchType != 'advanced' ? 'hidden-xs' : '' ;?>">
+<div class="<?=$searchType != 'advanced' ? 'hidden-xs' : '' ;?>">
   <h1 class="search-result-header">
   <? if ($this->recordsFound || isset($onRecordPage)): ?>
     <? if (isset($this->overrideSearchHeading)): ?>
@@ -44,10 +44,9 @@
     </span>
   <? endif; ?>
 </div>
-<div class="col-sm-3"></div>
 
 <? if ($searchType == 'advanced'): ?>
-<div class="col-xs-12">
+<div>
   <div id="searchForm" class="hidden-print">
     <div class="adv_search_links">
       <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($searchId)?>"><i class="fa fa-pen"></i> <?=$this->transEsc("Edit this Advanced Search")?></a>
@@ -57,7 +56,7 @@
   </div>
 </div>
 <? elseif ($this->fromStreetSearch): ?>
-<div class="col-xs-12">
+<div>
   <div id="searchForm" class="hidden-print">
     <?=$this->render('search/street-search-header.phtml');?>
   </div>
