@@ -115,6 +115,12 @@ pattern = "numeric"
 [updatePhone]
 ;method = driver
 
+[Holdings]
+; Whether item-specific hold counts are displayed
+display_item_hold_counts = false
+; Whether total count of holds is displayed
+display_total_hold_count = true
+
 [onlinePayment]
 ; Whether online payment is enabled. Default is false.
 enabled = true

@@ -74,6 +74,16 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         $data = parent::getHolding($id, $patron);
         if (!empty($data)) {
             $summary = $this->getHoldingsSummary($data);
+
+            // Remove request counts before adding the summary if necessary
+            if (isset($this->config['Holdings']['display_item_hold_counts'])
+                && !$this->config['Holdings']['display_item_hold_counts']
+            ) {
+                foreach ($data as &$item) {
+                    unset($item['requests_placed']);
+                }
+            }
+
             $data[] = $summary;
         }
         return $data;
@@ -834,6 +844,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     protected function getHoldingsSummary($holdings)
     {
         $availableTotal = $itemsTotal = $reservationsTotal = 0;
+        $requests = 0;
         $locations = [];
 
         foreach ($holdings as $item) {
@@ -841,13 +852,16 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 $availableTotal++;
             }
             $locations[$item['location']] = true;
+            if ($item['requests_placed'] > $requests) {
+                $requests = $item['requests_placed'];
+            }
         }
 
         // Since summary data is appended to the holdings array as a fake item,
         // we need to add a few dummy-fields that VuFind expects to be
         // defined for all elements.
 
-        return [
+        $result = [
            'available' => $availableTotal,
            'total' => count($holdings),
            'locations' => count($locations),
@@ -855,6 +869,10 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
            'callnumber' => null,
            'location' => null
         ];
+        if (!empty($this->config['Holdings']['display_total_hold_count'])) {
+            $result['reservations'] = $requests;
+        }
+        return $result;
     }
 
     /**
