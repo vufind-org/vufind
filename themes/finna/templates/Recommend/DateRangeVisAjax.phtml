@@ -53,7 +53,7 @@ JS;
 
 $script .= isset($this->plotFrom) ? "{$this->plotFrom}," : 'false,';
 $script .= isset($this->plotTo) ? "{$this->plotTo}," : 'false,';
-$script .= isset($this->plotImmediately) ? "true" : "false";
+$script .= isset($this->plotImmediately) ? "{$this->plotImmediately}" : "false";
 $script .= '
   );
 });';

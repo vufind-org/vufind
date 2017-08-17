@@ -127,7 +127,8 @@ $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
                 'type' => $type,
                 'backend' => (null === $module || $module == 'search') ? 'solr' : $module,
                 'daterangeFacet' => $daterangeFacetField,
-                'plotFrom' => $plotFrom
+                'plotFrom' => $plotFrom,
+                'plotImmediately' => !in_array($title, $collapsedFacets) ? 'true' : 'false'
               ]);
               ?>
             </div>

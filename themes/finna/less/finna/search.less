@@ -8,15 +8,15 @@
 @media (min-width: @screen-sm-min) {
   .mainbody { width: 75%; }
   .sidebar { width: 25%; }
-  .mainbody.left,
-  .sidebar.left {
+  .sidebar.left { float: left; }
+  .sidebar.right { float: right; }
+  .mainbody.left{
     float: left;
-    padding-right: 1rem;
+    padding-right: 15px;
   }
-  .mainbody.right,
-  .sidebar.right {
+  .mainbody.right{
     float: right;
-    padding-left: 1rem;
+    padding-left: 15px;
   }
   .empty-list {
     width: 75%;

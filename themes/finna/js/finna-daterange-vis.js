@@ -327,13 +327,11 @@ finna.dateRangeVis = (function() {
             plotData(200);
         });
 
-        if (facetItem.hasClass('collapsed')) {
-            title.on('click', function(e) {
-                if (!plotted) {
-                    showVis();
-                }
-            });
-        }
+        $('.daterange-facet.facet-group').on('shown.bs.collapse', function(e) {
+            if (!plotted) {
+                showVis();
+            }
+        });
     };
 
     var initResizeListener = function() {
