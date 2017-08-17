@@ -32,7 +32,7 @@
 
   // Search type and tabs
   $this->searchType = 'advanced';
-  $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">' . $this->translate('Advanced Search') . '</h1></div>';
+  $this->layout()->finnaMainHeader = '<div><h1 class="content-header">' . $this->translate('Advanced Search') . '</h1></div>';
   $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters, []);
   $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs'], 'hiddenFilters' => $hiddenFilters]);
 
@@ -77,8 +77,8 @@
       <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>" />
     <? endforeach; ?>
   <? endforeach; ?>
-  <div class="row">
-    <div class="col-sm-12 col-md-10 col-lg-9">
+  <div class="advanced-search">
+    <div class="">
       <h4><?=$this->transEsc("adv_search_label")?><? if (!$this->translationEmpty('tooltip_local_advanced_html')): ?><span class="tooltip-local-advanced pull-right" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title='<?=$this->transesc("tooltip_local_advanced_html") ?>'><i class="fa fa-info-big" aria-hidden="true"></i> <?=$this->transEsc("Help with Advanced Search")?></span><? endif; ?></h4>
       <input type="hidden" name="sort" value="relevance">
 
@@ -97,37 +97,33 @@
             <? endif; ?>
             <div id="group<?=$group ?>" class="adv-group well">
               <a href="#" class="adv-group-close hidden" title="<?=$this->transEsc("del_search")?>"><i class="fa fa-times" aria-hidden="true"></i> <?=$this->transEsc("del_search")?></a>
-              <div class="row">
-                <div class="col-sm-5 col-sm-push-7 match">
-                  <div class="adv-group-match">
-                    <label class="search_bool"><?=$this->transEsc("search_match")?>:</label>
-                    <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control form-inline">
-                      <option value="AND"<? if(isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_AND")?></option>
-                      <option value="OR"<? if(isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_OR")?></option>
-                      <option value="NOT"<? if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_NOT")?></option>
-                    </select>
-                  </div>
+              <div class="adv-search-group">
+                <div class="adv-group-match match">
+                  <label class="search_bool"><?=$this->transEsc("search_match")?>:</label>
+                  <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control form-inline">
+                    <option value="AND"<? if(isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_AND")?></option>
+                    <option value="OR"<? if(isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_OR")?></option>
+                    <option value="NOT"<? if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_NOT")?></option>
+                  </select>
                 </div>
-                <div class="col-sm-7 col-sm-pull-5">
-                  <div class="adv-group-terms">
-                    <? for ($search=0 ; $search<3 || (isset($setQueries[$group]) && $search<count($setQueries[$group])) ; $search++): ?>
-                      <? if ($group == 0 && $search == 0): ?>
-                        <div id="new_search_template">
-                      <? endif; ?>
-                      <div id="search<?=$group.'_'.$search ?>" class="adv-search search">
-                        <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" title="<?=$this->transEsc("Search words");?>" class="adv-term-input form-control form-inline responsive-field" placeholder="<?=$this->transEsc("Search words")?>..." type="text"<?if(isset($setQueries[$group][$search])):?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?endif;?>>
-                        <select class="adv-term-type form-control form-inline responsive-field" name="type<?=$group ?>[]" title="<?=$this->transEsc("search_in_field");?>">
-                          <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                            <option value="<?=$this->escapeHtml($searchVal)?>"<?if(isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()):?> selected<?endif;?>><?=$this->transEsc($searchDesc)?></option>
-                          <? endforeach; ?>
-                        </select>
+                <div class="adv-group-terms">
+                  <? for ($search=0 ; $search<3 || (isset($setQueries[$group]) && $search<count($setQueries[$group])) ; $search++): ?>
+                    <? if ($group == 0 && $search == 0): ?>
+                      <div id="new_search_template">
+                    <? endif; ?>
+                    <div id="search<?=$group.'_'.$search ?>" class="adv-search search">
+                      <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" title="<?=$this->transEsc("Search words");?>" class="adv-term-input form-control form-inline responsive-field" placeholder="<?=$this->transEsc("Search words")?>..." type="text"<?if(isset($setQueries[$group][$search])):?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?endif;?>>
+                      <select class="adv-term-type form-control form-inline responsive-field" name="type<?=$group ?>[]" title="<?=$this->transEsc("search_in_field");?>">
+                        <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+                          <option value="<?=$this->escapeHtml($searchVal)?>"<?if(isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()):?> selected<?endif;?>><?=$this->transEsc($searchDesc)?></option>
+                        <? endforeach; ?>
+                      </select>
+                    </div>
+                    <? if ($group == 0 && $search == 0): ?>
                       </div>
-                      <? if ($group == 0 && $search == 0): ?>
-                        </div>
-                        <span class="search_place_holder hidden"></span> <a href="#" class="add_search_link hidden"><i class="fa fa-plus-small" aria-hidden="true"></i> <?=$this->transEsc("add_search")?></a>
-                      <? endif; ?>
-                    <? endfor; ?>
-                  </div>
+                      <span class="search_place_holder hidden"></span> <a href="#" class="add_search_link hidden"><i class="fa fa-plus-small" aria-hidden="true"></i> <?=$this->transEsc("add_search")?></a>
+                    <? endif; ?>
+                  <? endfor; ?>
                 </div>
               </div>
               <? if($group == 0): ?>
@@ -137,15 +133,13 @@
           <? endfor; ?>
         <? endif; ?>
       </div>
-      <div class="row">
-        <div class="col-xs-12">
-          <div id="groupJoin" class="form text-center">
-            <label for="groupJoinOptions" class="sr-only"><?=$this->transEsc("search_match")?>:</label>
-            <select id="groupJoinOptions" name="join" class="form-control form-inline">
-              <option value="AND"<? if($searchDetails && $searchDetails->getOperator()=='ALL'):?> selected<?endif?>><?= $this->transEsc('group_AND') ?></option>
-              <option value="OR"<? if($searchDetails && $searchDetails->getOperator()=='OR'):?> selected<?endif?>><?= $this->transEsc('group_OR') ?></option>
-            </select>
-          </div>
+      <div class="group-join-container">
+        <div id="groupJoin" class="form text-center">
+          <label for="groupJoinOptions" class="sr-only"><?=$this->transEsc("search_match")?>:</label>
+          <select id="groupJoinOptions" name="join" class="form-control form-inline">
+            <option value="AND"<? if($searchDetails && $searchDetails->getOperator()=='ALL'):?> selected<?endif?>><?= $this->transEsc('group_AND') ?></option>
+            <option value="OR"<? if($searchDetails && $searchDetails->getOperator()=='OR'):?> selected<?endif?>><?= $this->transEsc('group_OR') ?></option>
+          </select>
         </div>
       </div>
       <span class="clearfix"></span>

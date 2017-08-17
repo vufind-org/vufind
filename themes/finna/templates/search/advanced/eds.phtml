@@ -51,11 +51,11 @@
     <? endforeach; ?>
 <? endif; ?>
 <? if (isset($this->dateRangeLimit)): ?>
-<div class="row ranges-container">
-  <div class="col-md-2">
+<div class="ranges-container">
+  <div>
     <label><?=$this->transEsc('adv_search_year')?></label>
   </div>
-  <div class="col-md-10">
+  <div>
       <input type="hidden" name="daterange[]" value="PublicationDate"/>
         <div class="slider-container">
           <input type="text" id="PublicationDateSlider">

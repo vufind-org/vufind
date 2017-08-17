@@ -17,20 +17,18 @@
       $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
     }
 ?>
-  <div class="row">
-    <div class="col-xs-12">
-      <h4><?=$this->transEsc('Limit To')?></h4>
-    </div>
+  <div>
+    <h4><?=$this->transEsc('Limit To')?></h4>
   </div>
-  <div class="row">
-    <div class="col-xs-12">
-    <fieldset class="adv-search well limit-to">
+  <div>
+    <div>
+    <fieldset class="well limit-to">
       <? if (!empty($this->checkboxFacets)): ?>
         <?=$this->render('search/advanced/checkbox-filters.phtml')?>
       <? endif; ?>
-      <div class="row">
+      <div>
         <? foreach ($this->facetList as $field => $list): ?>
-          <div class="col-sm-4 <?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>-container">
+          <div class="solr-adv-filter <?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>-container">
             <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
             <select class="form-control multi-select" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]"  multiple="multiple" >
               <? if (is_array($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>
@@ -59,17 +57,16 @@
             </select>
           </div>
         <? endforeach; ?>
-        <div class="col-sm-4"><p class="information-text"><i class="fa fa-info2"></i> <?=$this->transEsc('advanced_search_information_text')?></p></div>
-      </div>
-      <div class="row">
-        <div class="col-xs-12 ranges-container">
-          <?=$this->render('search/advanced/ranges.phtml', ['searchClassId' => $searchClassId, 'ranges' => $daterange])?>
-        </div>
+        <div><p class="information-text"><i class="fa fa-info2"></i> <?=$this->transEsc('advanced_search_information_text')?></p></div>
+    </div>
+      <div class="clearfix"></div>
+      <div class="ranges-container">
+        <?=$this->render('search/advanced/ranges.phtml', ['searchClassId' => $searchClassId, 'ranges' => $daterange])?>
       </div>
     </fieldset>
     <? if (!empty($searchFilters) || !empty($usedCheckboxFilters)): ?>
       <h4><?=$this->transEsc("adv_search_filters")?></h4>
-      <fieldset class="adv-search well limit-to">
+      <fieldset class="well limit-to">
         <?=$this->render('search/advanced/filters.phtml', ['usedCheckboxFilters' => $usedCheckboxFilters, 'searchFilters' => $searchFilters])?>
       </fieldset>
     <? endif; ?>
@@ -77,28 +74,22 @@
   </div>
 <? endif; ?>
 <div class="search-map-container">
-  <div class="row">
-    <div class="col-xs-12">
-      <h4><?=$this->transEsc('Geographical Area') ?></h4>
-    </div>
+  <div>
+    <h4><?=$this->transEsc('Geographical Area') ?></h4>
   </div>
-  <div class="row">
-    <div class="col-xs-12 map-container">
-      <fieldset class="adv-search well map">
-        <?=$this->render('search/advanced/map.phtml', ['searchClassId' => $searchClassId, 'saved' => $this->saved])?>
-      </fieldset>
-    </div>
+  <div class="map-container">
+    <fieldset class="well map">
+      <?=$this->render('search/advanced/map.phtml', ['searchClassId' => $searchClassId, 'saved' => $this->saved])?>
+    </fieldset>
   </div>
 </div>
 <? if (isset($this->illustratedLimit)): ?>
-  <div class="row">
-    <fieldset class="adv-search col-sm-4">
-      <legend><?=$this->transEsc("Illustrated")?>:</legend>
-      <? foreach ($this->illustratedLimit as $current): ?>
-        <input id="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtmlAttr($current['value'])?>"<?=$current['selected']?' checked="checked"':''?>/>
-        <label for="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>"><?=$this->transEsc($current['text'])?></label><br/>
-      <? endforeach; ?>
-    </fieldset>
-  </div>
-  <? endif; ?>
+  <fieldset>
+    <legend><?=$this->transEsc("Illustrated")?>:</legend>
+    <? foreach ($this->illustratedLimit as $current): ?>
+      <input id="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtmlAttr($current['value'])?>"<?=$current['selected']?' checked="checked"':''?>/>
+      <label for="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>"><?=$this->transEsc($current['text'])?></label><br/>
+    <? endforeach; ?>
+  </fieldset>
+<? endif; ?>
 <!-- END of: finna - search/advanced/solr.phtml -->

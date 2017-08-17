@@ -1,26 +1,26 @@
-<div class="row">
-  <div class="col-xs-12">
-    <? foreach ($usedCheckboxFilters as $filter): ?>
-      <? if ($filter['selected']): ?>
+<div>
+  <? if (isset($usedCheckboxFilters)): ?>
+  <? foreach ($usedCheckboxFilters as $filter): ?>
+    <? if ($filter['selected']): ?>
+    <div>
+      <label>
+        <input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($filter['filter'])?>' />
+        <?=$this->transEsc($filter['desc'])?>
+      </label>
+    </div>
+    <? endif; ?>
+  <? endforeach; ?>
+  <? endif; ?>
+  <? foreach ($searchFilters as $field => $data): ?>
+    <? foreach ($data as $index => $value): ?>
       <div>
         <label>
-          <input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($filter['filter'])?>' />
-          <?=$this->transEsc($filter['desc'])?>
+          <? $operatorChar = ($value['operator'] == 'NOT') ? '-' : ($value['operator'] == 'OR' ? '~' : ''); ?>
+          <input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$operatorChar . $this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' />
+          <? if ($value['operator'] == 'NOT') echo $this->transEsc('NOT'); if ($value['operator'] == 'OR' && $index > 0) echo $this->transEsc('OR'); ?>
+          <?=$this->transEsc($field)?>: <?=$this->escapeHtml($value['displayText'])?>
         </label>
       </div>
-      <? endif; ?>
     <? endforeach; ?>
-    <? foreach ($searchFilters as $field => $data): ?>
-      <? foreach ($data as $index => $value): ?>
-        <div>
-          <label>
-            <? $operatorChar = ($value['operator'] == 'NOT') ? '-' : ($value['operator'] == 'OR' ? '~' : ''); ?>
-            <input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$operatorChar . $this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' />
-            <? if ($value['operator'] == 'NOT') echo $this->transEsc('NOT'); if ($value['operator'] == 'OR' && $index > 0) echo $this->transEsc('OR'); ?>
-            <?=$this->transEsc($field)?>: <?=$this->escapeHtml($value['displayText'])?>
-          </label>
-        </div>
-      <? endforeach; ?>
-    <? endforeach; ?>
-  </div>
+  <? endforeach; ?>
 </div>
