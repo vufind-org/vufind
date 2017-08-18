@@ -172,6 +172,7 @@ $config = [
             'VuFind\RelatedPluginManager' => 'VuFind\Service\Factory::getRelatedPluginManager',
             'VuFind\ResolverDriverPluginManager' => 'VuFind\Service\Factory::getResolverDriverPluginManager',
             'VuFind\Search\BackendManager' => 'VuFind\Service\Factory::getSearchBackendManager',
+            'VuFind\Search\History' => 'VuFind\Service\Factory::getSearchHistory',
             'VuFind\Search\Memory' => 'VuFind\Service\Factory::getSearchMemory',
             'VuFind\SearchOptionsPluginManager' => 'VuFind\Service\Factory::getSearchOptionsPluginManager',
             'VuFind\SearchParamsPluginManager' => 'VuFind\Service\Factory::getSearchParamsPluginManager',

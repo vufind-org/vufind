@@ -693,6 +693,18 @@ class Factory
     }
 
     /**
+     * Construct the search history helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Search\History
+     */
+    public static function getSearchHistory(ServiceManager $sm)
+    {
+        return new \VuFind\Search\History($sm);
+    }
+
+    /**
      * Construct the search memory helper.
      *
      * @param ServiceManager $sm Service manager.

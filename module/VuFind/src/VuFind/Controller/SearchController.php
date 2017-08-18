@@ -40,6 +40,10 @@ use VuFind\Exception\Mail as MailException;
  */
 class SearchController extends AbstractSearch
 {
+
+
+    protected $historyService;
+
     /**
      * Handle an advanced search
      *
@@ -237,41 +241,11 @@ class SearchController extends AbstractSearch
             return $this->forceLogin();
         }
 
-        // Retrieve search history
-        $search = $this->getTable('Search');
-        $searchHistory = $search->getSearches(
-            $this->getServiceLocator()->get('VuFind\SessionManager')->getId(),
-            is_object($user) ? $user->id : null
-        );
-
-        // Build arrays of history entries
-        $saved = $unsaved = [];
-
-        // Loop through the history
-        foreach ($searchHistory as $current) {
-            $minSO = $current->getSearchObject();
-
-            // Saved searches
-            if ($current->saved == 1) {
-                $saved[] = $minSO->deminify($this->getResultsManager());
-            } else {
-                // All the others...
-
-                // If this was a purge request we don't need this
-                if ($this->params()->fromQuery('purge') == 'true') {
-                    $current->delete();
-
-                    // We don't want to remember the last search after a purge:
-                    $this->getSearchMemory()->forgetSearch();
-                } else {
-                    // Otherwise add to the list
-                    $unsaved[] = $minSO->deminify($this->getResultsManager());
-                }
-            }
-        }
-
+        /** @var \VuFind\Search\History $searchHistoryHelper */
+        $searchHistoryHelper = $this->getServiceLocator()->get('VuFind\Search\History');
+        $lastSearches = $searchHistoryHelper->getSearchHistory(is_object($user) ? $user->id : null);
         return $this->createViewModel(
-            ['saved' => $saved, 'unsaved' => $unsaved]
+            $lastSearches
         );
     }
 
