@@ -560,6 +560,8 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                 switch ($subfieldCode) {
                 case 'w':
                     $id = $subfield->getData();
+                    // Remove any source in parenthesis to create a working link
+                    $id = preg_replace('/\\(.+\\)/', '', $id);
                     break;
                 case 't':
                     $title = $this->stripTrailingPunctuation(
