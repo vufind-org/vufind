@@ -106,6 +106,8 @@
         <div class="pagination-container">
             <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results, 'label' => $resultsStr])?>
         </div>
+        <? else: ?>
+          <? $resultsStr = ''; ?>
         <? endif; ?>
         <? $this->layout()->srmessage = strip_tags($resultsStr); ?>
         <? if ($this->fromStreetSearch): ?>
