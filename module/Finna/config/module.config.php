@@ -247,6 +247,7 @@ $config = [
                     'fee' => 'Finna\Db\Row\Factory::getFee',
                     'finnacache' => 'Finna\Db\Row\Factory::getFinnaCache',
                     'privateuser' => 'Finna\Db\Row\Factory::getPrivateUser',
+                    'resource' => 'Finna\Db\Row\Factory::getResource',
                     'search' => 'Finna\Db\Row\Factory::getSearch',
                     'transaction' => 'Finna\Db\Row\Factory::getTransaction',
                     'user' => 'Finna\Db\Row\Factory::getUser',
