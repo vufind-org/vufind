@@ -16,7 +16,8 @@ $config = [
             'Finna\OnlinePaymentMonitor' => 'FinnaConsole\Service\Factory::getOnlinePaymentMonitor',
             'Finna\ScheduledAlerts' => 'FinnaConsole\Service\Factory::getScheduledAlerts',
             'Finna\UpdateSearchHashes' => 'FinnaConsole\Service\Factory::getUpdateSearchHashes',
-            'Finna\VerifyRecordLinks' => 'FinnaConsole\Service\Factory::getVerifyRecordLinks'
+            'Finna\VerifyRecordLinks' => 'FinnaConsole\Service\Factory::getVerifyRecordLinks',
+            'Finna\VerifyResourceMetadata' => 'FinnaConsole\Service\Factory::getVerifyResourceMetadata'
         ]
     ]
 ];
@@ -29,7 +30,8 @@ $routes = [
     'util/online_payment_monitor' => 'util online_payment_monitor <expire_hours> <from_email> <report_interval_hours>',
     'util/scheduled_alerts' => 'util scheduled_alerts <view_base_directory> <VuFind_local_configuration_directory>',
     'util/update_search_hashes' => 'util update_search_hashes Y',
-    'util/verify_record_links' => 'util verify_record_links'
+    'util/verify_record_links' => 'util verify_record_links',
+    'util/verify_resource_metadata' => 'util verify_resource_metadata'
 ];
 
 $routeGenerator = new \VuFindConsole\Route\RouteGenerator();

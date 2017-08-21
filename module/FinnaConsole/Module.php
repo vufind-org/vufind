@@ -103,7 +103,8 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
             'util online_payment_monitor' => 'Process unregistered online payments',
             'util scheduled_alerts' => 'Send scheduled alerts',
             'util update_search_hashes' => 'Update search hashes',
-            'util verify_record_links' => 'Verify record links'
+            'util verify_record_links' => 'Verify record links',
+            'util verify_resource_metadata' => 'Verify resource metadata'
         ];
     }
 }

@@ -297,8 +297,10 @@ $config = [
             ],
             'search_backend' => [
                 'factories' => [
+                    'EDS' => 'Finna\Search\Factory\EdsBackendFactory',
                     'Primo' => 'Finna\Search\Factory\PrimoBackendFactory',
                     'Solr' => 'Finna\Search\Factory\SolrDefaultBackendFactory',
+                    'Summon' => 'Finna\Search\Factory\SummonBackendFactory',
                 ],
                 'aliases' => [
                     // Allow Solr core names to be used as aliases for services:

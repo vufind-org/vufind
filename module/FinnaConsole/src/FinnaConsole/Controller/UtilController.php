@@ -131,6 +131,16 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     }
 
     /**
+     * Verify resource metadata.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function verifyResourceMetadataAction()
+    {
+        return $this->runService('Finna\VerifyResourceMetadata');
+    }
+
+    /**
      * Helper function for running a service.
      *
      * @param string $service Service name.

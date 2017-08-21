@@ -55,10 +55,11 @@ class Resource extends \VuFind\Db\Row\Resource
      */
     public function assignMetadata($driver, \VuFind\Date\Converter $converter)
     {
-        $parent = parent::assignMetadata($driver, $converter);
-        if (empty($parent->year)) {
-            $parent->year = $driver->tryMethod('getYear')
+        parent::assignMetadata($driver, $converter);
+        if (empty($this->year)) {
+            $this->year = $driver->tryMethod('getYear')
                 ? $driver->tryMethod('getYear') : null;
         }
+        return $this;
     }
 }

@@ -152,7 +152,7 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \FinnaConsole\Service\ScheduledAlerts
+     * @return \FinnaConsole\Service\VerifyRecordLinks
      */
     public static function getVerifyRecordLinks(ServiceManager $sm)
     {
@@ -165,6 +165,25 @@ class Factory
 
         return new VerifyRecordLinks(
             $commentsTable, $commentsRecordTable, $searchRunner
+        );
+    }
+
+    /**
+     * Construct the console service for verifying resource metadata.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \FinnaConsole\Service\VerifyResourceMetadata
+     */
+    public static function getVerifyResourceMetadata(ServiceManager $sm)
+    {
+        $resourceTable = $sm->get('VuFind\DbTablePluginManager')
+            ->get('Resource');
+        $dateConverter = $sm->get('VuFind\DateConverter');
+        $recordLoader = $sm->get('VuFind\RecordLoader');
+
+        return new VerifyResourceMetadata(
+            $resourceTable, $dateConverter, $recordLoader
         );
     }
 }
