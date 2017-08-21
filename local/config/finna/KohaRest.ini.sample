@@ -120,6 +120,8 @@ pattern = "numeric"
 display_item_hold_counts = false
 ; Whether total count of holds is displayed
 display_total_hold_count = true
+; Whether total item count is displayed in results list
+display_total_item_count_in_results = true
 
 [onlinePayment]
 ; Whether online payment is enabled. Default is false.
