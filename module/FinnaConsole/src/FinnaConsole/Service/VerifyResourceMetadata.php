@@ -73,7 +73,9 @@ class VerifyResourceMetadata extends AbstractService
     /**
      * Constructor
      *
-     * @param Resource $resourceTable Resource table
+     * @param Resource               $resourceTable Resource table
+     * @param \VuFind\Date\Converter $dateConverter Date converter
+     * @param \VuFind\Record\Loader  $recordLoader  Record loader
      */
     public function __construct(Resource $resourceTable,
         \VuFind\Date\Converter $dateConverter, \VuFind\Record\Loader $recordLoader
