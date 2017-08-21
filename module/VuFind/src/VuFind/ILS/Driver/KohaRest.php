@@ -1483,11 +1483,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         $unavail = isset($item['availability']['unavailabilities'])
             ? $item['availability']['unavailabilities'] : [];
-        if (!isset($unavail['Item::NotForLoan'])
-            && !isset($unavail['Item::Withdrawn'])
-            && !isset($unavail['Item::Lost'])
-            && !isset($unavail['Hold::NotHoldable'])
-        ) {
+        if (!isset($unavail['Hold::NotHoldable'])) {
             return true;
         }
         return false;
