@@ -28,7 +28,6 @@
  */
 namespace FinnaConsole\Service;
 use Finna\Db\Table\Resource;
-use VuFind\Exception\RecordMissing as RecordMissingException;
 
 /**
  * Console service for verifying metadata of saved records.
@@ -124,12 +123,12 @@ class VerifyResourceMetadata extends AbstractService
             }
             ++$count;
             if ($count % 1000 == 0) {
-                $this->msg("$count comments checked, $fixed fixed");
+                $this->msg("$count resources checked, $fixed fixed");
             }
         }
 
         $this->msg(
-            "Resource metadata verification completed with $count comments checked,"
+            "Resource metadata verification completed with $count resources checked,"
             . " $fixed fixed"
         );
         return true;
