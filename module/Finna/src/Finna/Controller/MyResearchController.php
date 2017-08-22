@@ -423,7 +423,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 return $this->redirect()->toRoute('list-page', ['lid' => $list->id]);
             }
             if ($list) {
-                $this->rememberListReturnUrl($list->id);
+                $this->rememberCurrentSearchUrl();
             } else {
                 $memory  = $this->serviceLocator->get('VuFind\Search\Memory');
                 $memory->rememberSearch(
@@ -1246,20 +1246,31 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
-     * Append list URL to search memory so that return links on
+     * Append current URL to search memory so that return links on
      * record pages opened from a list point back to the list page.
-     *
-     * @param int     $id         List id
-     * @param boolean $publicView Whether to return to public list view
      *
      * @return void
      */
-    protected function rememberListReturnUrl($id, $publicView = false)
+    protected function rememberCurrentSearchUrl()
     {
         $memory  = $this->serviceLocator->get('VuFind\Search\Memory');
-        $route = $publicView ? 'list-page' : 'userList';
-        $param = $publicView ? 'lid' : 'id';
-        $listUrl = $this->url()->fromRoute($route, [$param => $id]);
+        $listUrl = $this->getRequest()->getRequestUri();
+        /*$routeName = $publicView ? 'list-page' : 'userList';
+        $idParamName = $publicView ? 'lid' : 'id';
+        $request = $this->getRequest();
+        $queryParams = [];
+        if ($view = $request->getQuery('view')) {
+            $queryParams['view'] = $view;
+        }
+        if ($page = $request->getQuery('page')) {
+            $queryParams['page'] = $page;
+        }
+        if ($filter = $request->getQuery('filter')) {
+            $queryParams['filter'] = $filter;
+        }
+        $listUrl = $this->url()->fromRoute(
+            $routeName, [$idParamName => $id], ['query' => $queryParams]
+        );*/
         $memory->rememberSearch($listUrl);
     }
 
