@@ -61,7 +61,7 @@
                 <?=!empty($summAuthor) ? '' : ' '?>
                 <?
                 $parentSource = $this->driver->getSourceIdentifier();
-                $parentId = $this->driver->getHierarchyParentId();
+                $parentId = $this->driver->tryMethod('getHierarchyParentId');
                 $parentLink = false;
                 if ($parentId) {
                   try {
