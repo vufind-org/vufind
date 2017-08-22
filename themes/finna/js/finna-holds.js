@@ -87,9 +87,9 @@ finna.changeHolds = (function() {
                 spinnerChange.addClass('hidden');
                 if (response.data['success']) {
                     var success = $('<div></div>').attr('class', 'alert alert-success hold-change-success').text(VuFind.translate('change_hold_success'));
-                    hold.append(success);
+                    hold.closest('.pickup-location-container').append(success);
                 } else {
-                    hold.append(errorOccured);
+                    hold.closest('.pickup-location-container').append(errorOccured);
                 }
             })
             .fail(function() {

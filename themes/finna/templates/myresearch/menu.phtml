@@ -1,6 +1,6 @@
 <!-- START of: finna - myresearch/menu.phtml -->
 <?
-    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1><i class="fa fa-user"></i> ' . $this->transEsc('Your Account') . '</h1>';
+    $this->layout()->finnaMainHeader = '<h1><i class="fa fa-user"></i> ' . $this->transEsc('Your Account') . '</h1>';
     if (!$this->translationEmpty('tooltip_myaccount_html')) {
         $this->layout()->finnaMainHeader .= '<span class="tooltip-myaccount" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="' . $this->transesc("tooltip_myaccount_html") . '"><i class="fa fa-info-big"></i></span>';
     }
@@ -11,7 +11,7 @@
         $this->layout()->finnaMainHeader .= '<a class="btn btn-primary pull-right" href="' . $this->url('myresearch-logout') . '" title="'.$this->transEsc('Log Out') . '"><i class="fa fa-sign-out"></i> ' . $this->transEsc('Log Out') . '</a>';
         $this->layout()->finnaMainHeader .= $this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card']);
     }
-    $this->layout()->finnaMainHeader .= '</div>';
+    $this->layout()->finnaMainHeader;
 
     $showLibraryTabs = $this->ils()->loginAvailable();
 ?>
@@ -84,7 +84,7 @@
 </li>
 <? $menuEntries = ob_get_clean(); ?>
 
-  <div class="row">
+  <div>
     <div class="dropdown visible-xs useraccount-nav-mobile">
       <a href="#" class="dropdown-toggle" data-toggle="dropdown">
       <?

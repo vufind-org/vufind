@@ -1,8 +1,8 @@
 <!-- START of: finna - Auth/Database/login.phtml -->
 <? $account = $this->auth()->getManager(); ?>
-<div class="row">
+<div>
   <form method="post" class="form-vertical" action="<?=$this->url('myresearch-home')?>" name="loginForm">
-    <div class="col-sm-6">
+    <div class="login-col">
       <?=$this->auth()->getLoginFields()?>
       <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>">
       <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($account->getCsrfHash(true))?>" />
@@ -19,7 +19,7 @@
       </div>
     </div>
   </form>
-  <div class="col-sm-6 hidden-xs">
+  <div class="login-col hidden-xs">
     <div class="login-description">
       <p class="login-info">
         <?=$this->translate('login_desc_local_html') ?>

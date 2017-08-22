@@ -2,7 +2,7 @@
 <? // autocomplete="off" is needed to uncheck the checkbox after copying to another list ?>
 <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $this->id); ?>
 <? if ($this->label): ?>
-<label for="<?=$this->escapeHtmlAttr($safeId) ?>">
+<label for="<?=$this->escapeHtmlAttr($safeId) ?>" class="record-checkbox">
 <span class="sr-only"><?=$this->transEsc('Select');?></span>
 <? endif; ?>
 <input id="<?=$this->escapeHtmlAttr($safeId) ?>" autocomplete="off" class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<? if(isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<? endif; ?>/>

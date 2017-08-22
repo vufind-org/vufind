@@ -56,60 +56,52 @@
   <? endif; ?>
   <div class="mainbody right">
     <div class="clearfix hidden-print">
-      <div class="row">
-        <div class="col-xs-12">
-          <?=$this->flashmessages()?>
-        </div>
+      <div>
+        <?=$this->flashmessages()?>
       </div>
-      <div class="row">
-        <div class="col-xs-12">
-          <h2 class="list-title<?= !$list ? ' no-edit' : '' ?>"><? if(!$isDefaultList): ?><i class="list-title-edit fa fa-pen"></i><? endif; ?><span><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("All Favourites")?></span></h2>
-          <? if ($list): ?>
-          <div class="list-description<?= $list ? ' markdown' : ''?>">
-            <i class="list-description-edit fa fa-pen" aria-hidden="true"></i><div class="editable" data-markdown="<?=$this->escapeHtmlAttr($list ? $list->description : '')?>"><?=(!empty($list->description) ? $this->markdown()->toHtml($list->description) : $this->translate('Add list description'))?></div>
-          </div>
-          <? endif; ?>
+      <div>
+        <h2 class="list-title<?= !$list ? ' no-edit' : '' ?>"><? if(!$isDefaultList): ?><i class="list-title-edit fa fa-pen"></i><? endif; ?><span><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("All Favourites")?></span></h2>
+        <? if ($list): ?>
+        <div class="list-description<?= $list ? ' markdown' : ''?>">
+          <i class="list-description-edit fa fa-pen" aria-hidden="true"></i><div class="editable" data-markdown="<?=$this->escapeHtmlAttr($list ? $list->description : '')?>"><?=(!empty($list->description) ? $this->markdown()->toHtml($list->description) : $this->translate('Add list description'))?></div>
         </div>
+        <? endif; ?>
       </div>
     </div>
   <div>
-  <div>
     <? if ($recordTotal > 0): ?>
-      <div class="search-controls">
-        <div class="text-right hidden-print">
-          <? if (isset($list)): ?>
-          <a class="btn btn-primary" href="<?=$this->url('sortList', ['id' => $list->id]) ?>" data-backdrop=”static” data-lightbox><?=$this->transEsc('Sort manually');?></a>
-          <? endif; ?>
-          <?=$this->render('search/controls/sort.phtml')?>
-          <?=$this->render('search/controls/limit.phtml')?>
-        </div>
-        <div class="pagination-container">
-          <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results])?>
-        </div>
+    <div class="search-controls">
+      <div class="text-right hidden-print">
+        <? if (isset($list)): ?>
+        <a class="btn btn-primary" href="<?=$this->url('sortList', ['id' => $list->id]) ?>" data-backdrop=”static” data-lightbox><?=$this->transEsc('Sort manually');?></a>
+        <? endif; ?>
+        <?=$this->render('search/controls/sort.phtml')?>
+        <?=$this->render('search/controls/limit.phtml')?>
+      </div>
+      <div class="pagination-container">
+        <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results])?>
       </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-xs-12">
-      <form class="form" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox>
-        <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account, 'lists' => $lists])?>
-        <? foreach ($this->results->getResults() as $i=>$current): ?>
-          <?=$this->record($current)->getListEntry($list, $user)?>
-        <? endforeach; ?>
-      </form>
+  <div>
+    <form class="form" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox>
+      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account, 'lists' => $lists])?>
+      <? foreach ($this->results->getResults() as $i=>$current): ?>
+        <?=$this->record($current)->getListEntry($list, $user)?>
+      <? endforeach; ?>
+    </form>
       <? else: ?>
       <p><?=$this->transEsc('You do not have any saved resources')?></p>
       <? endif; ?>
     </div>
     <? if ($recordTotal > 0): ?>
-    <div class="">
+    <div>
       <div class="text-center">
         <hr>
         <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results])?>
       </div>
     </div>
     <? endif;?>
-  </div>
   </div>
   <div class="sidebar mylist-bar">
   <? if ($this->userlist()->getMode() !== 'disabled' && $user = $this->auth()->isLoggedIn()): ?>

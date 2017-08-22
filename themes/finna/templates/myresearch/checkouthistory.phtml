@@ -11,8 +11,8 @@
 
     $user = $this->auth()->isLoggedIn();
 ?>
-<div class="row">
-  <div class="col-md-10 col-lg-9 myresearch-grid-list">
+<div>
+  <div class="my-research-content myresearch-grid-list">
     <? if (!$this->translationEmpty('checkout_history_instructions_html')): ?><p class="no-content-message"><?=$this->translate('checkout_history_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
     <div class="useraccount-header">
@@ -29,28 +29,29 @@
         <div class="checkout-history-pre-list"><?=$this->render($template)?></div>
       <? endif; ?>
       <? if (!empty($this->transactions)): ?>
-        <div class="toolbar row">
-          <div class="col-xs-8 col-xs-push-4 col-sm-4 col-sm-push-8 col-md-5 col-md-push-7 text-right hidden-print">
+        <div class="history-controls toolbar">
+          <div class="text-right hidden-print right-control">
             <?=$this->render('search/controls/sort.phtml')?>
           </div>
-          <div class="col-xs-4 col-xs-pull-8 col-sm-4 col-sm-pull-0 col-md-3 hidden-print">
+          <div class="hidden-print left-control">
             <a class="btn btn-primary" href="<?=$this->url('myresearch-purgecheckouthistory');?>" data-lightbox><?=$this->transEsc('checkout_history_purge')?></a>
           </div>
-          <div class="col-xs-12 col-sm-4 col-sm-pull-8 col-md-4 col-md-pull-8">
+          <div class="pagination-container">
             <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination-simple.phtml') : ''?>
           </div>
         </div>
+        <table class="myresearch-table">
         <? $i = 0; foreach ($this->transactions as $resource): ?>
           <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-          <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="row myresearch-row">
-            <div class="col-sm-1 text-left hidden-xs">
+          <tr id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="myresearch-row">
+            <td class="text-left hidden-xs">
               <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
                 <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
               <? else: ?>
                 <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
               <? endif; ?>
-            </div>
-            <div class="col-sm-7 col-xs-12">
+            </td>
+            <td>
               <?
                 // If this is a non-missing Solr record, we should display a link:
                 if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
@@ -90,9 +91,8 @@
                 <br />
               <? endif; ?>
               </div>
-            </div>
-            <div class="col-xs-2 visible-xs"></div>
-            <div class="col-xs-10 col-sm-4 checkedout-status-information">
+            </td>
+            <td class="checkedout-status-information">
               <? if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
                 <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], [], $ilsDetails['institution_name'])?></strong>
                 <br />
@@ -114,9 +114,10 @@
               <? if (!empty($ilsDetails['duedate'])): ?>
                 <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><? endif; ?></strong>
               <? endif; ?>
-            </div>
-          </div>
+            </td>
+          </tr>
         <? endforeach; ?>
+        </table>
         <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml') : ''?>
         <? if ($template = $this->content()->findTemplateForLng("content/Additions/checkout-history-post-list")): ?>
           <div class="checkout-history-post-list"><?=$this->render($template)?></div>

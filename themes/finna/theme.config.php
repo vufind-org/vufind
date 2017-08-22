@@ -70,7 +70,6 @@ return [
         'vendor/video-js.min.css',
         'vendor/bootstrap-slider.min.css',
         'finna.css',
-        'flex-fallback.css:lt IE 10' // flex polyfill
     ],
     'js' => [
         'vendor/event-stub.js:lt IE 9',

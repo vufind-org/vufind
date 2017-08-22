@@ -1,13 +1,13 @@
 <!-- START of: finna - myresearch/profile-messaging.phtml -->
 <? $updateSettings = $this->ils()->checkFunction('updateMessagingSettings', compact($user)); ?>
 <form method="post" class="inline" id="messaging-form">
-    <div class="col-xs-12">
+    <div>
         <span class="myresearch-profile-middle-header"><?= $this->transEsc('messaging_settings_title') ?></span>
     </div>
     <? foreach ($profile['messagingServices'] as $service): ?>
             <?
-            echo '<div class="col-sm-4 profile-title">' . $this->transEsc('messaging_settings_type_' . $service['type'], null, $service['type']) . ':</div>';
-            echo '<div class="col-sm-8 profile-text-value">';
+            echo '<div class="my-profile-col profile-title">' . $this->transEsc('messaging_settings_type_' . $service['type'], null, $service['type']) . ':</div>';
+            echo '<div class="profile-text-value">';
             if (isset($service['sendMethods'])) {
                 // Axiell, Gemini
                 $activeMethods = 0;
@@ -67,8 +67,9 @@
             ?>
         </div>
     <? endforeach; ?>
+    <div class="clearfix"></div>
     <? if ($updateSettings): ?>
-      <div class="col-xs-12 messaging-last">
+      <div class="messaging-last">
         <? if (in_array($updateSettings['method'], ['email', 'driver'])): ?>
           <i class="fa fa-pen"></i> <a class="profile-messaging-update" data-lightbox href="<?=$this->escapeHtmlAttr($this->url('myresearch-changemessagingsettings')) ?>"><?= $this->transEsc('request_messaging_settings_change') ?></a>
         <? else: ?>

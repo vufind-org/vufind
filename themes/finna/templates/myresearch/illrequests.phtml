@@ -12,8 +12,8 @@
 
     $user = $this->auth()->isLoggedIn();
 ?>
-<div class="row">
-  <div class="col-md-10 col-lg-9 myresearch-grid-list">
+<div class="my-research-content">
+  <div class="myresearch-grid-list">
     <? if (!$this->translationEmpty('ill_requests_instructions_html')): ?><p class="no-content-message"><?=$this->transEsc('ill_requests_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
@@ -35,17 +35,17 @@
       <? if ($this->cancelForm): ?>
       <form name="cancelForm" class="inline" method="post" id="cancelILLRequest">
         <div class="toolbar">
-          <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
-          <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
-          <div class="btn-group">
+          <div>
+            <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
+            <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
+          </div>
+          <div>
             <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEsc("ill_request_cancel_selected") ?>" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"/>
             <ul class="dropdown-menu useraccount-cancel">
               <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_selected_text") ?></a></li>
               <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelSelected');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
               <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
-          </div>
-          <div class="btn-group">
             <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEsc("ill_request_cancel_all") ?>" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"/>
             <ul class="dropdown-menu useraccount-cancel">
               <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_all_text") ?></a></li>
@@ -55,38 +55,39 @@
           </div>
         </div>
         <? else: ?>
-        <div class="toolbar">
-          <p><?=$this->transEsc('cannot cancel any interlibrary loan requests')?></p>
-        </div>
+          <div class="toolbar">
+            <?=$this->transEsc('cannot cancel any interlibrary loan requests')?>
+          </div>
         <? endif; ?>
-
       <? $iteration = 0; ?>
+      <? $x = $this->recordList; ?>
+      <table class="myresearch-table">
       <? foreach ($this->recordList as $resource): ?>
         <? $iteration++; ?>
         <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-        <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="row myresearch-row">
-          <div class="col-xs-2 col-sm-1 text-center">
-          <? if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
+        <tr id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="myresearch-row ill-details-row">
+          <td class="text-center">
+          <? if ($this->cancelForm && !isset($ilsDetails['cancel_details'])): ?>
             <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
             <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" />
             <div class="checkboxFilter">
               <div class="checkbox">
                 <label>
-                  <span class="sr-only"><?=$this->transEsc('Select');?></span>
+                  <?=$this->transEsc('Select');?>
                   <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" />
                 </label>
               </div>
             </div>
           <? endif; ?>
-          </div>
-          <div class="col-sm-1 text-left hidden-xs">
+          </td>
+          <td class="text-left hidden-xs">
             <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
               <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
             <? else: ?>
               <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
             <? endif; ?>
-          </div>
-          <div class="col-xs-5 col-sm-6">
+          </td>
+          <td>
             <?
               // If this is a non-missing Solr record, we should display a link:
               if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
@@ -121,8 +122,8 @@
               <br />
             <? endif; ?>
             </div>
-          </div>
-          <div class="col-xs-5 col-sm-4 text-right">
+          </td>
+          <td class="text-right">
             <? /* Depending on the ILS driver, the "location" value may be a string or an ID; figure out the best
                value to display... */ ?>
             <? $pickupDisplay = ''; ?>
@@ -179,9 +180,9 @@
               <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("ill_request_cancel") ?></a></p>
             <? endif; ?>
 
-          </div>
-        </div>
-      <? endforeach; ?>
+          </td>
+      </tr>
+      <? endforeach; ?></table>
       <? if ($this->cancelForm): ?></form><? endif; ?>
       <? if ($template = $this->content()->findTemplateForLng("content/Additions/illrequests-post-list")): ?>
         <div class="illrequests-post-list"><?=$this->render($template)?></div>

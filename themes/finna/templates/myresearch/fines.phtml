@@ -11,8 +11,7 @@
 
     $user = $this->auth()->isLoggedIn();
 ?>
-<div class="row">
-  <div class="col-md-10 col-lg-9">
+<div class="my-research-content">
     <? if ($user): ?>
       <? if (!empty($this->registerPayment)): ?>
         <div class="alert alert-info">
@@ -130,9 +129,9 @@
           </tr>
         </table>
       </div>
-      <div class="row">
+      <div>
         <? if ($this->onlinePayment): ?>
-          <div class="col-sm-6 col-sm-push-6 text-right online-payment-data">
+          <div class="text-right online-payment-data">
             <p><?=$this->transEsc('online_payment_payable_online'); ?> (<?=$payableOnlineCnt ?>): <span class="amount"><?=$this->safeMoneyFormat($payableOnline/100.00);?></span></p>
             <? if (!empty($transactionFee)): ?>
             <p><?=$this->transEsc('online_payment_transaction_fee'); ?>: <span class="amount"><?=$this->safeMoneyFormat($transactionFee/100.00);?></span></p>
@@ -144,7 +143,7 @@
             <? endif; ?>
           </div>
           <? if ($template = $this->content()->findTemplateForLng("content/Additions/online-payment")): ?>
-          <div class="col-sm-6 col-sm-pull-6 online-payment-note"><?=$this->render($template)?></div>
+          <div class="online-payment-note"><?=$this->render($template)?></div>
           <? endif; ?>
         <? endif; ?>
         <? if ($template = $this->content()->findTemplateForLng("content/Additions/fines-post-list")): ?>
@@ -153,7 +152,6 @@
       </div>
       <? endif; ?>
     <? endif; ?>
-  </div>
 </div>
 <? if (isset($this->registerPayment) && $this->registerPayment): ?>
   <? $this->headScript()->appendFile('finna-online-payment.js'); ?>

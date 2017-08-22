@@ -34,8 +34,10 @@
     }
   }
   .pagination-container {
-    flex-grow: 1;
-    text-align: left;
+    @media(min-width: @screen-sm) {
+      flex-grow: 1;
+      text-align: left;
+    }
   }
 }
 
@@ -100,7 +102,6 @@
   @media(max-width:@screen-xs-max) {
     margin-right: 0;
     margin-bottom: 10px;
-
   }
   & .dropdown-menu {
     @media(max-width:@screen-sm-max) {

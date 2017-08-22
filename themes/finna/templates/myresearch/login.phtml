@@ -1,6 +1,7 @@
+<!-- START of: finna - Auth/myresearch/login.phtml -->
 <?
   // Set up page title:
-  $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1><i class="fa fa-sign-in"></i> ' . $this->transEsc('Login') . '</h1></div>';
+  $this->layout()->finnaMainHeader = '<div><h1><i class="fa fa-sign-in"></i> ' . $this->transEsc('Login') . '</h1></div>';
 
   $this->headTitle($this->translate('Login'));
 
@@ -20,10 +21,8 @@
 <h2 class="lightbox-header"><?=$this->transEsc('Login')?></h2>
 <?=$this->flashmessages()?>
 <? if ($template = $this->content()->findTemplateForLng("content/Additions/login-pre")): ?>
-  <div class="row">
-    <div class="col-xs-12">
-      <?=$this->render($template)?>
-    </div>
+  <div>
+    <?=$this->render($template)?>
   </div>
 <? endif; ?>
 <? if ($hideLogin): ?>
@@ -36,9 +35,8 @@
   <?=$this->auth()->getLogin()?>
 <? endif; ?>
 <? if ($template = $this->content()->findTemplateForLng("content/Additions/login-post")): ?>
-  <div class="row">
-    <div class="col-xs-12">
-      <?=$this->render($template)?>
-    </div>
+  <div>
+    <?=$this->render($template)?>
   </div>
 <? endif; ?>
+<!-- END of: finna - Auth/myresearch/login.phtml -->

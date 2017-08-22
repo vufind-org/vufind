@@ -7,6 +7,7 @@
     background-color: @state-info-bg;
     padding: 2em;
     margin-bottom: 1em;
+    margin-left: 1em;
 }
 .login-description.shibboleth {
     background-color: @state-info-bg;
@@ -23,4 +24,11 @@
 .template-name-login > .container {
     padding-top: 30px;
     padding-bottom: 30px;
+}
+
+.login-col {
+    @media (min-width: @screen-sm) {
+        width: 50%;
+        float: left;
+    }
 }

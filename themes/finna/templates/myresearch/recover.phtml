@@ -2,7 +2,7 @@
 <?
     // Set up page title:
     $this->headTitle($this->translate('recovery_title'));
-    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h3 class="finna-main-header">' . $this->transEsc('recovery_title') . '</h3></div>';
+    $this->layout()->finnaMainHeader = '<div><h3 class="finna-main-header">' . $this->transEsc('recovery_title') . '</h3></div>';
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('recovery_title') . '</li>';

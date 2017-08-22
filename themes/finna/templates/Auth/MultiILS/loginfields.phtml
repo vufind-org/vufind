@@ -1,5 +1,5 @@
 <!-- START of: finna - Auth/MultiILS/loginfields.phtml -->
-<div class="col-sm-6">
+<div class="login-col">
   <div class="form-group">
     <?$currentTarget = $this->request->get('target'); if (!$currentTarget) $currentTarget = $this->auth()->getManager()->getDefaultLoginTarget();?>
     <? if (count($this->auth()->getManager()->getLoginTargets()) > 1): ?>
@@ -29,7 +29,7 @@
     <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" type="password" name="password" class="form-control"/>
   </div>
 </div>
-<div class="col-sm-6 hidden-xs">
+<div class="login-col hidden-xs">
   <div class="login-description">
     <p class="login-info">
       <?=$this->translate('login_desc_library_card_html') ?>

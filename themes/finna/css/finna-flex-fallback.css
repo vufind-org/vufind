@@ -22,5 +22,6 @@
     display: table-cell;
     min-width: 20px;
     vertical-align: top;
+    padding: 10px;
   }
 }

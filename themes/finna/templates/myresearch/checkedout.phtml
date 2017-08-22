@@ -11,105 +11,108 @@
 
     $user = $this->auth()->isLoggedIn();
 ?>
-<div class="row">
-  <div class="col-md-10 col-lg-9 myresearch-grid-list">
-    <? if (!$this->translationEmpty('checked_out_instructions_html')): ?><p class="no-content-message"><?=$this->translate('checked_out_instructions_html')?></p><? endif; ?>
-    <?=$this->flashmessages()?>
-    <?=$this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
-    <div class="useraccount-header">
-    <?=$this->transEsc('Your Checked Out Items')?>
-    (<?=count($this->transactions);?>)
-    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
-    <? if (isset($this->noSupport)): ?>
-      <? if ($user->getLibraryCards()->count() > 1): ?>
-        <div class="support-notice">
-          <p><?=$this->transEsc("no_ils_support_description") ?></p>
-        </div>
-      <? endif; ?>
-    <? else: ?>
-    <? if ($template = $this->content()->findTemplateForLng("content/Additions/checkedout-pre-list")): ?>
-      <div class="checkedout-pre-list"><?=$this->render($template)?></div>
+<div class="my-research-content myresearch-grid-list">
+  <? if (!$this->translationEmpty('checked_out_instructions_html')): ?><p class="no-content-message"><?=$this->translate('checked_out_instructions_html')?></p><? endif; ?>
+  <?=$this->flashmessages()?>
+  <?=$this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
+  <div class="useraccount-header">
+  <?=$this->transEsc('Your Checked Out Items')?>
+  (<?=count($this->transactions);?>)
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
+  <? if (isset($this->noSupport)): ?>
+    <? if ($user->getLibraryCards()->count() > 1): ?>
+      <div class="support-notice">
+        <p><?=$this->transEsc("no_ils_support_description") ?></p>
+      </div>
     <? endif; ?>
-    <? if (!empty($this->transactions)): ?>
-      <? if ($this->renewForm): ?>
-      <form name="renewals" method="post" id="renewals">
-        <div class="toolbar row">
-          <div class="col-xs-2 col-sm-1 text-center">
-            <div class="checkboxFilter mylist-select-all">
+  <? else: ?>
+  <? if ($template = $this->content()->findTemplateForLng("content/Additions/checkedout-pre-list")): ?>
+    <div class="checkedout-pre-list"><?=$this->render($template)?></div>
+  <? endif; ?>
+  <? if (!empty($this->transactions)): ?>
+    <? if ($this->renewForm): ?>
+    <form name="renewals" method="post" id="renewals">
+      <table class="myresearch-table">
+      <tr class="toolbar">
+        <th class="text-left">
+          <div class="checkboxFilter mylist-select-all">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
+                <?=$this->transEsc('Select All')?>
+                <span class="selected"></span> <span class="loans-renewal-available"></span>
+              </label>
+            </div>
+          </div>
+        </th>
+        <th class="">
+          <input type="submit" class="btn btn-primary renew-button" id="renewSelected" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
+        </th>
+        <th class="text-right">
+          <?=$this->render('search/controls/sort.phtml')?>
+        </th>
+      </tr>
+    <? else: ?>
+    <table class="myresearch-table">
+      <tr class="toolbar">
+        <th class="myresearch-notification"><?=$this->transEsc('cannot renew any checked out items')?></th>
+        <th></th>
+        <th class="text-right">
+          <?=$this->render('search/controls/sort.phtml')?>
+        </th>
+      </tr>
+    <? endif; ?>
+    <? $i = 0; foreach ($this->transactions as $resource): ?>
+      <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
+      <tr id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="myresearch-row">
+        <td class="text-left">
+        <? if ($this->renewForm): ?>
+          <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
+            <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
+            <div class="checkboxFilter">
               <div class="checkbox">
                 <label>
-                  <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
-                  <span><?=$this->transEsc('Select All')?></span>
-                  <span class="selected"></span> <span class="loans-renewal-available"></span>
+                <span class="sr-only"><?=$this->transEsc('Select');?></span>
+                <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
                 </label>
               </div>
             </div>
-          </div>
-          <div class="col-xs-8 col-xs-push-2 col-sm-push-1 col-sm-7">
-            <input type="submit" class="btn btn-primary renew-button" id="renewSelected" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
-          </div>
-          <div class="col-xs-12 col-sm-3 col-sm-push-1 text-right">
-            <?=$this->render('search/controls/sort.phtml')?>
-          </div>
-        </div>
-      <? else: ?>
-        <div class="toolbar row">
-          <h4 class="col-xs-5 myresearch-notification"><?=$this->transEsc('cannot renew any checked out items')?></h4>
-          <div class="col-xs-7 text-right">
-            <?=$this->render('search/controls/sort.phtml')?>
-          </div>
-        </div>
-      <? endif; ?>
-      <? $i = 0; foreach ($this->transactions as $resource): ?>
-        <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-        <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="row myresearch-row">
-          <? if ($this->renewForm): ?>
-          <div class="col-xs-2 col-sm-1 text-center">
-            <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
-              <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
-              <div class="checkboxFilter">
-                <div class="checkbox">
-                  <label>
-                  <span class="sr-only"><?=$this->transEsc('Select');?></span>
-                  <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
-                  </label>
-                </div>
-              </div>
-              <input type="hidden" name="selectAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
-              <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
-            <? else: ?>
-              <span class="no-checkbox"><?=$this->transEsc('cannot renew');?></span>
-            <? endif; ?>
-          </div>
+            <input type="hidden" name="selectAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
+            <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
+          <? else: ?>
+            <span class="no-checkbox"><?=$this->transEsc('cannot renew');?></span>
           <? endif; ?>
-          <div class="col-sm-1 text-left hidden-xs">
-            <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
-              <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
-            <? else: ?>
-              <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
-            <? endif; ?>
-          </div>
-          <div class="<?=$this->renewForm ? 'col-sm-6 col-xs-10' : 'col-sm-7 col-xs-12'?>">
-            <?
-              // If this is a non-missing Solr record, we should display a link:
-              if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
-                // Use ILS title if available since it may contain e.g. issue number
-                if (!empty($ilsDetails['title'])) {
-                  $title = trim($ilsDetails['title'], '/: ');
-                } else {
-                  $title = $resource->getTitle();
-                  $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
-                }
-                echo '<h3><a href="' . $this->recordLink()->getUrl($resource) .
-                  '" class="record-title">' . $title . '</a></h3>';
-              } else if (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
-                // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
-                echo '<h3 class="record-title">' . $this->escapeHtml($ilsDetails['title']) . '</h3>';
+        </td>
+        <? endif; ?>
+        <td class="text-center hidden-xs">
+          <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
+            <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+          <? else: ?>
+            <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+          <? endif; ?>
+        </td>
+        <td class="checkedout-status-information" colspan="2">
+          <div class="half-table-column text-left">
+          <?
+            // If this is a non-missing Solr record, we should display a link:
+            if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
+              // Use ILS title if available since it may contain e.g. issue number
+              if (!empty($ilsDetails['title'])) {
+                $title = trim($ilsDetails['title'], '/: ');
               } else {
-                // Last resort -- indicate that no title could be found.
-                echo '<h3 class="record-title">' . $this->transEsc('Title not available') . '</h3>';
+                $title = $resource->getTitle();
+                $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
               }
-            ?>
+              echo '<h3><a href="' . $this->recordLink()->getUrl($resource) .
+                '" class="record-title">' . $title . '</a></h3>';
+            } else if (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
+              // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
+              echo '<h3 class="record-title">' . $this->escapeHtml($ilsDetails['title']) . '</h3>';
+            } else {
+              // Last resort -- indicate that no title could be found.
+              echo '<h3 class="record-title">' . $this->transEsc('Title not available') . '</h3>';
+            }
+          ?>
             <div class="record-authors">
             <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
               <?=$this->record($resource)->getFormatList() ?>
@@ -130,8 +133,7 @@
             <? endif; ?>
             </div>
           </div>
-          <div class="col-xs-2 visible-xs"></div>
-          <div class="col-xs-10 col-sm-4 checkedout-status-information">
+          <div class="half-table-column">
             <? $showStatus = true; ?>
             <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
               <? $renewDetails = $this->renewResult[$ilsDetails['item_id']]; ?>
@@ -187,38 +189,41 @@
               <? endif; ?>
             <? endif; ?>
           </div>
-        </div>
-      <? endforeach; ?>
-      <? if ($this->renewForm): ?>
-        <? if (count($this->transactions) > 10): ?>
-        <div class="toolbar bottom row">
-          <div class="col-xs-2 col-sm-1 text-center">
-            <div class="checkboxFilter mylist-select-all">
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
-                  <span><?=$this->transEsc('Select All')?></span>
-                </label>
-              </div>
+        </td>
+      </tr>
+    <? endforeach; ?>
+    <? if ($this->renewForm): ?>
+      <? if (count($this->transactions) > 10): ?>
+      <tr class="toolbar bottom">
+        <td class="text-center">
+          <div class="checkboxFilter mylist-select-all">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
+                <span><?=$this->transEsc('Select All')?></span>
+              </label>
             </div>
           </div>
-          <div class="col-xs-6 col-xs-push-2 col-sm-push-1 col-sm-8">
-            <input type="submit" class="btn btn-primary" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
-          </div>
-          <div class="col-sm-3 text-right hidden-xs">
-            <span class="myresearch-count"><?=$this->transEsc('total_borrowed_items', ['%%count%%' => count($this->transactions)]);?></span>
-          </div>
-        </div>
-        <? endif;?>
-      </form>
-      <? endif; ?>
-      <? if ($template = $this->content()->findTemplateForLng("content/Additions/checkedout-post-list")): ?>
-        <div class="checkedout-post-list"><?=$this->render($template)?></div>
-      <? endif; ?>
+        </td>
+        <td class="">
+          <input type="submit" class="btn btn-primary" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
+        </td>
+        <td class="text-right hidden-xs">
+          <span class="myresearch-count"><?=$this->transEsc('total_borrowed_items', ['%%count%%' => count($this->transactions)]);?></span>
+        </td>
+      </tr>
+      <? endif;?>
+      </table>
+    </form>
     <? else: ?>
-      <h4><?=$this->transEsc('You do not have any items checked out')?>.</h4>
+      </table>
     <? endif; ?>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/checkedout-post-list")): ?>
+      <div class="checkedout-post-list"><?=$this->render($template)?></div>
     <? endif; ?>
-  </div>
+  <? else: ?>
+    <h4><?=$this->transEsc('You do not have any items checked out')?>.</h4>
+  <? endif; ?>
+  <? endif; ?>
 </div>
 <!-- END of: finna - myresearch/checkedout.phtml -->

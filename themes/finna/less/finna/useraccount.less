@@ -3,6 +3,13 @@
 .main.template-dir-myresearch, .main.template-dir-search.template-name-history, .main.template-dir-librarycards {
     padding-bottom: 30px;
 
+    .my-research-content {
+        width: 100%;
+        @media (min-width: @screen-md) {
+            width: 75%;
+        }
+    }
+
     h1 {
         display: inline-block;
     }
@@ -19,6 +26,9 @@
         margin-bottom: 20px;
         & #import-export-buttons {
             margin-right: 20px;
+        }
+        .btn {
+            margin-bottom: 5px;
         }
     }
     & .pickup-location {
@@ -49,6 +59,9 @@
         & label, & .profile-title {
             padding-top: 6px;
         }
+        & .profile-title {
+            clear: left;
+        }
         .clearfix {
             padding: 3px 0px;
         }
@@ -64,7 +77,6 @@
         font-size: @font-size-h3;
         font-weight: bold;
         padding: 7px 10px;
-        margin: 0px;
         background: @gray;
         background: linear-gradient( @gray-light, darken(@gray-light,8%));
         color: @body-bg;
@@ -74,7 +86,11 @@
         font-size: 1.2em;
         margin-bottom: 40px;
         padding-right: 25px;
-        & .amount {
+        @media (min-width: @screen-sm) {
+            width: 50%;
+            float: right;
+        }
+            & .amount {
             font-weight: bold;
         }
 
@@ -87,6 +103,10 @@
     }
     & .online-payment-note {
         margin-bottom: 40px;
+        @media (min-width: @screen-sm) {
+            width: 50%;
+            float: left;
+        }
     }
 
     & .library-profile {
@@ -96,9 +116,6 @@
         padding-bottom: 0;
         border: 1px solid @gray-lighter;
         box-shadow: 10px 15px 30px -25px @gray;
-        & #profile_form {
-            margin-top: 10px;
-        }
         & #profile_library_form {
             & input {
                 min-width: 210px;
@@ -119,6 +136,7 @@
             }
             &.profile-text-value {
                 line-height: 1.5;
+                padding-left: 0px;
                 @media (max-width: @screen-xs-max) {
                     padding: 0px 8px 8px;
                 }
@@ -259,10 +277,6 @@
     #renewals .toolbar {
         @media (max-width:@screen-xs-max) {
             margin-left: -15px;
-            & .renew-button {
-                margin-bottom: 10px;
-                float: right;
-            }
         }
         & .checkboxFilter.mylist-select-all {
             margin-right: 0;
@@ -328,7 +342,7 @@
         }
     }
     &.template-name-mylist .bulk-action-buttons-col {
-        padding: 15px;
+        padding: 10px;
         padding-bottom: 0px;
         border-right: none;
         border-bottom: 1px solid @gray-lighter;
@@ -514,7 +528,7 @@
         }
     }
     .myresearch-row {
-        padding: 10px 0px;
+        padding: 10px;
         margin: 0px;
         word-wrap: break-word;
         @media(max-width:@screen-xs-max) {
@@ -579,6 +593,7 @@
         background: @link-color;
         padding: 10px;
         text-align: center;
+        margin: 0px -15px;
         > a, > i {
             color: @body-bg;
         }
@@ -594,9 +609,6 @@
         }
     }
     .useraccount-nav {
-        @media(min-width: @screen-lg-min) {
-            padding-left: 15px;
-        }
         & li {
             float:left;
             margin:0;
@@ -687,6 +699,7 @@
         margin-left: 10px;
     }
     & .bulk-action-buttons-col {
+        width: 100%;
         @media (min-width: @screen-sm-min) {
             padding-right: 0;
         }
@@ -732,6 +745,14 @@
                 color: @body-bg;
             }
         }
+    }
+}
+
+@media (min-width: @screen-sm ){
+    .my-profile-col {
+        width: 33.33%;
+        float: left;
+        padding-right: 15px;
     }
 }
 .main.template-dir-myresearch.template-name-unsubscribe {
@@ -820,5 +841,68 @@
     }
     .alert {
         margin-top: @modal-title-padding;
+    }
+    .form-control {
+        max-width: 200px;
+        float: left;
+    }
+}
+
+.myresearch-table {
+    width: 100%;
+    margin: 15px 0px;
+    th,td {
+        vertical-align: top;
+        padding: 5px;
+        @media(max-width: @screen-sm){
+            text-align: left;
+        }
+        .record-title {
+            text-align: left;
+        }
+    }
+    .half-table-column {
+        @media(min-width: @screen-sm){
+            width: 50%;
+            float: left;
+        }
+    }
+    .sort-button {
+        @media(max-width: @screen-sm){
+            min-width: 100px;
+        }
+    }
+    .recordcover {
+        min-width: 30px;
+    }
+}
+.history-controls {
+    @media (min-width: @screen-sm) {
+        display: flex;
+        flex-direction: row-reverse;
+    }
+    .right-control {
+        @media (max-width: @screen-sm) {
+            text-align: right;
+            float: right;
+            width: 65%;
+        }
+    }
+    .left-control {
+        @media (min-width: @screen-sm) {
+            flex-grow: 1;
+            text-align:left;
+        }
+        @media (max-width: @screen-sm) {
+            text-align: left;
+            width: 35%;
+        }
+        margin-bottom: 10px;
+    }
+    .pagination-container {
+        @media (min-width: @screen-sm) {
+            flex-grow: 1;
+            text-align:left;
+        }
     }
 }
