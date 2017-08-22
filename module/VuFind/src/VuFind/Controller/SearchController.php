@@ -41,9 +41,6 @@ use VuFind\Exception\Mail as MailException;
 class SearchController extends AbstractSearch
 {
 
-
-    protected $historyService;
-
     /**
      * Handle an advanced search
      *
