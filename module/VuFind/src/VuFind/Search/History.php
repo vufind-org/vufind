@@ -3,19 +3,43 @@
 namespace VuFind\Search;
 
 use minSO;
-use Zend\ServiceManager\ServiceManager;
 
 class History
 {
 
     /**
-     * @var ServiceManager
+     * @var \VuFind\Db\Table\Search
      */
-    protected $serviceManager;
+    protected $searchTable;
 
-    public function __construct(ServiceManager $serviceManager)
+    /**
+     * @var \Zend\Session\SessionManager
+     */
+    protected $sessionManager;
+
+    /**
+     * @var \VuFind\Search\Results\PluginManager
+     */
+    protected $resultsManager;
+
+    /**
+     * @var \VuFind\Search\Memory
+     */
+    protected $searchMemory;
+
+    /**
+     * History constructor
+     * @param \VuFind\Db\Table\Search $searchTable
+     * @param \Zend\Session\SessionManager $sessionManager
+     * @param \VuFind\Search\Results\PluginManager $resultsManager
+     * @param \VuFind\Search\Memory $searchMemory
+     */
+    public function __construct($searchTable, $sessionManager, $resultsManager, $searchMemory)
     {
-        $this->serviceManager = $serviceManager;
+        $this->searchTable = $searchTable;
+        $this->sessionManager = $sessionManager;
+        $this->resultsManager = $resultsManager;
+        $this->searchMemory = $searchMemory;
     }
 
     /**
@@ -25,26 +49,16 @@ class History
     public function getSearchHistory($userId = null, $purged = false)
     {
         // Retrieve search history
-
-        $searchTable = $this->serviceManager->get('VuFind\DbTablePluginManager')
-            ->get("Search");
-
-        $searchHistory = $searchTable->getSearches(
-            $this->serviceManager->get('VuFind\SessionManager')->getId(),
+        $searchHistory = $this->searchTable->getSearches(
+            $this->sessionManager->getId(),
             $userId
         );
-
-        $resultsManager = $this->serviceManager->get('VuFind\SearchResultsPluginManager');
-
-        $searchMemory = $this->serviceManager->get('VuFind\Search\Memory');
 
         // Build arrays of history entries
         $saved = $unsaved = [];
 
-
-
         // Loop through the history
-        /** @var  $current */
+        /** @var \VuFind\Db\Row\Search $current */
         foreach ($searchHistory as $current) {
 
             /** @var minSO $minSO */
@@ -52,7 +66,7 @@ class History
 
             // Saved searches
             if ($current->saved == 1) {
-                $saved[] = $minSO->deminify($resultsManager);
+                $saved[] = $minSO->deminify($this->resultsManager);
             } else {
                 // All the others...
 
@@ -61,10 +75,10 @@ class History
                     $current->delete();
 
                     // We don't want to remember the last search after a purge:
-                    $searchMemory->forgetSearch();
+                    $this->searchMemory->forgetSearch();
                 } else {
                     // Otherwise add to the list
-                    $unsaved[] = $minSO->deminify($resultsManager);
+                    $unsaved[] = $minSO->deminify($this->resultsManager);
                 }
             }
         }
