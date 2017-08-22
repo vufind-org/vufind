@@ -104,15 +104,15 @@
               <? endif; ?>
 
               <? if (!empty($ilsDetails['checkoutdate'])): ?>
-                <strong><?=$this->transEsc('Checkout Date')?>: <?=$this->escapeHtml($ilsDetails['checkoutdate'])?></strong>
+                <strong><?=$this->transEsc('Checkout Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['checkoutdate'])?>
                 <br>
               <? endif; ?>
               <? if (!empty($ilsDetails['returndate'])): ?>
-                <strong><?=$this->transEsc('Return Date')?>: <?=$this->escapeHtml($ilsDetails['returndate'])?></strong>
+                <strong><?=$this->transEsc('Return Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['returndate'])?>
                 <br>
               <? endif; ?>
               <? if (!empty($ilsDetails['duedate'])): ?>
-                <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><? endif; ?></strong>
+                <strong><?=$this->transEsc('Due Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><? endif; ?>
               <? endif; ?>
             </td>
           </tr>
