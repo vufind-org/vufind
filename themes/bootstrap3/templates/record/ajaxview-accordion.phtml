@@ -17,7 +17,7 @@
       <div id="information_<?=$idSuffix?>-content" class="panel-collapse collapse<? if($this->defaultTab === 'information'): ?> in<? endif; ?>">
         <div class="list-tab-content record panel-body">
           <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffix?>" />
-          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
+          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
           <?=$coreMetadata ?>
         </div>
       </div>
@@ -65,7 +65,7 @@
     <? foreach ($this->tabs as $tab => $obj): ?>
       <? // add current tab to breadcrumbs if applicable:
         $desc = $obj->getDescription();
-        $tab_classes = array();
+        $tab_classes = [];
         if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
         if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
         if ($this->defaultTab === strtolower($tab)) { $tab_classes[] = 'default'; }

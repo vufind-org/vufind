@@ -163,6 +163,7 @@ class Demo extends AbstractBase
                 }
             }
         }
+        $this->checkIntermittentFailure();
     }
 
     /**
@@ -292,6 +293,19 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Should we simulate a system failure?
+     *
+     * @return void
+     * @throws ILSException
+     */
+    protected function checkIntermittentFailure()
+    {
+        if ($this->isFailing(__METHOD__, 0)) {
+            throw new ILSException('Simulating low-level system failure');
+        }
+    }
+
+    /**
      * Are renewals blocked?
      *
      * @return bool
@@ -302,33 +316,35 @@ class Demo extends AbstractBase
     }
 
     /**
-     * Are holds/recalls blocked?
+     * Check whether the patron is blocked from placing requests (holds/ILL/SRR).
      *
-     * @return bool
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkRequestBlock()
+    public function getRequestBlocks($patron)
     {
-        return $this->isFailing(__METHOD__, 10);
+        return $this->isFailing(__METHOD__, 10)
+            ? ['simulated request block'] : false;
     }
 
     /**
-     * Are ILL requests blocked?
+     * Check whether the patron has any blocks on their account.
      *
-     * @return bool
-     */
-    protected function checkILLRequestBlock()
-    {
-        return $this->isFailing(__METHOD__, 10);
-    }
-
-    /**
-     * Are storage retrieval requests blocked?
+     * @param array $patron Patron data from patronLogin().
      *
-     * @return bool
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkStorageRetrievalRequestBlock()
+    public function getAccountBlocks($patron)
     {
-        return $this->isFailing(__METHOD__, 10);
+        return $this->isFailing(__METHOD__, 10)
+            ? ['simulated account block'] : false;
     }
 
     /**
@@ -359,16 +375,12 @@ class Demo extends AbstractBase
             'callnumber'   => $this->getFakeCallNum(),
             'duedate'      => '',
             'is_holdable'  => true,
-            'addLink'      => $patron
-                ? $this->checkRequestBlock() ? 'block' : true : false,
+            'addLink'      => $patron ? true : false,
             'level'        => 'copy',
             'storageRetrievalRequest' => 'auto',
-            'addStorageRetrievalRequestLink' => $patron
-                ? $this->checkStorageRetrievalRequestBlock() ? 'block' : 'check'
-                : false,
+            'addStorageRetrievalRequestLink' => $patron ? 'check' : false,
             'ILLRequest'   => 'auto',
-            'addILLRequestLink' => $patron
-                ? $this->checkILLRequestBlock() ? 'block' : 'check' : false,
+            'addILLRequestLink' => $patron ? 'check' : false,
             'services'     => $status == 'Available' ? $this->getFakeServices() : []
         ];
     }
@@ -586,6 +598,7 @@ class Demo extends AbstractBase
      */
     public function getStatuses($ids)
     {
+        $this->checkIntermittentFailure();
         return array_map([$this, 'getStatus'], $ids);
     }
 
@@ -604,6 +617,8 @@ class Demo extends AbstractBase
      */
     public function getHolding($id, array $patron = null)
     {
+        $this->checkIntermittentFailure();
+
         // Get basic status info:
         $status = $this->getSimulatedStatus($id, $patron);
 
@@ -640,6 +655,7 @@ class Demo extends AbstractBase
      */
     public function getPurchaseHistory($id)
     {
+        $this->checkIntermittentFailure();
         $issues = rand(0, 3);
         $retval = [];
         for ($i = 0; $i < $issues; $i++) {
@@ -662,6 +678,7 @@ class Demo extends AbstractBase
      */
     public function patronLogin($barcode, $password)
     {
+        $this->checkIntermittentFailure();
         if (isset($this->config['Users'])) {
             if (!isset($this->config['Users'][$barcode])
                 || $password !== $this->config['Users'][$barcode]
@@ -694,6 +711,7 @@ class Demo extends AbstractBase
      */
     public function getMyProfile($patron)
     {
+        $this->checkIntermittentFailure();
         $patron = [
             'firstname' => 'Lib-' . $patron['cat_username'],
             'lastname'  => 'Rarian',
@@ -721,6 +739,7 @@ class Demo extends AbstractBase
      */
     public function getMyFines($patron)
     {
+        $this->checkIntermittentFailure();
         $session = $this->getSession();
         if (!isset($session->fines)) {
             // How many items are there? %20 - 2 = 10% chance of none,
@@ -777,6 +796,7 @@ class Demo extends AbstractBase
      */
     public function getMyHolds($patron)
     {
+        $this->checkIntermittentFailure();
         $session = $this->getSession();
         if (!isset($session->holds)) {
             $session->holds = $this->createRequestList('Holds');
@@ -797,6 +817,7 @@ class Demo extends AbstractBase
      */
     public function getMyStorageRetrievalRequests($patron)
     {
+        $this->checkIntermittentFailure();
         $session = $this->getSession();
         if (!isset($session->storageRetrievalRequests)) {
             $session->storageRetrievalRequests
@@ -818,6 +839,7 @@ class Demo extends AbstractBase
      */
     public function getMyILLRequests($patron)
     {
+        $this->checkIntermittentFailure();
         $session = $this->getSession();
         if (!isset($session->ILLRequests)) {
             $session->ILLRequests = $this->createRequestList('ILLRequests');
@@ -833,6 +855,7 @@ class Demo extends AbstractBase
      */
     protected function getTransactionList()
     {
+        $this->checkIntermittentFailure();
         // If Demo.ini includes a fixed set of transactions, load those; otherwise
         // build some random ones.
         return isset($this->config['Records']['transactions'])
@@ -918,8 +941,8 @@ class Demo extends AbstractBase
                     $transList[$i]['title'] = 'Demo Title ' . $i;
                 }
             }
-            return $transList;
         }
+        return $transList;
     }
 
     /**
@@ -936,6 +959,7 @@ class Demo extends AbstractBase
      */
     public function getMyTransactions($patron)
     {
+        $this->checkIntermittentFailure();
         $session = $this->getSession();
         if (!isset($session->transactions)) {
             $session->transactions = $this->getTransactionList();
@@ -964,6 +988,7 @@ class Demo extends AbstractBase
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
+        $this->checkIntermittentFailure();
         return [
             [
                 'locationID' => 'A',
@@ -993,6 +1018,7 @@ class Demo extends AbstractBase
      */
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {
+        $this->checkIntermittentFailure();
         // 5 years in the future (but similate intermittent failure):
         return !$this->isFailing(__METHOD__, 50)
             ? mktime(0, 0, 0, date('m'), date('d'), date('Y') + 5) : null;
@@ -1016,6 +1042,7 @@ class Demo extends AbstractBase
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
+        $this->checkIntermittentFailure();
         $locations = $this->getPickUpLocations($patron);
         return $locations[0]['locationID'];
     }
@@ -1038,6 +1065,7 @@ class Demo extends AbstractBase
      */
     public function getDefaultRequestGroup($patron = false, $holdDetails = null)
     {
+        $this->checkIntermittentFailure();
         if ($this->isFailing(__METHOD__, 50)) {
             return false;
         }
@@ -1048,17 +1076,23 @@ class Demo extends AbstractBase
     /**
      * Get request groups
      *
-     * @param int   $bibId  BIB ID
-     * @param array $patron Patron information returned by the patronLogin
+     * @param int   $bibId       BIB ID
+     * @param array $patron      Patron information returned by the patronLogin
      * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the request group
+     * options or may be ignored.
      *
      * @return array  False if request groups not in use or an array of
      * associative arrays with id and name keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getRequestGroups($bibId = null, $patron = null)
-    {
+    public function getRequestGroups($bibId = null, $patron = null,
+        $holdDetails = null
+    ) {
+        $this->checkIntermittentFailure();
         return [
             [
                 'id' => 1,
@@ -1080,6 +1114,7 @@ class Demo extends AbstractBase
      */
     public function getFunds()
     {
+        $this->checkIntermittentFailure();
         return ["Fund A", "Fund B", "Fund C"];
     }
 
@@ -1092,6 +1127,7 @@ class Demo extends AbstractBase
      */
     public function getDepartments()
     {
+        $this->checkIntermittentFailure();
         return ["Dept. A", "Dept. B", "Dept. C"];
     }
 
@@ -1104,6 +1140,7 @@ class Demo extends AbstractBase
      */
     public function getInstructors()
     {
+        $this->checkIntermittentFailure();
         return ["Instructor A", "Instructor B", "Instructor C"];
     }
 
@@ -1116,6 +1153,7 @@ class Demo extends AbstractBase
      */
     public function getCourses()
     {
+        $this->checkIntermittentFailure();
         return ["Course A", "Course B", "Course C"];
     }
 
@@ -1140,6 +1178,7 @@ class Demo extends AbstractBase
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
+        $this->checkIntermittentFailure();
         // Pick a random number of results to return -- don't exceed limit or 30,
         // whichever is smaller (this can be pretty slow due to the random ID code).
         $count = rand(0, $limit > 30 ? 30 : $limit);
@@ -1174,6 +1213,7 @@ class Demo extends AbstractBase
      */
     public function findReserves($course, $inst, $dept)
     {
+        $this->checkIntermittentFailure();
         // Pick a random number of results to return -- don't exceed 30.
         $count = rand(0, 30);
         $results = [];
@@ -1206,6 +1246,7 @@ class Demo extends AbstractBase
      */
     public function cancelHolds($cancelDetails)
     {
+        $this->checkIntermittentFailure();
         // Rewrite the holds in the session, removing those the user wants to
         // cancel.
         $newHolds = new ArrayObject();
@@ -1269,6 +1310,7 @@ class Demo extends AbstractBase
      */
     public function cancelStorageRetrievalRequests($cancelDetails)
     {
+        $this->checkIntermittentFailure();
         // Rewrite the items in the session, removing those the user wants to
         // cancel.
         $newRequests = new ArrayObject();
@@ -1331,6 +1373,7 @@ class Demo extends AbstractBase
      */
     public function renewMyItems($renewDetails)
     {
+        $this->checkIntermittentFailure();
         // Simulate an account block at random.
         if ($this->checkRenewBlock()) {
             return [
@@ -1413,13 +1456,26 @@ class Demo extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
-        return !$this->isFailing(__METHOD__, 10);
+        $this->checkIntermittentFailure();
+        if ($this->isFailing(__METHOD__, 10)) {
+            return [
+                'valid' => false,
+                'status' => rand() % 3 != 0
+                    ? 'hold_error_blocked' : 'Demonstrating a custom failure'
+            ];
+        }
+        return [
+            'valid' => true,
+            'status' => 'request_place_text'
+        ];
     }
 
     /**
@@ -1435,6 +1491,7 @@ class Demo extends AbstractBase
      */
     public function placeHold($holdDetails)
     {
+        $this->checkIntermittentFailure();
         // Simulate failure:
         if ($this->isFailing(__METHOD__, 50)) {
             return [
@@ -1514,16 +1571,27 @@ class Demo extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
+        $this->checkIntermittentFailure();
         if (!$this->storageRetrievalRequests || $this->isFailing(__METHOD__, 10)) {
-            return false;
+            return [
+                'valid' => false,
+                'status' => rand() % 3 != 0
+                    ? 'storage_retrieval_request_error_blocked'
+                    : 'Demonstrating a custom failure'
+            ];
         }
-        return true;
+        return [
+            'valid' => true,
+            'status' => 'storage_retrieval_request_place_text'
+        ];
     }
 
     /**
@@ -1539,6 +1607,7 @@ class Demo extends AbstractBase
      */
     public function placeStorageRetrievalRequest($details)
     {
+        $this->checkIntermittentFailure();
         if (!$this->storageRetrievalRequests) {
             return [
                 "success" => false,
@@ -1617,16 +1686,26 @@ class Demo extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {
+        $this->checkIntermittentFailure();
         if (!$this->ILLRequests || $this->isFailing(__METHOD__, 10)) {
-            return false;
+            return [
+                'valid' => false,
+                'status' => rand() % 3 != 0
+                    ? 'ill_request_error_blocked' : 'Demonstrating a custom failure'
+            ];
         }
-        return true;
+        return [
+            'valid' => true,
+            'status' => 'ill_request_place_text'
+        ];
     }
 
     /**
@@ -1642,6 +1721,7 @@ class Demo extends AbstractBase
      */
     public function placeILLRequest($details)
     {
+        $this->checkIntermittentFailure();
         if (!$this->ILLRequests) {
             return [
                 'success' => false,
@@ -1746,6 +1826,7 @@ class Demo extends AbstractBase
      */
     public function getILLPickupLibraries($id, $patron)
     {
+        $this->checkIntermittentFailure();
         if (!$this->ILLRequests) {
             return false;
         }
@@ -1782,6 +1863,7 @@ class Demo extends AbstractBase
      */
     public function getILLPickupLocations($id, $pickupLib, $patron)
     {
+        $this->checkIntermittentFailure();
         switch ($pickupLib) {
         case 1:
             return [
@@ -1827,6 +1909,7 @@ class Demo extends AbstractBase
      */
     public function cancelILLRequests($cancelDetails)
     {
+        $this->checkIntermittentFailure();
         // Rewrite the items in the session, removing those the user wants to
         // cancel.
         $newRequests = new ArrayObject();
@@ -1889,6 +1972,7 @@ class Demo extends AbstractBase
      */
     public function changePassword($details)
     {
+        $this->checkIntermittentFailure();
         if (!$this->isFailing(__METHOD__, 33)) {
             return ['success' => true, 'status' => 'change_password_ok'];
         }
@@ -1912,6 +1996,7 @@ class Demo extends AbstractBase
      */
     public function getConfig($function, $params = null)
     {
+        $this->checkIntermittentFailure();
         if ($function == 'Holds') {
             return [
                 'HMACKeys' => 'id:item_id:level',

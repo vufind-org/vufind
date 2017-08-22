@@ -9,7 +9,7 @@
   <h2><?=$this->transEsc('Your Fines')?></h2>
   <?=$this->flashmessages()?>
 
-  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
 
   <? if (empty($this->fines)): ?>
     <?=$this->transEsc('You do not have any fines')?>
@@ -49,5 +49,5 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'fines'))?>
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'fines'])?>
 </div>

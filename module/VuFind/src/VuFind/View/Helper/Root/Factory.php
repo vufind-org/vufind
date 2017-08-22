@@ -245,13 +245,17 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $url = isset($config->Piwik->url) ? $config->Piwik->url : false;
-        $siteId = isset($config->Piwik->site_id) ? $config->Piwik->site_id : 1;
+        $options = [
+            'siteId' => isset($config->Piwik->site_id) ? $config->Piwik->site_id : 1,
+            'searchPrefix' => isset($config->Piwik->searchPrefix)
+                ? $config->Piwik->searchPrefix : null
+        ];
         $customVars = isset($config->Piwik->custom_variables)
             ? $config->Piwik->custom_variables
             : false;
         $request = $sm->getServiceLocator()->get('Request');
         $router = $sm->getServiceLocator()->get('Router');
-        return new Piwik($url, $siteId, $customVars, $router, $request);
+        return new Piwik($url, $options, $customVars, $router, $request);
     }
 
     /**
@@ -339,9 +343,12 @@ class Factory
             ),
             true
         );
+        $resolverPluginManager = $sm->getServiceLocator()
+            ->get('VuFind\ResolverDriverPluginManager');
         return new OpenUrl(
             $sm->get('context'),
             $openUrlRules,
+            $resolverPluginManager,
             isset($config->OpenURL) ? $config->OpenURL : null
         );
     }
@@ -444,9 +451,12 @@ class Factory
     public static function getSearchBox(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config');
+        $mainConfig = $config->get('config');
         return new SearchBox(
             $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager'),
-            $config->get('searchbox')->toArray()
+            $config->get('searchbox')->toArray(),
+            isset($mainConfig->SearchPlaceholder)
+                ? $mainConfig->SearchPlaceholder->toArray() : []
         );
     }
 

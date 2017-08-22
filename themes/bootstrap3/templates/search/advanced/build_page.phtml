@@ -3,12 +3,12 @@ $(document).ready(function() {
   $('#groupJoin').addClass('hidden');
   $('#groupPlaceHolder').removeClass('hidden');
   $('#new_search_template').addClass('hidden').detach().appendTo('[role="main"]');
-  $('#new_search_template').find('.search').removeAttr('id');
+  $('#new_search_template').find('.adv-search').removeAttr('id');
   $('#new_search_template').find('input').removeAttr('value');
   $('#new_search_template').find('option').removeAttr('selected');
   $('#new_group_template').addClass('hidden').detach().appendTo('[role="main"]');
-  $('#new_group_template').find('.group').removeAttr('id');
-  $('#new_group_template .search').remove();
+  $('#new_group_template').find('.adv-group').removeAttr('id');
+  $('#new_group_template .adv-search').remove();
   $('#advSearchForm .no-js').remove();
   // Build page
   <? if (isset($this->searchDetails) && is_object($this->searchDetails)): ?>

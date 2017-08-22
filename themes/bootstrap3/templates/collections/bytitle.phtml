@@ -11,7 +11,7 @@
         <div id="disambiguationItemsDiv">
           <? foreach ($collections as $i => $collection): ?>
            <div class="disambiguationItem <?=$i % 2 ? 'alt ' : ''?>record<?=$i?>">
-             <a href="<?=$this->url('collection', array('id' => $collection->getUniqueId()))?>"><?=$this->escapeHtml($collection->getTitle())?></a>
+             <a href="<?=$this->url('collection', ['id' => $collection->getUniqueId()])?>"><?=$this->escapeHtml($collection->getTitle())?></a>
              <p><?=$this->escapeHtml(implode(' ', $collection->getSummary()))?></p>
            </div>
           <? endforeach; ?>

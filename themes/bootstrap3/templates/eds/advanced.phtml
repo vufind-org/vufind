@@ -7,44 +7,31 @@
   ob_start();
 ?>
 <div id="new_group_template">
-  <div class="group well clearfix">
+  <div class="adv-group eds-adv">
     <input type="hidden" name="join" value="AND"/>
     <input type="hidden" name="bool0[]" value="AND"/>
-    <? for ($search=0;$search<3;$search++): ?>
-      <? if ($search == 0): ?>
+    <label class="adv-group-label"><?=$this->transEsc("adv_search_label")?>:</label>
+    <? for ($search = 0; $search < 3; $search++): ?>
+      <? if ($search === 0): ?>
         <div id="new_search_template">
       <? endif; ?>
-      <div class="search row">
-        <div class="col-sm-3">
-          <input type="hidden" value="AND" class="first-op"/>
-          <label class="help-block<? if ($search > 0): ?> hidden<?endif;?>"><?=$this->transEsc("adv_search_label")?>:</label>
-          <select id="search_op0_<?=$search ?>" name="op0[]" class="op col-sm-9 form-control<? if ($search == 0): ?> hidden<?endif;?>">
-            <option value="AND"><?=$this->transEsc("AND")?></option>
-            <option value="OR"><?=$this->transEsc("OR")?></option>
-            <option value="NOT"><?=$this->transEsc("NOT")?></option>
-          </select>
-        </div>
-        <div class="col-sm-9">
-          <div class="row">
-            <div class="col-sm-6">
-              <input id="search_lookfor0_<?=$search ?>" name="lookfor0[]" class="form-control" type="text" value=""/>
-            </div>
-            <span class="col-sm-1 help-block hidden-xs"><?=$this->transEsc("in")?></span>
-            <div class="col-sm-4 middle">
-              <select id="search_type0_<?=$search ?>" name="type0[]" class="type form-control">
-                <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                  <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
-                <? endforeach; ?>
-              </select>
-            </div>
-            <div class="close">
-              <a href="#" class="help-block">&times;</a>
-            </div>
-          </div>
-        </div>
-        <br class="hidden-lg"/>
+      <div class="adv-search">
+        <? if ($search === 0): ?><input type="hidden" value="AND" class="first-op"/><? endif; ?>
+        <select id="search_op0_<?=$search ?>" name="op0[]" class="adv-term-op form-control">
+          <option value="AND"><?=$this->transEsc("AND")?></option>
+          <option value="OR"><?=$this->transEsc("OR")?></option>
+          <option value="NOT"><?=$this->transEsc("NOT")?></option>
+        </select>
+        <input id="search_lookfor0_<?=$search ?>" name="lookfor0[]" class="adv-term-input form-control" type="text" value=""/>
+        <span class="help-block hidden-xs"><?=$this->transEsc("in")?></span>
+        <select id="search_type0_<?=$search ?>" name="type0[]" class="adv-term-type form-control">
+          <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+            <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
+          <? endforeach; ?>
+        </select>
+        <a class="adv-term-remove">&times;</a>
       </div>
-      <? if ($search == 0): ?>
+      <? if ($search === 0): ?>
         </div>
       <? endif; ?>
     <? endfor; ?>

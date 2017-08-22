@@ -29,7 +29,6 @@
 namespace VuFind\ILS\Driver;
 use PDO, PDOException;
 use VuFind\Exception\ILS as ILSException;
-use VuFindHttp\HttpServiceInterface;
 use Zend\Log\LoggerInterface;
 use VuFind\Exception\Date as DateException;
 
@@ -48,6 +47,9 @@ use VuFind\Exception\Date as DateException;
 class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Web services host
      *
@@ -107,56 +109,21 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     protected $logger = false;
 
     /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Show a debug message.
-     *
-     * @param string $msg Debug message.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
-    }
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
-
-    /**
      * Date converter object
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
 
     /**
      * Initialize the driver.
@@ -194,9 +161,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->availableLocationsDefault
             = isset($this->config['Other']['availableLocations'])
             ? $this->config['Other']['availableLocations'] : [];
-
-        // Create a dateConverter
-        $this->dateConverter = new \VuFind\Date\Converter;
 
         $this->debug("Config Summary:");
         $this->debug("DB Host: " . $this->host);
@@ -243,6 +207,58 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $this->debug('Connected to DB');
+    }
+
+    /**
+     * Check if a table exists in the current database.
+     *
+     * @param string $table Table to search for.
+     *
+     * @return bool
+     */
+    protected function tableExists($table)
+    {
+        $cacheKey = "kohailsdi-tables-$table";
+        $cachedValue = $this->getCachedData($cacheKey);
+        if ($cachedValue !== null) {
+            return $cachedValue;
+        }
+
+        if (!$this->db) {
+            $this->initDb();
+        }
+
+        $returnValue = false;
+
+        // Try a select statement against the table
+        // Run it in try/catch in case PDO is in ERRMODE_EXCEPTION.
+        try {
+            $result = $this->db->query("SELECT 1 FROM $table LIMIT 1");
+            // Result is FALSE (no table found) or PDOStatement Object (table found)
+            $returnValue = $result !== false;
+        } catch (Exception $e) {
+            // We got an exception == table not found
+            $returnValue = false;
+        }
+
+        $this->putCachedData($cacheKey, $returnValue);
+        return $returnValue;
+    }
+
+    /**
+     * Koha ILS-DI driver specific override of method to ensure uniform cache keys
+     * for cached VuFind objects.
+     *
+     * @param string|null $suffix Optional suffix that will get appended to the
+     * object class name calling getCacheKey()
+     *
+     * @return string
+     */
+    protected function getCacheKey($suffix = null)
+    {
+        return \VuFind\ILS\Driver\AbstractBase::getCacheKey(
+            md5($this->ilsBaseUrl) . $suffix
+        );
     }
 
     /**
@@ -310,7 +326,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $this->debug("XML is not valid, URL: $url");
 
             throw new ILSException(
-                "XML is not valid, URL: $url method: $method answer: $answer."
+                "XML is not valid, URL: $url method: $http_method answer: $answer."
             );
         }
         return $result;
@@ -463,6 +479,45 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             if (!$this->db) {
                 $this->initDb();
             }
+            if (!$this->pickupEnableBranchcodes) {
+                // No defaultPickupLocation is defined in config
+                // AND no pickupLocations are defined either
+                if (isset($holdDetails['item_id']) && (empty($holdDetails['level'])
+                    || $holdDetails['level'] == 'item')
+                ) {
+                    // We try to get the actual branchcode the item is found at
+                    $item_id = $holdDetails['item_id'];
+                    $sql = "SELECT holdingbranch
+                            FROM items
+                            WHERE itemnumber=($item_id)";
+                    try {
+                        $sqlSt = $this->db->prepare($sql);
+                        $sqlSt->execute();
+                        $this->pickupEnableBranchcodes = $sqlSt->fetch();
+                    } catch (PDOException $e) {
+                            $this->debug('Connection failed: ' . $e->getMessage());
+                            throw new ILSException($e->getMessage());
+                    }
+                } elseif (!empty($holdDetails['level'])
+                    && $holdDetails['level'] == 'title'
+                ) {
+                    // We try to get the actual branchcodes the title is found at
+                    $id = $holdDetails['id'];
+                    $sql = "SELECT DISTINCT holdingbranch
+                            FROM items
+                            WHERE biblionumber=($id)";
+                    try {
+                        $sqlSt = $this->db->prepare($sql);
+                        $sqlSt->execute();
+                        foreach ($sqlSt->fetchAll() as $row) {
+                            $this->pickupEnableBranchcodes[] = $row['holdingbranch'];
+                        }
+                    } catch (PDOException $e) {
+                            $this->debug('Connection failed: ' . $e->getMessage());
+                            throw new ILSException($e->getMessage());
+                    }
+                }
+            }
             $branchcodes = "'" . implode(
                 "','", $this->pickupEnableBranchcodes
             ) . "'";
@@ -530,7 +585,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function placeHold($holdDetails)
     {
-        $rsvLst             = [];
         $patron             = $holdDetails['patron'];
         $patron_id          = $patron['id'];
         $request_location   = isset($patron['ip']) ? $patron['ip'] : "127.0.0.1";
@@ -564,6 +618,22 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->debug("pickup loc: " . $pickup_location);
         $this->debug("Needed before date: " . $needed_before_date);
         $this->debug("Level: " . $level);
+
+        // The following check is mainly required for certain old buggy Koha versions
+        // that allowed multiple holds from the same user to the same item
+        $sql = "select count(*) as RCOUNT from reserves where borrowernumber = :rid "
+            . "and itemnumber = :iid";
+        $reservesSqlStmt = $this->db->prepare($sql);
+        $reservesSqlStmt->execute([':rid' => $patron_id, ':iid' => $item_id]);
+        $reservesCount = $reservesSqlStmt->fetch()["RCOUNT"];
+
+        if ($reservesCount > 0) {
+            $this->debug("Fatal error: Patron has already reserved this item.");
+            return [
+                "success" => false,
+                "sysMessage" => "It seems you have already reserved this item."
+            ];
+        }
 
         if ($level == "title") {
             $rqString = "HoldTitle&patron_id=$patron_id&bib_id=$bib_id"
@@ -648,8 +718,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $holding = [];
         $available = true;
         $duedate = $status = '';
-        $loc = $shelf = '';
-        $reserves = "N";
+        $loc = '';
 
         $sql = "select i.itemnumber as ITEMNO, i.location,
             COALESCE(av.lib_opac,av.lib,av.authorised_value,i.location) AS LOCATION,
@@ -670,10 +739,16 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             . "WHERE biblionumber = :id AND found IS NULL";
         $sqlWaitingReserve = "select count(*) as WAITING from reserves "
             . "WHERE itemnumber = :item_id and found = 'W'";
-        $sqlHoldings = "SELECT ExtractValue(( SELECT marcxml FROM biblioitems "
-            . "WHERE biblionumber = :id), "
-            . "'//datafield[@tag=\"866\"]/subfield[@code=\"a\"]') AS MFHD;";
-
+        if ($this->tableExists("biblio_metadata")) {
+            $sqlHoldings = "SELECT "
+                . "ExtractValue(( SELECT metadata FROM biblio_metadata "
+                . "WHERE biblionumber = :id AND format='marcxml'), "
+                . "'//datafield[@tag=\"866\"]/subfield[@code=\"a\"]') AS MFHD;";
+        } else {
+            $sqlHoldings = "SELECT ExtractValue(( SELECT marcxml FROM biblioitems "
+                . "WHERE biblionumber = :id), "
+               . "'//datafield[@tag=\"866\"]/subfield[@code=\"a\"]') AS MFHD;";
+        }
         if (!$this->db) {
             $this->initDb();
         }
@@ -838,16 +913,15 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * This method queries the ILS for new items
      *
-     * Comment for $fundID: (use a value returned by getFunds, or exclude for no
-     * limit); note that ?fund? may be a misnomer ? if funds are not an
-     * appropriate way to limit your new item results, you can return a different
-     * set of values from getFunds. The important thing is that this parameter
-     * supports an ID returned by getFunds, whatever that may mean.
-     *
-     * @param unknown $page    - page number of results to retrieve (starts at 1)
-     * @param unknown $limit   - the size of each page of results to retrieve
-     * @param unknown $daysOld - the maxi age of records to retrieve in days  -max 30
-     * @param string  $fundId  - optional fund ID to use for limiting results
+     * @param int $page    Page number of results to retrieve (counting starts at 1)
+     * @param int $limit   The size of each page of results to retrieve
+     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * returned by getFunds, or exclude for no limit); note that "fund" may be a
+     * misnomer - if funds are not an appropriate way to limit your new item
+     * results, you can return a different set of values from getFunds. The
+     * important thing is that this parameter supports an ID returned by getFunds,
+     * whatever that may mean.
      *
      * @return array provides a count and the results of new items.
      */
@@ -1410,12 +1484,23 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             if (!$this->db) {
                 $this->initDb();
             }
-            $sql = "SELECT biblio.biblionumber AS biblionumber
+
+            if ($this->tableExists("biblio_metadata")) {
+                $sql = "SELECT biblio.biblionumber AS biblionumber
+                      FROM biblio
+                      JOIN biblio_metadata USING (biblionumber)
+                      WHERE ExtractValue(
+                        metadata, '//datafield[@tag=\"942\"]/subfield[@code=\"n\"]' )
+                        IN ('Y', '1')
+                      AND biblio_metadata.format = 'marcxml'";
+            } else {
+                $sql = "SELECT biblio.biblionumber AS biblionumber
                       FROM biblioitems
                       JOIN biblio USING (biblionumber)
                       WHERE ExtractValue(
-                         marcxml, '//datafield[@tag=\"942\"]/subfield[@code=\"n\"]' )
-                      IN ('Y', '1')";
+                        marcxml, '//datafield[@tag=\"942\"]/subfield[@code=\"n\"]' )
+                        IN ('Y', '1')";
+            }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
             $result = [];
@@ -1448,7 +1533,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-            $result = [];
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $deptList[$rowItem["abv"]] = $rowItem["DEPARTMENT"];
             }
@@ -1479,7 +1563,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-            $result = [];
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $instList[$rowItem["borrowernumber"]] = $rowItem["name"];
             }
@@ -1509,7 +1592,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-            $result = [];
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $courseList[$rowItem["course_id"]] = $rowItem["course"];
             }
@@ -1537,7 +1619,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function findReserves($course, $inst, $dept)
     {
-        $recordList = [];
         $reserveWhere = [];
         $bindParams = [];
         if ($course != '') {
@@ -1596,8 +1677,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function patronLogin($username, $password)
     {
-        $patron = [];
-
         //       $idObj = $this->makeRequest(
         //         "AuthenticatePatron" . "&username=" . $username
         //       . "&password=" . $password

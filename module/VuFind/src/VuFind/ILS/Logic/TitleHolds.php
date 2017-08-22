@@ -120,13 +120,13 @@ class TitleHolds
             } else if ($mode == 'driver') {
                 try {
                     $patron = $this->ilsAuth->storedCatalogLogin();
+                    if (!$patron) {
+                        return false;
+                    }
+                    return $this->driverHold($id, $patron);
                 } catch (ILSException $e) {
                     return false;
                 }
-                if (!$patron) {
-                    return false;
-                }
-                return $this->driverHold($id, $patron);
             } else {
                 try {
                     $patron = $this->ilsAuth->storedCatalogLogin();
@@ -205,14 +205,13 @@ class TitleHolds
         $checkHolds = $this->catalog->checkFunction(
             'Holds', compact('id', 'patron')
         );
-        $data = [
-            'id' => $id,
-            'level' => 'title'
-        ];
 
-        if ($checkHolds != false) {
-            $valid = $this->catalog->checkRequestIsValid($id, $data, $patron);
-            if ($valid) {
+        if (isset($checkHolds['HMACKeys'])) {
+            $data = ['id' => $id, 'level' => 'title'];
+            $result = $this->catalog->checkRequestIsValid($id, $data, $patron);
+            if ((is_array($result) && $result['valid'])
+                || (is_bool($result) && $result)
+            ) {
                 return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
             }
         }

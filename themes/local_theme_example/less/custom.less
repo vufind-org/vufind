@@ -1,0 +1,33 @@
+@import "bootstrap"; /* Include bootstrap theme's less base */
+
+/* Change variables to change colors and values through-out the theme */
+@image-path: "../../local_theme_example/images";
+@active-orange: #fff93c;
+@dark-green: #137752;
+/* Bootstrap variables as well */
+@brand-primary: #0045a1;
+@body-bg: #5ab48a;
+@grid-gutter-width: 20px;
+
+/* Change specific styles below */
+body {
+  font-size: 14px;
+  color: #333;
+}
+header {
+  font-size: 16px;
+  color: @dark-green;
+}
+.container {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  border-left: 2px solid @dark-green;
+  border-right: 2px solid @dark-green;
+  background-color: #fff;
+  border-radius: 0;
+}
+footer .container { border-bottom: 2px solid #137752; }
+.alert { padding: 8px; }
+
+/* You can also organize these styles in separate files and @import them */
+@import "home-page";

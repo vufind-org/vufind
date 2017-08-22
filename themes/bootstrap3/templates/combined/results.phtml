@@ -10,7 +10,7 @@
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
     'search/searchbox.phtml',
-    array(
+    [
       'lookfor' => $lookfor,
       'searchIndex' => $this->params->getSearchHandler(),
       'searchType' => $this->params->getSearchType(),
@@ -20,7 +20,7 @@
       'filterList' => $this->params->getFilters(),
       'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
       'selectedShards' => $this->params->getSelectedShards()
-    )
+    ]
   );
 
   // Create shortcut to combined results (since $this->results may get overwritten in processing below):
@@ -38,6 +38,8 @@
   $this->showCartControls = $this->supportsCart && $this->cart()->isActive();
   // Enable bulk options if appropriate:
   $this->showBulkOptions = $this->supportsCart && $this->showBulkOptions;
+  // Enable bulk options if appropriate:
+  $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
@@ -47,7 +49,7 @@
   $this->headLink()->appendStylesheet('combined-search.css');
 ?>
 <?=$this->flashmessages()?>
-<form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
+<form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
   <? $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
     <div>
       <? foreach ($recs as $current): ?>
@@ -55,18 +57,19 @@
       <? endforeach; ?>
     </div>
   <? endif; ?>
-  <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
+  <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
   <?
-    $viewParams = array(
+    $viewParams = [
       'searchClassId' => $searchClassId,
       'combinedResults' => $this->combinedResults,
       'supportsCartOptions' => $this->supportsCartOptions,
       'showCartControls' => $this->showCartControls,
       'showBulkOptions' => $this->showBulkOptions
-    );
+    ];
   ?>
-  <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>
-  <? $recs = $combinedResults->getRecommendations('bottom'); if (!empty($recs)): ?>
+  <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+  <? $recs = $combinedResults->getRecommendations('bottom'); ?>
+  <? if (!empty($recs)): ?>
     <div>
       <? foreach ($recs as $current): ?>
         <?=$this->recommend($current)?>

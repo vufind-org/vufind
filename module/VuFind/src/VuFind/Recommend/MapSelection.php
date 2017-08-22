@@ -19,24 +19,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Vaclav Rosecky <xrosecky@gmail.com>
  * @author   Leila Gonzales <lmg@agiweb.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
 
 /**
  * MapSelection Recommendations Module
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Vaclav Rosecky <xrosecky@gmail.com>
  * @author   Leila Gonzales <lmg@agiweb.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 class MapSelection implements \VuFind\Recommend\RecommendInterface
 {
@@ -52,7 +52,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      *
      * @var string
      */
-    protected $geoField = 'location_geo';
+    protected $geoField = 'long_lat';
 
     /**
      * Height of search map pane
@@ -234,9 +234,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                     );
                     $this->selectedCoordinates = $reorder_coords;
                 }
-                $this->searchParams = $results->getUrlQuery()->removeFacet(
-                    $this->geoField, $value[0], false
-                );
+                $this->searchParams = $results->getUrlQuery()
+                    ->removeFacet($this->geoField, $value[0])->getParams(false);
             }
         }
         if ($this->searchParams == null) {
@@ -292,20 +291,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     public function getSearchParams()
     {
         return $this->searchParams;
-    }
-
-    /**
-     * GetSearchParams no question mark at end
-     *
-     * Return search params without leading question mark and colon.
-     * Copied from ResultGoogleMapAjax.php and chngd name to add NoQ.LMG
-     *
-     * @return string
-     */
-    public function getSearchParamsNoQ()
-    {
-        // Get search parameters and return them minus the leading ?:
-           return substr($this->searchObject->getUrlQuery()->getParams(false), 1);
     }
 
     /**

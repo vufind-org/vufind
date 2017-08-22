@@ -62,32 +62,25 @@ class Map extends AbstractBase
     protected $mapLabels = null;
 
     /**
-     * Google Maps API key.
+     * Display graticule / map lat long grid?
      *
-     * @var string
+     * @var bool
      */
-    protected $googleMapApiKey = null;
+    protected $graticule = false;
 
     /**
      * Constructor
      *
-     * @param string $mapType Map provider (valid options: 'google' or 'openlayers';
+     * @param string $mapType Map provider (valid options: 'openlayers';
      * null to disable this feature)
      * @param array  $options Additional settings
      */
     public function __construct($mapType = null, $options = [])
     {
         switch (trim(strtolower($mapType))) {
-        case 'google':
-            // Confirm API key, then fall through to 'openlayers' case for
-            // other standard behavior:
-            if (empty($options['googleMapApiKey'])) {
-                throw new \Exception('Google API key must be set in config.ini');
-            }
-            $this->googleMapApiKey = $options['googleMapApiKey'];
         case 'openlayers':
             $this->mapType = trim(strtolower($mapType));
-            $legalOptions = ['displayCoords', 'mapLabels'];
+            $legalOptions = ['displayCoords', 'mapLabels', 'graticule'];
             foreach ($legalOptions as $option) {
                 if (isset($options[$option])) {
                     $this->$option = $options[$option];
@@ -129,13 +122,13 @@ class Map extends AbstractBase
     }
 
     /**
-     * Get the Google Maps API key.
+     * Get the map graticule setting.
      *
      * @return string
      */
-    public function getGoogleMapApiKey()
+    public function getMapGraticule()
     {
-        return $this->googleMapApiKey;
+        return $this->graticule;
     }
 
     /**
@@ -148,39 +141,8 @@ class Map extends AbstractBase
         if ($this->mapType == 'openlayers') {
             $geocoords = $this->getRecordDriver()->tryMethod('getGeoLocation');
             return !empty($geocoords);
-        } else if ($this->mapType == 'google') {
-            $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
-            return !empty($longLat);
         }
         return false;
-    }
-
-    /**
-     * Get the JSON needed to display the record on a Google map.
-     *
-     * @return string
-     */
-    public function getGoogleMapMarker()
-    {
-        $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
-        if (empty($longLat)) {
-            return json_encode([]);
-        }
-        $markers = [];
-        $mapDisplayLabels = $this->getMapLabels();
-        foreach ($longLat as $key => $value) {
-            $coordval = explode(',', $value);
-            $label = isset($mapDisplayLabels[$key])
-                ? $mapDisplayLabels[$key] : '';
-            $markers[] = [
-                [
-                    'title' => $label,
-                    'lon' => $coordval[0],
-                    'lat' => $coordval[1]
-                ]
-            ];
-        }
-        return json_encode($markers);
     }
 
     /**
@@ -195,8 +157,8 @@ class Map extends AbstractBase
             return [];
         }
         $coordarray = [];
-        /* Extract coordinates from location_geo field */
-        foreach ($geoCoords as $key => $value) {
+        /* Extract coordinates from long_lat field */
+        foreach ($geoCoords as $value) {
             $match = [];
             if (preg_match('/ENVELOPE\((.*),(.*),(.*),(.*)\)/', $value, $match)) {
                 $lonW = (float)$match[1];
@@ -309,7 +271,7 @@ class Map extends AbstractBase
             $mapDisplayLabels = $this->getMapLabels();
         }
         // Pass coordinates, display coordinates, and labels
-        foreach ($geoCoords as $key => $value) {
+        foreach (array_keys($geoCoords) as $key) {
             $mapCoords = '';
             $mapLabel = '';
             if ($this->displayCoords) {

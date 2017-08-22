@@ -9,48 +9,46 @@
 <table class="table table-striped">
   <tr><th>Language</th><th>Missing Lines</th><th>Extra Lines</th><th>Percent Translated</th><th>Extra Help Files</th></tr>
   <? foreach ($details as $langCode => $diffs): ?>
+    <?
+      $extraCount = count($diffs['notInL1']);
+      $missingCount = count($diffs['notInL2']);
+    ?>
     <tr>
       <td><?=$this->escapeHtml($langCode . ' (' . $diffs['name'] . ')')?></td>
-      <td><?=count($diffs['notInL2'])?></td>
-      <td><?=count($diffs['notInL1'])?></td>
+      <td><?=$missingCount ?><? if($missingCount > 0): ?> (<a href="#" onclick="diffManager.showMissing('<?=$langCode ?>')"><?=$this->transEsc('show') ?></a>)<? endif; ?></td>
+      <td><?=$extraCount ?><? if($extraCount > 0): ?> (<a href="#" onclick="diffManager.showExtra('<?=$langCode ?>')"><?=$this->transEsc('show') ?></a>)<? endif; ?></td>
       <td><?=$this->escapeHtml($diffs['l2Percent'])?></td>
       <td><?=count($diffs['helpFiles'])?></td>
     </tr>
   <? endforeach; ?>
 </table>
-<div class="accordion" id="accordion">
-  <? foreach ($details as $langCode => $diffs): ?>
-    <? if (count($diffs['notInL1']) > 0): ?>
-      <div class="accordion-group">
-        <div class="accordion-heading">
-          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#extra_<?=$langCode ?>">
-            Extra Lines In <?=$this->escapeHtml($diffs['name'])?> (<?=$this->escapeHtml($langCode)?>.ini)
-          </a>
-        </div>
-        <div id="extra_<?=$langCode ?>" class="accordion-body collapse">
-          <div class="accordion-inner">
-          <? foreach ($diffs['notInL1'] as $key): ?>
-            <?=$this->escapeHtml($key)?> = "<?=$this->escapeHtml($diffs['object'][$key])?>"<br />
-          <? endforeach; ?>
-          </div>
-        </div>
-      </div>
-    <? endif; ?>
-    <? if (count($diffs['notInL2']) > 0): ?>
-      <div class="accordion-group">
-        <div class="accordion-heading">
-          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#missing_<?=$langCode ?>">
-            Missing From <?=$this->escapeHtml($diffs['name'])?> (<?=$this->escapeHtml($langCode)?>.ini)
-            <span class="pull-right flip"></span>
-          </a>
-        </div>
-        <div id="missing_<?=$langCode ?>" class="accordion-body collapse">
-          <div class="accordion-inner">
-            <textarea class="form-control" rows="15"><? foreach ($diffs['notInL2'] as $key): ?><?=$this->escapeHtml($key)?> = "<?=$this->escapeHtml($main[$key])?>"
-<? endforeach; ?></textarea>
-          </div>
-        </div>
-      </div>
-    <? endif; ?>
-  <? endforeach; ?>
-</div>
+<?
+  $json = json_encode($details);
+  $script = <<<JS
+  function createDiffManager() {
+    var details = {$json};
+    function makeRow(opArray, lang) {
+      var arr = [];
+      for (var i = 0; i < opArray.length; i++) {
+        console.log(details[lang].object[opArray[i]] || details.en.object[opArray[i]]);
+        arr.push(opArray[i] + ' = "' + (details[lang].object[opArray[i]] || details.en.object[opArray[i]]) + '"');
+      }
+      return '<textarea class="translation-output form-control" rows="' + Math.min(arr.length + 1, 25)+ '" onClick="this.select()">' + arr.join('\\n') + '</textarea>';
+    }
+    function showExtra(lang) {
+      VuFind.lightbox.render('<h2>Extra Lines</h2>'+makeRow(details[lang].notInL1, lang));
+      return false;
+    }
+    function showMissing(lang) {
+      VuFind.lightbox.render('<h2>Missing Lines</h2>'+makeRow(details[lang].notInL2, lang));
+      return false;
+    }
+    return {
+      showExtra: showExtra,
+      showMissing: showMissing
+    }
+  }
+  var diffManager = createDiffManager();
+JS;
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

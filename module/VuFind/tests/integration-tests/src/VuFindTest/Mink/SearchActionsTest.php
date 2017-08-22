@@ -75,7 +75,7 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
-        $this->findCss($page, '.searchForm [name="lookfor"]')->setValue($query);
+        $this->findCss($page, '#searchForm_lookfor')->setValue($query);
         $this->findCss($page, '.btn.btn-primary')->click();
         $this->snooze();
         return $page;
@@ -356,7 +356,7 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
         $genreMore->click();
         $this->facetListProcedure($page, $limit, true);
-        $this->assertEquals(1, count($page->find('css', '.list-group.filters')));
+        $this->assertEquals(1, count($page->find('css', '.active-filters')));
     }
 
     /**
@@ -374,7 +374,7 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#j1_1.jstree-open .jstree-icon');
         $this->findCss($page, '#j1_2 a')->click();
         $this->snooze();
-        $filter = $this->findCss($page, '.filters .list-group-item.active');
+        $filter = $this->findCss($page, '.active-filters .facet');
         $this->assertEquals('hierarchy: 1/level1a/level2a/', $filter->getText());
         $this->findCss($page, '#j1_2 .fa-check');
     }
