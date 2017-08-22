@@ -100,7 +100,7 @@
               [
                   '%%start%%' => $this->results->getStartRecord(),
                   '%%end%%' => $this->results->getEndRecord(),
-                  '%%total%%' => $recordTotal
+                  '%%total%%' => $this->localizedNumber($recordTotal)
               ]
           );?>
         <div class="pagination-container">
