@@ -57,8 +57,7 @@ class QueryBuilder
     public function build(AbstractQuery $query)
     {
         // Send back results
-        $params = new ParamBag();
-        $params->set('query', $this->abstractQueryToArray($query));
+        $params = new ParamBag(['query' => $this->abstractQueryToArray($query)]);
         return $params;
     }
 
@@ -74,44 +73,9 @@ class QueryBuilder
     protected function abstractQueryToArray(AbstractQuery $query)
     {
         if ($query instanceof Query) {
-            return $this->queryToArray($query);
+            return $query->getString();
         } else {
-            return $this->queryGroupToArray($query);
+            throw new \Exception('Query groups not supported');
         }
-    }
-
-    /**
-     * Convert a QueryGroup object to a query string.
-     *
-     * @param QueryGroup $query QueryGroup to convert
-     *
-     * @return array
-     */
-    protected function queryGroupToArray(QueryGroup $query)
-    {
-        $nextLevel = $query->getQueries();
-        $parts = [];
-        foreach ($nextLevel[0]->getQueries() as $q) {
-            $index = $q->getHandler();
-            $op = $q->getOperator();
-            $lookfor = $q->getString();
-            $parts[] = compact('index', 'op', 'lookfor');
-        }
-        return $parts;
-    }
-
-    /**
-     * Convert a single Query object to a query string.
-     *
-     * @param Query $query Query to convert
-     *
-     * @return array
-     */
-    protected function queryToArray(Query $query)
-    {
-        // Clean and validate input:
-        $index = $query->getHandler();
-        $lookfor = $query->getString();
-        return [compact('index', 'lookfor')];
     }
 }

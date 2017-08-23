@@ -78,6 +78,16 @@ class Results extends \VuFind\Search\Base\Results
      */
     protected function performSearch()
     {
-        // TODO
+        $query  = $this->getParams()->getQuery();
+        $limit  = $this->getParams()->getLimit();
+        $offset = $this->getStartRecord() - 1;
+        $collection = $this->getSearchService()->search(
+            'BrowZine', $query, $offset, $limit
+        );
+
+        $this->resultTotal = $collection->getTotal();
+
+        // Construct record drivers for all the items in the response:
+        $this->results = $collection->getRecords();
     }
 }

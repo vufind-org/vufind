@@ -100,9 +100,9 @@ class Backend extends AbstractBackend
         $baseParams->set('limit', $limit);
         $page = $limit > 0 ? floor($offset / $limit) + 1 : 1;
         $baseParams->set('pageNumber', $page);
-
         try {
-            $response = $this->connector->query($baseParams);
+            $response = $this->connector
+                ->search(current($baseParams->get('query')));
         } catch (\Exception $e) {
             throw new BackendException(
                 $e->getMessage(),
@@ -110,7 +110,9 @@ class Backend extends AbstractBackend
                 $e
             );
         }
-        $collection = $this->createRecordCollection($response);
+        $collection = $this->createRecordCollection(
+            json_decode($response, true)
+        );
         $this->injectSourceIdentifier($collection);
 
         return $collection;
