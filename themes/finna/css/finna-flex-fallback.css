@@ -4,9 +4,7 @@
   .author-facets .author-list,
   .result .media,
   .result .record-checkbox,
-  .result .record-number,
-  .grid-result .grid-body,
-  .grid-result .grid-checkbox {
+  .result .record-number {
     display: table-cell;
     min-width: 20px;
     vertical-align: top;

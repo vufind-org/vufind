@@ -280,13 +280,10 @@ mark, .highlight {
   content: '';
 }
 .grid.result {
-  display: flex;
   float: left;
   width: 50%;
 
-  .grid-body { flex: 1; }
   .grid-checkbox {
-    flex: 0 0 30px;
     min-width: 0;
   }
   .title { font-weight: bold; }
@@ -319,7 +316,7 @@ mark, .highlight {
       outline: none;
     }
     & .grid-title {
-      position: absolute;
+      position: relative;
       padding: 10px 5px 4px;
       width: ~"-webkit-calc(100% - 10px)";
       width: ~"-moz-calc(100% - 10px)";
@@ -444,7 +441,10 @@ mark, .highlight {
         transition: background .1s linear;
         padding-top: 6px;
         padding-bottom: 6px;
-        margin-top: -5px;
+        margin-top: -60px;
+        @media(max-width: @screen-sm){
+          margin-top: -100px;
+        }
       }
       & .dateyeartype {
         margin-top: -4px;
@@ -468,6 +468,7 @@ mark, .highlight {
     padding-bottom: 20px;
     & .grid-title {
       .opacity(.9);
+      position: relative;
       transition: max-height .2s ease-in, box-shadow .2s ease-in;
       max-height: 60px;
       top: 100%;
