@@ -10,6 +10,9 @@ $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
         'lookfor' => $list->title,
     ]
 );
+
+$this->hideCartControls = true;
+
 $this->headScript()->appendFile("finna-item-status.js");
 $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1");
 ?>
@@ -40,10 +43,10 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
 </div>
 <div class="public-list-view results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
     <form class="form-inline" method="post" name="bulkActionForm" action="<?= $this->url('cart-home') ?>">
-        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => '']) ?>
-        <?=$this->render('search/list-' . $this->params->getView() . '.phtml') ?>
-        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_']) ?>
     </form>
+      <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => '']) ?>
+      <?=$this->render('search/list-' . $this->params->getView() . '.phtml') ?>
+      <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_']) ?>
 </div>
 <div class="container-fluid pagination-background">
   <div class="container">
