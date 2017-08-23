@@ -43,6 +43,13 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
+     * The base URI for API requests
+     *
+     * @var string
+     */
+    protected $base = 'https://api.thirdiron.com/public/v1/';
+
+    /**
      * The HTTP Request client used for API transactions
      *
      * @var HttpClient
@@ -92,6 +99,18 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
+     * Get a full request URL for a relative path
+     *
+     * @param string $path URL path for service
+     *
+     * @return string
+     */
+    protected function getUri($path)
+    {
+        return $this->base . 'libraries/' . $this->libraryId . '/' . $path;
+    }
+
+    /**
      * Perform an API request and return the response body
      *
      * @param string $path   URL path for service
@@ -102,6 +121,16 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     protected function request($path, $params = [])
     {
         $params['access_token'] = $this->token;
-        
+        $uri = $this->getUri($path);
+        $this->debug('BrowZine request: ' . $uri);
+        $this->client->setUri($uri);
+        $this->client->setParameterGet($params);
+        $result = $this->client->send();
+        if ($result->isSuccess()) {
+            return $result->getBody();
+        } else {
+            $this->debug('API failure; status: ' . $result->getStatusCode());
+        }
+        return null;
     }
 }
