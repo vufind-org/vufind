@@ -348,7 +348,7 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                     . '&from=';
                 $handlers[] = [
                     'value' => 'External:' . $alphaBrowseUrl,
-                    'label' => $labelPrefix . $label,
+                    'label' => $labelPrefix . $this->getView()->translate($label),
                     'indent' => false,
                     'selected' => $activeHandler == 'AlphaBrowse:' . $source
                 ];
