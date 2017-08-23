@@ -57,16 +57,51 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     protected $token;
 
     /**
+     * The library ID number to use
+     *
+     * @var string
+     */
+    protected $libraryId;
+
+    /**
      * Constructor
      *
      * Sets up the BrowZine Client
      *
      * @param HttpClient $client HTTP client
      * @param string     $token  API access token
+     * @param string     $id     Library ID number
      */
-    public function __construct(HttpClient $client, $token)
+    public function __construct(HttpClient $client, $token, $id)
     {
         $this->client = $client;
         $this->token = $token;
+        $this->libraryId = $id;
+    }
+
+    /**
+     * Perform a search
+     *
+     * @param string $query Search query
+     *
+     * @return string
+     */
+    public function search($query)
+    {
+        return $this->request('search', compact('query'));
+    }
+
+    /**
+     * Perform an API request and return the response body
+     *
+     * @param string $path   URL path for service
+     * @param array  $params GET parameters
+     *
+     * @return string
+     */
+    protected function request($path, $params = [])
+    {
+        $params['access_token'] = $this->token;
+        
     }
 }

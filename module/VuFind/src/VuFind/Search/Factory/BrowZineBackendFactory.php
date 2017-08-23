@@ -116,6 +116,9 @@ class BrowZineBackendFactory implements FactoryInterface
         if (empty($this->browzineConfig->General->access_token)) {
             throw new \Exception("Missing access token in BrowZine.ini");
         }
+        if (empty($this->browzineConfig->General->library_id)) {
+            throw new \Exception("Missing library ID in BrowZine.ini");
+        }
         // Build HTTP client:
         $client = $this->serviceLocator->get('VuFind\Http')->createClient();
         $timeout = isset($this->browzineConfig->General->timeout)
@@ -123,7 +126,9 @@ class BrowZineBackendFactory implements FactoryInterface
         $client->setOptions(['timeout' => $timeout]);
 
         $connector = new Connector(
-            $client, $this->browzineConfig->General->access_token
+            $client,
+            $this->browzineConfig->General->access_token,
+            $this->browzineConfig->General->library_id
         );
         $connector->setLogger($this->logger);
         return $connector;
