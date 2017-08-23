@@ -110,6 +110,7 @@ $config = [
             'author' => 'VuFind\Controller\Factory::getAuthorController',
             'authority' => 'VuFind\Controller\Factory::getAuthorityController',
             'browse' => 'VuFind\Controller\Factory::getBrowseController',
+            'browzine' => 'VuFind\Controller\Factory::getBrowZineController',
             'cart' => 'VuFind\Controller\Factory::getCartController',
             'channels' => 'VuFind\Controller\Factory::getChannelsController',
             'collection' => 'VuFind\Controller\Factory::getCollectionController',
@@ -607,6 +608,7 @@ $config = [
             ],
             'search_backend' => [
                 'factories' => [
+                    'BrowZine' => 'VuFind\Search\Factory\BrowZineBackendFactory',
                     'EDS' => 'VuFind\Search\Factory\EdsBackendFactory',
                     'EIT' => 'VuFind\Search\Factory\EITBackendFactory',
                     'LibGuides' => 'VuFind\Search\Factory\LibGuidesBackendFactory',
