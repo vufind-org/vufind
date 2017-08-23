@@ -31,6 +31,7 @@ namespace VuFind\Search\Factory;
 use VuFindSearch\Backend\BrowZine\Backend;
 use VuFindSearch\Backend\BrowZine\Connector;
 use VuFindSearch\Backend\BrowZine\QueryBuilder;
+use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
