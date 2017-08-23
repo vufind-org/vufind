@@ -821,6 +821,7 @@ $staticRoutes = [
     'Authority/FacetList', 'Authority/Home', 'Authority/Record', 'Authority/Search',
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic', 'Cart/doExport',
+    'BrowZine/Home', 'BrowZine/Search',
     'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk',
     'Cart/Processor', 'Cart/Save', 'Cart/SearchResultsBulk',
     'Channels/Home', 'Channels/Record', 'Channels/Search',
