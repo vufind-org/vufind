@@ -43,11 +43,18 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * The HTTP_Request object used for API transactions
+     * The HTTP Request client used for API transactions
      *
      * @var HttpClient
      */
-    public $client;
+    protected $client;
+
+    /**
+     * The API access token
+     *
+     * @var string
+     */
+    protected $token;
 
     /**
      * Constructor
@@ -55,9 +62,11 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      * Sets up the BrowZine Client
      *
      * @param HttpClient $client HTTP client
+     * @param string     $token  API access token
      */
-    public function __construct(HttpClient $client)
+    public function __construct(HttpClient $client, $token)
     {
         $this->client = $client;
+        $this->token = $token;
     }
 }
