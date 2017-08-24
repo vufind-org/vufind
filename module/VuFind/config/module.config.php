@@ -371,6 +371,7 @@ $config = [
                     'booksite' => 'VuFind\Content\Covers\Factory::getBooksite',
                     'buchhandel' => 'VuFind\Content\Covers\Factory::getBuchhandel',
                     'contentcafe' => 'VuFind\Content\Covers\Factory::getContentCafe',
+                    'obalkyknih' => 'VuFind\Content\Covers\Factory::getObalkyKnih',
                     'syndetics' => 'VuFind\Content\Covers\Factory::getSyndetics',
                 ],
                 'invokables' => [
