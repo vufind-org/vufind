@@ -551,6 +551,7 @@ $config = [
                     'worldcat' => 'VuFind\RecordDriver\Factory::getWorldCat',
                 ],
                 'invokables' => [
+                    'browzine' => 'VuFind\RecordDriver\BrowZine',
                     'libguides' => 'VuFind\RecordDriver\LibGuides',
                 ],
             ],

@@ -100,7 +100,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             );
         }
         $collection = new $this->collectionClass($response);
-        foreach ($response['documents'] as $doc) {
+        foreach ($response['data'] as $doc) {
             $collection->add(call_user_func($this->recordFactory, $doc));
         }
         return $collection;
