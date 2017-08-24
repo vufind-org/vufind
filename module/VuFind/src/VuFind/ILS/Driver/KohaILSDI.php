@@ -236,7 +236,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $result = $this->db->query("SELECT 1 FROM $table LIMIT 1");
             // Result is FALSE (no table found) or PDOStatement Object (table found)
             $returnValue = $result !== false;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             // We got an exception == table not found
             $returnValue = false;
         }
