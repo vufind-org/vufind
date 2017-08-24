@@ -203,7 +203,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $this->db->exec("SET NAMES utf8");
         } catch (PDOException $e) {
             $this->debug('Connection failed: ' . $e->getMessage());
-            throw new ILSException($e->getMessage);
+            throw new ILSException($e->getMessage());
         }
 
         $this->debug('Connected to DB');
