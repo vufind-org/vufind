@@ -1,0 +1,12 @@
+<?
+  $urls = $this->driver->getUrls();
+?>
+<div class="media">
+  <div class="media-body">
+    <div class="resultItemLine1">
+      <? if (!empty($urls)): ?><a href="<?=$this->escapeHtmlAttr($urls[0])?>" class="title"><? endif; ?>
+        <?=$this->record($this->driver)->getTitleHtml()?>
+      <? if (!empty($urls)): ?></a><? endif; ?>
+    </div>
+  </div>
+</div>

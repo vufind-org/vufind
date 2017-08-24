@@ -97,9 +97,6 @@ class Backend extends AbstractBackend
         if (null !== $params) {
             $baseParams->mergeWith($params);
         }
-        $baseParams->set('limit', $limit);
-        $page = $limit > 0 ? floor($offset / $limit) + 1 : 1;
-        $baseParams->set('pageNumber', $page);
         try {
             $response = $this->connector
                 ->search(current($baseParams->get('query')));
@@ -111,7 +108,11 @@ class Backend extends AbstractBackend
             );
         }
         $collection = $this->createRecordCollection(
-            json_decode($response, true)
+            [
+                'offset' => $offset,
+                'recordCount' => count($response['data']),
+                'data' => array_slice($response['data'], $offset, $limit)
+            ]
         );
         $this->injectSourceIdentifier($collection);
 

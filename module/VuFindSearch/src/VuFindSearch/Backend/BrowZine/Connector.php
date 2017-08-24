@@ -91,7 +91,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * @param string $query Search query
      *
-     * @return string
+     * @return mixed
      */
     public function search($query)
     {
@@ -116,7 +116,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      * @param string $path   URL path for service
      * @param array  $params GET parameters
      *
-     * @return string
+     * @return mixed
      */
     protected function request($path, $params = [])
     {
@@ -127,7 +127,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         $this->client->setParameterGet($params);
         $result = $this->client->send();
         if ($result->isSuccess()) {
-            return $result->getBody();
+            return json_decode($result->getBody(), true);
         } else {
             $this->debug('API failure; status: ' . $result->getStatusCode());
         }

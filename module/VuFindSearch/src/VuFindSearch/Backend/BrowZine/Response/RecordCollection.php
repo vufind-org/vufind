@@ -79,8 +79,8 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getFacets()
     {
-        return isset($this->response['facets'])
-            ? $this->response['facets'] : [];
+        // Not supported
+        return [];
     }
 
     /**
@@ -90,10 +90,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getOffset()
     {
-        $page = isset($this->response['query']['pageNumber'])
-            ? $this->response['query']['pageNumber'] - 1 : 0;
-        $size = isset($this->response['query']['pageSize'])
-            ? $this->response['query']['pageSize'] : 0;
-        return $page * $size;
+        return isset($this->response['offset'])
+            ? $this->response['offset'] : 0;
     }
 }
