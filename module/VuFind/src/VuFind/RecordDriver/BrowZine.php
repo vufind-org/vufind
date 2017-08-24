@@ -39,13 +39,71 @@ namespace VuFind\RecordDriver;
 class BrowZine extends SolrDefault
 {
     /**
-     * Get text that can be displayed to represent this record in
-     * breadcrumbs.
+     * Get the short (pre-subtitle) title of the record.
      *
-     * @return string Breadcrumb text to represent this record.
+     * @return string
      */
-    public function getBreadcrumb()
+    public function getShortTitle()
     {
         return $this->getTitle();
+    }
+
+    /**
+     * Get the full title of the record.
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return isset($this->fields['name'])
+            ? $this->fields['name']
+            : parent::getTitle();
+    }
+    /**
+     * Returns one of three things: a full URL to a thumbnail preview of the record
+     * if an image is available in an external system; an array of parameters to
+     * send to VuFind's internal cover generator if no fixed URL exists; or false
+     * if no thumbnail can be generated.
+     *
+     * @param string $size Size of thumbnail (small, medium or large -- small is
+     * default).
+     *
+     * @return string|array|bool
+     */
+    public function getThumbnail($size = 'small')
+    {
+        if (isset($this->fields['coverImageUrl'])) {
+            return $this->fields['coverImageUrl'];
+        }
+        return parent::getThumbnail($size);
+    }
+
+    /**
+     * Return an array of associative URL arrays with one or more of the following
+     * keys:
+     *
+     * <li>
+     *   <ul>desc: URL description text to display (optional)</ul>
+     *   <ul>url: fully-formed URL (required if 'route' is absent)</ul>
+     *   <ul>route: VuFind route to build URL with (required if 'url' is absent)</ul>
+     *   <ul>routeParams: Parameters for route (optional)</ul>
+     *   <ul>queryString: Query params to append after building route (optional)</ul>
+     * </li>
+     *
+     * @return array
+     */
+    public function getURLs()
+    {
+        $urls = [];
+        $fields = ['browzineWebLink', 'externalLink'];
+        foreach ($fields as $field) {
+            if (isset($this->fields[$field])) {
+                $urls[] = $this->fields[$field];
+            }
+        }
+        $filter = function ($url) {
+            return ['url' => $url];
+        };
+        return array_map($filter, $urls);
     }
 }

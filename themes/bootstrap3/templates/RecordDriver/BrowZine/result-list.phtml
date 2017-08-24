@@ -1,12 +1,30 @@
 <?
-  $urls = $this->driver->getUrls();
-?>
+  $urls = $this->driver->getURLs();
+  $url = isset($urls[0]) ? $urls[0]['url'] : null;
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $url);
+  $cover = $coverDetails['html'];
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  if ($cover):
+    ob_start(); ?>
+    <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+      <?=$cover ?>
+    </div>
+    <? $thumbnail = ob_get_contents(); ?>
+  <? ob_end_clean(); ?>
+<? endif; ?>
 <div class="media">
+  <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <?=$thumbnail ?>
+  <? endif ?>
   <div class="media-body">
     <div class="resultItemLine1">
-      <? if (!empty($urls)): ?><a href="<?=$this->escapeHtmlAttr($urls[0])?>" class="title"><? endif; ?>
+      <? if ($url): ?><a href="<?=$this->escapeHtmlAttr($url)?>" class="title"><? endif; ?>
         <?=$this->record($this->driver)->getTitleHtml()?>
-      <? if (!empty($urls)): ?></a><? endif; ?>
+      <? if ($url): ?></a><? endif; ?>
     </div>
   </div>
+  <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+    <?=$thumbnail ?>
+  <? endif ?>
 </div>
