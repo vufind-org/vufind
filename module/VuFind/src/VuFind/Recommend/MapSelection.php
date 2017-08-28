@@ -19,24 +19,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Vaclav Rosecky <xrosecky@gmail.com>
  * @author   Leila Gonzales <lmg@agiweb.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
 
 /**
  * MapSelection Recommendations Module
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Vaclav Rosecky <xrosecky@gmail.com>
  * @author   Leila Gonzales <lmg@agiweb.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 class MapSelection implements \VuFind\Recommend\RecommendInterface
 {
