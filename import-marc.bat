@@ -53,37 +53,27 @@ set INDEX_OPTIONS=-Xms512m -Xmx512m -DentityExpansionLimit=0
 rem ##################################################
 rem # Set SOLRCORE
 rem ##################################################
-if not "!%SOLRCORE%!"=="!!" goto solrcorefound
-set SOLRCORE=biblio
-:solrcorefound
+if "!%SOLRCORE%!"=="!!" goto solrcorenotfound
+set EXTRA_SOLRMARC_SETTINGS=%EXTRA_SOLRMARC_SETTINGS%  -Dsolr.core.name=%SOLRCORE%
+:solrcorenotfound
 
 rem ##################################################
-rem # Set SOLR_HOME
+rem # Set VUFIND_HOME
 rem ##################################################
 if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
-rem VUFIND_HOME not set -- try to call vufind.bat to 
+rem VUFIND_HOME not set -- try to call env.bat to 
 rem fix the problem before we give up completely
-if exist vufind.bat goto usevufindbat
-rem If vufind.bat doesn't exist, the user hasn't run the installer yet.
-echo ERROR: vufind.bat does not exist -- could not set up environment.
+if exist env.bat goto useenvbat
+rem If env.bat doesn't exist, the user hasn't run the installer yet.
+echo ERROR: env.bat does not exist -- could not set up environment.
 echo Please run "php install.php" to correct this problem.
 goto end
-:usevufindbat
-call vufind > nul
+:useenvbat
+call env > nul
 if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
 echo You need to set the VUFIND_HOME environmental variable before running this script.
 goto end
 :vufindhomefound
-if "!%SOLR_HOME%!"=="!!" goto solrhomenotfound
-set EXTRA_SOLRMARC_SETTINGS=%EXTRA_SOLRMARC_SETTINGS% -Dsolr.path=%SOLR_HOME% -Dsolr.solr.home=%SOLR_HOME% -Dsolrmarc.solr.war.path=%SOLR_HOME%/jetty/webapps/solr.war
-:solrhomenotfound
-
-rem ##################################################
-rem # Set SOLRMARC_HOME
-rem ##################################################
-if "!%SOLRMARC_HOME%!"=="!!" goto solrmarchomenotfound
-set EXTRA_SOLRMARC_SETTINGS=%EXTRA_SOLRMARC_SETTINGS% -Dsolrmarc.path=%SOLRMARC_HOME%
-:solrmarchomenotfound
 
 rem #####################################################
 rem # Build java command
@@ -109,12 +99,12 @@ set PROPERTIES_FILE=%VUFIND_HOME%\import\import.properties
 rem ##################################################
 rem # Set Command Options
 rem ##################################################
-set JAR_FILE=%VUFIND_HOME%\import\SolrMarc.jar
+for %%a in (%VUFIND_HOME%\import\solrmarc_core_*.jar) do set JAR_FILE=%%a
 
 rem #####################################################
 rem # Execute Importer
 rem #####################################################
-set RUN_CMD=%JAVA% %INDEX_OPTIONS% -Duser.timezone=UTC -Dsolr.core.name=%SOLRCORE% %EXTRA_SOLRMARC_SETTINGS% -jar %JAR_FILE% %PROPERTIES_FILE% %1
+set RUN_CMD=%JAVA% %INDEX_OPTIONS% -Duser.timezone=UTC %EXTRA_SOLRMARC_SETTINGS% -jar %JAR_FILE% %PROPERTIES_FILE% -solrj %VUFIND_HOME%\solr\vendor\dist\solrj-lib %1
 echo Now Importing %1 ...
 echo %RUN_CMD%
 %RUN_CMD%

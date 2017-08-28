@@ -20,14 +20,14 @@
 <dl class="Content">
   <dt><a name="Wildcard Searches"></a>Suche mit Platzhaltern</dt>
   <dd>
-    <p>Als Platzhalter für ein beliebiges Zeichen verwenden sie<strong>?</strong>.</p>
-    <p>Beispiel: Wenn sie nach "Text" oder "Test" suchen wollen geben sie </p>
+    <p>Als Platzhalter für ein beliebiges Zeichen verwenden Sie das Fragezeichen <strong>(?)</strong>.</p>
+    <p>Beispiel: Wenn Sie nach "Text" oder "Test" suchen wollen geben Sie </p>
     <pre class="code">Te?t</pre>
     <p>ein.</p>
-    <p>Als Platzhalter für 0 oder mehrere beliebige Zeichen verwenden sie
-       <strong>*</strong>.</p>
+    <p>Als Platzhalter für 0 oder mehrere beliebige Zeichen verwenden Sie ein Sternchen 
+       <strong>(*)</strong>.</p>
     <p>Beispiel: Sie wollen nach "Test", "Tests" oder "Tester" suchen, dann geben
-       sie:</p>
+       Sie:</p>
     <pre class="code">Test*</pre>
     <p>ein</p>
     <p>Sie können Platzhalter irgendwo platzieren:</p>
@@ -36,27 +36,27 @@
   
   <dt><a name="Fuzzy Searches"></a>Unscharfe Suche</dt>
   <dd>
-    <p>Verwenden sie für die unscharfe Suche die Tilde (<strong>~</strong>) am
+    <p>Verwenden Sie für die unscharfe Suche die Tilde <strong>(~)</strong> am
        Ende eines Wortes.
        Beispiel: Sie wollen ähnlich geschriebene Wörter zu "Raum" erhalten:</p>
     <pre class="code">Raum~</pre>
     <p>In diese Suche werden Wörter, wie "Baum" oder "Rahm" aufgenommen.</p>
-    <p>Sie können die Anzahl der Wörter erhöhen oder verringern, indem sie 
+    <p>Sie können die Anzahl der Wörter erhöhen oder verringern, indem Sie 
        einen Wert zwischen 0 und 1 hinter der Tilde setzen.
-       Je kleiner der Wert, desto unschärfer die Suche. Wird der Wert auf 1
-       gesetzt, wird nur nach ähnlich geschriebenen Wörtern gesucht.
+       Je kleiner der Wert, desto unschärfer ist die Suche. Wird der Wert auf 1
+       gesetzt, wird nur nach identisch geschriebenen Wörtern gesucht.
        Beispiel:</p>
-    <pre class="code">roam~0.8</pre>
-    <p>Wenn sie nichts angeben, wird der Wert automatische auf 0.5 gesetzt.</p>
+    <pre class="code">Raum~0.8</pre>
+    <p>Wenn Sie nichts angeben, wird der Wert automatisch auf 0.5 gesetzt.</p>
   </dd>
   
   <dt><a name="Proximity Searches"></a>Bereichssuche</dt>
   <dd>
     <p>
-      Für die Bereichssuche verwenden sie die Tilde (<strong>~</strong>), welches
-      sie hinter einer Gruppe von Wörter setzen.
-      Beispiel: Um nach Ökonomie und Keynes, welche 10 Wörter entfernt sind, zu
-      suchen, geben sie folgende ein:
+      Für die Bereichssuche verwenden Sie die Tilde <strong>(~)</strong>, die
+      Sie hinter eine Gruppe von Wörter setzen.
+      Beispiel: Um nach Ökonomie und Keynes, welche maximal 10 Wörter voneinander entfernt sind, zu
+      suchen, geben Sie Folgendes ein:
     </p>
     <pre class="code">"Ökonomie Keynes"~10</pre>
   </dd>
@@ -64,24 +64,24 @@
   <dt><a name="Range Searches"></a>Bereichssuche</dt>
   <dd>
     <p>
-      Für die Bereichssuche verwenden sie geschweifte Klammern (<strong>{ }</strong>).
+      Für die Bereichssuche verwenden Sie geschweifte Klammern <strong>({ })</strong>.
       Beispiel: Sie wollen ein Wort, welches mit A, B oder C anfängt suchen:
     </p>
     <pre class="code">{A TO C}</pre>
     <p>
-      Das gleiche können sie mit Zahlen, wie Jahreszahlen machen:
+      Das gleiche können Sie mit Zahlen, wie z.B. Jahreszahlen machen:
     </p>
     <pre class="code">[2002 TO 2003]</pre>
   </dd>
   
-  <dt><a name="Boosting a Term"></a>Wort gewichten</dt>
+  <dt><a name="Boosting a Term"></a>Worte unterschiedlich gewichten</dt>
   <dd>
     <p>
-      Sie können Wörter mehr Bedeutung zuweisen, indem sie dieses mit einer
-      Zahl gewichten. Verwenden sie hierzu <strong>^</strong>. Beispiel:
+      Sie können Wörtern mehr Bedeutung zuweisen, indem Sie diese mit einer
+      Zahl gewichten. Verwenden Sie hierzu ein Dächchen <strong>(^)</strong>. Beispiel:
     </p>
-    <pre class="code">economics Keynes^5</pre>
-    <p>Dadurch wird das Wort "Keynes" stärker gewichtet und wird bei der Suche
+    <pre class="code">Ökonomie Keynes^5</pre>
+    <p>Dadurch wird das Wort "Keynes" stärker gewichtet und dadurch bei der Suche
        stärker beachtet.
     </p>
   </dd>
@@ -91,58 +91,58 @@
     <p>
       Boolsche Operatoren erlauben es Wörter, logisch miteinander zu verknüpfen.
       Folgende Operatoren sind erlaubt:
-      <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>,
-      <strong>NOT</strong> and <strong>-</strong>.
+      <strong>(AND)</strong>, <strong>(+)</strong>, <strong>(OR)</strong>,
+      <strong>(NOT)</strong> and <strong>(-)</strong>.
     </p>
-    <p>Hinweis: Boolsche Operatoren werden groß geschrieben</p>
+    <p>Hinweis: Boolsche Operatoren müssen groß geschrieben werden!</p>
     <dl>
       <dt><a name="AND"></a>AND</dt>
       <dd>
         <p>Die Und-Verknüpfung (<strong>AND</strong>) ist der Standardoperator. Das
             bedeutet, dass wenn zwischen zwei Wörtern kein Operator gesetzt wird,
-            die Und-Verknüpfung verwendet wird. Wenn sie zwei Wörter mit AND verbinden,
-            erhalten sie Treffer, in denen beide Wörter vorhanden sind.
+            die Und-Verknüpfung verwendet wird. Wenn Sie zwei Wörter mit AND verbinden,
+            erhalten Sie Treffer, in denen beide Wörter vorhanden sind.
         </p>
-        <p>Beispiel: Sie suchen nach Titel, in welchen die Wörter
-            "economics" und "Keynes" enthalten sind:</p>
-        <pre class="code">economics Keynes</pre>
+        <p>Beispiel: Sie suchen nach Titeln, in denen die Wörter
+           "Ökonomie" und "Keynes" enthalten sind:</p>
+        <pre class="code">Ökonomie Keynes</pre>
         <p>oder</p>
-        <pre class="code">economics AND Keynes</pre>
+        <pre class="code">Ökonomie AND Keynes</pre>
       </dd>      
       <dt><a name="+"></a>+</dt>
       <dd>
-        <p>Indem sie den "+"-Operator vor ein Wort setzen, erhalten sie
-           Treffer in welchem dieses Wort vorhanden ist.
+        <p>Indem Sie den "+"-Operator vor ein Wort setzen, erhalten Sie
+           nur Treffer in denen dieses Wort vorkommt.
         </p>
         <p>Beispiel:</p>
-        <pre class="code">+economics +Keynes</pre>
+        <pre class="code">+Ökonomie +Keynes</pre>
       </dd>
-      <dt><a name="OR"></a>ODER</dt>
+      <dt><a name="OR"></a>OR</dt>
       <dd>
-        <p>Steht eine Oder-Verknüpfung (<strong>OR</strong>) zwischen zwei Wörtern, so 
-        	erhalten sie Treffer, in welchem eines oder beide Wörter gefunden wurden.
+        <p>Steht eine Oder-Verknüpfung (<strong>(OR)</strong>) zwischen zwei Wörtern, so 
+           erhalten Sie Treffer, in denen eines oder beide Wörter gefunden wurden.
         </p>
-        <p>Beispiel: Sie suchen nach Titel, in welchen die Wörter "economics Keynes" oder
+        <p>Beispiel: Sie suchen nach Titeln, in denen die Phrasen "Ökonomie Keynes" oder
            "Keynes" enthalten sind:</p>
-        <pre class="code">"economics Keynes" OR Keynes</pre>
+        <pre class="code">"Ökonomie Keynes" OR Keynes</pre>
       </dd>
       <dt><a name="NOT"></a>NOT</dt>
       <dd>
-        <p>Indem sie NOT hinter ein Wort setzen, schliessen sie Treffer aus,
-           welche dieses Wort enthalten</p>
-        <p>Beispiel: Sie wollen nach Titel suchen, welche das Wort "economics"
+        <p>Indem Sie NOT vor ein Wort setzen, schließen Sie Treffer aus,
+           die dieses Wort enthalten.</p>
+        <p>Beispiel: Sie wollen nach Titeln suchen, welche das Wort "Ökonomie"
            enthalten aber nicht das Wort "Keynes":</p>
-        <pre class="code">economics NOT Keynes</pre>
+        <pre class="code">Ökonomie NOT Keynes</pre>
         <p>Hinweis: NOT muss mit mindestens zwei Wörtern verwendet werden.
            Beispielsweise liefert folgende Suche keine Treffer:</p>
-        <pre class="code">NOT economics</pre>
+        <pre class="code">NOT Ökonomie</pre>
       </dd>
       <dt><a name="-"></a>-</dt>
       <dd>
-        <p>Wird der Operator <strong>-</strong> vor ein Wort gesetzt, so
+        <p>Wird der Operator <strong>(-)</strong> vor ein Wort gesetzt, so
            werden alle Treffer ausgefiltert, die dieses Wort enthalten.</p>
         <p>Beispiel:</p>
-        <pre class="code">economics -Keynes</pre>
+        <pre class="code">Ökonomie -Keynes</pre>
       </dd>
     </dl>
   </dd>

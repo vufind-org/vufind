@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Cache
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Cache;
 use Zend\Cache\StorageFactory, Zend\Config\Config;
@@ -33,11 +33,11 @@ use Zend\Cache\StorageFactory, Zend\Config\Config;
  *
  * Creates file and APC caches
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Cache
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Manager
 {
@@ -89,9 +89,10 @@ class Manager
         $cacheBase = $this->getCacheDir();
 
         // Set up standard file-based caches:
-        foreach (['config', 'cover', 'language', 'object'] as $cache) {
+        foreach (['config', 'cover', 'language', 'object', 'yaml'] as $cache) {
             $this->createFileCache($cache, $cacheBase . $cache . 's');
         }
+        $this->createFileCache('public', $cacheBase . 'public');
 
         // Set up search specs cache based on config settings:
         $searchCacheType = isset($searchConfig->Cache->type)
@@ -148,11 +149,16 @@ class Manager
     public function getCacheDir($allowCliOverride = true)
     {
         if ($this->defaults && isset($this->defaults['cache_dir'])) {
-            $dir = $this->defaults['cache_dir'];
-            // ensure trailing slash:
-            if (substr($dir, -1) != '/') {
-                $dir .= '/';
-            }
+            // cache_dir setting in config.ini is deprecated
+            throw new \Exception(
+                'Deprecated cache_dir setting found in config.ini - please use '
+                . 'Apache environment variable VUFIND_CACHE_DIR in '
+                . 'httpd-vufind.conf instead.'
+            );
+        }
+
+        if (strlen(LOCAL_CACHE_DIR) > 0) {
+            $dir = LOCAL_CACHE_DIR . '/';
         } else if (strlen(LOCAL_OVERRIDE_DIR) > 0) {
             $dir = LOCAL_OVERRIDE_DIR . '/cache/';
         } else {

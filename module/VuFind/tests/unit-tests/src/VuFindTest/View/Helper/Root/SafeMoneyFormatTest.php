@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\SafeMoneyFormat;
@@ -31,11 +31,11 @@ use VuFind\View\Helper\Root\SafeMoneyFormat;
 /**
  * SafeMoneyFormat view helper Test Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class SafeMoneyFormatTest extends \PHPUnit_Framework_TestCase
 {
@@ -80,7 +80,7 @@ class SafeMoneyFormatTest extends \PHPUnit_Framework_TestCase
     public function testFormatting()
     {
         $escaper = new \Zend\View\Helper\EscapeHtml();
-        $view = $this->getMock('Zend\View\Renderer\PhpRenderer');
+        $view = $this->createMock('Zend\View\Renderer\PhpRenderer');
         $view->expects($this->any())->method('plugin')
             ->with($this->equalTo('escapeHtml'))
             ->will($this->returnValue($escaper));

@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\RecordTab;
 use Zend\ServiceManager\ServiceManager;
@@ -31,11 +31,11 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * Record Tab Factory Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  *
  * @codeCoverageIgnore
  */
@@ -177,8 +177,16 @@ class Factory
     public static function getMap(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $enabled = isset($config->Content->recordMap);
-        return new Map($enabled);
+        $mapType = isset($config->Content->recordMap)
+            ? $config->Content->recordMap : null;
+        $options = [];
+        $optionFields = ['displayCoords', 'mapLabels', 'graticule'];
+        foreach ($optionFields as $field) {
+            if (isset($config->Content->$field)) {
+                $options[$field] = $config->Content->$field;
+            }
+        }
+        return new Map($mapType, $options);
     }
 
     /**
@@ -195,19 +203,14 @@ class Factory
         // and googleoptions[tab] is not empty.
         $active = false;
         if (isset($cfg->Content->previews)) {
-            $content_previews = explode(
-                ',', strtolower(str_replace(' ', '', $cfg->Content->previews))
+            $previews = array_map(
+                'trim', explode(',', strtolower($cfg->Content->previews))
             );
-            if (in_array('google', $content_previews)
-                && isset($cfg->Content->GoogleOptions)
+            if (in_array('google', $previews)
+                && isset($cfg->Content->GoogleOptions['tab'])
+                && strlen(trim($cfg->Content->GoogleOptions['tab'])) > 0
             ) {
-                $g_options = $cfg->Content->GoogleOptions;
-                if (isset($g_options->tab)) {
-                    $tabs = explode(',', $g_options->tab);
-                    if (count($tabs) > 0) {
-                        $active = true;
-                    }
-                }
+                $active = true;
             }
         }
         return new Preview($active);
@@ -256,9 +259,14 @@ class Factory
      */
     public static function getUserComments(ServiceManager $sm)
     {
-        $cfg = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $enabled = !isset($cfg->Social->comments)
-            || ($cfg->Social->comments && $cfg->Social->comments !== 'disabled');
-        return new UserComments($enabled);
+        $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $useRecaptcha = isset($config->Captcha) && isset($config->Captcha->forms)
+            && (trim($config->Captcha->forms) === '*'
+            || strpos($config->Captcha->forms, 'userComments'));
+        return new UserComments(
+            'enabled' === $capabilities->getCommentSetting(),
+            $useRecaptcha
+        );
     }
 }

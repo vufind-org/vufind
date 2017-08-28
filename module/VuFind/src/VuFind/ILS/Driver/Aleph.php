@@ -23,7 +23,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -33,7 +33,7 @@
  * @author   Kun Lin <vufind-tech@lists.sourceforge.net>
  * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
@@ -46,7 +46,7 @@ use VuFind\Exception\Date as DateException;
  * @package  ILS_Drivers
  * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class AlephTranslator
 {
@@ -251,7 +251,7 @@ class AlephTranslator
  * @package  Exceptions
  * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class AlephRestfulException extends ILSException
 {
@@ -296,7 +296,7 @@ class AlephRestfulException extends ILSException
  * @author   Kun Lin <vufind-tech@lists.sourceforge.net>
  * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
@@ -380,6 +380,8 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $this->wwwuser = $this->config['Catalog']['wwwuser'];
             $this->wwwpasswd = $this->config['Catalog']['wwwpasswd'];
             $this->xserver_enabled = true;
+            $this->xport = isset($this->config['Catalog']['xport'])
+                ? $this->config['Catalog']['xport'] : 80;
         } else {
             $this->xserver_enabled = false;
         }
@@ -439,11 +441,12 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 'Call to doXRequest without X-Server configuration in Aleph.ini'
             );
         }
-        $url = "http://$this->host/X?op=$op";
+        $url = "http://$this->host:$this->xport/X?op=$op";
         $url = $this->appendQueryString($url, $params);
         if ($auth) {
             $url = $this->appendQueryString(
-                $url, [
+                $url,
+                [
                     'user_name' => $this->wwwuser,
                     'user_password' => $this->wwwpasswd
                 ]
@@ -778,14 +781,12 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 $addLink = ($hold_request[0] == 'Y');
             }
             $matches = [];
-            if (preg_match(
-                "/([0-9]*\\/[a-zA-Z]*\\/[0-9]*);([a-zA-Z ]*)/", $status, $matches
-            )) {
+            $dueDateWithStatusRegEx = "/([0-9]*\\/[a-zA-Z]*\\/[0-9]*);([a-zA-Z ]*)/";
+            $dueDateRegEx = "/([0-9]*\\/[a-zA-Z]*\\/[0-9]*)/";
+            if (preg_match($dueDateWithStatusRegEx, $status, $matches)) {
                 $duedate = $this->parseDate($matches[1]);
                 $requested = (trim($matches[2]) == "Requested");
-            } else if (preg_match(
-                "/([0-9]*\\/[a-zA-Z]*\\/[0-9]*)/", $status, $matches
-            )) {
+            } else if (preg_match($dueDateRegEx, $status, $matches)) {
                 $duedate = $this->parseDate($matches[1]);
             } else {
                 $duedate = null;
@@ -1138,11 +1139,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $barcode = (string) $z30->{'z30-barcode'};
             $checkout = (string) $z31->{'z31-date'};
             $id = $this->barcodeToID($barcode);
-            if ($transactiontype == "Debit") {
-                $mult = -100;
-            } elseif ($transactiontype == "Credit") {
-                $mult = 100;
-            }
+            $mult = ($transactiontype == "Credit") ? 100 : -100;
             $amount
                 = (float)(preg_replace("/[\(\)]/", "", (string) $z31->{'z31-sum'}))
                 * $mult;
@@ -1344,6 +1341,9 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 ], true
             );
         } catch (\Exception $ex) {
+            if (strpos($ex->getMessage(), 'Error in Verification') !== false) {
+                return null;
+            }
             throw new ILSException($ex->getMessage());
         }
         $patron = [];

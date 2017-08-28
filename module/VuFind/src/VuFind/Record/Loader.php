@@ -5,6 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2015.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,30 +18,35 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Record;
 use VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\RecordDriver\PluginManager as RecordFactory,
-    VuFindSearch\Service as SearchService;
+    VuFindSearch\Service as SearchService,
+    VuFind\Record\Cache;
 
 /**
  * Record loader
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
-class Loader
+class Loader implements \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Record factory
      *
@@ -56,16 +62,25 @@ class Loader
     protected $searchService;
 
     /**
+     * Record cache
+     *
+     * @var Cache
+     */
+    protected $recordCache;
+
+    /**
      * Constructor
      *
      * @param SearchService $searchService Search service
      * @param RecordFactory $recordFactory Record loader
+     * @param Cache         $recordCache   Record Cache
      */
     public function __construct(SearchService $searchService,
-        RecordFactory $recordFactory
+        RecordFactory $recordFactory, Cache $recordCache = null
     ) {
         $this->searchService = $searchService;
         $this->recordFactory = $recordFactory;
+        $this->recordCache = $recordCache;
     }
 
     /**
@@ -79,11 +94,29 @@ class Loader
      * @throws \Exception
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    public function load($id, $source = 'VuFind', $tolerateMissing = false)
-    {
-        $results = $this->searchService->retrieve($source, $id)->getRecords();
-        if (count($results) > 0) {
-            return $results[0];
+    public function load($id, $source = DEFAULT_SEARCH_BACKEND,
+        $tolerateMissing = false
+    ) {
+        if (null !== $id && '' !== $id) {
+            $results = [];
+            if (null !== $this->recordCache
+                && $this->recordCache->isPrimary($source)
+            ) {
+                $results = $this->recordCache->lookup($id, $source);
+            }
+            if (empty($results)) {
+                $results = $this->searchService->retrieve($source, $id)
+                    ->getRecords();
+            }
+            if (empty($results) && null !== $this->recordCache
+                && $this->recordCache->isFallback($source)
+            ) {
+                $results = $this->recordCache->lookup($id, $source);
+            }
+
+            if (!empty($results)) {
+                return $results[0];
+            }
         }
         if ($tolerateMissing) {
             $record = $this->recordFactory->get('Missing');
@@ -100,15 +133,69 @@ class Loader
      * Given an array of IDs and a record source, load a batch of records for
      * that source.
      *
-     * @param array  $ids    Record IDs
-     * @param string $source Record source
+     * @param array  $ids                       Record IDs
+     * @param string $source                    Record source
+     * @param bool   $tolerateBackendExceptions Whether to tolerate backend
+     * exceptions that may be caused by e.g. connection issues or changes in
+     * subcscriptions
      *
      * @throws \Exception
      * @return array
      */
-    public function loadBatchForSource($ids, $source = 'VuFind')
-    {
-        return $this->searchService->retrieveBatch($source, $ids)->getRecords();
+    public function loadBatchForSource($ids, $source = DEFAULT_SEARCH_BACKEND,
+        $tolerateBackendExceptions = false
+    ) {
+        $cachedRecords = [];
+        if (null !== $this->recordCache && $this->recordCache->isPrimary($source)) {
+            // Try to load records from cache if source is cachable
+            $cachedRecords = $this->recordCache->lookupBatch($ids, $source);
+            // Check which records could not be loaded from the record cache
+            foreach ($cachedRecords as $cachedRecord) {
+                $key = array_search($cachedRecord->getUniqueId(), $ids);
+                if ($key !== false) {
+                    unset($ids[$key]);
+                }
+            }
+        }
+
+        // Try to load the uncached records from the original $source
+        $genuineRecords = [];
+        if (!empty($ids)) {
+            try {
+                $genuineRecords = $this->searchService->retrieveBatch($source, $ids)
+                    ->getRecords();
+            } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
+                if (!$tolerateBackendExceptions) {
+                    throw $e;
+                }
+                $this->logWarning(
+                    "Exception when trying to retrieve records from $source: "
+                    . $e->getMessage()
+                );
+            }
+
+            foreach ($genuineRecords as $genuineRecord) {
+                $key = array_search($genuineRecord->getUniqueId(), $ids);
+                if ($key !== false) {
+                    unset($ids[$key]);
+                }
+            }
+        }
+
+        if (!empty($ids) && null !== $this->recordCache
+            && $this->recordCache->isFallback($source)
+        ) {
+            // Try to load missing records from cache if source is cachable
+            $cachedRecords = $this->recordCache->lookupBatch($ids, $source);
+        }
+
+        // Merge records found in cache and records loaded from original $source
+        $retVal = $genuineRecords;
+        foreach ($cachedRecords as $cachedRecord) {
+            $retVal[] = $cachedRecord;
+        }
+
+        return $retVal;
     }
 
     /**
@@ -116,16 +203,19 @@ class Loader
      * separated source|id strings), load all of the requested records in the
      * requested order.
      *
-     * @param array $ids Array of associative arrays with id/source keys or
-     * strings in source|id format.  In associative array formats, there is
-     * also an optional "extra_fields" key which can be used to pass in data
+     * @param array $ids                       Array of associative arrays with
+     * id/source keys or strings in source|id format.  In associative array formats,
+     * there is also an optional "extra_fields" key which can be used to pass in data
      * formatted as if it belongs to the Solr schema; this is used to create
      * a mock driver object if the real data source is unavailable.
+     * @param bool  $tolerateBackendExceptions Whether to tolerate backend
+     * exceptions that may be caused by e.g. connection issues or changes in
+     * subcscriptions
      *
      * @throws \Exception
      * @return array     Array of record drivers
      */
-    public function loadBatch($ids)
+    public function loadBatch($ids, $tolerateBackendExceptions = false)
     {
         // Sort the IDs by source -- we'll create an associative array indexed by
         // source and record ID which points to the desired position of the indexed
@@ -145,7 +235,9 @@ class Loader
         // Retrieve the records and put them back in order:
         $retVal = [];
         foreach ($idBySource as $source => $details) {
-            $records = $this->loadBatchForSource(array_keys($details), $source);
+            $records = $this->loadBatchForSource(
+                array_keys($details), $source, $tolerateBackendExceptions
+            );
             foreach ($records as $current) {
                 $id = $current->getUniqueId();
                 // In theory, we should be able to assume that $details[$id] is
@@ -174,5 +266,19 @@ class Loader
         // Send back the final array, with the keys in proper order:
         ksort($retVal);
         return $retVal;
+    }
+
+    /**
+     * Set the context to control cache behavior
+     *
+     * @param string $context Cache context
+     *
+     * @return void
+     */
+    public function setCacheContext($context)
+    {
+        if (null !== $this->recordCache) {
+            $this->recordCache->setContext($context);
+        }
     }
 }

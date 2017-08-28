@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\Role\PermissionProvider;
 use Zend\ServiceManager\ServiceManager;
@@ -31,11 +31,11 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * Permission Provider Factory Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  *
  * @codeCoverageIgnore
  */
@@ -50,7 +50,10 @@ class Factory
      */
     public static function getIpRange(ServiceManager $sm)
     {
-        return new IpRange($sm->getServiceLocator()->get('Request'));
+        return new IpRange(
+            $sm->getServiceLocator()->get('Request'),
+            $sm->getServiceLocator()->get('VuFind\IpAddressUtils')
+        );
     }
 
     /**
@@ -102,6 +105,20 @@ class Factory
     public static function getUsername(ServiceManager $sm)
     {
         return new Username(
+            $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService')
+        );
+    }
+    
+    /**
+     * Factory for User
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return User
+     */
+    public static function getUser(ServiceManager $sm)
+    {
+        return new User(
             $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService')
         );
     }

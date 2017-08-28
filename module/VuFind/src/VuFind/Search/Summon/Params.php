@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Summon
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Summon;
 use SerialsSolutions_Summon_Query as SummonQuery,
@@ -33,11 +33,11 @@ use SerialsSolutions_Summon_Query as SummonQuery,
 /**
  * Summon Search Parameters
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Summon
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Params extends \VuFind\Search\Base\Params
 {
@@ -83,6 +83,18 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
+     * Reset the current facet configuration.
+     *
+     * @return void
+     */
+    public function resetFacetConfig()
+    {
+        parent::resetFacetConfig();
+        $this->dateFacetSettings = [];
+        $this->fullFacetSettings = [];
+    }
+
+    /**
      * Get the full facet settings stored by addFacet -- these may include extra
      * parameters needed by the search results class.
      *
@@ -107,10 +119,13 @@ class Params extends \VuFind\Search\Base\Params
      * Get a user-friendly string to describe the provided facet field.
      *
      * @param string $field Facet field name.
+     * @param string $value Facet value.
      *
      * @return string       Human-readable description of field.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getFacetLabel($field)
+    public function getFacetLabel($field, $value = null)
     {
         // The default use of "Other" for undefined facets doesn't work well with
         // checkbox facets -- we'll use field names as the default within the Summon
@@ -132,11 +147,11 @@ class Params extends \VuFind\Search\Base\Params
         // Special case -- if we have a "holdings only" or "expand query" facet,
         // we want this to always appear, even on the "no results" screen, since
         // setting this facet actually EXPANDS rather than reduces the result set.
-        if (isset($facets['holdingsOnly'])) {
-            $facets['holdingsOnly']['alwaysVisible'] = true;
-        }
-        if (isset($facets['queryExpansion'])) {
-            $facets['queryExpansion']['alwaysVisible'] = true;
+        foreach ($facets as $i => $facet) {
+            list($field) = explode(':', $facet['filter']);
+            if ($field == 'holdingsOnly' || $field == 'queryExpansion') {
+                $facets[$i]['alwaysVisible'] = true;
+            }
         }
 
         // Return modified list:
@@ -173,7 +188,7 @@ class Params extends \VuFind\Search\Base\Params
         $backendParams->set('didYouMean', $options->spellcheckEnabled());
 
         // Get the language setting:
-        $lang = $this->getServiceLocator()->get('VuFind\Translator')->getLocale();
+        $lang = $this->getOptions()->getTranslator()->getLocale();
         $backendParams->set('language', substr($lang, 0, 2));
 
         if ($options->highlightEnabled()) {
@@ -197,7 +212,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function getBackendFacetParameters()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('Summon');
+        $config = $this->configLoader->get('Summon');
         $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
             ? $config->Facet_Settings->facet_limit : 30;
         $fieldSpecificLimits = isset($config->Facet_Settings->facet_limit_by_field)
@@ -250,6 +265,13 @@ class Params extends \VuFind\Search\Base\Params
                         // from other facets.
                         $params->set(
                             'expand', strtolower(trim($safeValue)) == 'true'
+                        );
+                    } else if ($filt['field'] == 'openAccessFilter') {
+                        // Special case -- "open access filter" is a separate
+                        // parameter from other facets.
+                        $params->set(
+                            'openAccessFilter',
+                            strtolower(trim($safeValue)) == 'true'
                         );
                     } else if ($filt['field'] == 'excludeNewspapers') {
                         // Special case -- support a checkbox for excluding
@@ -336,5 +358,6 @@ class Params extends \VuFind\Search\Base\Params
     {
         $this->initFacetList('Facets', 'Results_Settings', 'Summon');
         $this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings', 'Summon');
+        $this->initCheckboxFacets('CheckboxFacets', 'Summon');
     }
 }

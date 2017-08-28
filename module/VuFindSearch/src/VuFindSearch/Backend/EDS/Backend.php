@@ -17,15 +17,17 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Michelle Milton <mmilton@epnet.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\EDS;
+
+use Exception;
 
 use VuFindSearch\Backend\EDS\Zend2 as ApiClient;
 
@@ -46,11 +48,11 @@ use Zend\Session\Container as SessionContainer;
 /**
  *  EDS API Backend
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Michelle Milton <mmilton@epnet.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class Backend extends AbstractBackend
 {
@@ -100,7 +102,7 @@ class Backend extends AbstractBackend
     /**
      * Whether or not to use IP Authentication for communication with the EDS API
      *
-     * @var boolean
+     * @var bool
      */
     protected $ipAuth = false;
 
@@ -133,6 +135,13 @@ class Backend extends AbstractBackend
     protected $session;
 
     /**
+     * Is the current user a guest?
+     *
+     * @var bool
+     */
+    protected $isGuest;
+
+    /**
      * Constructor.
      *
      * @param ApiClient                        $client  EdsApi client to use
@@ -140,16 +149,18 @@ class Backend extends AbstractBackend
      * @param CacheAdapter                     $cache   Object cache
      * @param SessionContainer                 $session Session container
      * @param Config                           $config  Object representing EDS.ini
+     * @param bool                             $isGuest Is the current user a guest?
      */
     public function __construct(ApiClient $client,
         RecordCollectionFactoryInterface $factory, CacheAdapter $cache,
-        SessionContainer $session, Config $config = null
+        SessionContainer $session, Config $config = null, $isGuest = true
     ) {
-        // Save dependencies:
+        // Save dependencies/incoming parameters:
         $this->client = $client;
         $this->setRecordCollectionFactory($factory);
         $this->cache = $cache;
         $this->session = $session;
+        $this->isGuest = $isGuest;
 
         // Extract key values from configuration:
         if (isset($config->EBSCO_Account->user_name)) {
@@ -176,8 +187,8 @@ class Backend extends AbstractBackend
      * Perform a search and return record collection.
      *
      * @param AbstractQuery $query  Search query
-     * @param integer       $offset Search offset
-     * @param integer       $limit  Search limit
+     * @param int           $offset Search offset
+     * @param int           $limit  Search limit
      * @param ParamBag      $params Search backend parameters
      *
      *@return \VuFindSearch\Response\RecordCollectionInterface
@@ -297,11 +308,15 @@ class Backend extends AbstractBackend
                         $sessionToken = $this->getSessionToken(true);
                     }
                     $response = $this->client->retrieve(
-                        $an, $dbId,  $authenticationToken, $sessionToken, $hlTerms
+                        $an, $dbId, $authenticationToken, $sessionToken, $hlTerms
                     );
                 } catch(Exception $e) {
                     throw new BackendException($e->getMessage(), $e->getCode(), $e);
                 }
+                break;
+            case 135:
+                // DbId not in profile, fall through to treat as "record not found"
+                $response = [];
                 break;
             default:
                 throw $e;
@@ -457,7 +472,7 @@ class Backend extends AbstractBackend
      * Obtain the session token from the Session container. If it doesn't exist,
      * generate a new one.
      *
-     * @param boolean $isInvalid If a session token is invalid, generate a new one
+     * @param bool $isInvalid If a session token is invalid, generate a new one
      * regardless of what is in the session container
      *
      * @return string
@@ -498,23 +513,13 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Determines whether or not the current user session is identifed as a guest
-     * session
+     * Is the current user a guest? If so, return 'y' else 'n'.
      *
-     * @return string 'y'|'n'
+     * @return string
      */
     protected function isGuest()
     {
-        // If the user is not logged in, then treat them as a guest. Unless they are
-        // using IP Authentication.
-        // If IP Authentication is used, then don't treat them as a guest.
-        if ($this->ipAuth) {
-            return 'n';
-        }
-        if (isset($this->authManager)) {
-            return $this->authManager->isLoggedIn() ? 'n' : 'y';
-        }
-        return 'y';
+        return $this->isGuest ? 'y' : 'n';
     }
 
     /**
@@ -531,7 +536,7 @@ class Backend extends AbstractBackend
     {
         try {
             $authToken = $this->getAuthenticationToken();
-            $results = $this->client->createSession($profile,  $isGuest, $authToken);
+            $results = $this->client->createSession($profile, $isGuest, $authToken);
         } catch(\EbscoEdsApiException $e) {
             $errorCode = $e->getApiErrorCode();
             $desc = $e->getApiErrorDescription();
@@ -543,7 +548,7 @@ class Backend extends AbstractBackend
                 try {
                     $authToken = $this->getAuthenticationToken(true);
                     $results = $this->client
-                        ->createSession($this->profile,  $isGuest, $authToken);
+                        ->createSession($this->profile, $isGuest, $authToken);
                 } catch(Exception $e) {
                     throw new BackendException(
                         $e->getMessage(),

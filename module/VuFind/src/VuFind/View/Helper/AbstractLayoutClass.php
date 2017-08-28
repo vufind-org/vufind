@@ -17,24 +17,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper;
 
 /**
  * Helper class for managing high-level (body vs. sidebar) page layout.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 abstract class AbstractLayoutClass extends \Zend\View\Helper\AbstractHelper
 {
@@ -43,7 +43,7 @@ abstract class AbstractLayoutClass extends \Zend\View\Helper\AbstractHelper
      *
      * @var bool
      */
-    protected $left;
+    protected $sidebarOnLeft;
 
     /**
      * Is the sidebar offcanvas?
@@ -57,11 +57,10 @@ abstract class AbstractLayoutClass extends \Zend\View\Helper\AbstractHelper
      *
      * @param bool $left      Does the sidebar go on the left?
      * @param bool $offcanvas Is offcanvas menu active?
-     * @param bool $rtl       Are we displaying right-to-left?
      */
-    public function __construct($left = false, $offcanvas = false, $rtl = false)
+    public function __construct($left = false, $offcanvas = false)
     {
-        $this->left = (bool) $left ^ (bool) $rtl;
+        $this->sidebarOnLeft = $left;
         $this->offcanvas = $offcanvas;
     }
 

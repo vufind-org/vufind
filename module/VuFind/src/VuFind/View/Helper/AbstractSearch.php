@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper;
 use Zend\View\Helper\AbstractHelper;
@@ -31,11 +31,11 @@ use Zend\View\Helper\AbstractHelper;
 /**
  * Helper class for displaying search-related HTML chunks.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 abstract class AbstractSearch extends AbstractHelper
 {
@@ -84,11 +84,11 @@ abstract class AbstractSearch extends AbstractHelper
                 }
                 $html .= '<a href="'
                     . $results->getUrlQuery()
-                        ->replaceTerm($term, $data['new_term'])
+                        ->replaceTerm($term, $data['new_term'])->getParams()
                     . '">' . $view->escapeHtml($word) . '</a>';
                 if (isset($data['expand_term']) && !empty($data['expand_term'])) {
                     $url = $results->getUrlQuery()
-                        ->replaceTerm($term, $data['expand_term']);
+                        ->replaceTerm($term, $data['expand_term'])->getParams();
                     $html .= $this->renderExpandLink($url, $view);
                 }
             }

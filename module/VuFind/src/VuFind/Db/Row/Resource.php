@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Row;
 use VuFind\Date\Converter as DateConverter,
@@ -33,11 +33,11 @@ use VuFind\Date\Converter as DateConverter,
 /**
  * Row Definition for resource
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
@@ -95,8 +95,8 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     /**
      * Remove a tag from the current resource.
      *
-     * @param string              $tagText The tag to save.
-     * @param \VuFind\Db\Row\User $user    The user posting the tag.
+     * @param string              $tagText The tag to delete.
+     * @param \VuFind\Db\Row\User $user    The user deleting the tag.
      * @param string              $list_id The list associated with the tag
      * (optional).
      *
@@ -107,12 +107,16 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         $tagText = trim($tagText);
         if (!empty($tagText)) {
             $tags = $this->getDbTable('Tags');
-            $tag = $tags->getByText($tagText);
-
-            $linker = $this->getDbTable('ResourceTags');
-            $linker->destroyLinks(
-                $this->id, $user->id, $list_id, $tag->id
-            );
+            $tagIds = [];
+            foreach ($tags->getByText($tagText, false, false) as $tag) {
+                $tagIds[] = $tag->id;
+            }
+            if (!empty($tagIds)) {
+                $linker = $this->getDbTable('ResourceTags');
+                $linker->destroyLinks(
+                    $this->id, $user->id, $list_id, $tagIds
+                );
+            }
         }
     }
 
@@ -155,13 +159,23 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     public function assignMetadata($driver, \VuFind\Date\Converter $converter)
     {
         // Grab title -- we have to have something in this field!
-        $this->title = $driver->tryMethod('getSortTitle');
+        $this->title = mb_substr(
+            $driver->tryMethod('getSortTitle'),
+            0,
+            255,
+            "UTF-8"
+        );
         if (empty($this->title)) {
             $this->title = $driver->getBreadcrumb();
         }
 
         // Try to find an author; if not available, just leave the default null:
-        $author = $driver->tryMethod('getPrimaryAuthor');
+        $author = mb_substr(
+            $driver->tryMethod('getPrimaryAuthor'),
+            0,
+            255,
+            "UTF-8"
+        );
         if (!empty($author)) {
             $this->author = $author;
         }

@@ -17,27 +17,28 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Logic
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\ILS\Connection as ILSConnection;
+use VuFind\ILS\Connection as ILSConnection,
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * Title Hold Logic Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Logic
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class TitleHolds
 {
@@ -106,6 +107,8 @@ class TitleHolds
      * @param string $id A Bib ID
      *
      * @return string|bool URL to place hold, or false if hold option unavailable
+     *
+     * @todo Indicate login failure or ILS connection failure somehow?
      */
     public function getHold($id)
     {
@@ -115,13 +118,21 @@ class TitleHolds
             if ($mode == 'disabled') {
                  return false;
             } else if ($mode == 'driver') {
-                $patron = $this->ilsAuth->storedCatalogLogin();
-                if (!$patron) {
+                try {
+                    $patron = $this->ilsAuth->storedCatalogLogin();
+                    if (!$patron) {
+                        return false;
+                    }
+                    return $this->driverHold($id, $patron);
+                } catch (ILSException $e) {
                     return false;
                 }
-                return $this->driverHold($id, $patron);
             } else {
-                $patron = $this->ilsAuth->storedCatalogLogin();
+                try {
+                    $patron = $this->ilsAuth->storedCatalogLogin();
+                } catch (ILSException $e) {
+                    $patron = false;
+                }
                 $mode = $this->checkOverrideMode($id, $mode);
                 return $this->generateHold($id, $mode, $patron);
             }
@@ -194,14 +205,13 @@ class TitleHolds
         $checkHolds = $this->catalog->checkFunction(
             'Holds', compact('id', 'patron')
         );
-        $data = [
-            'id' => $id,
-            'level' => 'title'
-        ];
 
-        if ($checkHolds != false) {
-            $valid = $this->catalog->checkRequestIsValid($id, $data, $patron);
-            if ($valid) {
+        if (isset($checkHolds['HMACKeys'])) {
+            $data = ['id' => $id, 'level' => 'title'];
+            $result = $this->catalog->checkRequestIsValid($id, $data, $patron);
+            if ((is_array($result) && $result['valid'])
+                || (is_bool($result) && $result)
+            ) {
                 return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
             }
         }

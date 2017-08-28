@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category EBSCOIndustries
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\EDS;
 /**
@@ -33,7 +33,7 @@ namespace VuFindSearch\Backend\EDS;
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class SearchRequestModel
 {
@@ -112,7 +112,7 @@ class SearchRequestModel
     /**
      * Whether or not to highlight the search term in the results.
      *
-     * @var boolean
+     * @var bool
      */
     protected $highlight;
 
@@ -271,7 +271,7 @@ class SearchRequestModel
      * @param string $valueToCheck    Value to check the ending characters of
      * @param string $valueToCheckFor Characters to check for
      *
-     * @return boolean
+     * @return bool
      */
     protected static function endsWith($valueToCheck, $valueToCheckFor)
     {

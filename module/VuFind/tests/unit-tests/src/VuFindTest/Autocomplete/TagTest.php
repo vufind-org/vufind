@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Autocomplete;
 use VuFind\Autocomplete\Tag;
@@ -31,11 +31,11 @@ use VuFind\Autocomplete\Tag;
 /**
  * Tag autocomplete test class.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class TagTest extends \VuFindTest\Unit\DbTestCase
 {
@@ -67,12 +67,13 @@ class TagTest extends \VuFindTest\Unit\DbTestCase
         ];
 
         // Fake services:
-        $tagTable = $this->getMock('VuFind\Db\Table\Tags', ['matchText']);
+        $tagTable = $this->getMockBuilder('VuFind\Db\Table\Tags')
+            ->disableOriginalConstructor()->setMethods(['matchText'])->getMock();
         $tagTable->expects($this->once())->method('matchText')
             ->with($this->equalTo('foo'))
             ->will($this->returnValue($tags));
-        $tableManager
-            = $this->getMock('VuFind\Db\Table\PluginManager', ['get']);
+        $tableManager = $this->getMockBuilder('VuFind\Db\Table\PluginManager')
+            ->setMethods(['get'])->getMock();
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('Tags'))
             ->will($this->returnValue($tagTable));

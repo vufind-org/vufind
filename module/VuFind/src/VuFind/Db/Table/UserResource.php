@@ -17,34 +17,43 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
+use VuFind\Db\Row\RowGateway;
+use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for user_resource
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class UserResource extends Gateway
 {
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param string        $table   Name of database table to interface with
      */
-    public function __construct()
-    {
-        parent::__construct('user_resource', 'VuFind\Db\Row\UserResource');
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj = null, $table = 'user_resource'
+    ) {
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**
@@ -59,8 +68,8 @@ class UserResource extends Gateway
      *
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
-    public function getSavedData($resourceId, $source = 'VuFind', $listId = null,
-        $userId = null
+    public function getSavedData($resourceId, $source = DEFAULT_SEARCH_BACKEND,
+        $listId = null, $userId = null
     ) {
         $callback = function ($select) use ($resourceId, $source, $listId, $userId) {
             $select->columns(
@@ -101,7 +110,7 @@ class UserResource extends Gateway
      * @param string $list_id     ID of list to link up
      * @param string $notes       Notes to associate with link
      *
-     * @return void
+     * @return \VuFind\Db\Row\UserResource
      */
     public function createOrUpdateLink($resource_id, $user_id, $list_id,
         $notes = ''
@@ -123,6 +132,7 @@ class UserResource extends Gateway
         // Update the notes:
         $result->notes = $notes;
         $result->save();
+        return $result;
     }
 
     /**

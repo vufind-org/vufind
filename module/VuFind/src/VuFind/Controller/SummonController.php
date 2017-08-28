@@ -17,35 +17,38 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 use Zend\Mvc\MvcEvent;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Summon Controller
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class SummonController extends AbstractSearch
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         $this->searchClassId = 'Summon';
-        parent::__construct();
+        parent::__construct($sm);
     }
 
     /**
@@ -55,7 +58,7 @@ class SummonController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('Summon');
+        $config = $this->serviceLocator->get('VuFind\Config')->get('Summon');
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
     }
@@ -69,7 +72,7 @@ class SummonController extends AbstractSearch
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function preDispatch(MvcEvent $e)
+    public function injectSummonMessage(MvcEvent $e)
     {
         $this->layout()->poweredBy
             = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';
@@ -84,7 +87,9 @@ class SummonController extends AbstractSearch
     {
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
-        $events->attach(MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000);
+        $events->attach(
+            MvcEvent::EVENT_DISPATCH, [$this, 'injectSummonMessage'], 1000
+        );
     }
 
     /**
@@ -99,7 +104,7 @@ class SummonController extends AbstractSearch
 
         // Set up facet information:
         $view->facetList = $this->processAdvancedFacets(
-            $this->getAdvancedFacets()->getFacetList(), $view->saved
+            $this->getAdvancedFacets(), $view->saved
         );
         $specialFacets = $this->parseSpecialFacetsSetting(
             $view->options->getSpecialAdvancedFacets()
@@ -123,7 +128,10 @@ class SummonController extends AbstractSearch
     public function homeAction()
     {
         return $this->createViewModel(
-            ['results' => $this->getHomePageFacets()]
+            [
+                'results' => $this->getResultsManager()->get('Summon'),
+                'facetList' => $this->getHomePageFacets(),
+            ]
         );
     }
 
@@ -141,15 +149,15 @@ class SummonController extends AbstractSearch
      * Return a Search Results object containing advanced facet information.  This
      * data may come from the cache.
      *
-     * @return \VuFind\Search\Summon\Results
+     * @return array
      */
     protected function getAdvancedFacets()
     {
         // Check if we have facet results cached, and build them if we don't.
-        $cache = $this->getServiceLocator()->get('VuFind\CacheManager')
+        $cache = $this->serviceLocator->get('VuFind\CacheManager')
             ->getCache('object');
-        if (!($results = $cache->getItem('summonSearchAdvancedFacets'))) {
-            $config = $this->getServiceLocator()->get('VuFind\Config')
+        if (!($list = $cache->getItem('summonSearchAdvancedFacetsList'))) {
+            $config = $this->serviceLocator->get('VuFind\Config')
                 ->get('Summon');
             $limit = isset($config->Advanced_Facet_Settings->facet_limit)
                 ? $config->Advanced_Facet_Settings->facet_limit : 100;
@@ -177,22 +185,19 @@ class SummonController extends AbstractSearch
             $params->setLimit(0);
 
             // force processing for cache
-            $results->getResults();
+            $list = $results->getFacetList();
 
-            $cache->setItem('summonSearchAdvancedFacets', $results);
+            $cache->setItem('summonSearchAdvancedFacetsList', $list);
         }
 
-        // Restore the real service locator to the object (it was lost during
-        // serialization):
-        $results->restoreServiceLocator($this->getServiceLocator());
-        return $results;
+        return $list;
     }
 
     /**
      * Return a Search Results object containing homepage facet information.  This
      * data may come from the cache.
      *
-     * @return \VuFind\Search\Summon\Results
+     * @return array
      */
     protected function getHomePageFacets()
     {
@@ -235,4 +240,3 @@ class SummonController extends AbstractSearch
         return $facetList;
     }
 }
-

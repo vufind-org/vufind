@@ -17,24 +17,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Theme
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFindTheme;
 
 /**
  * Class to represent currently-selected theme and related information.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Theme
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class ThemeInfo
 {
@@ -93,6 +93,18 @@ class ThemeInfo
     }
 
     /**
+     * Get the configuration file for the specified mixin.
+     *
+     * @param string $mixin Mixin name
+     *
+     * @return string
+     */
+    protected function getMixinConfig($mixin)
+    {
+        return $this->baseDir . "/$mixin/mixin.config.php";
+    }
+
+    /**
      * Get the configuration file for the specified theme.
      *
      * @param string $theme Theme name
@@ -137,6 +149,26 @@ class ThemeInfo
     }
 
     /**
+     * Load configuration for the specified theme (and its mixins, if any) into the
+     * allThemeInfo property.
+     *
+     * @param string $theme Name of theme to load
+     *
+     * @return void
+     */
+    protected function loadThemeConfig($theme)
+    {
+        // Load theme configuration...
+        $this->allThemeInfo[$theme] = include $this->getThemeConfig($theme);
+        // ..and if there are mixins, load those too!
+        if (isset($this->allThemeInfo[$theme]['mixins'])) {
+            foreach ($this->allThemeInfo[$theme]['mixins'] as $mix) {
+                $this->allThemeInfo[$mix] = include $this->getMixinConfig($mix);
+            }
+        }
+    }
+
+    /**
      * Get all the configuration details related to the current theme.
      *
      * @return array
@@ -149,8 +181,7 @@ class ThemeInfo
             $this->allThemeInfo = [];
             $currentTheme = $this->getTheme();
             do {
-                $this->allThemeInfo[$currentTheme]
-                    = include $this->getThemeConfig($currentTheme);
+                $this->loadThemeConfig($currentTheme);
                 $currentTheme = $this->allThemeInfo[$currentTheme]['extends'];
             } while ($currentTheme);
         }
@@ -180,16 +211,21 @@ class ThemeInfo
         $allThemeInfo = $this->getThemeInfo();
 
         while (!empty($currentTheme)) {
-            foreach ($allPaths as $currentPath) {
-                $file = "$basePath/$currentTheme/$currentPath";
-                if (file_exists($file)) {
-                    if (true === $returnType) {
-                        return $file;
-                    } else if (self::RETURN_ALL_DETAILS === $returnType) {
-                        return ['path' => $file, 'theme' => $currentTheme];
+            $currentThemeSet = array_merge(
+                (array) $currentTheme,
+                isset($allThemeInfo[$currentTheme]['mixins'])
+                    ? $allThemeInfo[$currentTheme]['mixins'] : []
+            );
+            foreach ($currentThemeSet as $theme) {
+                foreach ($allPaths as $currentPath) {
+                    $path = "$basePath/$theme/$currentPath";
+                    if (file_exists($path)) {
+                        // Depending on return type, send back the requested data:
+                        if (self::RETURN_ALL_DETAILS === $returnType) {
+                            return compact('path', 'theme');
+                        }
+                        return $returnType ? $path : $theme;
                     }
-                    // Default return type:
-                    return $currentTheme;
                 }
             }
             $currentTheme = $allThemeInfo[$currentTheme]['extends'];

@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Import_Tools
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/importing_records Wiki
+ * @link     https://vufind.org/wiki/indexing Wiki
  */
 namespace VuFind\XSLT\Import;
 use DOMDocument, VuFind\Config\Locator as ConfigLocator;
@@ -33,11 +33,11 @@ use DOMDocument, VuFind\Config\Locator as ConfigLocator;
  * they will be automatically made available to your XSL stylesheet for use
  * with the php:function() function.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Import_Tools
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/importing_records Wiki
+ * @link     https://vufind.org/wiki/indexing Wiki
  */
 class VuFind
 {
@@ -366,7 +366,9 @@ class VuFind
     {
         static $articles = ['a', 'an', 'the'];
 
-        $text = strtolower(trim($in));
+        $text = is_callable('mb_strtolower')
+            ? mb_strtolower(trim($in), 'UTF-8')
+            : strtolower(trim($in));
 
         foreach ($articles as $a) {
             if (substr($text, 0, strlen($a) + 1) == ($a . ' ')) {

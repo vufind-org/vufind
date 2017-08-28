@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Config\Config;
@@ -31,11 +31,11 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Config\Config;
 /**
  * Zend action helper to perform new items-related actions
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class NewItems extends AbstractPlugin
 {
@@ -78,8 +78,10 @@ class NewItems extends AbstractPlugin
 
         // Build a list of unique IDs
         $bibIDs = [];
-        for ($i = 0; $i < count($newItems['results']); $i++) {
-            $bibIDs[] = $newItems['results'][$i]['id'];
+        if (isset($newItems['results'])) {
+            for ($i = 0; $i < count($newItems['results']); $i++) {
+                $bibIDs[] = $newItems['results'][$i]['id'];
+            }
         }
 
         // Truncate the list if it is too long:

@@ -1,0 +1,39 @@
+<?
+    $this->headTitle('Deminifier');
+?>
+
+<h2>Deminifier</h2>
+
+<? if (!$min): ?>
+  <form method='POST'>
+    Minified text:
+    <textarea name="min"></textarea>
+    <input type="submit" />
+  </form>
+<? else: ?>
+  <h3>Minified Object</h3>
+  <pre><? print_r($min) ?></pre>
+<? endif; ?>
+
+<? if ($results): ?>
+  <h3>Results Object</h3>
+  <p>Class: <?=get_class($results)?></p>
+<? endif; ?>
+
+<? if ($query): ?>
+  <h3>Query Object</h3>
+  <pre><? print_r($query) ?></pre>
+<? endif; ?>
+
+<? if ($backendParams || $queryParams): ?>
+  <h3>Backend Parameters</h3>
+  <? if ($queryParams): ?>
+    <h4>Query Parameters</h4>
+    <pre><? print_r($queryParams) ?></pre>
+  <? endif ; ?>
+  <? if ($backendParams): ?>
+    <h4>Non-query Parameters</h4>
+    <pre><? print_r($backendParams) ?></pre>
+  <? endif ; ?>
+<? endif; ?>
+

@@ -18,13 +18,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Record;
 
@@ -36,11 +36,11 @@ use VuFindTest\Unit\TestCase as TestCase;
 /**
  * Record router tests.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class RouterTest extends TestCase
 {
@@ -99,7 +99,7 @@ class RouterTest extends TestCase
         $router = $this->getRouter($driver, ['Collections' => ['collections' => true]]);
         $this->assertEquals(
             ['params' => ['id' => 'test', 'tab' => 'foo'], 'route' => 'collection'],
-            $router->getTabRouteDetails('VuFind|test', 'foo')
+            $router->getTabRouteDetails('Solr|test', 'foo')
         );
     }
 
@@ -172,12 +172,12 @@ class RouterTest extends TestCase
      *
      * @return RecordDriver
      */
-    protected function getDriver($id = 'test', $source = 'VuFind')
+    protected function getDriver($id = 'test', $source = 'Solr')
     {
-        $driver = $this->getMock('VuFind\RecordDriver\AbstractBase');
+        $driver = $this->createMock('VuFind\RecordDriver\AbstractBase');
         $driver->expects($this->any())->method('getUniqueId')
             ->will($this->returnValue($id));
-        $driver->expects($this->any())->method('getResourceSource')
+        $driver->expects($this->any())->method('getSourceIdentifier')
             ->will($this->returnValue($source));
         return $driver;
     }
@@ -195,13 +195,13 @@ class RouterTest extends TestCase
         if (null === $record) {
             $record = $this->getDriver();
         }
-        $loader = $this->getMock(
-            'VuFind\Record\Loader', [],
-            [
-                $this->getMock('VuFindSearch\Service'),
-                $this->getMock('VuFind\RecordDriver\PluginManager')
-            ]
-        );
+        $loader = $this->getMockBuilder('VuFind\Record\Loader')
+            ->setConstructorArgs(
+                [
+                    $this->createMock('VuFindSearch\Service'),
+                    $this->createMock('VuFind\RecordDriver\PluginManager')
+                ]
+            )->getMock();
         $loader->expects($this->any())->method('load')
             ->will($this->returnValue($record));
 

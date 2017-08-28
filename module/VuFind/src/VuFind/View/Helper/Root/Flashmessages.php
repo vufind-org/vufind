@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
 use Zend\View\Helper\AbstractHelper, Zend\Mvc\Controller\Plugin\FlashMessenger;
@@ -31,11 +31,11 @@ use Zend\View\Helper\AbstractHelper, Zend\Mvc\Controller\Plugin\FlashMessenger;
 /**
  * Flash message view helper
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Flashmessages extends AbstractHelper
 {
@@ -82,7 +82,14 @@ class Flashmessages extends AbstractHelper
                 $this->fm->getMessages($ns), $this->fm->getCurrentMessages($ns)
             );
             foreach (array_unique($messages, SORT_REGULAR) as $msg) {
-                $html .= '<div class="' . $this->getClassForNamespace($ns) . '">';
+                $html .= '<div class="' . $this->getClassForNamespace($ns) . '"';
+                if (isset($msg['dataset'])) {
+                    foreach ($msg['dataset'] as $attr => $value) {
+                        $html .= ' data-' . $attr . '="'
+                            . htmlspecialchars($value) . '"';
+                    }
+                }
+                $html .= '>';
                 // Advanced form:
                 if (is_array($msg)) {
                     // Use a different translate helper depending on whether

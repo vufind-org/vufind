@@ -17,36 +17,56 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
-use VuFind\Exception\LoginRequired as LoginRequiredException,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Db\Sql\Expression;
+use VuFind\Db\Row\RowGateway;
+use VuFind\Exception\LoginRequired as LoginRequiredException;
+use VuFind\Exception\RecordMissing as RecordMissingException;
+use Zend\Db\Adapter\Adapter;
+use Zend\Db\Sql\Expression;
+use Zend\Session\Container;
 
 /**
  * Table Definition for user_list
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class UserList extends Gateway
 {
     /**
-     * Constructor
+     * Session container for last list information.
+     *
+     * @var Container
      */
-    public function __construct()
-    {
-        parent::__construct('user_list', 'VuFind\Db\Row\UserList');
+    protected $session;
+
+    /**
+     * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param Container     $session Session container (must use same
+     * namespace as container provided to \VuFind\View\Helper\Root\UserList).
+     * @param string        $table   Name of database table to interface with
+     */
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj = null, Container $session = null, $table = 'user_list'
+    ) {
+        $this->session = $session;
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**
@@ -97,8 +117,8 @@ class UserList extends Gateway
      *
      * @return array
      */
-    public function getListsContainingResource($resourceId, $source = 'VuFind',
-        $userId = null
+    public function getListsContainingResource($resourceId,
+        $source = DEFAULT_SEARCH_BACKEND, $userId = null
     ) {
         // Set up base query:
         $callback = function ($select) use ($resourceId, $source, $userId) {

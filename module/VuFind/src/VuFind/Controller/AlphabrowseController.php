@@ -17,14 +17,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Mark Triggs <vufind-tech@lists.sourceforge.net>
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/alphabetical_heading_browse Wiki
+ * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
 namespace VuFind\Controller;
 
@@ -34,12 +34,12 @@ use VuFindSearch\ParamBag;
  *
  * Controls the alphabetical browsing feature
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Mark Triggs <vufind-tech@lists.sourceforge.net>
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/alphabetical_heading_browse Wiki
+ * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
 class AlphabrowseController extends AbstractBase
 {
@@ -94,7 +94,7 @@ class AlphabrowseController extends AbstractBase
             ? (int) $config->AlphaBrowse->page_size : 20;
 
         // Connect to Solr:
-        $db = $this->getServiceLocator()->get('VuFind\Search\BackendManager')
+        $db = $this->serviceLocator->get('VuFind\Search\BackendManager')
             ->get('Solr');
 
         // Process incoming parameters:

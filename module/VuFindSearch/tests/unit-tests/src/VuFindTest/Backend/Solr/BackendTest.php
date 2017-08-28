@@ -18,13 +18,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindTest\Backend\Solr;
 
@@ -41,11 +41,11 @@ use InvalidArgumentException;
 /**
  * Unit tests for SOLR backend.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class BackendTest extends PHPUnit_Framework_TestCase
 {
@@ -139,6 +139,29 @@ class BackendTest extends PHPUnit_Framework_TestCase
         $back = new Backend($conn);
         $back->setIdentifier('test');
         $terms = $back->terms('author', '', -1);
+        $this->assertTrue($terms->hasFieldTerms('author'));
+        $this->assertCount(10, $terms->getFieldTerms('author'));
+    }
+
+    /**
+     * Test terms component (using ParamBag as first param).
+     *
+     * @return void
+     */
+    public function testTermsWithParamBagAsFirstParameter()
+    {
+        $resp = $this->loadResponse('terms');
+        $conn = $this->getConnectorMock(['query']);
+        $conn->expects($this->once())
+            ->method('query')
+            ->will($this->returnValue($resp->getBody()));
+        $back = new Backend($conn);
+        $back->setIdentifier('test');
+        $bag = new ParamBag();
+        $bag->set('terms.fl', 'author');
+        $bag->set('terms.lower', '');
+        $bag->set('terms.limit', '-1');
+        $terms = $back->terms($bag);
         $this->assertTrue($terms->hasFieldTerms('author'));
         $this->assertCount(10, $terms->getFieldTerms('author'));
     }
@@ -263,16 +286,17 @@ class BackendTest extends PHPUnit_Framework_TestCase
     public function testRandom()
     {
         // Test that random sort parameter is added:
-        $params = $this->getMock('VuFindSearch\ParamBag', ['set']);
+        $params = $this->getMockBuilder('VuFindSearch\ParamBag')
+            ->setMethods(['set'])->getMock();
         $params->expects($this->once())->method('set')
             ->with($this->equalTo('sort'), $this->matchesRegularExpression('/[0-9]+_random asc/'));
 
         // Test that random proxies search; stub out injectResponseWriter() to prevent it
         // from injecting unwanted extra parameters into $params:
-        $back = $this->getMock(
-            'VuFindSearch\Backend\Solr\Backend', ['search', 'injectResponseWriter'],
-            [$this->getConnectorMock()]
-        );
+        $back = $this->getMockBuilder(__NAMESPACE__ . '\BackendMock')
+            ->setMethods(['search', 'injectResponseWriter'])
+            ->setConstructorArgs([$this->getConnectorMock()])
+            ->getMock();
         $back->expects($this->once())->method('injectResponseWriter');
         $back->expects($this->once())->method('search')
             ->will($this->returnValue('dummy'));
@@ -327,6 +351,16 @@ class BackendTest extends PHPUnit_Framework_TestCase
     protected function getConnectorMock(array $mock = [])
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
-        return $this->getMock('VuFindSearch\Backend\Solr\Connector', $mock, ['http://example.org/', $map]);
+        return $this->getMockBuilder('VuFindSearch\Backend\Solr\Connector')
+            ->setMethods($mock)
+            ->setConstructorArgs(['http://example.org/', $map])
+            ->getMock();
+    }
+}
+
+class BackendMock extends \VuFindSearch\Backend\Solr\Backend
+{
+    public function injectResponseWriter(\VuFindSearch\ParamBag $params)
+    {
     }
 }

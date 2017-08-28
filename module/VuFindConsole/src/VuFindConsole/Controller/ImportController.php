@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
 use VuFind\XSLT\Importer, Zend\Console\Console;
@@ -31,11 +31,11 @@ use VuFind\XSLT\Importer, Zend\Console\Console;
 /**
  * This controller handles various command-line tools
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 class ImportController extends AbstractBase
 {
@@ -46,22 +46,19 @@ class ImportController extends AbstractBase
      */
     public function importXslAction()
     {
-        // Parse switches:
-        $this->consoleOpts->addRules(
-            ['test-only' => 'Use test mode', 'index-s' => 'Solr index to use']
-        );
-        $testMode = $this->consoleOpts->getOption('test-only') ? true : false;
-        $index = $this->consoleOpts->getOption('index');
-        if (empty($index)) {
-            $index = 'Solr';
-        }
-
-        // Display help message if parameters missing:
-        $argv = $this->consoleOpts->getRemainingArgs();
-        if (!isset($argv[1])) {
+        $request = $this->getRequest();
+        $testMode = $request->getParam('test-only') ? true : false;
+        $index = $request->getParam('index', 'Solr');
+        $xml = $request->getParam('xml');
+        $properties = $request->getParam('properties');
+        if (empty($properties)) {
+            $scriptName = $this->getRequest()->getScriptName();
+            if (substr($scriptName, -9) === 'index.php') {
+                $scriptName .= ' import import-xsl';
+            }
             Console::writeLine(
-                "Usage: import-xsl.php [--test-only] [--index <type>] "
-                . "XML_file properties_file"
+                "Usage: $scriptName [--test-only] [--index <type>] "
+                . 'XML_file properties_file'
             );
             Console::writeLine("\tXML_file - source file to index");
             Console::writeLine("\tproperties_file - import configuration file");
@@ -88,15 +85,14 @@ class ImportController extends AbstractBase
             );
             Console::writeLine("");
             Console::writeLine(
-                "Note: See vudl.properties and ojs.properties "
-                . "for configuration examples."
+                "Note: See ojs.properties for configuration examples."
             );
             return $this->getFailureResponse();
         }
 
         // Try to import the document if successful:
         try {
-            $this->performImport($argv[0], $argv[1], $index, $testMode);
+            $this->performImport($xml, $properties, $index, $testMode);
         } catch (\Exception $e) {
             Console::writeLine("Fatal error: " . $e->getMessage());
             if (is_callable([$e, 'getPrevious']) && $e = $e->getPrevious()) {
@@ -108,7 +104,7 @@ class ImportController extends AbstractBase
             return $this->getFailureResponse();
         }
         if (!$testMode) {
-            Console::writeLine("Successfully imported {$argv[0]}...");
+            Console::writeLine("Successfully imported $xml...");
         }
         return $this->getSuccessResponse();
     }
@@ -126,8 +122,7 @@ class ImportController extends AbstractBase
     protected function performImport($xml, $properties, $index = 'Solr',
         $testMode = false
     ) {
-        $importer = new Importer();
-        $importer->setServiceLocator($this->getServiceLocator());
+        $importer = new Importer($this->serviceLocator);
         $importer->save($xml, $properties, $index, $testMode);
     }
 
@@ -138,17 +133,12 @@ class ImportController extends AbstractBase
      */
     public function webcrawlAction()
     {
-        // Parse switches:
-        $this->consoleOpts->addRules(
-            ['test-only' => 'Use test mode', 'index-s' => 'Solr index to use']
-        );
-        $testMode = $this->consoleOpts->getOption('test-only') ? true : false;
-        $index = $this->consoleOpts->getOption('index');
-        if (empty($index)) {
-            $index = 'SolrWeb';
-        }
+        // Get command line parameters:
+        $request = $this->getRequest();
+        $testMode = $request->getParam('test-only') ? true : false;
+        $index = $request->getParam('index', 'SolrWeb');
 
-        $configLoader = $this->getServiceLocator()->get('VuFind\Config');
+        $configLoader = $this->serviceLocator->get('VuFind\Config');
         $crawlConfig = $configLoader->get('webcrawl');
 
         // Get the time we started indexing -- we'll delete records older than this
@@ -167,7 +157,7 @@ class ImportController extends AbstractBase
 
         // Skip Solr operations if we're in test mode.
         if (!$testMode) {
-            $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
+            $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
             if ($verbose) {
                 Console::writeLine("Deleting old records (prior to $startTime)...");
             }

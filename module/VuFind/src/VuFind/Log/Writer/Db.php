@@ -17,45 +17,28 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Error_Logging
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Log\Writer;
 
 /**
  * This class extends the Zend Logging towards DB
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Error_Logging
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Db extends \Zend\Log\Writer\Db
 {
-    /**
-     * Holds the verbosity level
-     *
-     * @var int
-     */
-    protected $verbosity = 1;
-
-    /**
-     * Set verbosity
-     *
-     * @param integer $verb verbosity setting
-     *
-     * @return void
-     */
-    public function setVerbosity($verb)
-    {
-        $this->verbosity = $verb;
-    }
+    use VerbosityTrait;
 
     /**
      * Write a message to the log.
@@ -67,12 +50,7 @@ class Db extends \Zend\Log\Writer\Db
      */
     protected function doWrite(array $event)
     {
-        // Apply verbosity filter:
-        if (is_array($event['message'])) {
-            $event['message'] = $event['message'][$this->verbosity];
-        }
-
-        // Call parent method:
-        return parent::doWrite($event);
+        // Apply verbosity, Call parent method:
+        return parent::doWrite($this->applyVerbosity($event));
     }
 }

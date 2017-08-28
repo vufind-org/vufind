@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
 use VuFind\Search\Options\PluginManager as OptionsManager;
@@ -31,11 +31,11 @@ use VuFind\Search\Options\PluginManager as OptionsManager;
 /**
  * Search box view helper
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class SearchBox extends \Zend\View\Helper\AbstractHelper
 {
@@ -45,6 +45,13 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
      * @var array
      */
     protected $config;
+
+    /**
+     * Placeholders from config.ini
+     *
+     * @var array
+     */
+    protected $placeholders;
 
     /**
      * Search options plugin manager
@@ -65,11 +72,14 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
      *
      * @param OptionsManager $optionsManager Search options plugin manager
      * @param array          $config         Configuration for search box
+     * @param array          $placeholders   Array of placeholders keyed by backend
      */
-    public function __construct(OptionsManager $optionsManager, $config = [])
-    {
+    public function __construct(OptionsManager $optionsManager, $config = [],
+        $placeholders = []
+    ) {
         $this->optionsManager = $optionsManager;
         $this->config = $config;
+        $this->placeholders = $placeholders;
     }
 
     /**
@@ -153,6 +163,26 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
             $final[] = ['id' => 'applied_filter_' . ($i + 1), 'value' => $val];
         }
         return $final;
+    }
+
+    /**
+     * Get placeholder text from config using the activeSearchClass as key
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return string
+     */
+    public function getPlaceholderText($activeSearchClass)
+    {
+        // Searchbox place
+        if (!empty($this->placeholders)) {
+            return isset($this->placeholders[$activeSearchClass])
+                ? $this->placeholders[$activeSearchClass]
+                : (isset($this->placeholders['default'])
+                    ? $this->placeholders['default']
+                    : null);
+        }
+        return null;
     }
 
     /**

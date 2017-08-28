@@ -18,52 +18,47 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
-use Zend\Console\Console, Zend\Console\Getopt,
+use Zend\Console\Console,
+    Zend\ServiceManager\ServiceLocatorInterface,
     Zend\Mvc\Controller\AbstractActionController;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
  * controllers).
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 class AbstractBase extends AbstractActionController
 {
     /**
-     * Console options
-     *
-     * @var Getopt
-     */
-    protected $consoleOpts;
-
-    /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         // This controller should only be accessed from the command line!
         if (PHP_SAPI != 'cli') {
             throw new \Exception('Access denied to command line tools.');
         }
 
-        // Get access to information about the CLI request.
-        $this->consoleOpts = new Getopt([]);
+        $this->setServiceLocator($sm);
 
         // Switch the context back to the original working directory so that
-        // relative paths work as expected.  (This constant is set in
+        // relative paths work as expected. (This constant is set in
         // public/index.php)
         if (defined('ORIGINAL_WORKING_DIRECTORY')) {
             chdir(ORIGINAL_WORKING_DIRECTORY);
@@ -113,13 +108,25 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Get a VuFind configuration.
+     *
+     * @param string $id Configuration identifier (default = main VuFind config)
+     *
+     * @return \Zend\Config\Config
+     */
+    public function getConfig($id = 'config')
+    {
+        return $this->serviceLocator->get('VuFind\Config')->get($id);
+    }
+
+    /**
      * Get the ILS connection.
      *
      * @return \VuFind\ILS\Connection
      */
     public function getILS()
     {
-        return $this->getServiceLocator()->get('VuFind\ILSConnection');
+        return $this->serviceLocator->get('VuFind\ILSConnection');
     }
 
     /**
@@ -131,7 +138,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getTable($table)
     {
-        return $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
+        return $this->serviceLocator->get('VuFind\DbTablePluginManager')
             ->get($table);
     }
 }

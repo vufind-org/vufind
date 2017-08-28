@@ -20,13 +20,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Resolver_Drivers
  * @author   Graham Seaman <Graham.Seaman@rhul.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:link_resolver_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
 namespace VuFind\Resolver\Driver;
 
@@ -36,11 +36,11 @@ namespace VuFind\Resolver\Driver;
  * This interface class is the definition of the required methods for
  * interacting with the local OpenURL resolver.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Resolver_Drivers
  * @author   Graham Seaman <Graham.Seaman@rhul.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:link_resolver_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
 interface DriverInterface
 {
@@ -66,4 +66,27 @@ interface DriverInterface
      * @return array         Array of values
      */
     public function parseLinks($xmlstr);
+
+    /**
+     * Get Resolver Url
+     *
+     * Transform the OpenURL as needed to get a working link to the resolver.
+     *
+     * @param string $openURL openURL (url-encoded)
+     *
+     * @return string Returns resolver specific url
+     */
+    public function getResolverUrl($openURL);
+
+    /**
+     * This controls whether a "More options" link will be shown below the fetched
+     * resolver links eventually linking to the resolver page previously being
+     * parsed.
+     * This is especially useful for resolver such as the EZB resolver returning
+     * XML which would not be of any immediate use for the user.
+     *
+     * @return bool
+     */
+    public function supportsMoreOptionsLink();
+
 }

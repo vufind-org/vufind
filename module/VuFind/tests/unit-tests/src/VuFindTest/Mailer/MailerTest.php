@@ -17,25 +17,27 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Mailer;
 use VuFind\Mailer\Mailer;
+use Zend\Mail\Address;
+use Zend\Mail\AddressList;
 
 /**
  * Mailer Test Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class MailerTest extends \VuFindTest\Unit\TestCase
 {
@@ -52,10 +54,74 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
+    }
+
+    /**
+     * Test sending an email using an address object for the From field.
+     *
+     * @return void
+     */
+    public function testSendWithAddressObjectInSender()
+    {
+        $callback = function ($message) {
+            $fromString = $message->getFrom()->current()->toString();
+            return '<to@example.com>' == $message->getTo()->current()->toString()
+                && 'Sender TextName <from@example.com>' == $fromString
+                && 'body' == $message->getBody()
+                && 'subject' == $message->getSubject();
+        };
+        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $address = new Address('from@example.com', 'Sender TextName');
+        $mailer = new Mailer($transport);
+        $mailer->send('to@example.com', $address, 'subject', 'body');
+    }
+
+    /**
+     * Test sending an email using an address object for the To field.
+     *
+     * @return void
+     */
+    public function testSendWithAddressObjectInRecipient()
+    {
+        $callback = function ($message) {
+            $fromString = $message->getFrom()->current()->toString();
+            return 'Recipient TextName <to@example.com>' == $message->getTo()->current()->toString()
+                && '<from@example.com>' == $message->getFrom()->current()->toString()
+                && 'body' == $message->getBody()
+                && 'subject' == $message->getSubject();
+        };
+        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $address = new Address('to@example.com', 'Recipient TextName');
+        $mailer = new Mailer($transport);
+        $mailer->send($address, 'from@example.com', 'subject', 'body');
+    }
+
+    /**
+     * Test sending an email using an address list object for the To field.
+     *
+     * @return void
+     */
+    public function testSendWithAddressListObjectInRecipient()
+    {
+        $callback = function ($message) {
+            $fromString = $message->getFrom()->current()->toString();
+            return 'Recipient TextName <to@example.com>' == $message->getTo()->current()->toString()
+                && '<from@example.com>' == $message->getFrom()->current()->toString()
+                && 'body' == $message->getBody()
+                && 'subject' == $message->getSubject();
+        };
+        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $list = new AddressList();
+        $list->add(new Address('to@example.com', 'Recipient TextName'));
+        $mailer = new Mailer($transport);
+        $mailer->send($list, 'from@example.com', 'subject', 'body');
     }
 
     /**
@@ -68,7 +134,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testBadTo()
     {
-        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
         $mailer = new Mailer($transport);
         $mailer->send('bad@bad', 'from@example.com', 'subject', 'body');
     }
@@ -83,7 +149,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testEmptyTo()
     {
-        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
         $mailer = new Mailer($transport);
         $mailer->send('', 'from@example.com', 'subject', 'body');
     }
@@ -98,7 +164,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testTooManyRecipients()
     {
-        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
         $mailer = new Mailer($transport);
         $mailer->send('one@test.com;two@test.com', 'from@example.com', 'subject', 'body');
     }
@@ -113,9 +179,24 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testBadFrom()
     {
-        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'bad@bad', 'subject', 'body');
+    }
+
+    /**
+     * Test bad from address in Address object.
+     *
+     * @return void
+     *
+     * @expectedException        VuFind\Exception\Mail
+     * @expectedExceptionMessage Invalid Sender Email Address
+     */
+    public function testBadFromInAddressObject()
+    {
+        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $mailer = new Mailer($transport);
+        $mailer->send('to@example.com', new Address('bad@bad'), 'subject', 'body');
     }
 
     /**
@@ -128,7 +209,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testTransportException()
     {
-        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
         $transport->expects($this->once())->method('send')->will($this->throwException(new \Exception('Boom')));
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
@@ -147,7 +228,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && $in['from'] == 'from@example.com'
                 && $in['message'] == 'message';
         };
-        $view = $this->getMock('Zend\View\Renderer\PhpRenderer', ['partial']);
+        $view = $this->getMockBuilder(__NAMESPACE__ . '\MockEmailRenderer')
+            ->setMethods(['partial'])->getMock();
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
@@ -162,7 +244,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'Library Catalog Search Result' == $message->getSubject();
         };
-        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $mailer = new Mailer($transport);
         $mailer->setMaxRecipients(2);
@@ -179,7 +261,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testSendRecord()
     {
-        $driver = $this->getMock('VuFind\RecordDriver\AbstractBase');
+        $driver = $this->createMock('VuFind\RecordDriver\AbstractBase');
         $driver->expects($this->once())->method('getBreadcrumb')->will($this->returnValue('breadcrumb'));
 
         $viewCallback = function ($in) use ($driver) {
@@ -188,7 +270,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && $in['from'] == 'from@example.com'
                 && $in['message'] == 'message';
         };
-        $view = $this->getMock('Zend\View\Renderer\PhpRenderer', ['partial']);
+        $view = $this->getMockBuilder(__NAMESPACE__ . '\MockEmailRenderer')
+            ->setMethods(['partial'])->getMock();
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/record.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
@@ -199,9 +282,15 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'Library Catalog Record: breadcrumb' == $message->getSubject();
         };
-        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $mailer = new Mailer($transport);
         $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver, $view);
+    }
+}
+
+class MockEmailRenderer extends \Zend\View\Renderer\PhpRenderer
+{
+    public function partial($template, $driver) {
     }
 }

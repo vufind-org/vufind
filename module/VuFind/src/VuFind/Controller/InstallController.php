@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 use VuFind\Config\Locator as ConfigLocator,
@@ -34,11 +34,11 @@ use VuFind\Config\Locator as ConfigLocator,
 /**
  * Class controls VuFind auto-configuration.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class InstallController extends AbstractBase
 {
@@ -49,7 +49,7 @@ class InstallController extends AbstractBase
      *
      * @return void
      */
-    public function preDispatch(MvcEvent $e)
+    public function validateAutoConfigureConfig(MvcEvent $e)
     {
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
@@ -71,7 +71,9 @@ class InstallController extends AbstractBase
     {
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
-        $events->attach(MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000);
+        $events->attach(
+            MvcEvent::EVENT_DISPATCH, [$this, 'validateAutoConfigureConfig'], 1000
+        );
     }
 
     /**
@@ -163,7 +165,7 @@ class InstallController extends AbstractBase
      */
     protected function checkCache()
     {
-        $cache = $this->getServiceLocator()->get('VuFind\CacheManager');
+        $cache = $this->serviceLocator->get('VuFind\CacheManager');
         return [
             'title' => 'Cache',
             'status' => !$cache->hasDirectoryCreationError(),
@@ -178,7 +180,7 @@ class InstallController extends AbstractBase
      */
     public function fixcacheAction()
     {
-        $cache = $this->getServiceLocator()->get('VuFind\CacheManager');
+        $cache = $this->serviceLocator->get('VuFind\CacheManager');
         $view = $this->createViewModel();
         $view->cacheDir = $cache->getCacheDir();
         if (function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {
@@ -235,7 +237,7 @@ class InstallController extends AbstractBase
     {
         $requiredFunctionsExist
             = function_exists('mb_substr') && is_callable('imagecreatefromstring')
-              && function_exists('mcrypt_module_open')
+              && function_exists('openssl_encrypt')
               && class_exists('XSLTProcessor');
 
         return [
@@ -268,7 +270,7 @@ class InstallController extends AbstractBase
                 = "Your PHP installation appears to be missing the mbstring plug-in."
                 . " For better language support, it is recommended that you add"
                 . " this. For details on how to do this, see "
-                . "http://vufind.org/wiki/vufind2:installation_notes "
+                . "https://vufind.org/wiki/installation "
                 . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
@@ -280,19 +282,19 @@ class InstallController extends AbstractBase
                 = "Your PHP installation appears to be missing the GD plug-in. "
                 . "For better graphics support, it is recommended that you add this."
                 . " For details on how to do this, see "
-                . "http://vufind.org/wiki/vufind2:installation_notes "
+                . "https://vufind.org/wiki/installation "
                 . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
 
-        // Is the mcrypt library missing?
-        if (!function_exists('mcrypt_module_open')) {
+        // Is the openssl library missing?
+        if (!function_exists('openssl_encrypt')) {
             $msg
-                = "Your PHP installation appears to be missing the mcrypt plug-in."
+                = "Your PHP installation appears to be missing the openssl plug-in."
                 . " For better security support, it is recommended that you add"
                 . " this. For details on how to do this, see "
-                . "http://vufind.org/wiki/vufind2:installation_notes "
+                . "https://vufind.org/wiki/installation "
                 . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
@@ -303,7 +305,7 @@ class InstallController extends AbstractBase
             $msg
                 = "Your PHP installation appears to be missing the XSL plug-in."
                 . " For details on how to do this, see "
-                . "http://vufind.org/wiki/vufind2:installation_notes "
+                . "https://vufind.org/wiki/installation "
                 . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
@@ -352,7 +354,7 @@ class InstallController extends AbstractBase
                 try {
                     $dbName = ($view->driver == 'pgsql')
                         ? 'template1' : $view->driver;
-                    $db = $this->getServiceLocator()->get('VuFind\DbAdapterFactory')
+                    $db = $this->serviceLocator->get('VuFind\DbAdapterFactory')
                         ->getAdapterFromConnectionString("{$connection}/{$dbName}");
                 } catch (\Exception $e) {
                     $this->flashMessenger()
@@ -388,7 +390,7 @@ class InstallController extends AbstractBase
                         foreach ($preCommands as $query) {
                             $db->query($query, $db::QUERY_MODE_EXECUTE);
                         }
-                        $dbFactory = $this->getServiceLocator()
+                        $dbFactory = $this->serviceLocator
                             ->get('VuFind\DbAdapterFactory');
                         $db = $dbFactory->getAdapterFromConnectionString(
                             $connection . '/' . $view->dbname
@@ -507,13 +509,7 @@ class InstallController extends AbstractBase
         if (in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
             $status = false;
         } else {
-            try {
-                $catalog = $this->getILS();
-                $catalog->getStatus('1');
-                $status = true;
-            } catch (\Exception $e) {
-                $status = false;
-            }
+            $status = 'ils-offline' !== $this->getILS()->getOfflineMode(true);
         }
         return ['title' => 'ILS', 'status' => $status, 'fix' => 'fixils'];
     }
@@ -586,7 +582,7 @@ class InstallController extends AbstractBase
     protected function testSearchService()
     {
         // Try to retrieve an arbitrary ID -- this will fail if Solr is down:
-        $searchService = $this->getServiceLocator()->get('VuFind\Search');
+        $searchService = $this->serviceLocator->get('VuFind\Search');
         $searchService->retrieve('Solr', '1');
     }
 
@@ -793,6 +789,91 @@ class InstallController extends AbstractBase
     }
 
     /**
+     * Check if SSL configuration is set properly.
+     *
+     * @return array
+     */
+    public function checkSslCerts()
+    {
+        // Try to retrieve an SSL URL; if we're misconfigured, it will fail.
+        try {
+            $this->serviceLocator->get('VuFind\Http')
+                ->get('https://google.com');
+            $status = true;
+        } catch (\VuFindHttp\Exception\RuntimeException $e) {
+            // Any exception means we have a problem!
+            $status = false;
+        }
+
+        return [
+            'title' => 'SSL', 'status' => $status, 'fix' => 'fixsslcerts'
+        ];
+    }
+
+    /**
+     * Display repair instructions for SSL certificate problems.
+     *
+     * @return mixed
+     */
+    public function fixsslcertsAction()
+    {
+        // Bail out if we've fixed the problem:
+        $result = $this->checkSslCerts();
+        if ($result['status'] == true) {
+            $this->flashMessenger()->addMessage('SSL configuration fixed.', 'info');
+            return $this->redirect()->toRoute('install-home');
+        }
+
+        // Find out which test to try next:
+        $try = $this->params()->fromQuery('try', 0);
+
+        // Configurations to test:
+        $configsToTest = [
+            ['sslcapath' => '/etc/ssl/certs'],
+            ['sslcafile' => '/etc/pki/tls/cert.pem'],
+            [], // reset configuration as last attempt
+        ];
+        if (isset($configsToTest[$try])) {
+            return $this->testSslCertConfig($configsToTest[$try], $try);
+        }
+
+        // If we got this far, we can't fix this automatically and must display
+        // a message.
+        $view = $this->createViewModel();
+        return $view;
+    }
+
+    /**
+     * Try switching to a specific SSL configuration.
+     *
+     * @param array $config Setting(s) to add to [Http] section of config.ini.
+     * @param int   $try    Which config index are we trying right now?
+     *
+     * @return void
+     */
+    protected function testSslCertConfig($config, $try)
+    {
+        $file = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $writer = new ConfigWriter($file);
+        // Reset old settings
+        $writer->clear('Http', 'sslcapath');
+        $writer->clear('Http', 'sslcafile');
+        // Load new settings
+        foreach ($config as $setting => $value) {
+            $writer->set('Http', $setting, $value);
+        }
+        if (!$writer->save()) {
+            throw new \Exception('Cannot write config to disk.');
+        }
+
+        // Jump back to fix action so we can check if it worked (and attempt
+        // the next config by incrementing the $try variable, if necessary):
+        return $this->redirect()->toRoute(
+            'install-fixsslcerts', [], ['query' => ['try' => $try + 1]]
+        );
+    }
+
+    /**
      * Disable auto-configuration.
      *
      * @return mixed
@@ -826,4 +907,3 @@ class InstallController extends AbstractBase
         return $this->createViewModel(['checks' => $checks]);
     }
 }
-

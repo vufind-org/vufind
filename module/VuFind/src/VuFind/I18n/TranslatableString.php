@@ -17,24 +17,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Translator
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\I18n;
 
 /**
  * Class for translatable string with a special default translation.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Translator
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class TranslatableString implements TranslatableStringInterface
 {
@@ -60,7 +60,7 @@ class TranslatableString implements TranslatableStringInterface
      */
     public function __construct($string, $displayString)
     {
-        $this->string = $string;
+        $this->string = (string)$string;
         $this->displayString = $displayString;
     }
 

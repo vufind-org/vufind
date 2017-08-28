@@ -1,7 +1,7 @@
-/*global path, keepAliveInterval */
+/*global keepAliveInterval, VuFind */
 
-$(document).ready(function() {
-  window.setInterval(function() {
-    $.getJSON(path + '/AJAX/JSON', {method: 'keepAlive'});
+$(document).ready(function keepAliveReady() {
+  window.setInterval(function keepAliveInterval() {
+    $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   }, keepAliveInterval * 1000);
 });

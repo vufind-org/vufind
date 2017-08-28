@@ -18,13 +18,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindTest\Backend\Solr;
 
@@ -33,11 +33,11 @@ use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 /**
  * Unit tests for Lucene syntax helper
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
 {
@@ -340,6 +340,40 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
         foreach ($tests as $input => $expected)
         $this->assertEquals(
             $expected, $lh->normalizeSearchString($input)
+        );
+    }
+
+    /**
+     * Test search term extraction
+     *
+     * @return void
+     */
+    public function testExtractSearchTerms()
+    {
+        $lh = new LuceneSyntaxHelper(false, false);
+        $tests = [
+            'keyword' => 'keyword',
+            'two keywords' => 'two keywords',
+            'index:keyword' => 'keyword',
+            'index:keyword anotherkeyword' => 'keyword anotherkeyword',
+            'index:keyword anotherindex:anotherkeyword' => 'keyword anotherkeyword',
+            '(index:keyword)' => 'keyword',
+            'index:(keyword1 keyword2)' => '(keyword1 keyword2)',
+            '{!local params}keyword' => 'keyword',
+            'keyword~' => 'keyword',
+            'keyword~0.8' => 'keyword',
+            'keyword keyword2^20' => 'keyword keyword2',
+            '"keyword keyword2 keyword3"~2' => '"keyword keyword2 keyword3"',
+            '"kw1 kw2 kw3"~2 kw4^200' => '"kw1 kw2 kw3" kw4',
+            '+keyword -keyword2^20' => 'keyword keyword2',
+            'index:+keyword index2:-keyword2^20' => 'keyword keyword2',
+            'index:[start TO end]' => '[start TO end]',
+            'index:{start TO end}' => '{start TO end}',
+            'es\\"caped field:test' => 'es\\"caped test'
+        ];
+        foreach ($tests as $input => $expected)
+        $this->assertEquals(
+            $expected, $lh->extractSearchTerms($input)
         );
     }
 }

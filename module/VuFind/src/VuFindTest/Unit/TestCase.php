@@ -18,24 +18,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Unit;
 
 /**
  * Abstract base class for PHPUnit test cases.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
@@ -146,7 +146,6 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                     [
                         'abstract_factories' =>
                             ['VuFind\Search\Options\PluginFactory'],
-                        'aliases' => ['VuFind' => 'Solr'],
                     ]
                 )
             );
@@ -159,7 +158,6 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                     [
                         'abstract_factories' =>
                             ['VuFind\Search\Params\PluginFactory'],
-                        'aliases' => ['VuFind' => 'Solr'],
                     ]
                 )
             );
@@ -172,7 +170,6 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                     [
                         'abstract_factories' =>
                             ['VuFind\Search\Results\PluginFactory'],
-                        'aliases' => ['VuFind' => 'Solr'],
                     ]
                 )
             );
@@ -195,7 +192,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 'VuFind\SearchSpecsReader', new \VuFind\Config\SearchSpecsReader()
             );
             $this->serviceManager->setService(
-                'VuFind\Logger', $this->getMock('VuFind\Log\Logger')
+                'VuFind\Logger', $this->createMock('VuFind\Log\Logger')
             );
             $this->serviceManager->setService(
                 'VuFind\Http', new \VuFindHttp\HttpService()

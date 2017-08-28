@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\Record, Zend\View\Exception\RuntimeException;
@@ -31,11 +31,11 @@ use VuFind\View\Helper\Root\Record, Zend\View\Exception\RuntimeException;
 /**
  * Record view helper Test Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class RecordTest extends \PHPUnit_Framework_TestCase
 {
@@ -160,7 +160,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetListEntry()
     {
-        $driver = $this->getMock('VuFind\RecordDriver\AbstractBase');
+        $driver = $this->createMock('VuFind\RecordDriver\AbstractBase');
         $driver->expects($this->once())->method('getContainingLists')
             ->with($this->equalTo(42))
             ->will($this->returnValue([1, 2, 3]));
@@ -205,23 +205,6 @@ class RecordTest extends \PHPUnit_Framework_TestCase
             ['ISBN0123456789', 'LCCN12345', 'OCLC1', 'OCLC2'],
             $record->getPreviewIds()
         );
-    }
-
-    /**
-     * Test getController.
-     *
-     * @return void
-     */
-    public function testGetController()
-    {
-        // Default (Solr) case:
-        $driver = new \VuFindTest\RecordDriver\TestHarness();
-        $record = $this->getRecord($driver);
-        $this->assertEquals('Record', $record->getController());
-
-        // Custom source case:
-        $driver->setSourceIdentifier('Foo');
-        $this->assertEquals('Foorecord', $record->getController());
     }
 
     /**
@@ -288,10 +271,10 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     {
         $context = $this->getMockContext();
         $context->expects($this->at(1))->method('renderInContext')
-            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(['id' => 'VuFind|000105196', 'count' => 0, 'prefix' => 'bar']))
+            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(['id' => 'Solr|000105196', 'count' => 0, 'prefix' => 'bar', 'formAttr' => 'foo']))
             ->will($this->returnValue('success'));
         $context->expects($this->at(2))->method('renderInContext')
-            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(['id' => 'VuFind|000105196', 'count' => 1, 'prefix' => 'bar']))
+            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(['id' => 'Solr|000105196', 'count' => 1, 'prefix' => 'bar', 'formAttr' => 'foo']))
             ->will($this->returnValue('success'));
         $record = $this->getRecord(
             $this->loadRecordFixture('testbug1.json'), [], $context
@@ -401,7 +384,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         // Hard-coded thumbnail:
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData(['Thumbnail' => ['bar' => 'baz']]);
-        $record = $this->getRecord($driver, [], null, 'cover-show');
+        $record = $this->getRecord($driver);
         $this->assertEquals('http://foo/bar?bar=baz', $record->getThumbnail());
     }
 
@@ -507,7 +490,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         if (null === $context) {
             $context = $this->getMockContext();
         }
-        $view = $this->getMock('Zend\View\Renderer\PhpRenderer');
+        $view = $this->createMock('Zend\View\Renderer\PhpRenderer');
         if ($url) {
             $url = $this->getMockUrl($url);
         }
@@ -522,17 +505,20 @@ class RecordTest extends \PHPUnit_Framework_TestCase
                 return $serverurl;
             case 'url':
                 return $url;
+            case 'searchTabs':
+                return $this->getMockSearchTabs();
             default:
                 return null;
             }
         };
         $view->expects($this->any())->method('plugin')
             ->will($this->returnCallback($pluginCallback));
-        
+
         $view->expects($this->any())->method('resolver')
             ->will($this->returnValue($this->getMockResolver()));
         $config = is_array($config) ? new \Zend\Config\Config($config) : $config;
         $record = new Record($config);
+        $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar'));
         $record->setView($view);
         return $record->__invoke($driver);
     }
@@ -544,7 +530,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
      */
     protected function getMockResolver()
     {
-        return $this->getMock('Zend\View\Resolver\ResolverInterface');
+        return $this->createMock('Zend\View\Resolver\ResolverInterface');
     }
 
     /**
@@ -554,7 +540,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
      */
     protected function getMockContext()
     {
-        $context = $this->getMock('VuFind\View\Helper\Root\Context');
+        $context = $this->createMock('VuFind\View\Helper\Root\Context');
         $context->expects($this->any())->method('__invoke')
             ->will($this->returnValue($context));
         return $context;
@@ -569,7 +555,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
      */
     protected function getMockUrl($expectedRoute)
     {
-        $url = $this->getMock('Zend\View\Helper\Url');
+        $url = $this->createMock('Zend\View\Helper\Url');
         $url->expects($this->once())->method('__invoke')
             ->with($this->equalTo($expectedRoute))
             ->will($this->returnValue('http://foo/bar'));
@@ -585,10 +571,24 @@ class RecordTest extends \PHPUnit_Framework_TestCase
      */
     protected function getMockServerUrl()
     {
-        $url = $this->getMock('Zend\View\Helper\ServerUrl');
+        $url = $this->createMock('Zend\View\Helper\ServerUrl');
         $url->expects($this->once())->method('__invoke')
             ->will($this->returnValue('http://server-foo/baz'));
         return $url;
+    }
+
+    /**
+     * Get a mock search tabs view helper
+     *
+     * @return \VuFind\View\Helper\Root\SearchTabs
+     */
+    protected function getMockSearchTabs()
+    {
+        $searchTabs = $this->getMockBuilder('VuFind\View\Helper\Root\SearchTabs')
+            ->disableOriginalConstructor()->getMock();
+        $searchTabs->expects($this->any())->method('getCurrentHiddenFilterParams')
+            ->will($this->returnValue(''));
+        return $searchTabs;
     }
 
     /**

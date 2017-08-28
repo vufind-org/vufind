@@ -17,24 +17,25 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+use VuFind\Resolver\Driver\PluginManager;
 
 /**
  * OpenUrl view helper
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class OpenUrl extends \Zend\View\Helper\AbstractHelper
 {
@@ -60,6 +61,13 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     protected $openUrlRules;
 
     /**
+     * Resolver plugin manager
+     *
+     * @var PluginManager
+     */
+    protected $resolverPluginManager;
+
+    /**
      * Current RecordDriver
      *
      * @var \VuFind\RecordDriver
@@ -76,15 +84,17 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \VuFind\View\Helper\Root\Context $context      Context helper
-     * @param array                            $openUrlRules VuFind OpenURL rules
-     * @param \Zend\Config\Config              $config       VuFind OpenURL config
+     * @param \VuFind\View\Helper\Root\Context $context       Context helper
+     * @param array                            $openUrlRules  VuFind OpenURL rules
+     * @param PluginManager                    $pluginManager Resolver plugin manager
+     * @param \Zend\Config\Config              $config        VuFind OpenURL config
      */
     public function __construct(\VuFind\View\Helper\Root\Context $context,
-        $openUrlRules, $config = null
+        $openUrlRules, PluginManager $pluginManager, $config = null
     ) {
         $this->context = $context;
         $this->openUrlRules = $openUrlRules;
+        $this->resolverPluginManager = $pluginManager;
         $this->config = $config;
     }
 
@@ -105,15 +115,62 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Support method for renderTemplate() -- process image based parameters.
+     *
+     * @param bool  $imagebased Indicates if an image based link
+     * should be displayed or not (null for system default)
+     * @param array $params     OpenUrl parameters set so far
+     *
+     * @return void
+     */
+    protected function addImageBasedParams($imagebased, & $params)
+    {
+        $params['openUrlImageBasedMode'] = $this->getImageBasedLinkingMode();
+        $params['openUrlImageBasedSrc'] = null;
+
+        if (null === $imagebased) {
+            $imagebased = $this->imageBasedLinkingIsActive();
+        }
+
+        if ($imagebased) {
+            if (!isset($this->config->dynamic_graphic)) {
+                // if imagebased linking is forced by the template, but it is not
+                // configured properly, throw an exception
+                throw new \Exception(
+                    'Template tries to display OpenURL as image based link, but
+                     Image based linking is not configured! Please set parameter
+                     dynamic_graphic in config file.'
+                );
+            }
+
+            // Check if we have an image-specific OpenURL to use to override
+            // the default value when linking the image.
+            $params['openUrlImageBasedOverride'] = $this->recordDriver
+                ->tryMethod('getImageBasedOpenUrl');
+
+            // Concatenate image based OpenUrl base and OpenUrl
+            // to a usable image reference
+            $base = $this->config->dynamic_graphic;
+            $imageOpenUrl = $params['openUrlImageBasedOverride']
+                ? $params['openUrlImageBasedOverride'] : $params['openUrl'];
+            $params['openUrlImageBasedSrc'] = $base
+                . ((false === strpos($base, '?')) ? '?' : '&')
+                . $imageOpenUrl;
+        }
+
+        return $params;
+    }
+
+    /**
      * Public method to render the OpenURL template
+     *
+     * @param bool $imagebased Indicates if an image based link
+     * should be displayed or not (null for system default)
      *
      * @return string
      */
-    public function renderTemplate()
+    public function renderTemplate($imagebased = null)
     {
-        // Static counter to ensure that each OpenURL gets a unique ID.
-        static $counter = 0;
-
         if (null !== $this->config && isset($this->config->url)) {
             // Trim off any parameters (for legacy compatibility -- default config
             // used to include extraneous parameters):
@@ -123,9 +180,6 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         }
 
         $embed = (isset($this->config->embed) && !empty($this->config->embed));
-        if ($embed) {
-            $counter++;
-        }
 
         $embedAutoLoad = isset($this->config->embed_auto_load)
             ? $this->config->embed_auto_load : false;
@@ -148,9 +202,23 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             );
         }
 
+        // instantiate the resolver plugin to get a proper resolver link
+        $resolver = isset($this->config->resolver)
+            ? $this->config->resolver : 'other';
+        $openurl = $this->recordDriver->getOpenUrl();
+        if ($this->resolverPluginManager->has($resolver)) {
+            $resolverObj = new \VuFind\Resolver\Connection(
+                $this->resolverPluginManager->get($resolver)
+            );
+            $resolverUrl = $resolverObj->getResolverUrl($openurl);
+        } else {
+            $resolverUrl = empty($base) ? '' : $base . '?' . $openurl;
+        }
+
         // Build parameters needed to display the control:
         $params = [
-            'openUrl' => $this->recordDriver->getOpenUrl(),
+            'resolverUrl' => $resolverUrl,
+            'openUrl' => $openurl,
             'openUrlBase' => empty($base) ? false : $base,
             'openUrlWindow' => empty($this->config->window_settings)
                 ? false : $this->config->window_settings,
@@ -161,14 +229,40 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             'openUrlGraphicHeight' => empty($this->config->graphic_height)
                 ? false : $this->config->graphic_height,
             'openUrlEmbed' => $embed,
-            'openUrlEmbedAutoLoad' => $embedAutoLoad,
-            'openUrlId' => $counter
+            'openUrlEmbedAutoLoad' => $embedAutoLoad
         ];
+        $this->addImageBasedParams($imagebased, $params);
 
         // Render the subtemplate:
         return $this->context->__invoke($this->getView())->renderInContext(
             'Helpers/openurl.phtml', $params
         );
+    }
+
+    /**
+     * Public method to check ImageBased Linking mode
+     *
+     * @return string|bool false if image based linking is not active,
+     * config image_based_linking_mode otherwise (default = 'both')
+     */
+    public function getImageBasedLinkingMode()
+    {
+        if ($this->imageBasedLinkingIsActive()
+            && isset($this->config->image_based_linking_mode)
+        ) {
+            return $this->config->image_based_linking_mode;
+        }
+        return $this->imageBasedLinkingIsActive() ? 'both' : false;
+    }
+
+    /**
+     * Public method to check if ImageBased Linking is enabled
+     *
+     * @return bool
+     */
+    public function imageBasedLinkingIsActive()
+    {
+        return isset($this->config->dynamic_graphic);
     }
 
     /**
@@ -221,6 +315,11 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     protected function checkIfRulesApply()
     {
+        // special case if no rules are defined at all assume that any record is
+        // valid for openUrls
+        if (!isset($this->openUrlRules) || count($this->openUrlRules) < 1) {
+            return true;
+        }
         foreach ($this->openUrlRules as $rules) {
             if (!$this->checkExcludedRecordsRules($rules)
                 && $this->checkSupportedRecordsRules($rules)

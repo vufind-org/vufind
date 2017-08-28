@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Greg Pendlebury <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
@@ -31,11 +31,11 @@ use VuFind\Exception\ILS as ILSException;
 /**
  * VTLS Virtua Driver
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Greg Pendlebury <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
@@ -589,11 +589,9 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                         ) {
                             // ... can this user borrow on loan items at this
                             // location?
-                            if (in_array(
+                            $can_req = in_array(
                                 $location, $unavailable_locs[$item_loc_code]
-                            )) {
-                                $can_req = true;
-                            }
+                            );
                         }
                     } else {
                         // The item is NOT on loan ...
@@ -601,9 +599,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                         // ... and has a requestable status ...
                         if (in_array($item_stat_code, $status_list)) {
                             // ... can the user borrow status items at this location?
-                            if (in_array($location, $status_locs[$item_loc_code])) {
-                                $can_req = true;
-                            }
+                            $can_req
+                                = in_array($location, $status_locs[$item_loc_code]);
                         } else {
                             // ... and DOESN'T have a requestable status ...
                             if ($item_stat_code !== null) {
@@ -611,11 +608,9 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                             } else {
                                 // ... can the user borrow available items at this
                                 // location?
-                                if (in_array(
+                                $can_req = in_array(
                                     $location, $available_locs[$item_loc_code]
-                                )) {
-                                    $can_req = true;
-                                }
+                                );
                             }
                         }
                     }
@@ -1539,9 +1534,6 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         // Assume an error response:
         $response = ['success' => false, 'status' => "hold_error_fail"];
 
-        // Get the iPortal server
-        $web_server = $this->config['Catalog']['webhost'];
-
         // Validate input
         //  * Request level
         $allowed_req_levels = [
@@ -1568,7 +1560,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
 
         // Still here? Guess the request is valid, lets send it to virtua
-        $virtua_url = "http://$web_server/cgi-bin/chameleon?" .
+        $virtua_url = $this->getApiBaseUrl() . '?' .
             // Standard stuff
             "search=NOSRCH&function=REQUESTS&reqreqtype=0&reqtype=0" .
             "&reqscr=2&reqreqlevel=2&reqidtype=127&reqmincircperiod=" .
@@ -1649,10 +1641,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     protected function cancelHold($request_number)
     {
-        // Get the iPortal server
-        $web_server = $this->config['Catalog']['webhost'];
-
-        $virtua_url = "http://$web_server/cgi-bin/chameleon?" .
+        $virtua_url = $this->getApiBaseUrl() . '?' .
             // Standard stuff
             "search=NOSRCH&function=REQUESTS&reqreqtype=1&reqtype=0" .
             "&reqscr=4&reqreqlevel=2&reqidtype=127" .
@@ -1689,17 +1678,14 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     protected function fakeLogin($patron)
     {
-        // Get the iPortal server
-        $web_server = $this->config['Catalog']['webhost'];
-
-        $virtua_url = "http://$web_server/cgi-bin/chameleon";
+        $virtua_url = $this->getApiBaseUrl();
         $postParams = [
             "SourceScreen" => "INITREQ",
             "conf" => ".&#047;chameleon.conf",
             "elementcount" => "1",
             "function" => "PATRONATTEMPT",
             "host" => $this->config['Catalog']['host_string'],
-            "lng" => "en",
+            "lng" => $this->getConfiguredLanguage(),
             "login" => "1",
             "pos" => "1",
             "rootsearch" => "KEYWORD",
@@ -1766,34 +1752,31 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             $initial[$row['barcode']] = $row;
         }
 
-        // Get the iPortal server
-        $web_server = $this->config['Catalog']['webhost'];
-
         // Fake a login to get an authenticated session
         $session_id = $this->fakeLogin($patron);
 
-        $virtua_url = "http://$web_server/cgi-bin/chameleon";
+        $virtua_url = $this->getApiBaseUrl();
 
         // Have to use raw post data because of the way
         //   virtua expects the barcodes to come across.
-        $post_data  = "function="      . "RENEWAL";
-        $post_data .= "&search="       . "PATRON";
-        $post_data .= "&sessionid="    . "$session_id";
-        $post_data .= "&skin="         . "homepage";
-        $post_data .= "&lng="          . "en";
-        $post_data .= "&inst="         . "consortium";
-        $post_data .= "&conf="         . urlencode(".&#047;chameleon.conf");
-        $post_data .= "&u1="           . "12";
+        $post_data  = "function=" . "RENEWAL";
+        $post_data .= "&search=" . "PATRON";
+        $post_data .= "&sessionid=" . "$session_id";
+        $post_data .= "&skin=" . "homepage";
+        $post_data .= "&lng=" . $this->getConfiguredLanguage();
+        $post_data .= "&inst=" . "consortium";
+        $post_data .= "&conf=" . urlencode(".&#047;chameleon.conf");
+        $post_data .= "&u1=" . "12";
         $post_data .= "&SourceScreen=" . "PATRONACTIVITY";
-        $post_data .= "&pos="          . "1";
-        $post_data .= "&patronid="     . $patron['cat_username'];
+        $post_data .= "&pos=" . "1";
+        $post_data .= "&patronid=" . $patron['cat_username'];
         $post_data .= "&patronhost="
             . urlencode($this->config['Catalog']['patron_host']);
         $post_data .= "&host="
             . urlencode($this->config['Catalog']['host_string']);
-        $post_data .= "&itembarcode="  . implode("&itembarcode=", $item_list);
-        $post_data .= "&submit="       . "Renew";
-        $post_data .= "&reset="        . "Clear";
+        $post_data .= "&itembarcode=" . implode("&itembarcode=", $item_list);
+        $post_data .= "&submit=" . "Renew";
+        $post_data .= "&reset=" . "Clear";
 
         $result = $this->httpRequest($virtua_url, null, $post_data);
 
@@ -1844,9 +1827,35 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
 
         foreach ($result as $row) {
-            $list[] = 'vtls' .  str_pad($row['AUTH_ID'], 9, "0", STR_PAD_LEFT);
+            $list[] = 'vtls' . str_pad($row['AUTH_ID'], 9, "0", STR_PAD_LEFT);
         }
         return $list;
+    }
+
+    /**
+     * Support method -- get base URL for API requests.
+     *
+     * @return string
+     */
+    protected function getApiBaseUrl()
+    {
+        // Get the iPortal server
+        $host = $this->config['Catalog']['webhost'];
+        $path = isset($this->config['Catalog']['cgi_token'])
+            ? trim($this->config['Catalog']['cgi_token'], '/')
+            : 'cgi-bin';
+        return "http://{$host}/{$path}/chameleon";
+    }
+
+    /**
+     * Support method -- determine the language from the configuration.
+     *
+     * @return string
+     */
+    protected function getConfiguredLanguage()
+    {
+        return isset($this->config['Catalog']['language'])
+            ? $this->config['Catalog']['language'] : 'en';
     }
 
     /**

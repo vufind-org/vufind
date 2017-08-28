@@ -16,7 +16,7 @@
           <td width="5%"/>
           <td width="*"/>
         </tr>
-        <tr>
+        <tr class="marc-row-LEADER">
           <th>LEADER</th>
           <td colspan="3"><xsl:value-of select="//marc:leader"/></td>
         </tr>
@@ -25,7 +25,7 @@
   </xsl:template>
 
   <xsl:template match="//marc:controlfield">
-      <tr>
+      <tr class="marc-row-{@tag}">
         <th>
           <xsl:value-of select="@tag"/>
         </th>
@@ -34,7 +34,7 @@
   </xsl:template>
 
   <xsl:template match="//marc:datafield">
-      <tr>
+      <tr class="marc-row-{@tag}">
         <th>
           <xsl:value-of select="@tag"/>
         </th>

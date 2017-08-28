@@ -17,27 +17,28 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Logic
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\ILS\Connection as ILSConnection;
+use VuFind\ILS\Connection as ILSConnection,
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * Hold Logic Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Logic
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Holds
 {
@@ -114,31 +115,52 @@ class Holds
     {
         $retVal = [];
 
-        // Handle purchase history alongside other textual fields
         $textFieldNames = $this->catalog->getHoldingsTextFieldNames();
-        $textFieldNames[] = 'purchase_history';
 
         foreach ($holdings as $groupKey => $items) {
             $retVal[$groupKey] = [
                 'items' => $items,
                 'location' => isset($items[0]['location'])
-                    ? $items[0]['location']
-                    : ''
+                    ? $items[0]['location'] : '',
+                'locationhref' => isset($items[0]['locationhref'])
+                    ? $items[0]['locationhref'] : ''
             ];
             // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
                 foreach ($textFieldNames as $fieldName) {
-                    if (!empty($item[$fieldName])) {
-                        $fields = is_array($item[$fieldName])
-                            ? $item[$fieldName]
-                            : [$item[$fieldName]];
-
-                        foreach ($fields as $field) {
-                            if (empty($retVal[$groupKey][$fieldName])
-                                || !in_array($field, $retVal[$groupKey][$fieldName])
+                    if (in_array($fieldName, ['notes', 'holdings_notes'])) {
+                        if (empty($item[$fieldName])) {
+                            // begin aliasing
+                            if ($fieldName == 'notes'
+                                && !empty($item['holdings_notes'])
                             ) {
-                                $retVal[$groupKey][$fieldName][] = $field;
+                                // using notes as alias for holdings_notes
+                                $item[$fieldName] = $item['holdings_notes'];
+                            } elseif ($fieldName == 'holdings_notes'
+                                && !empty($item['notes'])
+                            ) {
+                                // using holdings_notes as alias for notes
+                                $item[$fieldName] = $item['notes'];
                             }
+                        }
+                    }
+
+                    if (!empty($item[$fieldName])) {
+                        $targetRef = & $retVal[$groupKey]['textfields'][$fieldName];
+                        foreach ((array)$item[$fieldName] as $field) {
+                            if (empty($targetRef) || !in_array($field, $targetRef)) {
+                                $targetRef[] = $field;
+                            }
+                        }
+                    }
+                }
+
+                // Handle purchase history
+                if (!empty($item['purchase_history'])) {
+                    $targetRef = & $retVal[$groupKey]['purchase_history'];
+                    foreach ((array)$item['purchase_history'] as $field) {
+                        if (empty($targetRef) || !in_array($field, $targetRef)) {
+                            $targetRef[] = $field;
                         }
                     }
                 }
@@ -166,12 +188,18 @@ class Holds
             // Retrieve stored patron credentials; it is the responsibility of the
             // controller and view to inform the user that these credentials are
             // needed for hold data.
-            $patron = $this->ilsAuth->storedCatalogLogin();
+            try {
+                $patron = $this->ilsAuth->storedCatalogLogin();
 
-            // Does this ILS Driver handle consortial holdings?
-            $config = $this->catalog->checkFunction(
-                'Holds', compact('id', 'patron')
-            );
+                // Does this ILS Driver handle consortial holdings?
+                $config = $this->catalog->checkFunction(
+                    'Holds', compact('id', 'patron')
+                );
+            } catch (ILSException $e) {
+                $patron = false;
+                $config = [];
+            }
+
             if (isset($config['consortium']) && $config['consortium'] == true) {
                 $result = $this->catalog->getConsortialHoldings(
                     $id, $patron ? $patron : null, $ids
@@ -180,22 +208,32 @@ class Holds
                 $result = $this->catalog->getHolding($id, $patron ? $patron : null);
             }
 
+            $grb = 'getRequestBlocks'; // use variable to shorten line below:
+            $blocks
+                = $patron && $this->catalog->checkCapability($grb, compact($patron))
+                ? $this->catalog->getRequestBlocks($patron) : false;
+
             $mode = $this->catalog->getHoldsMode();
 
             if ($mode == "disabled") {
                 $holdings = $this->standardHoldings($result);
             } else if ($mode == "driver") {
-                $holdings = $this->driverHoldings($result, $config);
+                $holdings = $this->driverHoldings($result, $config, !empty($blocks));
             } else {
                 $holdings = $this->generateHoldings($result, $mode, $config);
             }
 
             $holdings = $this->processStorageRetrievalRequests(
-                $holdings, $id, $patron
+                $holdings, $id, $patron, !empty($blocks)
             );
-            $holdings = $this->processILLRequests($holdings, $id, $patron);
+            $holdings = $this->processILLRequests(
+                $holdings, $id, $patron, !empty($blocks)
+            );
         }
-        return $this->formatHoldings($holdings);
+        return [
+            'blocks' => $blocks,
+            'holdings' => $this->formatHoldings($holdings)
+        ];
     }
 
     /**
@@ -223,12 +261,13 @@ class Holds
     /**
      * Protected method for driver defined holdings
      *
-     * @param array $result     A result set returned from a driver
-     * @param array $holdConfig Hold configuration from driver
+     * @param array $result          A result set returned from a driver
+     * @param array $holdConfig      Hold configuration from driver
+     * @param bool  $requestsBlocked Are user requests blocked?
      *
      * @return array A sorted results set
      */
-    protected function driverHoldings($result, $holdConfig)
+    protected function driverHoldings($result, $holdConfig, $requestsBlocked)
     {
         $holdings = [];
 
@@ -238,17 +277,16 @@ class Holds
                 if ($show) {
                     if ($holdConfig) {
                         // Is this copy holdable / linkable
-                        if (isset($copy['addLink']) && $copy['addLink']) {
-                            // If the hold is blocked, link to an error page
-                            // instead of the hold form:
-                            $copy['link'] = $copy['addLink'] === 'block'
-                                ? $this->getBlockedDetails($copy)
-                                : $this->getRequestDetails(
-                                    $copy, $holdConfig['HMACKeys'], 'Hold'
-                                );
+                        if (!$requestsBlocked
+                            && isset($copy['addLink']) && $copy['addLink']
+                        ) {
+                            $copy['link'] = $this->getRequestDetails(
+                                $copy, $holdConfig['HMACKeys'], 'Hold'
+                            );
+                            $copy['linkLightbox'] = true;
                             // If we are unsure whether hold options are available,
                             // set a flag so we can check later via AJAX:
-                            $copy['check'] = $copy['addLink'] == 'check';
+                            $copy['check'] = $copy['addLink'] === 'check';
                         }
                     }
 
@@ -332,12 +370,16 @@ class Holds
                                     = $this->catalog->getHoldLink(
                                         $copy['id'], $copy
                                     );
+                                $holdings[$location_key][$copy_key]['linkLightbox']
+                                    = false;
                             } else {
                                 /* Build non-opac link */
                                 $holdings[$location_key][$copy_key]['link']
                                     = $this->getRequestDetails(
                                         $copy, $holdConfig['HMACKeys'], 'Hold'
                                     );
+                                $holdings[$location_key][$copy_key]['linkLightbox']
+                                    = true;
                             }
                         }
                     }
@@ -351,14 +393,16 @@ class Holds
      * Process storage retrieval request information in holdings and set the links
      * accordingly.
      *
-     * @param array  $holdings Holdings
-     * @param string $id       Record ID
-     * @param array  $patron   Patron
+     * @param array  $holdings        Holdings
+     * @param string $id              Record ID
+     * @param array  $patron          Patron
+     * @param bool   $requestsBlocked Are user requests blocked?
      *
      * @return array Modified holdings
      */
-    protected function processStorageRetrievalRequests($holdings, $id, $patron)
-    {
+    protected function processStorageRetrievalRequests($holdings, $id, $patron,
+        $requestsBlocked
+    ) {
         if (!is_array($holdings)) {
             return $holdings;
         }
@@ -377,22 +421,15 @@ class Holds
         foreach ($holdings as &$location) {
             foreach ($location as &$copy) {
                 // Is this copy requestable
-                if (isset($copy['addStorageRetrievalRequestLink'])
+                if (!$requestsBlocked
+                    && isset($copy['addStorageRetrievalRequestLink'])
                     && $copy['addStorageRetrievalRequestLink']
                 ) {
-                    // If the request is blocked, link to an error page
-                    // instead of the form:
-                    if ($copy['addStorageRetrievalRequestLink'] === 'block') {
-                        $copy['storageRetrievalRequestLink']
-                            = $this->getBlockedStorageRetrievalRequestDetails($copy);
-                    } else {
-                        $copy['storageRetrievalRequestLink']
-                            = $this->getRequestDetails(
-                                $copy,
-                                $requestConfig['HMACKeys'],
-                                'StorageRetrievalRequest'
-                            );
-                    }
+                    $copy['storageRetrievalRequestLink'] = $this->getRequestDetails(
+                        $copy,
+                        $requestConfig['HMACKeys'],
+                        'StorageRetrievalRequest'
+                    );
                     // If we are unsure whether request options are
                     // available, set a flag so we can check later via AJAX:
                     $copy['checkStorageRetrievalRequest']
@@ -406,13 +443,14 @@ class Holds
     /**
      * Process ILL request information in holdings and set the links accordingly.
      *
-     * @param array  $holdings Holdings
-     * @param string $id       Record ID
-     * @param array  $patron   Patron
+     * @param array  $holdings        Holdings
+     * @param string $id              Record ID
+     * @param array  $patron          Patron
+     * @param bool   $requestsBlocked Are user requests blocked?
      *
      * @return array Modified holdings
      */
-    protected function processILLRequests($holdings, $id, $patron)
+    protected function processILLRequests($holdings, $id, $patron, $requestsBlocked)
     {
         if (!is_array($holdings)) {
             return $holdings;
@@ -432,22 +470,14 @@ class Holds
         foreach ($holdings as &$location) {
             foreach ($location as &$copy) {
                 // Is this copy requestable
-                if (isset($copy['addILLRequestLink'])
+                if (!$requestsBlocked && isset($copy['addILLRequestLink'])
                     && $copy['addILLRequestLink']
                 ) {
-                    // If the request is blocked, link to an error page
-                    // instead of the form:
-                    if ($copy['addILLRequestLink'] === 'block') {
-                        $copy['ILLRequestLink']
-                            = $this->getBlockedILLRequestDetails($copy);
-                    } else {
-                        $copy['ILLRequestLink']
-                            = $this->getRequestDetails(
-                                $copy,
-                                $requestConfig['HMACKeys'],
-                                'ILLRequest'
-                            );
-                    }
+                    $copy['ILLRequestLink'] = $this->getRequestDetails(
+                        $copy,
+                        $requestConfig['HMACKeys'],
+                        'ILLRequest'
+                    );
                     // If we are unsure whether request options are
                     // available, set a flag so we can check later via AJAX:
                     $copy['checkILLRequest']
@@ -471,6 +501,9 @@ class Holds
      */
     protected function getRequestDetails($details, $HMACKeys, $action)
     {
+        // Include request type in the details
+        $details['requestType'] = $action;
+
         // Generate HMAC
         $HMACkey = $this->hmac->generate($HMACKeys, $details);
 
@@ -489,55 +522,9 @@ class Holds
         // Build Params
         return [
             'action' => $action, 'record' => $details['id'],
-            'source' => isset($details['source']) ? $details['source'] : 'VuFind',
+            'source' => isset($details['source'])
+                ? $details['source'] : DEFAULT_SEARCH_BACKEND,
             'query' => $queryString, 'anchor' => "#tabnav"
-        ];
-    }
-
-    /**
-     * Returns a URL to display a "blocked hold" message.
-     *
-     * @param array $holdDetails An array of item data
-     *
-     * @return array             Details for generating URL
-     */
-    protected function getBlockedDetails($holdDetails)
-    {
-        // Build Params
-        return [
-            'action' => 'BlockedHold', 'record' => $holdDetails['id']
-        ];
-    }
-
-    /**
-     * Returns a URL to display a "blocked storage retrieval request" message.
-     *
-     * @param array $details An array of item data
-     *
-     * @return array         Details for generating URL
-     */
-    protected function getBlockedStorageRetrievalRequestDetails($details)
-    {
-        // Build Params
-        return [
-            'action' => 'BlockedStorageRetrievalRequest',
-            'record' => $details['id']
-        ];
-    }
-
-    /**
-     * Returns a URL to display a "blocked ILL request" message.
-     *
-     * @param array $details An array of item data
-     *
-     * @return array         Details for generating URL
-     */
-    protected function getBlockedILLRequestDetails($details)
-    {
-        // Build Params
-        return [
-            'action' => 'BlockedILLRequest',
-            'record' => $details['id']
         ];
     }
 
@@ -550,12 +537,40 @@ class Holds
      */
     protected function getHoldingsGroupKey($copy)
     {
-        // Group by holdings id unless configured otherwise or holdings id not
-        // available
+        // Group by holdings id and location unless configured otherwise
         $grouping = isset($this->config->Catalog->holdings_grouping)
-            ? $this->config->Catalog->holdings_grouping : 'holdings_id';
-        return ($grouping != 'location_name' && isset($copy['holdings_id']))
-            ? $copy['holdings_id'] : $copy['location'];
+            ? $this->config->Catalog->holdings_grouping : 'holdings_id,location';
+
+        $groupKey = "";
+
+        // Multiple keys may be used here (delimited by comma)
+        foreach (array_map('trim', explode(",", $grouping)) as $key) {
+            // backwards-compatibility:
+            // The config.ini file originally expected only
+            //   two possible settings: holdings_id and location_name.
+            // However, when location_name was set, the code actually
+            //   used the value of 'location' instead.
+            // From now on, we will expect (via config.ini documentation)
+            //   the value of 'location', but still continue to honor
+            //   'location_name'.
+            if ($key == "location_name") {
+                $key = "location";
+            }
+
+            if (isset($copy[$key])) {
+                if ($groupKey != "") {
+                    $groupKey .= '|';
+                }
+                $groupKey .= $copy[$key];
+            }
+        }
+
+        // default:
+        if ($groupKey == "") {
+            $groupKey = $copy['location'];
+        }
+
+        return $groupKey;
     }
 
     /**

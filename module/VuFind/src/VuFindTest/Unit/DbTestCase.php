@@ -18,27 +18,106 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Unit;
+use Zend\ServiceManager\ServiceManager;
 
 /**
  * Abstract base class for PHPUnit database test cases.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 abstract class DbTestCase extends TestCase
 {
+    /**
+     * Add table manager to service manager.
+     *
+     * @param ServiceManager $sm Service manager
+     *
+     * @return void
+     */
+    protected function addTableManager(ServiceManager $sm)
+    {
+        $factory = new \VuFind\Db\Table\PluginManager(
+            new \Zend\ServiceManager\Config(
+                [
+                    'abstract_factories' =>
+                        ['VuFind\Db\Table\PluginFactory'],
+                    'factories' => [
+                        'changetracker' =>
+                            'VuFind\Db\Table\Factory::getChangeTracker',
+                        'comments' => 'VuFind\Db\Table\Factory::getComments',
+                        'externalsession' =>
+                            'VuFind\Db\Table\Factory::getExternalSession',
+                        'oairesumption' =>
+                            'VuFind\Db\Table\Factory::getOaiResumption',
+                        'record' => 'VuFind\Db\Table\Factory::getRecord',
+                        'resource' => 'VuFind\Db\Table\Factory::getResource',
+                        'resourcetags' =>
+                            'VuFind\Db\Table\Factory::getResourceTags',
+                        'search' => 'VuFind\Db\Table\Factory::getSearch',
+                        'session' => 'VuFind\Db\Table\Factory::getSession',
+                        'tags' => 'VuFind\Db\Table\Factory::getTags',
+                        'user' => 'VuFind\Db\Table\Factory::getUser',
+                        'usercard' => 'VuFind\Db\Table\Factory::getUserCard',
+                        'userlist' => 'VuFind\Db\Table\Factory::getUserList',
+                        'userresource' =>
+                            'VuFind\Db\Table\Factory::getUserResource',
+                    ],
+                ]
+            )
+        );
+        $factory->setServiceLocator($sm);
+        $sm->setService('VuFind\DbTablePluginManager', $factory);
+    }
+
+    /**
+     * Add row manager to service manager.
+     *
+     * @param ServiceManager $sm Service manager
+     *
+     * @return void
+     */
+    protected function addRowManager(ServiceManager $sm)
+    {
+        $factory = new \VuFind\Db\Row\PluginManager(
+            new \Zend\ServiceManager\Config(
+                [
+                    'factories' => [
+                        'changetracker' => 'VuFind\Db\Row\Factory::getChangeTracker',
+                        'comments' => 'VuFind\Db\Row\Factory::getComments',
+                        'externalsession' =>
+                            'VuFind\Db\Row\Factory::getExternalSession',
+                        'oairesumption' => 'VuFind\Db\Row\Factory::getOaiResumption',
+                        'record' => 'VuFind\Db\Row\Factory::getRecord',
+                        'resource' => 'VuFind\Db\Row\Factory::getResource',
+                        'resourcetags' => 'VuFind\Db\Row\Factory::getResourceTags',
+                        'search' => 'VuFind\Db\Row\Factory::getSearch',
+                        'session' => 'VuFind\Db\Row\Factory::getSession',
+                        'tags' => 'VuFind\Db\Row\Factory::getTags',
+                        'user' => 'VuFind\Db\Row\Factory::getUser',
+                        'usercard' => 'VuFind\Db\Row\Factory::getUserCard',
+                        'userlist' => 'VuFind\Db\Row\Factory::getUserList',
+                        'userresource' => 'VuFind\Db\Row\Factory::getUserResource',
+                    ],
+                ]
+            )
+        );
+        $factory->setServiceLocator($sm);
+        $sm->setService('VuFind\DbRowPluginManager', $factory);
+    }
+
     /**
      * Get a service manager.
      *
@@ -55,20 +134,12 @@ abstract class DbTestCase extends TestCase
                 $sm->get('VuFind\Config')->get('config')
             );
             $sm->setService('VuFind\DbAdapter', $dbFactory->getAdapter());
-            $factory = new \VuFind\Db\Table\PluginManager(
-                new \Zend\ServiceManager\Config(
-                    [
-                        'abstract_factories' =>
-                            ['VuFind\Db\Table\PluginFactory'],
-                        'factories' => [
-                            'resource' => 'VuFind\Db\Table\Factory::getResource',
-                            'user' => 'VuFind\Db\Table\Factory::getUser',
-                        ]
-                    ]
-                )
+            $this->addTableManager($sm);
+            $this->addRowManager($sm);
+            $sm->setService(
+                'VuFind\SessionManager',
+                $this->createMock('Zend\Session\SessionManager')
             );
-            $factory->setServiceLocator($sm);
-            $sm->setService('VuFind\DbTablePluginManager', $factory);
 
             // Override the configuration so PostgreSQL tests can work:
             $sm->setAllowOverride(true);
@@ -77,16 +148,18 @@ abstract class DbTestCase extends TestCase
                 [
                     'vufind' => [
                         'pgsql_seq_mapping'  => [
-                            'comments'       => ['id', 'comments_id_seq'],
-                            'oai_resumption' => ['id', 'oai_resumption_id_seq'],
-                            'resource'       => ['id', 'resource_id_seq'],
-                            'resource_tags'  => ['id', 'resource_tags_id_seq'],
-                            'search'         => ['id', 'search_id_seq'],
-                            'session'        => ['id', 'session_id_seq'],
-                            'tags'           => ['id', 'tags_id_seq'],
-                            'user'           => ['id', 'user_id_seq'],
-                            'user_list'      => ['id', 'user_list_id_seq'],
-                            'user_resource'  => ['id', 'user_resource_id_seq']
+                            'comments'         => ['id', 'comments_id_seq'],
+                            'external_session' => ['id', 'external_session_id_seq'],
+                            'oai_resumption'   => ['id', 'oai_resumption_id_seq'],
+                            'record'           => ['id', 'record_id_seq'],
+                            'resource'         => ['id', 'resource_id_seq'],
+                            'resource_tags'    => ['id', 'resource_tags_id_seq'],
+                            'search'           => ['id', 'search_id_seq'],
+                            'session'          => ['id', 'session_id_seq'],
+                            'tags'             => ['id', 'tags_id_seq'],
+                            'user'             => ['id', 'user_id_seq'],
+                            'user_list'        => ['id', 'user_list_id_seq'],
+                            'user_resource'    => ['id', 'user_resource_id_seq'],
                         ]
                     ]
                 ]

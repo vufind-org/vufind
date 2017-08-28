@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\Search\Results;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -31,11 +31,11 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 /**
  * Search results plugin factory
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
@@ -54,15 +54,21 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
      * @param ServiceLocatorInterface $serviceLocator Service locator
      * @param string                  $name           Name of service
      * @param string                  $requestedName  Unfiltered name of service
+     * @param array                   $extraParams    Extra constructor parameters
+     * (to follow the Params, Search and RecordLoader objects)
      *
      * @return object
      */
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
-        $name, $requestedName
+        $name, $requestedName, array $extraParams = []
     ) {
         $params = $serviceLocator->getServiceLocator()
             ->get('VuFind\SearchParamsPluginManager')->get($requestedName);
+        $searchService = $serviceLocator->getServiceLocator()
+            ->get('VuFind\Search');
+        $recordLoader = $serviceLocator->getServiceLocator()
+            ->get('VuFind\RecordLoader');
         $class = $this->getClassName($name, $requestedName);
-        return new $class($params);
+        return new $class($params, $searchService, $recordLoader, ...$extraParams);
     }
 }

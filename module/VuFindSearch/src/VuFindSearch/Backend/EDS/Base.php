@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -52,7 +52,7 @@ abstract class EdsApi_REST_Base
      *
      * @var string
      */
-     protected $edsApiHost = 'http://eds-api.ebscohost.com/edsapi/rest';
+    protected $edsApiHost = 'http://eds-api.ebscohost.com/edsapi/rest';
 
     /**
      * Auth host
@@ -305,7 +305,8 @@ abstract class EdsApi_REST_Base
         // Build headers
         $headers = [
             'Accept' => $this->accept,
-            'Content-Type' => $this->contentType
+            'Content-Type' => $this->contentType,
+            'Accept-Encoding' => 'gzip,deflate'
         ];
         if (null != $headerParams && !empty($headerParams)) {
             foreach ($headerParams as $key => $value) {

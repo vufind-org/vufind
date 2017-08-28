@@ -17,24 +17,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\View\Helper\Root;
 
 /**
  * GoogleAnalytics view helper
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class GoogleAnalytics extends \Zend\View\Helper\AbstractHelper
 {
@@ -67,9 +67,11 @@ class GoogleAnalytics extends \Zend\View\Helper\AbstractHelper
     /**
      * Returns GA code (if active) or empty string if not.
      *
+     * @param string $customUrl override URL to send to Google Analytics
+     *
      * @return string
      */
-    public function __invoke()
+    public function __invoke($customUrl = false)
     {
         if (!$this->key) {
             return '';
@@ -77,9 +79,13 @@ class GoogleAnalytics extends \Zend\View\Helper\AbstractHelper
         if (!$this->universal) {
             $code = 'var key = "' . $this->key . '";' . "\n"
                 . "var _gaq = _gaq || [];\n"
-                . "_gaq.push(['_setAccount', key]);\n"
-                . "_gaq.push(['_trackPageview']);\n"
-                . "(function() {\n"
+                . "_gaq.push(['_setAccount', key]);\n";
+            if ($customUrl) {
+                $code .= "_gaq.push(['_trackPageview', '" . $customUrl . "']);\n";
+            } else {
+                $code .= "_gaq.push(['_trackPageview']);\n";
+            }
+            $code .= "(function() {\n"
                 . "var ga = document.createElement('script'); "
                 . "ga.type = 'text/javascript'; ga.async = true;\n"
                 . "ga.src = ('https:' == document.location.protocol ? "

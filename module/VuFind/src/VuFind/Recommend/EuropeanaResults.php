@@ -17,14 +17,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Lutz Biedinger <lutz.biedinger@gmail.com>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
 use Zend\Feed\Reader\Reader as FeedReader;
@@ -32,14 +32,14 @@ use Zend\Feed\Reader\Reader as FeedReader;
 /**
  * EuropeanaResults Recommendations Module
  *
- * This class provides recommendations by using the WorldCat Terminologies API.
+ * This class provides recommendations by using the Europeana API.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Lutz Biedinger <lutz.biedinger@gmail.com>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 class EuropeanaResults implements RecommendInterface,
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
@@ -139,7 +139,7 @@ class EuropeanaResults implements RecommendInterface,
         // Parse out parameters:
         $params = explode(':', $settings);
         $this->baseUrl = (isset($params[0]) && !empty($params[0]))
-            ? $params[0] : 'api.europeana.eu/api/opensearch.rss';
+            ? $params[0] : 'api.europeana.eu/api/v2/opensearch.rss';
         $this->requestParam = (isset($params[1]) && !empty($params[1]))
             ? $params[1] : 'searchTerms';
         $this->limit = isset($params[2]) && is_numeric($params[2])
@@ -231,7 +231,7 @@ class EuropeanaResults implements RecommendInterface,
             if (!empty($link)) {
                 $resultsProcessed[] = [
                     'title' => $value->getTitle(),
-                    'link' => substr($link, 0, strpos($link, '.srw')) . '.html',
+                    'link' => $link,
                     'enclosure' => $value->getEnclosure()['url']
                 ];
             }

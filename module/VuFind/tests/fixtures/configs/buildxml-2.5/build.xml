@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="vufind2" basedir="." default="main">
+  <property name="tmp" value="/tmp" />
+  <property name="package"  value="${phing.project.name}" override="true" />
+  <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
+  <property name="srcdir"   value="${project.basedir}" override="true" />
+  <property name="apacheconfdir" value="/etc/apache2/conf.d" />
+  <property name="apachectl" value="false" /><!-- set to apachectl path to spin up Apache instance -->
+  <property name="nodepath" value="" /><!-- set to node.js modules path to use Zombie.js testing -->
+  <!-- command for extra cleanup during shutdown; e.g. to change cache ownership after testing w/ Apache so deletion won't fail: -->
+  <property name="extra_shutdown_cleanup" value="false" />
+  <property name="vufindurl" value="http://localhost/vufind" />
+  <property name="vufinddb" value="vufind_test" />
+  <property name="vufinddbuser" value="vufindtest" />
+  <property name="vufinddbpass" value="vufindtestpass" />
+  <property name="dbtype" value="mysql" /><!-- use pgsql for PostgreSQL -->
+  <property name="mysqlhost" value="localhost" />
+  <property name="mysqlrootuser" value="root" />
+  <property name="mysqlrootpass" value="password" />
+  <property name="pgsqlhost" value="localhost" />
+  <property name="pgsqlrootuser" value="postgres" />
+  <property name="phpunit_extra_params" value="" />
+  <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use" />
+
+
+  <property name="version" value="2.5" />
+
+  <!-- We only need the -p switch if the password is non-blank -->
+  <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
+    <property name="mysqlpwswitch" value="-p" />
+  </then></if>
+
+  <!-- Main Target -->
+  <target name="main" description="main target">
+    <phingcall target="startup" />
+    <trycatch property="exceptionmsg">
+      <try>
+        <phingcall target="ci-tasks" />
+      </try>
+      <catch>
+        <phingcall target="shutdown" />
+        <fail>Unexpected error during continuous integration tasks -- ${exceptionmsg}</fail>
+      </catch>
+    </trycatch>
+    <phingcall target="shutdown" />
+  </target>
+
+  <!-- Continuous Integration Tasks -->
+  <target name="ci-tasks" description="continuous integration tasks">
+
+    <!-- Create dirs -->
+    <mkdir dir="${builddir}/reports"/>
+    <mkdir dir="${builddir}/reports/coverage"/>
+
+    <!-- Call standard tasks -->
+    <phingcall target="phpcs"/>
+    <phingcall target="php-cs-fixer-dryrun"/>
+    <phingcall target="phpunit"/>
+    <phingcall target="phpdoc"/>
+    <phingcall target="phpcpd"/>
+    <phingcall target="phpmd"/>
+    <phingcall target="pdepend"/>
+    <phingcall target="phploc"/>
+  </target>
+
+  <!-- Report rule violations with PHPMD (mess detector) -->
+  <target name="phpmd">
+    <exec command="phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
+  </target>
+
+  <!-- Measure project with phploc -->
+  <target name="phploc">
+    <exec command="phploc --log-csv ${builddir}/reports/phploc.csv ${srcdir}/module" />
+  </target>
+
+  <!-- PHP_Depend code analysis -->
+  <target name="pdepend">
+    <exec command="pdepend --jdepend-xml=${builddir}/reports/jdepend.xml --jdepend-chart=${builddir}/reports/dependencies.svg --overview-pyramid=${builddir}/reports/pdepend-pyramid.svg ${srcdir}/module" />
+  </target>
+
+  <!-- PHP copy-and-paste detection -->
+  <target name="phpcpd">
+    <exec command="phpcpd --log-pmd ${builddir}/reports/pmd-cpd.xml --exclude tests ${srcdir}/module" />
+  </target>
+
+  <!-- PHP CodeSniffer -->
+  <target name="phpcs">
+    <exec command="phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php --report=checkstyle ${srcdir}/module &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
+  </target>
+
+  <!-- php-cs-fixer (first task applies fixes, second task simply checks if they are needed) -->
+  <target name="php-cs-fixer">
+    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --verbose" passthru="true" escape="false" />
+  </target>
+  <target name="php-cs-fixer-dryrun">
+    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --dry-run --verbose --diff" passthru="true" escape="false" checkreturn="true" />
+  </target>
+
+  <!-- PHP API Documentation -->
+  <target name="phpdoc">
+    <mkdir dir="${builddir}/apidocs"/>
+    <phpdoc2 title="VuFind API Documentation"
+      destdir="${builddir}/apidocs">
+      <fileset dir=".">
+        <include name="module/*/src/**/*.php" />
+      </fileset>
+    </phpdoc2>
+  </target>
+
+  <!-- PHPUnit -->
+  <target name="phpunit" description="Run tests">
+    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+  </target>
+
+  <!-- PHPUnit without logging output -->
+  <target name="phpunitfast" description="Run tests">
+    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+  </target>
+
+  <!-- Install and Activate VuFind -->
+  <target name="startup" description="install and activate demo">
+    <!-- set up appropriate read/write permissions for Apache -->
+    <exec command="chmod -R a+w ${srcdir}/local/cache" />
+
+    <!-- Generate basic configuration -->
+    <php expression="end(explode('/', '${vufindurl}'))" returnProperty="basepath" />
+    <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive" />
+
+    <!-- Activate Apache (if an apachectl path has been provided) -->
+    <if>
+      <istrue value="${apachectl}" />
+      <then>
+        <copy file="${srcdir}/local/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
+        <exec command="${apachectl} restart" outputProperty="LASTOUTPUT" />
+        <echo message="${LASTOUTPUT}" />
+      </then>
+    </if>
+
+    <!-- build and configure the requested database type -->
+    <if>
+      <equals arg1="${dbtype}" arg2="pgsql" />
+      <then>
+        <!-- build database -->
+        <exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+        <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+        <exec command="sudo su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <exec command="sudo su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <exec command="sudo su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <!--<exec command="sudo su -c &quot;psql -c \&quot;select 'grant SELECT,INSERT,UPDATE,DELETE on '||schemaname||'.'||tablename||' to ${vufinddbuser};' from pg_tables where schemaname in ('${vufinddb}') order by schemaname, tablename;\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />-->
+        <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
+
+        <!-- configure VuFind -->
+        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
+      </then>
+      <else>
+        <!-- build database -->
+        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
+        <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}' WITH GRANT OPTION&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
+
+        <!-- configure VuFind -->
+        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
+      </else>
+    </if>
+
+    <!-- start Solr (use restart in case of old PID files) -->
+    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid JETTY_CONSOLE=/dev/null ${srcdir}/vufind.sh restart" outputProperty="LASTOUTPUT" />
+    <echo message="${LASTOUTPUT}" />
+
+    <!-- wait for Solr to finish spinning up -->
+    <echo message="Waiting for Solr to start up..." />
+    <exec command="sleep 30" />
+
+    <!-- import marc test records into vufind index (note: the marc test records have prefix "testsample#") -->
+    <exec escape="false" command="find ${srcdir}/tests/data -name '*.mrc' -printf '%p,'" outputProperty="buglist" />
+    <foreach list="${buglist}" param="filename" delimiter="," target="importrec" />
+    <exec escape="false" command="find ${srcdir}/tests/data/authority -name '*.mrc' -printf '%p,'" outputProperty="authlist" />
+    <foreach list="${authlist}" param="filename" delimiter="," target="importauthrec" />
+
+    <!-- build alphabrowse index -->
+    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/index-alphabetic-browse.sh" outputProperty="LASTOUTPUT" />
+    <echo message="${LASTOUTPUT}" />
+  </target>
+
+  <!-- Uninstall and Deactivate VuFind -->
+  <target name="shutdown" description="deactivate and uninstall demo">
+
+    <!-- Remove Apache settings (if Apache was enabled) -->
+    <if>
+      <istrue value="${apachectl}" />
+      <then>
+        <delete file="${apacheconfdir}/vufindtest.conf" />
+        <exec command="${apachectl} restart" />
+      </then>
+    </if>
+
+    <!-- drop database -->
+    <if>
+      <equals arg1="${dbtype}" arg2="pgsql" />
+      <then>
+        <exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+      </then>
+      <else>
+        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
+      </else>
+    </if>
+
+    <!-- stop Solr -->
+    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid ${srcdir}/vufind.sh stop" outputProperty="LASTOUTPUT" />
+    <echo message="${LASTOUTPUT}" />
+
+    <!-- run extra cleanup action, if any -->
+    <if>
+      <istrue value="${extra_shutdown_cleanup}" />
+      <then>
+        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${extra_shutdown_cleanup}" />
+      </then>
+    </if>
+
+    <!-- delete the configuration, sample index, logs and cache data -->
+    <delete dir="${srcdir}/solr/logs" includeemptydirs="true" failonerror="false" />
+    <delete dir="${srcdir}/solr/alphabetical_browse" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/authority/conf" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/authority/index" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/authority/tlog" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/biblio/index" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/biblio/conf" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/biblio/tlog" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/biblio/spellchecker" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/biblio/spellShingle" includeemptydirs="true" failonerror="true" />
+    <delete file="${srcdir}/import/solrmarc.log" failonerror="true" />
+    <delete dir="${srcdir}/local" includeemptydirs="true" failonerror="true" />
+    <exec command="git reset --hard" />
+  </target>
+
+  <!-- Prepare VuFind for distribution -->
+  <target name="package" description="build VuFind packages for distribution">
+    <!-- make sure the work area is empty, then rebuild it -->
+    <delete dir="${builddir}/packages" includeemptydirs="true" failonerror="true" />
+    <mkdir dir="${builddir}/packages" />
+
+    <!-- build the standard tar.gz archive -->
+    <exec command="git archive HEAD --format=tar --prefix=vufind-${version}/ -o ${builddir}/packages/vufind-${version}.tar" />
+    <exec command="gzip ${builddir}/packages/vufind-${version}.tar" />
+
+    <!-- build the a zip archive -->
+    <exec command="git archive HEAD --format=zip --prefix=vufind-${version}/ -o ${builddir}/packages/vufind-${version}.zip" />
+
+    <!-- build the DEB package -->
+    <mkdir dir="${builddir}/export/vufind/usr/local/vufind2" />
+    <exec command="git archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind2" />
+    <move file="${builddir}/export/vufind/usr/local/vufind2/packages/DEBIAN" todir="${builddir}/export/vufind" includeemptydirs="true"/>
+    <exec command="chmod 0775 ${builddir}/export/vufind/DEBIAN/postinst" />
+    <exec command="dpkg-deb -b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" />
+
+    <!-- clean up -->
+    <delete dir="${builddir}/export" includeemptydirs="true" failonerror="true" />
+
+    <!-- report success -->
+    <echo message="Packages successfully generated in ${builddir}/packages" />
+  </target>
+
+  <target name="importauthrec" description="import each of the MARC authority test records">
+    <if>
+    <istrue value="${filename}"/>       <!-- To ignore the last token, as find command output list has ',' after last filename -->
+      <then>
+        <exec command="basename ${filename}" outputProperty="BASENAME" />
+
+        <!-- perform the import -->
+        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/import-marc-auth.sh ${filename} marc_auth_ils.properties" outputProperty="LASTOUTPUT" />
+        <echo message="${LASTOUTPUT}" />
+      </then>
+    </if>
+  </target>
+
+  <target name="importrec" description="import each of the MARC bibliographic test records">
+    <if>
+    <istrue value="${filename}"/>       <!-- To ignore the last token, as find command output list has ',' after last filename -->
+      <then>
+        <exec command="basename ${filename}" outputProperty="BASENAME" />
+
+        <!-- create custom import configurations to load the MARC filename into the building facet to help
+             test cases to limit searches to within specific collections of test records. -->
+        <copy file="${srcdir}/import/marc_local.properties" tofile="${srcdir}/local/import/marc-${BASENAME}.properties" />
+        <exec command="echo building=\&quot;${BASENAME}\&quot; &gt;&gt; ${srcdir}/local/import/marc-${BASENAME}.properties" />
+        <exec command="sed -e &quot;s!marc_local.properties!marc-${BASENAME}.properties!&quot; ${srcdir}/local/import/import.properties &gt; ${srcdir}/local/import/import-${BASENAME}.properties" />
+
+        <!-- perform the import -->
+        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/import-marc.sh -p ${srcdir}/local/import/import-${BASENAME}.properties ${filename}" outputProperty="LASTOUTPUT" />
+        <echo message="${LASTOUTPUT}" />
+
+        <!-- clean up temp files -->
+        <delete file="${srcdir}/local/import/marc-${BASENAME}.properties" />
+        <delete file="${srcdir}/local/import/import-${BASENAME}.properties" />
+      </then>
+    </if>
+  </target>
+
+</project>

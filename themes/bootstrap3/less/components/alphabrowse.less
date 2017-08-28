@@ -1,0 +1,15 @@
+.alphabrowse {
+  border-collapse: separate;
+  .lcc { width: 20%; }
+  .titles {
+    width: 10%;
+    text-align: center;
+  }
+  /* highlighting the row makes ff bugs; operate on its children */
+  tr.browse-match td {
+    border-top: .2rem solid @brand-primary;
+    border-bottom: .2rem solid @brand-primary;
+    &:first-child { border-left: .2em solid @brand-primary;  }
+    &:last-child  { border-right: .2em solid @brand-primary; }
+  }
+}

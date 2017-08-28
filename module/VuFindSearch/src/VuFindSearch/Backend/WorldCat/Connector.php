@@ -17,14 +17,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  WorldCat
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindSearch\Backend\WorldCat;
 use VuFindSearch\ParamBag;
@@ -32,11 +32,11 @@ use VuFindSearch\ParamBag;
 /**
  * WorldCat SRU Search Interface
  *
- * @category VuFind2
+ * @category VuFind
  * @package  WorldCat
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Connector extends \VuFindSearch\Backend\SRU\Connector
 {
@@ -48,17 +48,27 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
     protected $wskey;
 
     /**
+     * Additional options
+     *
+     * @var array
+     */
+    protected $options;
+
+    /**
      * Constructor
      *
-     * @param string            $wsKey  Web services key
-     * @param \Zend\Http\Client $client An HTTP client object
+     * @param string            $wsKey   Web services key
+     * @param \Zend\Http\Client $client  An HTTP client object
+     * @param array             $options Additional config settings
      */
-    public function __construct($wsKey, \Zend\Http\Client $client)
-    {
+    public function __construct($wsKey, \Zend\Http\Client $client,
+        array $options = []
+    ) {
         parent::__construct(
             'http://www.worldcat.org/webservices/catalog/search/sru', $client
         );
         $this->wskey = $wsKey;
+        $this->options = $options;
     }
 
     /**
@@ -72,8 +82,13 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
     public function getHoldings($id)
     {
         $this->client->resetParameters();
-        $uri = "http://www.worldcat.org/webservices/catalog/content/libraries/{$id}";
-        $uri .= "?wskey={$this->wskey}&servicelevel=full";
+        if (!isset($this->options['useFrbrGroupingForHoldings'])) {
+            $grouping = 'on';   // default to "on" for backward compatibility
+        } else {
+            $grouping = $this->options['useFrbrGroupingForHoldings'] ? 'on' : 'off';
+        }
+        $uri = "http://www.worldcat.org/webservices/catalog/content/libraries/{$id}"
+            . "?wskey={$this->wskey}&servicelevel=full&frbrGrouping=$grouping";
         $this->client->setUri($uri);
         $this->debug('Connect: ' . $uri);
         $result = $this->client->setMethod('POST')->send();
@@ -121,8 +136,8 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * Execute a search.
      *
      * @param ParamBag $params Parameters
-     * @param integer  $offset Search offset
-     * @param integer  $limit  Search limit
+     * @param int      $offset Search offset
+     * @param int      $limit  Search limit
      *
      * @return string
      */

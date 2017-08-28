@@ -18,14 +18,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
 use VuFind\Exception\ILS as ILSException,
@@ -35,15 +35,17 @@ use VuFind\Exception\ILS as ILSException,
 /**
  * Model for MARC records in Solr.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 class SolrMarc extends SolrDefault
 {
+    use IlsAwareTrait;
+
     /**
      * MARC record. Access only via getMarcRecord() as this is initialized lazily.
      *
@@ -52,25 +54,40 @@ class SolrMarc extends SolrDefault
     protected $lazyMarcRecord = null;
 
     /**
-     * ILS connection
+     * Fields that may contain subject headings, and their descriptions
      *
-     * @var \VuFind\ILS\Connection
+     * @var array
      */
-    protected $ils = null;
+    protected $subjectFields = [
+        '600' => 'personal name',
+        '610' => 'corporate name',
+        '611' => 'meeting name',
+        '630' => 'uniform title',
+        '648' => 'chronological',
+        '650' => 'topic',
+        '651' => 'geographic',
+        '653' => '',
+        '655' => 'genre/form',
+        '656' => 'occupation'
+    ];
 
     /**
-     * Hold logic
+     * Mappings from subject source indicators (2nd indicator of subject fields in
+     * MARC 21) to the their codes.
      *
-     * @var \VuFind\ILS\Logic\Holds
+     * @var  array
+     * @link https://www.loc.gov/marc/bibliographic/bd6xx.html     Subject field docs
+     * @link https://www.loc.gov/standards/sourcelist/subject.html Code list
      */
-    protected $holdLogic;
-
-    /**
-     * Title hold logic
-     *
-     * @var \VuFind\ILS\Logic\TitleHolds
-     */
-    protected $titleHoldLogic;
+    protected $subjectSources = [
+        '0' => 'lcsh',
+        '1' => 'lcshac',
+        '2' => 'mesh',
+        '3' => 'nal',
+        '4' => 'unknown',
+        '5' => 'cash',
+        '6' => 'rvm'
+    ];
 
     /**
      * Get access restriction notes for the record.
@@ -87,20 +104,21 @@ class SolrMarc extends SolrDefault
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
      * @return array
      */
-    public function getAllSubjectHeadings()
+    public function getAllSubjectHeadings($extended = false)
     {
-        // These are the fields that may contain subject headings:
-        $fields = [
-            '600', '610', '611', '630', '648', '650', '651', '653', '655', '656'
-        ];
-
         // This is all the collected data:
         $retval = [];
 
         // Try each MARC field one at a time:
-        foreach ($fields as $field) {
+        foreach ($this->subjectFields as $field => $fieldType) {
             // Do we have any results for the current field?  If not, try the next.
             $results = $this->getMarcRecord()->getFields($field);
             if (!$results) {
@@ -124,7 +142,25 @@ class SolrMarc extends SolrDefault
                     }
                     // If we found at least one chunk, add a heading to our result:
                     if (!empty($current)) {
-                        $retval[] = $current;
+                        if ($extended) {
+                            $sourceIndicator = $result->getIndicator(2);
+                            $source = '';
+                            if (isset($this->subjectSources[$sourceIndicator])) {
+                                $source = $this->subjectSources[$sourceIndicator];
+                            } else {
+                                $source = $result->getSubfield('2');
+                                if ($source) {
+                                    $source = $source->getData();
+                                }
+                            }
+                            $retval[] = [
+                                'heading' => $current,
+                                'type' => $fieldType,
+                                'source' => $source ?: ''
+                            ];
+                        } else {
+                            $retval[] = $current;
+                        }
                     }
                 }
             }
@@ -185,21 +221,6 @@ class SolrMarc extends SolrDefault
     }
 
     /**
-     * Get the main corporate author (if any) for the record.
-     *
-     * @return string
-     */
-    public function getCorporateAuthor()
-    {
-        // Try 110 first -- if none found, try 710 next.
-        $main = $this->getFirstFieldValue('110', ['a', 'b']);
-        if (!empty($main)) {
-            return $main;
-        }
-        return $this->getFirstFieldValue('710', ['a', 'b']);
-    }
-
-    /**
      * Return an array of all values extracted from the specified field/subfield
      * combination.  If multiple subfields are specified and $concat is true, they
      * will be concatenated together in the order listed -- each entry in the array
@@ -209,11 +230,13 @@ class SolrMarc extends SolrDefault
      * @param string $field     The MARC field number to read
      * @param array  $subfields The MARC subfield codes to read
      * @param bool   $concat    Should we concatenate subfields?
+     * @param string $separator Separator string (used only when $concat === true)
      *
      * @return array
      */
-    protected function getFieldArray($field, $subfields = null, $concat = true)
-    {
+    protected function getFieldArray($field, $subfields = null, $concat = true,
+        $separator = ' '
+    ) {
         // Default to subfield a if nothing is specified.
         if (!is_array($subfields)) {
             $subfields = ['a'];
@@ -231,11 +254,25 @@ class SolrMarc extends SolrDefault
 
         // Extract all the requested subfields, if applicable.
         foreach ($fields as $currentField) {
-            $next = $this->getSubfieldArray($currentField, $subfields, $concat);
+            $next = $this
+                ->getSubfieldArray($currentField, $subfields, $concat, $separator);
             $matches = array_merge($matches, $next);
         }
 
         return $matches;
+    }
+
+    /**
+     * Return full record as filtered XML for public APIs.
+     *
+     * @return string
+     */
+    public function getFilteredXML()
+    {
+        $record = clone($this->getMarcRecord());
+        // The default implementation does not filter out any fields
+        // $record->deleteFields('9', true);
+        return $record->toXML();
     }
 
     /**
@@ -308,8 +345,12 @@ class SolrMarc extends SolrDefault
      */
     protected function getPublicationInfo($subfield = 'a')
     {
+        // Get string separator for publication information:
+        $separator = isset($this->mainConfig->Record->marcPublicationInfoSeparator)
+            ? $this->mainConfig->Record->marcPublicationInfoSeparator : ' ';
+
         // First check old-style 260 field:
-        $results = $this->getFieldArray('260', [$subfield]);
+        $results = $this->getFieldArray('260', [$subfield], true, $separator);
 
         // Now track down relevant RDA-style 264 fields; we only care about
         // copyright and publication places (and ignore copyright places if
@@ -320,25 +361,26 @@ class SolrMarc extends SolrDefault
         $fields = $this->getMarcRecord()->getFields('264');
         if (is_array($fields)) {
             foreach ($fields as $currentField) {
-                $currentVal = $currentField->getSubfield($subfield);
-                $currentVal = is_object($currentVal)
-                    ? $currentVal->getData() : null;
+                $currentVal = $this
+                    ->getSubfieldArray($currentField, [$subfield], true, $separator);
                 if (!empty($currentVal)) {
                     switch ($currentField->getIndicator('2')) {
                     case '1':
-                        $pubResults[] = $currentVal;
+                        $pubResults = array_merge($pubResults, $currentVal);
                         break;
                     case '4':
-                        $copyResults[] = $currentVal;
+                        $copyResults = array_merge($copyResults, $currentVal);
                         break;
                     }
                 }
             }
         }
+        $replace260 = isset($this->mainConfig->Record->replaceMarc260)
+            ? $this->mainConfig->Record->replaceMarc260 : false;
         if (count($pubResults) > 0) {
-            $results = array_merge($results, $pubResults);
+            return $replace260 ? $pubResults : array_merge($results, $pubResults);
         } else if (count($copyResults) > 0) {
-            $results = array_merge($results, $copyResults);
+            return $replace260 ? $copyResults : array_merge($results, $copyResults);
         }
 
         return $results;
@@ -503,45 +545,34 @@ class SolrMarc extends SolrDefault
      * @param object $currentField Result from File_MARC::getFields.
      * @param array  $subfields    The MARC subfield codes to read
      * @param bool   $concat       Should we concatenate subfields?
+     * @param string $separator    Separator string (used only when $concat === true)
      *
      * @return array
      */
-    protected function getSubfieldArray($currentField, $subfields, $concat = true)
-    {
+    protected function getSubfieldArray($currentField, $subfields, $concat = true,
+        $separator = ' '
+    ) {
         // Start building a line of text for the current field
         $matches = [];
-        $currentLine = '';
 
         // Loop through all subfields, collecting results that match the whitelist;
         // note that it is important to retain the original MARC order here!
         $allSubfields = $currentField->getSubfields();
-        if (count($allSubfields) > 0) {
+        if (!empty($allSubfields)) {
             foreach ($allSubfields as $currentSubfield) {
                 if (in_array($currentSubfield->getCode(), $subfields)) {
                     // Grab the current subfield value and act on it if it is
                     // non-empty:
                     $data = trim($currentSubfield->getData());
                     if (!empty($data)) {
-                        // Are we concatenating fields or storing them separately?
-                        if ($concat) {
-                            $currentLine .= $data . ' ';
-                        } else {
-                            $matches[] = $data;
-                        }
+                        $matches[] = $data;
                     }
                 }
             }
         }
 
-        // If we're in concat mode and found data, it will be in $currentLine and
-        // must be moved into the matches array.  If we're not in concat mode,
-        // $currentLine will always be empty and this code will be ignored.
-        if (!empty($currentLine)) {
-            $matches[] = trim($currentLine);
-        }
-
-        // Send back our result array:
-        return $matches;
+        // Send back the data in a different format depending on $concat mode:
+        return $concat && $matches ? [implode($separator, $matches)] : $matches;
     }
 
     /**
@@ -613,9 +644,12 @@ class SolrMarc extends SolrDefault
         foreach ($fields as $field) {
             $subfields = $field->getSubfields();
             foreach ($subfields as $subfield) {
-                // Break the string into appropriate chunks,  and merge them into
-                // return array:
-                $toc = array_merge($toc, explode('--', $subfield->getData()));
+                // Break the string into appropriate chunks, filtering empty strings,
+                // and merge them into return array:
+                $toc = array_merge(
+                    $toc,
+                    array_filter(explode('--', $subfield->getData()), 'trim')
+                );
             }
         }
         return $toc;
@@ -762,6 +796,14 @@ class SolrMarc extends SolrDefault
      */
     protected function getRecordLinkNote($field)
     {
+        // If set, use relationship information from subfield i
+        if ($subfieldI = $field->getSubfield('i')) {
+            $data = trim($subfieldI->getData());
+            if (!empty($data)) {
+                return $data;
+            }
+        }
+
         // Normalize blank relationship indicator to 0:
         $relationshipIndicator = $field->getIndicator('2');
         if ($relationshipIndicator == ' ') {
@@ -991,95 +1033,6 @@ class SolrMarc extends SolrDefault
 
         // Try the parent method:
         return parent::getXML($format, $baseUrl, $recordLink);
-    }
-
-    /**
-     * Attach an ILS connection and related logic to the driver
-     *
-     * @param \VuFind\ILS\Connection       $ils            ILS connection
-     * @param \VuFind\ILS\Logic\Holds      $holdLogic      Hold logic handler
-     * @param \VuFind\ILS\Logic\TitleHolds $titleHoldLogic Title hold logic handler
-     *
-     * @return void
-     */
-    public function attachILS(\VuFind\ILS\Connection $ils,
-        \VuFind\ILS\Logic\Holds $holdLogic,
-        \VuFind\ILS\Logic\TitleHolds $titleHoldLogic
-    ) {
-        $this->ils = $ils;
-        $this->holdLogic = $holdLogic;
-        $this->titleHoldLogic = $titleHoldLogic;
-    }
-
-    /**
-     * Do we have an attached ILS connection?
-     *
-     * @return bool
-     */
-    protected function hasILS()
-    {
-        return null !== $this->ils;
-    }
-
-    /**
-     * Get an array of information about record holdings, obtained in real-time
-     * from the ILS.
-     *
-     * @return array
-     */
-    public function getRealTimeHoldings()
-    {
-        return $this->hasILS() ? $this->holdLogic->getHoldings(
-            $this->getUniqueID(), $this->getConsortialIDs()
-        ) : [];
-    }
-
-    /**
-     * Get an array of information about record history, obtained in real-time
-     * from the ILS.
-     *
-     * @return array
-     */
-    public function getRealTimeHistory()
-    {
-        // Get Acquisitions Data
-        if (!$this->hasILS()) {
-            return [];
-        }
-        try {
-            return $this->ils->getPurchaseHistory($this->getUniqueID());
-        } catch (ILSException $e) {
-            return [];
-        }
-    }
-
-    /**
-     * Get a link for placing a title level hold.
-     *
-     * @return mixed A url if a hold is possible, boolean false if not
-     */
-    public function getRealTimeTitleHold()
-    {
-        if ($this->hasILS()) {
-            $biblioLevel = strtolower($this->getBibliographicLevel());
-            if ("monograph" == $biblioLevel || strstr("part", $biblioLevel)) {
-                if ($this->ils->getTitleHoldsMode() != "disabled") {
-                    return $this->titleHoldLogic->getHold($this->getUniqueID());
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns true if the record supports real-time AJAX status lookups.
-     *
-     * @return bool
-     */
-    public function supportsAjaxStatus()
-    {
-        return true;
     }
 
     /**

@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
 use VuFind\Auth\Database, Zend\Db\ResultSet\ResultSet, Zend\Stdlib\Parameters;
@@ -31,11 +31,11 @@ use VuFind\Auth\Database, Zend\Db\ResultSet\ResultSet, Zend\Stdlib\Parameters;
 /**
  * Database authentication test class.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
 {
@@ -232,8 +232,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
     protected function getRequest($post = [])
     {
         $post = new Parameters($post);
-        $request
-            = $this->getMock('Zend\Http\PhpEnvironment\Request', ['getPost']);
+        $request = $this->getMockBuilder('Zend\Http\PhpEnvironment\Request')
+            ->setMethods(['getPost'])->getMock();
         $request->expects($this->any())->method('getPost')
             ->will($this->returnValue($post));
         return $request;
@@ -248,8 +248,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      */
     protected function getDatabase($table)
     {
-        $tableManager
-            = $this->getMock('VuFind\Db\Table\PluginManager', ['get']);
+        $tableManager = $this->getMockBuilder('VuFind\Db\Table\PluginManager')
+            ->setMethods(['get'])->getMock();
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('User'))
             ->will($this->returnValue($table));

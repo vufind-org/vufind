@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Solr;
 use VuFindSearch\ParamBag;
@@ -31,11 +31,11 @@ use VuFindSearch\ParamBag;
 /**
  * Solr Search Parameters
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Params extends \VuFind\Search\Base\Params
 {
@@ -89,20 +89,37 @@ class Params extends \VuFind\Search\Base\Params
     protected $pivotFacets = null;
 
     /**
+     * Hierarchical Facet Helper
+     *
+     * @var HierarchicalFacetHelper
+     */
+    protected $facetHelper;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
      * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param HierarchicalFacetHelper      $facetHelper  Hierarchical facet helper
      */
-    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
-    {
+    public function __construct($options, \VuFind\Config\PluginManager $configLoader,
+        HierarchicalFacetHelper $facetHelper = null
+    ) {
         parent::__construct($options, $configLoader);
+        $this->facetHelper = $facetHelper;
+
         // Use basic facet limit by default, if set:
         $config = $configLoader->get($options->getFacetsIni());
         if (isset($config->Results_Settings->facet_limit)
             && is_numeric($config->Results_Settings->facet_limit)
         ) {
             $this->setFacetLimit($config->Results_Settings->facet_limit);
+        }
+        if (isset($config->LegacyFields)) {
+            $this->facetAliases = $config->LegacyFields->toArray();
+        }
+        if (isset($config->ExtraFacetLabels)) {
+            $this->extraFacetLabels = $config->ExtraFacetLabels->toArray();
         }
         if (isset($config->Results_Settings->facet_limit_by_field)) {
             foreach ($config->Results_Settings->facet_limit_by_field as $k => $v) {
@@ -126,9 +143,13 @@ class Params extends \VuFind\Search\Base\Params
     public function getFilterSettings()
     {
         // Define Filter Query
-        $filterQuery = $this->getOptions()->getHiddenFilters();
+        $filterQuery = [];
         $orFilters = [];
-        foreach ($this->filterList as $field => $filter) {
+        $filterList = array_merge(
+            $this->getHiddenFilters(),
+            $this->filterList
+        );
+        foreach ($filterList as $field => $filter) {
             if ($orFacet = (substr($field, 0, 1) == '~')) {
                 $field = substr($field, 1);
             }
@@ -188,15 +209,7 @@ class Params extends \VuFind\Search\Base\Params
             if ($this->facetPrefix != null) {
                 $facetSet['prefix'] = $this->facetPrefix;
             }
-            if ($this->facetSort != null) {
-                $facetSet['sort'] = $this->facetSort;
-            } else {
-                // No explicit setting? Set one based on the documented Solr behavior
-                // (index order for limit = -1, count order for limit > 0)
-                // Later Solr versions may have different defaults than earlier ones,
-                // so making this explicit ensures consistent behavior.
-                $facetSet['sort'] = ($this->facetLimit > 0) ? 'count' : 'index';
-            }
+            $facetSet['sort'] = $this->facetSort ?: 'count';
             if ($this->indexSortedFacets != null) {
                 foreach ($this->indexSortedFacets as $field) {
                     $facetSet["f.{$field}.facet.sort"] = 'index';
@@ -297,7 +310,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function initFacetList($facetList, $facetSettings, $cfgFile = 'facets')
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('facets');
+        $config = $this->configLoader->get('facets');
         if (isset($config->$facetSettings->facet_limit)
             && is_numeric($config->$facetSettings->facet_limit)
         ) {
@@ -364,6 +377,7 @@ class Params extends \VuFind\Search\Base\Params
             $this->initAdvancedFacets();
             $this->initBasicFacets();
         }
+        $this->initCheckboxFacets();
     }
 
     /**
@@ -386,14 +400,6 @@ class Params extends \VuFind\Search\Base\Params
         case 0:
             $this->addFilter('illustrated:"Not Illustrated"');
             break;
-        }
-
-        // Check for hidden filters:
-        $hidden = $request->get('hiddenFilters');
-        if (!empty($hidden) && is_array($hidden)) {
-            foreach ($hidden as $current) {
-                $this->getOptions()->addHiddenFilter($current);
-            }
         }
     }
 
@@ -431,7 +437,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function getQueryIDLimit()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $this->configLoader->get('config');
         return isset($config->Index->maxBooleanClauses)
             ? $config->Index->maxBooleanClauses : 1024;
     }
@@ -448,7 +454,8 @@ class Params extends \VuFind\Search\Base\Params
         static $table = [
             'year' => ['field' => 'publishDateSort', 'order' => 'desc'],
             'publishDateSort' => ['field' => 'publishDateSort', 'order' => 'desc'],
-            'author' => ['field' => 'authorStr', 'order' => 'asc'],
+            'author' => ['field' => 'author_sort', 'order' => 'asc'],
+            'authorStr' => ['field' => 'author_sort', 'order' => 'asc'],
             'title' => ['field' => 'title_sort', 'order' => 'asc'],
             'relevance' => ['field' => 'score', 'order' => 'desc'],
             'callnumber' => ['field' => 'callnumber-sort', 'order' => 'asc'],
@@ -593,11 +600,6 @@ class Params extends \VuFind\Search\Base\Params
         $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();
         $hierarchicalFacetSeparators
             = $this->getOptions()->getHierarchicalFacetSeparators();
-        $facetHelper = null;
-        if (!empty($hierarchicalFacets)) {
-            $facetHelper = $this->getServiceLocator()
-                ->get('VuFind\HierarchicalFacetHelper');
-        }
         // Convert range queries to a language-non-specific format:
         $caseInsensitiveRegex = '/^\(\[(.*) TO (.*)\] OR \[(.*) TO (.*)\]\)$/';
         if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
@@ -611,14 +613,22 @@ class Params extends \VuFind\Search\Base\Params
             ) {
                 $filter['displayText'] = $matches[1] . '-' . $matches[2];
             }
-        } else if (in_array($field, $hierarchicalFacets)) {
+        } else if ($this->facetHelper && in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely
             $separator = isset($hierarchicalFacetSeparators[$field])
                 ? $hierarchicalFacetSeparators[$field]
                 : '/';
-            $filter['displayText'] = $facetHelper->formatDisplayText(
+            $filter['displayText'] = $this->facetHelper->formatDisplayText(
                 $filter['displayText'], true, $separator
             );
+            if ($translate) {
+                $domain = $this->getOptions()->getTextDomainForTranslatedFacet(
+                    $field
+                );
+                $filter['displayText'] = $this->translate(
+                    [$domain, $filter['displayText']]
+                );
+            }
         }
 
         return $filter;

@@ -20,24 +20,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Session_Handlers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 namespace VuFind\Session;
 
 /**
  * Memcache session handler
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Session_Handlers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 class Memcache extends AbstractBase
 {
@@ -90,27 +90,12 @@ class Memcache extends AbstractBase
     }
 
     /**
-     * Write function that is called when session data is to be saved.
-     *
-     * @param string $sess_id The current session ID
-     * @param string $data    The session data to write
-     *
-     * @return void
-     */
-    public function write($sess_id, $data)
-    {
-        return $this->getConnection()->set(
-            "vufind_sessions/{$sess_id}", $data, 0, $this->lifetime
-        );
-    }
-
-    /**
      * The destroy handler, this is executed when a session is destroyed with
      * session_destroy() and takes the session id as its only parameter.
      *
      * @param string $sess_id The session ID to destroy
      *
-     * @return void
+     * @return bool
      */
     public function destroy($sess_id)
     {
@@ -119,5 +104,20 @@ class Memcache extends AbstractBase
 
         // Perform Memcache-specific cleanup:
         return $this->getConnection()->delete("vufind_sessions/{$sess_id}");
+    }
+
+    /**
+     * A function that is called internally when session data is to be saved.
+     *
+     * @param string $sess_id The current session ID
+     * @param string $data    The session data to write
+     *
+     * @return bool
+     */
+    protected function saveSession($sess_id, $data)
+    {
+        return $this->getConnection()->set(
+            "vufind_sessions/{$sess_id}", $data, 0, $this->lifetime
+        );
     }
 }

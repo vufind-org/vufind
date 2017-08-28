@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Installer
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:installation_notes Wiki
+ * @link     https://vufind.org/wiki/installation Wiki
  */
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -43,26 +43,26 @@ $basePath = '/vufind';
 try {
     $opts = new Getopt(
         array(
-        'use-defaults' => 
+        'use-defaults' =>
            'Use VuFind Defaults to Configure (ignores any other arguments passed)',
-        'overridedir=s' => 
+        'overridedir=s' =>
            "Where would you like to store your local settings? [{$baseDir}/local]",
-        'module-name=s' => 
+        'module-name=s' =>
            'What module name would you like to use? Use disabled, to not use',
-        'basepath=s' => 
+        'basepath=s' =>
            'What base path should be used in VuFind\'s URL? [/vufind]',
-        'multisite-w' => 
+        'multisite-w' =>
            'Specify we are going to setup a multisite. Options: directory and host',
-        'hostname=s' => 
+        'hostname=s' =>
             'Specify the hostname for the VuFind Site, When multisite=host',
         'non-interactive' =>
             'Use settings if provided via arguments, otherwise use defaults',
       )
     );
-
     $opts->parse();
 } catch (Exception $e) {
-    echo $e->getUsageMessage();
+    echo is_callable([$e, 'getUsageMessage'])
+        ? $e->getUsageMessage() : $e->getMessage() . "\n";
     exit;
 }
 
@@ -169,6 +169,11 @@ if (!empty($host)) {
         "\nneed to do some virtual host configuration. See\n" .
         "     http://httpd.apache.org/docs/2.2/vhosts/\n\n";
 }
+if ('/' == $basePath) {
+    echo "Since you are installing VuFind at the root of your domain, you will also"
+        . "\nneed to edit your Apache configuration to change DocumentRoot to:\n"
+        . $baseDir . "/public\n\n";
+}
 echo "Once the configuration is linked, restart Apache.  You should now be able\n";
 echo "to access VuFind at http://localhost{$basePath}\n\n";
 echo "For proper use of command line tools, you should also ensure that your\n";
@@ -207,12 +212,12 @@ function getApacheLocation($overrideDir)
         } else if (is_dir('/etc/apache2/2.2/conf.d')) {         // Solaris
             $confD = '/etc/apache2/2.2/conf.d';
             $httpdConf = '/etc/apache2/2.2/httpd.conf';
-        } else if (is_dir('/etc/apache2/conf.d')) {         // old Ubuntu / OpenSUSE
-            $confD = '/etc/apache2/conf.d';
-            $httpdConf = '/etc/apache2/httpd.conf';
         } else if (is_dir('/etc/apache2/conf-enabled')) {   // new Ubuntu / OpenSUSE
             $confD = '/etc/apache2/conf-enabled';
             $httpdConf = '/etc/apache2/apache2.conf';
+        } else if (is_dir('/etc/apache2/conf.d')) {         // old Ubuntu / OpenSUSE
+            $confD = '/etc/apache2/conf.d';
+            $httpdConf = '/etc/apache2/httpd.conf';
         } else if (is_dir('/opt/local/apache2/conf/extra')) {   // Mac with Mac Ports
             $confD = '/opt/local/apache2/conf/extra';
             $httpdConf = '/opt/local/apache2/conf/httpd.conf';
@@ -235,7 +240,7 @@ function getApacheLocation($overrideDir)
         echo "You can do it in either of two ways:\n\n";
         echo "    a) Add this line to your {$httpdConf} file:\n";
         echo "       Include {$overrideDir}/httpd-vufind.conf\n\n";
-        echo "    b) Link the configuration to Apache's conf.d directory like this:";
+        echo "    b) Link the configuration to Apache's config directory like this:";
         echo "\n       ln -s {$overrideDir}/httpd-vufind.conf {$confD}/{$symlink}\n";
         echo "\nOption b is preferable if your platform supports it,\n";
         echo "but option a is more certain to be supported.\n\n";
@@ -367,7 +372,7 @@ function validateModule($module)
 {
     $regex = '/^[a-zA-Z][0-9a-zA-Z_]*$/';
     $illegalModules = array(
-        'VuDL', 'VuFind', 'VuFindAdmin', 'VuFindConsole', 'VuFindDevTools',
+        'VuFind', 'VuFindAdmin', 'VuFindConsole', 'VuFindDevTools',
         'VuFindLocalTemplate', 'VuFindSearch', 'VuFindTest', 'VuFindTheme',
     );
     if (in_array($module, $illegalModules)) {
@@ -496,12 +501,17 @@ function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $
     if (empty($config)) {
         die("Problem reading {$baseConfig}.\n\n");
     }
-    $config = str_replace("/usr/local/vufind/local", "%override-dir%", $config);
-    $config = str_replace("/usr/local/vufind", "%base-dir%", $config);
-    $config = preg_replace("|([^/])\/vufind|", "$1%base-path%", $config);
-    $config = str_replace("%override-dir%", $overrideDir, $config);
-    $config = str_replace("%base-dir%", $baseDir, $config);
-    $config = str_replace("%base-path%", $basePath, $config);
+    $config = str_replace('/usr/local/vufind/local', '%override-dir%', $config);
+    $config = str_replace('/usr/local/vufind', '%base-dir%', $config);
+    $config = preg_replace('|([^/])\/vufind|', '$1%base-path%', $config);
+    $config = str_replace('%override-dir%', $overrideDir, $config);
+    $config = str_replace('%base-dir%', $baseDir, $config);
+    $config = str_replace('%base-path%', $basePath, $config);
+    // Special cases for root basePath:
+    if ('/' == $basePath) {
+        $config = str_replace('//', '/', $config);
+        $config = str_replace('Alias /', '#Alias /', $config);
+    }
     if (!empty($module)) {
         $config = str_replace(
             "#SetEnv VUFIND_LOCAL_MODULES VuFindLocalTemplate",
@@ -554,10 +564,9 @@ function buildWindowsConfig($baseDir, $overrideDir, $module)
 {
     $batch = "@set VUFIND_HOME={$baseDir}\n" .
         "@set VUFIND_LOCAL_DIR={$overrideDir}\n" .
-        (empty($module) ? '' : "@set VUFIND_LOCAL_MODULES={$module}\n") .
-        "@call run_vufind.bat %1 %2 %3 %4 %5 %6 %7 %8 %9";
-    if (!@file_put_contents($baseDir . '/vufind.bat', $batch)) {
-        die("Problem writing {$baseDir}/vufind.bat.\n\n");
+        (empty($module) ? '' : "@set VUFIND_LOCAL_MODULES={$module}\n");
+    if (!@file_put_contents($baseDir . '/env.bat', $batch)) {
+        die("Problem writing {$baseDir}/env.bat.\n\n");
     }
 }
 

@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindTheme\View\Helper;
 use Zend\ServiceManager\ServiceManager;
@@ -31,16 +31,46 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * Factory for VuFindTheme view helpers.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  *
  * @codeCoverageIgnore
  */
 class Factory
 {
+    /**
+     * Split config and return prefixed setting with current environment.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return string|bool
+     */
+    protected static function getPipelineConfig(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $default = false;
+        if (isset($config['Site']['asset_pipeline'])) {
+            $settings = array_map(
+                'trim',
+                explode(';', $config['Site']['asset_pipeline'])
+            );
+            foreach ($settings as $setting) {
+                $parts = array_map('trim', explode(':', $setting));
+                if (APPLICATION_ENV === $parts[0]) {
+                    return $parts[1];
+                } else if (count($parts) == 1) {
+                    $default = $parts[0];
+                } else if ($parts[0] === '*') {
+                    $default = $parts[1];
+                }
+            }
+        }
+        return $default;
+    }
+
     /**
      * Construct the HeadLink helper.
      *
@@ -51,7 +81,8 @@ class Factory
     public static function getHeadLink(ServiceManager $sm)
     {
         return new HeadLink(
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
+            Factory::getPipelineConfig($sm)
         );
     }
 
@@ -65,7 +96,8 @@ class Factory
     public static function getHeadScript(ServiceManager $sm)
     {
         return new HeadScript(
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
+            Factory::getPipelineConfig($sm)
         );
     }
 
@@ -107,7 +139,8 @@ class Factory
     public static function getInlineScript(ServiceManager $sm)
     {
         return new InlineScript(
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
+            Factory::getPipelineConfig($sm)
         );
     }
 

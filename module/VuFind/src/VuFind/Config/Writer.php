@@ -17,24 +17,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Config;
 
 /**
  * Class to update VuFind configuration settings
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Writer
 {
@@ -69,7 +69,7 @@ class Writer
         $this->filename = $filename;
         if (null === $content) {
             $this->content = file_get_contents($filename);
-            if (!$this->content) {
+            if (false === $this->content) {
                 throw new \Exception('Could not read ' . $filename);
             }
         } else if (is_array($content)) {
@@ -84,7 +84,7 @@ class Writer
      *
      * @param string $section Section to change/add
      * @param string $setting Setting within section to change/add
-     * @param string $value   Value to set
+     * @param string $value   Value to set (or null to unset)
      *
      * @return void
      */
@@ -109,20 +109,34 @@ class Writer
             if (preg_match('/^\[(.+)\]$/', trim($content), $matches)) {
                 // If we just left the target section and didn't find the
                 // desired setting, we should write it to the end.
-                if ($currentSection == $section && !$settingSet) {
-                    $line = $setting . ' = "' . $value . '"' . "\n\n" . $line;
+                if ($currentSection == $section && !$settingSet
+                    && $value !== null
+                ) {
+                    $line = $this->buildContentLine($setting, $value, 0)
+                        . "\n\n" . $line;
                     $settingSet = true;
                 }
                 $currentSection = $matches[1];
             } else if (strstr($content, '=')) {
                 $contentParts = explode('=', $content, 2);
-                $key = reset($contentParts);
-                if ($currentSection == $section && trim($key) == $setting) {
-                    $line = $setting . ' = "' . $value . '"';
+                $key = trim($contentParts[0]);
+                // If the key we are trying to set is already present as an array,
+                // we need to clear out the multiple existing values before writing
+                // in a new one:
+                if ($key == $setting . '[]') {
+                    continue;
+                }
+                // Standard case for match on section + key:
+                if ($currentSection == $section && $key == $setting) {
+                    $settingSet = true;
+                    if ($value === null) {
+                        continue;
+                    } else {
+                        $line = $this->buildContentLine($setting, $value, 0);
+                    }
                     if (!empty($comment)) {
                         $line .= ' ;' . $comment;
                     }
-                    $settingSet = true;
                 }
             }
 
@@ -131,13 +145,26 @@ class Writer
         }
 
         // Did we loop through everything without finding a place to put the setting?
-        if (!$settingSet) {
+        if (!$settingSet && $value !== null) {
             // We never found the target section?
             if ($currentSection != $section) {
                 $this->content .= '[' . $section . "]\n";
             }
-            $this->content .= $setting . ' = "' . $value . '"' . "\n";
+            $this->content .= $this->buildContentLine($setting, $value, 0) . "\n";
         }
+    }
+
+    /**
+     * Remove a setting (convenience wrapper around set to null).
+     *
+     * @param string $section Section to change/add
+     * @param string $setting Setting within section to change/add
+     *
+     * @return void
+     */
+    public function clear($section, $setting)
+    {
+        $this->set($section, $setting, null);
     }
 
     /**
@@ -190,7 +217,7 @@ class Writer
         } else if ($e == "") {
             return '';
         } else {
-            return '"' . $e . '"';
+            return '"' . str_replace('"', '\"', $e) . '"';
         }
     }
 
@@ -211,6 +238,18 @@ class Writer
             $tabStr .= ' ';
         }
 
+        // Special case: if value is an array, we need to adjust the key
+        // accordingly:
+        if (is_array($value)) {
+            $retVal = '';
+            foreach ($value as $current) {
+                $retVal .= $key . '[]' . $tabStr . " = "
+                    . $this->buildContentValue($current);
+            }
+            return $retVal;
+        }
+
+        // Standard case: value is not an array:
         return $key . $tabStr . " = " . $this->buildContentValue($value);
     }
 

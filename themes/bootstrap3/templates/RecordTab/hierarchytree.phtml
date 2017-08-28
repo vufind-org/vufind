@@ -13,7 +13,7 @@
      'SET'
   );
   $this->jsTranslations()->addStrings(
-    array('showTree' => 'hierarchy_show_tree', 'hideTree' => 'hierarchy_hide_tree')
+    ['showTree' => 'hierarchy_show_tree', 'hideTree' => 'hierarchy_hide_tree']
   );
   $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/jsTree/jstree.min.js');
   $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'hierarchyTree.js');
@@ -23,9 +23,9 @@
   <div id="treeSelector">
     <? foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
       <? if($activeTree == $hierarchy): ?>
-        <i class="fa fa-sitemap"></i> <?=$this->escapeHtml($hierarchyTitle)?>
+        <i class="fa fa-sitemap" aria-hidden="true"></i> <?=$this->escapeHtml($hierarchyTitle)?>
       <? else: ?>
-        <i class="fa fa-sitemap text-muted"></i> <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchy)?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
+        <i class="fa fa-sitemap text-muted" aria-hidden="true"></i> <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchy)?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
       <? endif; ?>
     <? endforeach; ?>
   </div>
@@ -40,12 +40,12 @@
           <option value="Title"><?=$this->transEsc('Title')?></option>
         </select>
         <input type="submit" class="btn btn-default" value="<?=$this->transEsc('Search') ?>"/>
-        <i id="treeSearchLoadingImg" class="fa fa-spinner fa-spin hidden"></i>
+        <i id="treeSearchLoadingImg" class="fa fa-spinner fa-spin hidden" aria-hidden="true"></i>
       </div>
       <div id="treeSearchNoResults" class="alert alert-danger hidden"><?=$this->translate('nohit_heading')?></div>
-      <div id="treeSearchLimitReached" class="alert alert-danger hidden"><?=$this->translate('tree_search_limit_reached_html', array('%%url%%' => $this->url('search-results'), '%%limit%%' => $this->tab->getSearchLimit()))?></div>
+      <div id="treeSearchLimitReached" class="alert alert-danger hidden"><?=$this->translate('tree_search_limit_reached_html', ['%%url%%' => $this->url('search-results'), '%%limit%%' => $this->tab->getSearchLimit()])?></div>
     <? endif; ?>
-    <div id="hierarchyLoading" class="hide"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc("Loading")?>...</div>
+    <div id="hierarchyLoading" class="hide"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> <?=$this->transEsc("Loading")?>...</div>
     <div id="hierarchyTree" class="hierarchy-tree">
       <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenRecordId" />
       <input type="hidden" value="<?=$this->escapeHtml($activeTree)?>" class="hiddenHierarchyId" />

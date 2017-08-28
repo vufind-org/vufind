@@ -5,6 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2014.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,16 +18,17 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @author   Bernd Oberknapp <bo@ub.uni-freiburg.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Auth;
 use VuFind\Exception\Auth as AuthException;
@@ -34,18 +36,36 @@ use VuFind\Exception\Auth as AuthException;
 /**
  * Shibboleth authentication module.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @author   Bernd Oberknapp <bo@ub.uni-freiburg.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Shibboleth extends AbstractBase
 {
     const DEFAULT_IDPSERVERPARAM = 'Shib-Identity-Provider';
+
+    /**
+     * Session manager
+     *
+     * @var \Zend\Session\ManagerInterface
+     */
+    protected $sessionManager;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Session\ManagerInterface $sessionManager Session manager
+     */
+    public function __construct(\Zend\Session\ManagerInterface $sessionManager)
+    {
+        $this->sessionManager = $sessionManager;
+    }
 
     /**
      * Validate configuration parameters.  This is a support method for getConfig(),
@@ -88,12 +108,20 @@ class Shibboleth extends AbstractBase
         $shib = $this->getConfig()->Shibboleth;
         $username = $request->getServer()->get($shib->username);
         if (empty($username)) {
+            $this->debug(
+                "No username attribute ({$shib->username}) present in request: "
+                . print_r($request->getServer()->toArray(), true)
+            );
             throw new AuthException('authentication_error_admin');
         }
 
         // Check if required attributes match up:
         foreach ($this->getRequiredAttributes() as $key => $value) {
             if (!preg_match('/' . $value . '/', $request->getServer()->get($key))) {
+                $this->debug(
+                    "Attribute '$key' does not match required value '$value' in"
+                    . ' request: ' . print_r($request->getServer()->toArray(), true)
+                );
                 throw new AuthException('authentication_error_denied');
             }
         }
@@ -114,16 +142,43 @@ class Shibboleth extends AbstractBase
             if (isset($shib->$attribute)) {
                 $value = $request->getServer()->get($shib->$attribute);
                 if ($attribute != 'cat_password') {
-                    $user->$attribute = $value;
+                    $user->$attribute = ($value === null) ? '' : $value;
                 } else {
                     $catPassword = $value;
                 }
             }
         }
 
-        // Save credentials if applicable:
-        if (!empty($catPassword) && !empty($user->cat_username)) {
-            $user->saveCredentials($user->cat_username, $catPassword);
+        // Save credentials if applicable. Note that we want to allow empty
+        // passwords (see https://github.com/vufind-org/vufind/pull/532), but
+        // we also want to be careful not to replace a non-blank password with a
+        // blank one in case the auth mechanism fails to provide a password on
+        // an occasion after the user has manually stored one. (For discussion,
+        // see https://github.com/vufind-org/vufind/pull/612). Note that in the
+        // (unlikely) scenario that a password can actually change from non-blank
+        // to blank, additional work may need to be done here.
+        if (!empty($user->cat_username)) {
+            $user->saveCredentials(
+                $user->cat_username,
+                empty($catPassword) ? $user->getCatPassword() : $catPassword
+            );
+        }
+
+        // Add session id mapping to external_session table for single logout support
+        if (isset($shib->session_id)) {
+            $shibSessionId = $request->getServer()->get($shib->session_id);
+            if (null !== $shibSessionId) {
+                $localSessionId = $this->sessionManager->getId();
+                $externalSession = $this->getDbTableManager()
+                    ->get('ExternalSession');
+                $externalSession->addSessionMapping(
+                    $localSessionId, $shibSessionId
+                );
+                $this->debug(
+                    "Cached Shibboleth session id '$shibSessionId' for local session"
+                    . " '$localSessionId'"
+                );
+            }
         }
 
         // Save and return the user object:
@@ -201,7 +256,10 @@ class Shibboleth extends AbstractBase
         if (isset($config->Shibboleth->logout)
             && !empty($config->Shibboleth->logout)
         ) {
-            $url = $config->Shibboleth->logout . '?return=' . urlencode($url);
+            $append = (strpos($config->Shibboleth->logout, '?') !== false) ? '&'
+                : '?';
+            $url = $config->Shibboleth->logout . $append . 'return='
+                . urlencode($url);
         }
 
         // Send back the redirect URL (possibly modified):

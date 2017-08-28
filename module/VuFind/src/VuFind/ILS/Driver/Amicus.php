@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Josu Moreno <jmoreno@scanbit.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 use PDO, PDOException, VuFind\Exception\ILS as ILSException,
@@ -32,11 +32,11 @@ use PDO, PDOException, VuFind\Exception\ILS as ILSException,
 /**
  * Amicus ILS Driver
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Josu Moreno <jmoreno@scanbit.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Amicus extends AbstractBase implements TranslatorAwareInterface
 {
@@ -178,9 +178,9 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * If there is no on loan items it returns 0.
      * Used in getHolding and getStatus functions
      *
-     * @param integer $copyId The copy id number to check.
+     * @param int $copyId The copy id number to check.
      *
-     * @return integer             Number of on loan items.
+     * @return int        Number of on loan items.
      */
     protected function sacaStatus($copyId)
     {
@@ -216,9 +216,9 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * If the difference is greater than 50 days it will return one special message
      * If not it returns the due date
      *
-     * @param integer $copyId The copy id number to check.
+     * @param int $copyId The copy id number to check.
      *
-     * @return string             String with special message or due date.
+     * @return string     String with special message or due date.
      */
     protected function sacaFecha($copyId)
     {
@@ -249,9 +249,9 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * Function that returns the numbers of holds for a copy id number given.
      * If there is no holds it returns 0.
      *
-     * @param integer $holdingId The copy id number to check.
+     * @param int $holdingId The copy id number to check.
      *
-     * @return integer             Integer with the number of holds.
+     * @return int           Integer with the number of holds.
      */
     protected function sacaReservas($holdingId)
     {

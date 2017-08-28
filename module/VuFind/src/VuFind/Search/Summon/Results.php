@@ -17,24 +17,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Summon
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Summon;
 
 /**
  * Summon Search Parameters
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Summon
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Results extends \VuFind\Search\Base\Results
 {
@@ -125,6 +125,11 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getFacetList($filter = null)
     {
+        // Make sure we have processed the search before proceeding:
+        if (null === $this->responseFacets) {
+            $this->performAndProcessSearch();
+        }
+
         // If there is no filter, we'll use all facets as the filter:
         $filter = is_null($filter)
             ? $this->getParams()->getFacetConfig()
@@ -321,5 +326,69 @@ class Results extends \VuFind\Search\Base\Results
     public function getTopicRecommendations()
     {
         return $this->topicRecommendations;
+    }
+
+    /**
+     * Get complete facet counts for several index fields
+     *
+     * @param array  $facetfields  name of the Solr fields to return facets for
+     * @param bool   $removeFilter Clear existing filters from selected fields (true)
+     * or retain them (false)?
+     * @param int    $limit        A limit for the number of facets returned, this
+     * may be useful for very large amounts of facets that can break the JSON parse
+     * method because of PHP out of memory exceptions (default = -1, no limit).
+     * @param string $facetSort    A facet sort value to use (null to retain current)
+     * @param int    $page         1 based. Offsets results by limit.
+     *
+     * @return array an array with the facet values for each index field
+     */
+    public function getPartialFieldFacets($facetfields, $removeFilter = true,
+        $limit = -1, $facetSort = null, $page = null
+    ) {
+        $params = $this->getParams();
+        $query  = $params->getQuery();
+        // No limit not implemented with Summon: cause page loop
+        if ($limit == -1) {
+            if ($page === null) {
+                $page = 1;
+            }
+            $limit = 50;
+        }
+        $params->resetFacetConfig();
+        if (null !== $facetSort && 'count' !== $facetSort) {
+            throw new \Exception("$facetSort facet sort not supported by Summon.");
+        }
+        foreach ($facetfields as $facet) {
+            $mode = $params->getFacetOperator($facet) === 'OR' ? 'or' : 'and';
+            $params->addFacet("$facet,$mode,$page,$limit");
+
+            // Clear existing filters for the selected field if necessary:
+            if ($removeFilter) {
+                $params->removeAllFilters($facet);
+            }
+        }
+        $params = $params->getBackendParameters();
+        $collection = $this->getSearchService()->search(
+            'Summon', $query, 0, 0, $params
+        );
+
+        $facets = $collection->getFacets();
+        $ret = [];
+        foreach ($facets as $data) {
+            if (in_array($data['displayName'], $facetfields)) {
+                $formatted = $this->formatFacetData($data);
+                $list = $formatted['counts'];
+                $ret[$data['displayName']] = [
+                    'data' => [
+                        'label' => $data['displayName'],
+                        'list' => $list,
+                    ],
+                    'more' => null
+                ];
+            }
+        }
+
+        // Send back data:
+        return $ret;
     }
 }

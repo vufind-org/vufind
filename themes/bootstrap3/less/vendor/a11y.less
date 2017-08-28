@@ -1,0 +1,117 @@
+/* mixins */
+
+input, textarea {
+  &::-webkit-input-placeholder, // Chrome/Safari/Opera
+  &:-ms-input-placeholder,      // IE
+  &::-ms-input-placeholder,     // Edge
+  &::placeholder {
+    color: #888;
+  }
+}
+
+.sr-only
+{
+  clip: rect(1px, 1px, 1px, 1px);
+  position: absolute;
+  /* reset */
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border:0;
+}
+
+.sr-only:focus {
+  background-color: @navbar-default-link-hover-bg;//watch out, transparent by default!
+  border-radius: @navbar-border-radius;
+  clip: auto;
+  color: @navbar-default-link-hover-color;
+  display: block;
+  font-size: @font-size-base;
+  height: @navbar-height;
+  line-height: @line-height-computed;
+  padding: @navbar-padding-vertical @navbar-padding-horizontal;
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  text-decoration: none;
+  text-transform: none;
+  width: auto;
+  z-index: 100000; /* Above WP toolbar */
+}
+
+/* this mixins give output generate duplicate CSS code
+ * alternatively you will to have to rewrite the original mixin in buttons.less
+ */
+.button-variant(@color; @background; @border) {
+  &:hover,
+  &:focus,
+  &:active,
+  &.active,
+  .open &.dropdown-toggle {
+    color: @background;
+    background-color: @color;
+    border-color: darken(@border, 12%);
+  }
+}
+
+// Navbar
+// -------------------------
+
+@navbar-default-color:             #fff;
+@navbar-default-bg:                #132531;
+@navbar-default-border:            darken(@navbar-default-bg, 6.5%);
+
+// Navbar links
+@navbar-default-link-color:                #fff;
+@navbar-default-link-hover-color:          #132531;
+@navbar-default-link-hover-bg:             #fff;
+@navbar-default-link-active-color:         #132531;
+@navbar-default-link-active-bg:            #fff;
+@navbar-default-link-disabled-color:       #fff;
+@navbar-default-link-disabled-bg:          #068139;
+
+// Navbar brand label
+@navbar-default-brand-color:               @navbar-default-link-color;
+@navbar-default-brand-hover-color:         #068139; //contrast 3.15, so min 19px;
+.navbar-brand {
+  font-size: 20px;
+}
+@navbar-default-brand-hover-bg:            transparent;
+
+// Navbar toggle
+@navbar-default-toggle-hover-bg:           #ddd;
+@navbar-default-toggle-icon-bar-bg:        #888;
+@navbar-default-toggle-border-color:       #ddd;
+
+@brand-primary:         #265680;
+@brand-success:         #028302;
+@brand-info:            #1C5F74;
+@brand-warning:         #A56100;
+@brand-danger:          #A41915;
+
+/* buttons */
+@btn-primary-color:              #fff;
+@btn-primary-bg:                 @brand-primary;
+@btn-primary-border:             #fff;
+
+@btn-success-color:              #fff;
+@btn-success-bg:                 @brand-success;
+@btn-success-border:             #fff;
+
+@btn-info-color:              #fff;
+@btn-info-bg:                 @brand-info;
+@btn-info-border:             #fff;
+
+@btn-warning-color:              #fff;
+@btn-warning-bg:                 @brand-warning;
+@btn-warning-border:             #fff;
+
+@btn-danger-color:              #fff;
+@btn-danger-bg:                 @brand-danger;
+@btn-danger-border:             #fff;
+
+
+/* link on white background */
+@link-color:            #12538B;

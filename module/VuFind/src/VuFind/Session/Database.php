@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Session_Handlers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 namespace VuFind\Session;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
@@ -31,11 +31,11 @@ use VuFind\Exception\SessionExpired as SessionExpiredException;
 /**
  * Database session handler
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Session_Handlers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 class Database extends AbstractBase
 {
@@ -55,21 +55,8 @@ class Database extends AbstractBase
                 ->readSession($sess_id, $this->lifetime);
         } catch (SessionExpiredException $e) {
             $this->destroy($sess_id);
-            return;
+            return '';
         }
-    }
-
-    /**
-     * Write function that is called when session data is to be saved.
-     *
-     * @param string $sess_id The current session ID
-     * @param string $data    The session data to write
-     *
-     * @return void
-     */
-    public function write($sess_id, $data)
-    {
-        $this->getTable('Session')->writeSession($sess_id, $data);
     }
 
     /**
@@ -78,7 +65,7 @@ class Database extends AbstractBase
      *
      * @param string $sess_id The session ID to destroy
      *
-     * @return void
+     * @return bool
      */
     public function destroy($sess_id)
     {
@@ -87,6 +74,8 @@ class Database extends AbstractBase
 
         // Now do database-specific destruction:
         $this->getTable('Session')->destroySession($sess_id);
+
+        return true;
     }
 
     /**
@@ -95,10 +84,25 @@ class Database extends AbstractBase
      *
      * @param int $sess_maxlifetime Maximum session lifetime.
      *
-     * @return void
+     * @return bool
      */
     public function gc($sess_maxlifetime)
     {
         $this->getTable('Session')->garbageCollect($sess_maxlifetime);
+        return true;
+    }
+
+    /**
+     * A function that is called internally when session data is to be saved.
+     *
+     * @param string $sess_id The current session ID
+     * @param string $data    The session data to write
+     *
+     * @return bool
+     */
+    protected function saveSession($sess_id, $data)
+    {
+        $this->getTable('Session')->writeSession($sess_id, $data);
+        return true;
     }
 }

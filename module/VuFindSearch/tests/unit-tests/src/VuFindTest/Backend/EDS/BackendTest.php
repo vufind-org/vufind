@@ -18,13 +18,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindTest\Backend\EDS;
 
@@ -35,11 +35,11 @@ use InvalidArgumentException;
 /**
  * Unit tests for EDS backend.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class BackendTest extends \VuFindTest\Unit\TestCase
 {
@@ -144,7 +144,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testConstructorSetters()
     {
-        $fact = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
+        $fact = $this->createMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
         $conn = $this->getConnectorMock();
         $config = [
             'EBSCO_Account' => [
@@ -191,10 +191,11 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->getMock('Zend\Http\Client');
-        return $this->getMock(
-            'VuFindSearch\Backend\EDS\Zend2', $mock, [[], $client]
-        );
+        $client = $this->createMock('Zend\Http\Client');
+        return $this->getMockBuilder('VuFindSearch\Backend\EDS\Zend2')
+            ->setMethods($mock)
+            ->setConstructorArgs([[], $client])
+            ->getMock();
     }
 
     /**
@@ -210,20 +211,23 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     protected function getBackend($connector, $factory = null, $cache = null, $container = null, $settings = [], $mock = null)
     {
         if (null === $factory) {
-            $factory = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
+            $factory = $this->createMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
         }
         if (null === $cache) {
-            $cache = $this->getMock('Zend\Cache\Storage\Adapter\Filesystem');
+            $cache = $this->createMock('Zend\Cache\Storage\Adapter\Filesystem');
         }
         if (null === $container) {
-            // Using a mock here causes an error for some reason -- investigate later.
-            $container = new \Zend\Session\Container('EBSCO');
+            $container = $this->getMockBuilder('Zend\Session\Container')
+                ->disableOriginalConstructor()->getMock();
         }
         if (null === $mock) {
             return new Backend($connector, $factory, $cache, $container, new \Zend\Config\Config($settings));
         } else {
             $params = [$connector, $factory, $cache, $container, new \Zend\Config\Config($settings)];
-            return $this->getMock('VuFindSearch\Backend\EDS\Backend', $mock, $params);
+            return $this->getMockBuilder(__NAMESPACE__ . '\BackendMock')
+                ->setMethods($mock)
+                ->setConstructorArgs($params)
+                ->getMock();
         }
     }
 
@@ -242,4 +246,11 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         return new \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory($callback);
     }
 
+}
+
+class BackendMock extends \VuFindSearch\Backend\EDS\Backend
+{
+    public function getAuthenticationToken($isInvalid = false)
+    {
+    }
 }

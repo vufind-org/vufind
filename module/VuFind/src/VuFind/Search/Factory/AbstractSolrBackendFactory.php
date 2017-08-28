@@ -18,13 +18,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Factory;
 
@@ -42,6 +42,7 @@ use VuFind\Search\Solr\HierarchicalFacetListener;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Solr\QueryBuilder;
+use VuFindSearch\Backend\Solr\SimilarBuilder;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\Backend;
@@ -54,11 +55,11 @@ use Zend\ServiceManager\FactoryInterface;
 /**
  * Abstract factory for SOLR backends.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 abstract class AbstractSolrBackendFactory implements FactoryInterface
 {
@@ -156,6 +157,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     {
         $backend = new Backend($connector);
         $backend->setQueryBuilder($this->createQueryBuilder());
+        $backend->setSimilarBuilder($this->createSimilarBuilder());
         if ($this->logger) {
             $backend->setLogger($this->logger);
         }
@@ -259,11 +261,21 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     /**
      * Get the Solr URL.
      *
-     * @return string
+     * @return string|array
      */
     protected function getSolrUrl()
     {
-        return $this->config->get('config')->Index->url . '/' . $this->getSolrCore();
+        $url = $this->config->get('config')->Index->url;
+        $core = $this->getSolrCore();
+        if (is_object($url)) {
+            return array_map(
+                function ($value) use ($core) {
+                    return "$value/$core";
+                },
+                $url->toArray()
+            );
+        }
+        return "$url/$core";
     }
 
     /**
@@ -308,7 +320,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 'defaults' => ['fl' => '*,score'],
                 'appends'  => ['fq' => []],
             ],
-            'term' => [
+            'terms' => [
                 'functions' => ['terms'],
             ],
         ];
@@ -360,6 +372,18 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $builder->setLuceneHelper($helper);
 
         return $builder;
+    }
+
+    /**
+     * Create the similar records query builder.
+     *
+     * @return SimilarBuilder
+     */
+    protected function createSimilarBuilder()
+    {
+        return new SimilarBuilder(
+            $this->config->get($this->searchConfig), $this->uniqueKey
+        );
     }
 
     /**

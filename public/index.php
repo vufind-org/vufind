@@ -7,21 +7,45 @@ use Zend\Mvc\Service\ServiceManagerConfig;
 $xhprof = getenv('VUFIND_PROFILER_XHPROF');
 if (!empty($xhprof) && extension_loaded('xhprof')) {
     xhprof_enable();
+} else if (extension_loaded('tideways')) {
+    tideways_enable();
 } else {
     $xhprof = false;
 }
 
 // Define path to application directory
 defined('APPLICATION_PATH')
-    || define('APPLICATION_PATH', dirname(__DIR__));
+    || define(
+        'APPLICATION_PATH',
+        (getenv('VUFIND_APPLICATION_PATH') ? getenv('VUFIND_APPLICATION_PATH')
+            : dirname(__DIR__))
+    );
 
 // Define application environment
 defined('APPLICATION_ENV')
-    || define('APPLICATION_ENV', (getenv('VUFIND_ENV') ? getenv('VUFIND_ENV') : 'production'));
+    || define(
+        'APPLICATION_ENV',
+        (getenv('VUFIND_ENV') ? getenv('VUFIND_ENV') : 'production')
+    );
+
+// Define default search backend identifier
+defined('DEFAULT_SEARCH_BACKEND') || define('DEFAULT_SEARCH_BACKEND', 'Solr');
 
 // Define path to local override directory
 defined('LOCAL_OVERRIDE_DIR')
-    || define('LOCAL_OVERRIDE_DIR', (getenv('VUFIND_LOCAL_DIR') ? getenv('VUFIND_LOCAL_DIR') : ''));
+    || define(
+        'LOCAL_OVERRIDE_DIR',
+        (getenv('VUFIND_LOCAL_DIR') ? getenv('VUFIND_LOCAL_DIR') : '')
+    );
+
+// Define path to cache directory
+defined('LOCAL_CACHE_DIR')
+    || define(
+        'LOCAL_CACHE_DIR',
+        (getenv('VUFIND_CACHE_DIR')
+            ? getenv('VUFIND_CACHE_DIR')
+            : (strlen(LOCAL_OVERRIDE_DIR) > 0 ? LOCAL_OVERRIDE_DIR . '/cache' : ''))
+    );
 
 // Save original working directory in case we need to remember our context, then
 // switch to the application directory for convenience:
@@ -60,12 +84,14 @@ Zend\Mvc\Application::init(require 'config/application.config.php')->run();
 
 // Handle final profiling details, if necessary:
 if ($xhprof) {
-    $xhprofData = xhprof_disable();
-    include_once "xhprof_lib/utils/xhprof_lib.php";
-    include_once "xhprof_lib/utils/xhprof_runs.php";
-    $xhprofRuns = new XHProfRuns_Default();
-    $suffix = 'vufind2';
-    $xhprofRunId = $xhprofRuns->save_run($xhprofData, $suffix);
+    $xhprofData = extension_loaded('xhprof') ? xhprof_disable() : tideways_disable();
+    $xhprofRunId = uniqid();
+    $suffix = 'vufind';
+    $dir = ini_get('xhprof.output_dir');
+    if (empty($dir)) {
+        $dir = sys_get_temp_dir();
+    }
+    file_put_contents("$dir/$xhprofRunId.$suffix.xhprof", serialize($xhprofData));
     $url = "$xhprof?run=$xhprofRunId&source=$suffix";
     echo "<a href='$url'>Profiler output</a>";
 }

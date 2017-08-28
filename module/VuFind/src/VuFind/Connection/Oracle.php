@@ -17,24 +17,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Oracle
  * @author   Greg Pendlebury <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Connection;
 
 /**
  * Oracle support code for VTLS Virtua Driver
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Oracle
  * @author   Greg Pendlebury <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Oracle
 {
@@ -201,10 +201,11 @@ class Oracle
     public function bindParam(
         $parsed, $place_holder, $data, $data_type = 'string', $length = -1
     ) {
-        if (@oci_bind_by_name(
+        $success = @oci_bind_by_name(
             $parsed, $place_holder, $data, $length,
             $this->getDataTypeConstant($data_type)
-        )) {
+        );
+        if ($success) {
             return true;
         } else {
             $this->handleError('binding', oci_error());
@@ -234,10 +235,11 @@ class Oracle
     public function returnParam(
         $parsed, $place_holder, &$data, $data_type = 'string', $length = -1
     ) {
-        if (@oci_bind_by_name(
+        $success = @oci_bind_by_name(
             $parsed, $place_holder, $data, $length,
             $this->getDataTypeConstant($data_type)
-        )) {
+        );
+        if ($success) {
             return true;
         } else {
             $this->handleError('binding', oci_error());

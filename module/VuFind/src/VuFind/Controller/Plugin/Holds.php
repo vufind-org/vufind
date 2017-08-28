@@ -17,24 +17,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
 
 /**
  * Zend action helper to perform holds-related actions
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Holds extends AbstractRequestBase
 {
@@ -58,12 +58,29 @@ class Holds extends AbstractRequestBase
                 // Build OPAC URL
                 $ilsDetails['cancel_link']
                     = $catalog->getCancelHoldLink($ilsDetails);
+            } else if (isset($ilsDetails['cancel_details'])) {
+                // The ILS driver provided cancel details up front. If the
+                // details are an empty string (flagging lack of support), we
+                // should unset it to prevent confusion; otherwise, we'll leave it
+                // as-is.
+                if ('' === $ilsDetails['cancel_details']) {
+                    unset($ilsDetails['cancel_details']);
+                } else {
+                    $this->rememberValidId($ilsDetails['cancel_details']);
+                }
             } else {
-                // Form Details
-                $ilsDetails['cancel_details']
-                    = $catalog->getCancelHoldDetails($ilsDetails);
-                $this->rememberValidId($ilsDetails['cancel_details']);
+                // Default case: ILS supports cancel but we need to look up
+                // details:
+                $cancelDetails = $catalog->getCancelHoldDetails($ilsDetails);
+                if ($cancelDetails !== '') {
+                    $ilsDetails['cancel_details'] = $cancelDetails;
+                    $this->rememberValidId($ilsDetails['cancel_details']);
+                }
             }
+        } else {
+            // Cancelling holds disabled? Make sure no details get passed back:
+            unset($ilsDetails['cancel_link']);
+            unset($ilsDetails['cancel_details']);
         }
 
         return $ilsDetails;
@@ -142,13 +159,12 @@ class Holds extends AbstractRequestBase
                 $flashMsg->addMessage('hold_cancel_fail', 'error');
             } else {
                 if ($cancelResults['count'] > 0) {
-                    // TODO : add a mechanism for inserting tokens into translated
-                    // messages so we can avoid a double translation here.
                     $msg = $this->getController()
-                        ->translate('hold_cancel_success_items');
-                    $flashMsg->addMessage(
-                        $cancelResults['count'] . ' ' . $msg, 'success'
-                    );
+                        ->translate(
+                            'hold_cancel_success_items',
+                            ['%%count%%' => $cancelResults['count']]
+                        );
+                    $flashMsg->addMessage($msg, 'success');
                 }
                 return $cancelResults;
             }

@@ -17,24 +17,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_SolrAuthorFacets
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\SolrAuthorFacets;
 
 /**
  * AuthorFacets Search Parameters
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_SolrAuthorFacets
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Params extends \VuFind\Search\Solr\Params
 {
@@ -52,7 +52,7 @@ class Params extends \VuFind\Search\Solr\Params
 
         // Force custom facet settings:
         $this->facetConfig = [];
-        $this->addFacet('authorStr');
+        $this->addFacet('author_facet');
         $this->setFacetOffset(($this->getPage() - 1) * $this->getLimit());
         $this->setFacetLimit($this->getLimit() * 10);
         // Sorting - defaults to off with unlimited facets, so let's
@@ -70,7 +70,7 @@ class Params extends \VuFind\Search\Solr\Params
      * @param \Zend\StdLib\Parameters $request Parameter object representing user
      * request.
      *
-     * @return boolean True if search settings were found, false if not.
+     * @return bool True if search settings were found, false if not.
      */
     protected function initBasicSearch($request)
     {

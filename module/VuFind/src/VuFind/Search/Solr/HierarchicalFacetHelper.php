@@ -17,26 +17,27 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Solr;
 
 use VuFind\I18n\TranslatableString;
+use VuFind\Search\UrlQueryHelper;
 
 /**
  * Functions for manipulating facets
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class HierarchicalFacetHelper
 {
@@ -85,6 +86,7 @@ class HierarchicalFacetHelper
      * @param string    $facet     Facet name
      * @param array     $facetList Facet list
      * @param UrlHelper $urlHelper Query URL helper for building facet URLs
+     * @param bool      $escape    Whether to escape URLs
      *
      * @return array Facet hierarchy
      *
@@ -92,15 +94,14 @@ class HierarchicalFacetHelper
      * converting-a-flat-array-with-parent-ids-to-a-nested-tree/
      * Based on this example
      */
-    public function buildFacetArray($facet, $facetList, $urlHelper = false)
-    {
-        // getParamArray() is expensive, so call it just once and pass it on
-        $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
+    public function buildFacetArray($facet, $facetList, $urlHelper = false,
+        $escape = true
+    ) {
         // Create a keyed (for conversion to hierarchical) array of facet data
         $keyedList = [];
         foreach ($facetList as $item) {
             $keyedList[$item['value']] = $this->createFacetItem(
-                $facet, $item, $urlHelper, $paramArray
+                $facet, $item, $urlHelper, $escape
             );
         }
 
@@ -175,16 +176,14 @@ class HierarchicalFacetHelper
     /**
      * Create an item for the hierarchical facet array
      *
-     * @param string         $facet      Facet name
-     * @param array          $item       Facet item received from Solr
-     * @param UrlQueryHelper $urlHelper  UrlQueryHelper for creating facet
-     * url's
-     * @param array          $paramArray URL parameters
-     * active children
+     * @param string         $facet     Facet name
+     * @param array          $item      Facet item received from Solr
+     * @param UrlQueryHelper $urlHelper UrlQueryHelper for creating facet URLs
+     * @param bool           $escape    Whether to escape URLs
      *
      * @return array Facet item
      */
-    protected function createFacetItem($facet, $item, $urlHelper, $paramArray)
+    protected function createFacetItem($facet, $item, $urlHelper, $escape = true)
     {
         $href = '';
         $exclude = '';
@@ -192,16 +191,15 @@ class HierarchicalFacetHelper
         if ($urlHelper !== false) {
             if ($item['isApplied']) {
                 $href = $urlHelper->removeFacet(
-                    $facet, $item['value'], true, $item['operator'], $paramArray
-                );
+                    $facet, $item['value'], $item['operator']
+                )->getParams($escape);
             } else {
                 $href = $urlHelper->addFacet(
-                    $facet, $item['value'], $item['operator'], $paramArray
-                );
+                    $facet, $item['value'], $item['operator']
+                )->getParams($escape);
             }
-            $exclude = $urlHelper->addFacet(
-                $facet, $item['value'], 'NOT', $paramArray
-            );
+            $exclude = $urlHelper->addFacet($facet, $item['value'], 'NOT')
+                ->getParams($escape);
         }
 
         $displayText = $item['displayText'];
@@ -244,7 +242,7 @@ class HierarchicalFacetHelper
      *
      * @param array $list Facet list
      *
-     * @return boolean Whether any items are applied (for recursive calls)
+     * @return bool Whether any items are applied (for recursive calls)
      */
     protected function updateAppliedChildrenStatus($list)
     {
@@ -252,7 +250,7 @@ class HierarchicalFacetHelper
         foreach ($list as &$item) {
             $item['hasAppliedChildren'] = !empty($item['children'])
                 && $this->updateAppliedChildrenStatus($item['children']);
-            if ($item['isApplied']) {
+            if ($item['isApplied'] || $item['hasAppliedChildren']) {
                 $result = true;
             }
         }

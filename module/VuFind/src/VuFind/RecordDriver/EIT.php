@@ -17,24 +17,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Julia Bauder <bauderj@grinnell.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
 
 /**
  * Model for records retrieved via EBSCO's EIT API.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Julia Bauder <bauderj@grinnell.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 class EIT extends SolrDefault
 {
@@ -83,9 +83,15 @@ class EIT extends SolrDefault
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
      * @return array
      */
-    public function getAllSubjectHeadings()
+    public function getAllSubjectHeadings($extended = false)
     {
         $su = isset($this->controlInfo['artinfo']['su'])
             ? $this->controlInfo['artinfo']['su'] : [];
@@ -94,7 +100,9 @@ class EIT extends SolrDefault
         // format, so we'll just send each value as a single chunk.
         $retval = [];
         foreach ($su as $s) {
-            $retval[] = [$s];
+            $retval[] = $extended
+                ? ['heading' => [$s], 'type' => '', 'source' => '']
+                : [$s];
         }
         return $retval;
     }
@@ -155,31 +163,6 @@ class EIT extends SolrDefault
     }
 
     /**
-     * Deduplicate author information into associative array with main/corporate/
-     * secondary keys.
-     *
-     * @return array
-     */
-    public function getDeduplicatedAuthors()
-    {
-        $authors = [
-            'main' => $this->getPrimaryAuthor(),
-            'secondary' => $this->getSecondaryAuthors()
-        ];
-
-        // The secondary author array may contain a corporate or primary author;
-        // let's be sure we filter out duplicate values.
-        $duplicates = [];
-        if (!empty($authors['main'])) {
-            $duplicates[] = $authors['main'];
-        }
-        if (!empty($duplicates)) {
-            $authors['secondary'] = array_diff($authors['secondary'], $duplicates);
-        }
-        return $authors;
-    }
-
-    /**
      * Get the edition of the current record.
      *
      * @return string
@@ -210,15 +193,15 @@ class EIT extends SolrDefault
      *
      * @return string
      */
-    public function getPrimaryAuthor()
+    public function getPrimaryAuthors()
     {
         if (isset($this->controlInfo['artinfo']['aug']['au'])
             && is_array($this->controlInfo['artinfo']['aug']['au'])
         ) {
-            return $this->controlInfo['artinfo']['aug']['au']['0'];
+            return $this->controlInfo['artinfo']['aug']['au'];
         } else {
             return isset($this->controlInfo['artinfo']['aug']['au'])
-                ? $this->controlInfo['artinfo']['aug']['au'] : '';
+                ? [$this->controlInfo['artinfo']['aug']['au']] : [];
         }
 
     }
@@ -250,17 +233,6 @@ class EIT extends SolrDefault
     {
         return isset($this->controlInfo['pubinfo']['pub'])
             ? [$this->controlInfo['pubinfo']['pub']] : [];
-    }
-
-    /**
-     * Get an array of all secondary authors (complementing getPrimaryAuthor()).
-     *
-     * @return array
-     */
-    public function getSecondaryAuthors()
-    {
-        return is_array($this->controlInfo['artinfo']['aug']['au'])
-            ? $this->controlInfo['artinfo']['aug']['au'] : [];
     }
 
     /**

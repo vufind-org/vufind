@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category EBSCOIndustries
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\EDS;
 
@@ -39,7 +39,7 @@ use Zend\Http\Client\Adapter\Curl as CurlAdapter;
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
 {
@@ -47,6 +47,7 @@ class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
 
      /**
      * The HTTP Request object to execute EDS API transactions
+      *
      * @var Zend2HttpClient
      */
     protected $client;

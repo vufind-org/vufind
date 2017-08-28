@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Josef Moravec <josef.moravec@knihovna-uo.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 use PDO, PDOException, VuFind\Exception\ILS as ILSException;
@@ -31,11 +31,11 @@ use PDO, PDOException, VuFind\Exception\ILS as ILSException;
 /**
  * VuFind Driver for Clavius SQL (version: 0.1 dev)
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Josef Moravec <josef.moravec@knihovna-uo.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class ClaviusSQL extends AbstractBase
 {
@@ -84,7 +84,7 @@ class ClaviusSQL extends AbstractBase
     /**
      * How many days is new document hidden in catalog
      *
-     * @var integer
+     * @var int
      */
     protected $hideNewItemsDays;
 

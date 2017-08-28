@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db;
 use Zend\Db\Adapter\Adapter;
@@ -31,11 +31,11 @@ use Zend\Db\Adapter\Adapter;
 /**
  * Database utility class.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class AdapterFactory
 {
@@ -146,7 +146,13 @@ class AdapterFactory
         list($type, $details) = explode('://', $connectionString);
         preg_match('/(.+)@([^@]+)\/(.+)/', $details, $matches);
         $credentials = isset($matches[1]) ? $matches[1] : null;
-        $host = isset($matches[2]) ? $matches[2] : null;
+        if (isset($matches[2])) {
+            if (strpos($matches[2], ':') !== false) {
+                list($host, $port) = explode(':', $matches[2]);
+            } else {
+                $host = $matches[2];
+            }
+        }
         $dbName = isset($matches[3]) ? $matches[3] : null;
         if (strstr($credentials, ':')) {
             list($username, $password) = explode(':', $credentials, 2);
@@ -160,12 +166,14 @@ class AdapterFactory
         // Set up default options:
         $options = [
             'driver' => $this->getDriverName($type),
-            'hostname' => $host,
+            'hostname' => isset($host) ? $host : null,
             'username' => $username,
             'password' => $password,
             'database' => $dbName
         ];
-
+        if (!empty($port)) {
+            $options['port'] = $port;
+        }
         return $this->getAdapterFromOptions($options);
     }
 }

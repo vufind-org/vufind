@@ -1,19 +1,19 @@
 <?
-  $this->headScript()->appendFile("vendor/d3.js");
+  $this->headScript()->appendFile("vendor/d3.min.js");
 
   $visualFacetSet = $this->recommend->getPivotFacetSet();
 
   if (isset($visualFacetSet->children)) {
-    $flarechildren = array();
+    $flarechildren = [];
 
     foreach ($visualFacetSet->children as $toplevelfacet) {
-      $toplevelinfo = array();
-      $toplevelchildren = array();
+      $toplevelinfo = [];
+      $toplevelchildren = [];
       $toplevelinfo['name'] = $toplevelfacet['value'];
       $toplevelinfo['field'] = $toplevelfacet['field'];
       $toplevelinfo['size'] = $toplevelfacet['count'];
       foreach($toplevelfacet['pivot'] as $secondlevelfacet) {
-        $secondlevelinfo = array();
+        $secondlevelinfo = [];
         $secondlevelinfo['name'] = $secondlevelfacet['value'];
         $secondlevelinfo['size'] = $secondlevelfacet['count'];
         $secondlevelinfo['field'] = $secondlevelfacet['field'];
@@ -30,8 +30,7 @@
 
 <? if (isset($visualFacetSet)): ?>
   <script type="text/javascript">
-  <? $pivotdata = json_encode($visualFacetSet);
-  echo "var pivotdata = " . $pivotdata . ";"; ?>
+  var pivotdata = <?=json_encode($visualFacetSet);?>;
   jQuery(document).ready(function(data) {
   if (!d3.select("#visualResults").empty()) {
     $('.limitSelect').css('display', 'none');

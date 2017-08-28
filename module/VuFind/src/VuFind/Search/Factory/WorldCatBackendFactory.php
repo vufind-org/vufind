@@ -18,13 +18,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Factory;
 
@@ -40,11 +40,11 @@ use Zend\ServiceManager\FactoryInterface;
 /**
  * Factory for WorldCat backends.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class WorldCatBackendFactory implements FactoryInterface
 {
@@ -70,6 +70,13 @@ class WorldCatBackendFactory implements FactoryInterface
     protected $config;
 
     /**
+     * WorldCat configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $wcConfig;
+
+    /**
      * Create the backend.
      *
      * @param ServiceLocatorInterface $serviceLocator Superior service manager
@@ -80,6 +87,8 @@ class WorldCatBackendFactory implements FactoryInterface
     {
         $this->serviceLocator = $serviceLocator;
         $this->config = $this->serviceLocator->get('VuFind\Config')->get('config');
+        $this->wcConfig = $this->serviceLocator
+            ->get('VuFind\Config')->get('WorldCat');
         if ($this->serviceLocator->has('VuFind\Logger')) {
             $this->logger = $this->serviceLocator->get('VuFind\Logger');
         }
@@ -112,8 +121,11 @@ class WorldCatBackendFactory implements FactoryInterface
     {
         $wsKey = isset($this->config->WorldCat->apiKey)
             ? $this->config->WorldCat->apiKey : null;
+        $connectorOptions = isset($this->wcConfig->Connector)
+            ? $this->wcConfig->Connector->toArray() : [];
         $connector = new Connector(
-            $wsKey, $this->serviceLocator->get('VuFind\Http')->createClient()
+            $wsKey, $this->serviceLocator->get('VuFind\Http')->createClient(),
+            $connectorOptions
         );
         $connector->setLogger($this->logger);
         return $connector;

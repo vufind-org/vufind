@@ -17,14 +17,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\OpenUrl, Zend\Config\Config, InvalidArgumentException;
@@ -32,12 +32,12 @@ use VuFind\View\Helper\Root\OpenUrl, Zend\Config\Config, InvalidArgumentExceptio
 /**
  * OpenUrl Test Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
@@ -295,7 +295,9 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
         if (null === $mockContext) {
             $mockContext = $this->getMockContext();
         }
-        $openUrl = new OpenUrl($mockContext, $rules, new Config($config));
+        $mockPm = $this->getMockBuilder('VuFind\Resolver\Driver\PluginManager')
+            ->getMock();
+        $openUrl = new OpenUrl($mockContext, $rules, $mockPm, new Config($config));
         $openUrl->setView($this->getPhpRenderer());
         return $openUrl;
     }

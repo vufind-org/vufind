@@ -59,19 +59,12 @@
                 <xsl:if test="//dc:creator">
                     <xsl:for-each select="//dc:creator">
                         <xsl:if test="normalize-space()">
-                            <!-- author is not a multi-valued field, so we'll put
-                                 first value there and subsequent values in author2.
-                             -->
+                            <field name="author">
+                                <xsl:value-of select="normalize-space()"/>
+                            </field>
+                            <!-- use first author value for sorting -->
                             <xsl:if test="position()=1">
-                                <field name="author">
-                                    <xsl:value-of select="normalize-space()"/>
-                                </field>
-                                <field name="author-letter">
-                                    <xsl:value-of select="normalize-space()"/>
-                                </field>
-                            </xsl:if>
-                            <xsl:if test="position()>1">
-                                <field name="author2">
+                                <field name="author_sort">
                                     <xsl:value-of select="normalize-space()"/>
                                 </field>
                             </xsl:if>
@@ -92,6 +85,13 @@
                     </field>
                     <field name="title_sort">
                         <xsl:value-of select="php:function('VuFind::stripArticles', string(//dc:title[normalize-space()]))"/>
+                    </field>
+                </xsl:if>
+                
+                <!-- DESCRIPTION -->
+                <xsl:if test="//dc:description">
+                    <field name="description">
+                        <xsl:value-of select="//dc:description" />
                     </field>
                 </xsl:if>
 
