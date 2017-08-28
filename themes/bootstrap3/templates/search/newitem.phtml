@@ -19,7 +19,7 @@
       <? foreach ($this->ranges as $key => $range): ?>
         <label class="btn btn-primary<? if($key == 0): ?> active<? endif ?>">
           <input type="radio" name="range" id="newitem_range_<?=$this->escapeHtmlAttr($key)?>" value="<?=$this->escapeHtmlAttr($range)?>"<?=($key == 0) ? ' checked="checked"' : ''?>/>
-          <?=($range == 1) ? $this->transEsc('Yesterday') : $this->transEsc('Past') . ' ' . $this->escapeHtml($range) . ' ' . $this->transEsc('Days')?>
+          <?=($range == 1) ? $this->transEsc('Yesterday') : $this->transEsc('past_days', ['%%range%%' => $this->escapeHtml($range)])?>
         </label>
       <? endforeach; ?>
     </div>
