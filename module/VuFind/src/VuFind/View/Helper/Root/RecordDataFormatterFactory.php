@@ -103,7 +103,10 @@ class RecordDataFormatterFactory
             'Format', 'getFormats', 'RecordHelper',
             ['helperMethod' => 'getFormatList']
         );
-        $spec->setLine('Language', 'getLanguages');
+        $spec->setLine(
+            'Language', 'getLanguages', null,
+            ['translate' => true, 'translationTextDomain' => 'language::']
+        );
         $spec->setTemplateLine(
             'Published', 'getPublicationDetails', 'data-publicationDetails.phtml'
         );
@@ -166,7 +169,10 @@ class RecordDataFormatterFactory
                 ],
             ]
         );
-        $spec->setLine('Language', 'getLanguages');
+        $spec->setLine(
+            'Language', 'getLanguages', null,
+            ['translate' => true, 'translationTextDomain' => 'language::']
+        );
         $spec->setLine(
             'Format', 'getFormats', 'RecordHelper',
             ['helperMethod' => 'getFormatList']
@@ -244,7 +250,10 @@ class RecordDataFormatterFactory
             'Format', 'getFormats', 'RecordHelper',
             ['helperMethod' => 'getFormatList']
         );
-        $spec->setLine('Language', 'getLanguages');
+        $spec->setLine(
+            'Language', 'getLanguages', null,
+            ['translate' => true, 'translationTextDomain' => 'language::']
+        );
         $spec->setTemplateLine(
             'Published', 'getPublicationDetails', 'data-publicationDetails.phtml'
         );
