@@ -1100,11 +1100,19 @@ class AjaxController extends \VuFind\Controller\AjaxController
     {
         $this->disableSessionWrites();  // avoid session write timing bug
 
-        if (null === ($parent = $this->params()->fromQuery('parent'))) {
+        $reqParams = array_merge(
+            $this->params()->fromPost(), $this->params()->fromQuery()
+        );
+        if (empty($reqParams['parent'])) {
             return $this->handleError('getOrganisationInfo: missing parent');
         }
+        $parent = is_array($reqParams['parent'])
+            ? implode(',', $reqParams['parent']) : $reqParams['parent'];
 
-        $params = $this->params()->fromQuery('params');
+        if (empty($reqParams['params']['action'])) {
+            return $this->handleError('getOrganisationInfo: missing action');
+        }
+        $params = $reqParams['params'];
 
         $cookieName = 'organisationInfoId';
         $cookieManager = $this->serviceLocator->get('VuFind\CookieManager');
@@ -1131,8 +1139,10 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
         if ($action == 'lookup') {
-            $params['link'] = $this->params()->fromQuery('link') === '1';
-            $params['parentName'] = $this->params()->fromQuery('parentName');
+            $link = isset($reqParams['link']) ? $reqParams['link'] : '0';
+            $params['link'] = $link === '1';
+            $params['parentName'] = isset($reqParams['parentName'])
+                ? $reqParams['parentName'] : null;
         }
 
         $lang = $this->serviceLocator->get('VuFind\Translator')->getLocale();
@@ -1722,7 +1732,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
      *
      * @return \Zend\Http\Response
      */
-    protected function handleError($outputMsg, $logMsg, $httpStatus = 400)
+    protected function handleError($outputMsg, $logMsg = '', $httpStatus = 400)
     {
         $this->setLogger($this->serviceLocator->get('VuFind\Logger'));
         $this->logError(

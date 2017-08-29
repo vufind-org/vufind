@@ -675,18 +675,27 @@ finna.layout = (function() {
     };
 
     var getOrganisationPageLink = function(organisation, organisationName, link, callback) {
-        var url = VuFind.path + '/AJAX/JSON?method=getOrganisationInfo';
-        url += '&params[action]=lookup&link=' + (link ? '1' : '0') + '&parent=' + organisation;
+        var params = {
+            url: VuFind.path + '/AJAX/JSON?method=getOrganisationInfo',
+            dataType: 'json',
+            method: 'POST',
+            data: {
+                method: 'getOrganisationInfo',
+                'params[action]': 'lookup',
+                link: link ? '1' : '0',
+                parent: organisation
+            },
+        };
         if (organisationName) {
-           url += '&parentName=' + organisationName;
+           params.parentName = new String(organisationName);
         }
-        $.getJSON(url)
+        $.ajax(params)
             .done(function(response) {
                 callback(response.data.items);
             })
             .fail(function() {
+                callback(false);
             });
-        return callback(false);
     };
 
     var initOrganisationInfoWidgets = function() {

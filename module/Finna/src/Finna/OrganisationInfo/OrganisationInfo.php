@@ -306,7 +306,6 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
     protected function lookupAction($parent, $link = false, $parentName = null)
     {
         // Check if consortium is found in Kirjastohakemisto
-        $parents = explode(',', $parent);
         $params = [
             'finna:id' => $parent,
             'lang' => $this->language
