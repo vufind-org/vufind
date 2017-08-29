@@ -67,7 +67,7 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
      * @param PermissionManager       $pm  Permission Manager
      * @param PermissionDeniedManager $pdm Permission Denied Manager
      */
-    public function  __construct(PermissionManager $pm, PermissionDeniedManager $pdm)
+    public function __construct(PermissionManager $pm, PermissionDeniedManager $pdm)
     {
         $this->permissionManager = $pm;
         $this->permissionDeniedManager = $pdm;
@@ -76,6 +76,10 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
     /**
      * Check if a permission is denied; if so, throw an exception or return an
      * error response as configured in permissionBehavior.ini.
+     *
+     * @param string $permission      Permission to check
+     * @param string $defaultBehavior Default behavior to use if none configured
+     * (null to use default configured in the manager, false to take no action).
      *
      * @return mixed
      */
