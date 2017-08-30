@@ -48,6 +48,12 @@ function saveQueueAjax(obj, el) {
         if (response.data.hasOwnProperty(id)) {
           displaySaveStatus(response.data[id], saveStatusEls[id]);
         }
+        // Remove populated ids from the queue
+        for (var j = 0; j < saveStatusObjs; j++) {
+          if (saveStatusObjs[j].id === id) {
+            saveStatusObjs.splice(j, 1);
+          }
+        }
       }
       saveStatusObjs = [];
     })
@@ -87,9 +93,9 @@ function checkSaveStatuses(_container) {
 
   var ajaxItems = container.find('.result,.record');
   for (var i = 0; i < ajaxItems.length; i++) {
-    var $id = $(ajaxItems[i]).find('.hiddenId').val();
-    var $source = $(ajaxItems[i]).find('.hiddenSource').val();
-    if ($id.length === 0 || $source.length === 0) {
+    var $id = $(ajaxItems[i]).find('.hiddenId');
+    var $source = $(ajaxItems[i]).find('.hiddenSource');
+    if ($id.length > 0 && $source.length > 0) {
       var idval = $id.val();
       saveQueueAjax({
         id: idval,

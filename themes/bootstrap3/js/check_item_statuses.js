@@ -90,9 +90,9 @@ function itemQueueAjax(id, el) {
     })
     .done(function checkItemStatusDone(response) {
       for (var j = 0; j < response.data.length; j++) {
-        displayItemStatus(response.data[j], itemStatusEls[response.data[j].id + '']);
+        displayItemStatus(response.data[j], itemStatusEls[response.data[j].id]);
+        itemStatusIds.splice(itemStatusIds.indexOf(response.data[j].id), 1);
       }
-      itemStatusIds = [];
     })
     .fail(function checkItemStatusFail(response, textStatus) {
       itemStatusFail(response, textStatus);
