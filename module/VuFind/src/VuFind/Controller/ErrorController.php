@@ -50,4 +50,18 @@ class ErrorController extends AbstractActionController
         $this->getResponse()->setStatusCode(503);
         return new \Zend\View\Model\ViewModel();
     }
+
+    /**
+     * Display permission denied message.
+     *
+     * @return mixed
+     */
+    public function permissionDeniedAction()
+    {
+        $this->getResponse()->setStatusCode(403);
+        return new \Zend\View\Model\ViewModel(
+            ['msg' => $this->params()->fromQuery('msg')]
+        );
+    }
+
 }
