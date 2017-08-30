@@ -77,7 +77,7 @@ class Backend extends AbstractBackend
         if (null !== $factory) {
             $this->setRecordCollectionFactory($factory);
         }
-        $this->connector    = $connector;
+        $this->connector = $connector;
     }
 
     /**
@@ -129,7 +129,7 @@ class Backend extends AbstractBackend
      */
     public function retrieve($id, ParamBag $params = null)
     {
-        // TODO
+        throw new \Exception('retrieve() not supported by BrowZine.');
     }
 
     /**
