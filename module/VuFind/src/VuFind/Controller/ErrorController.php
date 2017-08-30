@@ -47,7 +47,8 @@ class ErrorController extends AbstractActionController
      */
     public function unavailableAction()
     {
-        // no special action necessary
+        $this->getResponse()->setStatusCode(503);
+        return new \Zend\View\Model\ViewModel();
     }
 
     /**
