@@ -34,7 +34,6 @@ use VuFindSearch\Backend\BrowZine\QueryBuilder;
 use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
 use Zend\Http\Client\Adapter\Test as TestAdapter;
 use Zend\Http\Client as HttpClient;
-use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use InvalidArgumentException;
 
