@@ -107,6 +107,7 @@ class AbstractBase extends AbstractActionController
     protected function attachDefaultListeners()
     {
         parent::attachDefaultListeners();
+
         // Attach preDispatch event if we need to check permissions.
         if ($this->accessPermission) {
             $events = $this->getEventManager();
@@ -266,10 +267,10 @@ class AbstractBase extends AbstractActionController
      *
      * @return mixed
      */
-    protected function forceLogin($msg = null, $extras = [], $forward = true)
+    public function forceLogin($msg = null, $extras = [], $forward = true)
     {
         // Set default message if necessary.
-        if (is_null($msg)) {
+        if (null === $msg) {
             $msg = 'You must be logged in first';
         }
 

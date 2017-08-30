@@ -2,6 +2,17 @@
   $this->headTitle($this->translate('Browse the Collection Alphabetically'));
   $this->layout()->breadcrumbs = '<a href="' . $this->url('alphabrowse-home') . '">' . $this->transEsc('Browse Alphabetically') . '</a>';
   $baseQuery = ['source' => $this->source, 'from' => $this->from];
+
+  // Set up upper search box if necessary:
+  if ($this->searchbox()->alphaBrowseOptionsEnabled()) {
+    $this->layout()->searchbox = $this->context($this)->renderInContext(
+        'search/searchbox.phtml',
+        [
+          'lookfor' => $this->from,
+          'searchIndex' => 'AlphaBrowse:' . $this->source,
+        ]
+    );
+  }
 ?>
 
 <? /* LOAD THE LINK INFORMATION INTO $pageLinks, similar to smarty's {capture} */ ?>
@@ -22,17 +33,21 @@
 <? $pageLinks = ob_get_contents(); ?>
 <? ob_end_clean(); ?>
 
-<form class="form-inline" method="get" action="<?=$this->url('alphabrowse-home')?>" name="alphaBrowseForm" id="alphaBrowseForm">
-  <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
-  <select id="alphaBrowseForm_source" name="source" class="form-control">
-    <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
-      <option value="<?=$this->escapeHtmlAttr($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
-    <? endforeach; ?>
-  </select>
-  <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
-  <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>" class="form-control"/>
-  <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Browse') ?>"/>
-</form>
+<? /* If the top search box is not configured to show alphabrowse, or if no option
+      is selected yet, set up a separate form: */ ?>
+<? if (!$this->searchbox()->alphaBrowseOptionsEnabled() || empty($this->source)): ?>
+  <form class="form-inline" method="get" action="<?=$this->url('alphabrowse-home')?>" name="alphaBrowseForm" id="alphaBrowseForm">
+    <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
+    <select id="alphaBrowseForm_source" name="source" class="form-control">
+      <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
+        <option value="<?=$this->escapeHtmlAttr($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
+      <? endforeach; ?>
+    </select>
+    <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
+    <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>" class="form-control"/>
+    <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Browse') ?>"/>
+  </form>
+<? endif; ?>
 
 <? if ($this->result): ?>
   <?=$pageLinks ?>
