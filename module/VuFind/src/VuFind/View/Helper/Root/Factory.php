@@ -452,11 +452,17 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config');
         $mainConfig = $config->get('config');
+        $searchboxConfig = $config->get('searchbox')->toArray();
+        $includeAlphaOptions
+            = isset($searchboxConfig['General']['includeAlphaBrowse'])
+            && $searchboxConfig['General']['includeAlphaBrowse'];
         return new SearchBox(
             $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager'),
-            $config->get('searchbox')->toArray(),
+            $searchboxConfig,
             isset($mainConfig->SearchPlaceholder)
-                ? $mainConfig->SearchPlaceholder->toArray() : []
+                ? $mainConfig->SearchPlaceholder->toArray() : [],
+            $includeAlphaOptions && isset($mainConfig->AlphaBrowse_Types)
+                ? $mainConfig->AlphaBrowse_Types->toArray() : []
         );
     }
 
