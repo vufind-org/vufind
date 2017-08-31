@@ -1,3 +1,6 @@
+/*global VuFind */
+/*exported bindModernCheckboxes */
+
 // Highlight entire element when checked
 function toggleResultChecked(box) {
   if (box.checked) {
