@@ -115,7 +115,7 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
     {
         // link_type => 'All'
         $this->changeConfigs([
-            'config'=> [
+            'config' => [
                 'Hierarchy' => [
                     'showTree' => true
                 ]
