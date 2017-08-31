@@ -1,6 +1,6 @@
 /*global VuFind, checkItemStatuses, checkSaveStatuses */
 VuFind.combinedSearch = (function CombinedSearch() {
-  var init = function init(container, url) {
+  var setup = function setup(container, url) {
     container.load(url, '', function containerLoad(responseText) {
       if (responseText.length === 0) {
         container.hide();
@@ -8,14 +8,12 @@ VuFind.combinedSearch = (function CombinedSearch() {
         VuFind.openurl.init(container);
         checkItemStatuses(container);
         checkSaveStatuses(container);
+        VuFind.emit('vf-combined-ajax');
       }
     });
   };
 
-  var my = {
-    init: init
+  return {
+    setup: setup
   };
-
-  return my;
-
 })();

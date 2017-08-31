@@ -23,6 +23,10 @@ function bindModernCheckboxes(_container) {
   });
 }
 
+VuFind.listen('vf-combined-ajax', function modernCombinedCheckboxes(e) {
+  bindModernCheckboxes(e.detail);
+});
+
 $(document).ready(function modernTweaks() {
   bindModernCheckboxes();
 });
