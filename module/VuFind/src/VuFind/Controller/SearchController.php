@@ -578,9 +578,10 @@ class SearchController extends AbstractSearch
         // Check if we have facet results cached, and build them if we don't.
         $cache = $this->serviceLocator->get('VuFind\CacheManager')
             ->getCache('object');
+        $language = $this->serviceLocator->get('VuFind\Translator')->getLocale();
         $hiddenFilters = $this->getActiveHiddenFilters();
         $hiddenFiltersHash = md5(json_encode($hiddenFilters));
-        $cacheName .= "List-$hiddenFiltersHash";
+        $cacheName .= "List-$hiddenFiltersHash-$language";
         if (!($list = $cache->getItem($cacheName))) {
             // Use advanced facet settings to get summary facets on the front page;
             // we may want to make this more flexible later.  Also keep in mind that

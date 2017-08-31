@@ -47,6 +47,7 @@ class PrimorecordController extends AbstractRecord
     public function __construct(ServiceLocatorInterface $sm)
     {
         // Override some defaults:
+        $this->accessPermission = 'access.PrimoModule';
         $this->searchClassId = 'Primo';
         $this->fallbackDefaultTab = 'Description';
 
