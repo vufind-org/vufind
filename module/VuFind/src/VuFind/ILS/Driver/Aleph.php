@@ -880,6 +880,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         );
         foreach ($xml->xpath('//loan') as $item) {
             $z36 = $item->z36;
+            $z36h = $item->z36h;
             $z13 = $item->z13;
             $z30 = $item->z30;
             $group = $item->xpath('@href');
@@ -892,21 +893,23 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $reqnum = (string) $z36->{'z36-doc-number'}
                 . (string) $z36->{'z36-item-sequence'}
                 . (string) $z36->{'z36-sequence'};
-            $due = $returned = null;
+
+            $due = $returned = $issued = null;
             if ($history) {
-                $due = $item->z36h->{'z36h-due-date'};
-                $returned = $item->z36h->{'z36h-returned-date'};
+                $due = (string) $z36->{'z36h-due-date'};
+                $returned = (string) $z36h->{'z36h-returned-date'};
+                $issued = (string) $z36h->{'z36h-loan-date'};
             } else {
                 $due = (string) $z36->{'z36-due-date'};
+                $issued = (string) $z36->{'z36-loan-date'};
             }
-            //$loaned = (string) $z36->{'z36-loan-date'};
             $title = (string) $z13->{'z13-title'};
             $author = (string) $z13->{'z13-author'};
             $isbn = (string) $z13->{'z13-isbn-issn'};
             $barcode = (string) $z30->{'z30-barcode'};
             $transList[] = [
                 //'type' => $type,
-                'id' => ($history) ? $z30->{'z30-doc-number'} : $this->barcodeToID($barcode),
+                'id' => ($history) ? (string) $z30->{'z30-doc-number'} : $this->barcodeToID($barcode),
                 'item_id' => $group,
                 'location' => $location,
                 'title' => $title,
@@ -914,14 +917,16 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 'isbn' => [$isbn],
                 'reqnum' => $reqnum,
                 'barcode' => $barcode,
+                'issuedate' => $this->parseDate($issued),
                 'duedate' => $this->parseDate($due),
                 'returned' => $this->parseDate($returned),
                 //'holddate' => $holddate,
                 //'delete' => $delete,
-                'renewable' => true,
+                'renewable' => !$history,
                 //'create' => $this->parseDate($create)
             ];
         }
+
         return $transList;
     }
 
