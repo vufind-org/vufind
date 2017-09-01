@@ -1209,6 +1209,61 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Send list of historic loans to view
+     *
+     * @return mixed
+     */
+    public function historicloansAction()
+    {
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        // Connect to the ILS:
+        $catalog = $this->getILS();
+
+        // Get checked out item details:
+        $result = $catalog->getMyHistory($patron);
+
+        // Get page size:
+        $config = $this->getConfig();
+        $limit = isset($config->Catalog->historic_loan_page_size)
+            ? $config->Catalog->historic_loan_page_size : 50;
+
+        // Build paginator if needed:
+        if ($limit > 0 && $limit < count($result)) {
+            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($result);
+            $paginator = new \Zend\Paginator\Paginator($adapter);
+            $paginator->setItemCountPerPage($limit);
+            $paginator->setCurrentPageNumber($this->params()->fromQuery('page', 1));
+            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
+        } else {
+            $paginator = false;
+            $pageStart = 0;
+            $pageEnd = count($result);
+        }
+
+        $transactions = $hiddenTransactions = [];
+        foreach ($result as $i => $current) {
+            // Build record driver (only for the current visible page):
+            if ($i >= $pageStart && $i <= $pageEnd) {
+                $transactions[] = $this->getDriverForILSRecord($current);
+            } else {
+                $hiddenTransactions[] = $current;
+            }
+        }
+
+        return $this->createViewModel(
+            compact(
+                'transactions', 'paginator',
+                'hiddenTransactions'
+            )
+        );
+    }
+
+    /**
      * Send list of fines to view
      *
      * @return mixed
