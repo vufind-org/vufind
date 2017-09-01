@@ -4,8 +4,9 @@
   $this->headScript()->appendFile('map_tab_ol.js');
   $this->headLink()->appendStylesheet('vendor/ol/ol.css');
   $mapTabData = $this->tab->getMapTabData();
+  $mapGraticule = $this->tab->getMapGraticule();
   $popupTitle = $this->transEsc('map_results_label');
-  $params = [json_encode($mapTabData), json_encode($popupTitle)];
+  $params = [json_encode($mapTabData), json_encode($popupTitle), json_encode($mapGraticule)];
   $jsParams = implode(', ', $params);
   $jsLoad = "loadMapTab(" . $jsParams . ");"; ?>
   <div id="wrap" style="width: 674px; height: 479px">

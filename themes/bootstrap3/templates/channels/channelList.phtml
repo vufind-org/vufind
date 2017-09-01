@@ -4,17 +4,19 @@
 <? $this->headScript()->appendFile('vendor/jquery.dotdotdot.min.js'); ?>
 <?
   $this->jsTranslations()->addStrings([
+    'channel_browse' => 'channel_browse',
     'channel_expand' => 'channel_expand',
     'channel_search' => 'channel_search',
+    'nohit_heading' => 'nohit_heading',
     'View Record' => 'View Record',
   ]);
 ?>
 
 <? if (empty($token)): ?>
   <form action="<?=$this->url('channels-search')?>" class="form-inline">
-    Search for more channels:
+    <?=$this->transEsc('channel_searchbox_label')?>
     <input type="text" name="lookfor" class="form-control" value="<?=$this->escapeHtmlAttr($this->lookfor) ?>"/>
-    <input type="submit" class="btn btn-default" />
+    <input type="submit" value="<?=$this->escapeHtmlAttr($this->translate('Submit'))?>" class="btn btn-default" />
   </form>
 <? endif; ?>
 
