@@ -80,16 +80,30 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
      * @param string $permission      Permission to check
      * @param string $defaultBehavior Default behavior to use if none configured
      * (null to use default configured in the manager, false to take no action).
+     * @param bool   $passIfUndefined Should the check pass if no rules are
+     * defined for $permission in permissions.ini?
      *
      * @return mixed
      */
-    public function check($permission, $defaultBehavior = null)
-    {
+    public function check($permission, $defaultBehavior = null,
+        $passIfUndefined = false
+    ) {
+        // If no permission rule is defined and we're only checking defined
+        // permissions, bail out now....
+        if (!$this->permissionManager->permissionRuleExists($permission)
+            && $passIfUndefined
+        ) {
+            return null;
+        }
+
         // Make sure the current user has permission to access the module:
         if ($this->permissionManager->isAuthorized($permission) !== true) {
             $dl = $this->permissionDeniedManager->getDeniedControllerBehavior(
                 $permission, $defaultBehavior
             );
+            if ($dl === false) {
+                return null;
+            }
             $exceptionDescription = isset($dl['exceptionMessage'])
                 ? $dl['exceptionMessage'] : 'Access denied.';
             switch (strtolower($dl['action'])) {

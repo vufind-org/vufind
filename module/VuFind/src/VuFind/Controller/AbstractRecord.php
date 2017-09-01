@@ -327,7 +327,7 @@ class AbstractRecord extends AbstractBase
         }
 
         // Check permission:
-        $response = $this->permission()->check('feature.Favorites', 'promptLogin');
+        $response = $this->permission()->check('feature.Favorites', false);
         if (is_object($response)) {
             return $response;
         }
