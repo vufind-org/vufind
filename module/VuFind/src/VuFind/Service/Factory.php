@@ -828,10 +828,12 @@ class Factory
             ? $config->SearchTabs->toArray() : [];
         $filterConfig = isset($config->SearchTabsFilters)
             ? $config->SearchTabsFilters->toArray() : [];
+        $permissionConfig = isset($config->SearchTabsPermissions)
+            ? $config->SearchTabsPermissions->toArray() : [];
         return new \VuFind\Search\SearchTabsHelper(
             $sm->get('VuFind\SearchResultsPluginManager'),
             $tabConfig, $filterConfig,
-            $sm->get('Application')->getRequest()
+            $sm->get('Application')->getRequest(), $permissionConfig
         );
     }
 
