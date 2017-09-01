@@ -591,6 +591,38 @@ class Factory
     }
 
     /**
+     * Construct the PermissionDeniedManager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Role\PermissionDeniedManager
+     */
+    public static function getPermissionDeniedManager(ServiceManager $sm)
+    {
+        return new \VuFind\Role\PermissionDeniedManager(
+            $sm->get('VuFind\Config')->get('permissionBehavior')
+        );
+    }
+
+    /**
+     * Construct the PermissionManager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Role\PermissionManager
+     */
+    public static function getPermissionManager(ServiceManager $sm)
+    {
+            $permManager = new \VuFind\Role\PermissionManager(
+                $sm->get('VuFind\Config')->get('permissions')->toArray()
+            );
+            $permManager->setAuthorizationService(
+                $sm->get('ZfcRbac\Service\AuthorizationService')
+            );
+            return $permManager;
+    }
+
+    /**
      * Construct the RecordDriver Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.

@@ -22,6 +22,7 @@ return array(
             'ils' => 'VuFind\View\Helper\Root\Factory::getIls',
             'jstranslations' => 'VuFind\View\Helper\Root\Factory::getJsTranslations',
             'keepalive' => 'VuFind\View\Helper\Root\Factory::getKeepAlive',
+            'permission' => 'VuFind\View\Helper\Root\Factory::getPermission',
             'proxyurl' => 'VuFind\View\Helper\Root\Factory::getProxyUrl',
             'openurl' => 'VuFind\View\Helper\Root\Factory::getOpenUrl',
             'piwik' => 'VuFind\View\Helper\Root\Factory::getPiwik',

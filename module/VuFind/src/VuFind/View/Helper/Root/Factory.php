@@ -235,6 +235,22 @@ class Factory
     }
 
     /**
+     * Construct the Permission helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Permission
+     */
+    public static function getPermission(ServiceManager $sm)
+    {
+        $ld = new Permission(
+            $sm->getServiceLocator()->get('VuFind\Role\PermissionManager'),
+            $sm->getServiceLocator()->get('VuFind\Role\PermissionDeniedManager')
+        );
+        return $ld;
+    }
+
+    /**
      * Construct the Piwik helper.
      *
      * @param ServiceManager $sm Service manager.
