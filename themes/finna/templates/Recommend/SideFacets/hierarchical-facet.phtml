@@ -1,5 +1,4 @@
 <? $this->headScript()->appendFile('vendor/jsTree/jstree.min.js'); ?>
-<? $sort = isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : ''; ?>
 <? if (!in_array($title, $collapsedFacets)): ?>
     <?
     $script = <<<JS
@@ -25,5 +24,5 @@ JS;
      data-exclude="<?=$allowExclude?>"
      data-operator="<?=$this->recommend->getFacetOperator($title)?>"
      data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
-     data-sort="<?=isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : ''?>">
+     data-sort="<?=isset($this->sortOptions) ? $this->sortOptions : ''?>">
 </div>
