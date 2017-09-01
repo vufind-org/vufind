@@ -466,6 +466,12 @@ class MyResearchController extends AbstractBase
      */
     public function favoritesAction()
     {
+        // Check permission:
+        $response = $this->permission()->check('feature.Favorites', 'promptLogin');
+        if (is_object($response)) {
+            return $response;
+        }
+
         // Favorites is the same as MyList, but without the list ID parameter.
         return $this->forwardTo('MyResearch', 'MyList');
     }
@@ -704,12 +710,6 @@ class MyResearchController extends AbstractBase
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
             throw new ForbiddenException('Lists disabled');
-        }
-
-        // Check permission:
-        $response = $this->permission()->check('feature.Favorites', 'promptLogin');
-        if (is_object($response)) {
-            return $response;
         }
 
         // Check for "delete item" request; parameter may be in GET or POST depending
