@@ -906,7 +906,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $barcode = (string) $z30->{'z30-barcode'};
             $transList[] = [
                 //'type' => $type,
-                'id' => ($history) ? null : $this->barcodeToID($barcode),
+                'id' => ($history) ? $z30->{'z30-doc-number'} : $this->barcodeToID($barcode),
                 'item_id' => $group,
                 'location' => $location,
                 'title' => $title,
