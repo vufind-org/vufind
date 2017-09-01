@@ -706,6 +706,12 @@ class MyResearchController extends AbstractBase
             throw new ForbiddenException('Lists disabled');
         }
 
+        // Check permission:
+        $response = $this->permission()->check('feature.Favorites', 'promptLogin');
+        if (is_object($response)) {
+            return $response;
+        }
+
         // Check for "delete item" request; parameter may be in GET or POST depending
         // on calling context.
         $deleteId = $this->params()->fromPost(
