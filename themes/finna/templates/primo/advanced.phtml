@@ -31,7 +31,7 @@
     $this->searchType = 'advanced';
     $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters, []);
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs'], 'hiddenFilters' => $hiddenFilters]);
-    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h3>' . $this->transEsc('Advanced Search from Primo') . '</h3></div>';
+    $this->layout()->finnaMainHeader = '<div><h3>' . $this->transEsc('Advanced Search from Primo') . '</h3></div>';
 ?>
 <form id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>" class="form-horizontal">
   <input type="hidden" name="join" value="AND" />

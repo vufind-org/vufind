@@ -1,12 +1,12 @@
 <!-- START of: finna - content/help_en-gb.phtml -->
 <? $this->headTitle($this->translate('Instructions of use')); $this->content()->setHeading($this->translate('Search Tips')); ?>
 
-<div class="row">
-  <div class="col-sm-3 sidebar">
+<div>
+  <div class="sidebar left">
     <div class="content-navigation-menu">
     </div>
   </div>
-  <div class="col-sm-9">
+  <div class="mainbody right">
     <? if ($this->resolver('Content/Additions/helpBegin_en-gb.phtml')): ?>
     <?=$this->render('Content/Additions/helpBegin_en-gb.phtml')?>
     <? endif; ?>
@@ -23,7 +23,7 @@
       <p>By default, the menu displays the most relevant search results at the top.</p>
       <h4>Year filter and timeline</h4>
       <p>You can specify the year(s) of production by entering a range of years or using the visual timeline tool.<p>
-      <p>By clicking on the arrow, you can display the locations or formats (e.g., compilation, archive series, DVD) of a lower hierarchical level</p>
+      <p>By clicking on the arrow, you can display the locations or formats (e.g., corowmpilation, archive series, DVD) of a lower hierarchical level</p>
       <p>You can delete criteria under the <strong>Narrow Search</strong> menu.</p>
       <h4>Retain filters</h4>
       <p>This feature retains your filters for new search.  If you wish to carry out a new search applying the criteria, enable this function</p>

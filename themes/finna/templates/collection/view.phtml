@@ -11,7 +11,7 @@
   $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
   // Set main header
   if (empty($lastSearch)) {
-    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">'.$this->transEsc('Collection').'</h1></div>';
+    $this->layout()->finnaMainHeader = '<div><h1 class="content-header">'.$this->transEsc('Collection').'</h1></div>';
   }
   // Add RDF header link if applicable:
   if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {

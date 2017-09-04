@@ -10,8 +10,7 @@
   // Set up some variables for convenience:
   $largeThumb = $this->record($this->driver)->getThumbnail('large');
 ?>
-<div class="row hidden-xs">
-<div class="col-xs-12">
+<div class="hidden-xs">
   <ul class="nav nav-pills hidden-print">
   <? if ($this->userlist()->getMode() !== 'disabled'): ?>
     <li><a class="save-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-plus" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Add to favorites')?></span></a></li>
@@ -55,6 +54,5 @@
     </li>
   <? endif; ?>
   </ul>
-</div>
 </div>
 <!-- END of: finna - RecordDriver/SolrDefault/toolbar.phtml -->

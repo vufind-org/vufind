@@ -380,7 +380,6 @@ input[type=number].input-year::-webkit-outer-spin-button {
     background: @home-right-column-background;
 }
 
-
 /* --- Image processing --- */
 
 .group [class^=col-] {padding-left:0}
@@ -952,11 +951,6 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     }
 }
 
-//== CONTENT PAGES
-.content-section {
-    padding-bottom: 20px;
-    border-bottom: 1px solid @gray-lighter;
-}
 //Finna mixins
 .truncate-field {
     overflow: hidden;
@@ -1198,54 +1192,6 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     }
     .datepicker.datepicker-dropdown {
         margin-top: -340px;
-    }
-}
-
-
-// Content page styles
-.main.template-dir-content.template-name-content,
-.main.template-dir-feedcontent.template-name-content {
-    & .odd-fluid {
-        background: #f5f5f5;
-    }
-    & .organisation-list-inner-row > div {
-        position: relative;
-        & > .organisation-list-beta {
-            position: absolute;
-            right: 15px;
-            top: 0;
-            padding: 1px 2px;
-            line-height: 1;
-            text-transform: uppercase;
-            background-color: #13aebe;
-            color: #fff;
-        }
-        & .organisation-list-header {
-            font-weight: bold;
-            margin-top: 3px;
-            margin-bottom: -4px;
-        }
-        & .organisation-list-header, .organisation-list-url {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        & .organisation-list-url:hover {
-            text-decoration: underline;
-        }
-        & a:hover {
-            text-decoration: none;
-        }
-    }
-    .organisation-list-header {
-        color: @text-color;
-    }
-    .organisation-list-url {
-        color: @link-color;
-        margin-bottom: 25px;
-    }
-    & ul li {
-        margin-bottom: 3px;
     }
 }
 

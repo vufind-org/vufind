@@ -39,12 +39,10 @@
 </div>
 <div class="container-fluid eds-home">
   <div class="container">
-    <div class="row">
-       <div class="col-xs-12">
-          <? if ($template = $this->content()->findTemplateForLng('eds/home-1')): ?>
-          <?=$this->render($template)?>
-          <? endif; ?>
-        </div>
+    <div>
+        <? if ($template = $this->content()->findTemplateForLng('eds/home-1')): ?>
+        <?=$this->render($template)?>
+        <? endif; ?>
     </div>
   </div>
 </div>
