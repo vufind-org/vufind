@@ -10,14 +10,14 @@
 </div>
 
 <? if ($user): ?>
-  <form class="comment-form row" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post"">
+  <form class="comment-form" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post"">
     <div>
       <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
       <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>"/>
       <input type="hidden" name="commentId" />
       <input type="hidden" name="type" value="<?= $ratings ? '1' : '0' ?>" />
     </div>
-    <div class="col-sm-12">
+    <div>
       <? $user = $this->auth()->isLoggedIn() ?>
       <? if($user): ?>
         <? if ($ratings): ?>

@@ -35,37 +35,33 @@
     $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $url->setPage(1);
   }
 ?>
-<div class="row">
-  <div class="col-xs-12 combined-titles">
-    <? if (isset($currentSearch['more_link']) && $currentSearch['more_link'] && ($recordTotal > 0)): ?>
-      <a href="<?=$moreUrl?>">
-        <h2 class="combined-list-title"><?=$this->transEsc($currentSearch['label'])?></h2>
-      </a>
-    <? else: ?>
+<div class="combined-titles">
+  <? if (isset($currentSearch['more_link']) && $currentSearch['more_link'] && ($recordTotal > 0)): ?>
+    <a href="<?=$moreUrl?>">
       <h2 class="combined-list-title"><?=$this->transEsc($currentSearch['label'])?></h2>
-    <? endif; ?>
+    </a>
+  <? else: ?>
+    <h2 class="combined-list-title"><?=$this->transEsc($currentSearch['label'])?></h2>
+  <? endif; ?>
 
-    <? if (isset($currentSearch['sublabel'])): ?>
-      <p class="show-list-details pull-right" onclick="$(this).next().toggleClass('hidden');$('i', this).toggleClass('fa-arrow-up');"><?=$this->transEsc('More Information');?> <i class="fa fa-arrow-down"></i></p>
-      <p class="sub-label hidden"><?=$this->translate($currentSearch['sublabel'])?></p>
-    <? endif; ?>
-  </div>
+  <? if (isset($currentSearch['sublabel'])): ?>
+    <p class="show-list-details pull-right" onclick="$(this).next().toggleClass('hidden');$('i', this).toggleClass('fa-arrow-up');"><?=$this->transEsc('More Information');?> <i class="fa fa-arrow-down"></i></p>
+    <p class="sub-label hidden"><?=$this->translate($currentSearch['sublabel'])?></p>
+  <? endif; ?>
 </div>
 <div class="clearfix">
   <? if ($recordTotal > 0): ?>
-  <div class="row">
-    <div class="col-xs-12 combined-search-results">
-      <h4>
-      <?=$this->transEsc('Search Results')?>
-      <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
-      <? if (!isset($view->skipTotalCount)): ?>
-        / <strong><?=$this->localizedNumber($recordTotal)?></strong>
-      <? endif; ?>
-      </h4>
-      <? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
-        <strong><a href="<?=$moreUrl?>" class="pull-right"><?=$this->transEsc('More')?> &raquo;</a></strong>
-      <? endif; ?>
-      </div>
+  <div class="combined-search-results">
+    <h4>
+    <?=$this->transEsc('Search Results')?>
+    <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
+    <? if (!isset($view->skipTotalCount)): ?>
+      / <strong><?=$this->localizedNumber($recordTotal)?></strong>
+    <? endif; ?>
+    </h4>
+    <? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
+      <strong><a href="<?=$moreUrl?>" class="pull-right"><?=$this->transEsc('More')?> &raquo;</a></strong>
+    <? endif; ?>
   </div>
   <? endif; ?>
 </div>
@@ -120,20 +116,18 @@
 
   <div class="clearfix">
     <? if ($recordTotal > 0): ?>
-    <div class="row">
-      <div class="col-xs-12 combined-search-results">
-      <h4>
-      <?=$this->transEsc('Search Results')?>
-      <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
-      <? if (!isset($view->skipTotalCount)): ?>
-        / <strong><?=$this->localizedNumber($recordTotal)?></strong>
-      <? endif; ?>
-      </h4>
-      <? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
-        <strong><a href="<?=$moreUrl?>" class="pull-right"><?=$this->transEsc('More')?> &raquo;</a></strong>
-      <? endif; ?>
+      <div class="combined-search-results">
+        <h4>
+        <?=$this->transEsc('Search Results')?>
+        <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
+        <? if (!isset($view->skipTotalCount)): ?>
+          / <strong><?=$this->localizedNumber($recordTotal)?></strong>
+        <? endif; ?>
+        </h4>
+        <? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
+          <strong><a href="<?=$moreUrl?>" class="pull-right"><?=$this->transEsc('More')?> &raquo;</a></strong>
+        <? endif; ?>
       </div>
-    </div>
     <? endif; ?>
   </div>
 <? endif; ?>

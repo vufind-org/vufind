@@ -17,7 +17,7 @@
         $textFields = $found;
     }
     ?>
-  <div class="copy-details <?=isset($heading) ? 'group-heading' : "row $mode"?>">
+  <div class="copy-details <?=isset($heading) ? 'group-heading' : "$mode"?>">
     <? // Translation for summary is a special case for backwards-compatibility and purchase_history a special case ?>
     <?
     if ($textFieldName == 'summary') {
@@ -29,9 +29,9 @@
     }
     ?>
     <? if (isset($mode)): ?>
-    <div class="col-sm-3 col-xs-6"><?=$this->transEsc($title)?>:</div>
+    <div class="details-title"><?=$this->transEsc($title)?>:</div>
     <? endif;?>
-    <div <?= !isset($heading) ? ' class="col-sm-9 col-xs-6"' : ''?>>
+    <div <?= !isset($heading) ? ' class="details-info"' : ''?>>
     <? foreach ($textFields as $current): ?>
       <?=$this->escapeHtml($current)?><br/>
     <? endforeach; ?>

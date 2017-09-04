@@ -121,27 +121,25 @@
 <? endif; ?>
 
 <div class="table record-holdings-table">
-  <div class="row headers">
-    <div class="headers <?=(!empty($holdings['holdings'])) ?  'col-sm-6 col-xs-7' : 'col-xs-12';?>">
-      <? $currentSource = $this->driver->tryMethod('getDataSource'); ?>
-      <? $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
-      <div class="dedup-information">
-        <span class="holdings-title"><?=$this->transEsc("source_$currentSource", null, $currentSource) ?></span>
-        <? if ($mergedData && count($mergedData['records']) > 1): ?>
-          <select class="dedup-select form-control jumpMenuUrl hidden-print" role="listbox" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
-            <option value="#" role="option" selected="selected"><?=$this->transEsc('Other Libraries'); ?></option>
-            <? foreach ($mergedData['records'] as $current): ?>
-              <? // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
-              <? if ($currentSource != $current['source']): ?>
-                <option value="<?=$this->escapeHtmlAttr($this->url('record') . urlencode($current['id'])) ?>" role="option"><?=$this->transEsc("source_{$current['source']}", null, $current['source']) ?></option>
-              <? endif; ?>
-            <? endforeach; ?>
-          </select>
-        <? endif; ?>
-        </div>
+  <div class="headers">
+    <? $currentSource = $this->driver->tryMethod('getDataSource'); ?>
+    <? $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
+    <div class="dedup-information">
+      <span class="holdings-title"><?=$this->transEsc("source_$currentSource", null, $currentSource) ?></span>
+      <? if ($mergedData && count($mergedData['records']) > 1): ?>
+        <select class="dedup-select form-control jumpMenuUrl hidden-print" role="listbox" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
+          <option value="#" role="option" selected="selected"><?=$this->transEsc('Other Libraries'); ?></option>
+          <? foreach ($mergedData['records'] as $current): ?>
+            <? // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
+            <? if ($currentSource != $current['source']): ?>
+              <option value="<?=$this->escapeHtmlAttr($this->url('record') . urlencode($current['id'])) ?>" role="option"><?=$this->transEsc("source_{$current['source']}", null, $current['source']) ?></option>
+            <? endif; ?>
+          <? endforeach; ?>
+        </select>
+      <? endif; ?>
       </div>
     <? if (!empty($holdings['holdings'])): ?>
-      <div class="headers reservations-container col-sm-4 col-xs-5">
+      <div class="reservations-container">
         <? if ($showSummary): ?>
           <? if (!empty($reservationsTotal)): ?>
             <span class="reservations"><?=$this->translate('status_requests_html', ['%%count%%' => $reservationsTotal]);?></span>
@@ -151,7 +149,7 @@
           <? endif; ?>
         <? endif; ?>
       </div>
-      <div class="headers total-container col-sm-2 hidden-xs text-right">
+      <div class="total-container hidden-xs text-right">
         <?=$this->transEsc("shelf_location"); ?>
       </div>
     <? endif; ?>
@@ -247,8 +245,8 @@
   ?>
   <? if ($holdingsGroup == 1 && $holdingsConfig = $this->ils()->getConfig('Holdings', [$this->driver->getUniqueId()])): ?>
     <? if (!empty($holdingsConfig['extra_texts'])): ?>
-      <div class="holdings-container-heading row">
-        <div class="col-xs-12">
+      <div class="holdings-container-heading">
+        <div>
           <? foreach ($holdingsConfig['extra_texts'] as $extraText): ?>
             <div class="holdings-extra-text"><?=$this->translate($extraText, ['%%recordId%%' => $this->driver->getUniqueId()])?></div>
           <? endforeach; ?>
@@ -256,15 +254,15 @@
       </div>
     <? endif; ?>
   <? endif; ?>
-  <div class="holdings-container-heading row">
-    <div class="location col-sm-6 col-xs-6">
+  <div class="holdings-container-heading">
+    <div class="location">
       <i class="fa fa-arrow-<?=$holdingsDetails == 'collapsed' ? 'right' : 'down'?>" aria-hidden="true"></i> <?=$this->transEsc('location_' . $holding['location'], [], $holding['location'])?>
       <? if ($this->holdingsSettings()->showDetailsAfterLocationGroup()): ?>
         <div class="details"><?=$this->partial('RecordTab/holdings-details.phtml', ['holdingId' => $holdingId, 'holding' => $holding, 'heading' => true]);?></div>
       <? endif; ?>
     </div>
-    <div class="holdings-details col-sm-3 col-xs-6"><?=$holdingSummary ?></div>
-    <div class="location-link col-sm-3 col-xs-12 text-right">
+    <div class="holdings-details"><?=$holdingSummary ?></div>
+    <div class="location-link text-right">
       <? foreach ($callnumbers as $data): ?>
         <?=$this->callnumber()->callnumber($currentSource, $this->driver->getFullTitle(), $data['callNo'], $data['collection'], $data['location'], $this->layout()->userLang)?>
       <? endforeach; ?>
@@ -273,14 +271,15 @@
       <? endif; ?>
     </div>
   </div>
+  <div class="clearfix"></div>
   <? if (!$this->holdingsSettings()->showDetailsAfterLocationGroup()): ?>
     <?=$this->partial('RecordTab/holdings-details.phtml', ['holdingId' => $holdingId, 'holding' => $holding, 'mode' => $holdingsDetails]);?>
   <? endif; ?>
   <? $formats = $this->driver->getFormats(); ?>
   <? if (!empty($holding['items'][0]['order_statuses']) && !in_array(end($formats), ['1/Book/eBook/', '1/Journal/eJournal/', '1/Journal/eArticle/'])): ?>
-    <div class="copy-details <?=$holdingsDetails?> row">
-      <div class="col-sm-3 col-xs-6"><?=$this->transEsc("Order Information") ?>:</div>
-      <div class="col-sm-3 col-xs-6">
+    <div class="copy-details <?=$holdingsDetails?>">
+      <div><?=$this->transEsc("Order Information") ?>:</div>
+      <div>
         <? foreach ($holding['items'][0]['order_statuses'] as $orderStatus): ?>
           <?=$this->transEsc('order_status_' . $orderStatus['status'], null, $orderStatus['status']) ?> <?=$this->escapeHtml($orderStatus['order_update_date']) ?>
         <? endforeach; ?>
@@ -298,17 +297,17 @@
       $blockStorageRetrievalRequest = !$checkStorageRetrievalRequest && isset($row['addStorageRetrievalRequestLink']) && $row['addStorageRetrievalRequestLink'] === 'block';
       $blockILLRequest = !$checkILLRequest && isset($row['addILLRequestLink']) && $row['addILLRequestLink'] === 'block';
     ?>
-    <div vocab="http://schema.org/" typeof="Offer" class="copy-details <?=$holdingsDetails?> row">
+    <div vocab="http://schema.org/" typeof="Offer" class="copy-details <?=$holdingsDetails?>">
       <? if (isset($row['branch']) && isset($row['department'])): ?>
-      <div class="copy-title col-sm-6">
+      <div class="copy-title">
         <span class="branch"><?=$row['branch']?></span><span class="department">, <?=$row['department']?></span>
       </div>
       <? else: ?>
-      <div class="copy-title col-sm-6">
+      <div class="copy-title">
         <span class="copy-number"><?=!empty($row['number']) ? $this->escapeHtml($row['number']) : $this->transEsc("Copy") ?></span>
       </div>
       <? endif; ?>
-      <div class="copy-info <?=(isset($row['availabilityInfo'])) ? 'col-sm-3' : 'col-sm-6' ;?>">
+      <div class="copy-info">
         <? if (isset($row['reserve']) && $row['reserve'] == "Y"): ?>
           <link property="availability" href="http://schema.org/InStoreOnly" />
           <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
@@ -376,7 +375,7 @@
           <link property="itemOffered" href="#record" />
       </div>
       <? if (isset($row['availabilityInfo'])): ?>
-      <div class="copy-available col-sm-3">
+      <div class="copy-available">
         <? if (!empty($row['availabilityInfo']['ordered'])): ?>
           <div class="ordered">
             <?=$this->translate('status_Ordered')?>: <?=$row['availabilityInfo']['ordered']?>
@@ -389,6 +388,7 @@
       <? endif; ?>
     </div>
   <? endforeach; ?>
+  <div class="clearfix"></div>
   <? if (!empty($holding['purchase_history'])): ?>
     <div class="row">
       <div class="col-xs-4"><?=$this->transEsc("Most Recent Received Issues")?>:</div>
@@ -401,10 +401,8 @@
   <? endif; ?>
 <? endforeach; ?>
 <? if (empty($holdings['holdings'])): ?>
-  <div class="row">
-    <div class="col-xs-12">
-      <h5><?=$this->transEsc('No Holdings Available'); ?></h5>
-    </div>
+  <div>
+    <h5><?=$this->transEsc('No Holdings Available'); ?></h5>
   </div>
 <? endif; ?>
 </div>

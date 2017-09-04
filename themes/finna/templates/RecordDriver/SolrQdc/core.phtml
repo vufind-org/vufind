@@ -4,30 +4,28 @@
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   ob_start(); ?>
-  <div class="media-<?=$thumbnailAlignment ?> col-sm-3 col-md-2">
-    <div class="row">
-      <div class="col-xs-12 image-information">
-        <div class="cover-wrapper">
-          <? /* Display thumbnail if appropriate: */ ?>
-          <? if ($img): ?>
-            <?=$img->render('record', ['small' => ['w' => 50, 'h' => 50], 'medium' => ['w' => 1200, 'h' => 1200]]) ?>
-          <? endif;?>
-          <? /* Display qrcode if appropriate: */ ?>
-          <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
-          <? if ($QRCode): ?>
-            <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
-          <? endif; ?>
-        </div>
-        <? // if you have a preview tab but want to move or remove the preview link
-           // from this area of the record view, this can be split into
-           // getPreviewData() (should stay here) and
-           // getPreviewLink() (can go in your desired tab) ?>
-        <?=$this->record($this->driver)->getPreviews()?>
+  <div class="media-<?=$thumbnailAlignment ?>">
+    <div class="image-information">
+      <div class="cover-wrapper">
+        <? /* Display thumbnail if appropriate: */ ?>
+        <? if ($img): ?>
+          <?=$img->render('record', ['small' => ['w' => 50, 'h' => 50], 'medium' => ['w' => 1200, 'h' => 1200]]) ?>
+        <? endif;?>
+        <? /* Display qrcode if appropriate: */ ?>
+        <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
+        <? if ($QRCode): ?>
+          <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
+        <? endif; ?>
       </div>
+      <? // if you have a preview tab but want to move or remove the preview link
+         // from this area of the record view, this can be split into
+         // getPreviewData() (should stay here) and
+         // getPreviewLink() (can go in your desired tab) ?>
+      <?=$this->record($this->driver)->getPreviews()?>
     </div>
 
-    <div class="row record-rating">
-      <div class="col-xs-12 rating-stars">
+    <div class="record-rating">
+      <div class="rating-stars">
         <div onclick="$('a.usercomments').click();">
           <?=$this->record($this->driver)->getRating()?>
         </div>
@@ -35,10 +33,8 @@
     </div>
 
     <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-toolbar")): ?>
-    <div class="row">
-      <div class="col-xs-12 record-post-toolbar">
-        <?=$this->render($template)?>
-      </div>
+    <div class="record-post-toolbar">
+      <?=$this->render($template)?>
     </div>
     <? endif; ?>
 
@@ -46,12 +42,11 @@
   <? $thumbnail = ob_get_contents(); ?>
 <? ob_end_clean(); ?>
 <? $this->headScript()->appendFile("finna-record.js"); ?>
-<div class="media row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+<div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
     <?=$thumbnail ?>
   <? endif; ?>
-  <div class="col-sm-9 col-md-10">
-    <div class="media-body record-information">
+  <div class="media-body record-information">
       <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
       <div class="description">
         <span id="description_text" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>">
@@ -190,14 +185,11 @@
       <?/* End Main Details */?>
 
       <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-metadata")): ?>
-      <div class="row">
-        <div class="col-xs-12">
-          <?=$this->render($template)?>
-        </div>
+      <div>
+        <?=$this->render($template)?>
       </div>
       <? endif; ?>
     </div>
-  </div>
   <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
     <?=$thumbnail ?>
   <? endif; ?>

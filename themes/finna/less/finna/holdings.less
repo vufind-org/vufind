@@ -87,15 +87,18 @@
 }
 .record-holdings-table {
     margin: 20px 0px;
-    padding: 0px 15px;
     border: 1px solid @gray-lighter;
     border-top: none;
 
     .holdings-container-heading {
+        padding-right: 15px;
         &:hover {
             cursor: pointer;
         }
         & .location {
+            width: 50%;
+            float: left;
+            padding-left: 15px;
             font-weight: bold;
             font-size: .92em;
             text-transform: uppercase;
@@ -117,7 +120,10 @@
         }
         & .holdings-details {
             font-weight: bold;
+            width: 25%;
+            float: left;
             @media (max-width: @screen-xs-max) {
+                width: 50%;
                 text-align: right;
             }
             @media (min-width: @screen-sm-min) {
@@ -136,8 +142,11 @@
             }
         }
         & .location-link {
+            width: 25%;
+            float: left;
             font-weight: bold;
             @media (max-width: @screen-xs-max) {
+                width: 100%;
                 text-align: right;
                 border-top: none;
                 padding-top: 4px;
@@ -155,17 +164,19 @@
     }
 
     & .copy-title {
-        padding-left: 20px;
         font-weight: bold;
         & .department {
             font-weight: normal;
         }
+        @media (min-width: @screen-sm-min) {
+            width: 50%;
+            float: left;
+        }
     }
     & .copy-info, .copy-available {
-        @media (max-width: @screen-xs-max) {
-            padding-left: 20px;
-        }
         @media (min-width: @screen-sm-min) {
+            width: 25%;
+            float: left;
             & i {
                 margin-left: -15px;
             }
@@ -180,8 +191,7 @@
         }
     }
     & .copy-details {
-        padding-top: 8px;
-        padding-bottom: 8px;
+        padding: 8px 20px;
         &.collapsed {
            display: none;
         }
@@ -194,12 +204,38 @@
             padding-bottom: 0;
             text-transform: initial;
         }
+        .details-title {
+            @media (min-width: @screen-sm) {
+                width: 25%;
+            }
+            width: 50%;
+            float: left;
+        }
+        .details-info {
+            @media (min-width: @screen-sm) {
+                width: 75%;
+            }
+            width: 50%;
+            float: left;
+        }
+    }
+    .details-info, .details-title, .copy-title, .copy-info {
+        @media (min-width: @screen-sm) {
+            padding: 5px 0px;
+        }
     }
     & .headers {
-            background: @brand-primary;
-            color: @body-bg;
-            vertical-align: middle;
+        display: flex;
+        width: 100%;
+        padding: 0 15px;
+        background: @brand-primary;
+        color: @body-bg;
+        vertical-align: middle;
+        & .dedup-information {
+            flex: 1;
+        }
         & .reservations-container {
+            flex: 1;
             @media (max-width: @screen-xs-max) {
                 text-align: right;
             }

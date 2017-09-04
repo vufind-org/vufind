@@ -1,6 +1,6 @@
 <!-- START of: finna - RecordDriver/SolrDefault/collection-info.phtml -->
 <? $this->headScript()->appendFile('collection_record.js'); ?>
-<div class="row">
+<div>
     <? // if you have a preview tab but want to move or remove the preview link
        // from this area of the record view, this can be split into
        // getPreviewData() (should stay here) and
@@ -8,7 +8,7 @@
     <?=$this->record($this->driver)->getPreviews()?>
 
 
-  <div class="col-sm-12 record-information">
+  <div class="record-information">
     <h2 class="collection-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
     <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
     <? if ($summary): ?>

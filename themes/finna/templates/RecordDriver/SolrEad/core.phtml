@@ -4,9 +4,8 @@
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   ob_start(); ?>
-  <div class="media-<?=$thumbnailAlignment ?> col-sm-4 col-md-3">
-    <div class="row">
-      <div class="col-xs-12 image-information">
+  <div class="media-<?=$thumbnailAlignment ?>">
+    <div class="image-information">
         <div class="cover-wrapper">
           <? /* Display thumbnail if appropriate: */ ?>
           <? if ($img): ?>
@@ -24,10 +23,9 @@
            // getPreviewLink() (can go in your desired tab) ?>
         <?=$this->record($this->driver)->getPreviews()?>
       </div>
-    </div>
 
-    <div class="row record-rating">
-      <div class="col-xs-12 rating-stars">
+    <div class="record-rating">
+      <div class="rating-stars">
         <div onclick="$('a.usercomments').click();">
           <?=$this->record($this->driver)->getRating()?>
         </div>
@@ -40,10 +38,8 @@
 
 
     <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-toolbar")): ?>
-    <div class="row">
-      <div class="col-xs-12 record-post-toolbar">
-        <?=$this->render($template)?>
-      </div>
+    <div class="record-post-toolbar">
+      <?=$this->render($template)?>
     </div>
     <? endif; ?>
 
@@ -51,12 +47,11 @@
   <? $thumbnail = ob_get_contents(); ?>
 <? ob_end_clean(); ?>
 <? $this->headScript()->appendFile("finna-record.js"); ?>
-<div class="media row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+<div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
     <?=$thumbnail ?>
   <? endif; ?>
-  <div class="col-sm-8 col-md-9">
-    <div class="media-body record-information">
+  <div class="media-body record-information">
       <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getTitle())?></h1>
       <? if ($serviceURLs = $this->driver->getServiceURLs()): ?>
         <div class="recordURLs">
@@ -120,14 +115,11 @@
       <?/* End Main Details */?>
 
       <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-metadata")): ?>
-      <div class="row">
-        <div class="col-xs-12">
-          <?=$this->render($template)?>
-        </div>
+      <div>
+        <?=$this->render($template)?>
       </div>
       <? endif; ?>
     </div>
-  </div>
   <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
     <?=$thumbnail ?>
   <? endif; ?>

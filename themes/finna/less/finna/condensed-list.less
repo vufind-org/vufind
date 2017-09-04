@@ -1,6 +1,6 @@
 .result.condensed-list-view {
     padding-top: 6px;
-    padding-left: 1em;
+    padding-left: 2em;
     padding-bottom: 6px;
     margin-bottom: 2px;
 //    border-bottom: 1px solid @gray-lighter;
@@ -111,6 +111,15 @@
             width: 40%;
             @media (min-width: @screen-md-min) {
                 width: 35%;
+            }
+        }
+        .result-database {
+            @media (min-width: @screen-sm-min) {
+                display: flex;
+                .database-subject {
+                    min-width: 200px;
+                    padding-left: 15px;
+                }
             }
         }
     }
