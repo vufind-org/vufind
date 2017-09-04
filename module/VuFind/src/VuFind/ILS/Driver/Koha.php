@@ -111,7 +111,7 @@ class Koha extends AbstractBase
             'SUSPENSION' => 'Account Suspended',
             'OVERDUES' => 'Account Blocked (Overdue Items)',
             'MANUAL' => 'Account Blocked',
-            'DISCHARGE' => 'Account Discharge',
+            'DISCHARGE' => 'Account Blocked for Discharge',
         );
 
         // Now override the default with any defined in the `Koha.ini` config file
