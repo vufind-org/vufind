@@ -121,13 +121,14 @@ class Koha extends AbstractBase
             }
         }
 
-        // Allow the users to set if an account block's comments should be included by
-        // setting the block type to true or flase () in the `Koha.ini` config file
-        // (defaults to false if not present)
+        // Allow the users to set if an account block's comments should be included
+        // by setting the block type to true or flase () in the `Koha.ini` config
+        // file (defaults to false if not present)
         $this->showBlockComments = array();
 
         foreach (array('SUSPENSION','OVERDUES','MANUAL','DISCHARGE') as $blockType) {
-            $this->showBlockComments[$blockType] = !empty($this->config['Show_Block_Comments'][$blockType]);
+            $this->showBlockComments[$blockType]
+                = !empty($this->config['Show_Block_Comments'][$blockType]);
         }
     }
 
@@ -435,7 +436,6 @@ class Koha extends AbstractBase
      *
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
-     *
      */
     public function getAccountBlocks($patron)
     {
@@ -456,7 +456,8 @@ class Koha extends AbstractBase
                     : $row['TYPE']];
 
                 if (!empty($this->showBlockComments[$row['TYPE']])
-                    && !empty($row['COMMENT'])) {
+                    && !empty($row['COMMENT'])
+                ) {
 
                     $block[] = $row['COMMENT'];
                 }
