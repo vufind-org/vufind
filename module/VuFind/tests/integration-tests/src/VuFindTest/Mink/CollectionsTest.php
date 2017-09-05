@@ -61,6 +61,7 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $path = '/Collection/subcollection1/HierarchyTree';
         $session->visit($this->getVuFindUrl() . $path);
+        $this->snooze();
         return $session->getPage();
     }
 
@@ -101,6 +102,7 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
         $input = $this->findCss($page, '#keywordFilter_lookfor');
         $input->setValue('Subcollection 2');
         $this->findCss($page, '#keywordFilterForm .btn')->press();
+        $this->snooze();
 
         $results = $page->findAll('css', '.result');
         $this->assertEquals(2, count($results));
@@ -135,6 +137,8 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
             'Subcollection 1'
         );
         $this->findCss($page, '[recordid="colitem2"] a')->click();
+        $this->snooze();
+
         $this->assertEquals(
             trim($this->findCss($page, '#tree-preview h2')->getText()),
             'Collection item 2'
