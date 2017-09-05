@@ -89,6 +89,128 @@ h3 { font-size: 16px; }
 }
 
 /* ------ Layout ------ */
+header { .clearfix(); }
+.header-container {
+  .container-fixed();
+  max-width: @container-sm;
+  @media (min-width: 992px) {
+    max-width: none;
+    padding: 0;
+  }
+}
+@media (min-width: 768px) {
+  #header-nav-menu { float: right; }
+}
+.header-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: left;
+  line-height: 65px;
+  @media (min-width: 992px) {
+    text-align: center;
+  }
+}
+.header-nav {
+  margin-bottom: 0;
+  padding: 0;
+  text-align: right;
+  list-style: none;
+}
+@media (min-width: 992px) {
+  .header-nav { padding-right: 1rem; }
+}
+
+.header-nav-item { display: block; }
+@media (min-width: 768px) {
+  .header-nav-item { display: inline-block; }
+}
+.header-nav-item > a {
+  display: block;
+  padding: .5rem;
+
+  @media (min-width: 768px) {
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 65px;
+  }
+}
+.header-nav-item .dropdown-menu { margin-top: -1rem; }
+body.rtl .header-nav-item .dropdown-menu {
+  left: 0;
+  right: auto;
+}
+@media (max-width: 767px) {
+  .header-nav-item .dropdown-menu {
+    position: relative;
+    float: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    text-align: right;
+    box-shadow: none;
+  }
+}
+header .empty { display: none; }
+.with-search {
+  display: grid;
+  grid-template-columns: 1fr 3rem;
+  grid-template-areas: "logo button" "menu menu" "search search";
+
+  .header-logo { grid-area: logo; }
+  .searchbox { grid-area: search; }
+  .navbar-toggle { grid-area: button; }
+  #header-nav-menu {
+    grid-area: menu;
+    float: right;
+  }
+  .empty { grid-area: empty; }
+
+  @media (min-width: 768px) {
+    grid-template-columns: 180px 1fr;
+    grid-template-areas: "logo menu" "search search";
+  }
+  @media (min-width: 992px) {
+    grid-template-columns: 180px auto auto;
+    grid-template-areas: "logo search menu";
+
+    #header-nav-menu { float: none; }
+  }
+  @media (min-width: 1400px) {
+    grid-template-columns: 1fr (@container-lg - @grid-gutter-width) 1fr;
+    grid-template-areas: "logo search empty" "menu menu menu";
+
+    #header-nav-menu {
+      position: absolute;
+      left: auto;
+      right: 0;
+    }
+    .empty { display: block; }
+  }
+}
+.header-menu {
+  float: right;
+  text-align: right;
+}
+.header-menu button { display: block; }
+@media (min-width: 768px) {
+  .header-menu button { display: none; }
+  #header-nav-menu { display: block; }
+}
+body.rtl {
+  .header-menu {
+    float: left;
+    text-align: left;
+  }
+  #header-nav-menu > ul { text-align: left; }
+  .header-logo {
+    text-align: right;
+
+    @media (min-width: 992px) {
+      text-align: center;
+    }
+  }
+}
+
 footer {
   &:extend(.container);
   padding: 1rem;
