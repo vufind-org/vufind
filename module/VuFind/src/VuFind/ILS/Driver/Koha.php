@@ -451,7 +451,7 @@ class Koha extends AbstractBase
 
             foreach ($sqlStmt->fetchAll() as $row) {
                 $block = empty($this->blockTerms[$row['TYPE']])
-                    ? [$row['TYPE']]]
+                    ? [$row['TYPE']]
                     : [$this->blockTerms[$row['TYPE']]];
 
                 if (!empty($this->showBlockComments[$row['TYPE']])
