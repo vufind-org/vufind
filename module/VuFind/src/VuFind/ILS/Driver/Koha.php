@@ -450,14 +450,13 @@ class Koha extends AbstractBase
             $sqlStmt->execute([':id' => $id]);
 
             foreach ($sqlStmt->fetchAll() as $row) {
-                $block = [$this->blockTerms[$row['TYPE']]
-                    ? $this->blockTerms[$row['TYPE']]
-                    : $row['TYPE']];
+                $block = empty($this->blockTerms[$row['TYPE']])
+                    ? [$row['TYPE']]]
+                    : [$this->blockTerms[$row['TYPE']]];
 
                 if (!empty($this->showBlockComments[$row['TYPE']])
                     && !empty($row['COMMENT'])
                 ) {
-
                     $block[] = $row['COMMENT'];
                 }
 
@@ -467,7 +466,6 @@ class Koha extends AbstractBase
         catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
-        
 
         return count($blocks) ? $blocks : false;
     }
