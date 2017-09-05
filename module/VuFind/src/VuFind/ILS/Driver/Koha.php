@@ -105,17 +105,16 @@ class Koha extends AbstractBase
         $this->validatePasswords
             = empty($this->config['Catalog']['dontValidatePasswords']);
 
-
         // Set our default terms for block types
-        $this->blockTerms = array(
+        $this->blockTerms = [
             'SUSPENSION' => 'Account Suspended',
             'OVERDUES' => 'Account Blocked (Overdue Items)',
             'MANUAL' => 'Account Blocked',
             'DISCHARGE' => 'Account Blocked for Discharge',
-        );
+        ];
 
         // Now override the default with any defined in the `Koha.ini` config file
-        foreach (array('SUSPENSION','OVERDUES','MANUAL','DISCHARGE') as $blockType) {
+        foreach (['SUSPENSION','OVERDUES','MANUAL','DISCHARGE'] as $blockType) {
             if (!empty($this->config['Blocks'][$blockType])) {
                 $this->blockTerms[$blockType] = $this->config['Blocks'][$blockType];
             }
@@ -124,9 +123,9 @@ class Koha extends AbstractBase
         // Allow the users to set if an account block's comments should be included
         // by setting the block type to true or flase () in the `Koha.ini` config
         // file (defaults to false if not present)
-        $this->showBlockComments = array();
+        $this->showBlockComments = [];
 
-        foreach (array('SUSPENSION','OVERDUES','MANUAL','DISCHARGE') as $blockType) {
+        foreach (['SUSPENSION','OVERDUES','MANUAL','DISCHARGE'] as $blockType) {
             $this->showBlockComments[$blockType]
                 = !empty($this->config['Show_Block_Comments'][$blockType]);
         }
