@@ -85,11 +85,13 @@
         </td>
         <? endif; ?>
         <td class="text-center hidden-xs">
-          <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
-            <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
-          <? else: ?>
-            <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
-          <? endif; ?>
+          <div class="cover-image">
+            <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
+              <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+            <? else: ?>
+              <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+            <? endif; ?>
+          </div>
         </td>
         <td class="checkedout-status-information" colspan="2">
           <div class="half-table-column text-left">
