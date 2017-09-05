@@ -45,11 +45,13 @@
             </div>
           </div>
         </th>
-        <th class="">
-          <input type="submit" class="btn btn-primary renew-button" id="renewSelected" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
-        </th>
-        <th class="text-right">
-          <?=$this->render('search/controls/sort.phtml')?>
+        <th class="text-right" colspan="2">
+          <div class="renew-button-col">
+            <input type="submit" class="btn btn-primary renew-button" id="renewSelected" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
+          </div>
+          <div class="sort-col">
+            <?=$this->render('search/controls/sort.phtml')?>
+          </div>
         </th>
       </tr>
     <? else: ?>

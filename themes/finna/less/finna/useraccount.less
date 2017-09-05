@@ -862,12 +862,6 @@
             text-align: left;
         }
     }
-    .half-table-column {
-        @media(min-width: @screen-sm){
-            width: 50%;
-            float: left;
-        }
-    }
     .sort-button {
         @media(max-width: @screen-sm){
             min-width: 100px;
@@ -875,6 +869,22 @@
     }
     .recordcover {
         min-width: 30px;
+    }
+    .renew-button {
+        margin-bottom: 5px;
+    }
+    @media(min-width: @screen-sm){
+        .half-table-column {
+            width: 50%;
+            float: left;
+        }
+        .sort-col,
+        .renew-button-col {
+            width: 50%;
+            float: left;
+        }
+        .sort-col{ text-align: right; }
+        .renew-button-col { text-align: left; }
     }
 }
 .history-controls {
