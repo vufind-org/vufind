@@ -121,7 +121,7 @@ class Koha extends AbstractBase
         }
 
         // Allow the users to set if an account block's comments should be included
-        // by setting the block type to true or flase () in the `Koha.ini` config
+        // by setting the block type to true or false () in the `Koha.ini` config
         // file (defaults to false if not present)
         $this->showBlockComments = [];
 
