@@ -41,7 +41,14 @@
           <? if ($this->multipleTargets): ?>
             <td><?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?></td>
           <? endif; ?>
-          <td><?=$this->escapeHtml($username)?></td>
+          <td>
+            <a href="<?=$this->url('barcode-show') ?>?code=<?=$this->escapeHtmlAttr($username) ?>" title="<?=$this->escapeHtmlAttr($this->translate('show_barcode_title'))?>">
+              <div class="librarycard-barcode">
+                <img src="data:image/png;base64,<?=$this->barcode()->createPng($username)?>" alt="">
+              </div>
+              <?=$this->escapeHtml($username)?>
+            </a>
+          </td>
           <td class="library-card-actions">
               <span class="change-password-link">
                 <a class="btn-link" href="<?=$this->url('newLibraryCardPassword') ?>?id=<?=$this->escapeHtmlAttr($record['id']) ?>" data-lightbox title="<?=$this->transEsc('Change Password')?>"><i class="fa fa-lock bigger gray"></i> <?=$this->transEsc('Change Password')?></a>

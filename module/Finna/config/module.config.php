@@ -163,6 +163,7 @@ $config = [
     'controllers' => [
         'factories' => [
             'ajax' => 'Finna\Controller\Factory::getAjaxController',
+            'barcode' => 'Finna\Controller\Factory::getBarcodeController',
             'browse' => 'Finna\Controller\Factory::getBrowseController',
             'cache' => 'Finna\Controller\Factory::getCacheController',
             'cart' => 'Finna\Controller\Factory::getCartController',
@@ -474,7 +475,8 @@ $staticRoutes = [
     'MyResearch/PurgeCheckoutHistory',
     'OrganisationInfo/Home',
     'PCI/Home', 'PCI/Search', 'PCI/Record',
-    'Search/StreetSearch'
+    'Search/StreetSearch',
+    'Barcode/Show'
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();

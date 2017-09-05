@@ -48,10 +48,11 @@ return [
             'recordlink' =>  'Finna\View\Helper\Root\Factory::getRecordLink',
         ],
         'invokables' => [
+            'barcode' => 'Finna\View\Helper\Root\Barcode',
             'markdown' => 'Finna\View\Helper\Root\Markdown',
+            'organisationDisplayName' => 'Finna\View\Helper\Root\OrganisationDisplayName',
             'personaAuth' => 'Finna\View\Helper\Root\PersonaAuth',
             'resultfeed' => 'Finna\View\Helper\Root\ResultFeed',
-            'organisationDisplayName' => 'Finna\View\Helper\Root\OrganisationDisplayName',
             'search' => 'Finna\View\Helper\Root\Search',
             'streetSearch' => 'Finna\View\Helper\Root\StreetSearch',
             'translationEmpty' => 'Finna\View\Helper\Root\TranslationEmpty',

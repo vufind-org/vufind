@@ -1,0 +1,21 @@
+<?
+  // Standalone page
+  $this->layout()->setTemplate('layout/lightbox');
+  $this->headTitle($this->translate('show_barcode_title'));
+?>
+<?=$this->doctype('HTML5')?>
+<html lang="<?=$this->layout()->userLang?>">
+  <head>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <? // Turn off automatic telephone number detection on iOS ?>
+    <meta name="format-detection" content="telephone=no" />
+    <?=$this->headTitle()?>
+  </head>
+  <body>
+    <div style="background: white; margin: 30px;">
+      <?=$this->html?>
+    </div>
+    <?=$this->translate('show_barcode_instructions_html', null, '')?>
+  </body>
+</html>

@@ -23,6 +23,7 @@
         "pear/http_request2": "2.3.0",
         "pear/validate_ispn": "dev-master",
         "phing/phing": "2.16.0",
+        "picqer/php-barcode-generator": "0.2.1",
         "serialssolutions/summon": "1.1.0",
         "symfony/yaml": "3.3.2",
         "swagger-api/swagger-ui": "2.2.10",
