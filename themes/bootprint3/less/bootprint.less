@@ -27,26 +27,22 @@ body {
 }
 
 /* --- Header --- */
-header { margin-top: 18px; }
+header {
+  .container-fixed();
+  max-width: @container-sm;
+  margin-top: 18px;
+  background-color: #fff;
+  border-radius: 4px 4px 0 0;
+
+  @media (min-width: 992px) {
+    max-width: @container-md;
+  }
+}
 header .fa.fa-bars { font-size: 21px; }
 header .navbar {
   border-radius: 5px 5px 0 0;
   padding: 0 10px;
   &.search { border-radius: 0; }
-  .navbar-brand {
-    height: 65px;
-    width: 170px;
-    margin-top: 5px;
-    color: transparent;
-    background-image: ~"url('../../bootprint3/images/vufind_logo.png')";
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    &:active,
-    &:focus,
-    &:hover { color: transparent; }
-    &.lang-ar { background-image: ~"url('../../bootprint3/images/vufind_logo_ar.png')"; }
-  }
   .navbar-nav > li > a { padding: 12px 6px; }
   .navbar-right { margin-top: 12px; }
   @media (max-width: 767px) {
@@ -61,6 +57,43 @@ header .searchbox .tab-content .navbar-text { margin: 5px 10px 5px 0; }
   header .searchForm_type {
     margin-top: 2px;
     margin-bottom: 2px
+  }
+}
+.header-logo {
+  display: inline-block;
+  height: 65px;
+  width: 170px;
+  margin-top: 5px;
+  color: transparent;
+  background-image: ~"url('../../bootprint3/images/vufind_logo.png')";
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  &:active,
+  &:focus,
+  &:hover { color: transparent; }
+  &.lang-ar { background-image: ~"url('../../bootprint3/images/vufind_logo_ar.png')"; }
+}
+.header-nav { padding-right: 0; }
+@media (min-width: 992px) {
+  .header-nav-item { display: block; }
+  .header-nav-item a {
+    padding: .5rem;
+    line-height: 1rem;
+  }
+  .header-nav-item .dropdown-menu { margin-top: 2px; } // default
+}
+@media (min-width: 1400px) {
+  .with-search {
+    grid-template-columns: 180px auto auto;
+    grid-template-areas: "logo search menu";
+
+    #header-nav-menu {
+      position: relative;
+      left: auto;
+      right: auto;
+    }
+    .empty { display: none; }
   }
 }
 
