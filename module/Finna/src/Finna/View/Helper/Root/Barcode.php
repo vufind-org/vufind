@@ -42,9 +42,9 @@ class Barcode extends \Zend\View\Helper\AbstractHelper
      * Create a barcode PNG
      *
      * @param string $code   String to use as the barcode
-     * @param string $type   Barcode type
      * @param int    $width  Barcode narrow bar width
      * @param int    $height Barcode height
+     * @param string $type   Barcode type
      *
      * @return string Base 64 encoded image data
      */
