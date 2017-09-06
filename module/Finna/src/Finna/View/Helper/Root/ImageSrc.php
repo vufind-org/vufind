@@ -59,7 +59,6 @@ class ImageSrc extends ThemeSrc
             return $url;
         }
 
-
         return '';
 
     }
