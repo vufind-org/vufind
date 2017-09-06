@@ -840,17 +840,62 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     }
 
     /**
-     * Get Patron Transaction History
+     * Get Patron Loan History
      *
      * @param array $user The patron array from patronLogin
      *
      * @throws \VuFind\Exception\Date
      * @throws ILSException
-     * @return array      Array of the patron's transactions on success.
+     * @return array      Array of the patron's historic loans on success.
      */
     public function getMyHistory($user)
     {
-        return $this->getMyTransactions($user, true);
+        $userId = $user['id'];
+        $historicLoans = [];
+        $params = [
+            "view" => "full",
+            "type" => "history",
+        ];
+
+        $xml = $this->doRestDLFRequest(
+            ['patron', $userId, 'circulationActions', 'loans'], $params
+        );
+
+        foreach ($xml->xpath('//loan') as $item) {
+            $z36h = $item->z36h;
+            $z13 = $item->z13;
+            $z30 = $item->z30;
+            $group = $item->xpath('@href');
+            $group = substr(strrchr($group[0], "/"), 1);
+            $location = (string) $z36->{'z36_pickup_location'};
+            $reqnum = (string) $z36->{'z36-doc-number'}
+                . (string) $z36->{'z36-item-sequence'}
+                . (string) $z36->{'z36-sequence'};
+
+            $due = (string) $z36->{'z36h-due-date'};
+            $returned = (string) $z36h->{'z36h-returned-date'};
+            $issued = (string) $z36h->{'z36h-loan-date'};
+            $title = (string) $z13->{'z13-title'};
+            $author = (string) $z13->{'z13-author'};
+            $isbn = (string) $z13->{'z13-isbn-issn'};
+            $barcode = (string) $z30->{'z30-barcode'};
+
+            $historicLoans[] = [
+                'id' => (string) $z30->{'z30-doc-number'},
+                'item_id' => $group,
+                'location' => $location,
+                'title' => $title,
+                'author' => $author,
+                'isbn' => [$isbn],
+                'reqnum' => $reqnum,
+                'barcode' => $barcode,
+                'issuedate' => $this->parseDate($issued),
+                'duedate' => $this->parseDate($due),
+                'returned' => $this->parseDate($returned),
+            ];
+        }
+
+        return $historicLoans;
     }
 
     /**
@@ -867,20 +912,17 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($user, $history = false)
+    public function getMyTransactions($user)
     {
         $userId = $user['id'];
         $transList = [];
         $params = ["view" => "full"];
-        if ($history) {
-            $params["type"] = "history";
-        }
         $xml = $this->doRestDLFRequest(
             ['patron', $userId, 'circulationActions', 'loans'], $params
         );
+
         foreach ($xml->xpath('//loan') as $item) {
             $z36 = $item->z36;
-            $z36h = $item->z36h;
             $z13 = $item->z13;
             $z30 = $item->z30;
             $group = $item->xpath('@href');
@@ -894,22 +936,15 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 . (string) $z36->{'z36-item-sequence'}
                 . (string) $z36->{'z36-sequence'};
 
-            $due = $returned = $issued = null;
-            if ($history) {
-                $due = (string) $z36->{'z36h-due-date'};
-                $returned = (string) $z36h->{'z36h-returned-date'};
-                $issued = (string) $z36h->{'z36h-loan-date'};
-            } else {
-                $due = (string) $z36->{'z36-due-date'};
-                $issued = (string) $z36->{'z36-loan-date'};
-            }
+            $due = (string) $z36->{'z36-due-date'};
+            $issued = (string) $z36->{'z36-loan-date'};
             $title = (string) $z13->{'z13-title'};
             $author = (string) $z13->{'z13-author'};
             $isbn = (string) $z13->{'z13-isbn-issn'};
             $barcode = (string) $z30->{'z30-barcode'};
             $transList[] = [
                 //'type' => $type,
-                'id' => ($history) ? (string) $z30->{'z30-doc-number'} : $this->barcodeToID($barcode),
+                'id' => $this->barcodeToID($barcode),
                 'item_id' => $group,
                 'location' => $location,
                 'title' => $title,
@@ -919,10 +954,9 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 'barcode' => $barcode,
                 'issuedate' => $this->parseDate($issued),
                 'duedate' => $this->parseDate($due),
-                'returned' => $this->parseDate($returned),
                 //'holddate' => $holddate,
                 //'delete' => $delete,
-                'renewable' => !$history,
+                'renewable' => true,
                 //'create' => $this->parseDate($create)
             ];
         }
