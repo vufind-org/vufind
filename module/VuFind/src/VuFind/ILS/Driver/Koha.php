@@ -306,10 +306,10 @@ class Koha extends AbstractBase
             foreach ($sqlStmt->fetchAll() as $row) {
                 $fineLst[] = [
                     'amount' => (null == $row['AMOUNT']) ? 0 : $row['AMOUNT'],
-                    'checkout' => $row['CHECKOUT'],
+                    'checkout' => $this->displayDate($row['CHECKOUT']),
                     'fine' => (null == $row['FINE']) ? 'Unknown' : $row['FINE'],
                     'balance' => (null == $row['BALANCE']) ? 0 : $row['BALANCE'],
-                    'duedate' => $row['DUEDATE'],
+                    'duedate' => $this->displayDate($row['DUEDATE']),
                     'id' => $row['BIBNO']
                 ];
             }
