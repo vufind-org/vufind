@@ -167,6 +167,32 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->debug("ILS URL: " . $this->ilsBaseUrl);
         $this->debug("Locations: " . $this->locations);
         $this->debug("Default Location: " . $this->defaultLocation);
+
+        // Set our default terms for block types
+        $this->blockTerms = [
+            'SUSPENSION' => 'Account Suspended',
+            'OVERDUES' => 'Account Blocked (Overdue Items)',
+            'MANUAL' => 'Account Blocked',
+            'DISCHARGE' => 'Account Blocked for Discharge',
+        ];
+
+        // Now override the default with any defined in the `KohaILSDI.ini` config
+        // file
+        foreach (['SUSPENSION','OVERDUES','MANUAL','DISCHARGE'] as $blockType) {
+            if (!empty($this->config['Blocks'][$blockType])) {
+                $this->blockTerms[$blockType] = $this->config['Blocks'][$blockType];
+            }
+        }
+
+        // Allow the users to set if an account block's comments should be included
+        // by setting the block type to true or false () in the `KohaILSDI.ini`
+        // config file (defaults to false if not present)
+        $this->showBlockComments = [];
+
+        foreach (['SUSPENSION','OVERDUES','MANUAL','DISCHARGE'] as $blockType) {
+            $this->showBlockComments[$blockType]
+                = !empty($this->config['Show_Block_Comments'][$blockType]);
+        }
     }
 
     /**
@@ -1267,6 +1293,53 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         } else {
             return null;
         }
+    }
+
+    /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin
+     *
+     * @throws ILSException
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getAccountBlocks($patron)
+    {
+        $blocks = [];
+
+        try {
+            if (!$this->db) {
+                $this->initDb();
+            }
+            $id = $patron['id'];
+            $sql = "select type as TYPE, comment as COMMENT " .
+                "from borrower_debarments " .
+                "where (expiration is null or expiration >= NOW()) " .
+                "and borrowernumber = :id";
+            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->execute([':id' => $id]);
+
+            foreach ($sqlStmt->fetchAll() as $row) {
+                $block = empty($this->blockTerms[$row['TYPE']])
+                    ? [$row['TYPE']]
+                    : [$this->blockTerms[$row['TYPE']]];
+
+                if (!empty($this->showBlockComments[$row['TYPE']])
+                    && !empty($row['COMMENT'])
+                ) {
+                    $block[] = $row['COMMENT'];
+                }
+
+                $blocks[] = implode(' - ', $block);
+            }
+        }
+        catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+        return count($blocks) ? $blocks : false;
     }
 
     /**
