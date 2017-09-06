@@ -193,7 +193,7 @@ class Koha extends AbstractBase
                     if ($rowIssue) {
                         $available = false;
                         $status = 'Checked out';
-                        $duedate = $rowIssue['DUEDATE'];
+                        $duedate = $this->displayDateTime($rowIssue['DUEDATE']);
                     } else {
                         $available = true;
                         $status = 'Available';
@@ -646,14 +646,14 @@ class Koha extends AbstractBase
     /**
      * Convert a database date to a displayable date.
      *
-     * @param string $date Date to parse
+     * @param string $date Date to convert
      *
      * @throws DateException
      * @return string
      */
     public function displayDate($date)
     {
-        if ($date == null || $date == "") {
+        if (empty($date)) {
             return "";
         } else if (preg_match("/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/", $date) === 1) {
             // YYYY-MM-DD HH:MM:SS
@@ -668,14 +668,14 @@ class Koha extends AbstractBase
     /**
      * Convert a database datetime to a displayable time.
      *
-     * @param string $date Datetime to parse
+     * @param string $date Datetime to convert
      *
      * @throws DateException
      * @return string
      */
     public function displayTime($date)
     {
-        if ($date == null || $date == "") {
+        if (empty($date)) {
             return "";
         } else if (preg_match("/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/", $date) === 1) {
             // YYYY-MM-DD HH:MM:SS
@@ -683,5 +683,20 @@ class Koha extends AbstractBase
         } else {
             throw new DateException("Invalid date: $date");
         }
+    }
+
+    /**
+     * Convert a database datetime to a displayable date and time.
+     *
+     * @param string $date Datetime to convert
+     *
+     * @throws DateException
+     * @return string
+     */
+    public function displayDateTime($date)
+    {
+        return empty($date)
+            ? ""
+            : $this->displayDate($date) . " " . $this->displayTime($date);
     }
 }
