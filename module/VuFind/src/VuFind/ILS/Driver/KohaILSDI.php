@@ -1342,6 +1342,54 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         return count($blocks) ? $blocks : false;
     }
 
+    /*
+     * Get Patron Loan History
+     *
+     * This is responsible for retrieving all historic loans (i.e. items previously
+     * checked out and then returned), for a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @throws \VuFind\Exception\Date
+     * @throws ILSException
+     * @return array        Array of the patron's transactions on success.
+     */
+    public function getMyHistory($patron)
+    {
+        $id = 0;
+        $historicLoans = [];
+        $row = $sql = $sqlStmt = '';
+        try {
+            if (!$this->db) {
+                $this->initDb();
+            }
+            $id = $patron['id'];
+            $sql = "select old_issues.issuedate as ISSUEDATE, " .
+                "old_issues.date_due as DUEDATE, items.biblionumber as " .
+                "BIBNO, items.barcode BARCODE, old_issues.returndate as RETURNED " .
+                "from old_issues join items " .
+                "on old_issues.itemnumber = items.itemnumber " .
+                "where old_issues.borrowernumber = :id " .
+                "order by ISSUEDATE desc";
+            $sqlStmt = $this->db->prepare($sql);
+
+            $sqlStmt->execute([':id' => $id]);
+            foreach ($sqlStmt->fetchAll() as $row) {
+                $historicLoans[] = [
+                    'issuedate' => $row['ISSUEDATE'],
+                    'duedate' => $row['DUEDATE'],
+                    'id' => $row['BIBNO'],
+                    'barcode' => $row['BARCODE'],
+                    'returned' => $row['RETURNED'],
+                ];
+            }
+            return $historicLoans;
+        }
+        catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+    }
+
     /**
      * Get Patron Transactions
      *
