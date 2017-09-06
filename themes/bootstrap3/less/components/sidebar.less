@@ -9,7 +9,11 @@
     line-height: 1.5rem;
 
     .badge,
-    .status { float: right; }
+    .status {
+      float: right;
+
+      body.rtl & { float: left; }
+    }
     .badge {
       max-height: 19px;
       line-height: 1.1rem;
@@ -74,16 +78,23 @@
   font-weight: bold;
   color: @text-color;
 }
+.facet-group > .checkbox,
+.sidebar .facet.checkbox {
+  margin: 0;
+  padding-left: 2rem;
+}
 
 .active-filters .facet,
 .facet-group .active {
+  padding-right: .65rem;
   background-color: @brand-primary;
   color: #fff;
 
   a { color: #fff; }
 }
-.active-filters .facet { padding-right: .65rem; }
-.facet-group .active .badge {
+.facet.active .badge,
+.jstree-node.active .badge,
+.jstree-node.active .badge .fa {
   background-color: #fff;
   color: @brand-primary;
 }
@@ -105,3 +116,10 @@
 }
 
 .full-facet-list { margin-top: 1rem; }
+.full-facet-list .active .fa {
+  float: right;
+  margin-top: .25rem;
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+}
+body.rtl .full-facet-list .active .fa { float: left; }

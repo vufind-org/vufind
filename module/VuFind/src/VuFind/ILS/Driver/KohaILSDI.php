@@ -203,10 +203,62 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $this->db->exec("SET NAMES utf8");
         } catch (PDOException $e) {
             $this->debug('Connection failed: ' . $e->getMessage());
-            throw new ILSException($e->getMessage);
+            throw new ILSException($e->getMessage());
         }
 
         $this->debug('Connected to DB');
+    }
+
+    /**
+     * Check if a table exists in the current database.
+     *
+     * @param string $table Table to search for.
+     *
+     * @return bool
+     */
+    protected function tableExists($table)
+    {
+        $cacheKey = "kohailsdi-tables-$table";
+        $cachedValue = $this->getCachedData($cacheKey);
+        if ($cachedValue !== null) {
+            return $cachedValue;
+        }
+
+        if (!$this->db) {
+            $this->initDb();
+        }
+
+        $returnValue = false;
+
+        // Try a select statement against the table
+        // Run it in try/catch in case PDO is in ERRMODE_EXCEPTION.
+        try {
+            $result = $this->db->query("SELECT 1 FROM $table LIMIT 1");
+            // Result is FALSE (no table found) or PDOStatement Object (table found)
+            $returnValue = $result !== false;
+        } catch (PDOException $e) {
+            // We got an exception == table not found
+            $returnValue = false;
+        }
+
+        $this->putCachedData($cacheKey, $returnValue);
+        return $returnValue;
+    }
+
+    /**
+     * Koha ILS-DI driver specific override of method to ensure uniform cache keys
+     * for cached VuFind objects.
+     *
+     * @param string|null $suffix Optional suffix that will get appended to the
+     * object class name calling getCacheKey()
+     *
+     * @return string
+     */
+    protected function getCacheKey($suffix = null)
+    {
+        return \VuFind\ILS\Driver\AbstractBase::getCacheKey(
+            md5($this->ilsBaseUrl) . $suffix
+        );
     }
 
     /**
@@ -687,10 +739,16 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             . "WHERE biblionumber = :id AND found IS NULL";
         $sqlWaitingReserve = "select count(*) as WAITING from reserves "
             . "WHERE itemnumber = :item_id and found = 'W'";
-        $sqlHoldings = "SELECT ExtractValue(( SELECT marcxml FROM biblioitems "
-            . "WHERE biblionumber = :id), "
-            . "'//datafield[@tag=\"866\"]/subfield[@code=\"a\"]') AS MFHD;";
-
+        if ($this->tableExists("biblio_metadata")) {
+            $sqlHoldings = "SELECT "
+                . "ExtractValue(( SELECT metadata FROM biblio_metadata "
+                . "WHERE biblionumber = :id AND format='marcxml'), "
+                . "'//datafield[@tag=\"866\"]/subfield[@code=\"a\"]') AS MFHD;";
+        } else {
+            $sqlHoldings = "SELECT ExtractValue(( SELECT marcxml FROM biblioitems "
+                . "WHERE biblionumber = :id), "
+               . "'//datafield[@tag=\"866\"]/subfield[@code=\"a\"]') AS MFHD;";
+        }
         if (!$this->db) {
             $this->initDb();
         }
@@ -1426,12 +1484,23 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             if (!$this->db) {
                 $this->initDb();
             }
-            $sql = "SELECT biblio.biblionumber AS biblionumber
+
+            if ($this->tableExists("biblio_metadata")) {
+                $sql = "SELECT biblio.biblionumber AS biblionumber
+                      FROM biblio
+                      JOIN biblio_metadata USING (biblionumber)
+                      WHERE ExtractValue(
+                        metadata, '//datafield[@tag=\"942\"]/subfield[@code=\"n\"]' )
+                        IN ('Y', '1')
+                      AND biblio_metadata.format = 'marcxml'";
+            } else {
+                $sql = "SELECT biblio.biblionumber AS biblionumber
                       FROM biblioitems
                       JOIN biblio USING (biblionumber)
                       WHERE ExtractValue(
-                         marcxml, '//datafield[@tag=\"942\"]/subfield[@code=\"n\"]' )
-                      IN ('Y', '1')";
+                        marcxml, '//datafield[@tag=\"942\"]/subfield[@code=\"n\"]' )
+                        IN ('Y', '1')";
+            }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
             $result = [];

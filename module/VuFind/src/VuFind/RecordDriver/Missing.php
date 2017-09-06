@@ -61,6 +61,12 @@ class Missing extends SolrDefault
      */
     public function determineMissingTitle()
     {
+        // If available, use details from ILS:
+        $ilsDetails = $this->getExtraDetail('ils_details');
+        if (isset($ilsDetails['title'])) {
+            return $ilsDetails['title'];
+        }
+
         // If available, load title from database:
         $id = $this->getUniqueId();
         if ($id) {

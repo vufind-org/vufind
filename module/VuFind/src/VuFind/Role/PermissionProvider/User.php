@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authorization
  * @author   Markus Beh <markus.beh@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -32,7 +32,7 @@ use ZfcRbac\Service\AuthorizationService;
  * LDAP permission provider for VuFind.
  * based on permission provider Username.php
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License

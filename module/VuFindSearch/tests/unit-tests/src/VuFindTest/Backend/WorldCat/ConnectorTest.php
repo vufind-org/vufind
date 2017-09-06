@@ -55,7 +55,7 @@ class ConnectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('POST'))
             ->will($this->returnValue($client));
         $client->expects($this->once())->method('setUri')
-            ->with($this->equalTo('http://www.worldcat.org/webservices/catalog/content/libraries/baz?wskey=key&servicelevel=full'));
+            ->with($this->equalTo('http://www.worldcat.org/webservices/catalog/content/libraries/baz?wskey=key&servicelevel=full&frbrGrouping=on'));
         $body = '<foo>bar</foo>';
         $response = $this->createMock('Zend\Http\Response');
         $response->expects($this->once())->method('getBody')

@@ -62,6 +62,13 @@ class Map extends AbstractBase
     protected $mapLabels = null;
 
     /**
+     * Display graticule / map lat long grid?
+     *
+     * @var bool
+     */
+    protected $graticule = false;
+
+    /**
      * Constructor
      *
      * @param string $mapType Map provider (valid options: 'openlayers';
@@ -73,7 +80,7 @@ class Map extends AbstractBase
         switch (trim(strtolower($mapType))) {
         case 'openlayers':
             $this->mapType = trim(strtolower($mapType));
-            $legalOptions = ['displayCoords', 'mapLabels'];
+            $legalOptions = ['displayCoords', 'mapLabels', 'graticule'];
             foreach ($legalOptions as $option) {
                 if (isset($options[$option])) {
                     $this->$option = $options[$option];
@@ -112,6 +119,16 @@ class Map extends AbstractBase
     public function getMapType()
     {
         return $this->mapType;
+    }
+
+    /**
+     * Get the map graticule setting.
+     *
+     * @return string
+     */
+    public function getMapGraticule()
+    {
+        return $this->graticule;
     }
 
     /**

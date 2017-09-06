@@ -159,6 +159,7 @@ $config = [
             'holds' => 'VuFind\Controller\Plugin\Factory::getHolds',
             'newitems' => 'VuFind\Controller\Plugin\Factory::getNewItems',
             'ILLRequests' => 'VuFind\Controller\Plugin\Factory::getILLRequests',
+            'permission' => 'VuFind\Controller\Plugin\Factory::getPermission',
             'recaptcha' => 'VuFind\Controller\Plugin\Factory::getRecaptcha',
             'reserves' => 'VuFind\Controller\Plugin\Factory::getReserves',
             'result-scroller' => 'VuFind\Controller\Plugin\Factory::getResultScroller',
@@ -218,6 +219,8 @@ $config = [
             'VuFind\RecordTabPluginManager' => 'VuFind\Service\Factory::getRecordTabPluginManager',
             'VuFind\RelatedPluginManager' => 'VuFind\Service\Factory::getRelatedPluginManager',
             'VuFind\ResolverDriverPluginManager' => 'VuFind\Service\Factory::getResolverDriverPluginManager',
+            'VuFind\Role\PermissionManager' => 'VuFind\Service\Factory::getPermissionManager',
+            'VuFind\Role\PermissionDeniedManager' => 'VuFind\Service\Factory::getPermissionDeniedManager',
             'VuFind\Search' => 'VuFind\Service\Factory::getSearchService',
             'VuFind\Search\BackendManager' => 'VuFind\Service\Factory::getSearchBackendManager',
             'VuFind\Search\Memory' => 'VuFind\Service\Factory::getSearchMemory',
@@ -261,6 +264,9 @@ $config = [
         'not_found_template'       => 'error/404',
         'exception_template'       => 'error/index',
         'template_path_stack'      => [],
+        'whoops_no_catch' => [
+            'VuFind\Exception\RecordMissing',
+        ],
     ],
     // This section contains all VuFind-specific settings (i.e. configurations
     // unrelated to specific Zend Framework 2 components).
@@ -336,6 +342,7 @@ $config = [
             ],
             'channelprovider' => [
                 'factories' => [
+                    'alphabrowse' => 'VuFind\ChannelProvider\Factory::getAlphaBrowse',
                     'facets' => 'VuFind\ChannelProvider\Factory::getFacets',
                     'listitems' => 'VuFind\ChannelProvider\Factory::getListItems',
                     'random' => 'VuFind\ChannelProvider\Factory::getRandom',
@@ -825,7 +832,8 @@ $staticRoutes = [
     'Confirm/Confirm', 'Cover/Show', 'Cover/Unavailable',
     'EDS/Advanced', 'EDS/Home', 'EDS/Search',
     'EIT/Advanced', 'EIT/Home', 'EIT/Search',
-    'Error/Unavailable', 'Feedback/Email', 'Feedback/Home', 'Help/Home',
+    'Error/PermissionDenied', 'Error/Unavailable',
+    'Feedback/Email', 'Feedback/Home', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSecurity', 'Install/FixSolr', 'Install/FixSSLCerts', 'Install/Home',

@@ -28,7 +28,7 @@ $(document).ready(function() {
       data: {'offlineModeMsg':'ils_offline_home_message'},
       url: VuFind.path + '/AJAX/JSON?method=getIlsStatus',
       success: function(response) {
-          $('.searchHomeContent').append(response.data);
+          $('.searchHomeContent').prepend(response.data);
       }
   });
 });

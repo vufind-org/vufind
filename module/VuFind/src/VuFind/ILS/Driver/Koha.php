@@ -97,6 +97,38 @@ class Koha extends AbstractBase
         // Location codes are defined in 'Koha.ini' file according to current
         // version (3.02)
         $this->locCodes = $this->config['Location_Codes'];
+
+        // If we are using SAML/Shibboleth for authentication for both ourselves
+        // and Koha then we can't validate the patrons passwords against Koha as
+        // they won't have one. (Double negative logic used so that if the config
+        // option isn't present in Koha.ini then ILS passwords will be validated)
+        $this->validatePasswords
+            = empty($this->config['Catalog']['dontValidatePasswords']);
+
+        // Set our default terms for block types
+        $this->blockTerms = [
+            'SUSPENSION' => 'Account Suspended',
+            'OVERDUES' => 'Account Blocked (Overdue Items)',
+            'MANUAL' => 'Account Blocked',
+            'DISCHARGE' => 'Account Blocked for Discharge',
+        ];
+
+        // Now override the default with any defined in the `Koha.ini` config file
+        foreach (['SUSPENSION','OVERDUES','MANUAL','DISCHARGE'] as $blockType) {
+            if (!empty($this->config['Blocks'][$blockType])) {
+                $this->blockTerms[$blockType] = $this->config['Blocks'][$blockType];
+            }
+        }
+
+        // Allow the users to set if an account block's comments should be included
+        // by setting the block type to true or false () in the `Koha.ini` config
+        // file (defaults to false if not present)
+        $this->showBlockComments = [];
+
+        foreach (['SUSPENSION','OVERDUES','MANUAL','DISCHARGE'] as $blockType) {
+            $this->showBlockComments[$blockType]
+                = !empty($this->config['Show_Block_Comments'][$blockType]);
+        }
     }
 
     /**
@@ -395,6 +427,50 @@ class Koha extends AbstractBase
     }
 
     /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin
+     *
+     * @throws ILSException
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getAccountBlocks($patron)
+    {
+        $blocks = [];
+
+        try {
+            $id = $patron['id'];
+            $sql = "select type as TYPE, comment as COMMENT " .
+                "from borrower_debarments " .
+                "where (expiration is null or expiration >= NOW()) " .
+                "and borrowernumber = :id";
+            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->execute([':id' => $id]);
+
+            foreach ($sqlStmt->fetchAll() as $row) {
+                $block = empty($this->blockTerms[$row['TYPE']])
+                    ? [$row['TYPE']]
+                    : [$this->blockTerms[$row['TYPE']]];
+
+                if (!empty($this->showBlockComments[$row['TYPE']])
+                    && !empty($row['COMMENT'])
+                ) {
+                    $block[] = $row['COMMENT'];
+                }
+
+                $blocks[] = implode(' - ', $block);
+            }
+        }
+        catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+        return count($blocks) ? $blocks : false;
+    }
+
+    /**
      * Get Purchase History
      *
      * This is responsible for retrieving the acquisitions history data for the
@@ -510,11 +586,19 @@ class Koha extends AbstractBase
 
         $sql = "select borrowernumber as ID, firstname as FNAME, " .
             "surname as LNAME, email as EMAIL from borrowers " .
-            "where userid = :username and password = :db_pwd";
+            "where userid = :username";
         
+        $parameters = [':username' => $username];
+
+        if ($this->validatePasswords) {
+            $sql .= " and password = :db_pwd";
+            $parameters[':db_pwd'] = $db_pwd;
+        }
+
         try {
             $sqlStmt = $this->db->prepare($sql);
-            $sqlStmt->execute([':username' => $username, ':db_pwd' => $db_pwd]);
+            $sqlStmt->execute($parameters);
+
             $row = $sqlStmt->fetch();
             if ($row) {
                 // NOTE: Here, 'cat_password' => $password is used, password is
