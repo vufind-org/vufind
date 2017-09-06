@@ -904,9 +904,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
      *
-     * @param array $user    The patron array from patronLogin
-     * @param bool  $history Include history of transactions (true) or just get
-     * current ones (false).
+     * @param array $user The patron array from patronLogin
      *
      * @throws \VuFind\Exception\Date
      * @throws ILSException
