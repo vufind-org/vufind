@@ -184,7 +184,6 @@ class Factory
         return $paia;
     }
 
-
     /**
      * Factory for Koha driver.
      *
