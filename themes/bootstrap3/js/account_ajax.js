@@ -127,9 +127,21 @@ VuFind.register('account', function Account() {
     var data = sessionStorage.getItem('account');
     if (data && prevLoginStatus !== null && prevLoginStatus === 'true') {
       var json = JSON.parse(data);
-      checkedOutStatus = json.checkedOut;
-      fineStatus = json.fines;
-      holdStatus = json.holds;
+      if (json.checkedOut === -1) {
+        _ajaxCheckedOut();
+      } else {
+        checkedOutStatus = json.checkedOut;
+      }
+      if (json.fines === -1) {
+        _ajaxFines();
+      } else {
+        fineStatus = json.fines;
+      }
+      if (json.holds === -1) {
+        _ajaxHolds();
+      } else {
+        holdStatus = json.holds;
+      }
       _render();
     } else {
       _performAjax();
@@ -142,6 +154,7 @@ VuFind.register('account', function Account() {
     fineStatus: fineStatus,
     holdStatus: holdStatus,
 
-    init: load
+    init: load,
+    load: load
   };
 });
