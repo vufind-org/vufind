@@ -180,6 +180,12 @@
 .full-facet-list {
     margin-bottom: 0;
 }
+.full-facet-list .active .fa {
+  float: right;
+  margin-top: .25rem;
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+}
 .building-filter {
     padding: 5px 0px 5px 10px;
     @media (max-width:@screen-xs-max) {
@@ -200,4 +206,69 @@
 span.badge.cb-facet {
     float: right;
     margin-right: 10px;
+}
+
+// Full facet list
+.facet-group {
+  display: block;
+  margin-bottom: 1rem;
+
+  .facet,
+  .title {
+    display: block;
+    padding: 8px 15px;
+    line-height: 1.5rem;
+
+    .badge,
+    .status {
+      float: right;
+
+      body.rtl & { float: left; }
+    }
+    .badge {
+      max-height: 19px;
+      line-height: 1.1rem;
+    }
+  }
+  .title {
+    padding-right: 8px;
+    font-weight: bold;
+  }
+
+  [data-toggle="collapse"] {
+    cursor: pointer;
+
+    &::after {
+      content: '\25B2';
+      float: right;
+
+      body.rtl & { float: left; }
+    }
+  }
+  .collapsed::after {content: '\25BC';}
+
+  .facetOR .text {
+    display: inline-block;
+    padding-left: 0.5rem;
+    text-indent: -0.5rem;
+  }
+
+  .excludable {
+    display: flex;
+    flex-direction: row-reverse;
+    padding-right: 0;
+
+    .badge { flex-shrink: 0; }
+    .text { flex-grow: 1; }
+    .exclude {
+      flex-basis: 2rem;
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    body.rtl & {
+      padding-left: 0;
+      padding-right: 15px;
+    }
+  }
 }

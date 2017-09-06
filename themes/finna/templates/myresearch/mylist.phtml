@@ -73,7 +73,7 @@
     <div class="search-controls">
       <div class="text-right hidden-print">
         <? if (isset($list)): ?>
-        <a class="btn btn-primary" href="<?=$this->url('sortList', ['id' => $list->id]) ?>" data-backdrop=”static” data-lightbox><?=$this->transEsc('Sort manually');?></a>
+          <a class="btn btn-primary" href="<?=$this->url('sortList', ['id' => $list->id]) ?>" data-backdrop=”static” data-lightbox><?=$this->transEsc('Sort manually');?></a>
         <? endif; ?>
         <?=$this->render('search/controls/sort.phtml')?>
         <?=$this->render('search/controls/limit.phtml')?>

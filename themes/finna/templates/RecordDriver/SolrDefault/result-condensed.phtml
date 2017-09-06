@@ -128,7 +128,6 @@
           </div>
         <? endif; ?>
 
-
         <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
           <? foreach ($summInCollection as $collId => $collText): ?>
             <div>
@@ -187,10 +186,10 @@
           </div>
         </div>
         <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? /* Saved lists */ ?>
-        <div class="savedLists alert alert-info hidden">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
-        </div>
+          <? /* Saved lists */ ?>
+          <div class="savedLists">
+            <strong><?=$this->transEsc("Saved in")?>:</strong>
+          </div>
         <? endif; ?>
         <? if ($this->layout()->templateDir === 'list'): ?>
           <?=$this->render('list/list-notes.phtml')?>

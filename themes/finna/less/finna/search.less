@@ -150,6 +150,16 @@ mark, .highlight {
     padding-right: 20px;
   }
 }
+.savedLists {
+  &:extend(.alert);
+  &:extend(.alert-info);
+  margin-bottom: 0;
+  display: none;
+  ul {
+    margin-bottom: 0;
+  }
+}
+.savedLists.loaded { display: block; }
 
 .bulkActionButtons {
   .checkbox {
