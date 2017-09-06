@@ -25,8 +25,14 @@
             </li>
           <? endif; ?>
           <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
-            <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
+            <li class="logoutOptions with-dropdown<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
               <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>"><i id="account-icon" class="fa fa-user-circle" aria-hidden="true"></i> <?=$this->transEsc("Your Account")?></a>
+            </li>
+            <li id="login-dropdown" class="dropdown<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
+              <a href="#" data-toggle="dropdown"><i class="fa fa-caret-down"></i></a>
+              <div class="dropdown-menu">
+                <?=$this->render('myresearch/menu'); ?>
+              </div>
             </li>
             <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
               <a href="<?=$this->url('myresearch-logout')?>" class="logout"><i class="fa fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?></a>

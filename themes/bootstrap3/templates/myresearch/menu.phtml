@@ -1,5 +1,5 @@
 <h4><?=$this->transEsc('Your Account')?></h4>
-<div class="myresearch-menu">
+<div class="myresearch-menu account-menu">
   <? if ($this->userlist()->getMode() !== 'disabled'): ?>
     <a href="<?=$this->url('myresearch-favorites')?>"<?=$this->active == 'favorites' ? ' class="active"' : ''?>>
       <i class="fa fa-fw fa-star" aria-hidden="true"></i> <?=$this->transEsc('Favorites')?>
