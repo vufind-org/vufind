@@ -350,8 +350,8 @@ class Koha extends AbstractBase
                 $holdLst[] = [
                     'id' => $row['BIBNO'],
                     'location' => $row['BRNAME'],
-                    'expire' => $row['EXDATE'],
-                    'create' => $row['RSVDATE']
+                    'expire' => $this->displayDate($row['EXDATE']),
+                    'create' => $this->displayDate($row['RSVDATE'])
                 ];
             }
             return $holdLst;
