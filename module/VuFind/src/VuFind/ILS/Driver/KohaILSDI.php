@@ -1342,7 +1342,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         return count($blocks) ? $blocks : false;
     }
 
-    /*
+    /**
      * Get Patron Loan History
      *
      * This is responsible for retrieving all historic loans (i.e. items previously

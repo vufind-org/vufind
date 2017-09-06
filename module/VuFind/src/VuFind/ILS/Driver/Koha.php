@@ -487,7 +487,7 @@ class Koha extends AbstractBase
         return count($blocks) ? $blocks : false;
     }
 
-    /*
+    /**
      * Get Patron Loan History
      *
      * This is responsible for retrieving all historic loans (i.e. items previously
