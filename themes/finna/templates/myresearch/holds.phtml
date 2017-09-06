@@ -142,6 +142,13 @@
                       <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
                       <br />
                     <? endif; ?>
+                  </div>
+                </div>
+                <div class="half-table-column holds-status-information">
+                  <? if (!empty($ilsDetails['requestGroup'])): ?>
+                    <strong><?=$this->transEsc('hold_requested_group') ?>:</strong> <?=$this->transEsc('request_group_' . $ilsDetails['requestGroup'], [], $this->transEsc('location_' . $ilsDetails['requestGroup'], [], $ilsDetails['requestGroup']))?>
+                    <br />
+                  <? endif; ?>
 
                   <? /* Depending on the ILS driver, the "location" value may be a string or an ID; figure out the best
                      value to display... */ ?>
@@ -156,14 +163,9 @@
                         <? endif; ?>
                       <? endforeach; ?>
                     <? endif; ?>
-                  </div>
-                </div>
-                <div class="half-table-column holds-status-information">
-                  <? if (!empty($ilsDetails['requestGroup'])): ?>
-                    <strong><?=$this->transEsc('hold_requested_group') ?>:</strong> <?=$this->transEsc('request_group_' . $ilsDetails['requestGroup'], [], $this->transEsc('location_' . $ilsDetails['requestGroup'], [], $ilsDetails['requestGroup']))?>
-                    <br />
-                  <? endif; ?>
-
+                    <? if (empty($pickupDisplay)): ?>
+                      <? $pickupDisplay = $ilsDetails['location']; ?>
+                    <? endif; ?>
                   <? endif; ?>
                   <? if (!empty($pickupDisplay)): ?>
                     <div class="pickup-location-container">
