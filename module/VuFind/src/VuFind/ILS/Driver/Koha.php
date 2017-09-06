@@ -27,8 +27,8 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\ILS as ILSException;
-
+use PDO, PDOException, VuFind\Exception\ILS as ILSException,
+    VuFind\Exception\Date as DateException;
 /**
  * VuFind Driver for Koha (version: 3.02)
  *
@@ -61,6 +61,23 @@ class Koha extends AbstractBase
      * @var array
      */
     protected $locCodes;
+
+    /**
+     * Date converter object
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter = null;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
 
     /**
      * Initialize the driver.
@@ -413,7 +430,8 @@ class Koha extends AbstractBase
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
                 $transactionLst[] = [
-                    'duedate' => $row['DUEDATE'],
+                    'duedate' => $this->displayDate($row['DUEDATE']),
+                    'dueTime' => $this->displayTime($row['DUEDATE']),
                     'id' => $row['BIBNO'],
                     'barcode' => $row['BARCODE'],
                     'renew' => $row['RENEWALS']
@@ -622,6 +640,48 @@ class Koha extends AbstractBase
         }
         catch (PDOException $e) {
             throw new ILSException($e->getMessage());
+        }
+    }
+
+    /**
+     * Convert a database date to a displayable date.
+     *
+     * @param string $date Date to parse
+     *
+     * @throws DateException
+     * @return string
+     */
+    public function displayDate($date)
+    {
+        if ($date == null || $date == "") {
+            return "";
+        } else if (preg_match("/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/", $date) === 1) {
+            // YYYY-MM-DD HH:MM:SS
+            return $this->dateConverter->convertToDisplayDate('Y-m-d H:i:s', $date);
+        } else if (preg_match("/^\d{4}-\d{2}-\d{2}$/", $date) === 1) { // YYYY-MM-DD
+            return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
+        } else {
+            throw new DateException("Invalid date: $date");
+        }
+    }
+
+    /**
+     * Convert a database datetime to a displayable time.
+     *
+     * @param string $date Datetime to parse
+     *
+     * @throws DateException
+     * @return string
+     */
+    public function displayTime($date)
+    {
+        if ($date == null || $date == "") {
+            return "";
+        } else if (preg_match("/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/", $date) === 1) {
+            // YYYY-MM-DD HH:MM:SS
+            return $this->dateConverter->convertToDisplayTime('Y-m-d H:i:s', $date);
+        } else {
+            throw new DateException("Invalid date: $date");
         }
     }
 }
