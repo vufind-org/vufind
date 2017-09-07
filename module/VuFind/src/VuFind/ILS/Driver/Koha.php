@@ -665,26 +665,6 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Convert a database datetime to a displayable time.
-     *
-     * @param string $date Datetime to convert
-     *
-     * @return string
-     */
-    public function displayTime($date)
-    {
-        if (empty($date)) {
-            return "";
-        } else if (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
-            // YYYY-MM-DD HH:MM:SS
-            return $this->dateConverter->convertToDisplayTime('Y-m-d H:i:s', $date);
-        } else {
-            error_log("Unexpected date format: $date");
-            return $date;
-        }
-    }
-
-    /**
      * Convert a database datetime to a displayable date and time.
      *
      * @param string $date Datetime to convert
