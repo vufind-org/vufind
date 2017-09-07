@@ -44,7 +44,7 @@
           <td>
             <a href="<?=$this->url('barcode-show') ?>?code=<?=$this->escapeHtmlAttr($username) ?>" title="<?=$this->escapeHtmlAttr($this->translate('show_barcode_title'))?>">
               <div class="librarycard-barcode">
-                <img src="data:image/png;base64,<?=$this->barcode()->createPng($username)?>" alt="">
+                <img src="data:image/png;base64,<?=$this->barcode()->createPng($username, 2, 40)?>" alt="">
               </div>
               <?=$this->escapeHtml($username)?>
             </a>
