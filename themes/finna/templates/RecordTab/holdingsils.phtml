@@ -390,9 +390,9 @@
   <? endforeach; ?>
   <div class="clearfix"></div>
   <? if (!empty($holding['purchase_history'])): ?>
-    <div class="row">
-      <div class="col-xs-4"><?=$this->transEsc("Most Recent Received Issues")?>:</div>
-      <div class="col-sm-8">
+    <div class="ils-purchase-history">
+      <div class="title"><?=$this->transEsc("Most Recent Received Issues")?>:</div>
+      <div class="history">
         <? foreach ($holding['purchase_history'] as $current): ?>
           <?=$this->escapeHtml($current['issue'])?><br/>
         <? endforeach; ?>

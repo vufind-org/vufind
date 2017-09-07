@@ -20,7 +20,7 @@
   <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
     <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
   </form>
-  <div class="results result-view-<?=$this->escapeHtmlAttr($params->getView()) == 'grid' ? 'grid col-xs-12' : $this->escapeHtmlAttr($params->getView());?>">
+  <div class="results result-view-<?=$this->escapeHtmlAttr($params->getView()) == 'grid' ? 'grid' : $this->escapeHtmlAttr($params->getView());?>">
     <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
   </div>
     <div class="text-center">

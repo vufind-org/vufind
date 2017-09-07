@@ -4,18 +4,14 @@
 ?>
 <div class="organisation-info<?=$this->showDetails ? ' with-details' : ''?>" data-parent="<?=$this->escapeHtmlAttr($this->id)?>" data-target="<?=$this->escapeHtmlAttr($this->target)?>" data-init="<?=$this->target == 'widget' ? '1' : '0'?>"<?=!empty($this->buildings) ? (' data-buildings="' . implode(',', $this->buildings) . '"') : ''?>>
 <? if ($this->target == 'widget'): ?>
-  <div class="row">
-    <div class="col-xs-12">
-      <h2><?=$this->transEsc('organisation_info_title');?></h2>
-    </div>
+  <div>
+    <h2><?=$this->transEsc('organisation_info_title');?></h2>
   </div>
-  <div class="row">
-    <div class="col-xs-12">
-      <div class="loader"><i class="fa fa-spin fa-spinner"></i></div>
-    </div>
+  <div>
+    <div class="loader"><i class="fa fa-spin fa-spinner"></i></div>
   </div>
-  <div class="row content hide">
-    <div class="<?=$this->showDetails ? 'col-md-8 col-lg-7 col-xs-12 ' : ''?>info">
+  <div class="content hide">
+    <div class="<?=$this->showDetails ? 'info-col' : ''?>info">
       <div class="organisation-dropdown-holder">
         <div class="organisation dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><input type="hidden"><span></span><i class="fa fa-arrow-down"></i></a>
@@ -60,7 +56,7 @@
       <div class="schedules-info info-element"></div>
 <? if ($this->target == 'widget' && $this->showDetails): ?>
     </div>
-    <div class="col-md-4 col-lg-5 col-xs-12">
+    <div class="details details-col">
       <a href="#" data-href="<?=$this->escapeHtmlAttr($this->url('organisationinfo-home'))?>" class="facility details"><img src="<?=$this->imageLink('noCover2.gif')?>" alt="" class="facility-image"></a>
       <div class="contact-links">
         <a href="#" class="email info-element"><span class="btn btn-open-widget"><i class="fa fa-at"></i><span class="sr-only"><?=$this->transEsc('organisation_info_email') ?></span></span></a>

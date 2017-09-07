@@ -22,8 +22,8 @@ JS;
 ?>
 
 <?=$this->headScript()?>
-<div class="row">
-  <div class="col-<?= $this->modal ? 'xs-12' : 'sm-9'?> feed-content" data-feed="<?=$this->escapeHtmlAttr($this->feed)?>" data-element="<?=$this->escapeHtmlAttr($this->element)?>" data-feed-url="<?=$this->escapeHtmlAttr($this->feedUrl)?>">
+<div>
+  <div class="<?= $this->modal ? '' : 'page-content'?> feed-content" data-feed="<?=$this->escapeHtmlAttr($this->feed)?>" data-element="<?=$this->escapeHtmlAttr($this->element)?>" data-feed-url="<?=$this->escapeHtmlAttr($this->feedUrl)?>">
 
   <? if ($this->modal): ?>
     <div class="date"><?=$this->transEsc('Published');?>: <span></span></div>
@@ -31,14 +31,14 @@ JS;
   </div>
 
   <? else: ?>
-    <div class="row">
-      <div class="col-xs-12 col-md-11 col-lg-10">
+    <div>
+      <div class="mainbody left">
         <div class="date"><?=$this->transEsc('Published');?>: <span></span></div>
         <div class="holder"></div>
       </div>
     </div>
   </div>
-  <div class="col-sm-3 sidebar">
+  <div class="sidebar right">
     <div><h3 class="article-navigation-header"><?=$this->translate('content-feed-navigation')?></h3></div>
     <div class="article-navigation-wrapper"></div>
   </div>

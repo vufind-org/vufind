@@ -2,7 +2,7 @@
 <?
   // Set page title.
   $this->headTitle($this->translate('Summon Search'));
-  $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">'.$this->translate('Summon Search').'</h1></div>';
+  $this->layout()->finnaMainHeader = '<div><h1 class="content-header">'.$this->translate('Summon Search').'</h1></div>';
   // Disable top search box -- this page has a special layout.
 
 
@@ -24,7 +24,7 @@
 </div>
 <div class="container-fluid">
   <div class="container">
-    <div class="row">
+    <div>
       <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
       <div class="alert alert-warning">
         <h2><?=$this->transEsc('ils_offline_title')?></h2>
@@ -39,13 +39,11 @@
 </div>
 <div class="container-fluid summon-home">
   <div class="container">
-    <div class="row">
-       <div class="col-xs-12">
-          <? if ($template = $this->content()->findTemplateForLng('summon/home-1')): ?>
-          <?=$this->render($template)?>
-          <? endif; ?>
-        </div>
-    </div>
+     <div>
+        <? if ($template = $this->content()->findTemplateForLng('summon/home-1')): ?>
+        <?=$this->render($template)?>
+        <? endif; ?>
+      </div>
   </div>
 </div>
 <!-- reopen container -->

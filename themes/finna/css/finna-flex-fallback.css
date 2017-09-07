@@ -16,7 +16,8 @@
   .footer-container .footer-column,
   .home-facet-container .home-facet,
   .home-facet-container .home-facet-list,
-  .solr-facet-container .solr-adv-facet {
+  .solr-facet-container .solr-adv-facet,
+  .map-control-bar .flex-item {
     display: table-cell;
     min-width: 20px;
     vertical-align: top;

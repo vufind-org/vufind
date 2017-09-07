@@ -136,23 +136,21 @@ if ($groupBranches) {
     </div>
     <div class="holdings<?=$collapseLocations ? ' collapsed' : ''?> root">
 <? else: ?>
-  <div class="header holdings<?=!empty($availableTotal) ? ' available' : ''?>">
-    <div class="row">
-      <div class="col-xs-12">
-      <? if (!empty($availableTotal)): ?>
-        <span class="available-total">
-          <i class="fa fa-ok"></i> <span><?=$this->translate('status_items_available_html', ['%%count%%' => $availableTotal])?></span>
-        </span>
-      <? endif; ?>
-      <span class="info">
-        <? if (!empty($reservationsTotal)): ?>
-          <span class="reservations"><?=$this->translate('status_requests_html', ['%%count%%' => $reservationsTotal]);?></span>
-        <? endif; ?>
-        <? if (!empty($itemsTotal) && !empty($holdingsConfig['display_total_item_count_in_results'])): ?>
-          <span class="total"><?=$this->translate('status_items_total_html', ['%%count%%' => $itemsTotal]);?></span>
-        <? endif; ?>
+  <div class="header holdings<?=!empty($availableTotal) ? ' available' : ''?> clearfix">
+    <div>
+    <? if (!empty($availableTotal)): ?>
+      <span class="available-total">
+        <i class="fa fa-ok"></i> <span><?=$this->translate('status_items_available_html', ['%%count%%' => $availableTotal])?></span>
       </span>
-      </div>
+    <? endif; ?>
+    <span class="info">
+      <? if (!empty($reservationsTotal)): ?>
+        <span class="reservations"><?=$this->translate('status_requests_html', ['%%count%%' => $reservationsTotal]);?></span>
+      <? endif; ?>
+      <? if (!empty($itemsTotal) && !empty($holdingsConfig['display_total_item_count_in_results'])): ?>
+        <span class="total"><?=$this->translate('status_items_total_html', ['%%count%%' => $itemsTotal]);?></span>
+      <? endif; ?>
+    </span>
     </div>
   </div>
   <? $truncateLimit = $this->holdingsSettings()->getTruncateLimit(); ?>
@@ -184,7 +182,7 @@ foreach ($this->statusItems as $item):
     </div></div>
   <? endif; ?>
   <? if ($groupBranches && $newLocation): ?>
-    <div class="holdings-container<?=$collapseBranches ? ' collapsible' : ''?>">
+    <div class="holdings-container<?=$collapseBranches ? ' collapsible' : ''?> clearfix">
       <div class="header">
         <? if ($collapseBranches): ?><i class="fa fa-arrow-right arrow right"></i><? endif; ?>
         <?=$currentLocation?>
@@ -219,14 +217,14 @@ foreach ($this->statusItems as $item):
       ? '<span class="branch">' . ($this->transEsc($item['branch']) . '</span>, <span class="department">' . $this->transEsc($item['department']) . '</span>')
       : '<span class="branch">' . $this->transEsc($item['location'], [], $item['location']) . '</span>';
   ?>
-    <div class="row <?=$currentRow % 2 == 0 ? 'even' : 'odd'?>">
-      <div class="<?=$groupBranches ? 'col-sm-8' : 'no-branches'?> col-xs-12">
+    <div class="<?=$currentRow % 2 == 0 ? 'even' : 'odd'?> clearfix">
+      <div class="<?=$groupBranches ? 'group-location-col' : 'no-branches'?>">
         <div class="groupLocation <?= $prevOrganisation && $newOrganisation ? ' new-organisation' : ''; ?>">
           <i class="fa fa-<?=$classes[0]?> text-<?=$classes[1]?>"></i> <span class="text-<?=$classes[0]?>"><?=$location?></span>
         </div>
       <? if ($groupBranches): ?>
       </div>
-      <div class="col-sm-4 col-xs-12">
+      <div class="group-branches">
           <span class="branchInfo">
           <? if ($item['availability'] && !empty($item['availabilityInfo']['available'])): ?>
             <?= sprintf('%s: %d', $this->transEsc('Available items'), $item['availabilityInfo']['available']); ?>

@@ -1,6 +1,6 @@
 <!-- START of: finna - ajax/piwik-popular-searches.phtml -->
-<div class="popular-searches row">
-  <ul class="col-sm-6 col-xs-12">
+<div class="popular-searches">
+  <ul class="popular-search-col">
   <? $counter = 0; ?>
   <? foreach ($this->searches as $search => $results): ?>
     <li>
@@ -12,7 +12,7 @@
       <? break; ?>
     <? elseif ($counter == 5): ?>
   </ul>
-  <ul class="col-sm-6 col-xs-12">
+  <ul class="popular-search-col">
     <? endif; ?>
   <? endforeach; ?>
   </ul>

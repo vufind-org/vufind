@@ -44,6 +44,19 @@
     padding-bottom: 2px;
 }
 
+.ils-purchase-history {
+    @media(min-width: @screen-sm){
+        .title{
+            width: 33.333%;
+            float:left;
+        }
+        .history{
+            width: 66.666%;
+            float: left;
+        }
+    }
+}
+
 // Result list
 .record-container .holding-details {
     clear: both;
@@ -90,6 +103,9 @@
     border: 1px solid @gray-lighter;
     border-top: none;
 
+    h5{
+        padding-left: 15px;
+    }
     .holdings-container-heading {
         padding-right: 15px;
         &:hover {
@@ -317,7 +333,7 @@
         }
     }
     & .holdings {
-        & .row.odd {
+        & .odd {
             background-color: @gray-ultralight;
         }
         & .branchInfo {
@@ -332,6 +348,16 @@
         }
         & .groupCallnumber {
             float: right;
+        }
+        @media (min-width: @screen-sm) {
+            .group-location-col {
+                width: 65%;
+                float: left;
+            }
+            .group-branches {
+                width: 35%;
+                float: left;
+            }
         }
     }
     & .holdings-container {
