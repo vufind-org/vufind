@@ -80,4 +80,23 @@ class SearchMemory extends \VuFind\View\Helper\Root\SearchMemory
     {
         return $this->memory->retrieveSearch();
     }
+
+    /**
+     * Retrieve the parameters of the last search by the search class
+     *
+     * @param string $searchClassId Search class
+     *
+     * @return \VuFind\Search\Base\Params
+     */
+    public function getLastSearchParams($searchClassId)
+    {
+        $lastUrl = $this->getLastSearchUrl();
+        $queryParams = $lastUrl ? parse_url($lastUrl, PHP_URL_QUERY) : '';
+        $request = new \Zend\StdLib\Parameters();
+        $request->fromString($queryParams);
+        $paramsPlugin = $this->getView()->plugin('SearchParams');
+        $params = $paramsPlugin($searchClassId);
+        $params->initFromRequest($request);
+        return $params;
+    }
 }
