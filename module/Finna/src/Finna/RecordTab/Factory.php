@@ -69,9 +69,8 @@ class Factory
     {
         $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $useRecaptcha = isset($config->Captcha) && isset($config->Captcha->forms)
-            && (trim($config->Captcha->forms) === '*'
-            || strpos($config->Captcha->forms, 'userComments'));
+        $recaptcha = \Finna\Controller\Plugin\Factory::getRecaptcha($sm);
+        $useRecaptcha = $recaptcha->active('userComments');
         return new UserComments(
             'enabled' === $capabilities->getCommentSetting(),
             $useRecaptcha
