@@ -36,7 +36,7 @@
         <div class="access-rights">
           <div class="image-rights">
             <? $hasLink = isset($rights['link']); ?>
-            <strong><?= $this->transEsc('Image Rights') ?>:</strong> <? if (isset($rights['copyright'])): ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
+            <strong><?= $this->transEsc('Image Rights') ?>:</strong> <? if (isset($rights['copyright'])): ?><? if ($hasLink): ?><span class="imagerights"><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a></span><? endif ?><? endif ?>
           </div>
           <div class="copyright truncate-field">
             <? if (isset($rights['description'])): ?>

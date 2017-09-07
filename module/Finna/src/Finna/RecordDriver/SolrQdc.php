@@ -23,6 +23,7 @@
  * @package  RecordDrivers
  * @author   Anna Pienimäki <anna.pienimaki@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -35,6 +36,7 @@ namespace Finna\RecordDriver;
  * @package  RecordDrivers
  * @author   Anna Pienimäki <anna.pienimaki@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -90,7 +92,8 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
     {
         $result = [];
         $urls = [];
-        foreach ($this->getSimpleXML()->xpath('file') as $node) {
+        $rights = [];
+        foreach ($this->getSimpleXML()->file as $node) {
             $attributes = $node->attributes();
             $size = $attributes->bundle == 'THUMBNAIL' ? 'small' : 'large';
             $mimes = ['image/jpeg', 'image/png'];
@@ -107,6 +110,13 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
             }
             $urls[$size] = $url;
         }
+
+        $xml = $this->getSimpleXML();
+        $rights['copyright'] = !empty($xml->rights) ? (string)$xml->rights : '';
+        $rights['link'] = $this->getRightsLink(
+            strtoupper($rights['copyright']), $language
+        );
+
         if ($urls) {
             if (!isset($urls['small'])) {
                 $urls['small'] = $urls['large'];
@@ -116,7 +126,7 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
             $result[] = [
                 'urls' => $urls,
                 'description' => '',
-                'rights' => []
+                'rights' => $rights
             ];
         }
         return $result;
