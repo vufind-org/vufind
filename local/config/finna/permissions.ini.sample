@@ -139,3 +139,20 @@ permission = finna.cache
 ;ipRange[] = ::1
 ;permission[] = access.finna.api.auth.backendlist
 ;permission[] = access.finna.api.auth.librarycardlogin
+
+; Default configuration for the Primo module (allow everyone by default).
+[default.PrimoModule]
+role[] = guest
+role[] = loggedin
+permission = access.PrimoModule
+
+; Show staff view for all users by default
+[default.StaffViewTab]
+role[] = guest
+role[] = loggedin
+permission = access.StaffViewTab
+
+; By default, favorites are available to all logged-in users.
+[default.Favorites]
+role[] = loggedin
+permission = feature.Favorites
