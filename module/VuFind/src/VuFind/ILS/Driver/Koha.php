@@ -27,8 +27,8 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\ILS as ILSException,
-    VuFind\Exception\Date as DateException;
+use PDO, PDOException, VuFind\Exception\ILS as ILSException;
+
 /**
  * VuFind Driver for Koha (version: 3.02)
  *
@@ -647,7 +647,6 @@ class Koha extends AbstractBase
      *
      * @param string $date Date to convert
      *
-     * @throws DateException
      * @return string
      */
     public function displayDate($date)
@@ -670,7 +669,6 @@ class Koha extends AbstractBase
      *
      * @param string $date Datetime to convert
      *
-     * @throws DateException
      * @return string
      */
     public function displayTime($date)
@@ -691,7 +689,6 @@ class Koha extends AbstractBase
      *
      * @param string $date Datetime to convert
      *
-     * @throws DateException
      * @return string
      */
     public function displayDateTime($date)
