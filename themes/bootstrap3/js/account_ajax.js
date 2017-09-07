@@ -1,6 +1,8 @@
 /*global userIsLoggedIn, VuFind */
 VuFind.register('account', function Account() {
   var LOADING = -1;
+  var _sessionDataKey = 'account-statuses';
+  var _sessionLoginKey = 'account-logged-in';
 
   var checkedOutStatus = LOADING;
   var fineStatus = LOADING;
@@ -104,27 +106,34 @@ VuFind.register('account', function Account() {
       holdStatus = null;
     });
   };
-  var _performAjax = function _performAjax() {
+  var _fetchData = function _fetchData() {
     _ajaxCheckedOut();
     _ajaxFines();
     _ajaxHolds();
   };
 
   var _save = function _save() {
-    sessionStorage.setItem('account', JSON.stringify({
+    sessionStorage.setItem(_sessionDataKey, JSON.stringify({
       checkedOut: checkedOutStatus,
       fines: fineStatus,
       holds: holdStatus
     }));
   };
+  // Clearing save forces AJAX update next page load
+  var _clearSave = function _clearSave() {
+    sessionStorage.removeItem(_sessionDataKey);
+  };
   var load = function load() {
     if (!userIsLoggedIn) {
-      sessionStorage.setItem('account-logged-in', false);
+      sessionStorage.setItem(_sessionLoginKey, false);
       return false;
     }
+    // Update information when certain actions are performed
+    $('#cancelHold,#renewals').submit(_clearSave);
+
     $('.myresearch-menu .status').removeClass('hidden');
-    var prevLoginStatus = sessionStorage.getItem('account-logged-in');
-    var data = sessionStorage.getItem('account');
+    var prevLoginStatus = sessionStorage.getItem(_sessionLoginKey);
+    var data = sessionStorage.getItem(_sessionDataKey);
     if (data && prevLoginStatus !== null && prevLoginStatus === 'true') {
       var json = JSON.parse(data);
       if (json.checkedOut === -1) {
@@ -144,8 +153,8 @@ VuFind.register('account', function Account() {
       }
       _render();
     } else {
-      _performAjax();
-      sessionStorage.setItem('account-logged-in', true);
+      _fetchData();
+      sessionStorage.setItem(_sessionLoginKey, true);
     }
   };
 
@@ -154,7 +163,6 @@ VuFind.register('account', function Account() {
     fineStatus: fineStatus,
     holdStatus: holdStatus,
 
-    init: load,
-    load: load
+    init: load
   };
 });
