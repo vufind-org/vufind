@@ -659,9 +659,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
             if ($url) {
                 $httpService = $this->serviceLocator->get('VuFind\Http');
                 $result = $httpService->get($url, [], 60);
-                if ($result->isSuccess()) {
-                    $content = $result->getBody();
-
+                if ($result->isSuccess() && ($content = $result->getBody())) {
                     $encoding = mb_detect_encoding(
                         $content, ['UTF-8', 'ISO-8859-1']
                     );
