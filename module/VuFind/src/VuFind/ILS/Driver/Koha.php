@@ -696,18 +696,14 @@ class Koha extends AbstractBase
      */
     public function displayDateTime($date)
     {
-
         if (empty($date)) {
             return "";
-
         } else if (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
             // YYYY-MM-DD HH:MM:SS
-
             return
                 $this->dateConverter->convertToDisplayDateAndTime(
                     'Y-m-d H:i:s', $date
                 );
-
         } else {
             error_log("Unexpected date format: $date");
             return $date;
