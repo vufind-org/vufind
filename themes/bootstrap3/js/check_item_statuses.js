@@ -77,30 +77,42 @@ var itemStatusIds = [];
 var itemStatusEls = {};
 var itemStatusTimer = null;
 var itemStatusDelay = 200;
+var itemStatusRunning = false;
+
+function runItemAjaxForQueue() {
+  // Only run one item status AJAX request at a time:
+  if (itemStatusRunning) {
+      itemStatusTimer = setTimeout(runItemAjaxForQueue, itemStatusDelay);
+      return;
+  }
+  itemStatusRunning = true;
+  $.ajax({
+    dataType: 'json',
+    method: 'POST',
+    url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
+    data: { 'id': itemStatusIds }
+  })
+  .done(function checkItemStatusDone(response) {
+    for (var j = 0; j < response.data.length; j++) {
+      displayItemStatus(response.data[j], itemStatusEls[response.data[j].id]);
+      itemStatusIds.splice(itemStatusIds.indexOf(response.data[j].id), 1);
+    }
+    itemStatusRunning = false;
+  })
+  .fail(function checkItemStatusFail(response, textStatus) {
+    itemStatusFail(response, textStatus);
+    itemStatusRunning = false;
+  });
+  for (var i = 0; i < itemStatusIds.length; i++) {
+    itemStatusEls[itemStatusIds[i]].find('.ajax-availability').addClass('ajax-pending');
+  }
+}
+
 function itemQueueAjax(id, el) {
   clearTimeout(itemStatusTimer);
   itemStatusIds.push(id);
   itemStatusEls[id] = el;
-  itemStatusTimer = setTimeout(function delayItemAjax() {
-    $.ajax({
-      dataType: 'json',
-      method: 'POST',
-      url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
-      data: { 'id': itemStatusIds }
-    })
-    .done(function checkItemStatusDone(response) {
-      for (var j = 0; j < response.data.length; j++) {
-        displayItemStatus(response.data[j], itemStatusEls[response.data[j].id]);
-        itemStatusIds.splice(itemStatusIds.indexOf(response.data[j].id), 1);
-      }
-    })
-    .fail(function checkItemStatusFail(response, textStatus) {
-      itemStatusFail(response, textStatus);
-    });
-    for (var i = 0; i < itemStatusIds.length; i++) {
-      itemStatusEls[itemStatusIds[i]].find('.ajax-availability').addClass('ajax-pending');
-    }
-  }, itemStatusDelay);
+  itemStatusTimer = setTimeout(runItemAjaxForQueue, itemStatusDelay);
 }
 
 function checkItemStatus(el) {
