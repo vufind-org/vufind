@@ -1376,11 +1376,11 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
                 $historicLoans[] = [
-                    'issuedate' => $row['ISSUEDATE'],
-                    'duedate' => $row['DUEDATE'],
+                    'issuedate' => $this->displayDateTime($row['ISSUEDATE']),
+                    'duedate' => $this->displayDateTime($row['DUEDATE']),
                     'id' => $row['BIBNO'],
                     'barcode' => $row['BARCODE'],
-                    'returned' => $row['RETURNED'],
+                    'returned' => $this->displayDateTime($row['RETURNED']),
                 ];
             }
             return $historicLoans;
@@ -1829,6 +1829,51 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             return $profile;
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Convert a database date to a displayable date.
+     *
+     * @param string $date Date to convert
+     *
+     * @return string
+     */
+    public function displayDate($date)
+    {
+        if (empty($date)) {
+            return "";
+        } else if (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
+            // YYYY-MM-DD HH:MM:SS
+            return $this->dateConverter->convertToDisplayDate('Y-m-d H:i:s', $date);
+        } else if (preg_match("/^\d{4}-\d{2}-\d{2}$/", $date) === 1) { // YYYY-MM-DD
+            return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
+        } else {
+            error_log("Unexpected date format: $date");
+            return $date;
+        }
+    }
+
+    /**
+     * Convert a database datetime to a displayable date and time.
+     *
+     * @param string $date Datetime to convert
+     *
+     * @return string
+     */
+    public function displayDateTime($date)
+    {
+        if (empty($date)) {
+            return "";
+        } else if (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
+            // YYYY-MM-DD HH:MM:SS
+            return
+                $this->dateConverter->convertToDisplayDateAndTime(
+                    'Y-m-d H:i:s', $date
+                );
+        } else {
+            error_log("Unexpected date format: $date");
+            return $date;
         }
     }
 }
