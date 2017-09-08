@@ -82,8 +82,8 @@ var itemStatusRunning = false;
 function runItemAjaxForQueue() {
   // Only run one item status AJAX request at a time:
   if (itemStatusRunning) {
-      itemStatusTimer = setTimeout(runItemAjaxForQueue, itemStatusDelay);
-      return;
+    itemStatusTimer = setTimeout(runItemAjaxForQueue, itemStatusDelay);
+    return;
   }
   itemStatusRunning = true;
   $.ajax({
