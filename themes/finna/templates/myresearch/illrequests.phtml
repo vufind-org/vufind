@@ -40,18 +40,22 @@
             <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
           </div>
           <div>
-            <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEsc("ill_request_cancel_selected") ?>" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"/>
-            <ul class="dropdown-menu useraccount-cancel">
-              <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_selected_text") ?></a></li>
-              <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelSelected');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-              <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-            </ul>
-            <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEsc("ill_request_cancel_all") ?>" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"/>
-            <ul class="dropdown-menu useraccount-cancel">
-              <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_all_text") ?></a></li>
-              <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelAll');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-              <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-            </ul>
+            <div class="btn-group">
+              <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEsc("ill_request_cancel_selected") ?>" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"/>
+              <ul class="dropdown-menu useraccount-cancel">
+                <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_selected_text") ?></a></li>
+                <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelSelected');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+                <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+              </ul>
+            </div>
+            <div class="btn-group">
+              <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEsc("ill_request_cancel_all") ?>" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"/>
+              <ul class="dropdown-menu useraccount-cancel">
+                <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_all_text") ?></a></li>
+                <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelAll');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+                <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+              </ul>
+            </div>
           </div>
         </div>
         <? else: ?>
@@ -67,13 +71,13 @@
         <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <tr id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="myresearch-row ill-details-row">
           <td class="text-center">
-          <? if ($this->cancelForm && !isset($ilsDetails['cancel_details'])): ?>
+          <? if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
             <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
             <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" />
             <div class="checkboxFilter">
               <div class="checkbox">
                 <label>
-                  <?=$this->transEsc('Select');?>
+                  <span class="sr-only"><?=$this->transEsc('Select');?></span>
                   <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" />
                 </label>
               </div>
