@@ -15,8 +15,8 @@
     ?>
     <tr>
       <td><?=$this->escapeHtml($langCode . ' (' . $diffs['name'] . ')')?></td>
-      <td><?=$missingCount ?><? if($missingCount > 0): ?> (<a href="#" onclick="diffManager.showMissing('<?=$langCode ?>')"><?=$this->transEsc('show') ?></a>)<? endif; ?></td>
-      <td><?=$extraCount ?><? if($extraCount > 0): ?> (<a href="#" onclick="diffManager.showExtra('<?=$langCode ?>')"><?=$this->transEsc('show') ?></a>)<? endif; ?></td>
+      <td><?=$missingCount ?><? if($missingCount > 0): ?> (<a href="#" onclick="return diffManager.showMissing('<?=$langCode ?>')"><?=$this->transEsc('show') ?></a>)<? endif; ?></td>
+      <td><?=$extraCount ?><? if($extraCount > 0): ?> (<a href="#" onclick="return diffManager.showExtra('<?=$langCode ?>')"><?=$this->transEsc('show') ?></a>)<? endif; ?></td>
       <td><?=$this->escapeHtml($diffs['l2Percent'])?></td>
       <td><?=count($diffs['helpFiles'])?></td>
     </tr>

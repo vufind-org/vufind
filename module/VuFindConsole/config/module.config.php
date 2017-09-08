@@ -4,6 +4,7 @@ namespace VuFindConsole\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
+            'compile' => 'VuFindConsole\Controller\Factory::getCompileController',
             'generate' => 'VuFindConsole\Controller\Factory::getGenerateController',
             'harvest' => 'VuFindConsole\Controller\Factory::getHarvestController',
             'import' => 'VuFindConsole\Controller\Factory::getImportController',
@@ -35,11 +36,14 @@ $config = [
 ];
 
 $routes = [
+    'compile/theme' => 'compile theme [--force] [<source>] [<target>]',
     'generate/dynamicroute' => 'generate dynamicroute [<name>] [<newController>] [<newAction>] [<module>]',
     'generate/extendservice' => 'generate extendservice [<source>] [<target>]',
     'generate/nontabrecordaction' => 'generate nontabrecordaction [<newAction>] [<module>]',
     'generate/recordroute' => 'generate recordroute [<base>] [<newController>] [<module>]',
     'generate/staticroute' => 'generate staticroute [<name>] [<module>]',
+    'generate/theme' => 'generate theme [<themename>]',
+    'generate/thememixin' => 'generate thememixin [<name>]',
     // harvest/harvest_oai is too complex to represent here; we need to rely on default-route
     'harvest/merge-marc' => 'harvest merge-marc [<dir>]',
     'import/import-xsl' => 'import import-xsl [--test-only] [--index=] [<xml>] [<properties>]',

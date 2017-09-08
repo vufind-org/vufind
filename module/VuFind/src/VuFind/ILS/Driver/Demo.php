@@ -713,15 +713,16 @@ class Demo extends AbstractBase
     {
         $this->checkIntermittentFailure();
         $patron = [
-            'firstname' => 'Lib-' . $patron['cat_username'],
-            'lastname'  => 'Rarian',
-            'address1'  => 'Somewhere...',
-            'address2'  => 'Over the Rainbow',
-            'zip'       => '12345',
-            'city'      => 'City',
-            'country'   => 'Country',
-            'phone'     => '1900 CALL ME',
-            'group'     => 'Library Staff'
+            'firstname'       => 'Lib-' . $patron['cat_username'],
+            'lastname'        => 'Rarian',
+            'address1'        => 'Somewhere...',
+            'address2'        => 'Over the Rainbow',
+            'zip'             => '12345',
+            'city'            => 'City',
+            'country'         => 'Country',
+            'phone'           => '1900 CALL ME',
+            'group'           => 'Library Staff',
+            'expiration_date' => 'Someday'
         ];
         return $patron;
     }
