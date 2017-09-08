@@ -687,7 +687,7 @@ finna.layout = (function() {
             },
         };
         if (organisationName) {
-           params.parentName = new String(organisationName);
+           params.data.parentName = new String(organisationName);
         }
         $.ajax(params)
             .done(function(response) {
