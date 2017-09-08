@@ -47,7 +47,11 @@
             <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>
           <? if (!$missing): ?><span class="sr-only"> <?=$this->transEsc('To the record')?></span></a><? endif; ?>
         </div>
-
+        <? if ($titleAltScript = $this->driver->tryMethod('getShortTitleAltScript')): ?>
+          <div class="title-alt-script">
+            <?=$this->escapeHtml($titleAltScript)?><? if ($subtitleAltScript = $this->driver->tryMethod('getSubtitleAltScript')): ?>&nbsp;: <?=$this->escapeHtml($subtitleAltScript)?><? endif; ?>
+          </div>
+        <? endif; ?>
         <div class="record-authors">
           <?=$this->record($this->driver)->getFormatList() ?><br/>
           <? if($this->driver->isCollection()): ?>

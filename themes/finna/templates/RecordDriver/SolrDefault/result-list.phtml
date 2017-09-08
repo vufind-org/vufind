@@ -34,7 +34,11 @@ if ($img):
             </div>
           <? endif; ?>
         </div>
-
+        <? if ($titleAltScript = $this->driver->tryMethod('getShortTitleAltScript')): ?>
+          <div class="title-alt-script">
+            <?=$this->escapeHtml($titleAltScript)?><? if ($subtitleAltScript = $this->driver->tryMethod('getSubtitleAltScript')): ?>&nbsp;: <?=$this->escapeHtml($subtitleAltScript)?><? endif; ?>
+          </div>
+        <? endif; ?>
         <div class="dateyeartype">
           <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
 
