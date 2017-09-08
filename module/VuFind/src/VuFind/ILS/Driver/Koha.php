@@ -518,11 +518,11 @@ class Koha extends AbstractBase
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
                 $historicLoans[] = [
-                    'issuedate' => $row['ISSUEDATE'],
-                    'duedate' => $row['DUEDATE'],
+                    'issuedate' => $this->displayDateTime($row['ISSUEDATE']),
+                    'duedate' => $this->displayDateTime($row['DUEDATE']),
                     'id' => $row['BIBNO'],
                     'barcode' => $row['BARCODE'],
-                    'returned' => $row['RETURNED'],
+                    'returned' => $this->displayDateTime($row['RETURNED']),
                 ];
             }
             return $historicLoans;
