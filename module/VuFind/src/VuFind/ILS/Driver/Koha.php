@@ -63,6 +63,23 @@ class Koha extends AbstractBase
     protected $locCodes;
 
     /**
+     * Date converter object
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter = null;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -176,7 +193,7 @@ class Koha extends AbstractBase
                     if ($rowIssue) {
                         $available = false;
                         $status = 'Checked out';
-                        $duedate = $rowIssue['DUEDATE'];
+                        $duedate = $this->displayDateTime($rowIssue['DUEDATE']);
                     } else {
                         $available = true;
                         $status = 'Available';
@@ -289,10 +306,10 @@ class Koha extends AbstractBase
             foreach ($sqlStmt->fetchAll() as $row) {
                 $fineLst[] = [
                     'amount' => (null == $row['AMOUNT']) ? 0 : $row['AMOUNT'],
-                    'checkout' => $row['CHECKOUT'],
+                    'checkout' => $this->displayDate($row['CHECKOUT']),
                     'fine' => (null == $row['FINE']) ? 'Unknown' : $row['FINE'],
                     'balance' => (null == $row['BALANCE']) ? 0 : $row['BALANCE'],
-                    'duedate' => $row['DUEDATE'],
+                    'duedate' => $this->displayDate($row['DUEDATE']),
                     'id' => $row['BIBNO']
                 ];
             }
@@ -333,8 +350,8 @@ class Koha extends AbstractBase
                 $holdLst[] = [
                     'id' => $row['BIBNO'],
                     'location' => $row['BRNAME'],
-                    'expire' => $row['EXDATE'],
-                    'create' => $row['RSVDATE']
+                    'expire' => $this->displayDate($row['EXDATE']),
+                    'create' => $this->displayDate($row['RSVDATE'])
                 ];
             }
             return $holdLst;
@@ -413,7 +430,7 @@ class Koha extends AbstractBase
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
                 $transactionLst[] = [
-                    'duedate' => $row['DUEDATE'],
+                    'duedate' => $this->displayDateTime($row['DUEDATE']),
                     'id' => $row['BIBNO'],
                     'barcode' => $row['BARCODE'],
                     'renew' => $row['RENEWALS']
@@ -622,6 +639,51 @@ class Koha extends AbstractBase
         }
         catch (PDOException $e) {
             throw new ILSException($e->getMessage());
+        }
+    }
+
+    /**
+     * Convert a database date to a displayable date.
+     *
+     * @param string $date Date to convert
+     *
+     * @return string
+     */
+    public function displayDate($date)
+    {
+        if (empty($date)) {
+            return "";
+        } else if (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
+            // YYYY-MM-DD HH:MM:SS
+            return $this->dateConverter->convertToDisplayDate('Y-m-d H:i:s', $date);
+        } else if (preg_match("/^\d{4}-\d{2}-\d{2}$/", $date) === 1) { // YYYY-MM-DD
+            return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
+        } else {
+            error_log("Unexpected date format: $date");
+            return $date;
+        }
+    }
+
+    /**
+     * Convert a database datetime to a displayable date and time.
+     *
+     * @param string $date Datetime to convert
+     *
+     * @return string
+     */
+    public function displayDateTime($date)
+    {
+        if (empty($date)) {
+            return "";
+        } else if (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
+            // YYYY-MM-DD HH:MM:SS
+            return
+                $this->dateConverter->convertToDisplayDateAndTime(
+                    'Y-m-d H:i:s', $date
+                );
+        } else {
+            error_log("Unexpected date format: $date");
+            return $date;
         }
     }
 }
