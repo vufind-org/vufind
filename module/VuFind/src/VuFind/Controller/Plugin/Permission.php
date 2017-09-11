@@ -72,8 +72,9 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
     /**
      * Constructor
      *
-     * @param PermissionManager       $pm  Permission Manager
-     * @param PermissionDeniedManager $pdm Permission Denied Manager
+     * @param PermissionManager       $pm   Permission Manager
+     * @param PermissionDeniedManager $pdm  Permission Denied Manager
+     * @param \VuFind\Auth\Manager    $auth Auth manager
      */
     public function __construct(PermissionManager $pm, PermissionDeniedManager $pdm,
         \VuFind\Auth\Manager $auth
