@@ -1224,7 +1224,7 @@ class MyResearchController extends AbstractBase
         $catalog = $this->getILS();
 
         // Get checked out item details:
-        $result = $catalog->getMyHistory($patron);
+        $result = $catalog->getMyTransactionHistory($patron);
 
         // Get page size:
         $config = $this->getConfig();

@@ -848,7 +848,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * @throws ILSException
      * @return array      Array of the patron's historic loans on success.
      */
-    public function getMyHistory($user)
+    public function getMyTransactionHistory($user)
     {
         $userId = $user['id'];
         $historicLoans = [];

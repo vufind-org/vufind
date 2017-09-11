@@ -499,7 +499,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyHistory($patron)
+    public function getMyTransactionHistory($patron)
     {
         $id = 0;
         $historicLoans = [];

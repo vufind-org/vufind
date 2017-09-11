@@ -11,7 +11,7 @@
         <i class="fa fa-fw fa-book" aria-hidden="true"></i> <?=$this->transEsc('Checked Out Items')?>
       </a>
     <? endif; ?>
-    <? if ($this->ils()->checkCapability('getMyHistory')): ?>
+    <? if ($this->ils()->checkCapability('getMyTransactionHistory')): ?>
       <a href="<?=$this->url('myresearch-historicloans')?>"<?=$this->active == 'historicloans' ? ' class="active"' : ''?>">
         <i class="fa fa-fw fa-book" aria-hidden="true"></i> <?=$this->transEsc('Historic Loans')?>
       </a>
