@@ -23,49 +23,58 @@ var saveStatusObjs = [];
 var saveStatusEls = {};
 var saveStatusTimer = null;
 var saveStatusDelay = 200;
+var saveStatusRunning = false;
+
+function runSaveAjaxForQueue() {
+  // Only run one save status AJAX request at a time:
+  if (saveStatusRunning) {
+    itemStatusTimer = setTimeout(runSaveAjaxForQueue, itemStatusDelay);
+    return;
+  }
+  saveStatusRunning = true;
+  var ids = [];
+  var sources = [];
+  for (var i = 0; i < saveStatusObjs.length; i++) {
+    ids.push(saveStatusObjs[i].id);
+    sources.push(saveStatusObjs[i].source);
+  }
+  $.ajax({
+    dataType: 'json',
+    method: 'POST',
+    url: VuFind.path + '/AJAX/JSON?method=getSaveStatuses',
+    data: {
+      'id': ids,
+      'source': sources
+    }
+  })
+  .done(function checkSaveStatusDone(response) {
+    for (var id in response.data) {
+      if (response.data.hasOwnProperty(id)) {
+        displaySaveStatus(response.data[id], saveStatusEls[id]);
+      }
+      // Remove populated ids from the queue
+      for (var j = 0; j < saveStatusObjs; j++) {
+        if (saveStatusObjs[j].id === id) {
+          saveStatusObjs.splice(j, 1);
+        }
+      }
+    }
+    saveStatusObjs = [];
+  })
+  .fail(function checkItemStatusFail(response, textStatus) {
+    saveStatusFail(response, textStatus);
+  });
+  for (var sel in saveStatusEls) {
+    if (saveStatusEls.hasOwnProperty(sel)) {
+      saveStatusEls[sel].find('.ajax-availability').addClass('ajax-pending');
+    }
+  }
+}
 function saveQueueAjax(obj, el) {
   clearTimeout(saveStatusTimer);
   saveStatusObjs.push(obj);
   saveStatusEls[obj.source + '|' + obj.id] = el;
-  saveStatusTimer = setTimeout(function delaySaveAjax() {
-    var ids = [];
-    var sources = [];
-    for (var i = 0; i < saveStatusObjs.length; i++) {
-      ids.push(saveStatusObjs[i].id);
-      sources.push(saveStatusObjs[i].source);
-    }
-    $.ajax({
-      dataType: 'json',
-      method: 'POST',
-      url: VuFind.path + '/AJAX/JSON?method=getSaveStatuses',
-      data: {
-        'id': ids,
-        'source': sources
-      }
-    })
-    .done(function checkSaveStatusDone(response) {
-      for (var id in response.data) {
-        if (response.data.hasOwnProperty(id)) {
-          displaySaveStatus(response.data[id], saveStatusEls[id]);
-        }
-        // Remove populated ids from the queue
-        for (var j = 0; j < saveStatusObjs; j++) {
-          if (saveStatusObjs[j].id === id) {
-            saveStatusObjs.splice(j, 1);
-          }
-        }
-      }
-      saveStatusObjs = [];
-    })
-    .fail(function checkItemStatusFail(response, textStatus) {
-      saveStatusFail(response, textStatus);
-    });
-    for (var sel in saveStatusEls) {
-      if (saveStatusEls.hasOwnProperty(sel)) {
-        saveStatusEls[sel].find('.ajax-availability').addClass('ajax-pending');
-      }
-    }
-  }, saveStatusDelay);
+  saveStatusTimer = setTimeout(runSaveAjaxForQueue, saveStatusDelay);
 }
 
 function checkSaveStatus(el) {
