@@ -159,13 +159,19 @@ header .container.navbar { margin-bottom: 0; }
 .result-formats { margin-bottom: .5rem; }
 
 .btn-bookbag-toggle form { display: inline; }
-.btn-bookbag-toggle .fa { margin-right: .3rem; }
-.result .btn-bookbag-toggle .fa {
+.cart-link-icon.fa { margin-right: .3rem; }
+.result .cart-link-icon {
   color: $text-color;
   /* .fa-fw */
   width: 1.28571429em;
   text-align: center;
 }
+.savedLists {
+  @extend .alert;
+  @extend .alert-info;
+  display: none;
+}
+
 @media (min-width: 768px) {
   .result-body {
     float: left;
@@ -176,6 +182,7 @@ header .container.navbar { margin-bottom: 0; }
     width: 25%;
     padding: 0;
   }
+  .savedLists.loaded { display: block; }
 }
 body.rtl {
   .result .btn-bookbag-toggle .fa {

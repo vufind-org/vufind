@@ -217,6 +217,9 @@ class DbUpgrade extends AbstractPlugin
      */
     protected function getCollationProblemsForTable($table)
     {
+        if (!isset($this->dbCommands[$table['Name']][0])) {
+            return false;
+        }
         // For now, we'll only detect problems in utf8-encoded tables; if the
         // user has a Latin1 database, they probably have more complex issues to
         // work through anyway.

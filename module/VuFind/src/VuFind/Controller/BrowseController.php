@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -701,9 +701,14 @@ class BrowseController extends AbstractBase
 
         // ALPHABET TO ['value','displayText']
         // (value has asterix appended for Solr, but is unmodified for tags)
-        $suffix = $this->getCurrentAction() == 'Tag' ? '' : '*';
-        $callback = function ($letter) use ($suffix) {
-            return ['value' => $letter . $suffix, 'displayText' => $letter];
+        $action = $this->getCurrentAction();
+        $callback = function ($letter) use ($action) {
+            // Tag is a special case because it is database-backed; for everything
+            // else, use a Solr query that will allow case-insensitive lookups.
+            $value = ($action == 'Tag')
+                ? $letter
+                : '(' . strtoupper($letter) . '* OR ' . strtolower($letter) . '*)';
+            return ['value' => $value, 'displayText' => $letter];
         };
         preg_match_all('/(.)/u', $chars, $matches);
         return array_map($callback, $matches[1]);

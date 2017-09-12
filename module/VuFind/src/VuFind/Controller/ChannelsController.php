@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -42,18 +42,40 @@ use Zend\Config\Config;
 class ChannelsController extends AbstractBase
 {
     /**
+     * Retrieve channel information for the Channels/Home page.
+     *
+     * @param array  $providers     Array of channel providers
+     * @param string $searchClassId Search class ID
+     * @param string $token         Channel token
+     *
+     * @return array
+     */
+    protected function getHomeChannels($providers, $searchClassId, $token)
+    {
+        $callback = function ($runner, $params, $searchClassId) use ($providers) {
+            foreach ($providers as $provider) {
+                $provider->configureSearchParams($params);
+            }
+        };
+        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+        $results = $runner->run([], $searchClassId, $callback);
+
+        $channels = [];
+        foreach ($providers as $provider) {
+            $channels = array_merge(
+                $channels, $provider->getFromSearch($results, $token)
+            );
+        }
+        return $channels;
+    }
+
+    /**
      * Generates static front page of channels.
      *
      * @return \Zend\View\Model\ViewModel
      */
     public function homeAction()
     {
-        $view = $this->createViewModel();
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
-
-        // Send both GET and POST variables to search class:
-        $request = [];
-
         $config = $this->getConfig('channels');
         $defaultSearchClassId = isset($config->General->default_home_source)
             ? $config->General->default_home_source : DEFAULT_SEARCH_BACKEND;
@@ -62,22 +84,25 @@ class ChannelsController extends AbstractBase
             ? $config->{"source.$searchClassId"}->home->toArray() : [];
         $providers = $this->getChannelProviderArray($providerIds, $config);
 
-        $callback = function ($runner, $params, $searchClassId) use ($providers) {
-            foreach ($providers as $provider) {
-                $provider->configureSearchParams($params);
-            }
-        };
-        $view->results = $runner->run($request, $searchClassId, $callback);
-
-        $view->channels = [];
-        $view->token = $this->params()->fromQuery('channelToken');
-        foreach ($providers as $provider) {
-            $view->channels = array_merge(
-                $view->channels,
-                $provider->getFromSearch($view->results, $view->token)
-            );
+        $token = $this->params()->fromQuery('channelToken');
+        if (isset($config->General->cache_home_channels)
+            && $config->General->cache_home_channels
+        ) {
+            $parts = [implode(',', $providerIds), $searchClassId, $token];
+            $cacheKey = 'homeChannels-' . md5(implode('-', $parts));
+            $cache = $this->serviceLocator->get('VuFind\CacheManager')
+                ->getCache('object');
+        } else {
+            $cacheKey = false;
         }
-        return $view;
+        $channels = $cacheKey ? $cache->getItem($cacheKey) : false;
+        if (!$channels) {
+            $channels = $this->getHomeChannels($providers, $searchClassId, $token);
+            if ($cacheKey) {
+                $cache->setItem($cacheKey, $channels);
+            }
+        }
+        return $this->createViewModel(compact('token', 'channels'));
     }
 
     /**

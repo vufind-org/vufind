@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -31,7 +31,7 @@ use Behat\Mink\Element\Element;
 /**
  * List views (i.e. tabs/accordion) test class.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -144,6 +144,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         // Click save inside the tools tab
         $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a')->click();
         $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record')->click();
+        $this->snooze();
         // Login
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
