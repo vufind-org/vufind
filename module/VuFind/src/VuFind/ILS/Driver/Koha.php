@@ -799,7 +799,7 @@ class Koha extends AbstractBase
             ];
         }
         return isset($this->config[$function])
-            ?  $this->config[$function]
+            ? $this->config[$function]
             : false;
     }
 }

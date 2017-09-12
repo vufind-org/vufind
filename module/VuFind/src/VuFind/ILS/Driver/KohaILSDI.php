@@ -488,7 +488,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             ];
         }
         return isset($this->config[$function])
-            ?  $this->config[$function]
+            ? $this->config[$function]
             : false;
     }
 
