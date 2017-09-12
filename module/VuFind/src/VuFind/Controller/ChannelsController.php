@@ -85,7 +85,23 @@ class ChannelsController extends AbstractBase
         $providers = $this->getChannelProviderArray($providerIds, $config);
 
         $token = $this->params()->fromQuery('channelToken');
-        $channels = $this->getHomeChannels($providers, $searchClassId, $token);
+        if (isset($config->General->cache_home_channels)
+            && $config->General->cache_home_channels
+        ) {
+            $parts = implode('-', [implode(',', $providerIds), $searchClassId, $token]);
+            $cacheKey = 'homeChannels-' . md5($parts);
+            $cache = $this->serviceLocator->get('VuFind\CacheManager')
+                ->getCache('object');
+        } else {
+            $cacheKey = false;
+        }
+        $channels = $cacheKey ? $cache->getItem($cacheKey) : false;
+        if (!$channels) {
+            $channels = $this->getHomeChannels($providers, $searchClassId, $token);
+            if ($cacheKey) {
+                $cache->setItem($cacheKey, $channels);
+            }
+        }
         return $this->createViewModel(compact('token', 'channels'));
     }
 
