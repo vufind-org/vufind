@@ -1223,42 +1223,108 @@ class MyResearchController extends AbstractBase
         // Connect to the ILS:
         $catalog = $this->getILS();
 
-        // Get checked out item details:
-        $result = $catalog->getMyTransactionHistory($patron);
+        // Check function config
+        $functionConfig = $catalog->checkFunction(
+            'getMyTransactionHistory', $patron
+        );
+        if (false === $functionConfig) {
+            $this->flashMessenger()->addErrorMessage('ils_action_unavailable');
+            return $this->createViewModel();
+        }
 
-        // Get page size:
+        // Get page and page size:
+        $page = (int)$this->params()->fromQuery('page', 1);
         $config = $this->getConfig();
         $limit = isset($config->Catalog->historic_loan_page_size)
             ? $config->Catalog->historic_loan_page_size : 50;
+        $ilsPaging = true;
+        if (isset($functionConfig['max_results'])) {
+            $limit = min([$functionConfig['max_results'], $limit]);
+        } elseif (isset($functionConfig['page_size'])) {
+            if (!in_array($limit, $functionConfig['page_size'])) {
+                $limit = isset($functionConfig['default_page_size'])
+                    ? $functionConfig['default_page_size']
+                    : $functionConfig['page_size'][0];
+            }
+        } else {
+            $ilsPaging = false;
+        }
+
+        // Get sort settings
+        $sort = false;
+        if (!empty($functionConfig['sort'])) {
+            $sort = $this->params()->fromQuery('sort');
+            if (!isset($functionConfig['sort'][$sort])) {
+                if (isset($functionConfig['default_sort'])) {
+                    $sort = $functionConfig['default_sort'];
+                } else {
+                    reset($functionConfig['sort']);
+                    $sort = key($functionConfig['sort']);
+                }
+            }
+        }
+
+        // Configure call params
+        $params = [
+            'sort' => $sort
+        ];
+        if ($ilsPaging) {
+            $params['page'] = $page;
+            $params['limit'] = $limit;
+        }
+
+        // Get checked out item details:
+        $result = $catalog->getMyTransactionHistory($patron, $params);
 
         // Build paginator if needed:
-        if ($limit > 0 && $limit < count($result)) {
-            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($result);
+        if ($ilsPaging && $limit < $result['count']) {
+            $adapter = new \Zend\Paginator\Adapter\NullFill($result['count']);
             $paginator = new \Zend\Paginator\Paginator($adapter);
             $paginator->setItemCountPerPage($limit);
-            $paginator->setCurrentPageNumber($this->params()->fromQuery('page', 1));
+            $paginator->setCurrentPageNumber($page);
+            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
+        } elseif ($limit > 0 && $limit < $result['count']) {
+            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter(
+                $result['transactions']
+            );
+            $paginator = new \Zend\Paginator\Paginator($adapter);
+            $paginator->setItemCountPerPage($limit);
+            $paginator->setCurrentPageNumber($page);
             $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
             $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
         } else {
             $paginator = false;
             $pageStart = 0;
-            $pageEnd = count($result);
+            $pageEnd = $result['count'];
         }
 
         $transactions = $hiddenTransactions = [];
-        foreach ($result as $i => $current) {
+        foreach ($result['transactions'] as $i => $current) {
             // Build record driver (only for the current visible page):
-            if ($i >= $pageStart && $i <= $pageEnd) {
+            if ($ilsPaging || ($i >= $pageStart && $i <= $pageEnd)) {
                 $transactions[] = $this->getDriverForILSRecord($current);
             } else {
                 $hiddenTransactions[] = $current;
             }
         }
 
+        // Handle view params for sorting
+        $sortList = [];
+        if (!empty($functionConfig['sort'])) {
+            foreach ($functionConfig['sort'] as $key => $value) {
+                $sortList[$key] = [
+                    'desc' => $value,
+                    'url' => '?sort=' . urlencode($key),
+                    'selected' => $sort == $key
+                ];
+            }
+        }
+
         return $this->createViewModel(
             compact(
                 'transactions', 'paginator',
-                'hiddenTransactions'
+                'hiddenTransactions', 'sortList', 'functionConfig'
             )
         );
     }

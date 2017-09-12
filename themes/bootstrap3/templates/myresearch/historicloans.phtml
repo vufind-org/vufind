@@ -1,9 +1,9 @@
 <?
   // Set up page title:
-  $this->headTitle($this->translate('Historic Loans'));
+  $this->headTitle($this->translate('Loan History'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Historic Loans') . '</li>';
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Loan History') . '</li>';
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
@@ -13,20 +13,27 @@
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
 
   <? if (!empty($this->transactions)): ?>
-    <? if ($paginator): ?>
-      <?
-        $end = min(
-          $paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage()),
-          $paginator->getTotalItemCount()
-        );
-        $transParams = [
-          '%%start%%' => $this->localizedNumber($paginator->getAbsoluteItemNumber(1)),
-          '%%end%%'   => $this->localizedNumber($end),
-          '%%total%%' => $this->localizedNumber($paginator->getTotalItemCount())
-        ];
-      ?>
-      <?=$this->translate('showing_items_of_html', $transParams); ?>
-    <? endif; ?>
+    <nav class="search-header hidden-print">
+      <? if ($this->paginator): ?>
+        <div class="search-stats">
+          <?
+            $end = min(
+              $this->paginator->getAbsoluteItemNumber($this->paginator->getItemCountPerPage()),
+              $this->paginator->getTotalItemCount()
+            );
+            $transParams = [
+              '%%start%%' => $this->localizedNumber($this->paginator->getAbsoluteItemNumber(1)),
+              '%%end%%'   => $this->localizedNumber($end),
+              '%%total%%' => $this->localizedNumber($this->paginator->getTotalItemCount())
+            ];
+          ?>
+          <?=$this->translate('showing_items_of_html', $transParams); ?>
+        </div>
+      <? endif; ?>
+      <? if ($this->sortList): ?>
+        <?=$this->context($this)->renderInContext('Helpers/sort.phtml', ['sortList' => $this->sortList]); ?>
+      <? endif; ?>
+    </nav>
 
     <? $i = 0; foreach ($this->transactions as $resource): ?>
       <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
@@ -92,8 +99,15 @@
               <br />
             <? endif; ?>
 
-            <strong><?=$this->transEsc('Issue Date')?>: <?=$this->escapeHtml($ilsDetails['issuedate'])?><? if (isset($ilsDetails['issueTime'])): ?> <?=$this->escapeHtml($ilsDetails['issueTime'])?><? endif; ?></strong> <br/>
-            <strong><?=$this->transEsc('Returned Date')?>: <?=$this->escapeHtml($ilsDetails['returned'])?><? if (isset($ilsDetails['returnedTime'])): ?> <?=$this->escapeHtml($ilsDetails['returnedTime'])?><? endif; ?></strong>
+            <? if (!empty($ilsDetails['checkoutDate'])): ?>
+              <strong><?=$this->transEsc('Checkout Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['checkoutDate'])?><? if (isset($ilsDetails['checkoutTime'])): ?> <span class="checkout-time"><?=$this->escapeHtml($ilsDetails['checkoutTime'])?><? endif; ?></span><br/>
+            <? endif; ?>
+            <? if (!empty($ilsDetails['returnDate'])): ?>
+              <strong><?=$this->transEsc('Return Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['returnDate'])?><? if (isset($ilsDetails['returnTime'])): ?> <span class="return-time"><?=$this->escapeHtml($ilsDetails['returnTime'])?><? endif; ?></span><br/>
+            <? endif; ?>
+            <? if (!empty($ilsDetails['dueDate'])): ?>
+              <strong><?=$this->transEsc('Due Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['dueDate'])?><? if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><? endif; ?>
+            <? endif; ?>
 
             <? if (isset($ilsDetails['message']) && !empty($ilsDetails['message'])): ?>
               <div class="alert alert-info"><?=$this->transEsc($ilsDetails['message'])?></div>
@@ -106,9 +120,9 @@
         <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="'.$this->escapeHtmlAttr($resource->getCoinsOpenUrl()).'"></span>':''?>
       </div>
     <? endforeach; ?>
-    <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml') : ''?>
+    <?=$this->paginator ? $this->paginationControl($this->paginator, 'Sliding', 'Helpers/pagination.phtml') : ''?>
   <? else: ?>
-    <?=$this->transEsc('You do not have any historic loans')?>.
+    <?=$this->transEsc('You do not have any loans in the loan history')?>.
   <? endif; ?>
 </div>
 
