@@ -29,7 +29,7 @@ var saveStatusRunning = false;
 function runSaveAjaxForQueue() {
   // Only run one save status AJAX request at a time:
   if (saveStatusRunning) {
-    itemStatusTimer = setTimeout(runSaveAjaxForQueue, itemStatusDelay);
+    saveStatusTimer = setTimeout(runSaveAjaxForQueue, saveStatusDelay);
     return;
   }
   saveStatusRunning = true;
