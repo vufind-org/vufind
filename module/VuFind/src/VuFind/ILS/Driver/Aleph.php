@@ -842,7 +842,8 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     /**
      * Get Patron Loan History
      *
-     * @param array $user The patron array from patronLogin
+     * @param array $user   The patron array from patronLogin
+     * @param array $params Parameters
      *
      * @throws \VuFind\Exception\Date
      * @throws ILSException
@@ -901,36 +902,38 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         if (isset($params['sort'])) {
             switch ($params['sort']) {
             case 'checkout asc':
-                usort($historicLoans, function ($a, $b) {
+                $sorter = function ($a, $b) {
                     return strcmp($a['_checkoutDate'], $b['_checkoutDate']);
-                });
+                };
                 break;
             case 'return desc':
-                usort($historicLoans, function ($a, $b) {
+                $sorter = function ($a, $b) {
                     return strcmp($b['_returnDate'], $a['_returnDate']);
-                });
+                };
                 break;
             case 'return asc':
-                usort($historicLoans, function ($a, $b) {
+                $sorter = function ($a, $b) {
                     return strcmp($a['_returnDate'], $b['_returnDate']);
-                });
+                };
                 break;
             case 'due desc':
-                usort($historicLoans, function ($a, $b) {
+                $sorter = function ($a, $b) {
                     return strcmp($b['_dueDate'], $a['_dueDate']);
-                });
+                };
                 break;
             case 'due asc':
-                usort($historicLoans, function ($a, $b) {
+                $sorter = function ($a, $b) {
                     return strcmp($a['_dueDate'], $b['_dueDate']);
-                });
+                };
                 break;
             default:
-                usort($historicLoans, function ($a, $b) {
+                $sorter = function ($a, $b) {
                     return strcmp($b['_checkoutDate'], $a['_checkoutDate']);
-                });
+                };
                 break;
             }
+
+            usort($historicLoans, $sorter);
         }
 
         return [
