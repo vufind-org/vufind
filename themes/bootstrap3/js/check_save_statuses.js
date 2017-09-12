@@ -2,6 +2,7 @@
 /*exported checkSaveStatuses, checkSaveStatusesCallback */
 
 function displaySaveStatus(itemLists, $item) {
+  $item.removeClass('.ajax-pending');
   if (itemLists.length > 0) {
     var html = '<ul>' + itemLists.map(function convertToLi(l) {
       return '<li><a href="' + l.list_url + '">' + htmlEncode(l.list_title) + '</a></li>';
@@ -64,17 +65,13 @@ function runSaveAjaxForQueue() {
   .fail(function checkItemStatusFail(response, textStatus) {
     saveStatusFail(response, textStatus);
   });
-  for (var sel in saveStatusEls) {
-    if (saveStatusEls.hasOwnProperty(sel)) {
-      saveStatusEls[sel].find('.ajax-availability').addClass('ajax-pending');
-    }
-  }
 }
 function saveQueueAjax(obj, el) {
   clearTimeout(saveStatusTimer);
   saveStatusObjs.push(obj);
   saveStatusEls[obj.source + '|' + obj.id] = el;
   saveStatusTimer = setTimeout(runSaveAjaxForQueue, saveStatusDelay);
+  el.addClass('ajax-pending');
 }
 
 function checkSaveStatus(el) {

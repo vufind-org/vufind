@@ -12,6 +12,7 @@ function linkCallnumbers(callnumber, callnumber_handler) {
   return callnumber;
 }
 function displayItemStatus(result, $item) {
+  $item.removeClass('.ajax-pending');
   $item.find('.status').empty().append(result.availability_message);
   $item.find('.ajax-availability').removeClass('ajax-availability hidden');
   if (typeof(result.full_status) != 'undefined'
@@ -103,9 +104,6 @@ function runItemAjaxForQueue() {
     itemStatusFail(response, textStatus);
     itemStatusRunning = false;
   });
-  for (var i = 0; i < itemStatusIds.length; i++) {
-    itemStatusEls[itemStatusIds[i]].find('.ajax-availability').addClass('ajax-pending');
-  }
 }
 
 function itemQueueAjax(id, el) {
@@ -113,6 +111,7 @@ function itemQueueAjax(id, el) {
   itemStatusIds.push(id);
   itemStatusEls[id] = el;
   itemStatusTimer = setTimeout(runItemAjaxForQueue, itemStatusDelay);
+  el.addClass('ajax-pending');
 }
 
 function checkItemStatus(el) {
