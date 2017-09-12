@@ -88,8 +88,8 @@ class ChannelsController extends AbstractBase
         if (isset($config->General->cache_home_channels)
             && $config->General->cache_home_channels
         ) {
-            $parts = implode('-', [implode(',', $providerIds), $searchClassId, $token]);
-            $cacheKey = 'homeChannels-' . md5($parts);
+            $parts = [implode(',', $providerIds), $searchClassId, $token];
+            $cacheKey = 'homeChannels-' . md5(implode('-', $parts));
             $cache = $this->serviceLocator->get('VuFind\CacheManager')
                 ->getCache('object');
         } else {
