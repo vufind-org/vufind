@@ -23,6 +23,13 @@
         <?=$this->record($this->driver)->getTitleHtml()?>
       <? if ($url): ?></a><? endif; ?>
     </div>
+    <? if (($sjr = $this->driver->getSjrValue()) && ($issn = $this->driver->getCleanISSN())): ?>
+      <div class="resultItemLine2">
+        <a class="label label-default" href="http://www.scimagojr.com/journalsearch.php?q=<?=urlencode($issn)?>&amp;tip=iss">
+          SJR: <?=$this->escapeHtml($sjr)?>
+        </a>
+      </div>
+    <? endif; ?>
   </div>
   <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
     <?=$thumbnail ?>

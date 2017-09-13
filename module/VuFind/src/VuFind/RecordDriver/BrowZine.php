@@ -49,6 +49,16 @@ class BrowZine extends SolrDefault
     }
 
     /**
+     * Get the SciMago Journal Rank
+     *
+     * @return string
+     */
+    public function getSjrValue()
+    {
+        return isset($this->fields['sjrValue']) ? $this->fields['sjrValue'] : '';
+    }
+
+    /**
      * Get the full title of the record.
      *
      * @return string
@@ -76,6 +86,16 @@ class BrowZine extends SolrDefault
             return $this->fields['coverImageUrl'];
         }
         return parent::getThumbnail($size);
+    }
+
+    /**
+     * Get an array of all ISSNs associated with the record (may be empty).
+     *
+     * @return array
+     */
+    public function getISSNs()
+    {
+        return isset($this->fields['issn']) ? (array)$this->fields['issn'] : [];
     }
 
     /**
