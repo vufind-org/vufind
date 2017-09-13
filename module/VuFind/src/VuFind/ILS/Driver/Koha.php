@@ -790,7 +790,7 @@ class Koha extends AbstractBase
                 'sort' => [
                     'checkout desc' => 'sort_checkout_date_desc',
                     'checkout asc' => 'sort_checkout_date_asc',
-                    'return desc' => 'sort_checkout_date_desc',
+                    'return desc' => 'sort_return_date_desc',
                     'return asc' => 'sort_return_date_asc',
                     'due desc' => 'sort_due_date_desc',
                     'due asc' => 'sort_due_date_asc'
