@@ -166,6 +166,8 @@ $(document).ready(function hierarchyTreeReady() {
         }
       });
 
+      // Assist current record styling
+      $('.jstree-clicked').parent().attr('data-clicked-parent', true);
       // Scroll to the current record
       if ($('#hierarchyTree').parents('#modal').length > 0) {
         var hTree = $('#hierarchyTree');
