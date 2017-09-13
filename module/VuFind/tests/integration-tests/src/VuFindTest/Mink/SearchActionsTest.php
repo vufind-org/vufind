@@ -297,7 +297,7 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#modal .js-facet-item.active')->click();
         // remove facet
         $this->snooze();
-        $this->assertNull($page->find('css', '.list-group.filters'));
+        $this->assertNull($page->find('css', '.active-filters'));
     }
 
     /**
@@ -329,7 +329,7 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#modal .js-facet-item.active')->click();
         // remove facet
         $this->snooze();
-        $this->assertNull($page->find('css', '.list-group.filters'));
+        $this->assertNull($page->find('css', '.active-filters'));
     }
 
     /**

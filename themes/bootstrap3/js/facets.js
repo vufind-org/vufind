@@ -68,7 +68,7 @@ function initFacetTree(treeNode, inSidebar)
   var query = window.location.href.split('?')[1];
 
   if (inSidebar) {
-    treeNode.prepend('<li class="facet"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></li>');
+    treeNode.prepend('<div class="facet"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></div>');
   } else {
     treeNode.prepend('<div><i class="fa fa-spinner fa-spin" aria-hidden="true"></i><div>');
   }
