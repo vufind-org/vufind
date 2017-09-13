@@ -1,6 +1,6 @@
-<div class="list-group">
+<div class="facet-group">
   <? foreach ($result as $i => $item): ?>
-    <a class="list-group-item" href="<?=$this->url('collection', ['id' => $item['value']])?>">
+    <a class="facet" href="<?=$this->url('collection', ['id' => $item['value']])?>">
       <strong><?=$this->escapeHtml($item['displayText'])?></strong>
       <span class="badge">
         <?=$item['count']?> <?=$this->transEsc('items')?>
