@@ -208,6 +208,18 @@ class Factory
     }
 
     /**
+     * Factory for Koha driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Koha
+     */
+    public static function getKoha(ServiceManager $sm)
+    {
+        return new Koha($sm->getServiceLocator()->get('VuFind\DateConverter'));
+    }
+
+    /**
      * Factory for KohaILSDI driver.
      *
      * @param ServiceManager $sm Service manager.
