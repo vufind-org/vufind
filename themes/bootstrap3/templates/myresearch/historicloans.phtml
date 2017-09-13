@@ -120,7 +120,7 @@
         <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="'.$this->escapeHtmlAttr($resource->getCoinsOpenUrl()).'"></span>':''?>
       </div>
     <? endforeach; ?>
-    <?=$this->paginator ? $this->paginationControl($this->paginator, 'Sliding', 'Helpers/pagination.phtml') : ''?>
+    <?=$this->paginator ? $this->paginationControl($this->paginator, 'Sliding', 'Helpers/pagination.phtml', array('params' => $this->params)) : ''?>
   <? else: ?>
     <?=$this->transEsc('You do not have any loans in the loan history')?>.
   <? endif; ?>

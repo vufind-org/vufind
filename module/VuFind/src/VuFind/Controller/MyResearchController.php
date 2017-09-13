@@ -1323,7 +1323,7 @@ class MyResearchController extends AbstractBase
 
         return $this->createViewModel(
             compact(
-                'transactions', 'paginator',
+                'transactions', 'paginator', 'params',
                 'hiddenTransactions', 'sortList', 'functionConfig'
             )
         );
