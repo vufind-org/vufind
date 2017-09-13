@@ -1,4 +1,4 @@
-.jstree-children { padding-left: 1rem; }
+.jstree-children { padding-left: .5rem; }
 .jstree-container-ul { padding-left: 0; }
 .jstree-facet,
 .jstree-facet ul,
@@ -24,6 +24,7 @@
   white-space: nowrap;
 }
 .jstree-open { padding-bottom: 0; }
+.jstree-leaf { padding-left: 1.5rem; }
 
 /* jsTree arrows */
 .jstree-ocl:before {
@@ -46,17 +47,21 @@
   width: 16px;
   color: #000;
 }
-.jstree-node.active .jstree-ocl:before { color: #fff; }
 
-.jstree-clicked {
-  padding: .5rem;
-  font-weight: bold;
+.jstree-node.active {
   color: #fff;
   background-color: @brand-primary;
+
+  .fa:before { color: #fff; }
+  .jstree-anchor,
+  .jstree-anchor:active,
+  .jstree-anchor:focus,
+  .jstree-anchor:hover { color: #fff; }
 }
-.jstree-clicked:active,
-.jstree-clicked:focus,
-.jstree-clicked:hover { color: #fff; }
+.jstree-clicked {
+  font-weight: bold;
+  font-style: italic;
+}
 
 /* Facets */
 .jstree-facet .jstree-node {
