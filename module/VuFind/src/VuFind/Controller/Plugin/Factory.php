@@ -104,21 +104,6 @@ class Factory
     }
 
     /**
-     * Construct the NewItems plugin.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Reserves
-     */
-    public static function getNewItems(ServiceManager $sm)
-    {
-        $search = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
-        $config = isset($search->NewItem)
-            ? $search->NewItem : new \Zend\Config\Config([]);
-        return new NewItems($config);
-    }
-
-    /**
      * Construct the ILLRequests plugin.
      *
      * @param ServiceManager $sm Service manager.
@@ -131,6 +116,36 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\HMAC'),
             $sm->getServiceLocator()->get('VuFind\SessionManager')
         );
+    }
+
+    /**
+     * Construct the NewItems plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return NewItems
+     */
+    public static function getNewItems(ServiceManager $sm)
+    {
+        $search = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
+        $config = isset($search->NewItem)
+            ? $search->NewItem : new \Zend\Config\Config([]);
+        return new NewItems($config);
+    }
+
+    /**
+     * Construct the Permission plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Permission
+     */
+    public static function getPermission(ServiceManager $sm)
+    {
+        $pdm = $sm->getServiceLocator()->get('VuFind\Role\PermissionDeniedManager');
+        $pm = $sm->getServiceLocator()->get('VuFind\Role\PermissionManager');
+        $auth = $sm->getServiceLocator()->get('VuFind\AuthManager');
+        return new Permission($pm, $pdm, $auth);
     }
 
     /**
