@@ -69,7 +69,7 @@ function initFacetTree(treeNode, inSidebar)
   var query = window.location.href.split('?')[1];
 
   if (inSidebar) {
-    treeNode.prepend('<li class="list-group-item"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></li>');
+    treeNode.prepend('<div class="facet"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></div>');
   } else {
     treeNode.prepend('<div><i class="fa fa-spinner fa-spin" aria-hidden="true"></i><div>');
   }
@@ -84,11 +84,6 @@ function initFacetTree(treeNode, inSidebar)
       if (response.status === "OK") {
         var results = buildFacetNodes(response.data, currentPath, allowExclude, excludeTitle, inSidebar);
         treeNode.find('.fa-spinner').parent().remove();
-        if (inSidebar) {
-          treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
-            treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
-          });
-        }
         treeNode.jstree({
           'core': {
             'data': results
