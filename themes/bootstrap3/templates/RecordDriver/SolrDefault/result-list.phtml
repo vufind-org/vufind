@@ -173,9 +173,13 @@
       <? endif; ?>
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? /* Add to favorites */ ?>
-        <i class="result-link-icon fa fa-fw fa-star" aria-hidden="true"></i>
-        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record result-link-label" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+        <? if ($this->permission()->allowDisplay('feature.Favorites')): ?>
+          <? /* Add to favorites */ ?>
+          <i class="result-link-icon fa fa-fw fa-star" aria-hidden="true"></i>
+          <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record result-link-label" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+        <? elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
+          <?=$block?>
+        <? endif; ?>
         <? /* Saved lists */ ?>
         <div class="savedLists">
           <strong><?=$this->transEsc("Saved in")?>:</strong>

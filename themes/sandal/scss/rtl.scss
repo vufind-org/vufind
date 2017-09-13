@@ -10,10 +10,5 @@ body.rtl {
       float: right;
       text-align: right;
     }
-    .record-checkbox .checkbox-icon::before {
-      border-radius: 0;
-      border-top-right-radius: $border-radius-base;
-      border-bottom-right-radius: $border-radius-base;
-    }
   }
 }

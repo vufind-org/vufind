@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ChannelProvider;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params, VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
@@ -41,7 +42,9 @@ use Zend\Mvc\Controller\Plugin\Url;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Facets extends AbstractChannelProvider
+   implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
     /**
      * Facet fields to use (field name => description).
      *
@@ -311,7 +314,7 @@ class Facets extends AbstractChannelProvider
         return $this->buildChannel(
             $results,
             "$field:{$value['value']}",
-            "{$this->fields[$field]}: {$value['displayText']}",
+            $this->translate($this->fields[$field]) . ": {$value['displayText']}",
             $tokenOnly
         );
     }
