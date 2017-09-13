@@ -17,7 +17,7 @@
     <? endif; ?>
     <? if ($this->ils()->checkFunction('getMyTransactionHistory', $capabilityParams)): ?>
       <a href="<?=$this->url('myresearch-historicloans')?>"<?=$this->active == 'historicloans' ? ' class="active"' : ''?>">
-        <i class="fa fa-fw fa-book" aria-hidden="true"></i> <?=$this->transEsc('Loan History')?>
+        <i class="fa fa-fw fa-history" aria-hidden="true"></i> <?=$this->transEsc('Loan History')?>
       </a>
     <? endif; ?>
     <? if ($this->ils()->checkCapability('getMyHolds', $capabilityParams)): ?>
