@@ -51,13 +51,21 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
      */
     public function emailAction()
     {
+        $user = $this->getUser();
+
         $view = $this->createViewModel();
         $view->useRecaptcha = $this->recaptcha()->active('feedback');
         $view->category = $this->params()->fromPost(
             'category', $this->params()->fromQuery('category')
         );
-        $view->name = $this->params()->fromPost('name');
-        $view->users_email = $this->params()->fromPost('email');
+        $view->name = $this->params()->fromPost(
+            'name',
+            $user ? trim($user->firstname . ' ' . $user->lastname) : ''
+        );
+        $view->users_email = $this->params()->fromPost(
+            'email',
+            $user ? $user->email : ''
+        );
         $view->comments = $this->params()->fromPost(
             'comments', $this->params()->fromQuery('comments')
         );
@@ -112,6 +120,23 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
                 . ($view->users_email ? $view->users_email : '-') . "\n";
             $email_message .= $this->translate('feedback_url') . ': '
                 . ($view->url ? $view->url : '-') . "\n";
+            if ($user) {
+                $loginMethod = $this->translate(
+                    'login_method_' . $user->finna_auth_method,
+                    null,
+                    $user->finna_auth_method
+                );
+                $email_message .= $this->translate('feedback_user_login_method')
+                    . ": $loginMethod\n";
+            } else {
+                $email_message .= $this->translate('feedback_user_anonymous') . "\n";
+            }
+            $permissionManager
+                = $this->serviceLocator->get('VuFind\Role\PermissionManager');
+            $roles = $permissionManager->getActivePermissions();
+            $email_message .= $this->translate('feedback_user_roles') . ': '
+                . implode(', ', $roles) . "\n";
+
             $email_message .= "\n" . $this->translate('feedback_message') . ":\n";
             $email_message .= "----------\n\n$view->comments\n\n----------\n";
 

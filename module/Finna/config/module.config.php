@@ -211,6 +211,7 @@ $config = [
             'VuFind\ILSHoldLogic' => 'Finna\Service\Factory::getILSHoldLogic',
             'VuFind\AuthManager' => 'Finna\Auth\Factory::getManager',
             'VuFind\RecordLoader' => 'Finna\Service\Factory::getRecordLoader',
+            'VuFind\Role\PermissionManager' => 'Finna\Service\Factory::getPermissionManager',
             'VuFind\SearchSpecsReader' => 'Finna\Service\Factory::getSearchSpecsReader',
             'VuFind\SearchTabsHelper' => 'Finna\Service\Factory::getSearchTabsHelper',
             'VuFind\YamlReader' => 'Finna\Service\Factory::getYamlReader',

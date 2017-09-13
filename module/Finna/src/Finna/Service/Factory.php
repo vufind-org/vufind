@@ -214,6 +214,24 @@ class Factory extends \VuFind\Service\Factory
     }
 
     /**
+     * Construct the PermissionManager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Role\PermissionManager
+     */
+    public static function getPermissionManager(ServiceManager $sm)
+    {
+        $permManager = new \Finna\Role\PermissionManager(
+            $sm->get('VuFind\Config')->get('permissions')->toArray()
+        );
+        $permManager->setAuthorizationService(
+            $sm->get('ZfcRbac\Service\AuthorizationService')
+        );
+        return $permManager;
+    }
+
+    /**
      * Construct the record loader.
      *
      * @param ServiceManager $sm Service manager.
