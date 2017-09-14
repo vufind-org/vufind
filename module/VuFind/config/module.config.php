@@ -110,6 +110,7 @@ $config = [
             'author' => 'VuFind\Controller\Factory::getAuthorController',
             'authority' => 'VuFind\Controller\Factory::getAuthorityController',
             'browse' => 'VuFind\Controller\Factory::getBrowseController',
+            'browzine' => 'VuFind\Controller\Factory::getBrowZineController',
             'cart' => 'VuFind\Controller\Factory::getCartController',
             'channels' => 'VuFind\Controller\Factory::getChannelsController',
             'collection' => 'VuFind\Controller\Factory::getCollectionController',
@@ -554,6 +555,7 @@ $config = [
                     'worldcat' => 'VuFind\RecordDriver\Factory::getWorldCat',
                 ],
                 'invokables' => [
+                    'browzine' => 'VuFind\RecordDriver\BrowZine',
                     'libguides' => 'VuFind\RecordDriver\LibGuides',
                 ],
             ],
@@ -611,6 +613,7 @@ $config = [
             ],
             'search_backend' => [
                 'factories' => [
+                    'BrowZine' => 'VuFind\Search\Factory\BrowZineBackendFactory',
                     'EDS' => 'VuFind\Search\Factory\EdsBackendFactory',
                     'EIT' => 'VuFind\Search\Factory\EITBackendFactory',
                     'LibGuides' => 'VuFind\Search\Factory\LibGuidesBackendFactory',
@@ -823,6 +826,7 @@ $staticRoutes = [
     'Authority/FacetList', 'Authority/Home', 'Authority/Record', 'Authority/Search',
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic', 'Cart/doExport',
+    'BrowZine/Home', 'BrowZine/Search',
     'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk',
     'Cart/Processor', 'Cart/Save', 'Cart/SearchResultsBulk',
     'Channels/Home', 'Channels/Record', 'Channels/Search',
