@@ -34,7 +34,7 @@
     <form name="renewals" method="post" id="renewals">
       <table class="myresearch-table">
       <tr class="toolbar">
-        <th class="text-left">
+        <th class="text-left checkbox-col">
           <div class="checkboxFilter mylist-select-all">
             <div class="checkbox">
               <label>
@@ -58,7 +58,6 @@
     <table class="myresearch-table">
       <tr class="toolbar">
         <th class="myresearch-notification"><?=$this->transEsc('cannot renew any checked out items')?></th>
-        <th></th>
         <th class="text-right">
           <?=$this->render('search/controls/sort.phtml')?>
         </th>
@@ -67,7 +66,7 @@
     <? $i = 0; foreach ($this->transactions as $resource): ?>
       <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
       <tr id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="myresearch-row">
-        <td class="text-left">
+        <td class="text-left checkbox-col">
         <? if ($this->renewForm): ?>
           <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
             <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
@@ -96,7 +95,7 @@
           </div>
         </td>
         <td class="checkedout-status-information" colspan="2">
-          <div class="half-table-column text-left">
+          <div class="title-column text-left">
           <?
             // If this is a non-missing Solr record, we should display a link:
             if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
@@ -137,7 +136,7 @@
             <? endif; ?>
             </div>
           </div>
-          <div class="half-table-column">
+          <div class="status-column">
             <? $showStatus = true; ?>
             <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
               <? $renewDetails = $this->renewResult[$ilsDetails['item_id']]; ?>
