@@ -40,7 +40,6 @@ use VuFind\Exception\Mail as MailException;
  */
 class SearchController extends AbstractSearch
 {
-
     /**
      * Handle an advanced search
      *
@@ -237,13 +236,15 @@ class SearchController extends AbstractSearch
         if ($this->params()->fromQuery('require_login', 'no') !== 'no' && !$user) {
             return $this->forceLogin();
         }
+        $userId = is_object($user) ? $user->id : null;
 
-        /** @var \VuFind\Search\History $searchHistoryHelper */
         $searchHistoryHelper = $this->serviceLocator->get('VuFind\Search\History');
-        $lastSearches = $searchHistoryHelper->getSearchHistory(is_object($user) ? $user->id : null);
-        return $this->createViewModel(
-            $lastSearches
-        );
+
+        if ($this->params()->fromQuery('purge')) {
+            $searchHistoryHelper->purgeSearchHistory($userId);
+        }
+        $lastSearches = $searchHistoryHelper->getSearchHistory($userId);
+        return $this->createViewModel($lastSearches);
     }
 
     /**

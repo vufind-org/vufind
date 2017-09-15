@@ -87,43 +87,43 @@ class History
     }
 
     /**
-     * @param int $userId
+     * Purge the user's unsaved search history.
+     *
+     * @param int $userId User ID (null if logged out)
+     *
+     * @return void
+     */
+    public function purgeSearchHistory($userId = null)
+    {
+        $this->searchTable->destroySession($this->sessionId, $userId);
+
+        // We don't want to remember the last search after a purge:
+        $this->searchMemory->forgetSearch();
+    }
+
+    /**
+     * Get the user's saved and temporary search histories.
+     *
+     * @param int $userId User ID (null if logged out)
+     *
      * @return array
      */
-    public function getSearchHistory($userId = null, $purged = false)
+    public function getSearchHistory($userId = null)
     {
         // Retrieve search history
         $searchHistory = $this->searchTable->getSearches($this->sessionId, $userId);
 
-        // Build arrays of history entries
+        // Loop through and sort the history
         $saved = $unsaved = [];
-
-        // Loop through the history
-        /** @var \VuFind\Db\Row\Search $current */
         foreach ($searchHistory as $current) {
-
-            /** @var minSO $minSO */
-            $minSO = $current->getSearchObject();
-
-            // Saved searches
+            $search = $current->getSearchObject()->deminify($this->resultsManager);
             if ($current->saved == 1) {
-                $saved[] = $minSO->deminify($this->resultsManager);
+                $saved[] = $search;
             } else {
-                // All the others...
-
-                // If this was a purge request we don't need this
-                if ($purged) {
-                    $current->delete();
-
-                    // We don't want to remember the last search after a purge:
-                    $this->searchMemory->forgetSearch();
-                } else {
-                    // Otherwise add to the list
-                    $unsaved[] = $minSO->deminify($this->resultsManager);
-                }
+                $unsaved[] = $search;
             }
         }
 
-        return ['saved' => $saved, 'unsaved' => $unsaved];
+        return compact('saved', 'unsaved');
     }
 }
