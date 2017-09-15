@@ -26,7 +26,13 @@
   <? endif; ?>
 
   <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-    <li><a class="save-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" rel="nofollow"><i class="fa fa-star" aria-hidden="true"></i> <?=$this->transEsc('Add to favorites')?></a></li>
+    <li>
+      <? if ($this->permission()->allowDisplay('feature.Favorites')): ?>
+        <a class="save-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" rel="nofollow"><i class="fa fa-star" aria-hidden="true"></i> <?=$this->transEsc('Add to favorites')?></a>
+      <? elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
+        <?=$block?>
+      <? endif; ?>
+    </li>
   <? endif; ?>
   <? if (!empty($addThis)): ?>
     <li><a class="addThis addthis_button" href="https://www.addthis.com/bookmark.php?v=250&amp;pub=<?=urlencode($addThis)?>"><i class="fa fa-bookmark" aria-hidden="true"></i> <?=$this->transEsc('Bookmark')?></a></li>
