@@ -61,9 +61,11 @@ function runSaveAjaxForQueue() {
       }
     }
     saveStatusObjs = [];
+    saveStatusRunning = false;
   })
   .fail(function checkItemStatusFail(response, textStatus) {
     saveStatusFail(response, textStatus);
+    saveStatusRunning = false;
   });
 }
 function saveQueueAjax(obj, el) {
