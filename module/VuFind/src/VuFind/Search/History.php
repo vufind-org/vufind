@@ -63,27 +63,17 @@ class History
     protected $resultsManager;
 
     /**
-     * Search memory
-     *
-     * @var \VuFind\Search\Memory
-     */
-    protected $searchMemory;
-
-    /**
      * History constructor
      *
      * @param \VuFind\Db\Table\Search              $searchTable    Search table
      * @param string                               $sessionId      Session ID
      * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
-     * @param \VuFind\Search\Memory                $searchMemory   Search memory
      */
-    public function __construct($searchTable, $sessionId, $resultsManager,
-        $searchMemory
-    ) {
+    public function __construct($searchTable, $sessionId, $resultsManager)
+    {
         $this->searchTable = $searchTable;
         $this->sessionId = $sessionId;
         $this->resultsManager = $resultsManager;
-        $this->searchMemory = $searchMemory;
     }
 
     /**
@@ -96,9 +86,6 @@ class History
     public function purgeSearchHistory($userId = null)
     {
         $this->searchTable->destroySession($this->sessionId, $userId);
-
-        // We don't want to remember the last search after a purge:
-        $this->searchMemory->forgetSearch();
     }
 
     /**

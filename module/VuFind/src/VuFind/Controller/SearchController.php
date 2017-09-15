@@ -242,6 +242,9 @@ class SearchController extends AbstractSearch
 
         if ($this->params()->fromQuery('purge')) {
             $searchHistoryHelper->purgeSearchHistory($userId);
+
+            // We don't want to remember the last search after a purge:
+            $this->getSearchMemory()->forgetSearch();
         }
         $lastSearches = $searchHistoryHelper->getSearchHistory($userId);
         return $this->createViewModel($lastSearches);

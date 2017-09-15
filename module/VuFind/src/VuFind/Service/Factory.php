@@ -733,11 +733,8 @@ class Factory
         $searchTable = $sm->get('VuFind\DbTablePluginManager')
             ->get("Search");
         $resultsManager = $sm->get('VuFind\SearchResultsPluginManager');
-        $searchMemory = $sm->get('VuFind\Search\Memory');
         $sessionId = $sm->get('VuFind\SessionManager')->getId();
-        return new \VuFind\Search\History(
-            $searchTable, $sessionId, $resultsManager, $searchMemory
-        );
+        return new \VuFind\Search\History($searchTable, $sessionId, $resultsManager);
     }
 
     /**
