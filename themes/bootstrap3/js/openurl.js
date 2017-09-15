@@ -1,7 +1,5 @@
-/*global extractClassParams, VuFind */
+/*global extractClassParams, Hunt, VuFind */
 VuFind.register('openurl', function OpenUrl() {
-  var _huntObserver;
-
   function _loadResolverLinks($target, openUrl, searchClassId) {
     $target.addClass('ajax_availability');
     var url = VuFind.path + '/AJAX/JSON?' + $.param({
@@ -63,7 +61,7 @@ VuFind.register('openurl', function OpenUrl() {
     if (typeof Hunt === 'undefined') {
       container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger('click');
     } else {
-      _huntObserver = new Hunt(
+      new Hunt(
         container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').toArray(),
         { enter: embedOpenUrlLinks }
       );
