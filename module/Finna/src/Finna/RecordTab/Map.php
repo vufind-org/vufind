@@ -107,7 +107,7 @@ class Map extends \VuFind\RecordTab\Map
     {
         $array = [];
         $envelope = preg_replace('/.*\((.+)\).*/', '\\1', $envelope);
-        list($minX, $maxX, $maxY, $minY) = explode(' ', trim($envelope));
+        list($minX, $maxX, $maxY, $minY) = explode(',', trim($envelope));
         return [
             [(float)$minY, (float)$minX],
             [(float)$minY, (float)$maxX],
