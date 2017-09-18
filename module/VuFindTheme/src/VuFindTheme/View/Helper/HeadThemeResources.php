@@ -125,8 +125,8 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
             $parts = $this->parseSetting($current);
             $headLink()->prependStylesheet(
                 trim($parts[0]),
-                isset($parts[1]) ? trim($parts[1]) : 'all',
-                isset($parts[2]) ? trim($parts[2]) : false
+                isset($parts[2]) ? trim($parts[2]) : 'screen', // media
+                isset($parts[1]) ? trim($parts[1]) : ''        // conditional
             );
         }
 
@@ -136,8 +136,8 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
             $parts = $this->parseSetting($current);
             $headLink()->prependStylesheet(
                 $headLink()->addLessStylesheet(trim($parts[0])),
-                isset($parts[1]) ? trim($parts[1]) : 'all',
-                isset($parts[2]) ? trim($parts[2]) : false
+                isset($parts[2]) ? trim($parts[2]) : 'screen', // media
+                isset($parts[1]) ? trim($parts[1]) : ''        // conditional
             );
         }
 
