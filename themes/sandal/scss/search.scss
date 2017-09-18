@@ -154,7 +154,7 @@
   padding: 6rem 3rem;
   padding-left: calc(50vw - 50%); // Align searchbox with container
   background-color: $header-bg;
-  background-image: url('https://source.unsplash.com/collection/803311/1000x300');
+  background-image: url('../../sandal/images/forest.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center top;
@@ -172,6 +172,7 @@
   background-color: rgba(255,255,255,.5);
 }
 .template-dir-search.template-name-home .breadcrumbs { border: 0; }
+.home-facet h2 { margin-top: 1rem; }
 
 .search { border: 0; }
 #searchForm {

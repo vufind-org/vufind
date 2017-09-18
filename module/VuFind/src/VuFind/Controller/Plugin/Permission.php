@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
+use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Role\PermissionDeniedManager;
 use VuFind\Role\PermissionManager;
@@ -62,15 +63,25 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
     protected $permissionDeniedManager;
 
     /**
+     * Auth manager
+     *
+     * @var \VuFind\Auth\Manager
+     */
+    protected $authManager;
+
+    /**
      * Constructor
      *
-     * @param PermissionManager       $pm  Permission Manager
-     * @param PermissionDeniedManager $pdm Permission Denied Manager
+     * @param PermissionManager       $pm   Permission Manager
+     * @param PermissionDeniedManager $pdm  Permission Denied Manager
+     * @param \VuFind\Auth\Manager    $auth Auth manager
      */
-    public function __construct(PermissionManager $pm, PermissionDeniedManager $pdm)
-    {
+    public function __construct(PermissionManager $pm, PermissionDeniedManager $pdm,
+        \VuFind\Auth\Manager $auth
+    ) {
         $this->permissionManager = $pm;
         $this->permissionDeniedManager = $pdm;
+        $this->authManager = $auth;
     }
 
     /**
@@ -108,6 +119,17 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
                 ? $dl['exceptionMessage'] : 'Access denied.';
             switch (strtolower($dl['action'])) {
             case 'promptlogin':
+                // If the user is already logged in, but we're getting a "prompt
+                // login" denied permission requirement, there is probably a
+                // configuration error somewhere; throw an exception rather than
+                // triggering an infinite login redirection loop.
+                if ($this->authManager->isLoggedIn()) {
+                    throw new ForbiddenException(
+                        'Trying to prompt login due to denied ' . $permission
+                        . ' permission, but a user is already logged in; '
+                        . 'possible configuration problem in permissions.ini.'
+                    );
+                }
                 $msg = empty($dl['value']) ? null : $dl['value'];
                 return $this->getController()->forceLogin($msg, [], false);
             case 'showmessage':
