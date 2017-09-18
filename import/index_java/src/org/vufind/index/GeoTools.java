@@ -359,7 +359,7 @@ public class GeoTools
    public boolean validateEastWest(Record record, Double east, Double west) {
     if (east < west) {
        // Convert to 360 degree grid
-       if (east < 0) {
+       if (east <= 0) {
            east = 360 + east;
        }
        if (west < 0) {
