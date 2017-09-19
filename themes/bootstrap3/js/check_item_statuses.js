@@ -54,7 +54,7 @@ function displayItemStatus(result, $item) {
       locationListHTML += '</div>';
     }
     $item.find('.locationDetails').removeClass('hidden');
-    $item.find('.locationDetails').empty().append(locationListHTML);
+    $item.find('.locationDetails').html(locationListHTML);
   } else {
     // Default case -- load call number and location into appropriate containers:
     $item.find('.callnumber').empty().append(linkCallnumbers(result.callnumber, result.callnumber_handler) + '<br/>');
@@ -111,7 +111,8 @@ function itemQueueAjax(id, el) {
   itemStatusIds.push(id);
   itemStatusEls[id] = el;
   itemStatusTimer = setTimeout(runItemAjaxForQueue, itemStatusDelay);
-  el.addClass('ajax-pending');
+  el.addClass('ajax-pending').removeClass('hidden')
+    .find('.status').removeClass('hidden');
 }
 
 function checkItemStatus(el) {

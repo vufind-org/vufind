@@ -2,22 +2,24 @@
 /*exported checkSaveStatuses, checkSaveStatusesCallback */
 
 function displaySaveStatus(itemLists, $item) {
-  $item.removeClass('.ajax-pending');
   if (itemLists.length > 0) {
     var html = '<ul>' + itemLists.map(function convertToLi(l) {
       return '<li><a href="' + l.list_url + '">' + htmlEncode(l.list_title) + '</a></li>';
     }).join('') + '</ul>';
-    $item.find('.savedLists').html($item.find('.savedLists strong')[0].outerHTML + html).addClass('loaded');
+    $item.find('.savedLists')
+      .removeClass('ajax-pending').addClass('loaded')
+      .find('.js-load').replaceWith(html);
   }
 }
 
 function saveStatusFail(response, textStatus) {
-  $('.savedLists.ajax-pending').empty();
+  $('.ajax-pending').empty();
   if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') {
+    $('.ajax-pending .savedLists').addClass('hidden');
     return;
   }
   // display the error message on each of the ajax status place holder
-  $('.savedLists.ajax-pending').addClass('alert-danger').append(response.responseJSON.data);
+  $('.ajax-pending .savedLists').addClass('alert-danger').append(response.responseJSON.data);
 }
 
 var saveStatusObjs = [];
@@ -73,7 +75,9 @@ function saveQueueAjax(obj, el) {
   saveStatusObjs.push(obj);
   saveStatusEls[obj.source + '|' + obj.id] = el;
   saveStatusTimer = setTimeout(runSaveAjaxForQueue, saveStatusDelay);
-  el.addClass('ajax-pending');
+  el.find('.savedLists')
+    .append('<span class="js-load">' + VuFind.translate('loading') + '...</span>')
+    .addClass('ajax-pending').removeClass('hidden');
 }
 
 function checkSaveStatus(el) {
