@@ -1,0 +1,42 @@
+<hr/>
+<div class="row">
+  <div class="col-sm-4">
+    <p><strong><?=$this->transEsc('Search Options')?></strong></p>
+    <ul>
+      <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
+      <li><a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
+      <li><a href="<?=$this->url('static-catalogs')?>"><?=$this->transEsc('Other catalogs')?></a></li>
+    </ul>
+  </div>
+  <div class="col-sm-4">
+    <p><strong><?=$this->transEsc('Find More')?></strong></p>
+    <ul>
+      <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
+      <li><a href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
+      <li><a href="<?=$this->url('search-newitem')?>"><?=$this->transEsc('New Items')?></a></li>
+    </ul>
+  </div>
+  <div class="col-sm-4">
+    <p><strong><?=$this->transEsc('Need Help?')?></strong></p>
+    <ul>
+      <li><a href="<?=$this->url('help-home')?>?topic=search&_=<?=time() ?>" data-lightbox class="help-link"><?=$this->transEsc('Search Tips')?></a></li>
+      <? // <li><a href="#"><?=$this->transEsc('Ask a Librarian')? ></a></li> ?>
+      <li><a href="<?=$this->url('help-faq')?>"><?=$this->transEsc('FAQs')?></a></li>
+    </ul>
+  </div>
+</div>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//vitruv.uni-tuebingen.de/piwik/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 17]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="//vitruv.uni-tuebingen.de/piwik/piwik.php?idsite=17" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
