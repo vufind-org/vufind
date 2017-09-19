@@ -1,5 +1,5 @@
 // helper function to set focus on a specified input field, also sets cursor position to end of field content
-function ubtueSetFocus(input_selector) {
+function tufindSetFocus(input_selector) {
     $(input_selector).focus();
     if ($(input_selector).length) {
        // now we are sure that element exists
@@ -11,7 +11,7 @@ function ubtueSetFocus(input_selector) {
 
 // function to register onload handler function
 // multiple handlers can be chained, if necessary
-function ubtueRegisterOnLoad(functionOnLoad) {
+function tufindRegisterOnLoad(functionOnLoad) {
     if(window.attachEvent) {
         window.attachEvent('onload', functionOnLoad);
     } else {
@@ -28,18 +28,18 @@ function ubtueRegisterOnLoad(functionOnLoad) {
     }
 }
 
-// onload handler for ubtue
-function ubtueOnLoad() {
+// onload handler for tufind
+function tufindOnLoad() {
     // advanced search: set focus on first input field of first search group
     if (window.location.href.match(/\/Search\/Advanced/i)) {
-        ubtueSetFocus('#search_lookfor0_0');
+        tufindSetFocus('#search_lookfor0_0');
     // keywordchainsearch: set focus on 2nd input field
     } else if (window.location.href.match(/\/Keywordchainsearch\//i)) {
-        ubtueSetFocus('#kwc_input');
+        tufindSetFocus('#kwc_input');
     // alphabrowse: set focus on "starting from" edit field
     } else if (window.location.href.match(/\/Alphabrowse\//i)) {
-        ubtueSetFocus('#alphaBrowseForm_from');
+        tufindSetFocus('#alphaBrowseForm_from');
     }
 }
 
-ubtueRegisterOnLoad(ubtueOnLoad);
+tufindRegisterOnLoad(tufindOnLoad);

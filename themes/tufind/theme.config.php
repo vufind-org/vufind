@@ -7,6 +7,6 @@ return array(
         ],
     ],
     'js' => [
-        'ubtue.js',
+        'tufind.js',
     ],
 );
