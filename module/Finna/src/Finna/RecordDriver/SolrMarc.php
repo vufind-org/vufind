@@ -1516,20 +1516,34 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
-     * Get an composition information from field 382.
+     * Get composition information from field 382.
      *
-     * @return string
+     * @return array
      */
-    public function getMusicComposition()
+    public function getMusicCompositions()
     {
-        $result = '';
+        $results = [];
         foreach ($this->getMarcRecord()->getFields('382') as $field) {
-            foreach ($field->getSubfields('a') as $compose) {
-                $subfields[] = $this->stripTrailingPunctuation($compose->getData());
+            $matches = ['a','b','n','d','p','v'];
+            $allSubfields = $field->getSubfields();
+            if (!empty($allSubfields)) {
+                $subfields = [];
+                foreach ($allSubfields as $currentSubfield) {
+                    if (in_array($currentSubfield->getCode(), $matches)) {
+                        $data = trim($currentSubfield->getData());
+                        if (!empty($data)) {
+                            if ($currentSubfield->getCode() == 'n') {
+                                $subfields[] = "($data)";
+                            } else {
+                                $subfields[] = $data;
+                            }
+                        }
+                    }
+                }
+                $results[] = implode(' ', $subfields);
             }
-            $result = implode(', ', $subfields);
         }
-        return $result;
+        return $results;
     }
 
     /**
@@ -1648,5 +1662,37 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             }
         }
         return $results;
+    }
+
+    /**
+     * Get associated place of the record from field 370.
+     *
+     * @return array
+     */
+    public function getAssociatedPlace()
+    {
+        $results = [];
+        foreach ($this->getMarcRecord()->getFields('370') as $field) {
+            foreach ($field->getSubfields('g') as $place) {
+                $results[] = $this->stripTrailingPunctuation($place->getData());
+            }
+        }
+        return $results > 1 ? implode(', ', $results) : $results[0];
+    }
+
+    /**
+     * Get time period of creation from field 388.
+     *
+     * @return array
+     */
+    public function getTimePeriodOfCreation()
+    {
+        $results = [];
+        foreach ($this->getMarcRecord()->getFields('388') as $field) {
+            foreach ($field->getSubfields('a') as $time) {
+                $results[] = $this->stripTrailingPunctuation($time->getData());
+            }
+        }
+        return $results > 1 ? implode(', ', $results) : $results[0];
     }
 }
