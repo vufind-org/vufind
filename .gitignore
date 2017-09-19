@@ -13,3 +13,6 @@ import/solrmarc.log
 node_modules
 public/swagger-ui
 .vagrant
+nbproject
+schema_local_types.xml
+schema_local_fields.xml

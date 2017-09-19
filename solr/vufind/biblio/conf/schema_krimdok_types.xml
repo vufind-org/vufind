@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types>
+    <xi:include href="schema_tufind_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+    <fieldType name="textFacetRaw" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+        <analyzer>
+            <tokenizer class="solr.KeywordTokenizerFactory"/>
+            <!-- this is just like textFacet but without punctuation stripping. -->
+        </analyzer>
+    </fieldType>
+    <!-- Search signatures; ignore cases, remove whitespace -->
+    <fieldType name="signaturestring" class="solr.TextField" sortMissingLast="true" >
+        <analyzer>
+            <tokenizer class="solr.KeywordTokenizerFactory"/>
+            <filter class="solr.PatternReplaceFilterFactory" pattern="[^\w]+" replacement="" replace="all"/>
+            <filter class="solr.LowerCaseFilterFactory" />
+        </analyzer>
+    </fieldType>
+</types>
