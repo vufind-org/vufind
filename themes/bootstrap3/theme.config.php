@@ -7,7 +7,7 @@ return array(
         //'vendor/font-awesome.min.css',
         //'bootstrap-custom.css',
         'compiled.css',
-        'print.css:print',
+        'print.css::print', // blank media ('')
         'flex-fallback.css:lt IE 10', // flex polyfill
     ),
     'js' => array(
