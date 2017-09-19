@@ -3,7 +3,7 @@ finna.advSearch = (function() {
 
     var initForm = function() {
         var form = $('.template-dir-search #advSearchForm');
-        var container = form.find('.ranges-container .slider-container').closest('.row');
+        var container = form.find('.ranges-container .slider-container').closest('fieldset');
         var field = container.find('input[name="daterange[]"]').eq(0).val();
         var fromField = container.find('#' + field + 'from');
         var toField = container.find('#' + field + 'to');
@@ -32,10 +32,10 @@ finna.advSearch = (function() {
             if (from != '*' || to != '*') {
                 var filter = field + ':"[' + from + " TO " + to + ']"';
 
-                $("<input>")
-                    .attr("type", "hidden")
-                    .attr("name", "filter[]")
-                    .attr("value", filter)
+                $('<input>')
+                    .attr('type', 'hidden')
+                    .attr('name', 'filter[]')
+                    .attr('value', filter)
                     .appendTo($(this));
             }
         });
