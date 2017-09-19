@@ -1,0 +1,168 @@
+<?
+// TODO: fold this logic into record driver methods at some point:
+$marc = $this->driver->tryMethod('getMarcRecord');
+if (is_object($marc)) {
+    $marcPhdField = $marc->getField('502');
+    $marcProceedingsField = $marc->getField('711');
+} else {
+    $marcPhdField = $marcProceedingsField = false;
+}
+$formats = $this->driver->tryMethod('getFormats');
+if ($marcProceedingsField) {
+    $format = 'CONF';
+} else if ($marcPhdField) {
+    $format = 'THES';
+} else if (!empty($journalTitle) || (is_array($formats) && in_array('Article', $formats))) {
+    $format = 'JOUR';
+} else if (is_array($formats) && in_array('Journal', $formats)) {
+    $format = 'JFULL';
+} else {
+    $format = 'BOOK';
+}
+
+// Type
+echo 'TY  - ' . $format . "\r\n";
+
+$title = rtrim($this->driver->getTitle(), " /");
+if (!empty($title)) {
+    echo 'TI  - ' . "$title\r\n";
+}
+
+$ids_and_titles = $this->driver->tryMethod('getContainerIdsAndTitles');
+if (!empty($ids_and_titles)) {
+    echo 'T2  - ';
+    $i = 0;
+    foreach ($ids_and_titles as $id => $title):
+        echo $title[0];
+        if (++$i < count($ids_and_titles))
+            echo ", ";
+    endforeach;
+    echo "\r\n";
+}
+
+$issue = $this->driver->tryMethod('getIssue');
+if (!empty($issue)) {
+    echo 'IS  - ' . "$issue\r\n";
+}
+
+$pages = $this->driver->tryMethod('getPages');
+if (!empty($pages)) {
+    $split_pages = split('-', $pages);
+    if (!empty($split_pages[0]))
+        echo 'SP  - ' . trim($split_pages[0]) . "\r\n";
+    if (!empty($split_pages[1]))
+        echo 'EP  - ' . trim($split_pages[1]) . "\r\n";
+}
+
+$volume = $this->driver->tryMethod('getVolume');
+if (!empty($volume)) {
+    echo 'VL  - ' . "$volume\r\n";
+}
+
+
+$series = $this->driver->tryMethod('getSeries');
+if (is_array($series)) {
+    foreach ($series as $current) {
+        echo 'T3  - ' . (is_array($current) ? $current['name'] : $current) . "\r\n";
+    }
+}
+
+$author = $this->driver->tryMethod('getPrimaryAuthor');
+if (!empty($author)) {
+    $author = $this->driver->stripTrailingDates($author);
+    echo 'AU  - ' . "$author\r\n";
+}
+
+$secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors');
+if (is_array($secondaryAuthors)) {
+    foreach ($secondaryAuthors as $secondaryAuthor) {
+        $secondaryAuthor = $this->driver->stripTrailingDates($secondaryAuthor);
+        echo 'A2  - ' . "$secondaryAuthor\r\n";
+    }
+}
+
+$pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
+$pubDates = $this->driver->tryMethod('getPublicationDates');
+$pubNames = $this->driver->tryMethod('getPublishers');
+if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
+    $total = min(count($pubPlaces), count($pubDates), count($pubNames));
+    // if we have pub dates but no other details, we still want to export the year:
+    if ($total == 0 && count($pubDates) > 0) {
+        $total = 1;
+    }
+    for ($i = 0; $i < $total; $i++) {
+        if (isset($pubPlaces[$i])) {
+            echo "CY  - " . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': '). "\r\n";
+        }
+        if (isset($pubNames[$i])) {
+            echo "PB  - " . rtrim($pubNames[$i], ", ") . "\r\n";
+        }
+        $date = trim($pubDates[$i], '[]. ');
+        if (strlen($date) > 4) {
+            $date = $this->dateTime()->extractYear($date);
+        }
+        if ($date) {
+            echo 'PY  - ' . "$date\r\n";
+        }
+    }
+}
+
+$languages = $this->driver->tryMethod('getLanguages');
+if (is_array($languages)) {
+    foreach ($languages as $lang) {
+        echo 'LA  - ' . "$lang\r\n";
+    }
+}
+
+$genres =  $this->driver->tryMethod('getGenres');
+if (is_array($genres)) {
+    foreach ($genres as $genre) {
+        echo 'M3  - ' . "$genre\r\n";
+    }
+}
+
+$topics =  $this->driver->tryMethod('getTopics');
+if (is_array($topics)) {
+    foreach ($topics as $topic) {
+        echo 'KW  - ' . "$topic\r\n";
+    }
+}
+
+$start_page = $this->driver->tryMethod('getContainerStartPage');
+if (!empty($start_page)) {
+    echo 'SP  - ' . "$start_page\r\n";
+}
+
+$isbns = $this->driver->tryMethod('getISBNs');
+if (is_array($isbns)) {
+    foreach ($isbns as $isbn) {
+        echo 'SN  - ' . "$isbn\r\n";
+    }
+}
+
+$issns = $this->driver->tryMethod('getISSNs');
+if (is_array($issns)) {
+    foreach ($issns as $issn) {
+        echo 'SN  - ' . "$issn\r\n";
+    }
+}
+
+$edition = $this->driver->tryMethod('getEdition');
+if (!empty($edition)) {
+    echo 'ET  - ' . "$edition\r\n";
+}
+
+$notes = $this->driver->tryMethod('getGeneralNotes');
+if (is_array($notes)) {
+    foreach ($notes as $note) {
+        echo 'N1  - ' . "$note\r\n";
+    }
+}
+
+foreach ($this->record($this->driver)->getUrlList() as $url) {
+    echo 'UR  - ' . "$url\r\n";
+}
+
+// End of Record:
+echo "ER  -\r\n\r\n";
+?>

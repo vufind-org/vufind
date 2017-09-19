@@ -1,0 +1,37 @@
+.feedback_title {
+    display: none;
+}
+
+.feedback_trigger {
+    background: white;
+    border: 1px solid lightgray;
+    border-right: 0;
+}
+
+.feedback_content {
+    background: white;
+    border: 1px solid lightgray;
+}
+
+.feedback-box {
+    padding: 10px;
+}
+
+.feedback-box h2{
+    margin-top: 0;
+}
+.feedback-box textarea {
+    width: 100%;
+}
+
+@media (max-width: 430px) {
+    .feedback_content, .feedback_trigger {
+        display: none;
+    }
+}
+
+@media (max-height: 400px) {
+.feedback_content, .feedback_trigger {
+    display: none;
+}
+}

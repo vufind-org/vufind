@@ -1,0 +1,142 @@
+<?
+// TODO: fold this logic into record driver methods at some point:
+$marc = $this->driver->tryMethod('getMarcRecord');
+if (is_object($marc)) {
+    $marcPhdField = $marc->getField('502');
+    $marcProceedingsField = $marc->getField('711');
+} else {
+    $marcPhdField = $marcProceedingsField = false;
+}
+$formats = $this->driver->tryMethod('getFormats');
+if ($marcProceedingsField) {
+    $format = 'proceedings';
+} else if ($marcPhdField) {
+    $format = 'phdthesis';
+} else if (is_array($formats) && in_array('Article', $formats)) {
+    $format = 'article';
+} else if (is_array($formats) && in_array('Journal', $formats)) {
+    $format = 'misc';
+} else {
+    $format = 'book';
+}
+
+// Open format tag:
+echo '@' . $format . "{\n";
+
+// Citation key:
+echo $this->driver->getSourceIdentifier() . '-' .  $this->driver->getUniqueId() . ",\n";
+
+$title = rtrim($this->driver->getTitle(), " /");
+echo "title = {{$title}},\n";
+
+$ids_and_titles = $this->driver->tryMethod('getContainerIdsAndTitles');
+if (!empty($ids_and_titles)) {
+    echo "journal = {";
+    $i = 0;
+    foreach ($ids_and_titles as $id => $title):
+        echo $title[0];
+        if (++$i < count($ids_and_titles))
+            echo ", ";
+    endforeach;
+    echo "}\n";
+}
+
+$issue = $this->driver->tryMethod('getIssue');
+if (!empty($issue)) {
+    echo "number = {{$issue}}\n";
+}
+
+$pages = $this->driver->tryMethod('getPages');
+if (!empty($pages)) {
+    echo "pages = {{$pages}}\n";
+}
+
+$volume = $this->driver->tryMethod('getVolume');
+if (!empty($volume)) {
+   echo "volume = {{$volume}}\n";
+}
+
+$series = $this->driver->tryMethod('getSeries');
+if (is_array($series)) {
+    foreach ($series as $current) {
+        echo "series = {" . (is_array($current) ? $current['name'] : $current) . "},\n";
+    }
+}
+
+$author = $this->driver->tryMethod('getPrimaryAuthor');
+if (!empty($author)) {
+    $author = $this->driver->stripTrailingDates($author);
+    echo "author = {{$author}},\n";
+}
+
+$secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors');
+if (is_array($secondaryAuthors)) {
+    foreach ($secondaryAuthors as $secondaryAuthor) {
+        $secondaryAuthor = $this->driver->stripTrailingDates($secondaryAuthor);
+        echo "editor = {{$secondaryAuthor}},\n";
+    }
+}
+
+
+
+
+$pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
+$pubDates = $this->driver->tryMethod('getPublicationDates');
+$pubNames = $this->driver->tryMethod('getPublishers');
+if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
+    $total = min(count($pubPlaces), count($pubDates), count($pubNames));
+    // if we have pub dates but no other details, we still want to export the year:
+    if ($total == 0 && count($pubDates) > 0) {
+        $total = 1;
+    }
+    for ($i = 0; $i < $total; $i++) {
+        if (isset($pubPlaces[$i])) {
+            echo "address = {" . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': ') . "},\n";
+        }
+        if (isset($pubNames[$i])) {
+            echo "publisher = {" . rtrim($pubNames[$i], ", ") . "},\n";
+        }
+        $date = trim($pubDates[$i], '[]. ');
+        if (strlen($date) > 4) {
+            $date = $this->dateTime()->extractYear($date);
+        }
+        if ($date) {
+            echo "year = {{$date}},\n";
+        }
+    }
+}
+
+$edition = $this->driver->tryMethod('getEdition');
+if (!empty($edition)) {
+    echo "edition = {{$edition}},\n";
+}
+
+if ($marcPhdField && $subfield = $marcPhdField->getSubfield('a')) {
+    echo "school = {" . $subfield->getData() . "},\n";
+}
+
+// Try to find a page count in the physical description:
+$physical = $this->driver->tryMethod('getPhysicalDescriptions');
+if (is_array($physical)) {
+    foreach ($physical as $current) {
+        if (preg_match('/([0-9]+)\s*p/', $current, $matches)) {
+            echo "pages = {{$matches[1]}},\n";
+            break;
+        }
+    }
+}
+
+$notes = $this->driver->tryMethod('getGeneralNotes');
+if (is_array($notes)) {
+    foreach ($notes as $note) {
+        echo "note = {{$note}},\n";
+    }
+}
+
+foreach ($this->record($this->driver)->getUrlList() as $url) {
+    echo "url = {{$url}}\n";
+}
+
+// Record separator:
+echo "}\n\n";
+?>
