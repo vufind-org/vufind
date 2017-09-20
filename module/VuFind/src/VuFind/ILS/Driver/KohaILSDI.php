@@ -712,7 +712,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                . implode(",", (array)$patron)
                . ") called"
         );
-
         $started = microtime(true);
 
         $holding = [];
@@ -727,7 +726,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             i.copynumber as COPYNO, i.notforloan as NOTFORLOAN,
             i.itemnotes as PUBLICNOTES, b.frameworkcode as DOCTYPE,
             t.frombranch as TRANSFERFROM, t.tobranch as TRANSFERTO,
-            i.itemlost as ITEMLOST, i.itemlost_on AS LOSTON
+            i.itemlost as ITEMLOST, i.itemlost_on AS LOSTON,
+            i.stocknumber as STOCKNUMBER
             from items i join biblio b on i.biblionumber = b.biblionumber
             left outer join
                 (SELECT itemnumber, frombranch, tobranch from branchtransfers
@@ -764,7 +764,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $this->debug('Connection failed: ' . $e->getMessage());
             throw new ILSException($e->getMessage());
         }
-
         $this->debug("Rows count: " . $itemSqlStmt->rowCount());
 
         $notes = $sqlStmtHoldings->fetch();
@@ -892,7 +891,9 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 'barcode'      => (null == $rowItem['BARCODE'])
                     ? 'Unknown' : $rowItem['BARCODE'],
                 'number'       => (null == $rowItem['COPYNO'])
-                    ? '' : $rowItem['COPYNO'],
+                    ? ( (null == $rowItem['STOCKNUMBER'] )
+                        ? '' : $rowItem['STOCKNUMBER'] )
+                    : $rowItem['COPYNO'],
                 'requests_placed' => $reservesCount ? $reservesCount : 0,
                 'frameworkcode' => $rowItem['DOCTYPE'],
             ];
@@ -906,7 +907,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             . count($holding) . ", took " . (microtime(true) - $started) .
             " sec"
         );
-
         return $holding;
     }
 
