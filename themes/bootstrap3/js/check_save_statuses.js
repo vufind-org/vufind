@@ -77,7 +77,8 @@ function saveQueueAjax(obj, el) {
   saveStatusTimer = setTimeout(runSaveAjaxForQueue, saveStatusDelay);
   el.find('.savedLists')
     .append('<span class="js-load">' + VuFind.translate('loading') + '...</span>')
-    .addClass('ajax-pending').removeClass('hidden');
+    .addClass('ajax-pending').removeClass('loaded hidden');
+  el.find('.savedLists ul').remove();
 }
 
 function checkSaveStatus(el) {
