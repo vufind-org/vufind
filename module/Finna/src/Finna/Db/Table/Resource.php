@@ -70,7 +70,7 @@ class Resource extends \VuFind\Db\Table\Resource
                 );
                 $s->join(
                     ['ur' => 'user_resource'], 'resource.id = ur.resource_id',
-                    []
+                    ['id', 'finna_custom_order_index']
                 );
                 $s->where->equalTo('ur.user_id', $user);
 
@@ -119,19 +119,45 @@ class Resource extends \VuFind\Db\Table\Resource
      */
     public static function applySort($query, $sort, $alias = 'resource')
     {
-        if (!empty($sort) && strtolower($sort) == 'custom_order') {
-            $order[] = new Expression(
-                'isnull(?)', ['resource.id'],
-                [Expression::TYPE_IDENTIFIER]
+        // Apply sorting, if necessary:
+        $legalSorts = [
+            'title', 'title desc', 'author', 'author desc', 'year', 'year desc',
+            'id', 'id desc', 'custom_order'
+        ];
+        if (!empty($sort) && in_array(strtolower($sort), $legalSorts)) {
+            if ('custom_order' === $sort) {
+                $sort = 'finna_custom_order_index';
+            }
+            // Strip off 'desc' to obtain the raw field name -- we'll need it
+            // to sort null values to the bottom:
+            $parts = explode(' ', $sort);
+            $rawField = trim($parts[0]);
+
+            // Start building the list of sort fields:
+            $order = [];
+
+            // The title field or id can't be null, so don't bother with the extra
+            // isnull() sort in that case. In finna_custom_order_index it's fine for
+            // it to be null.
+            $special = in_array(
+                strtolower($rawField), ['title', 'id', 'finna_custom_order_index']
             );
-            $order[] = 'ur.finna_custom_order_index';
+            if (!$special) {
+                $order[] = new Expression(
+                    'isnull(?)', [$alias . '.' . $rawField],
+                    [Expression::TYPE_IDENTIFIER]
+                );
+            }
+
+            // Apply the user-specified sort:
+            if ('id' === $rawField || 'finna_custom_order_index' === $rawField) {
+                $order[] = "ur.$sort";
+            } else {
+                $order[] = $alias . '.' . $sort;
+            }
+
+            // Inject the sort preferences into the query object:
             $query->order($order);
-            // Add the column to the query for MySQL 5.7 compatibility
-            $columns = $query->getRawState(\Zend\Db\Sql\Select::COLUMNS);
-            $columns[] = new Expression('ur.finna_custom_order_index');
-            $query->columns($columns);
-        } else {
-            parent::applySort($query, $sort, $alias);
         }
     }
 }

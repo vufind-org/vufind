@@ -90,13 +90,6 @@ class Results extends \VuFind\Search\Favorites\Results
             $sort = 'id desc';
         }
 
-        $sortNewestAddedFirst = $sort == 'id desc';
-        if ($sortNewestAddedFirst) {
-            // Set sort option to 'id' (ascending), since we reverse the
-            // results to a descending (newest first) order (see below).
-            $this->getParams()->setSort('id');
-        }
-
         $this->getParams()->setSort($sort);
 
         parent::performSearch();
@@ -114,9 +107,6 @@ class Results extends \VuFind\Search\Favorites\Results
             }
             ksort($records);
             $this->results = array_values($records);
-        } else if ($sortNewestAddedFirst) {
-            $this->getParams()->setSort($sort);
-            $this->results = array_reverse($this->results);
         }
     }
 
