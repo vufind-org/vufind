@@ -27,7 +27,6 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search;
-use minSO;
 
 /**
  * VuFind Search History Helper
