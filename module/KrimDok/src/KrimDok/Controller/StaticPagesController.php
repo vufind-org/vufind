@@ -8,8 +8,6 @@
  */
 namespace KrimDok\Controller;
 
-use VuFind\Exception\Forbidden as ForbiddenException;
-
 /**
  * This controller handles global web proxy functionality.
  *

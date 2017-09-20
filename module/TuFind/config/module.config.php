@@ -1,37 +1,37 @@
 <?php
 namespace TuFind\Module\Config;
 
-$config = array(
-    'controllers' => array(
-        'invokables' => array(
-            'proxy' => 'TuFind\Controller\ProxyController',
-            'pdaproxy' => 'TuFind\Controller\PDAProxyController'
-        ),
-    ),
-    'router' => array(
-        'routes' => array(
-            'proxy-load' => array(
+$config = [
+    'controllers' => [
+        'factories' => [
+            'pdaproxy' => 'TuFind\Controller\Factory::getPDAProxyController',
+            'proxy' => 'TuFind\Controller\Factory::getProxyController',
+        ],
+    ],
+    'router' => [
+        'routes' => [
+            'proxy-load' => [
                 'type' => 'Zend\Mvc\Router\Http\Literal',
-                'options' => array(
+                'options' => [
                     'route'    => '/Proxy/Load',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => 'Proxy',
                         'action'     => 'Load',
-                    )
-                )
-            ),
-            'pdaproxy-load' => array(
+                    ]
+                ]
+            ],
+            'pdaproxy-load' => [
                 'type' => 'Zend\Mvc\Router\Http\Literal',
-                'options' => array(
+                'options' => [
                     'route'    => '/PDAProxy/Load',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => 'PDAProxy',
                         'action'     => 'Load',
-                    )
-                )
-            )
-        )
-    )
-);
+                    ]
+                ]
+            ]
+        ]
+    ]
+];
 
 return $config;

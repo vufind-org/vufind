@@ -70,18 +70,15 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
+            'alphabrowse' => 'IxTheo\Controller\Factory::getAlphabrowseController',
             'browse' => 'IxTheo\Controller\Factory::getBrowseController',
+            'feedback' => 'IxTheo\Controller\Factory::getFeedbackController',
+            'KeywordChainSearch' => 'IxTheo\Controller\Factory::getKeywordChainSearchController',
+            'MyResearch' => 'IxTheo\Controller\Factory::getMyResearchController',
+            'Pipeline' => 'IxTheo\Controller\Factory::getPipelineController',
             'record' => 'IxTheo\Controller\Factory::getRecordController',
-        ],
-        'invokables' => [
-            'alphabrowse' => 'IxTheo\Controller\AlphabrowseController',
-            'BibleRangeSearch' => 'IxTheo\Controller\Search\BibleRangeSearchController',
-            'feedback' => 'IxTheo\Controller\FeedbackController',
-            'KeywordChainSearch' => 'IxTheo\Controller\Search\KeywordChainSearchController',
-            'MyResearch' => 'IxTheo\Controller\MyResearchController',
-            'Pipeline' => 'IxTheo\Controller\Pipeline',
-            'search' => 'IxTheo\Controller\SearchController',
-            'StaticPage' => 'IxTheo\Controller\StaticPageController',
+            'search' => 'IxTheo\Controller\Factory::getSearchController',
+            'StaticPage' => 'IxTheo\Controller\Factory::getStaticPageController',
         ],
     ],
     'controller_plugins' => [

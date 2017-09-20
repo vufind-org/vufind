@@ -6,8 +6,8 @@ class StaticPageController extends \VuFind\Controller\AbstractBase
 {
     private function getLanguage()
     {
-        return $this->getServiceLocator()->has('VuFind\Translator')
-            ? $this->getServiceLocator()->get('VuFind\Translator')->getLocale()
+        return $this->serviceLocator->has('VuFind\Translator')
+            ? $this->serviceLocator->get('VuFind\Translator')->getLocale()
             : $this->getDefaultLanguage();
     }
 

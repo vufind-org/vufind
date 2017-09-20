@@ -95,7 +95,7 @@ class KeywordChainSearchController extends \VuFind\Controller\AbstractSearch
      */
     public function homeAction()
     {
-        $params = $this->getServiceLocator()->get('VuFind\SearchParamsPluginManager')->get('KeywordChainSearch');
+        $params = $this->serviceLocator->get('VuFind\SearchParamsPluginManager')->get('KeywordChainSearch');
         return parent::createViewModel(['params' => $params]);
     }
 

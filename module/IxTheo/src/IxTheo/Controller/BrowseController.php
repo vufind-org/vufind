@@ -360,7 +360,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
      */
     protected function getFacetList($facet, $category = null, $sort = 'count', $query = '[* TO *]')
     {
-        $results = $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager')->get('Solr');
+        $results = $this->serviceLocator->get('VuFind\SearchResultsPluginManager')->get('Solr');
         $params = $results->getParams();
         $params->addFacet($facet);
         if ($category != null) {

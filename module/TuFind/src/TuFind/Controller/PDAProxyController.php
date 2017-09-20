@@ -29,7 +29,7 @@ class PDAProxyController extends \VuFind\Controller\AbstractBase
 
     protected function isAvailableForILL($isbn)
     {
-        $client = $this->getServiceLocator()->get('VuFind\Http')->createClient();
+        $client = $this->serviceLocator->get('VuFind\Http')->createClient();
         $client->setUri($this->base_url . '?' . $this->base_query . $isbn);
         $response = $client->send();
 
@@ -104,7 +104,7 @@ class PDAProxyController extends \VuFind\Controller\AbstractBase
         $json = json_encode(['isbn' => $isbn,
                              'pda_status' => $pda_status]);
 
-        $this->getServiceLocator()->get('VuFind\Logger')->log(Logger::NOTICE, 'PDALOG for ' . $isbn . ': ' . $pda_status);
+        $this->serviceLocator->get('VuFind\Logger')->log(Logger::NOTICE, 'PDALOG for ' . $isbn . ': ' . $pda_status);
 
         $response = $this->getResponse();
         $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');

@@ -1,8 +1,6 @@
 <?php
 namespace IxTheo\Controller;
 
-use IxTheo\Controller\Search\BibleRangeSearchController;
-
 class SearchController extends \VuFind\Controller\SearchController
 {
     /**

@@ -56,7 +56,7 @@ class AlphabrowseController extends \VuFind\Controller\AlphabrowseController
             ? (int) $config->AlphaBrowse->page_size : 20;
 
         // Connect to Solr:
-        $db = $this->getServiceLocator()->get('VuFind\Search\BackendManager')
+        $db = $this->serviceLocator->get('VuFind\Search\BackendManager')
             ->get('Solr');
 
         // Process incoming parameters:

@@ -1,16 +1,14 @@
 <?php
 namespace KrimDok\Module\Config;
 
-$config = array(
+$config = [
     'controllers' => [
         'factories' => [
             'browse' => 'KrimDok\Controller\Factory::getBrowseController',
-        ],
-        'invokables' => [
-            'fidsystematik' => 'KrimDok\Controller\FIDSystematikController',
-            'help' => 'KrimDok\Controller\HelpController',
-            'search' => 'KrimDok\Controller\SearchController',
-            'static_pages' => 'KrimDok\Controller\StaticPagesController',
+            'fidsystematik' => 'KrimDok\Controller\Factory::getFIDSystematikController',
+            'help' => 'KrimDok\Controller\Factory::getHelpController',
+            'search' => 'KrimDok\Controller\Factory::getSearchController',
+            'static_pages' => 'KrimDok\Controller\Factory::getStaticPagesController',
         ],
     ],
     'controller_plugins' => [
@@ -56,7 +54,7 @@ $config = array(
             ],
         ],
     ],
-);
+];
 
 $recordRoutes = [];
 $dynamicRoutes = [];

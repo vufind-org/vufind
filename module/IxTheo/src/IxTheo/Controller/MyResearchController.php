@@ -47,7 +47,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         // If we got this far, we just need to display the subscriptions:
         try {
-            $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+            $runner = $this->serviceLocator->get('VuFind\SearchRunner');
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
@@ -56,7 +56,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 + ['id' => $this->params()->fromRoute('id')];
 
             // Set up listener for recommendations:
-            $rManager = $this->getServiceLocator()->get('VuFind\RecommendPluginManager');
+            $rManager = $this->serviceLocator->get('VuFind\RecommendPluginManager');
             $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
                 $listener = new RecommendListener($rManager, $searchId);
                 $listener->setConfig(
@@ -116,7 +116,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         // If we got this far, we just need to display the subscriptions:
         try {
-            $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+            $runner = $this->serviceLocator->get('VuFind\SearchRunner');
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
@@ -125,7 +125,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 + ['id' => $this->params()->fromRoute('id')];
 
             // Set up listener for recommendations:
-            $rManager = $this->getServiceLocator()->get('VuFind\RecommendPluginManager');
+            $rManager = $this->serviceLocator->get('VuFind\RecommendPluginManager');
             $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
                 $listener = new RecommendListener($rManager, $searchId);
                 $listener->setConfig(
