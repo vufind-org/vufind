@@ -633,7 +633,7 @@ class RecordDataFormatterFactory
         $spec->setTemplateLine(
             'Photo Info', 'getPhotoInfo', 'data-escapeHtml.phtml',
             [
-                'context' => ['class' => 'recordPhotographer']
+                'context' => ['class' => 'record-photoinfo']
             ]
         );
         $spec->setTemplateLine(
