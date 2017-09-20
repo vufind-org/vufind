@@ -44,6 +44,6 @@ class KohaTest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function __construct()
     {
-        $this->driver = new Koha();
+        $this->driver = new Koha(new \VuFind\Date\Converter());
     }
 }

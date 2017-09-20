@@ -429,11 +429,11 @@ $(document).ready(function commonDocReady() {
   // retain filter sessionStorage
   $('.searchFormKeepFilters').click(function retainFiltersInSessionStorage() {
     sessionStorage.setItem('vufind_retain_filters', this.checked ? 'true' : 'false');
+    $('.applied-filter').prop('checked', this.checked);
   });
   if (sessionStorage.getItem('vufind_retain_filters')) {
     var state = (sessionStorage.getItem('vufind_retain_filters') === 'true');
-    $('.searchFormKeepFilters').prop('checked', state);
-    $('#applied-filter').prop('checked', state);
+    $('.searchFormKeepFilters,.applied-filter').prop('checked', state);
   }
 
   setupIeSupport();
