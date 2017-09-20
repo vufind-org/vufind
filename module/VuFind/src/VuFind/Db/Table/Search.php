@@ -121,7 +121,8 @@ class Search extends Gateway
         $callback = function ($select) use ($sid, $uid) {
             $select->where->equalTo('session_id', $sid)->and->equalTo('saved', 0);
             if ($uid !== null) {
-                $select->where->OR->equalTo('user_id', $uid)->and->equalTo('saved', 0);
+                $select->where->OR
+                    ->equalTo('user_id', $uid)->and->equalTo('saved', 0);
             }
         };
         return $this->delete($callback);
