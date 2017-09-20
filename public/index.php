@@ -5,12 +5,14 @@ use Zend\Mvc\Service\ServiceManagerConfig;
 
 // If the XHProf profiler is enabled, set it up now:
 $xhprof = getenv('VUFIND_PROFILER_XHPROF');
-if (!empty($xhprof) && extension_loaded('xhprof')) {
-    xhprof_enable();
-} else if (extension_loaded('tideways')) {
-    tideways_enable();
-} else {
-    $xhprof = false;
+if (!empty($xhprof)) {
+    if (extension_loaded('xhprof')) {
+        xhprof_enable();
+    } else if (extension_loaded('tideways')) {
+        tideways_enable();
+    } else {
+        $xhprof = false;
+    }
 }
 
 // Define path to application directory
