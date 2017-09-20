@@ -1,5 +1,10 @@
 .record .media-body h3 { margin-top: 0; } // Align title with top of image
 .recordcover { max-height: 300px; } // Keep the image from getting out of control
+.browzine .recordcover {
+  margin-top: 2px;
+  margin-bottom: 4px;
+  box-shadow: 1px 1px 3px rgba(47,52,64,.72);
+}
 @media (max-width: 767px) {
   .record .media-left,
   .record .media-right { display: block; }

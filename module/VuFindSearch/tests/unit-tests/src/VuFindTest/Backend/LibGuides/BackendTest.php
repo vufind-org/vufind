@@ -253,7 +253,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     /**
      * Build a real record collection factory
      *
-     * @return \VuFindSearch\Backend\LibGuides\Response\XML\RecordCollectionFactory
+     * @return RecordCollectionFactory
      */
     protected function getRCFactory()
     {
@@ -262,6 +262,6 @@ class BackendTest extends \VuFindTest\Unit\TestCase
             $driver->setRawData($data);
             return $driver;
         };
-        return new \VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory($callback);
+        return new RecordCollectionFactory($callback);
     }
 }

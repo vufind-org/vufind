@@ -326,6 +326,12 @@ class AbstractRecord extends AbstractBase
             throw new ForbiddenException('Lists disabled');
         }
 
+        // Check permission:
+        $response = $this->permission()->check('feature.Favorites', false);
+        if (is_object($response)) {
+            return $response;
+        }
+
         // Process form submission:
         if ($this->formWasSubmitted('submit')) {
             return $this->processSave();

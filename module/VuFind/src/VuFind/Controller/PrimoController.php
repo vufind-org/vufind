@@ -46,6 +46,7 @@ class PrimoController extends AbstractSearch
      */
     public function __construct(ServiceLocatorInterface $sm)
     {
+        $this->accessPermission = 'access.PrimoModule';
         $this->searchClassId = 'Primo';
         parent::__construct($sm);
     }
