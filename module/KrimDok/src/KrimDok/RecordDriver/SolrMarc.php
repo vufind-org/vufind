@@ -1,10 +1,6 @@
 <?php
 
 namespace KrimDok\RecordDriver;
-use VuFind\Exception\LoginRequired as LoginRequiredException;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-
 
 class SolrMarc extends \TuFind\RecordDriver\SolrMarc
 {

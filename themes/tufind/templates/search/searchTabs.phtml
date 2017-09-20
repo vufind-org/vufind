@@ -1,0 +1,13 @@
+<? if (isset($searchTabs) && count($searchTabs) > 0): ?>
+  <ul class="nav nav-tabs">
+    <? foreach ($searchTabs as $tab): ?>
+        <? if ($this->permission()->allowDisplay($tab['permission'])): ?>
+          <li<?=$tab['selected'] ? ' class="active"' : ''?>>
+            <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
+          </li>
+        <? elseif ($block = $this->permission()->getAlternateContent($tab['permission'])): ?>
+            <?=$block?>
+        <? endif; ?>
+    <? endforeach; ?>
+  </ul>
+<? endif; ?>

@@ -2,6 +2,8 @@
 
 namespace IxTheo\Controller\Search;
 
+use Zend\ServiceManager\ServiceLocatorInterface;
+
 class KeywordChainSearchController extends \VuFind\Controller\AbstractSearch
 {
     // Try to implement KWC based on the Browse Controller
@@ -10,10 +12,10 @@ class KeywordChainSearchController extends \VuFind\Controller\AbstractSearch
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         $this->searchClassId = 'KeywordChainSearch';
-        parent::__construct();
+        parent::__construct($sm);
     }
 
 

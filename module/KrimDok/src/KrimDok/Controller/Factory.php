@@ -8,6 +8,7 @@ class Factory
     public static function getBrowseController(ServiceManager $sm)
     {
         return new BrowseController(
+            $sm->getServiceLocator(),
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }

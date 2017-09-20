@@ -13,6 +13,7 @@ class Factory extends \VuFind\Controller\Factory
     public static function getBrowseController(ServiceManager $sm)
     {
         return new BrowseController(
+            $sm->getServiceLocator(),
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }
@@ -36,6 +37,7 @@ class Factory extends \VuFind\Controller\Factory
     public static function getRecordController(ServiceManager $sm)
     {
         return new RecordController(
+            $sm->getServiceLocator(),
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }
