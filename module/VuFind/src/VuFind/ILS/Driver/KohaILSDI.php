@@ -118,7 +118,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Should validate passwords against Koha system?
      *
-     * @var string
+     * @var boolean
      */
     protected $validatePasswords;
 
