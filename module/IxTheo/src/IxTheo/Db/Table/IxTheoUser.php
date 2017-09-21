@@ -1,14 +1,27 @@
 <?php
 namespace IxTheo\Db\Table;
+use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Table\PluginManager;
+use Zend\Db\Adapter\Adapter;
 class IxTheoUser extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
 
     protected $session;
 
-    public function __construct()
-    {
-        parent::__construct('ixtheo_user', 'IxTheo\Db\Row\IxTheoUser');
+    /**
+     * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param string        $table   Name of database table to interface with
+     */
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj = null, $table = 'ixtheo_user'
+    ) {
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     public function getNew($userId)

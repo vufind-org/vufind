@@ -16,17 +16,16 @@ $config = [
             ],
             'db_row' => [
                 'factories' => [
+                    'IxTheoUser' => 'IxTheo\Db\Row\Factory::getIxTheoUser',
                     'pdasubscription' => 'IxTheo\Db\Row\Factory::getPDASubscription',
                     'subscription' => 'IxTheo\Db\Row\Factory::getSubscription',
                 ],
             ],
             'db_table' => [
                 'factories' => [
+                    'IxTheoUser' => 'IxTheo\Db\Table\Factory::getIxTheoUser',
                     'pdasubscription' => 'IxTheo\Db\Table\Factory::getPDASubscription',
                     'subscription' => 'IxTheo\Db\Table\Factory::getSubscription',
-                ],
-                'invokables' => [
-                    'IxTheoUser' => 'IxTheo\Db\Table\IxTheoUser',
                 ],
             ],
             'recorddriver' => [
