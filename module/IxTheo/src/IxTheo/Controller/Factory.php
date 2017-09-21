@@ -6,10 +6,6 @@ use Zend\ServiceManager\ServiceManager;
 
 class Factory extends \VuFind\Controller\Factory
 {
-    public static function getAlphabrowseController(ServiceManager $sm) {
-        return new AlphabrowseController($sm->getServiceLocator());
-    }
-
     public static function getBrowseController(ServiceManager $sm)
     {
         return new BrowseController(
@@ -18,20 +14,27 @@ class Factory extends \VuFind\Controller\Factory
         );
     }
 
-    public static function getFeedbackController(ServiceManager $sm) {
-        return new FeedbackController($sm->getServiceLocator());
-    }
-
-    public static function getKeywordChainSearchController(ServiceManager $sm) {
-        return new Search\KeywordChainSearchController($sm->getServiceLocator());
-    }
-
-    public static function getMyResearchController(ServiceManager $sm) {
-        return new MyResearchController($sm->getServiceLocator());
-    }
-
-    public static function getPipelineController(ServiceManager $sm) {
-        return new PipelineController($sm->getServiceLocator());
+    /**
+     * Construct a generic controller.
+     *
+     * This function is inherited but contains the same code as the parent.
+     * Required because __NAMESPACE__ overwrites the parent's namespace.
+     *
+     * @param string         $name Name of table to construct (fully qualified
+     * class name, or else a class name within the current namespace)
+     * @param ServiceManager $sm   Service manager
+     *
+     * @return object
+     */
+    public static function getGenericController($name, ServiceManager $sm)
+    {
+        // Prepend the current namespace unless we receive a FQCN:
+        $class = (strpos($name, '\\') === false)
+            ? __NAMESPACE__ . '\\' . $name : $name;
+        if (!class_exists($class)) {
+            throw new \Exception('Cannot construct ' . $class);
+        }
+        return new $class($sm->getServiceLocator());
     }
 
     public static function getRecordController(ServiceManager $sm)
@@ -40,13 +43,5 @@ class Factory extends \VuFind\Controller\Factory
             $sm->getServiceLocator(),
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
-    }
-
-    public static function getSearchController(ServiceManager $sm) {
-        return new SearchController($sm->getServiceLocator());
-    }
-
-    public static function getStaticPageController(ServiceManager $sm) {
-        return new StaticPageController($sm->getServiceLocator());
     }
 }
