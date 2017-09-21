@@ -172,7 +172,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         // If we are using SAML/Shibboleth for authentication for both ourselves
         // and Koha then we can't validate the patrons passwords against Koha as
         // they won't have one. (Double negative logic used so that if the config
-        // option isn't present in KohaILSDI.ini then ILS passwords will be validated)
+        // option isn't present in KohaILSDI.ini then ILS passwords will be
+        // validated)
         $this->validatePasswords
             = empty($this->config['Catalog']['dontValidatePasswords']);
 
