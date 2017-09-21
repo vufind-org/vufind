@@ -99,6 +99,20 @@ function initFacetTree(treeNode, inSidebar)
   );
 }
 
+function collapseTopFacets() {
+  $('.top-facets').each(function setupToCollapses(index) {
+    $(this).find('.collapse').removeClass('in');
+    $(this).on('show.bs.collapse', function toggleTopFacet() {
+      $(this).find('.top-title .fa').removeClass('fa-caret-right');
+      $(this).find('.top-title .fa').addClass('fa-caret-down');
+    });
+    $(this).on('hide.bs.collapse', function toggleTopFacet() {
+      $(this).find('.top-title .fa').removeClass('fa-caret-down');
+      $(this).find('.top-title .fa').addClass('fa-caret-right');
+    });
+  });
+}
+
 /* --- Lightbox Facets --- */
 VuFind.register('lightbox_facets', function LightboxFacets() {
   function lightboxFacetSorting() {
