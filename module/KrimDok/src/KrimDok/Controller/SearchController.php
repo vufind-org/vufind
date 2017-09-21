@@ -2,8 +2,6 @@
 
 namespace KrimDok\Controller;
 
-use VuFind\Exception\Mail as MailException;
-
 class SearchController extends \VuFind\Controller\SearchController
 {
     /**

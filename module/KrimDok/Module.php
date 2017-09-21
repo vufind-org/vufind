@@ -7,7 +7,7 @@
  * @author      Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @copyright   2015-2017 Universtitätsbibliothek Tübingen
  */
-namespace krimDok;
+namespace KrimDok;
 use Zend\ModuleManager\ModuleManager,
     Zend\Mvc\MvcEvent;
 

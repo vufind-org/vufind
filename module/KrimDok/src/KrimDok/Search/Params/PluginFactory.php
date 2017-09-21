@@ -1,7 +1,6 @@
 <?php
 
 namespace KrimDok\Search\Params;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 class PluginFactory extends \VuFind\Search\Params\PluginFactory
 {
