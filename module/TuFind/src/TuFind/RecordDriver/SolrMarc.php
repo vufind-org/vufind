@@ -45,10 +45,26 @@ class SolrMarc extends \TuFind\RecordDriver\SolrDefault
         return (count($ita_fields) > 0);
     }
 
-    public function isDependentWork() {
+    public function isArticle() {
         $leader = $this->getMarcRecord()->getLeader();
-        // leader[7] is set to 'a' if we have a dependent work
-        return ($leader[7] == 'a') ? true : false;
+
+        if ($leader[7] == 'a')
+            return true;
+        $_935_fields = $this->getMarcRecord()->getFields('935');
+        foreach ($_935_fields as $_935_field) {
+            $c_subfields = $this->getSubfieldArray($_935_field, ['c']);
+            foreach ($c_subfields as $c_subfield) {
+                if ($c_subfield == 'sodr')
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isArticleCollection() {
+        $aco_fields = $this->getMarcRecord()->getFields("ACO");
+        return (count($aco_fields) > 0);
     }
 
     public function isPrintedWork() {
@@ -61,6 +77,6 @@ class SolrMarc extends \TuFind\RecordDriver\SolrDefault
     }
 
     public function workIsTADCandidate() {
-        return $this->isDependentWork() && $this->isPrintedWork() && $this->isAvailableInTubingenUniversityLibrary();
+        return ($this->isArticle() || $this->isArticleCollection()) && $this->isPrintedWork() && $this->isAvailableInTubingenUniversityLibrary();
     }
 }
