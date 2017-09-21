@@ -5,18 +5,6 @@ namespace IxTheo\Search\KeywordChainSearch;
 class Results extends \VuFind\Search\Solr\Results
 {
     /**
-     * Constructor
-     *
-     * @param \VuFind\Search\Base\Params $params Object representing user search
-     * parameters.
-     */
-    public function __construct($params)
-    {
-        // Call parent constructor:
-        parent::__construct($params);
-    }
-
-    /**
      * Is the current search saved in the database?
      *
      * @return bool
