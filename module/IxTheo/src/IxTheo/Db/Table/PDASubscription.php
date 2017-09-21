@@ -1,8 +1,8 @@
 <?php
 namespace IxTheo\Db\Table;
-use VuFind\Exception\LoginRequired as LoginRequiredException,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Db\Sql\Expression;
+use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Table\PluginManager;
+use Zend\Db\Adapter\Adapter;
 class PDASubscription extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
@@ -17,12 +17,16 @@ class PDASubscription extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Tab
     /**
      * Constructor
      *
-     * @param \Zend\Session\Container $session Session container (must use same
-     * namespace as container provided to \VuFind\View\Helper\Root\UserList).
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param string        $table   Name of database table to interface with
      */
-    public function __construct()
-    {
-        parent::__construct('ixtheo_pda_subscriptions', 'IxTheo\Db\Row\PDASubscription');
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj = null, $table = 'ixtheo_pda_subscriptions'
+    ) {
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     public function getNew($userId, $ppn, $title, $author, $year, $isbn) {

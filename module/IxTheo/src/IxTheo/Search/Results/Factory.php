@@ -48,7 +48,8 @@ class Factory extends \VuFind\Search\Results\Factory
     public static function getPDASubscriptions(ServiceManager $sm)
     {
         $factory = new PluginFactory();
-        $obj = $factory->createServiceWithName($sm, 'pdasubscriptions', 'PDASubscriptions');
+        $tm = $sm->getServiceLocator()->get('VuFind\DbTablePluginManager');
+        $obj = $factory->createServiceWithName($sm, 'pdasubscriptions', 'PDASubscriptions', [$tm->get('pdasubscription')]);
         $init = new \ZfcRbac\Initializer\AuthorizationServiceInitializer();
         $init->initialize($obj, $sm);
         return $obj;

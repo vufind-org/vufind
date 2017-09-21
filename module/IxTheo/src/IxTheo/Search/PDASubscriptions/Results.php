@@ -1,7 +1,11 @@
 <?php
 namespace IxTheo\Search\PDASubscriptions;
-use VuFind\Exception\ListPermission as ListPermissionException,
+use IxTheo\Db\Table\PDASubscription as PDASubscriptionTable,
+    VuFind\Exception\ListPermission as ListPermissionException,
+    VuFind\Record\Loader,
+    VuFind\Search\Base\Params as BaseParams,
     VuFind\Search\Base\Results as BaseResults,
+    VuFindSearch\Service as SearchService,
     ZfcRbac\Service\AuthorizationServiceAwareInterface,
     ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
@@ -23,6 +27,29 @@ class Results extends BaseResults
      * @var \VuFind\Db\Row\UserList|bool
      */
     protected $list = false;
+
+    /**
+     * DB table
+     * @var \IxTheo\Db\Table\PDASubscription
+     */
+    protected $pdasubscriptionTable = null;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Base\Params $params        Object representing user
+     * search parameters.
+     * @param SearchService              $searchService Search service
+     * @param Loader                     $recordLoader  Record loader
+     * @param SubscriptionTable          $pdasubscriptionTable Subscription table
+     */
+    public function __construct(BaseParams $params,
+        SearchService $searchService, Loader $recordLoader,
+        PDASubscriptionTable $pdasubscriptionTable
+    ) {
+        parent::__construct($params, $searchService, $recordLoader);
+        $this->pdasubscriptionTable = $pdasubscriptionTable;
+    }
 
     /**
      * Returns the stored list of facets for the last search
@@ -57,8 +84,7 @@ class Results extends BaseResults
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
-            $table = $this->getTable('PDASubscription');
-            $list = $table->get($this->user->id, $this->getParams()->getSort(), $this->getStartRecord() - 1, $limit);
+            $list = $this->pdasubscriptionTable->get($this->user->id, $this->getParams()->getSort(), $this->getStartRecord() - 1, $limit);
         }
 
         // Retrieve record drivers for the selected items.
@@ -70,9 +96,8 @@ class Results extends BaseResults
             ];
         }
 
-        $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
-        $recordLoader->setCacheContext("PDASubscription");
-        $this->results = $recordLoader->loadBatch($recordsToRequest);
+        $this->recordLoader->setCacheContext("PDASubscription");
+        $this->results = $this->recordLoader->loadBatch($recordsToRequest);
     }
 
     /**
@@ -85,8 +110,7 @@ class Results extends BaseResults
     {
         // If we haven't previously tried to load a list, do it now:
         if ($this->list === false) {
-            $table = $this->getTable('PDASubscription');
-            $this->list = $table->getAll($this->user->id, $this->getParams()->getSort());
+            $this->list = $this->pdasubscriptionTable->getAll($this->user->id, $this->getParams()->getSort());
         }
         return $this->list;
     }
