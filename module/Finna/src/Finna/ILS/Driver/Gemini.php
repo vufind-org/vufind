@@ -285,7 +285,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
                 $holdableTotal = true;
             }
 
-            if (isset($item->MagazineIssue)) {
+            if (!empty($item->MagazineIssue)) {
                 $journal = explode(':', (string)$item->MagazineIssue);
 
                 $journalInfo = [
@@ -385,6 +385,16 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
 
         $messagingSettings = $this->processMessagingSettings($activatedServices);
 
+        $fullData = [
+            'MainAddrLine1' => (string) $info->MainAddrLine1,
+            'MainZip' => (string) $info->MainZip,
+            'MainPlace' => (string) $info->MainPlace,
+            'MainCountry' => (string) $info->MainCountry,
+            'MainPhone' => (string) $info->MainPhone,
+            'Mobile' => (string) $info->Mobile,
+            'MainEmail' => (string) $info->MainEmail
+        ];
+
         $user = [
             'id' => (string) $info->PatronId,
             'cat_username' => $username,
@@ -393,15 +403,17 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
             'firstname' => $firstname,
             'email' => (string) $info->MainEmail,
             'address1' => (string) $info->MainAddrLine1,
-            'zip' => (int) $info->MainZip,
+            'zip' => (string) $info->MainZip,
             'city' => (string) $info->MainPlace,
             'country' => (string) $info->MainCountry,
-            'phone' => (int) $info->MainPhone,
+            'phone' => (string) $info->MainPhone,
+            'smsnumber' => (string) $info->Mobile,
             'phoneLocalCode' => null,
             'phoneAreaCode' => null,
             'major' => null,
             'college' => null,
-            'messagingServices' => $messagingSettings
+            'messagingServices' => $messagingSettings,
+            'full_data' => $fullData
         ];
 
         return $user;
@@ -671,33 +683,28 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
      */
     public function getRequestGroups($bibId, $patronId, $holdDetails = null)
     {
-        $interfaceLanguage = $this->getLanguage();
         $results = [];
 
         // Add Required Params
-        $params['unitId'] = 'ALL';
+        $params = [
+            'id'   => $bibId,
+            'lang' => $this->getLanguage()
+        ];
+        $response = $this->makeRequest('GetItem', $params);
 
-        $response = $this->makeRequest('getUnits', $params);
+        foreach ($response->MarcRecord->Item as $item) {
+            $unitId = (string) $item->BelongToUnitId;
 
-        if (!isset($response->Unit)) {
-            return [];
-        }
-
-        foreach ($response->Unit as $unit) {
-            foreach ($unit->description as $description) {
-                $lang = (string) $description->attributes()['lang'];
-
-                if ($lang == $interfaceLanguage) {
-                    $unitName = (string) $description;
-                }
+            if ($item->PermitReservation) {
+                $unit = [
+                  'id'   => $unitId,
+                  'name' => (string) $item->BelongToUnit
+                ];
+                $results[] = $unit;
             }
-
-            $unit = [
-                'id'   => (string) $unit->UnitId,
-                'name' => $unitName
-            ];
-            $results[] = $unit;
         }
+        $results = array_unique($results, SORT_REGULAR);
+
         return $results;
     }
 
@@ -735,6 +742,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
 
         // Add Required Params
         $params['unitId'] = $unitId;
+        $params['onlyDeliverableUnits'] = '1';
 
         $response = $this->makeRequest('getUnits', $params);
 
@@ -958,6 +966,163 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
     }
 
     /**
+     * Update patron's email address
+     *
+     * @param array  $patron Patron array
+     * @param String $email  Email address
+     *
+     * @throws ILSException
+     *
+     * @return array Associative array of the results
+     */
+    public function updateEmail($patron, $email)
+    {
+        $details = '<MainEmail>' . $this->encodeXML($email) . '</MainEmail>';
+        $xml = $this->createPatronUpdateXML($patron, $details);
+        $response = $this->makeRequest('PatronUpdWDelay', false, 'POST', $xml);
+
+        $statusId = (string) $response->Result['id'];
+
+        if ($statusId != '0') {
+            return  [
+                'success' => false,
+                'status' => 'Changing the email address failed',
+                'sys_message' => $statusId
+            ];
+        }
+        return [
+            'success' => true,
+            'status' => 'request_change_done',
+            'sys_message' => ''
+        ];
+    }
+
+    /**
+     * Update patron's phone number
+     *
+     * @param array  $patron Patron array
+     * @param string $phone  Phone number
+     *
+     * @throws ILSException
+     *
+     * @return array Associative array of the results
+     */
+    public function updatePhone($patron, $phone)
+    {
+        $details = '<MainPhone>' . $this->encodeXML($phone) . '</MainPhone>';
+        $xml = $this->createPatronUpdateXML($patron, $details);
+        $response = $this->makeRequest('PatronUpdWDelay', false, 'POST', $xml);
+
+        $statusId = (string) $response->Result['id'];
+
+        if ($statusId != '0') {
+            return  [
+                'success' => false,
+                'status' => 'Changing the phone number failed',
+                'sys_message' => $statusId
+            ];
+        }
+        return [
+            'success' => true,
+            'status' => 'request_change_done',
+            'sys_message' => ''
+        ];
+    }
+
+    /**
+     * Update patron's SMS alert number
+     *
+     * @param array  $patron Patron array
+     * @param string $number SMS alert number
+     *
+     * @throws ILSException
+     *
+     * @return array Associative array of the results
+     */
+    public function updateSmsNumber($patron, $number)
+    {
+        $details = '<Mobile>' . $this->encodeXML($number) . '</Mobile>';
+        $xml = $this->createPatronUpdateXML($patron, $details);
+        $response = $this->makeRequest('PatronUpdWDelay', false, 'POST', $xml);
+
+        $statusId = (string) $response->Result['id'];
+
+        if ($statusId != '0') {
+            return  [
+                'success' => false,
+                'status' => 'Changing the phone number failed',
+                'sys_message' => $statusId
+            ];
+        }
+        return [
+            'success' => true,
+            'status' => 'request_change_done',
+            'sys_message' => ''
+        ];
+    }
+
+    /**
+     * Update patron contact information
+     *
+     * @param array $patron  Patron array
+     * @param array $details Associative array of patron contact information
+     *
+     * @throws ILSException
+     *
+     * @return array Associative array of the results
+     */
+    public function updateAddress($patron, $details)
+    {
+        $addressFields = isset($this->config['updateAddress']['fields'])
+            ? $this->config['updateAddress']['fields'] : [];
+        $addressFields = array_map(
+            function ($item) {
+                $parts = explode(':', $item, 2);
+                return isset($parts[1]) ? $parts[1] : '';
+            },
+            $addressFields
+        );
+        $addressFields = array_flip($addressFields);
+
+        // Pick the configured fields from the request
+        $request = '';
+        foreach ($details as $key => $value) {
+            if (isset($addressFields[$key]) && !empty($value != '')
+                && $patron['full_data'][$key] != $value
+            ) {
+                $request .= "<$key>" . $this->encodeXML($value) . "</$key>";
+            }
+        }
+
+        // No need to send it, if there are no changes
+        if (empty($request)) {
+            return  [
+                'success' => true,
+                'status' => 'request_change_done',
+                'sys_message' => ''
+            ];
+        }
+
+        $xml = $this->createPatronUpdateXML($patron, $request);
+        $response = $this->makeRequest('PatronUpdWDelay', false, 'POST', $xml);
+
+        $statusId = (string) $response->Result['id'];
+
+        if ($statusId != '0') {
+            return  [
+                'success' => false,
+                'status' => 'Changing the contact information failed',
+                'sys_message' => $statusId
+            ];
+        }
+        return [
+            'success' => true,
+            'status' => 'request_change_done',
+            'sys_message' => ''
+        ];
+    }
+
+    /**
      * Change Password
      *
      * @param String $cardDetails Patron card data
@@ -1057,6 +1222,79 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
     }
 
     /**
+     * Create a HTTP client
+     *
+     * @param string $url Request URL
+     *
+     * @return \Zend\Http\Client
+     */
+    protected function createHttpClient($url)
+    {
+        $client = $this->httpService->createClient($url);
+
+        if (isset($this->config['Http']['ssl_verify_peer_name'])
+            && !$this->config['Http']['ssl_verify_peer_name']
+        ) {
+            $adapter = $client->getAdapter();
+            if ($adapter instanceof \Zend\Http\Client\Adapter\Socket) {
+                $context = $adapter->getStreamContext();
+                $res = stream_context_set_option(
+                    $context, 'ssl', 'verify_peer_name', false
+                );
+                if (!$res) {
+                    throw new \Exception('Unable to set sslverifypeername option');
+                }
+            } elseif ($adapter instanceof \Zend\Http\Client\Adapter\Curl) {
+                $adapter->setCurlOption(CURLOPT_SSL_VERIFYHOST, false);
+            }
+        }
+
+        // Set timeout value
+        $timeout = isset($this->config['Catalog']['http_timeout'])
+            ? $this->config['Catalog']['http_timeout'] : 30;
+        $client->setOptions(
+            ['timeout' => $timeout, 'useragent' => 'VuFind', 'keepalive' => true]
+        );
+
+        // Set Accept header
+        $client->getRequest()->getHeaders()->addHeaderLine(
+            'Accept', 'application/json'
+        );
+
+        return $client;
+    }
+
+    /**
+     * Create XML for POST requests using PatronUpdateWDelay
+     *
+     * @param array  $patron  Patron array
+     * @param string $details XML string with details for patron update request
+     *
+     * @throws ILSException
+     *
+     * @return array Associative array of the results
+     */
+    protected function createPatronUpdateXML($patron, $details)
+    {
+        $barCode = $this->encodeXML($patron['cat_username']);
+        $pinCode = $this->encodeXML($patron['cat_password']);
+        $xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>
+                <PatronUpdWDelay
+                    xmlns=\"http://www.abilita.fi/schemas/patronInformation\">
+                    <PatronSearch>
+                        <BarCode>$barCode</BarCode>
+                        <PinCode>$pinCode</PinCode>
+                    </PatronSearch>
+                    <Patron>
+                        <BarCode>$barCode</BarCode>
+                        <PinCode>$pinCode</PinCode>
+                        $details
+                    </Patron>
+                </PatronUpdWDelay>";
+        return $xml;
+    }
+
+    /**
      * Make Request
      *
      * Makes a request to the Gemini Restful API
@@ -1064,47 +1302,48 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
      * @param string $service Name of the service used
      * @param array  $params  A keyed array of query data
      * @param string $mode    The http request method to use (Default of GET)
+     * @param string $xml     An optional XML string to send to the API
      *
      * @throws ILSException
      * @return obj  A Simple XML Object loaded with the xml data returned by the API
      */
-    protected function makeRequest($service, $params = false, $mode = 'GET')
-    {
+    protected function makeRequest($service, $params = false, $mode = 'GET',
+        $xml = false
+    ) {
         // Build Url Base
         $urlParams = "{$this->wsHost}/$service";
 
-        // Add web services database key
-        $params['apikey'] = $this->wsApiKey;
-
-        // Add Params
-        $queryString = [];
-        foreach ($params as $key => $param) {
-            $queryString[] = urlencode($key) . '=' . urlencode($param);
+        if (false !== $params) {
+            $params['apikey'] = $this->wsApiKey;
+            // Create proxy request
+            $client = $this->createHttpClient($urlParams);
+            // Add web services database key
+            $client->setParameterGet($params);
+        } else if (false !== $xml) {
+            $client = $this->createHttpClient($urlParams);
+            $client->getRequest()->getHeaders()
+                ->addHeaderLine('Content-Type', 'application/xml');
+            $client->getRequest()->getHeaders()
+                ->addHeaderLine('APIKey', $this->wsApiKey);
+            $client->setEncType('text/xml');
+            $client->setRawBody($xml);
+        } else {
+            throw new ILSException('Problem creating request.');
         }
-
-        // Build Params
-        $urlParams .= '?' . implode('&', $queryString);
-
-        // Create Proxy Request
-        $client = $this->httpService->createClient($urlParams);
-
-        // Add any cookies
-        if ($this->cookies) {
-            $client->addCookie($this->cookies);
-        }
-
-        // Set timeout value
-        $timeout = isset($this->config['Catalog']['http_timeout'])
-        ? $this->config['Catalog']['http_timeout'] : 30;
-        $client->setOptions(['timeout' => $timeout]);
-        $client->setOptions(['sslcapath' => '/etc/ssl/certs']);
 
         // Send Request and Retrieve Response
         $startTime = microtime(true);
         $result = $client->setMethod($mode)->send();
         if (!$result->isSuccess()) {
             $this->error(
-                "$mode request for '$urlParams' with contents '$xml' failed: "
+                "$mode request for '$urlParams' failed"
+            );
+            $this->debug(
+                "with params: '$params' with xml: '$xml'"
+                . $result->getStatusCode() . ': ' . $result->getReasonPhrase()
+            );
+            $this->error(
+                " server response: "
                 . $result->getStatusCode() . ': ' . $result->getReasonPhrase()
             );
             throw new ILSException('Problem with RESTful API.');
@@ -1120,7 +1359,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         $xmlResponse = $result->getBody();
         $this->debug(
             '[' . round(microtime(true) - $startTime, 4) . 's]'
-            . " $mode request $urlParams, contents:"
+            . " $mode request $urlParams, contents:$xml"
             . PHP_EOL . 'response: ' . PHP_EOL
             . $xmlResponse
         );

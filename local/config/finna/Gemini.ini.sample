@@ -42,15 +42,44 @@ HMACKeys = id
 minLength = 4
 maxLength = 4
 
-; Uncomment the following lines to enable update Address
-; Select email method and add an emailAddress if you want them to be send via email
-; email is the only method currently supported with Gemini
+; Uncomment the following lines to enable updating of address information.
+; Choose a method on how to update the address information (driver or email).
 [updateAddress]
-method = email
-emailAddress =
+;method = driver
+; emailAddress is required for the email method
+;emailAddress =
+; Uncomment the following lines to change which fields are included in the form
+; when using the email method. Format for the fields is label:profile_field
+; Default is address, zip, city and country. Email and phone are included unless
+; they have their own sections [updateEmail] or [updatePhone] defined. Also custom
+; fields can be defined.
+;fields[] = Address:MainAddrLine1
+;fields[] = Zip:MainZip
+;fields[] = City:MainPlace
+;fields[] = Country:MainCountry
+;fields[] = Phone:MainPhone
+;fields[] = Mobile:Mobile
+;fields[] = Email:MainEmail
 
 ; Select email method and add an emailAddress if you want them to be send via email
 ; email is the only method currently supported with Gemini
 [updateMessagingSettings]
-method = email
-emailAddress =
+;method = email
+;emailAddress =
+
+; Uncomment the following lines to enable updating of email address.
+; Choose a method on how to update the email address.
+; Only 'driver' is currently supported.
+[updateEmail]
+;method = driver
+
+; Changing of SMS alert number is enabled if method parameter is set.
+; Only 'driver' is currently supported.
+[updateSmsNumber]
+;method = driver
+
+; Uncomment the following lines to enable updating of phone number.
+; Choose a method on how to update the phone number.
+; Only 'driver' is currently supported.
+[updatePhone]
+;method = driver
