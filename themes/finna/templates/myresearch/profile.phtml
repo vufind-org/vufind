@@ -184,7 +184,7 @@
             </div>
           <? else: ?>
             <div class="my-profile-col profile-title"><?=$this->transEsc('SMS Number') ?>:</div>
-            <div class="my-profile-col profile-text-value"><?=$this->escapeHtml($this->profile['smsnumber']) ?></div>
+            <div class="profile-text-value"><?=$this->escapeHtml($this->profile['smsnumber']) ?></div>
           <? endif; ?>
         <? endif; ?>
         <? if (!empty($this->profile['email']) || $updateEmail): ?>
