@@ -8,7 +8,7 @@ return array(
         //'bootstrap-custom.css',
         'compiled.css',
         'print.css:print',
-        'flex-fallback.css:lt IE 10', // flex polyfill
+        'flex-fallback.css::lt IE 10', // flex polyfill
     ),
     'js' => array(
         'vendor/base64.js:lt IE 10', // btoa polyfill
