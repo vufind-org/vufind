@@ -10,7 +10,7 @@ class Factory extends \VuFind\Search\Results\Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return Subscriptions
+     * @return \IxTheo\Search\KeywordChainSearch\Results
      */
     public static function getKeywordChainSearch(ServiceManager $sm)
     {
@@ -26,12 +26,13 @@ class Factory extends \VuFind\Search\Results\Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return Subscriptions
+     * @return \IxTheo\Search\Subscriptions\Results
      */
     public static function getSubscriptions(ServiceManager $sm)
     {
         $factory = new PluginFactory();
-        $obj = $factory->createServiceWithName($sm, 'subscriptions', 'Subscriptions');
+        $tm = $sm->getServiceLocator()->get('VuFind\DbTablePluginManager');
+        $obj = $factory->createServiceWithName($sm, 'subscriptions', 'Subscriptions', [$tm->get('subscription')]);
         $init = new \ZfcRbac\Initializer\AuthorizationServiceInitializer();
         $init->initialize($obj, $sm);
         return $obj;
@@ -42,7 +43,7 @@ class Factory extends \VuFind\Search\Results\Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return Subscriptions
+     * @return \IxTheo\Search\PDASubscriptions\Results
      */
     public static function getPDASubscriptions(ServiceManager $sm)
     {

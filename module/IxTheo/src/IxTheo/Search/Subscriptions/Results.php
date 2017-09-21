@@ -1,7 +1,10 @@
 <?php
 namespace IxTheo\Search\Subscriptions;
-use VuFind\Exception\ListPermission as ListPermissionException,
+use IxTheo\Db\Table\Subscription as SubscriptionTable,
+    VuFind\Exception\ListPermission as ListPermissionException,
+    VuFind\Record\Loader,
     VuFind\Search\Base\Results as BaseResults,
+    VuFindSearch\Service as SearchService,
     ZfcRbac\Service\AuthorizationServiceAwareInterface,
     ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
@@ -23,6 +26,29 @@ class Results extends BaseResults
      * @var \VuFind\Db\Row\UserList|bool
      */
     protected $list = false;
+
+    /**
+     *
+     * @var \IxTheo\Db\Table\Subscription
+     */
+    protected $subscriptionTable = null;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Base\Params $params        Object representing user
+     * search parameters.
+     * @param SearchService              $searchService Search service
+     * @param Loader                     $recordLoader  Record loader
+     * @param SubscriptionTable          $subscriptionTable Subscription table
+     */
+    public function __construct(\VuFind\Search\Base\Params $params,
+        SearchService $searchService, Loader $recordLoader,
+        SubscriptionTable $subscriptionTable
+    ) {
+        parent::__construct($params, $searchService, $recordLoader);
+        $this->subscriptionTable = $subscriptionTable;
+    }
 
     /**
      * Returns the stored list of facets for the last search
@@ -57,8 +83,7 @@ class Results extends BaseResults
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
-            $table = $this->getTable('Subscription');
-            $list = $table->get($this->user->id, $this->getParams()->getSort(), $this->getStartRecord() - 1, $limit);
+            $list = $this->subscriptionTable->get($this->user->id, $this->getParams()->getSort(), $this->getStartRecord() - 1, $limit);
         }
 
         // Retrieve record drivers for the selected items.
@@ -70,9 +95,8 @@ class Results extends BaseResults
             ];
         }
 
-        $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
-        $recordLoader->setCacheContext("Subscription");
-        $this->results = $recordLoader->loadBatch($recordsToRequest);
+        $this->recordLoader->setCacheContext("Subscription");
+        $this->results = $this->recordLoader->loadBatch($recordsToRequest);
     }
 
     /**
@@ -85,8 +109,7 @@ class Results extends BaseResults
     {
         // If we haven't previously tried to load a list, do it now:
         if ($this->list === false) {
-            $table = $this->getTable('Subscription');
-            $this->list = $table->getAll($this->user->id, $this->getParams()->getSort());
+            $this->list = $this->subscriptionTable->getAll($this->user->id, $this->getParams()->getSort());
         }
         return $this->list;
     }

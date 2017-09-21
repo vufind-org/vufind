@@ -14,12 +14,18 @@ $config = [
                     'solr' => 'IxTheo\Autocomplete\Factory::getSolr',
                 ],
             ],
+            'db_row' => [
+                'factories' => [
+                    'subscription' => 'IxTheo\Db\Row\Factory::getSubscription',
+                ],
+            ],
             'db_table' => [
+                'factories' => [
+                    'subscription' => 'IxTheo\Db\Table\Factory::getSubscription',
+                ],
                 'invokables' => [
                     'IxTheoUser' => 'IxTheo\Db\Table\IxTheoUser',
                     'pdasubscription' => 'IxTheo\Db\Table\PDASubscription',
-                    'subscription' => 'IxTheo\Db\Table\Subscription',
-
                 ],
             ],
             'recorddriver' => [
