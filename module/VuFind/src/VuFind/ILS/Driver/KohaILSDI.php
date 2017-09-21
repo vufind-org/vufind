@@ -1750,13 +1750,9 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function patronLogin($username, $password)
     {
-        //       $idObj = $this->makeRequest(
-        //         "AuthenticatePatron" . "&username=" . $username
-        //       . "&password=" . $password
-        // );
         $idObj = $this->makeRequest(
-            "LookupPatron" . "&id=" . urlencode($username)
-            . "&id_type=userid"
+            "AuthenticatePatron" . "&username=" . urlencode($username)
+            . "&password=" . $password
         );
 
         $this->debug("username: " . $username);
