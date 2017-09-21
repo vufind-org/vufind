@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fields>
     <!-- COMMON -->
-    <xi:include href="schema_tufind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="schema_tufind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//field)"/>
 
     <!-- CUSTOM - only IxTheo/RelBib -->
     <field name="author_synonyms" type="text" indexed="true" stored="true" termVectors="true"/>
