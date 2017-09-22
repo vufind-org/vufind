@@ -50,6 +50,7 @@ header .navbar {
     .navbar-right { margin: 0; }
   }
 }
+header .navbar-toggle { margin-bottom: 0; }
 header .searchbox .tab-content { border: 0; }
 header .searchbox .tab-content .navbar-text { margin: 5px 10px 5px 0; }
 @media (max-width: 767px) {
@@ -76,12 +77,12 @@ header .searchbox .tab-content .navbar-text { margin: 5px 10px 5px 0; }
 }
 .header-nav { padding-right: 0; }
 @media (min-width: 992px) {
-  .header-nav-item { display: block; }
+  .header-nav-item { display: inline-block; }
   .header-nav-item a {
     padding: .5rem;
-    line-height: 1rem;
+    line-height: 4rem;
   }
-  .header-nav-item .dropdown-menu { margin-top: 2px; } // default
+  .header-nav-item .dropdown-menu { margin-top: -1.5rem; } // default
 }
 @media (min-width: 1400px) {
   .with-search {
