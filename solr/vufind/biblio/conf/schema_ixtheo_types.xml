@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <types>
-    <xi:include href="schema_tufind_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="schema_tufind_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="xpointer(//fieldType)"/>
 </types>
