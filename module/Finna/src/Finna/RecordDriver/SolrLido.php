@@ -943,35 +943,39 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     */
     public function getPhotoInfo()
     {
-        $result = '';
+        $photographer = '';
+        $time = '';
         foreach ($this->getSimpleXML()->xpath(
             'lido/administrativeMetadata/resourceWrap/resourceSet'
         ) as $nodes) {
             $resourceTerm = (string)$nodes->resourceType->term;
-            if ('Valokuva' === $resourceTerm) {
+            if ('alokuva' === strtolower($resourceTerm)) {
                 $photographer = !empty($nodes->resourceDescription)
                  ? (string)$nodes->resourceDescription : '';
                 $time = !empty($nodes->resourceDateTaken->displayDate)
                  ? (string)$nodes->resourceDateTaken->displayDate : '';
-                if ('' !== trim($time) || '' !== trim($photographer)) {
-                    $result = !empty($time) ?
-                     $photographer . ' ' . $time : $photographer;
-                }
+                break;
             }
         }
         if (empty($result)) {
             foreach ($this->getSimpleXML()->xpath(
                 '/lidoWrap/lido/descriptiveMetadata/eventWrap/eventSet/event'
-            ) as $events) {
-                foreach ($events->eventActor as $actor) {
-                    if ($actor->actorInRole->roleActor->term == 'valokuvaaja'
-                        || $actor->actorInRole->roleActor->term == 'kuvaaja'
-                    ) {
-                        $result = $actor->actorInRole->actor->nameActorSet
-                            ->appellationValue;
+            ) as $event) {
+                foreach ($event->eventActor as $actor) {
+                    $term = strtolower($actor->actorInRole->roleActor->term);
+                    if ('valokuvaaja' === $term || 'kuvaaja' === $term) {
+                        $photographer = (string)$actor->actorInRole->actor
+                            ->nameActorSet->appellationValue;
+                        $time = !empty($event->eventDate->displayDate)
+                            ? (string)$event->eventDate->displayDate : '';
+                        break;
                     }
                 }
             }
+        }
+        if ('' !== trim($time) || '' !== trim($photographer)) {
+            $result = !empty($time) ?
+                $photographer . ' ' . $time : $photographer;
         }
         return $result;
     }
