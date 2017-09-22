@@ -9,20 +9,22 @@ class SolrMarc extends \TuFind\RecordDriver\SolrMarc
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
      * @return array
      */
-    public function getAllSubjectHeadings()
+    public function getAllSubjectHeadings($extended = false)
     {
-        // These are the fields that may contain subject headings:
-        $fields = [
-            '600', '610', '611', '630', '648', '650', '651', '653', '655', '656'
-        ];
-
+        // THIS PART OF THE CODE IS THE SAME AS VUFIND4
         // This is all the collected data:
         $retval = [];
 
         // Try each MARC field one at a time:
-        foreach ($fields as $field) {
+        foreach ($this->subjectFields as $field => $fieldType) {
             // Do we have any results for the current field?  If not, try the next.
             $results = $this->getMarcRecord()->getFields($field);
             if (!$results) {
@@ -46,11 +48,31 @@ class SolrMarc extends \TuFind\RecordDriver\SolrMarc
                     }
                     // If we found at least one chunk, add a heading to our result:
                     if (!empty($current)) {
-                        $retval[] = $current;
+                        if ($extended) {
+                            $sourceIndicator = $result->getIndicator(2);
+                            $source = '';
+                            if (isset($this->subjectSources[$sourceIndicator])) {
+                                $source = $this->subjectSources[$sourceIndicator];
+                            } else {
+                                $source = $result->getSubfield('2');
+                                if ($source) {
+                                    $source = $source->getData();
+                                }
+                            }
+                            $retval[] = [
+                                'heading' => $current,
+                                'type' => $fieldType,
+                                'source' => $source ?: ''
+                            ];
+                        } else {
+                            $retval[] = $current;
+                        }
                     }
                 }
             }
         }
+
+        // THIS IS WHERE THE KRIMDOK CODE STARTS => for 689 and LOK 689
         $results = $this->getMarcRecord()->getFields('689');
         if ($results) {
             $current = [];
@@ -65,7 +87,15 @@ class SolrMarc extends \TuFind\RecordDriver\SolrMarc
                 if ($subfields) {
                     foreach ($subfields as $subfield) {
                         if (!is_numeric($subfield->getCode()) && strlen($subfield->getData()) > 2) {
-                            $current[] = $subfield->getData();
+                            if (!$extended) {
+                                $current[] = $subfield->getData();
+                            } else {
+                                $current[] = [
+                                    'heading' => $subfield->getData(),
+                                    'type' => 'subject',
+                                    'source' => '',
+                                ];
+                            }
                         }
                     }
                 }
@@ -83,7 +113,15 @@ class SolrMarc extends \TuFind\RecordDriver\SolrMarc
                 if ($subfields && $subfields->bottom()->getData() === '689  ') {
                     foreach ($subfields as $subfield) {
                         if ($subfield->getCode() === 'a' && strlen($subfield->getData()) > 1) {
-                            $current[] = $subfield->getData();
+                            if (!$extended) {
+                                $current[] = $subfield->getData();
+                            } else {
+                                $current[] = [
+                                    'heading' => $subfield->getData(),
+                                    'type' => 'subject',
+                                    'source' => '',
+                                ];
+                            }
                         }
                     }
                 }
@@ -92,6 +130,8 @@ class SolrMarc extends \TuFind\RecordDriver\SolrMarc
                 }
             }
         }
+
+        // RETURNING IS SAME AS VUFIND4
         // Remove duplicates and then send back everything we collected:
         return array_map(
             'unserialize', array_unique(array_map('serialize', $retval))
@@ -357,6 +397,6 @@ class SolrMarc extends \TuFind\RecordDriver\SolrMarc
 
     public function isAvailableInTuebingen()
     {
-        return $this->fields['available_in_tubingen'];
+        return (isset($this->fields['available_in_tubingen']) ? $this->fields['available_in_tubingen'] : false);
     }
 }
