@@ -299,13 +299,13 @@
     ?>
     <div vocab="http://schema.org/" typeof="Offer" class="copy-details <?=$holdingsDetails?>">
       <? if (isset($row['branch']) && isset($row['department'])): ?>
-      <div class="copy-title">
-        <span class="branch"><?=$row['branch']?></span><span class="department">, <?=$row['department']?></span>
-      </div>
+        <div class="copy-title">
+          <span class="branch"><?=$row['branch']?></span><span class="department">, <?=$row['department']?></span>
+        </div>
       <? else: ?>
-      <div class="copy-title">
-        <span class="copy-number"><?=!empty($row['number']) ? $this->escapeHtml($row['number']) : $this->transEsc("Copy") ?></span>
-      </div>
+        <div class="copy-title">
+          <span class="copy-number"><?=!empty($row['number']) ? $this->escapeHtml($row['number']) : $this->transEsc("Copy") ?></span>
+        </div>
       <? endif; ?>
       <div class="copy-info">
         <? if (isset($row['reserve']) && $row['reserve'] == "Y"): ?>
@@ -373,19 +373,19 @@
         <? /* Declare that the item is to be borrowed, not for sale */ ?>
           <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut" />
           <link property="itemOffered" href="#record" />
-      </div>
-      <? if (isset($row['availabilityInfo'])): ?>
-      <div class="copy-available">
-        <? if (!empty($row['availabilityInfo']['ordered'])): ?>
-          <div class="ordered">
-            <?=$this->translate('status_Ordered')?>: <?=$row['availabilityInfo']['ordered']?>
+        <? if (isset($row['availabilityInfo'])): ?>
+          <div class="copy-available">
+            <? if (!empty($row['availabilityInfo']['ordered'])): ?>
+              <div class="ordered">
+                <?=$this->translate('status_Ordered')?>: <?=$row['availabilityInfo']['ordered']?>
+              </div>
+            <? endif; ?>
+            <? if (!empty($row['availabilityInfo']['available'])): ?>
+              <div class="available"><?=$this->translate('Available items')?>: <?=$row['availabilityInfo']['available']?> / <?=$row['availabilityInfo']['total']?></div>
+            <? endif; ?>
           </div>
         <? endif; ?>
-        <? if (!empty($row['availabilityInfo']['available'])): ?>
-          <div class="available"><?=$this->translate('Available items')?>: <?=$row['availabilityInfo']['available']?> / <?=$row['availabilityInfo']['total']?></div>
-        <? endif; ?>
       </div>
-      <? endif; ?>
     </div>
   <? endforeach; ?>
   <div class="clearfix"></div>

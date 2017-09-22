@@ -45,12 +45,13 @@
 }
 
 .ils-purchase-history {
-    @media(min-width: @screen-sm){
-        .title{
+    padding: 8px 15px;
+    @media(min-width: @screen-sm) {
+        .title {
             width: 33.333%;
             float:left;
         }
-        .history{
+        .history {
             width: 66.666%;
             float: left;
         }
@@ -107,7 +108,6 @@
         padding-left: 15px;
     }
     .holdings-container-heading {
-        padding-right: 15px;
         &:hover {
             cursor: pointer;
         }
@@ -115,6 +115,7 @@
             width: 50%;
             float: left;
             padding-left: 15px;
+            padding-right: 15px;
             font-weight: bold;
             font-size: .92em;
             text-transform: uppercase;
@@ -135,17 +136,14 @@
             vertical-align: middle;
         }
         & .holdings-details {
+            padding-right: 15px;
             font-weight: bold;
             width: 25%;
             float: left;
+            .clearfix();
             @media (max-width: @screen-xs-max) {
                 width: 50%;
                 text-align: right;
-            }
-            @media (min-width: @screen-sm-min) {
-                & i {
-                    margin-left: -15px;
-                }
             }
             .small {
                 font-weight: normal;
@@ -161,6 +159,7 @@
             width: 25%;
             float: left;
             font-weight: bold;
+            padding-right: 15px;
             @media (max-width: @screen-xs-max) {
                 width: 100%;
                 text-align: right;
@@ -189,25 +188,23 @@
             float: left;
         }
     }
-    & .copy-info, .copy-available {
+    & .copy-info {
         @media (min-width: @screen-sm-min) {
-            width: 25%;
+            width: 50%;
             float: left;
-            & i {
-                margin-left: -15px;
-            }
         }
     }
     & .copy-available {
         @media (min-width: @screen-sm-min) {
-            text-align: right;
+            float: right;
             & div {
                 margin-left: -15px;
             }
         }
     }
     & .copy-details {
-        padding: 8px 20px;
+        .clearfix();
+        padding: 8px 15px;
         &.collapsed {
            display: none;
         }
@@ -233,11 +230,6 @@
             }
             width: 50%;
             float: left;
-        }
-    }
-    .details-info, .details-title, .copy-title, .copy-info {
-        @media (min-width: @screen-sm) {
-            padding: 5px 0px;
         }
     }
     & .headers {
