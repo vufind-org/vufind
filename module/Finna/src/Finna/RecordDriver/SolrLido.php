@@ -974,10 +974,10 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             }
         }
         if ('' !== trim($time) || '' !== trim($photographer)) {
-            $result = !empty($time) ?
+            return !empty($time) ?
                 $photographer . ' ' . $time : $photographer;
         }
-        return $result;
+        return '';
     }
 
     /**
