@@ -81,7 +81,6 @@ $config = [
             'feedback' => 'IxTheo\Controller\Factory::getFeedbackController',
             'KeywordChainSearch' => 'IxTheo\Controller\Factory::getKeywordChainSearchController',
             'MyResearch' => 'IxTheo\Controller\Factory::getMyResearchController',
-            'Pipeline' => 'IxTheo\Controller\Factory::getPipelineController',
             'record' => 'IxTheo\Controller\Factory::getRecordController',
             'search' => 'IxTheo\Controller\Factory::getSearchController',
             'StaticPage' => 'IxTheo\Controller\Factory::getStaticPageController',
@@ -118,7 +117,6 @@ $staticRoutes = [
     'MyResearch/DeleteSubscription',
     'MyResearch/PDASubscriptions',
     'MyResearch/DeletePDASubscription',
-    'Pipeline/Home',
 ];
 
 $config['router']['routes']['static-page'] = [
