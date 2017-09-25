@@ -1,0 +1,17 @@
+<? if (!isset($this->indexStart)) $this->indexStart = 0; ?>
+<? $showCheckboxes = (isset($this->showCartControls) && $this->showCartControls)
+  || (isset($this->showBulkOptions) && $this->showBulkOptions); ?>
+<? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
+  $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
+  <div id="result<?=$i++ ?>" class="row result clearfix <?=$i%2==1?' panel-gray ':' panel-body '?>">
+    <div class="col-xs-1 hidden-print">
+      <label>
+        <? if ($showCheckboxes): ?>
+          <?=$this->record($current)->getCheckbox()?>
+        <? endif; ?>
+        <?=$recordNumber?>
+      </label>
+    </div>
+    <?=$this->record($current)->getSearchResult('list')?>
+  </div>
+<? endforeach; ?>

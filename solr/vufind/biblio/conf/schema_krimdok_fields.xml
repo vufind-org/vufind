@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fields>
+    <!-- COMMON -->
+    <xi:include href="schema_tufind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//field)"/>
+
+    <!-- CUSTOM - only KrimDok -->
+    <field name="abr" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="article_page_range" type="string" indexed="true" stored="true"/>
+    <field name="available_in_tubingen" type="boolean" indexed="false" stored="true" multiValued="false"/>
+    <field name="content" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="fid_systematik" type="textFacetRaw" indexed="false" stored="true" multiValued="true"/>
+    <field name="fid_systematik1" type="textFacetRaw" indexed="false" stored="true" multiValued="true"/>
+    <field name="fid_systematik2" type="textFacetRaw" indexed="false" stored="true" multiValued="true"/>
+    <field name="fid_systematik3" type="textFacetRaw" indexed="false" stored="true" multiValued="true"/>
+    <field name="fid_systematik4" type="textFacetRaw" indexed="false" stored="true" multiValued="true"/>
+    <field name="fid_systematik5" type="textFacetRaw" indexed="false" stored="true" multiValued="true"/>
+    <field name="gkdnum" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="instituts_systematik1" type="textFacetRaw" indexed="true" stored="true" multiValued="true"/>
+    <field name="instituts_systematik2" type="textFacetRaw" indexed="true" stored="true" multiValued="true"/>
+    <field name="isil" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="local_recoding_date" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="local_signature" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="local_subject" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="media" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="multipart_link" type="string" indexed="true" stored="true" multiValued="true" termVectors="true"/>
+    <field name="multipart_part" type="string" indexed="true" stored="true"  multiValued="true"/>
+    <field name="multipart_set" type="string" indexed="true" stored="true"/>
+    <field name="pndnum" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="rvk" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="rvk-notation" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="signature" type="signaturestring" indexed="true" stored="true" multiValued="true"/>
+    <field name="tue_local_indexed_date" type="date" indexed="true" stored="true"/>
+</fields>

@@ -1,0 +1,118 @@
+<?
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
+  $cover = $coverDetails['html'];
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+?>
+<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+<div class="media">
+  <div class="media-body">
+    <div class="row short-view">
+      <div class="col-sm-12">
+        <div>
+          <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>">
+            <?=$this->record($this->driver)->getTitleHtml()?>
+          </a>
+        </div>
+
+        <div>
+          <? if($this->driver->isCollection()): ?>
+            <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
+          <? else: ?>
+            <? $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
+              <?=$this->transEsc('by')?>
+              <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
+                <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ',' : ''?>
+              <? endforeach; ?>
+            <? endif; ?>
+            <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
+            <? if (!empty($journalTitle)): ?>
+              <?=!empty($summAuthor) ? '<br />' : ''?>
+              <?=$this->transEsc('Published in')?>
+              <? $containerSource = $this->driver->getSourceIdentifier(); ?>
+              <? $containerID = $this->driver->getContainerRecordID(); ?>
+              <? /* TODO: handle highlighting more elegantly here: */?>
+              <a href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)))?>"><?=$this->highlight($journalTitle) ?></a>
+              <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
+            <? elseif (!empty($summDate)): ?>
+              <?=!empty($summAuthor) ? '<br />' : ''?>
+              <?=$this->transEsc('Published') . ' ' . $this->escapeHtml($summDate[0])?>
+            <? endif; ?>
+            <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
+              <? foreach ($summInCollection as $collId => $collText): ?>
+                <div>
+                  <b><?=$this->transEsc("in_collection_label")?></b>
+                  <a class="collectionLinkText" href="<?=$this->url('collection', array('id' => $collId))?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
+                    <?=$this->escapeHtml($collText)?>
+                  </a>
+                </div>
+              <? endforeach; ?>
+            <? endif; ?>
+          <? endif; ?>
+        </div>
+
+        <? $ids_and_titles_and_volume = $this->driver->getContainerIDsAndTitles(); ?>
+        <? if (!empty($ids_and_titles_and_volume)): ?>
+          <? foreach ($ids_and_titles_and_volume as $id => $title_and_volume): ?>
+            <div>
+              <?=$this->transEsc('In')?>: <a href="/Record/<?=$id?>"><?=$this->escapeHtml(implode(" ", $title_and_volume))?></a>
+            </div>
+          <? endforeach; ?>
+        <? endif; ?>
+
+          <? if(!$this->driver->isCollection()): ?>
+            <? if ($snippet = $this->driver->getHighlightedSnippet()): ?>
+              <? if (!empty($snippet['caption'])): ?>
+                <strong><?=$this->transEsc($snippet['caption']) ?>:</strong>
+              <? endif; ?>
+              <? if (!empty($snippet['snippet'])): ?>
+                <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
+              <? endif; ?>
+            <? endif; ?>
+          <? endif; ?>
+
+        <?
+        /* Display information on duplicate records if available */
+        if ($dedupData = $this->driver->getDedupData()): ?>
+          <div class="dedupInformation">
+            <?
+            $i = 0;
+            foreach ($dedupData as $source => $current) {
+              if (++$i == 1) {
+                ?><span class="currentSource"><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc("source_$source", array(), $source)?></a></span><?
+              } else {
+                if ($i == 2) {
+                  ?> <span class="otherSources">(<?=$this->transEsc('Other Sources')?>: <?
+                } else {
+                  ?>, <?
+                }
+                ?><a href="<?=$this->recordLink()->getUrl($current['id'])?>"><?=$this->transEsc("source_$source", array(), $source)?></a><?
+              }
+            }
+            if ($i > 1) {
+              ?>)</span><?
+            }?>
+          </div>
+          <? endif; ?>
+
+        <? $urls_and_material_types = $this->driver->getURLsAndMaterialTypes(); ?>
+        <? if (!empty($urls_and_material_types)): ?>
+          <? foreach ($urls_and_material_types as $url => $material_type): ?>
+            <a href="<?=$url?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($material_type)?></a>
+            <br/>
+          <? endforeach; ?>
+        <? endif; ?>
+
+        <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?>
+
+        <? if ($this->driver->supportsAjaxStatus()): ?>
+          <span class="status ajax-availability hidden">
+            <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
+          </span>
+        <? endif; ?>
+        <?=$this->record($this->driver)->getPreviews()?>
+      </div>
+    </div>
+  </div>
+</div>
