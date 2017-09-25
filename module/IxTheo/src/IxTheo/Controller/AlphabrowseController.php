@@ -44,7 +44,6 @@ class AlphabrowseController extends \VuFind\Controller\AlphabrowseController
             ];
         }
 
-
         // Load remaining config parameters
         $rows_before = isset($config->AlphaBrowse->rows_before)
             && is_numeric($config->AlphaBrowse->rows_before)
