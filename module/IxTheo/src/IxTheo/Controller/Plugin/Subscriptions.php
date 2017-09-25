@@ -10,7 +10,6 @@ use VuFind\Exception\LoginRequired as LoginRequiredException,
  */
 class Subscriptions extends AbstractPlugin
 {
-
     /**
      * Delete a group of favorites.
      *
