@@ -18,6 +18,9 @@ public/swagger-ui
 # CUSTOM TUFIND IGNORES START HERE
 nbproject
 
+# active instance flag
+tufind.instance
+
 # Schema files & links
 schema_local_types.xml
 schema_local_fields.xml
