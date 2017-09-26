@@ -66,11 +66,17 @@ function generateXml {
     FILE_TARGET=$(basename "$2")
 
     echo "generating $2 from $FILE_SOURCE"
+    echo "  (note: if you get XInclude errors, these may be ignored => fallback IS defined and working!!!)"
     xmllint --xinclude --format "$1" > "$2"
 }
 
+# this function is used to ignore git changes
+function gitAssumeUnchanged {
+    git update-index --assume-unchanged $1
+}
 
 echo "Starting configuration of $TUFIND_INSTANCE"
+echo
 
 # dirs
 DIR_SOLR_CONF="$VUFIND_HOME/solr/vufind/biblio/conf"
@@ -97,6 +103,7 @@ FILE_MARC_TUFIND="$DIR_SOLRMARC_CONF/marc_tufind.properties"
 FILE_MARC_CUSTOM="$DIR_SOLRMARC_CONF/marc_"$TUFIND_INSTANCE".properties"
 
 generateProperties $FILE_MARC_TUFIND $FILE_MARC_CUSTOM $FILE_MARC_LOCAL
+gitAssumeUnchanged $FILE_MARC_LOCAL
 
 # index alphabetical browse (only if special script for current instance exists)
 FILE_ALPHABROWSE="$VUFIND_HOME/index-alphabetic-browse.sh"
@@ -104,11 +111,13 @@ FILE_ALPHABROWSE_CUSTOM="$VUFIND_HOME/index-alphabetic-browse_"$TUFIND_INSTANCE"
 
 if [ -e $FILE_ALPHABROWSE_CUSTOM ]; then
     createSymlink $FILE_ALPHABROWSE $FILE_ALPHABROWSE_CUSTOM
+    gitAssumeUnchanged $FILE_ALPHABROWSE
 else
     echo "restoring $FILE_ALPHABROWSE from git"
     git checkout $FILE_ALPHABROWSE
 fi
 
 # write configured instance to file for git hook
-echo $TUFIND_INSTANCE" successfully configured!"
+echo
 echo $TUFIND_INSTANCE > "$VUFIND_HOME/tufind.instance"
+echo $TUFIND_INSTANCE" successfully configured!"
