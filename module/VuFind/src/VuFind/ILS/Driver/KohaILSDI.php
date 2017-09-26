@@ -116,6 +116,13 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     protected $dateConverter;
 
     /**
+     * Should validate passwords against Koha system?
+     *
+     * @var boolean
+     */
+    protected $validatePasswords;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -161,6 +168,14 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->availableLocationsDefault
             = isset($this->config['Other']['availableLocations'])
             ? $this->config['Other']['availableLocations'] : [];
+
+        // If we are using SAML/Shibboleth for authentication for both ourselves
+        // and Koha then we can't validate the patrons passwords against Koha as
+        // they won't have one. (Double negative logic used so that if the config
+        // option isn't present in KohaILSDI.ini then ILS passwords will be
+        // validated)
+        $this->validatePasswords
+            = empty($this->config['Catalog']['dontValidatePasswords']);
 
         $this->debug("Config Summary:");
         $this->debug("DB Host: " . $this->host);
@@ -1750,14 +1765,15 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function patronLogin($username, $password)
     {
-        //       $idObj = $this->makeRequest(
-        //         "AuthenticatePatron" . "&username=" . $username
-        //       . "&password=" . $password
-        // );
-        $idObj = $this->makeRequest(
-            "LookupPatron" . "&id=" . urlencode($username)
-            . "&id_type=userid"
-        );
+        $request = "LookupPatron" . "&id=" . urlencode($username)
+            . "&id_type=userid";
+
+        if ($this->validatePasswords) {
+            $request = "AuthenticatePatron" . "&username="
+                . urlencode($username) . "&password=" . $password;
+        }
+
+        $idObj = $this->makeRequest($request);
 
         $this->debug("username: " . $username);
         $this->debug("Code: " . $idObj->{'code'});
