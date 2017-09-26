@@ -13,12 +13,22 @@
   }
 
   $formatRoles = function ($roles) {
-    if (count($roles) == 0) {
+    if (!isset($roles['role'])) {
       return '';
     }
     $that = $this;
-    $translate = function ($str) use ($that) {
-      return $that->transEsc('CreatorRoles::' . $str);
+    $translate = function ($arr) use ($that) {
+      $translatedRoles = array();
+      foreach ($arr as $element) {
+          if (!is_array($element)) {
+            $translatedRoles[] = $that->transEsc('CreatorRoles::' . $element);
+          } else {
+            foreach ($element as $str) {
+                $translatedRoles[] = $that->transEsc('CreatorRoles::' . $str);
+            }
+          }
+      }
+      return implode(',', $translatedRoles);
     };
     return ' (' . implode(', ', array_unique(array_map($translate, $roles))) . ')';
   };

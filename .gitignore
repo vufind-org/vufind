@@ -13,6 +13,27 @@ import/solrmarc.log
 node_modules
 public/swagger-ui
 .vagrant
+
+
+# CUSTOM TUFIND IGNORES START HERE
 nbproject
+
+# active instance flag
+tufind.instance
+
+# Schema files & links
 schema_local_types.xml
 schema_local_fields.xml
+
+# Solr/SolrMarc plugins
+MultiLanguageDocTransformerFactory.jar
+MultiLanguageQueryParser.jar
+KeywordChainParser.jar
+BibleRangeParser.jar
+TuelibSolrmarcMixin.jar
+FacetPrefixSortComponent.jar
+
+# other logs & temporary files
+*.log
+*.log.*
+compiled.css
