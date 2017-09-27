@@ -139,46 +139,6 @@ class SolrMarc extends \KrimDok\RecordDriver\SolrDefault
     }
 
     /**
-     * Return an array of non-empty subfield values found in the provided MARC
-     * field.  If $concat is true, the array will contain either zero or one
-     * entries (empty array if no subfields found, subfield values concatenated
-     * together in specified order if found).  If concat is false, the array
-     * will contain a separate entry for each subfield value found.
-     *
-     * @param object $currentField Result from File_MARC::getFields.
-     * @param array  $subfields    The MARC subfield codes to read
-     * @param bool   $concat       Should we concatenate subfields?
-     * @param string $separator    Separator string (used only when $concat === true)
-     *
-     * @return array
-     */
-    protected function getSubfieldArray($currentField, $subfields, $concat = true,
-        $separator = ' '
-    ) {
-        // Start building a line of text for the current field
-        $matches = [];
-
-        // Loop through all subfields, collecting results that match the whitelist;
-        // note that it is important to retain the original MARC order here!
-        $allSubfields = $currentField->getSubfields();
-        if (!empty($allSubfields)) {
-            foreach ($allSubfields as $currentSubfield) {
-                if (in_array($currentSubfield->getCode(), $subfields)) {
-                    // Grab the current subfield value and act on it if it is
-                    // non-empty:
-                    $data = trim($currentSubfield->getData());
-                    if (!empty($data)) {
-                        $matches[] = $data;
-                    }
-                }
-            }
-        }
-
-        // Send back the data in a different format depending on $concat mode:
-        return $concat && $matches ? [implode($separator, $matches)] : $matches;
-    }
-
-    /**
      * Return an associative array of URL's mapped to their material types.
      *
      * @return array
