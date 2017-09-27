@@ -198,18 +198,6 @@
         </tr>
       <? endif; ?>
 
-      <? $isbns = $this->driver->getISBNs(); if (!empty($isbns)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr>
-          <th><?=$this->transEsc('ISBN')?>: </th>
-          <td>
-            <? foreach ($isbns as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
       <? $issns = $this->driver->getISSNs(); if (!empty($issns)): ?>
         <? $contentDisplayed = true; ?>
         <tr>
