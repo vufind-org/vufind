@@ -422,6 +422,10 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
             $source = $this->getDefaultLoginDriver();
         }
         $driver = $this->getDriver($source);
+        if (!$driver) {
+            $source = $this->getDefaultLoginDriver();
+            $driver = $this->getDriver($source);
+        }
         if ($driver) {
             $patron = $driver->patronLogin(
                 $this->getLocalId($username), $password
