@@ -138,48 +138,6 @@ class SolrMarc extends \TuFind\RecordDriver\SolrMarc
         );
     }
 
-    /**
-     * Return an associative array of all containee IDs (children) mapped to their titles containing the record.
-     *
-     * @return array
-     */
-    public function getContaineeIDsAndTitles()
-    {
-        $retval = array();
-
-        if (isset($this->fields['containee_ids_and_titles']) && !empty($this->fields['containee_ids_and_titles'])) {
-            foreach ($this->fields['containee_ids_and_titles'] as $id_and_title) {
-                $a = explode(":", $id_and_title, 2);
-                if (count($a) == 2) {
-                    $retval[$a[0]] = $a[1];
-                }
-            }
-        }
-
-        return $retval;
-    }
-
-    /**
-     * Return an associative array of all container IDs (parents) mapped to their titles containing the record.
-     *
-     * @return array
-     */
-    public function getContainerIDsAndTitles()
-    {
-        $retval = array();
-
-        if (isset($this->fields['container_ids_and_titles']) && !empty($this->fields['container_ids_and_titles'])) {
-            foreach ($this->fields['container_ids_and_titles'] as $id_title_and_volume) {
-                $a = explode(hex2bin("1f"), $id_title_and_volume, 3);
-                if (count($a) == 3) {
-                    $retval[$a[0]] = [$a[1], $a[2]];
-                }
-            }
-        }
-
-        return $retval;
-    }
-
     public function getGenres()
     {
         return isset($this->fields['genre']) ? $this->fields['genre'] : array();
@@ -220,17 +178,6 @@ class SolrMarc extends \TuFind\RecordDriver\SolrMarc
     }
 
     /**
-     * Get the issue of the current record.
-     *
-     * @return string
-     */
-    public function getIssue()
-    {
-        return isset($this->fields['issue']) ?
-            $this->fields['issue'] : '';
-    }
-
-    /**
      * Get local signatures of the current record.
      *
      * @return array
@@ -239,17 +186,6 @@ class SolrMarc extends \TuFind\RecordDriver\SolrMarc
     {
         return isset($this->fields['local_signature']) && is_array($this->fields['local_signature']) ?
             $this->fields['local_signature'] : [];
-    }
-
-    /**
-     * Get the pages of the current record.
-     *
-     * @return string
-     */
-    public function getPages()
-    {
-        return isset($this->fields['pages']) ?
-            $this->fields['pages'] : '';
     }
 
     /**
@@ -371,28 +307,6 @@ class SolrMarc extends \TuFind\RecordDriver\SolrMarc
         }
 
         return $retval;
-    }
-
-    /**
-     * Get the volume of the current record.
-     *
-     * @return string
-     */
-    public function getVolume()
-    {
-        return isset($this->fields['volume']) ?
-            $this->fields['volume'] : '';
-    }
-
-    /**
-     * Get the year of the current record.
-     *
-     * @return string
-     */
-    public function getYear()
-    {
-        return isset($this->fields['year']) ?
-            $this->fields['year'] : '';
     }
 
     public function isAvailableInTuebingen()
