@@ -1,5 +1,5 @@
 <tr>
-  <th><?=$this->transEsc('Local Availability')?>: </th>
+  <th><?=$this->transEsc('Check Availability')?>: </th>
 <? $isbns = $this->driver->getISBNs(); if (!empty($isbns)): ?>
   <td><a href="http://openurlgw.hbz-nrw.de/gw?isbn=<?=$isbns[0]?>">HBZ Gateway</a></td>
 <? else: ?>
