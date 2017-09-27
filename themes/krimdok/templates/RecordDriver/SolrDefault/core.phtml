@@ -235,19 +235,6 @@
         </tr>
       <? endif; ?>
 
-      <?/* Display containee section if at least one containee exists. */?>
-      <? $ids_and_titles = $this->driver->getContaineeIDsAndTitles(); if (!empty($ids_and_titles)): ?>
-        <tr>
-          <th><?=$this->transEsc('Contains')?>: </th>
-          <td>
-            <? foreach ($ids_and_titles as $id => $title): ?>
-              <a href="<?=$id?>"><?=$this->escapeHtml($title)?></a>
-              <br>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
       <? $subjects = $this->driver->getAllSubjectHeadings(); if (!empty($subjects)): ?>
         <tr>
           <th><?=$this->transEsc('Subjects')?>: </th>
