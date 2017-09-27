@@ -4,6 +4,23 @@ namespace KrimDok\RecordDriver;
 
 class Factory
 {
+    /**
+     * Factory for SolrDefault record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SolrDefault
+     */
+    public static function getSolrDefault(ServiceManager $sm)
+    {
+        $driver = new SolrDefault(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            null,
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+        );
+        $driver->attachSearchService($sm->getServiceLocator()->get('VuFind\Search'));
+        return $driver;
+    }
 
     /**
      * Factory for SolrMarc record driver.
