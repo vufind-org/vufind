@@ -198,18 +198,6 @@
         </tr>
       <? endif; ?>
 
-      <? $issns = $this->driver->getISSNs(); if (!empty($issns)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr>
-          <th><?=$this->transEsc('ISSN')?>:</th>
-          <td>
-            <? foreach ($issns as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
       <? $urls_and_material_types = $this->driver->getURLsAndMaterialTypes(); ?>
       <? if (!empty($urls_and_material_types)): ?>
         <tr>
