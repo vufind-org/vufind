@@ -19,28 +19,6 @@ class SolrDefault extends \TuFind\RecordDriver\SolrMarc
     }
 
     /**
-     * Get the issue of the current record.
-     *
-     * @return string
-     */
-    public function getIssue()
-    {
-        return isset($this->fields['issue']) ?
-            $this->fields['issue'] : '';
-    }
-
-    /**
-     * Get the pages of the current record.
-     *
-     * @return string
-     */
-    public function getPages()
-    {
-        return isset($this->fields['pages']) ?
-            $this->fields['pages'] : '';
-    }
-
-    /**
      * Get the full title of the record.
      *
      * @return string
@@ -53,28 +31,6 @@ class SolrDefault extends \TuFind\RecordDriver\SolrMarc
         if (!empty($subtitle)) { $title .= ' : ' . $subtitle; }
         if (!empty($titleSection)) { $title .= ' / ' . $titleSection; }
         return $title;
-    }
-
-    /**
-     * Get the volume of the current record.
-     *
-     * @return string
-     */
-    public function getVolume()
-    {
-        return isset($this->fields['volume']) ?
-            $this->fields['volume'] : '';
-    }
-
-    /**
-     * Get the year of the current record.
-     *
-     * @return string
-     */
-    public function getYear()
-    {
-        return isset($this->fields['year']) ?
-            $this->fields['year'] : '';
     }
 
     /**
@@ -191,37 +147,5 @@ class SolrDefault extends \TuFind\RecordDriver\SolrMarc
     {
         return isset($this->fields['corporation']) ?
             $this->fields['corporation'] : [];
-    }
-
-    /**
-     * Get the title of the item that contains this record (i.e. MARC 773s of a
-     * journal).
-     *
-     * @return string
-     */
-    public function getJournalIssue()
-    {
-        return isset($this->fields['journal_issue'])
-            ? $this->fields['journal_issue'] : '';
-    }
-
-    /**
-     * Return an associative array of URL's mapped to their material types.
-     *
-     * @return array
-     */
-    public function getURLsAndMaterialTypes()
-    {
-        $retval = [];
-        if (isset($this->fields['urls_and_material_types']) && !empty($this->fields['urls_and_material_types'])) {
-            foreach ($this->fields['urls_and_material_types'] as $url_and_material_type) {
-                $last_colon_pos = strrpos($url_and_material_type, ":");
-                if ($last_colon_pos) {
-                    $material_type = substr($url_and_material_type, $last_colon_pos + 1);
-                    $retval[substr($url_and_material_type, 0, $last_colon_pos)] = $material_type;
-                }
-            }
-        }
-        return $retval;
     }
 }

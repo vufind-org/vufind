@@ -198,30 +198,6 @@
         </tr>
       <? endif; ?>
 
-      <? $isbns = $this->driver->getISBNs(); if (!empty($isbns)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr>
-          <th><?=$this->transEsc('ISBN')?>: </th>
-          <td>
-            <? foreach ($isbns as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $issns = $this->driver->getISSNs(); if (!empty($issns)): ?>
-        <? $contentDisplayed = true; ?>
-        <tr>
-          <th><?=$this->transEsc('ISSN')?>:</th>
-          <td>
-            <? foreach ($issns as $field): ?>
-              <?=$this->escapeHtml($field)?><br/>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
       <? $urls_and_material_types = $this->driver->getURLsAndMaterialTypes(); ?>
       <? if (!empty($urls_and_material_types)): ?>
         <tr>
@@ -255,19 +231,6 @@
           <th><?=$this->transEsc('Volumes / Articles')?>: </th>
           <td>
             <a href="<?=$this->url("search-results", array(), array('query' => array('lookfor' => 'superior_ppn:' . $this->driver->getRecordId())))?>"><?=$this->transEsc('Show Volumes / Articles');?>.</a>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <?/* Display containee section if at least one containee exists. */?>
-      <? $ids_and_titles = $this->driver->getContaineeIDsAndTitles(); if (!empty($ids_and_titles)): ?>
-        <tr>
-          <th><?=$this->transEsc('Contains')?>: </th>
-          <td>
-            <? foreach ($ids_and_titles as $id => $title): ?>
-              <a href="<?=$id?>"><?=$this->escapeHtml($title)?></a>
-              <br>
-            <? endforeach; ?>
           </td>
         </tr>
       <? endif; ?>

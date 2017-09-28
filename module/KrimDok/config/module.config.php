@@ -39,6 +39,7 @@ $config = [
             ],
             'recorddriver' => [
                 'factories' => [
+                    'solrdefault' => 'KrimDok\RecordDriver\Factory::getSolrDefault',
                     'solrmarc' => 'KrimDok\RecordDriver\Factory::getSolrMarc'
                 ],
             ],

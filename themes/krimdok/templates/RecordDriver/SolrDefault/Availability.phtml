@@ -3,7 +3,7 @@ $signatures = $this->driver->getLocalSignatures();
 if ($this->driver->isAvailableInTuebingen() || !empty($signatures)) {
     echo "<tr>";
     echo "<th>";
-    echo $this->transEsc('Availability') . ":";
+    echo $this->transEsc('Availability in Tubingen') . ":";
     echo "</th>";
     echo "<td>";
     if (!OnlyOrdered($signatures)) {
