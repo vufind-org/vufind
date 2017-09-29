@@ -241,8 +241,13 @@ function setupOffcanvas() {
 }
 
 function setupAutocomplete() {
+  // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
+  var searchbox = $('#searchForm_lookfor.autocomplete');
+  if (searchbox.length < 1) {
+      return;
+  }
   // Search autocomplete
-  $('#searchForm_lookfor').autocomplete({
+  searchbox.autocomplete({
     maxResults: 10,
     loadingString: VuFind.translate('loading') + '...',
     handler: function vufindACHandler(input, cb) {
@@ -278,7 +283,7 @@ function setupAutocomplete() {
   });
   // Update autocomplete on type change
   $('#searchForm_type').change(function searchTypeChange() {
-    $('#searchForm_lookfor').autocomplete('clear cache');
+    searchbox.autocomplete('clear cache');
   });
 }
 
