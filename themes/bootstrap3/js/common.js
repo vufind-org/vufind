@@ -246,8 +246,10 @@ function setupAutocomplete() {
   if (searchbox.length < 1) {
       return;
   }
+  var cacheObj = {};
   // Search autocomplete
   searchbox.autocomplete({
+    cacheObj: cacheObj,
     maxResults: 10,
     loadingString: VuFind.translate('loading') + '...',
     handler: function vufindACHandler(input, cb) {
@@ -283,7 +285,11 @@ function setupAutocomplete() {
   });
   // Update autocomplete on type change
   $('#searchForm_type').change(function searchTypeChange() {
-    searchbox.autocomplete('clear cache');
+    for (var i in cacheObj) {
+        for (var j in cacheObj[i]) {
+            delete cacheObj[i][j];
+        }
+    }
   });
 }
 
