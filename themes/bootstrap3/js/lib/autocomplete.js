@@ -5,7 +5,7 @@
 
   function Factory(_input, settings) {
     var cache = (typeof(settings) === "object" && typeof(settings.cacheObj) === "object")
-        ? settings.cacheObj : {};
+      ? settings.cacheObj : {};
     return (function acClosure() {
       var input = $(this),
         options;

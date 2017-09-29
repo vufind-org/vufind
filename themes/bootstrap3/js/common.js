@@ -244,7 +244,7 @@ function setupAutocomplete() {
   // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
   var searchbox = $('#searchForm_lookfor.autocomplete');
   if (searchbox.length < 1) {
-      return;
+    return;
   }
   var cacheObj = {};
   // Search autocomplete
@@ -286,9 +286,9 @@ function setupAutocomplete() {
   // Update autocomplete on type change
   $('#searchForm_type').change(function searchTypeChange() {
     for (var i in cacheObj) {
-        for (var j in cacheObj[i]) {
-            delete cacheObj[i][j];
-        }
+      for (var j in cacheObj[i]) {
+        delete cacheObj[i][j];
+      }
     }
   });
 }
