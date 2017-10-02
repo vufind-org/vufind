@@ -1015,7 +1015,10 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                     if (!empty($attributes['video-tyyppi'])) {
                         $videoType = (string)$attributes->{'video-tyyppi'};
                     }
-                    $description = (string)$attributes->{'video-lisatieto'};
+                    // Use video type as the default description since the additional
+                    // information may contain long descriptive texts.
+                    $description = $videoType ? $videoType
+                        : (string)$attributes->{'video-lisatieto'};
 
                     $posterFilename = (string)$title->PartDesignation->Value;
                     if ($posterFilename) {
