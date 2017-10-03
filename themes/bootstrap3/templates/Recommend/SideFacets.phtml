@@ -3,7 +3,7 @@
 
   // Save results/options to $this so they are available to sub-templates:
   $this->results = $results = $this->recommend->getResults();
-  $this->options = $options = $this->searchOptions($this->searchClassId);
+  $this->options = $options = $results->getOptions();
 ?>
 <? if ($results->getResultTotal() > 0): ?>
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>

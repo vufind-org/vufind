@@ -727,7 +727,8 @@ class AbstractSearch extends AbstractBase
                 'results' => $results,
                 'anotherPage' => $facets[$facet]['more'],
                 'sort' => $sort,
-                'sortOptions' => $facetSortOptions
+                'sortOptions' => $facetSortOptions,
+                'recordId' => $this->params()->fromQuery('recordId')
             ]
         );
         $view->setTemplate('search/facet-list');

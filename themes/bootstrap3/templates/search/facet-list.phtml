@@ -1,11 +1,15 @@
 <?
-  $options = $this->searchOptions($this->searchClassId);
+  $options = $this->results->getParams()->getOptions();
   $facetLightbox = $options->getFacetListAction();
   if (empty($this->sortOptions)) {
     $this->sort = 'default';
     $this->sortOptions = [ 'default' => 'default' ];
   }
   $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . urlencode($this->facet) . '&amp;facetexclude=' . $this->exclude . '&amp;facetop=' . $this->operator;
+  $searchAction = $this->url($options->getSearchAction());
+  if ($this->recordId) {
+    $searchAction .= $this->recordId;
+  }
 ?>
 <h2><?=$this->transEsc($this->facetLabel) ?></h2>
 <? if (count($this->sortOptions) > 1): ?>
@@ -28,8 +32,8 @@
         <? endif; ?>
         <? foreach ($this->data as $item): ?>
           <? $toggleUrl = $item['isApplied']
-              ? $this->url($options->getSearchAction()) . $this->results->getUrlQuery()->removeFacet($this->facet, $item['value'], $item['operator'])
-              : $this->url($options->getSearchAction()) . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], $item['operator'])
+              ? $searchAction . $this->results->getUrlQuery()->removeFacet($this->facet, $item['value'], $item['operator'])
+              : $searchAction . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], $item['operator'])
           ?>
           <? $subLinks = $this->exclude && !$item['isApplied']; ?>
           <? if ($subLinks): ?>
