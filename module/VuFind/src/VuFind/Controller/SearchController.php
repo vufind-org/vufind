@@ -73,6 +73,17 @@ class SearchController extends AbstractSearch
     }
 
     /**
+     * Show facet list for Solr-driven collections.
+     *
+     * @return mixed
+     */
+    public function collectionfacetlistAction()
+    {
+        $this->searchClassId = 'SolrCollection';
+        return $this->facetListAction();
+    }
+
+    /**
      * Email action - Allows the email form to appear.
      *
      * @return mixed
