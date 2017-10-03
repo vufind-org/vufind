@@ -180,6 +180,7 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     } else {
       removeHashFromLocation();
     }
+    setupJumpMenus($newTab);
   });
   return false;
 }
