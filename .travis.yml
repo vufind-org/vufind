@@ -20,4 +20,4 @@ cache:
     - $HOME/.composer/cache
 
 script:
-  - vendor/bin/phing phpunitfast phpcs-console php-cs-fixer-dryrun eslint
+  - vendor/bin/phing eslint phpunitfast phpcs-console php-cs-fixer-dryrun
