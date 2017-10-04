@@ -147,7 +147,7 @@ if ($img):
               <strong><?=$this->transEsc($snippet['caption']) ?>:</strong> ';
             <? endif; ?>
             <? if (!empty($snippet['snippet'])): ?>
-              <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
+              <span class="quotestart">&#8220;</span>...<?=$this->highlight(strip_tags($snippet['snippet'])); ?>...</i><span class="quoteend">&#8221;</span><br/>
             <? endif; ?>
           <? endif; ?>
         <? endif; ?>
