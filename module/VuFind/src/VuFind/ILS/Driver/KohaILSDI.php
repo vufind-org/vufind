@@ -768,7 +768,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             i.itemnotes as PUBLICNOTES, b.frameworkcode as DOCTYPE,
             t.frombranch as TRANSFERFROM, t.tobranch as TRANSFERTO,
             i.itemlost as ITEMLOST, i.itemlost_on AS LOSTON,
-            i.stocknumber as STOCKNUMBER
+            i.stocknumber as STOCKNUMBER, i.enumchron AS PERIONAME
             from items i join biblio b on i.biblionumber = b.biblionumber
             left outer join
                 (SELECT itemnumber, frombranch, tobranch from branchtransfers
