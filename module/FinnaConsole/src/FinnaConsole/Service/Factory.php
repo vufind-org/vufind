@@ -43,6 +43,25 @@ use Zend\Console\Console,
 class Factory
 {
     /**
+     * Construct the console service for reminding on expiring user accounts
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \FinnaConsole\Service\AccountExpirationReminders
+     */
+    public static function getAccountExpirationReminders(ServiceManager $sm)
+    {
+        $table = $sm->get('VuFind\DbTablePluginManager')->get('User');
+        $renderer = $sm->get('ViewRenderer');
+        $configReader = $sm->get('VuFind\Config');
+        $translator = $sm->get('VuFind\Translator');
+
+        return new AccountExpirationReminders(
+            $table, $renderer, $configReader, $translator, $sm
+        );
+    }
+
+    /**
      * Construct the console service for sending due date reminders.
      *
      * @param ServiceManager $sm Service manager.

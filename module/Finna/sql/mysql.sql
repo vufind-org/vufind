@@ -33,6 +33,7 @@ ALTER TABLE `user` ADD COLUMN `finna_language` varchar(30) NOT NULL DEFAULT '';
 ALTER TABLE `user` ADD COLUMN `finna_due_date_reminder` int(11) NOT NULL DEFAULT 0;
 ALTER TABLE `user` ADD COLUMN `finna_last_login` datetime NOT NULL DEFAULT '2000-01-01 00:00:00';
 ALTER TABLE `user` ADD COLUMN `finna_auth_method` varchar(50) DEFAULT NULL;
+ALTER TABLE `user` ADD COLUMN `finna_last_expiration_reminder` datetime NOT NULL DEFAULT '2000-01-01 00:00:00';
 CREATE INDEX `finna_user_due_date_reminder_key` ON user (`finna_due_date_reminder`);
 CREATE INDEX `finna_user_email` ON user (`email`);
 
