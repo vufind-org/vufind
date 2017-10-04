@@ -109,7 +109,7 @@ if ($groupBranches) {
 
 <? if ($groupBranches): ?>
   <div class="holdings-container root <?=$collapseLocations ? ' collapsible' : ''?>">
-    <div class="header<?=!empty($availableTotal) ? ' available' : ''?>">
+    <div class="header<?=!empty($availableTotal) ? ' available' : ''?> clearfix">
       <i class="fa fa-<?=!empty($availableTotal) ? 'ok' : 'remove'?>"></i>
       <span>
         <? if (!empty($availableTotal)): ?>
