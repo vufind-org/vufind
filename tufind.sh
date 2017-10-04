@@ -82,6 +82,22 @@ function gitAssumeUnchanged {
     git update-index --assume-unchanged "$1"
 }
 
+# check if a custom file exists
+# if yes => create symlink from original file + git assume unchanged
+# if no => restore original file from git
+function useCustomFileIfExists {
+    FILE_DEFAULT="$1"
+    FILE_CUSTOM="$2"
+
+    if [ -e $FILE_CUSTOM ]; then
+        gitAssumeUnchanged $FILE_DEFAULT
+        createSymlink $FILE_DEFAULT $FILE_CUSTOM
+    else
+        echo "restoring $FILE_DEFAULT from git"
+        git checkout $FILE_DEFAULT
+    fi
+}
+
 echo "Starting configuration of $TUFIND_INSTANCE"
 echo
 
@@ -114,16 +130,18 @@ gitAssumeUnchanged $FILE_MARC_LOCAL
 generateProperties $FILE_MARC_TUFIND $FILE_MARC_CUSTOM $FILE_MARC_LOCAL
 
 # index alphabetical browse (only if special script for current instance exists)
+# (also checking browse indexing & browse handler jar files)
 FILE_ALPHABROWSE="$VUFIND_HOME/index-alphabetic-browse.sh"
 FILE_ALPHABROWSE_CUSTOM="$VUFIND_HOME/index-alphabetic-browse_"$TUFIND_INSTANCE".sh"
+useCustomFileIfExists $FILE_ALPHABROWSE $FILE_ALPHABROWSE_CUSTOM
 
-if [ -e $FILE_ALPHABROWSE_CUSTOM ]; then
-    gitAssumeUnchanged $FILE_ALPHABROWSE
-    createSymlink $FILE_ALPHABROWSE $FILE_ALPHABROWSE_CUSTOM
-else
-    echo "restoring $FILE_ALPHABROWSE from git"
-    git checkout $FILE_ALPHABROWSE
-fi
+FILE_BROWSE_INDEXING="$VUFIND_HOME/import/browse-indexing.jar"
+FILE_BROWSE_INDEXING_CUSTOM="$VUFIND_HOME/import/browse-indexing_"$TUFIND_INSTANCE".jar"
+useCustomFileIfExists $FILE_BROWSE_INDEXING $FILE_BROWSE_INDEXING_CUSTOM
+
+FILE_BROWSE_HANDLER="$VUFIND_HOME/solr/vufind/jars/browse-handler.jar"
+FILE_BROWSE_HANDLER_CUSTOM="$VUFIND_HOME/solr/vufind/jars/browse-handler_"$TUFIND_INSTANCE".jar"
+useCustomFileIfExists $FILE_BROWSE_HANDLER $FILE_BROWSE_HANDLER_CUSTOM
 
 # write configured instance to file for git hook
 echo
