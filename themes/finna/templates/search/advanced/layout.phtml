@@ -68,6 +68,13 @@
       }
     }
   }
+
+  $tooltipSource = 'local';
+  if ('EDS' == $this->searchClassId) {
+    $tooltipSource = 'eds';
+  } elseif ('Summon' == $this->searchClassId) {
+    $tooltipSource = 'summon';
+  }
 ?>
 
 <?=$this->flashmessages()?>
@@ -79,7 +86,7 @@
   <? endforeach; ?>
   <div class="advanced-search">
     <div class="">
-      <h4><?=$this->transEsc("adv_search_label")?><? if (!$this->translationEmpty('tooltip_local_advanced_html')): ?><span class="tooltip-local-advanced pull-right" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title='<?=$this->transesc("tooltip_local_advanced_html") ?>'><i class="fa fa-info-big" aria-hidden="true"></i> <?=$this->transEsc("Help with Advanced Search")?></span><? endif; ?></h4>
+      <h4><?=$this->transEsc("adv_search_label")?><? if (!$this->translationEmpty("tooltip_{$tooltipSource}_advanced_html")): ?><span class="tooltip-<?=$tooltipSource?>-advanced pull-right" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title='<?=$this->transesc("tooltip_{$tooltipSource}_advanced_html") ?>'><i class="fa fa-info-big" aria-hidden="true"></i> <?=$this->transEsc("Help with Advanced Search")?></span><? endif; ?></h4>
       <input type="hidden" name="sort" value="relevance">
 
       <? /* An empty div. This is the target for the javascript that builds this screen */ ?>
