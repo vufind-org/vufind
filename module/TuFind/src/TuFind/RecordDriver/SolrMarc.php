@@ -1,7 +1,6 @@
 <?php
 
 namespace TuFind\RecordDriver;
-use VuFind\Exception\LoginRequired as LoginRequiredException;
 
 class SolrMarc extends \TuFind\RecordDriver\SolrDefault
 {
