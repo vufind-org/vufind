@@ -4,7 +4,7 @@ namespace KrimDok\Controller\Plugin;
 use \Zend\ServiceManager\ServiceLocatorAwareTrait;
 use \Zend\ServiceManager\ServiceLocatorAwareInterface;
 
-class NewItems extends \VuFind\Controller\Plugin\NewItems implements \Zend\ServiceManager\ServiceLocatorAwareInterface {
+class NewItems extends \VuFind\Controller\Plugin\NewItems implements ServiceLocatorAwareInterface {
 
     use ServiceLocatorAwareTrait;
 
