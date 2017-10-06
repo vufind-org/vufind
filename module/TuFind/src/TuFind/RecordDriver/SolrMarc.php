@@ -5,6 +5,25 @@ namespace TuFind\RecordDriver;
 class SolrMarc extends \TuFind\RecordDriver\SolrDefault
 {
     /**
+     * Get DOI from 024 instead of doi_str_mv field
+     * 
+     * @return string
+     */
+    public function getCleanDOI() {
+        $results = $this->getMarcRecord()->getFields('024');
+        if (!$results)
+            return;
+        foreach ($results as $result) {
+            $subfields = $this->getSubfieldArray($result, ['a', '2'], false);
+            if ($subfields && count($subfields) == 2) {
+                if (strtolower($subfields[1]) == 'doi');
+                    return $subfields[0];
+            }
+        }
+    }
+
+
+    /**
      * Wrapper for parent's getFieldArray, allowing multiple fields to be
      * processed at once
      *
