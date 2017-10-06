@@ -200,7 +200,7 @@ ISN:
 Subject:
   DismaxFields:
     - topic_unstemmed^150
-    - topic^100
+    - topic_all^100
     - geographic^50
     - genre^50
     - era
@@ -209,7 +209,7 @@ Subject:
       - [onephrase, 350]
       - [and, 150]
       - [or, ~]
-    topic:
+    topic_all:
       - [onephrase, 300]
       - [and, 100]
       - [or, ~]
@@ -360,7 +360,7 @@ AllFields:
     - author_fuller^150
     - contents^10
     - topic_unstemmed^550
-    - topic^500
+    - topic_all^500
     - geographic^300
     - genre^300
     - allfields_unstemmed^10
@@ -410,7 +410,7 @@ AllFields:
     topic_unstemmed:
       - [onephrase, 550]
       - [and, 500]
-    topic:
+    topic_all:
       - [onephrase, 500]
     geographic:
       - [onephrase, 300]
@@ -560,7 +560,7 @@ toc:
       - [and, 100]
       - [or, ~]
 
-topic:
+topic_all:
   QueryFields:
     topic:
       - [and, 50]
