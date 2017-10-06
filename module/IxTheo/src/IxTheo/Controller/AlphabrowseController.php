@@ -26,7 +26,7 @@ class AlphabrowseController extends \VuFind\Controller\AlphabrowseController
                 'topic'  => 'By Topic',
                 'author' => 'By Author',
                 'title'  => 'By Title',
-                'lcc'    => 'By Call Number'
+                'lcc'    => 'By LCC Call Number'
             ];
         }
 
