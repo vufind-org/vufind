@@ -424,6 +424,13 @@ finna.layout = (function() {
         $('.type-dropdown .dropdown-toggle span').text($(this).text());
       });
 
+      if (sessionStorage.getItem('vufind_retain_filters')) {
+        if(sessionStorage.getItem('vufind_retain_filters') === 'true') {
+            $('.searchFormKeepFilters').closest('.checkbox').addClass('checked');
+        } else {
+            $('.searchFormKeepFilters').closest('.checkbox').removeClass('checked');
+        }
+      }
     };
 
     var initToolTips = function (holder) {
