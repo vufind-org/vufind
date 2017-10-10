@@ -717,7 +717,52 @@ class RecordDataFormatterFactory
             'Time Period of Creation', 'getTimePeriodOfCreation',
             'data-escapeHtml.phtml',
             [
+                'context' => ['class' => 'record-time-period-creation']
+            ]
+        );
+
+        $spec->setTemplateLine(
+            'Uniform Title', 'getCollectiveUniformTitle', 'data-transEsc.phtml',
+            [
+                'context' => ['class' => 'record-collective-uniform-title']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Standard Codes', 'getStandardCodes', 'data-transEsc.phtml',
+            [
+                'context' => ['class' => 'record-standard-codes']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Publisher or Distributor Number',
+            'getPubDistNumber',
+            'data-transEsc.phtml',
+            [
+                'context' => ['class' => 'record-pubdist-number']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Time Period', 'getTimePeriod', 'data-transEsc.phtml',
+            [
                 'context' => ['class' => 'record-time-period']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Copyright Notes', 'getCopyrightNotes', 'data-transEsc.phtml',
+            [
+                'context' => ['class' => 'record-copyright-notes']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Language Notes', 'getLanguageNotes', 'data-transEsc.phtml',
+            [
+                'context' => ['class' => 'record-language-notes']
+            ]
+        );
+        $spec->setTemplateLine(
+            'Uncontrolled Title', 'getUncontrolledTitle', 'data-transEsc.phtml',
+            [
+                'context' => ['class' => 'record-uncontrolled-title']
             ]
         );
 
