@@ -1,29 +1,35 @@
-<? $results = $this->recommend->getResults(); ?>
 <?
-function isIxTheoNotation($self, $title) {
-  return $title === $self->transEsc('ixtheo_notation_facet') ||
-         $title === $self->transEsc('relbib_notation_facet');
-}
+  $results = $this->recommend->getResults();
 
-function getIxTheoNotationForTrans($self, $facet) {
-  if (isUnassigned($self, $facet)) {
-    return $facet;
+  function isIxTheoNotation($self, $title) {
+    return $title === $self->transEsc('ixtheo_notation_facet') ||
+           $title === $self->transEsc('relbib_notation_facet');
   }
-  return "ixtheo-" . $facet;
-}
 
-function isUnassigned($self, $facet) {
-  return  $facet == $self->transEsc('[Unassigned]');
-}
+  function isUnassigned($self, $facet) {
+    return  $facet == '[Unassigned]' || $facet == $self->transEsc('[Unassigned]');
+  }
 
-function getOverallPercentage($count, $results) {
-  return ($count * 100) / $results->getResultTotal();
-}
+  function getIxTheoNotationForTrans($self, $facet) {
+    if (isUnassigned($self, $facet)) {
+      return $facet;
+    }
+    return "ixtheo-" . $facet;
+  }
 
-function getLocalizedOverallPercentage($self, $count, $results) {
-  $percentage = getOverallPercentage($count, $results);
-  return $percentage > 0.1 ? $self->localizedNumber($percentage, 1) : "&lt; 0.1";
-}
+  function getOverallPercentage($count, $results) {
+    return ($count * 100) / $results->getResultTotal();
+  }
+
+  function getLocalizedOverallPercentage($self, $count, $results) {
+    $percentage = getOverallPercentage($count, $results);
+    return $percentage > 0.1 ? $self->localizedNumber($percentage, 1) : "&lt; 0.1";
+  }
+
+  $this->headScript()->appendFile('facets.js');
+
+  $results = $this->recommend->getResults();
+  $options = $this->searchOptions($this->searchClassId);
 ?>
 <? if ($results->getResultTotal() > 0): ?>
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
@@ -69,8 +75,8 @@ function getLocalizedOverallPercentage($self, $count, $results) {
             $filter['displayText'] = $this->translate('filter_wildcard');
           }
         ?>
-        <a class="list-group-item active" href="<?=$removeLink?>">
-          <span class="pull-right flip"><i class="fa fa-times"></i></span>
+        <a class="list-group-item active" href="<?=$removeLink?>" title="<?=$this->transEsc('clear_tag_filter') ?>">
+          <span class="pull-right flip"><i class="fa fa-times" aria-hidden="true"></i></span>
           <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><?=$this->transEsc($field)?>: <?=$this->transEsc($filter['displayText'])?>
         </a>
       <? endforeach; ?>
@@ -83,6 +89,7 @@ function getLocalizedOverallPercentage($self, $count, $results) {
   <? foreach ($sideFacetSet as $title => $cluster): ?>
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <? $facets_before_more = $this->recommend->getShowMoreSetting($title); ?>
+    <? $showMoreInLightbox = $this->recommend->getShowInLightboxSetting($title); ?>
     <div class="list-group facet" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
       <div class="list-group-item title<? if(in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
         <?=$this->transEsc($cluster['label'])?>
@@ -140,7 +147,7 @@ $(document).ready(function() {
     'value':[{$low},{$high}],
     'reversed': {$reversed}
   })
-  .on('slide', fillTexts)
+  .on('change', fillTexts)
   .data('slider');
 });
 JS;
@@ -150,7 +157,6 @@ JS;
         <? else: ?>
           <? if (in_array($title, $hierarchicalFacets)): ?>
             <? $this->headScript()->appendFile('vendor/jsTree/jstree.min.js'); ?>
-            <? $this->headScript()->appendFile('facets.js'); ?>
             <? $sort = isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : ''; ?>
             <? if (!in_array($title, $collapsedFacets)): ?>
               <?
@@ -185,22 +191,34 @@ JS;
               <?
                 if(strlen($thisFacet['displayText']) == 0) {
                   $thisFacet['displayText'] = "-";
-                } else {
-                  $thisFacet['displayText'] = $this->transEsc($thisFacet['displayText']);
                 }
               ?>
               <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtmlAttr($title).' hidden'; ?>
             <? if ($i == $facets_before_more): ?>
-              <a id="more-narrowGroupHidden-<?=$this->escapeHtmlAttr($title)?>" class="list-group-item narrow-toggle" href="javascript:moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('more')?> ...</a>
+              <? $idAndClass = 'id="more-narrowGroupHidden-'.$this->escapeHtmlAttr($title).'" class="list-group-item narrow-toggle"'; ?>
+              <? if ($facetLightbox = $options->getFacetListAction()): ?>
+                <? $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&amp;facet='.$title.'&amp;facetop='.$thisFacet['operator'].'&amp;facetexclude='.($allowExclude ? 1 : 0); ?>
+              <? else: ?>
+                <? $moreUrl = '#'; ?>
+              <? endif; ?>
+              <? if (($showMoreInLightbox && $showMoreInLightbox !== 'more') && $facetLightbox): ?>
+                <a <?=$idAndClass ?> data-lightbox href="<?=$moreUrl ?>" rel="nofollow"><?=$this->transEsc('more')?> ...</a>
+                <? break; ?>
+              <? else: ?>
+                <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')" rel="nofollow"><?=$this->transEsc('more')?> ...</a>
+              <? endif; ?>
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
-              <a class="list-group-item active<? if ($i >= $facets_before_more): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>">
+              <a class="list-group-item active<? if ($i >= $facets_before_more): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>" title="<?=$this->transEsc('applied_filter') ?>">
                 <? if ($thisFacet['operator'] == 'OR'): ?>
-                  <i class="fa fa-check-square-o"></i>
+                  <i class="fa fa-check-square-o" aria-hidden="true"></i>
                 <? else: ?>
-                  <span class="pull-right flip"><i class="fa fa-check"></i></span>
+                  <span class="pull-right flip"><i class="fa fa-check" aria-hidden="true"></i></span>
                 <? endif; ?>
-                <?=$thisFacet['displayText']?>
+                <?$fancy_result = isIxTheoNotation($this, $title) ?
+                    getIxTheoNotationForTrans($this, $thisFacet['displayText']) : $thisFacet['displayText'];?>
+                <?=$this->transEsc($fancy_result)?>
+
               </a>
             <? else: ?>
               <? $addURL = $this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator']); ?>
@@ -212,17 +230,18 @@ JS;
               <span class="badge">
                 <?=isUnassigned($this, $thisFacet['displayText']) ? getLocalizedOverallPercentage($this, $thisFacet['count'], $results) . '%' : $this->localizedNumber($thisFacet['count'])?>
                 <? if ($allowExclude): ?>
-                  <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times"></i></a>
+                  <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times" aria-hidden="true"></i></a>
                 <? endif; ?>
               </span>
               <? if ($allowExclude): ?>
                 <a href="<?=$addURL ?>">
               <? endif; ?>
               <? if($thisFacet['operator'] == 'OR'): ?>
-                <i class="fa fa-square-o"></i>
+                <i class="fa fa-square-o" aria-hidden="true"></i>
               <? endif; ?>
-              <?$fancy_result = isIxTheoNotation($this, $title) ? $this->transEsc(getIxTheoNotationForTrans($this, $thisFacet['displayText'])): $thisFacet['displayText'];?>
-              <?=$fancy_result?>
+              <?$fancy_result = isIxTheoNotation($this, $title) ?
+                getIxTheoNotationForTrans($this, $thisFacet['displayText']) : $thisFacet['displayText'];?>
+              <?=$this->transEsc($fancy_result)?>
               <? if ($allowExclude): ?>
                   </a>
                 </div>
@@ -231,7 +250,11 @@ JS;
               <? endif; ?>
             <? endif; ?>
           <? endforeach; ?>
-          <? if ($i >= $facets_before_more): ?><a class="list-group-item narrow-toggle <?=$moreClass ?>" href="javascript:lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('less')?> ...</a><? endif; ?>
+          <? if ($showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
+            <? $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&amp;facet='.$title.'&amp;facetop='.$thisFacet['operator'].'&amp;facetexclude='.($allowExclude ? 1 : 0); ?>
+            <a class="list-group-item narrow-toggle <?=$moreClass ?>" data-lightbox href="<?=$moreUrl ?>" rel="nofollow"><?=$this->transEsc('see all')?> ...</a>
+          <? endif; ?>
+          <? if ($i >= $facets_before_more): ?><a class="list-group-item narrow-toggle <?=$moreClass ?>" href="#" onclick="return lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('less')?> ...</a><? endif; ?>
         <? endif; ?>
         <? if (in_array($title, $hierarchicalFacets)): ?>
           </noscript>
