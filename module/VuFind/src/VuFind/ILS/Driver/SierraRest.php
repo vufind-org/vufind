@@ -505,7 +505,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'limit' => 10000,
                 'offset' => 0,
                 'fields' => 'item,dueDate,numberOfRenewals,outDate,recallDate'
-                    . ',callNumber'
+                    . ',callNumber,barcode'
             ],
             'GET',
             $patron
@@ -531,6 +531,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 );
                 $transaction['message']
                     = $this->translate('item_recalled', ['%%date%%' => $date]);
+            }
+            if (!empty($this->config['Loans']['display_item_barcode'])) {
+                $transaction['item_barcode'] = $entry['barcode'];
             }
             // Fetch item information
             $item = $this->makeRequest(
