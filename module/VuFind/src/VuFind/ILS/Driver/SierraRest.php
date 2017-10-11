@@ -795,7 +795,40 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             return $locations;
         }
 
-        return [];
+        $result = $this->makeRequest(
+            ['v4', 'branches', 'pickupLocations'],
+            [
+                'limit' => 10000,
+                'offset' => 0,
+                'fields' => 'code,name',
+                'language' => $this->getTranslatorLocale()
+            ],
+            'GET',
+            $patron
+        );
+        if (isset($result['code'])) {
+            // An error was returned
+            $this->error(
+                "Request for pickup locations returned error code: {$result['code']}"
+                . ", HTTP status: {$result['httpStatus']}, name: {$result['name']}"
+            );
+            throw new ILSException('Problem with Sierra REST API.');
+        }
+        if (empty($result['entries'])) {
+            return [];
+        }
+
+        $locations = [];
+        foreach ($result['entries'] as $entry) {
+            $locations[] = [
+                'locationID' => $entry['code'],
+                'locationDisplay' => $this->translateLocation(
+                    ['code' => $entry['code'], 'name' => $entry['name']]
+                )
+            ];
+        }
+
+        return $result;
     }
 
     /**
@@ -915,9 +948,12 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'Y-m-d', $holdDetails['requiredBy']
             )
         ];
+        if ($comment) {
+            $request['note'] = $comment;
+        }
 
         $result = $this->makeRequest(
-            ['v3', 'patrons', $patron['id'], 'holds', 'requests'],
+            [$comment ? 'v4' : 'v3', 'patrons', $patron['id'], 'holds', 'requests'],
             json_encode($request),
             'POST',
             $patron
