@@ -121,13 +121,21 @@
 
   <!-- PHP API Documentation -->
   <target name="phpdoc">
-    <mkdir dir="${builddir}/apidocs"/>
-    <phpdoc2 title="VuFind API Documentation"
-      destdir="${builddir}/apidocs">
-      <fileset dir=".">
-        <include name="module/*/src/**/*.php" />
-      </fileset>
-    </phpdoc2>
+    <!-- GET phpDocumentor.phar -->
+    <if>
+      <not><available file="${srcdir}/vendor/bin/phpdoc.phar" /></not>
+      <then>
+        <exec command="wget https://github.com/phpDocumentor/phpDocumentor2/releases/download/v2.9.0/phpDocumentor.phar -O ${srcdir}/vendor/bin/phpdoc.phar" passthru="true" />
+        <chmod mode="0755">
+          <fileset dir="${srcdir}/vendor/bin">
+            <include name="phpdoc.phar" />
+          </fileset>
+        </chmod>
+      </then>
+    </if>
+    <!-- Run phpdoc -->
+    <mkdir dir="${builddir}/apidocs" />
+    <exec command="${srcdir}/vendor/bin/phpdoc.phar -t ${builddir}/apidocs" passthru="true" />
   </target>
 
   <!-- PHPUnit -->
