@@ -159,13 +159,15 @@ class ThemeInfo
     protected function loadThemeConfig($theme)
     {
         // Load theme configuration...
-        $this->allThemeInfo[$theme] = include $this->getThemeConfig($theme);
+        // HS: changing the order of themes: mixin themes should preceed parent theme
+        $themeInfo = include $this->getThemeConfig($theme);
         // ..and if there are mixins, load those too!
-        if (isset($this->allThemeInfo[$theme]['mixins'])) {
-            foreach ($this->allThemeInfo[$theme]['mixins'] as $mix) {
+        if (isset($themeInfo['mixins'])) {
+            foreach ($themeInfo['mixins'] as $mix) {
                 $this->allThemeInfo[$mix] = include $this->getMixinConfig($mix);
             }
         }
+        $this->allThemeInfo[$theme] = $themeInfo;
     }
 
     /**
