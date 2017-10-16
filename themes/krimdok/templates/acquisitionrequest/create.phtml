@@ -1,0 +1,47 @@
+<?php
+    // field validation via javascript
+    $this->headScript()->appendFile("acquisitionrequest.js");
+?>
+
+<h1><?= $this->transEsc('Acquisition Request') ?></h1>
+<p><?= $this->transEsc('acquisition_request_description') ?></p>
+
+<form name="acquisition_request" class="form-horizontal" action="<?=$this->url('acquisitionrequest-send')?>" method="post">
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="ar-book"><?= $this->transEsc('Book Request') ?>*</label>
+        <div class="col-sm-9">
+            <textarea id="ar-book" name="book" class="form-control" onkeyup="AcquisitionRequest.checkFields()" required></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="ar-firstname"><?= $this->transEsc('First Name') ?>*</label>
+        <div class="col-sm-9">
+            <input id="ar-firstname" name="firstname" class="form-control" type="text" onkeyup="AcquisitionRequest.checkFields()" required/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="ar-lastname"><?= $this->transEsc('Last Name') ?>*</label>
+        <div class="col-sm-9">
+            <input id="ar-lastname" name="lastname" class="form-control" type="text" onkeyup="AcquisitionRequest.checkFields()" required/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="ar-email"><?= $this->transEsc('Email Address') ?></label>
+        <div class="col-sm-9">
+            <input id="ar-email" name="email" class="form-control" type="text" onkeyup="AcquisitionRequest.checkFields()"/>
+        </div>
+    </div>
+
+    <?=$this->recaptcha()->html($this->useRecaptcha) ?>
+
+    <div class="form-group">
+        <div class="col-sm-9 col-sm-offset-3">
+            <input type="hidden" name="submitted" value="true"/>
+            <input id="ar-submit" type="submit" class="btn btn-primary" disabled/>
+        </div>
+    </div>
+
+</form>
