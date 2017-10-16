@@ -4,6 +4,7 @@ namespace KrimDok\Module\Config;
 $config = [
     'controllers' => [
         'factories' => [
+            'acquisition_request' => 'KrimDok\Controller\Factory::getAcquisitionRequestController',
             'browse' => 'KrimDok\Controller\Factory::getBrowseController',
             'fidsystematik' => 'KrimDok\Controller\Factory::getFIDSystematikController',
             'help' => 'KrimDok\Controller\Factory::getHelpController',
@@ -60,6 +61,8 @@ $config = [
 $recordRoutes = [];
 $dynamicRoutes = [];
 $staticRoutes = [
+    'AcquisitionRequest/Create',
+    'AcquisitionRequest/Send',
     'FIDSystematik/Home',
     'Help/FAQ',
 ];
