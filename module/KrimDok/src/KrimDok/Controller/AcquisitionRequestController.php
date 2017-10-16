@@ -27,7 +27,7 @@ class AcquisitionRequestController extends \VuFind\Controller\AbstractBase
         $view = $this->createViewModel();
         if ($this->params()->fromPost('submitted') != 'true') {
             $this->flashMessenger()->addMessage(
-                $this->translate('Please use the entry form'), 'error'
+                $this->translate('Please use the entry form.'), 'error'
             );
         } else {
             $to = $config->Site->acquisition_request_receivers;
