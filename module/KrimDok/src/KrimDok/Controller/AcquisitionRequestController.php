@@ -43,7 +43,7 @@ class AcquisitionRequestController extends \VuFind\Controller\AbstractBase
             $body .= $this->params()->fromPost('book');
             $cc = null;
             $mailer = $this->serviceLocator->get('VuFind\Mailer');
-            $mailer->setMaxRecipients(5),
+            $mailer->setMaxRecipients(5);
             $mailer->send($to, $from, $subject, $body, $cc);
             $this->flashMessenger()->addMessage(
                 'Thank you for your purchasing suggestion!', 'success'
