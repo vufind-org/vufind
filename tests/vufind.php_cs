@@ -4,7 +4,7 @@ $finder = PhpCsFixer\Finder::create()->in(__DIR__ . '/../module');
 
 $rules = [
     'array_syntax' => ['syntax' => 'short'],
-    //'binary_operator_spaces' => true,
+    //'binary_operator_spaces' => ['default' => 'single_space'],
     'concat_space' => ['spacing' => 'one'],
     'encoding' => true,
     'lowercase_keywords' => true,
