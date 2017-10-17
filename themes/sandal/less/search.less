@@ -151,10 +151,10 @@
   .full-width();
   .clearfix();
   position: relative;
-  padding: 6rem 3rem;
-  padding-left: ~"calc(50vw - 50%)"; // Align searchbox with container
+  padding: 1rem;
+  padding-bottom: 2rem;
   background-color: @header-bg;
-  background-image: url('https://source.unsplash.com/collection/803311/1000x300');
+  background-image: url('../../sandal/images/forest.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center top;
@@ -164,14 +164,33 @@
     color: @white;
     text-shadow: 0 1px 0 @black;
   }
+  @media (min-width: 768px) {
+    height: 300px;
+    padding: 7rem 3rem;
+    padding-left: ~"calc(50vw - 50% + .5rem)"; // Align searchbox with container
+  }
 }
-.searchHomeContent::before {
+.searchHomeContent::after {
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
-  background-color: rgba(255,255,255,.5);
+  display: block;
+  width: 100%;
+  padding: .25rem .5rem;
+  padding-left: 1rem;
+  font-size: 10px;
+  color: #fff;
+  background-color: rgba(0,0,0,.3);
+  content: "Photo by Paul Gilmore on Unsplash";
+  @media (min-width: 768px) {
+    left: auto;
+    right: ~"calc(50% - 50vw + .5rem)";
+    width: auto;
+    padding-left: .5rem;
+  }
 }
 .template-dir-search.template-name-home .breadcrumbs { border: 0; }
+.home-facet h2 { margin-top: 1rem; }
 
 .search { border: 0; }
 #searchForm {

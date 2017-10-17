@@ -1,4 +1,4 @@
-/*global extractClassParams, VuFind */
+/*global extractClassParams, Hunt, VuFind */
 VuFind.register('openurl', function OpenUrl() {
   function _loadResolverLinks($target, openUrl, searchClassId) {
     $target.addClass('ajax_availability');
@@ -21,7 +21,8 @@ VuFind.register('openurl', function OpenUrl() {
     });
   }
 
-  function embedOpenUrlLinks(element) {
+  function embedOpenUrlLinks(el) {
+    var element = $(el);
     // Extract the OpenURL associated with the clicked element:
     var openUrl = element.children('span.openUrl:first').attr('title');
 
@@ -53,11 +54,18 @@ VuFind.register('openurl', function OpenUrl() {
 
     // assign action to the openUrlEmbed link class
     container.find('.openUrlEmbed a').unbind('click').click(function openUrlEmbedClick() {
-      embedOpenUrlLinks($(this));
+      embedOpenUrlLinks(this);
       return false;
     });
 
-    container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger('click');
+    if (typeof Hunt === 'undefined') {
+      container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger('click');
+    } else {
+      new Hunt(
+        container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').toArray(),
+        { enter: embedOpenUrlLinks }
+      );
+    }
   }
   return {
     init: init,

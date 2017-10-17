@@ -156,7 +156,9 @@ class SummonController extends AbstractSearch
         // Check if we have facet results cached, and build them if we don't.
         $cache = $this->serviceLocator->get('VuFind\CacheManager')
             ->getCache('object');
-        if (!($list = $cache->getItem('summonSearchAdvancedFacetsList'))) {
+        $language = $this->serviceLocator->get('VuFind\Translator')->getLocale();
+        $cacheKey = 'summonSearchAdvancedFacetsList-' . $language;
+        if (!($list = $cache->getItem($cacheKey))) {
             $config = $this->serviceLocator->get('VuFind\Config')
                 ->get('Summon');
             $limit = isset($config->Advanced_Facet_Settings->facet_limit)

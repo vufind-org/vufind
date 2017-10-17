@@ -235,6 +235,22 @@ class Factory
     }
 
     /**
+     * Construct the Permission helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Permission
+     */
+    public static function getPermission(ServiceManager $sm)
+    {
+        $ld = new Permission(
+            $sm->getServiceLocator()->get('VuFind\Role\PermissionManager'),
+            $sm->getServiceLocator()->get('VuFind\Role\PermissionDeniedManager')
+        );
+        return $ld;
+    }
+
+    /**
      * Construct the Piwik helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -452,11 +468,17 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config');
         $mainConfig = $config->get('config');
+        $searchboxConfig = $config->get('searchbox')->toArray();
+        $includeAlphaOptions
+            = isset($searchboxConfig['General']['includeAlphaBrowse'])
+            && $searchboxConfig['General']['includeAlphaBrowse'];
         return new SearchBox(
             $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager'),
-            $config->get('searchbox')->toArray(),
+            $searchboxConfig,
             isset($mainConfig->SearchPlaceholder)
-                ? $mainConfig->SearchPlaceholder->toArray() : []
+                ? $mainConfig->SearchPlaceholder->toArray() : [],
+            $includeAlphaOptions && isset($mainConfig->AlphaBrowse_Types)
+                ? $mainConfig->AlphaBrowse_Types->toArray() : []
         );
     }
 

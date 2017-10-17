@@ -64,6 +64,13 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
     protected $filterConfig;
 
     /**
+     * Tab permission configuration
+     *
+     * @var array
+     */
+    protected $permissionConfig;
+
+    /**
      * Request
      *
      * @var Request
@@ -77,14 +84,16 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
      * @param array         $tabConfig    Tab configuration
      * @param array         $filterConfig Tab filter configuration
      * @param Request       $request      Request
+     * @param array         $permConfig   Tab permission configuration
      */
     public function __construct(PluginManager $results, array $tabConfig,
-        array $filterConfig, Request $request
+        array $filterConfig, Request $request, array $permConfig = []
     ) {
         $this->results = $results;
         $this->tabConfig = $tabConfig;
         $this->filterConfig = $filterConfig;
         $this->request = $request;
+        $this->permissionConfig = $permConfig;
     }
 
     /**
@@ -128,6 +137,16 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
     public function getTabFilterConfig()
     {
         return $this->filterConfig;
+    }
+
+    /**
+     * Get the tab permissions
+     *
+     * @return array
+     */
+    public function getTabPermissionConfig()
+    {
+        return $this->permissionConfig;
     }
 
     /**

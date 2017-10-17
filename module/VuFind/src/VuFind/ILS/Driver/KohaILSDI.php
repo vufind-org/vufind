@@ -116,6 +116,13 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     protected $dateConverter;
 
     /**
+     * Should validate passwords against Koha system?
+     *
+     * @var boolean
+     */
+    protected $validatePasswords;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -162,11 +169,45 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             = isset($this->config['Other']['availableLocations'])
             ? $this->config['Other']['availableLocations'] : [];
 
+        // If we are using SAML/Shibboleth for authentication for both ourselves
+        // and Koha then we can't validate the patrons passwords against Koha as
+        // they won't have one. (Double negative logic used so that if the config
+        // option isn't present in KohaILSDI.ini then ILS passwords will be
+        // validated)
+        $this->validatePasswords
+            = empty($this->config['Catalog']['dontValidatePasswords']);
+
         $this->debug("Config Summary:");
         $this->debug("DB Host: " . $this->host);
         $this->debug("ILS URL: " . $this->ilsBaseUrl);
         $this->debug("Locations: " . $this->locations);
         $this->debug("Default Location: " . $this->defaultLocation);
+
+        // Set our default terms for block types
+        $this->blockTerms = [
+            'SUSPENSION' => 'Account Suspended',
+            'OVERDUES' => 'Account Blocked (Overdue Items)',
+            'MANUAL' => 'Account Blocked',
+            'DISCHARGE' => 'Account Blocked for Discharge',
+        ];
+
+        // Now override the default with any defined in the `KohaILSDI.ini` config
+        // file
+        foreach (['SUSPENSION','OVERDUES','MANUAL','DISCHARGE'] as $blockType) {
+            if (!empty($this->config['Blocks'][$blockType])) {
+                $this->blockTerms[$blockType] = $this->config['Blocks'][$blockType];
+            }
+        }
+
+        // Allow the users to set if an account block's comments should be included
+        // by setting the block type to true or false () in the `KohaILSDI.ini`
+        // config file (defaults to false if not present)
+        $this->showBlockComments = [];
+
+        foreach (['SUSPENSION','OVERDUES','MANUAL','DISCHARGE'] as $blockType) {
+            $this->showBlockComments[$blockType]
+                = !empty($this->config['Show_Block_Comments'][$blockType]);
+        }
     }
 
     /**
@@ -1270,6 +1311,53 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin
+     *
+     * @throws ILSException
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getAccountBlocks($patron)
+    {
+        $blocks = [];
+
+        try {
+            if (!$this->db) {
+                $this->initDb();
+            }
+            $id = $patron['id'];
+            $sql = "select type as TYPE, comment as COMMENT " .
+                "from borrower_debarments " .
+                "where (expiration is null or expiration >= NOW()) " .
+                "and borrowernumber = :id";
+            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->execute([':id' => $id]);
+
+            foreach ($sqlStmt->fetchAll() as $row) {
+                $block = empty($this->blockTerms[$row['TYPE']])
+                    ? [$row['TYPE']]
+                    : [$this->blockTerms[$row['TYPE']]];
+
+                if (!empty($this->showBlockComments[$row['TYPE']])
+                    && !empty($row['COMMENT'])
+                ) {
+                    $block[] = $row['COMMENT'];
+                }
+
+                $blocks[] = implode(' - ', $block);
+            }
+        }
+        catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+        return count($blocks) ? $blocks : false;
+    }
+
+    /**
      * Get Patron Transactions
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
@@ -1677,14 +1765,15 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function patronLogin($username, $password)
     {
-        //       $idObj = $this->makeRequest(
-        //         "AuthenticatePatron" . "&username=" . $username
-        //       . "&password=" . $password
-        // );
-        $idObj = $this->makeRequest(
-            "LookupPatron" . "&id=" . urlencode($username)
-            . "&id_type=userid"
-        );
+        $request = "LookupPatron" . "&id=" . urlencode($username)
+            . "&id_type=userid";
+
+        if ($this->validatePasswords) {
+            $request = "AuthenticatePatron" . "&username="
+                . urlencode($username) . "&password=" . $password;
+        }
+
+        $idObj = $this->makeRequest($request);
 
         $this->debug("username: " . $username);
         $this->debug("Code: " . $idObj->{'code'});
