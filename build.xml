@@ -26,6 +26,7 @@
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_version" value="6.4.2" />
+  <property name="phpdoc_version" value="2.9.0" />
   <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use,eof_ending" />
 
 
@@ -35,8 +36,6 @@
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
     <property name="mysqlpwswitch" value="-p" />
   </then></if>
-
-  <includepath classpath="${srcdir}/vendor/phpdocumentor" />
 
   <!-- Main Target -->
   <target name="main" description="main target">
@@ -121,8 +120,22 @@
 
   <!-- PHP API Documentation -->
   <target name="phpdoc">
-    <mkdir dir="${builddir}/apidocs"/>
+    <!-- GET phpDocumentor.phar -->
+    <if>
+      <not><available file="${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar" /></not>
+      <then>
+        <httpget followRedirects="true" url="https://github.com/phpDocumentor/phpDocumentor2/releases/download/v${phpdoc_version}/phpDocumentor.phar" dir="${srcdir}/vendor/bin" filename="phpDocumentor-${phpdoc_version}.phar" />
+        <chmod mode="0755">
+          <fileset dir="${srcdir}/vendor/bin">
+            <include name="phpDocumentor-${phpdoc_version}.phar" />
+          </fileset>
+        </chmod>
+      </then>
+    </if>
+    <!-- Run phpdoc -->
+    <mkdir dir="${builddir}/apidocs" />
     <phpdoc2 title="VuFind API Documentation"
+      pharlocation="${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar"
       destdir="${builddir}/apidocs">
       <fileset dir=".">
         <include name="module/*/src/**/*.php" />
