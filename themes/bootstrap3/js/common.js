@@ -376,6 +376,11 @@ function setupIeSupport() {
   }
 }
 
+function setupJumpMenus(_container) {
+  var container = _container || $('body');
+  container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
+}
+
 $(document).ready(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
@@ -387,7 +392,7 @@ $(document).ready(function commonDocReady() {
   keyboardShortcuts();
 
   // support "jump menu" dropdown boxes
-  $('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
+  setupJumpMenus();
 
   // Checkbox select all
   $('.checkbox-select-all').change(function selectAllCheckboxes() {
