@@ -1,0 +1,11 @@
+<?
+  $transParams = [
+    '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
+    '%%end%%'   => $this->localizedNumber($this->results->getEndRecord()),
+    '%%total%%' => $this->localizedNumber($this->recordTotal),
+    '%%lookfor%%' => $this->escapeHtml($this->lookfor)
+  ];
+?>
+<? $showingResults = $this->translate('showing_results_of_html', $transParams); ?>
+<? $this->layout()->srmessage = $showingResults; ?>
+<?=$showingResults; ?>

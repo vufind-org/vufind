@@ -56,32 +56,23 @@
       <? endforeach; ?>
     <? endif; ?>
     <?=$this->flashmessages()?>
-    <div class="hidden-print search-controls row">
-      <div class="col-sm-4">
+    <nav class="search-header hidden-print">
+      <div class="search-stats">
         <? if ($recordTotal > 0): ?>
-          <?=$this->transEsc("Showing")?>
-          <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
-          <? if (!isset($this->skipTotalCount)): ?>
-            <? $this->layout()->srmessage = $this->transEsc('result_count', ['%%count%%' => $this->localizedNumber($recordTotal)]); ?>
-            <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
-          <? endif; ?>
-          <? if (isset($this->overrideSearchHeading)): ?>
-            <?=$this->overrideSearchHeading?>
-          <? elseif ($this->params->getSearchType() == 'basic'): ?>
-          <? endif; ?>
+          <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
         <? else: ?>
           <h2><?=$this->transEsc('nohit_heading')?></h2>
         <? endif; ?>
       </div>
 
       <? if ($recordTotal > 0): ?>
-        <div class="col-sm-8 text-right">
+        <div class="search-controls">
           <?=$this->render('search/controls/limit.phtml')?>
           <?=$this->render('search/controls/sort.phtml')?>
           <?=$this->render('search/controls/view.phtml')?>
         </div>
       <? endif; ?>
-    </div>
+    </nav>
     <? /* End Listing Options */ ?>
 
     <? if ($recordTotal < 1): ?>
