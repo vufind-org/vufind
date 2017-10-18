@@ -20,7 +20,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     var url = currentPath + this.href;
     // Just to be safe
     url.replace("'", "\\'");
-    html += '<span class="main' + (this.isApplied ? ' applied' : '') + '" title="' + htmlEncode(this.displayText) + '"'
+    html += '<span class="main' + (this.isApplied ? ' applied' : '') + '" role="menuitem" title="' + htmlEncode(this.displayText) + '"'
       + ' onclick="document.location.href=\'' + url + '\'; return false;">';
     if (this.operator === 'OR') {
       if (this.isApplied) {
@@ -45,7 +45,10 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
       'state': {
         'opened': this.hasAppliedChildren
       },
-      'li_attr': this.isApplied ? { 'class': 'active' } : {}
+      'li_attr': this.isApplied ? { 'class': 'active' } : {},
+      'data': {
+        'url': url.replace(/&amp;/g, '&')
+      }
     });
   });
 
@@ -59,6 +62,13 @@ function initFacetTree(treeNode, inSidebar)
     return;
   }
   treeNode.data('loaded', true);
+
+  // Enable keyboard navigation also when a screen reader is active
+  treeNode.bind('select_node.jstree', function selectNode(event, data) {
+    window.location = data.node.data.url;
+    event.preventDefault();
+    return false;
+  });
 
   var facet = treeNode.data('facet');
   var operator = treeNode.data('operator');

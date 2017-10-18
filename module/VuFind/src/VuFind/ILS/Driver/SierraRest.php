@@ -505,7 +505,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'limit' => 10000,
                 'offset' => 0,
                 'fields' => 'item,dueDate,numberOfRenewals,outDate,recallDate'
-                    . ',callNumber'
+                    . ',callNumber,barcode'
             ],
             'GET',
             $patron
@@ -519,6 +519,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'id' => '',
                 'checkout_id' => $this->extractId($entry['id']),
                 'item_id' => $this->extractId($entry['item']),
+                'barcode' => $entry['barcode'],
                 'duedate' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['dueDate']
                 ),
