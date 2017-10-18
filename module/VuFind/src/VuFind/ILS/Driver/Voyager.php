@@ -1317,6 +1317,7 @@ EOT;
             "MAX(CIRC_TRANSACTIONS.ITEM_ID) as ITEM_ID",
             "MAX(MFHD_ITEM.ITEM_ENUM) AS ITEM_ENUM",
             "MAX(MFHD_ITEM.YEAR) AS YEAR",
+            "MAX(ITEM_BARCODE.ITEM_BARCODE) AS ITEM_BARCODE",
             "MAX(BIB_TEXT.TITLE_BRIEF) AS TITLE_BRIEF",
             "MAX(BIB_TEXT.TITLE) AS TITLE",
             "LISTAGG(ITEM_STATUS_DESC, CHR(9)) "
@@ -1334,6 +1335,7 @@ EOT;
             $this->dbName . ".ITEM",
             $this->dbName . ".ITEM_STATUS",
             $this->dbName . ".ITEM_STATUS_TYPE",
+            $this->dbName . ".ITEM_BARCODE",
             $this->dbName . ".MFHD_ITEM",
             $this->dbName . ".BIB_TEXT",
             $this->dbName . ".CIRC_POLICY_MATRIX",
@@ -1352,6 +1354,9 @@ EOT;
             "BIB_ITEM.ITEM_ID = ITEM.ITEM_ID",
             "ITEM.ITEM_ID = ITEM_STATUS.ITEM_ID",
             "ITEM_STATUS.ITEM_STATUS = ITEM_STATUS_TYPE.ITEM_STATUS_TYPE",
+            "ITEM.ITEM_ID = ITEM_BARCODE.ITEM_ID(+)",
+            "ITEM_BARCODE.BARCODE_STATUS IN (SELECT BARCODE_STATUS_TYPE FROM " .
+            "$this->dbName.ITEM_BARCODE_STATUS WHERE BARCODE_STATUS_DESC = 'Active')"
         ];
 
         // Order
@@ -1433,6 +1438,7 @@ EOT;
         $transaction = [
             'id' => $sqlRow['BIB_ID'],
             'item_id' => $sqlRow['ITEM_ID'],
+            'barcode' => utf8_encode($sqlRow['ITEM_BARCODE']),
             'duedate' => $dueDate,
             'dueStatus' => $dueStatus,
             'volume' => str_replace("v.", "", utf8_encode($sqlRow['ITEM_ENUM'])),
@@ -1450,9 +1456,7 @@ EOT;
         ) {
             $transaction['dueTime'] = $dueTime;
         }
-        if (isset($this->config['Loans']['display_borrowing_location'])
-            && $this->config['Loans']['display_borrowing_location']
-        ) {
+        if (!empty($this->config['Loans']['display_borrowing_location'])) {
             $transaction['borrowingLocation']
                 = utf8_encode($sqlRow['BORROWING_LOCATION']);
         }
