@@ -1,5 +1,8 @@
 <? foreach ($checkboxFilters as $current): ?>
   <a class="checkbox-filter<? if(!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<? endif; ?>" href="<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter']);?>">
+    <? if ($current['selected']): ?>
+      <span class="sr-only"><?=$this->transEsc('clear_tag_filter') ?></span>
+    <? endif; ?>
     <i class="fa fa-<?=$current['selected'] ? 'check-square-o' : 'square-o' ?>"></i>
     <?=$this->transEsc($current['desc']) ?>
   </a>
