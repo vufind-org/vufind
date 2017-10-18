@@ -724,7 +724,7 @@ class ClaviusSQL extends AbstractBase
             $char = substr($pin, $i, 1);
             $return = 1 + intval($char) + $return * 12;
         }
-        return 2109876543 -  $return * 7 * (intval($patron) % 89 + 7);
+        return 2109876543 - $return * 7 * (intval($patron) % 89 + 7);
     }
 
     /**
