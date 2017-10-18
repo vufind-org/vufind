@@ -459,7 +459,7 @@ class Options extends \VuFind\Search\Base\Options
                         'Label' => $mode['Label'], 'Value' => $mode['Mode']
                     ];
                     if (isset($mode['DefaultOn'])
-                        &&  'y' == $mode['DefaultOn']
+                        && 'y' == $mode['DefaultOn']
                     ) {
                         $this->defaultMode = $mode['Mode'];
                     }

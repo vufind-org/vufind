@@ -721,6 +721,7 @@ class Demo extends AbstractBase
             'city'            => 'City',
             'country'         => 'Country',
             'phone'           => '1900 CALL ME',
+            'mobile_phone'    => '1234567890',
             'group'           => 'Library Staff',
             'expiration_date' => 'Someday'
         ];

@@ -91,6 +91,13 @@ class Voyager extends AbstractBase
     protected $useHoldingsSortGroups;
 
     /**
+     * Loan interval types for which to display the due time (empty = all)
+     *
+     * @var array
+     */
+    protected $displayDueTimeIntervals;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -141,6 +148,12 @@ class Voyager extends AbstractBase
         $this->useHoldingsSortGroups
             = isset($this->config['Holdings']['use_sort_groups'])
             ? $this->config['Holdings']['use_sort_groups'] : true;
+
+        $this->displayDueTimeIntervals
+            = isset($this->config['Loans']['display_due_time_only_for_intervals'])
+            ? explode(
+                ':', $this->config['Loans']['display_due_time_only_for_intervals']
+            ) : [];
     }
 
     /**
@@ -1311,7 +1324,8 @@ EOT;
             . "WITHIN GROUP (ORDER BY ITEM_STATUS_DESC) as status",
             "MAX(CIRC_TRANSACTIONS.RENEWAL_COUNT) AS RENEWAL_COUNT",
             "MAX(CIRC_POLICY_MATRIX.RENEWAL_COUNT) as RENEWAL_LIMIT",
-            "MAX(LOCATION.LOCATION_DISPLAY_NAME) as BORROWING_LOCATION"
+            "MAX(LOCATION.LOCATION_DISPLAY_NAME) as BORROWING_LOCATION",
+            "MAX(CIRC_POLICY_MATRIX.LOAN_INTERVAL) as LOAN_INTERVAL"
         ];
 
         // From
@@ -1426,7 +1440,6 @@ EOT;
             'item_id' => $sqlRow['ITEM_ID'],
             'barcode' => utf8_encode($sqlRow['ITEM_BARCODE']),
             'duedate' => $dueDate,
-            'dueTime' => $dueTime,
             'dueStatus' => $dueStatus,
             'volume' => str_replace("v.", "", utf8_encode($sqlRow['ITEM_ENUM'])),
             'publication_year' => $sqlRow['YEAR'],
@@ -1437,6 +1450,12 @@ EOT;
             'message' =>
                 $this->pickTransactionStatus(explode(chr(9), $sqlRow['STATUS'])),
         ];
+        // Display due time only if loan interval is not in days if configured
+        if (empty($this->displayDueTimeIntervals)
+            || in_array($sqlRow['LOAN_INTERVAL'], $this->displayDueTimeIntervals)
+        ) {
+            $transaction['dueTime'] = $dueTime;
+        }
         if (!empty($this->config['Loans']['display_borrowing_location'])) {
             $transaction['borrowingLocation']
                 = utf8_encode($sqlRow['BORROWING_LOCATION']);
@@ -1958,16 +1977,24 @@ EOT;
                "PATRON.HISTORICAL_CHARGES, PATRON_ADDRESS.ADDRESS_LINE1, " .
                "PATRON_ADDRESS.ADDRESS_LINE2, PATRON_ADDRESS.ZIP_POSTAL, " .
                "PATRON_ADDRESS.CITY, PATRON_ADDRESS.COUNTRY, " .
-               "PATRON_PHONE.PHONE_NUMBER, PATRON_GROUP.PATRON_GROUP_NAME " .
+               "PATRON_PHONE.PHONE_NUMBER, PHONE_TYPE.PHONE_DESC, " .
+               "PATRON_GROUP.PATRON_GROUP_NAME " .
                "FROM $this->dbName.PATRON, $this->dbName.PATRON_ADDRESS, " .
-               "$this->dbName.PATRON_PHONE, $this->dbName.PATRON_BARCODE, " .
-               "$this->dbName.PATRON_GROUP " .
+               "$this->dbName.PATRON_PHONE, $this->dbName.PHONE_TYPE, " .
+               "$this->dbName.PATRON_BARCODE, $this->dbName.PATRON_GROUP " .
                "WHERE PATRON.PATRON_ID = PATRON_ADDRESS.PATRON_ID (+) " .
                "AND PATRON_ADDRESS.ADDRESS_ID = PATRON_PHONE.ADDRESS_ID (+) " .
                "AND PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID (+) " .
                "AND PATRON_BARCODE.PATRON_GROUP_ID = " .
                "PATRON_GROUP.PATRON_GROUP_ID (+) " .
+               "AND PATRON_PHONE.PHONE_TYPE = PHONE_TYPE.PHONE_TYPE (+) " .
                "AND PATRON.PATRON_ID = :id";
+        $primaryPhoneType = isset($this->config['Profile']['primary_phone'])
+            ? $this->config['Profile']['primary_phone']
+            : 'Primary';
+        $mobilePhoneType = isset($this->config['Profile']['mobile_phone'])
+            ? $this->config['Profile']['mobile_phone']
+            : 'Mobile';
         try {
             $sqlStmt = $this->executeSQL($sql, [':id' => $patron['id']]);
             $patron = [];
@@ -1979,7 +2006,11 @@ EOT;
                     $patron['lastname'] = utf8_encode($row['LAST_NAME']);
                 }
                 if (!empty($row['PHONE_NUMBER'])) {
-                    $patron['phone'] = utf8_encode($row['PHONE_NUMBER']);
+                    if ($primaryPhoneType === $row['PHONE_DESC']) {
+                        $patron['phone'] = utf8_encode($row['PHONE_NUMBER']);
+                    } elseif ($mobilePhoneType === $row['PHONE_DESC']) {
+                        $patron['mobile_phone'] = utf8_encode($row['PHONE_NUMBER']);
+                    }
                 }
                 if (!empty($row['PATRON_GROUP_NAME'])) {
                     $patron['group'] = utf8_encode($row['PATRON_GROUP_NAME']);
