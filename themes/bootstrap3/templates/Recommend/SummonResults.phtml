@@ -1,8 +1,8 @@
 <? $searchObject = $this->recommend->getResults(); $results = $searchObject->getResults(); if (!empty($results)): ?>
   <h4><?=$this->transEsc('Summon Results')?></h4>
-  <div class="list-group">
+  <div class="facet-group">
     <? foreach ($results as $driver): ?>
-      <div class="list-group-item">
+      <div class="facet">
         <span>
           <? $formats = $driver->getFormats(); $format = isset($formats[0]) ? $formats[0] : ''; ?>
           <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?>">
@@ -17,6 +17,6 @@
         </span>
       </div>
     <? endforeach; ?>
-    <a class="list-group-item" href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More Summon results')?>...</a>
+    <a class="facet" href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More Summon results')?>...</a>
   </div>
 <? endif ?>

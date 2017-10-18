@@ -6,9 +6,9 @@
     </a>
     </div>
     <div>
-      <ul class="list-group">
+      <ul class="facet-group">
         <? $i = 0; foreach ($data['worksArray'] as $workKey => $work): ?>
-          <li class="list-group-item suggestedResult <? (++$i % 2) ? 'alt ' : ''?>record<?=$i?>">
+          <li class="facet suggestedResult <? (++$i % 2) ? 'alt ' : ''?>record<?=$i?>">
             <div class="resultitem clearfix">
               <? if (isset($work['enclosure'])): ?>
                 <span class="europeanaImg"><img src="<?=$this->escapeHtmlAttr($work['enclosure'])?>" id="europeanaImage<?=$this->escapeHtmlAttr($workKey)?>"/></span>

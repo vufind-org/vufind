@@ -83,8 +83,8 @@
     <? endif ?>
     <? if (!empty($searchFilters)): ?>
       <h4><?=$this->transEsc("adv_search_filters")?></h4>
-      <ul class="list-group">
-        <li class="list-group-item">
+      <ul class="facet-group">
+        <li class="facet">
           <div class="checkbox">
             <label>
               <?=$this->transEsc("adv_search_select_all")?>
@@ -95,10 +95,10 @@
       </ul>
       <? foreach ($searchFilters as $field => $data): ?>
         <div>
-          <ul class="list-group">
-            <li class="list-group-item title"><?=$this->transEsc($field)?></li>
+          <ul class="facet-group">
+            <li class="title"><?=$this->transEsc($field)?></li>
             <? foreach ($data as $value): ?>
-              <li class="list-group-item">
+              <li class="facet">
                 <div class="checkbox">
                   <label>
                     <input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?>

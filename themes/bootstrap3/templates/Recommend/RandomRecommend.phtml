@@ -1,11 +1,11 @@
 <? $recommend = $this->recommend->getResults(); if (count($recommend)> 0): ?>
-  <ul class="list-group random <?=$this->recommend->getDisplayMode()?>">
-    <li class="list-group-item title" data-toggle="collapse" href="#side-collapse-randomrecommend">
+  <ul class="facet-group random <?=$this->recommend->getDisplayMode()?>">
+    <li class="title" data-toggle="collapse" href="#side-collapse-randomrecommend">
       <?=$this->transEsc("random_recommendation_title")?>
     </li>
     <div id="side-collapse-randomrecommend" class="collapse<? if(!in_array('RandomRecommend', $collapsedFacets)): ?> in<? endif ?>">
     <? foreach ($recommend as $driver): ?>
-      <li class="list-group-item">
+      <li class="facet">
         <?if($this->recommend->getDisplayMode() === "images" || $this->recommend->getDisplayMode() === "mixed"):?>
 
           <? /* Display thumbnail if appropriate: */ ?>

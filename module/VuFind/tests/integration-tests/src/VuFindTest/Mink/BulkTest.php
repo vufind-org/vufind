@@ -140,7 +140,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
 
         // Now do it for real -- we should get a login prompt.
-        $page->find('css', '#addFormCheckboxSelectAll')->check();
+        $page->find('css', '[for="addFormCheckboxSelectAll"]')->click();
         $button->click();
         $this->snooze();
         $this->checkForLoginMessage($page);
@@ -184,7 +184,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
 
         // Now do it for real -- we should get a login prompt.
-        $page->find('css', '#addFormCheckboxSelectAll')->check();
+        $page->find('css', '[for="addFormCheckboxSelectAll"]')->click();
         $button->click();
         $this->snooze();
         $this->checkForLoginMessage($page);
@@ -230,7 +230,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
 
         // Now do it for real -- we should get a lightbox prompt.
-        $page->find('css', '#addFormCheckboxSelectAll')->check();
+        $page->find('css', '[for="addFormCheckboxSelectAll"]')->click();
         $button->click();
         $this->snooze();
 
@@ -264,7 +264,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
 
         // Now do it for real -- we should get redirected.
-        $page->find('css', '#addFormCheckboxSelectAll')->check();
+        $page->find('css', '[for="addFormCheckboxSelectAll"]')->click();
         $button->click();
         $this->snooze();
         list(, $params) = explode('?', $session->getCurrentUrl());

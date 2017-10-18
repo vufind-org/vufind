@@ -1,5 +1,5 @@
 /*global htmlEncode, VuFind */
-/*exported initFacetTree */
+/*exported collapseTopFacets, initFacetTree */
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 {
   var json = [];
@@ -7,14 +7,13 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
   $(data).each(function facetNodesEach() {
     var html = '';
     if (!this.isApplied && counts) {
-      html = '<span class="badge" style="float: right">' + this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'));
       if (allowExclude) {
         var excludeURL = currentPath + this.exclude;
         excludeURL.replace("'", "\\'");
         // Just to be safe
-        html += ' <a href="' + excludeURL + '" onclick="document.location.href=\'' + excludeURL + '\'; return false;" title="' + htmlEncode(excludeTitle) + '"><i class="fa fa-times" title="' + VuFind.translate('Selected') + '"></i></a>';
+        html += ' <a href="' + excludeURL + '" class="exclude" onclick="document.location.href=\'' + excludeURL + '\'; return false;" title="' + htmlEncode(excludeTitle) + '"><i class="fa fa-times" aria-hidden="true"></i></a>';
       }
-      html += '</span>';
+      html += '<span class="badge">' + this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator')) + '</span>';
     }
 
     var url = currentPath + this.href;
@@ -69,7 +68,7 @@ function initFacetTree(treeNode, inSidebar)
   var query = window.location.href.split('?')[1];
 
   if (inSidebar) {
-    treeNode.prepend('<li class="list-group-item"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></li>');
+    treeNode.prepend('<div class="facet"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></div>');
   } else {
     treeNode.prepend('<div><i class="fa fa-spinner fa-spin" aria-hidden="true"></i><div>');
   }
@@ -84,11 +83,6 @@ function initFacetTree(treeNode, inSidebar)
       if (response.status === "OK") {
         var results = buildFacetNodes(response.data, currentPath, allowExclude, excludeTitle, inSidebar);
         treeNode.find('.fa-spinner').parent().remove();
-        if (inSidebar) {
-          treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
-            treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
-          });
-        }
         treeNode.jstree({
           'core': {
             'data': results
@@ -97,6 +91,20 @@ function initFacetTree(treeNode, inSidebar)
       }
     }
   );
+}
+
+function collapseTopFacets() {
+  $('.top-facets').each(function setupToCollapses() {
+    $(this).find('.collapse').removeClass('in');
+    $(this).on('show.bs.collapse', function toggleTopFacet() {
+      $(this).find('.top-title .fa').removeClass('fa-caret-right');
+      $(this).find('.top-title .fa').addClass('fa-caret-down');
+    });
+    $(this).on('hide.bs.collapse', function toggleTopFacet() {
+      $(this).find('.top-title .fa').removeClass('fa-caret-down');
+      $(this).find('.top-title .fa').addClass('fa-caret-right');
+    });
+  });
 }
 
 /* --- Lightbox Facets --- */
