@@ -52,9 +52,15 @@ class Factory
      */
     public static function getGenericController($name, ServiceManager $sm)
     {
-        // Prepend the current namespace unless we receive a FQCN:
-        $class = (strpos($name, '\\') === false)
-            ? __NAMESPACE__ . '\\' . $name : $name;
+        // Prepend the current (inherited) namespace unless we receive a FQCN:
+        if (strpos($name, '\\') === false) {
+            $reflection = new \ReflectionClass(static::class);
+            $namespace = $reflection->getNamespaceName();
+            $class = $namespace . '\\' . $name;
+        } else {
+            $class = $name;
+        }
+
         if (!class_exists($class)) {
             throw new \Exception('Cannot construct ' . $class);
         }
