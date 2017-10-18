@@ -1966,6 +1966,12 @@ EOT;
                "PATRON_GROUP.PATRON_GROUP_ID (+) " .
                "AND PATRON_PHONE.PHONE_TYPE = PHONE_TYPE.PHONE_TYPE (+) " .
                "AND PATRON.PATRON_ID = :id";
+        $primaryPhoneType = isset($this->config['Profile']['primary_phone'])
+            ? $this->config['Profile']['primary_phone']
+            : 'Primary';
+        $mobilePhoneType = isset($this->config['Profile']['mobile_phone'])
+            ? $this->config['Profile']['mobile_phone']
+            : 'Mobile';
         try {
             $sqlStmt = $this->executeSQL($sql, [':id' => $patron['id']]);
             $patron = [];
@@ -1977,9 +1983,9 @@ EOT;
                     $patron['lastname'] = utf8_encode($row['LAST_NAME']);
                 }
                 if (!empty($row['PHONE_NUMBER'])) {
-                    if ('Primary' === $row['PHONE_DESC']) {
+                    if ($primaryPhoneType === $row['PHONE_DESC']) {
                         $patron['phone'] = utf8_encode($row['PHONE_NUMBER']);
-                    } elseif ('Mobile' === $row['PHONE_DESC']) {
+                    } elseif ($mobilePhoneType === $row['PHONE_DESC']) {
                         $patron['mobile_phone'] = utf8_encode($row['PHONE_NUMBER']);
                     }
                 }
