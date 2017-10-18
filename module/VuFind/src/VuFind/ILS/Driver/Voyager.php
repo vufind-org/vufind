@@ -1424,6 +1424,7 @@ EOT;
         $transaction = [
             'id' => $sqlRow['BIB_ID'],
             'item_id' => $sqlRow['ITEM_ID'],
+            'barcode' => utf8_encode($sqlRow['ITEM_BARCODE']),
             'duedate' => $dueDate,
             'dueTime' => $dueTime,
             'dueStatus' => $dueStatus,
@@ -1439,9 +1440,6 @@ EOT;
         if (!empty($this->config['Loans']['display_borrowing_location'])) {
             $transaction['borrowingLocation']
                 = utf8_encode($sqlRow['BORROWING_LOCATION']);
-        }
-        if (!empty($this->config['Loans']['display_item_barcode'])) {
-            $transaction['item_barcode'] = utf8_encode($sqlRow['ITEM_BARCODE']);
         }
 
         return $transaction;

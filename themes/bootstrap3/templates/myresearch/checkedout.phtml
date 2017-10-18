@@ -124,8 +124,8 @@
               <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
               <br />
             <? endif; ?>
-            <? if (!empty($ilsDetails['item_barcode'])): ?>
-              <strong><?=$this->transEsc('Barcode')?>:</strong> <?=$this->escapeHtml($ilsDetails['item_barcode'])?>
+            <? if ($this->displayItemBarcode && !empty($ilsDetails['barcode'])): ?>
+              <strong><?=$this->transEsc('Barcode')?>:</strong> <?=$this->escapeHtml($ilsDetails['barcode'])?>
               <br />
             <? endif; ?>
 
