@@ -91,6 +91,13 @@ class Voyager extends AbstractBase
     protected $useHoldingsSortGroups;
 
     /**
+     * Loan interval types for which to display the due time (empty = all)
+     *
+     * @var array
+     */
+    protected $displayDueTimeIntervals;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -141,6 +148,12 @@ class Voyager extends AbstractBase
         $this->useHoldingsSortGroups
             = isset($this->config['Holdings']['use_sort_groups'])
             ? $this->config['Holdings']['use_sort_groups'] : true;
+
+        $this->displayDueTimeIntervals
+            = isset($this->config['Loans']['display_due_time_only_for_intervals'])
+            ? explode(
+                ':', $this->config['Loans']['display_due_time_only_for_intervals']
+            ) : [];
     }
 
     /**
@@ -1432,8 +1445,8 @@ EOT;
                 $this->pickTransactionStatus(explode(chr(9), $sqlRow['STATUS'])),
         ];
         // Display due time only if loan interval is not in days if configured
-        if (empty($this->config['Loans']['display_due_time_only_for_short_loans'])
-            || $sqlRow['LOAN_INTERVAL'] !== 'D'
+        if (empty($this->displayDueTimeIntervals)
+            || in_array($sqlRow['LOAN_INTERVAL'], $this->displayDueTimeIntervals)
         ) {
             $transaction['dueTime'] = $dueTime;
         }
