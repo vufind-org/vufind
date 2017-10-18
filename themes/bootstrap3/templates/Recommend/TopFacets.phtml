@@ -9,7 +9,7 @@
     <? $moreClass = ' NarrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <div class="top-facets">
-      <strong><?=$this->transEsc('top_facet_label', ['%%label%%' => $cluster['label']]) ?></strong><br />
+      <strong><?=$this->transEsc('top_facet_label', ['%%label%%' => $this->translate($cluster['label'])]) ?></strong><br />
       <? $limit = $topFacetSettings['rows'] * $topFacetSettings['cols']; ?>
       <? foreach($cluster['list'] as $index => $thisFacet): ?>
         <span class="facet <?=$index > $limit ? $moreClass : '' ?>">

@@ -719,7 +719,7 @@ class Params
         $value = count($temp) > 0 ? $temp[0] : '';
 
         // Remove quotes from the value if there are any
-        if (substr($value, 0, 1)  == '"') {
+        if (substr($value, 0, 1) == '"') {
             $value = substr($value, 1);
         }
         if (substr($value, -1, 1) == '"') {
