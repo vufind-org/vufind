@@ -146,11 +146,11 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      * @return void
      */
     protected function addCurrentPageToCart(Element $page, Element $updateCart,
-        $selectAllId = '#addFormCheckboxSelectAll'
+        $selectAllId = '[for="addFormCheckboxSelectAll"]'
     )
     {
         $selectAll = $page->find('css', $selectAllId);
-        $selectAll->check();
+        $selectAll->click();
         $updateCart->click();
     }
 
@@ -493,7 +493,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->addCurrentPageToCart(
             $page,
             $this->findCss($page, '#bottom_updateCart'),
-            '#bottom_addFormCheckboxSelectAll'
+            '[for="bottom_addFormCheckboxSelectAll"]'
         );
         $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
     }
