@@ -1,34 +1,33 @@
-/*global VuFind*/
-finna.onlinePayment = (function() {
+/*global VuFind, finna */
+finna.onlinePayment = (function finnaOnlinePayment() {
 
-    var registerPayment = function(params) {
-        var url = VuFind.path + '/AJAX/registerOnlinePayment';
-        $.ajax({
-            type: 'POST',
-            url:  url,
-            data: jQuery.parseJSON(params),
-            dataType: 'json'
-        }).done(function(response) {
-            location.href = response.data;
-        })
-        .fail(function(response, textStatus) {
-            var redirect = '';
-            if (typeof response.responseJSON == 'undefined') {
-                redirect = window.location.href.split('?')[0];
-            } else {
-                redirect = response.responseJSON.data;
-            }
-            location.href = redirect;
-        });
-    
-        return false;
-    };
+  function registerPayment(params) {
+    var url = VuFind.path + '/AJAX/registerOnlinePayment';
+    $.ajax({
+      type: 'POST',
+      url: url,
+      data: jQuery.parseJSON(params),
+      dataType: 'json'
+    })
+      .done(function onRegisterPaymentDone(response) {
+        location.href = response.data;
+      })
+      .fail(function onRegisterPaymentFail(response/*, textStatus*/) {
+        var redirect = '';
+        if (typeof response.responseJSON === 'undefined') {
+          redirect = window.location.href.split('?')[0];
+        } else {
+          redirect = response.responseJSON.data;
+        }
+        location.href = redirect;
+      });
 
-    var my = {
-        registerPayment: registerPayment,
-        init: function() {
-        },
-    };
+    return false;
+  }
 
-    return my;
-})(finna);
+  var my = {
+    registerPayment: registerPayment
+  };
+
+  return my;
+})();

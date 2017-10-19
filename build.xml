@@ -119,6 +119,17 @@
     <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js --format checkstyle -o ${builddir}/reports/eslint.xml" escape="false" />
   </target>
 
+  <!-- Finna ESLint -->
+  <target name="eslint-finna">
+    <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna/js/*.js" escape="false" checkreturn="true" passthru="true" />
+  </target>
+  <target name="eslint-finna-fix">
+    <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna/js/*.js --fix" escape="false" passthru="true" />
+  </target>
+  <target name="eslint-finna-report">
+    <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna/js/*.js --format checkstyle -o ${builddir}/reports/eslint-finna.xml" escape="false" />
+  </target>
+
   <!-- PHP API Documentation -->
   <target name="phpdoc">
     <mkdir dir="${builddir}/apidocs"/>
