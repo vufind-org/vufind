@@ -57,4 +57,4 @@
   <? endforeach; ?>
 <? endif; ?>
 
-<script>collapseTopFacets()</script>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, 'collapseTopFacets()', 'SET')?>
