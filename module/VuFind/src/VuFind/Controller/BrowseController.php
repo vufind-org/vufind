@@ -171,7 +171,7 @@ class BrowseController extends AbstractBase
             'Author', 'Topic', 'Genre', 'Region', 'Era'
         ];
         foreach ($remainingOptions as $current) {
-            $option = strToLower($current);
+            $option = strtolower($current);
             if (!isset($this->config->Browse->$option)
                 || $this->config->Browse->$option == true
             ) {
@@ -660,7 +660,7 @@ class BrowseController extends AbstractBase
         if ($action == null) {
             $action = $this->getCurrentAction();
         }
-        switch (strToLower($action)) {
+        switch (strtolower($action)) {
         case 'alphabetical':
             return $this->getCategory();
         case 'dewey':
