@@ -43,13 +43,13 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      *
      * @var array
      */
-    protected $sourceList = array(
-        'TOC' => array(
+    protected $sourceList = [
+        'TOC' => [
             'title' => 'TOC',
             'file' => 'TOC.XML',
             'div' => '<div id="syn_toc"></div>'
-        )
-    );
+        ]
+    ];
 
     /**
      * This method is responsible for connecting to Syndetics for tables
@@ -72,7 +72,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
     public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
         // Initialize return value:
-        $toc = array();
+        $toc = [];
 
         // Find out if there are any tables of contents
         $isbn = $this->getIsbn10($isbnObj);

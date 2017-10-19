@@ -43,18 +43,18 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      *
      * @var array
      */
-    protected $sourceList = array(
-        'AVSUMMARY' => array(
+    protected $sourceList = [
+        'AVSUMMARY' => [
             'title' => 'Summaries',
             'file' => 'AVSUMMARY.XML',
             'div' => '<div id="syn_summaries"></div>'
-        ),
-        'SUMMARY' => array(
+        ],
+        'SUMMARY' => [
             'title' => 'Summaries',
             'file' => 'SUMMARY.XML',
             'div' => '<div id="syn_summaries"></div>'
-        ),
-    );
+        ],
+    ];
 
     /**
      * This method is responsible for connecting to Syndetics for summaries.
@@ -74,7 +74,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
     public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
         // Initialize return value:
-        $summaries = array();
+        $summaries = [];
 
         // Find out if there are any summaries
         $isbn = $this->getIsbn10($isbnObj);

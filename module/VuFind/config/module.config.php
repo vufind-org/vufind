@@ -374,16 +374,16 @@ $config = [
                     'syndeticsplus' => 'VuFind\Content\Excerpts\Factory::getSyndeticsPlus',
                 ],
             ],
-            'content_summaries' => array(
-                'factories' => array(
+            'content_summaries' => [
+                'factories' => [
                     'syndetics' => 'VuFind\Content\Summaries\Factory::getSyndetics',
-                ),
-            ),
-            'content_toc' => array(
-                'factories' => array(
+                ],
+            ],
+            'content_toc' => [
+                'factories' => [
                     'syndetics' => 'VuFind\Content\TOC\Factory::getSyndetics',
-                ),
-            ),
+                ],
+            ],
             'content_covers' => [
                 'factories' => [
                     'amazon' => 'VuFind\Content\Covers\Factory::getAmazon',
