@@ -56,7 +56,7 @@ class ConfigurationBased extends AbstractBase
     {
         $treeConfigDriver = isset($this->config->HierarchyTree->show)
             ? $this->config->HierarchyTree->show : false;
-        return ($this->enabled && $treeConfigDriver);
+        return $this->enabled && $treeConfigDriver;
     }
 
     /**

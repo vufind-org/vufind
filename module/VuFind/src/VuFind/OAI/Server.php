@@ -403,7 +403,7 @@ class Server
      */
     protected function hasParam($param)
     {
-        return (isset($this->params[$param]) && !empty($this->params[$param]));
+        return isset($this->params[$param]) && !empty($this->params[$param]);
     }
 
     /**

@@ -303,7 +303,7 @@ class Results extends \VuFind\Search\Base\Results
     public function getPartialFieldFacets($facetfields, $removeFilter = true,
         $limit = -1, $facetSort = null, $page = null, $ored = false
     ) {
-        $clone = clone($this);
+        $clone = clone $this;
         $params = $clone->getParams();
 
         // Manipulate facet settings temporarily:

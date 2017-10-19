@@ -2037,7 +2037,7 @@ EOT;
                     }
                 }
             }
-            return (empty($patron) ? null : $patron);
+            return empty($patron) ? null : $patron;
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }

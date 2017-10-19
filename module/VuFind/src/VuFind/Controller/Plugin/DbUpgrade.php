@@ -639,7 +639,7 @@ class DbUpgrade extends AbstractPlugin
             $expectedDefault = (strtoupper($expectedDefault) == 'NULL')
                 ? null : $expectedDefault;
         }
-        return ($expectedDefault === $currentDefault);
+        return $expectedDefault === $currentDefault;
     }
 
     /**

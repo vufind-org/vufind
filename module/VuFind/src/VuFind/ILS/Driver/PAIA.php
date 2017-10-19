@@ -370,7 +370,7 @@ class PAIA extends DAIA
      */
     public function getCancelHoldDetails($checkOutDetails)
     {
-        return($checkOutDetails['cancel_details']);
+        return $checkOutDetails['cancel_details'];
     }
 
     /**
@@ -585,7 +585,7 @@ class PAIA extends DAIA
             $paiaCurrencyPattern = "/^([0-9]+\.[0-9][0-9]) ([A-Z][A-Z][A-Z])$/";
             if (preg_match($paiaCurrencyPattern, $fee, $feeMatches)) {
                 // VuFind expects fees in PENNIES
-                return ($feeMatches[1] * 100);
+                return $feeMatches[1] * 100;
             }
             return $fee;
         };
@@ -804,7 +804,7 @@ class PAIA extends DAIA
      */
     public function getRenewDetails($checkOutDetails)
     {
-        return($checkOutDetails['renew_details']);
+        return $checkOutDetails['renew_details'];
     }
 
     /**
@@ -1500,7 +1500,7 @@ class PAIA extends DAIA
             );
         }
         // return any result as error-handling is done elsewhere
-        return ($result->getBody());
+        return $result->getBody();
     }
 
     /**
@@ -1536,7 +1536,7 @@ class PAIA extends DAIA
             );
         }
         // return any result as error-handling is done elsewhere
-        return ($result->getBody());
+        return $result->getBody();
     }
 
     /**

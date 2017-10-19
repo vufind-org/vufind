@@ -270,7 +270,7 @@ class SolrMarc extends SolrDefault
      */
     public function getFilteredXML()
     {
-        $record = clone($this->getMarcRecord());
+        $record = clone $this->getMarcRecord();
         // The default implementation does not filter out any fields
         // $record->deleteFields('9', true);
         return $record->toXML();

@@ -108,7 +108,7 @@ class Gateway extends AbstractTableGateway
      */
     public function createRow()
     {
-        $obj = clone($this->getResultSetPrototype()->getArrayObjectPrototype());
+        $obj = clone $this->getResultSetPrototype()->getArrayObjectPrototype();
 
         // If this is a PostgreSQL connection, we may need to initialize the ID
         // from a sequence:

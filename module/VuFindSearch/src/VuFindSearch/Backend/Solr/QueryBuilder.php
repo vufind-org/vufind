@@ -133,7 +133,7 @@ class QueryBuilder implements QueryBuilderInterface
             $finalQuery = $this->reduceQueryGroup($query);
         } else {
             // Clone the query to avoid modifying the original user-visible query
-            $finalQuery = clone($query);
+            $finalQuery = clone $query;
             $finalQuery->setString($this->getNormalizedQueryString($query));
         }
         $string = $finalQuery->getString() ?: '*:*';

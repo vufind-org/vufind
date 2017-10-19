@@ -1601,7 +1601,7 @@ class SolrDefault extends AbstractBase
         // Check config setting for what constitutes a collection
         switch ($hierarchyDriver->getCollectionLinkType()) {
         case 'All':
-            return (isset($this->fields['is_hierarchy_id']));
+            return isset($this->fields['is_hierarchy_id']);
         case 'Top':
             return isset($this->fields['is_hierarchy_title'])
                 && isset($this->fields['is_hierarchy_id'])

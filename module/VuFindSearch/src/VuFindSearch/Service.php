@@ -356,7 +356,7 @@ class Service
         if (!isset($this->backends[$backend])) {
             $response = $this->getEventManager()->triggerUntil(
                 function ($o) {
-                    return ($o instanceof BackendInterface);
+                    return $o instanceof BackendInterface;
                 },
                 self::EVENT_RESOLVE,
                 $this,

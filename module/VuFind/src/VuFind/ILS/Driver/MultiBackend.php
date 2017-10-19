@@ -1423,7 +1423,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
             $this->error("No configuration found for source '$source'");
             return null;
         }
-        $driverInst = clone($this->driverManager->get($driver));
+        $driverInst = clone $this->driverManager->get($driver);
         $driverInst->setConfig($config);
         $driverInst->init();
         return $driverInst;

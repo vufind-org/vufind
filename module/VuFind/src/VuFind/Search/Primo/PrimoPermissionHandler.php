@@ -98,7 +98,7 @@ class PrimoPermissionHandler
      */
     public function instCodeExists($code)
     {
-        return (in_array($code, $this->getInstCodes()) === true);
+        return in_array($code, $this->getInstCodes()) === true;
     }
 
     /**
@@ -123,7 +123,7 @@ class PrimoPermissionHandler
     public function hasPermission()
     {
         $code = $this->getInstCode();
-        return (false !== $code && $this->checkPermission($code) === true);
+        return false !== $code && $this->checkPermission($code) === true;
     }
 
     /**
@@ -308,6 +308,6 @@ class PrimoPermissionHandler
         $authService = $this->getAuthorizationService();
 
         // if no authorization service is available, the user can't get permission
-        return ($authService && $authService->isGranted($onCampusRule));
+        return $authService && $authService->isGranted($onCampusRule);
     }
 }
