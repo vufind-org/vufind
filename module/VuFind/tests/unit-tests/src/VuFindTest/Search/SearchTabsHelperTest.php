@@ -241,7 +241,7 @@ class SearchTabsHelperTest extends TestCase
             ->method('get')
             ->will(
                 $this->returnCallback(
-                    function($backend) use ($mockSolr, $mockPrimo) {
+                    function ($backend) use ($mockSolr, $mockPrimo) {
                         switch ($backend) {
                             case 'Solr': return $mockSolr;
                             case 'Primo': return $mockPrimo;
