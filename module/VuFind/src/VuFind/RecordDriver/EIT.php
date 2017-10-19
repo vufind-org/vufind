@@ -150,7 +150,7 @@ class EIT extends SolrDefault
             $this->controlInfo['jinfo']['issn'] : false;
     }
 
-        /**
+    /**
      * Get the date coverage for a record which spans a period of time (i.e. a
      * journal).  Use getPublicationDates for publication dates of particular
      * monographic items.
@@ -246,7 +246,7 @@ class EIT extends SolrDefault
             ? $this->controlInfo['artinfo']['tig']['atl'] : '';
     }
 
-        /**
+    /**
      * Get an array of summary strings for the record.
      *
      * @return array
@@ -269,7 +269,7 @@ class EIT extends SolrDefault
         return [];
     }
 
-        /**
+    /**
      * Get the full title of the record.
      *
      * @return string
@@ -280,7 +280,7 @@ class EIT extends SolrDefault
             ? $this->controlInfo['artinfo']['tig']['atl'] : '';
     }
 
-        /**
+    /**
      * Return an array of associative URL arrays with one or more of the following
      * keys:
      *
@@ -327,7 +327,7 @@ class EIT extends SolrDefault
         return $this->fields['fields']['header']['@attributes']['uiTerm'];
     }
 
-        /**
+    /**
      * Get the title of the item that contains this record (i.e. MARC 773s of a
      * journal).
      *
@@ -403,7 +403,7 @@ class EIT extends SolrDefault
         }
     }
 
-        /**
+    /**
      * Get a sortable title for the record (i.e. no leading articles).
      *
      * @return string

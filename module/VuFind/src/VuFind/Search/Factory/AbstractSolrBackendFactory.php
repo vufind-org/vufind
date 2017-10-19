@@ -417,13 +417,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     }
 
     /**
-    * Get a hide facet value listener for the backend
-    *
-    * @param BackendInterface $backend Search backend
-    * @param Config           $facet   Configuration of facets
-    *
-    * @return mixed null|HideFacetValueListener
-    */
+     * Get a hide facet value listener for the backend
+     *
+     * @param BackendInterface $backend Search backend
+     * @param Config           $facet   Configuration of facets
+     *
+     * @return mixed null|HideFacetValueListener
+     */
     protected function getHideFacetValueListener(
         BackendInterface $backend,
         Config $facet

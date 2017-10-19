@@ -184,15 +184,15 @@ class Backend extends AbstractBackend
     }
 
      /**
-     * Perform a search and return record collection.
-     *
-     * @param AbstractQuery $query  Search query
-     * @param int           $offset Search offset
-     * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
-     *
-     *@return \VuFindSearch\Response\RecordCollectionInterface
-     **/
+      * Perform a search and return record collection.
+      *
+      * @param AbstractQuery $query  Search query
+      * @param int           $offset Search offset
+      * @param int           $limit  Search limit
+      * @param ParamBag      $params Search backend parameters
+      *
+      * @return \VuFindSearch\Response\RecordCollectionInterface
+      **/
     public function search(AbstractQuery $query, $offset, $limit,
         ParamBag $params = null
     ) {

@@ -515,23 +515,23 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-    * Returns the defaultFacetDelimiter value.
-    *
-    * @return string
-    */
+     * Returns the defaultFacetDelimiter value.
+     *
+     * @return string
+     */
     public function getDefaultFacetDelimiter()
     {
         return $this->defaultFacetDelimiter;
     }
 
     /**
-    * Set the defaultFacetDelimiter value.
-    *
-    * @param string $defaultFacetDelimiter A default delimiter to be used with
-    * delimited facets
-    *
-    * @return void
-    */
+     * Set the defaultFacetDelimiter value.
+     *
+     * @param string $defaultFacetDelimiter A default delimiter to be used with
+     * delimited facets
+     *
+     * @return void
+     */
     public function setDefaultFacetDelimiter($defaultFacetDelimiter)
     {
         $this->defaultFacetDelimiter = $defaultFacetDelimiter;
@@ -567,12 +567,12 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-    * Set the delimitedFacets value.
-    *
-    * @param array $delimitedFacets An array of delimited facet names
-    *
-    * @return void
-    */
+     * Set the delimitedFacets value.
+     *
+     * @param array $delimitedFacets An array of delimited facet names
+     *
+     * @return void
+     */
     public function setDelimitedFacets($delimitedFacets)
     {
         $this->delimitedFacets = $delimitedFacets;
