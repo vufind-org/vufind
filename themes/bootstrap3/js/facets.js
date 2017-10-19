@@ -1,5 +1,5 @@
 /*global htmlEncode, VuFind */
-/*exported initFacetTree */
+/*exported collapseTopFacets, initFacetTree */
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 {
   var json = [];
@@ -107,6 +107,20 @@ function initFacetTree(treeNode, inSidebar)
       }
     }
   );
+}
+
+function collapseTopFacets() {
+  $('.top-facets').each(function setupToCollapses() {
+    $(this).find('.collapse').removeClass('in');
+    $(this).on('show.bs.collapse', function toggleTopFacet() {
+      $(this).find('.top-title .fa').removeClass('fa-caret-right');
+      $(this).find('.top-title .fa').addClass('fa-caret-down');
+    });
+    $(this).on('hide.bs.collapse', function toggleTopFacet() {
+      $(this).find('.top-title .fa').removeClass('fa-caret-down');
+      $(this).find('.top-title .fa').addClass('fa-caret-right');
+    });
+  });
 }
 
 /* --- Lightbox Facets --- */
