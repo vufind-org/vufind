@@ -77,7 +77,7 @@ class Options extends \VuFind\Search\Base\Options
      * Available limiter options
      *
      * @var unknown
-    */
+     */
     protected $limiterOptions = [];
 
     /**

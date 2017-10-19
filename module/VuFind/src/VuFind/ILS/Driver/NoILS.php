@@ -309,7 +309,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
         return [];
     }
 
-        /**
+    /**
      * Get New Items
      *
      * Retrieve the IDs of items recently added to the catalog.
