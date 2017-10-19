@@ -11,6 +11,7 @@ $rules = [
     ],
     'blank_line_after_namespace' => true,
     'concat_space' => ['spacing' => 'one'],
+    'elseif' => true,
     'encoding' => true,
     'lowercase_keywords' => true,
     'no_blank_lines_after_class_opening' => true,
