@@ -11,6 +11,7 @@ $rules = [
     ],
     'blank_line_after_namespace' => true,
     'braces' => true,
+    'cast_spaces' => ['space' => 'none'],
     'concat_space' => ['spacing' => 'one'],
     'elseif' => true,
     'encoding' => true,
