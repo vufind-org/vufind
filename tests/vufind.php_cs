@@ -54,6 +54,7 @@ $rules = [
     'ordered_imports' => true,
     'phpdoc_no_access' => true,
     'single_blank_line_at_eof' => true,
+    'single_class_element_per_statement' => true,
     'single_import_per_statement' => true,
     'single_line_after_imports' => true,
     'short_scalar_cast' => true,
