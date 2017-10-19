@@ -297,7 +297,7 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
 
             // Clone the submitted writer since we'll need a separate instance of the
             // writer for each selected priority level.
-            $newWriter = clone($writer);
+            $newWriter = clone $writer;
 
             // verbosity
             if ($verbosity) {

@@ -122,7 +122,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         }
 
         // Don't change input when manipulating parameters:
-        $params = (null === $data) ? new ParamBag() : clone($data);
+        $params = (null === $data) ? new ParamBag() : clone $data;
 
         // Add session and command:
         if ($this->session) {

@@ -52,7 +52,7 @@ class SIP2Test extends \VuFindTest\Unit\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = clone($this->getAuthManager()->get('SIP2'));
+        $obj = clone $this->getAuthManager()->get('SIP2');
         $obj->setConfig($config);
         return $obj;
     }

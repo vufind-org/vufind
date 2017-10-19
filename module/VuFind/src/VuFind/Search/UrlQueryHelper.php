@@ -244,7 +244,7 @@ class UrlQueryHelper
      */
     public function replaceTerm($from, $to)
     {
-        $query = clone($this->queryObject);
+        $query = clone $this->queryObject;
         $query->replaceTerm($from, $to);
         return new static($this->urlParams, $query, $this->config);
     }
@@ -453,7 +453,7 @@ class UrlQueryHelper
      */
     public function setHandler($handler)
     {
-        $query = clone($this->queryObject);
+        $query = clone $this->queryObject;
         // We can only set the handler on basic queries:
         if ($query instanceof Query) {
             $query->setHandler($handler);
@@ -552,7 +552,7 @@ class UrlQueryHelper
      */
     protected function filtered($field, $value, $filter)
     {
-        return (isset($filter[$field]) && preg_match($filter[$field], $value));
+        return isset($filter[$field]) && preg_match($filter[$field], $value);
     }
 
     /**

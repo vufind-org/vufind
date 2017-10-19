@@ -254,7 +254,7 @@ class Facets extends AbstractChannelProvider
             return $retVal;
         }
 
-        $newResults = clone($results);
+        $newResults = clone $results;
         $params = $newResults->getParams();
 
         // Determine the filter for the current channel, and add it:

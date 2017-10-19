@@ -508,7 +508,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
     protected function isPunctuated($string)
     {
         $punctuation = ['.', '?', '!'];
-        return (in_array(substr($string, -1), $punctuation));
+        return in_array(substr($string, -1), $punctuation);
     }
 
     /**
@@ -638,7 +638,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
                 $i++;
             }
         }
-        return (empty($authorStr) ? false : $authorStr);
+        return empty($authorStr) ? false : $authorStr;
     }
 
     /**
@@ -720,7 +720,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
                 }
             }
         }
-        return (empty($authorStr) ? false : $this->stripPunctuation($authorStr));
+        return empty($authorStr) ? false : $this->stripPunctuation($authorStr);
     }
 
     /**

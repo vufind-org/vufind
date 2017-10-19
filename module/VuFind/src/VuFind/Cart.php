@@ -216,7 +216,7 @@ class Cart
      */
     public function isFull()
     {
-        return (count($this->items) >= $this->maxSize);
+        return count($this->items) >= $this->maxSize;
     }
 
     /**

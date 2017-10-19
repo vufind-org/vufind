@@ -506,7 +506,7 @@ class DAIA extends AbstractBase implements
             }
         }
 
-        return ($result->getBody());
+        return $result->getBody();
     }
 
     /**
@@ -1007,9 +1007,9 @@ class DAIA extends AbstractBase implements
 
         // Check if we have at least one service unavailable and a href field is set
         // (either as flag or as actual value for the next action).
-        return ($href && count(
+        return $href && count(
             array_diff($services['unavailable'], $services['available'])
-        ));
+        );
     }
 
     /**
@@ -1051,9 +1051,9 @@ class DAIA extends AbstractBase implements
 
         // Check if we have at least one service unavailable and a href field is set
         // (either as flag or as actual value for the next action).
-        return ($href && count(
+        return $href && count(
             array_diff($services['available'], $services['unavailable'])
-        ));
+        );
     }
 
     /**

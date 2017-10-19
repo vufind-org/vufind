@@ -200,6 +200,6 @@ class Spellcheck implements IteratorAggregate, Countable
      */
     public function compareTermLength($a, $b)
     {
-        return (strlen($b) - strlen($a));
+        return strlen($b) - strlen($a);
     }
 }

@@ -228,10 +228,10 @@ class Params
     public function __clone()
     {
         if (is_object($this->options)) {
-            $this->options = clone($this->options);
+            $this->options = clone $this->options;
         }
         if (is_object($this->query)) {
-            $this->query = clone($this->query);
+            $this->query = clone $this->query;
         }
     }
 
@@ -1501,7 +1501,7 @@ class Params
     public function getDisplayQueryWithReplacedTerm($oldTerm, $newTerm)
     {
         // Stash our old data for a minute
-        $oldTerms = clone($this->query);
+        $oldTerms = clone $this->query;
         // Replace the search term
         $this->query->replaceTerm($oldTerm, $newTerm);
         // Get the new query string

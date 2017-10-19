@@ -168,7 +168,7 @@ abstract class Results
     public function __clone()
     {
         if (is_object($this->params)) {
-            $this->params = clone($this->params);
+            $this->params = clone $this->params;
         }
         $this->helpers = [];
     }

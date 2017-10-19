@@ -95,7 +95,7 @@ class QueryGroupTest extends PHPUnit_Framework_TestCase
     public function testClone()
     {
         $q = $this->getSampleQueryGroup();
-        $qClone = clone($q);
+        $qClone = clone $q;
         $q->replaceTerm('query', 'question');
         $qClone->setOperator('AND');
         $this->assertEquals('test question multi word question', $q->getAllTerms());
