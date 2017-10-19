@@ -315,8 +315,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getField($contents, $default = "Unknown")
     {
-        if ((string) $contents != "") {
-            return (string) $contents;
+        if ((string)$contents != "") {
+            return (string)$contents;
         } else {
             return $default;
         }
@@ -915,7 +915,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $holding[] = [
                 'id'           => $id,
-                'availability' => (string) $available,
+                'availability' => (string)$available,
                 'item_id'      => $rowItem['ITEMNO'],
                 'status'       => $status,
                 'location'     => $loc,
@@ -929,7 +929,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     ((null == $rowItem['CALLNO']) || ($rowItem['DOCTYPE'] == "PE"))
                         ? '' : $rowItem['CALLNO'],
                 'duedate'      => ($onTransfer || $waiting)
-                    ? '' : (string) $duedate_formatted,
+                    ? '' : (string)$duedate_formatted,
                 'barcode'      => (null == $rowItem['BARCODE'])
                     ? 'Unknown' : $rowItem['BARCODE'],
                 'number'       => (null == $rowItem['COPYNO'])

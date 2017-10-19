@@ -263,6 +263,6 @@ class Backend extends AbstractBackend
     protected function getSearchProgress()
     {
         $statResponse = $this->connector->stat();
-        return (float) $statResponse->progress;
+        return (float)$statResponse->progress;
     }
 }

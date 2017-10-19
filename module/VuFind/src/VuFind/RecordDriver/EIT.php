@@ -66,7 +66,7 @@ class EIT extends SolrDefault
     public function setRawData($data)
     {
         // Easy way to recursively convert a SimpleXML Object to an array
-        $data = json_decode(json_encode((array) $data), 1);
+        $data = json_decode(json_encode((array)$data), 1);
         if (isset($data['fields'])) {
             $this->fields = $data['fields'];
         } else {

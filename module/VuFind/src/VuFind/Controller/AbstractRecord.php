@@ -732,7 +732,7 @@ class AbstractRecord extends AbstractBase
         $view->backgroundTabs = $this->getBackgroundTabs();
         $view->loadInitialTabWithAjax
             = isset($config->Site->loadInitialTabWithAjax)
-            ? (bool) $config->Site->loadInitialTabWithAjax : false;
+            ? (bool)$config->Site->loadInitialTabWithAjax : false;
 
         // Set up next/previous record links (if appropriate)
         if ($this->resultScrollerActive()) {
