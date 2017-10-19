@@ -152,7 +152,7 @@ class AlephTranslator
     {
         $tab15 = $this->tabSubLibraryTranslate($slc);
         if ($tab15 == null) {
-            print "tab15 is null!<br>";
+            echo "tab15 is null!<br>";
         }
         $findme = $tab15["tab15"] . "|" . $isc . "|" . $ipsc;
         $result = $this->table15[$findme];
