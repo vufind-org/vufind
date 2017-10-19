@@ -74,7 +74,7 @@ trait ConcatTrait
      *
      * @param stdClass $item Element object
      * @param string   $path New path string
-
+     *
      * @return void
      */
     abstract protected function setResourceFilePath($item, $path);

@@ -525,13 +525,6 @@ class ClaviusSQL extends AbstractBase
      *
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
-            firstname
-            lastname
-            address1
-            address2
-            zip
-            phone
-            group - i.e. Student, Staff, Faculty, etc.
      */
     public function getMyProfile($patron)
     {
