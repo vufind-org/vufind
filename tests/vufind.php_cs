@@ -58,6 +58,9 @@ $rules = [
     'single_import_per_statement' => true,
     'single_line_after_imports' => true,
     'short_scalar_cast' => true,
+    'standardize_not_equals' => true,
+    'switch_case_semicolon_to_colon' => true,
+    'switch_case_space' => true,
     'ternary_operator_spaces' => true,
     'visibility_required' => true,
 ];
