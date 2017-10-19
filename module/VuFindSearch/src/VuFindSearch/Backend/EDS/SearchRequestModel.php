@@ -380,7 +380,7 @@ class SearchRequestModel
     {
         return addcslashes($value, ":,");
     }
-    
+
     /**
      * Escape characters that may be present in the action parameter syntax
      *

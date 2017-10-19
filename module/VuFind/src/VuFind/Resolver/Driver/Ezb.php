@@ -221,7 +221,7 @@ class Ezb extends AbstractBase
 
         return implode('&', $downgraded);
     }
-    
+
     /**
      * Extract electronic results from the EZB response and inject them into the
      * $records array.

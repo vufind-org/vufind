@@ -46,8 +46,7 @@ class UserTest extends \VuFindTest\Unit\TestCase
                 ['username','mbeh'],
                 ['email','markus.beh@ub.uni-freiburg.de'],
                 ['college', 'Albert Ludwigs Universität Freiburg']
-        ]
-        ,
+        ],
         'testuser2' =>
         [
                 ['username','mbeh2'],

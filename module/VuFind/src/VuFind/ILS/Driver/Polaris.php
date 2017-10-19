@@ -426,7 +426,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 "holdrequest/{$response->RequestGUID}", 'PUT', '',
                 $reply_jsonrequest
             );
-      
+
             if ($reply_response->StatusValue == 1) {
                 // auto-reply success
                 return [ 'success' => true,  'sysMessage' => $response->Message ];
@@ -876,7 +876,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 . "$items_per_page&page=$page_offset", 'GET',
                 $patron['cat_password']
             );
-    
+
             $checkout_history_array = $response->PatronReadingHistoryGetRows;
             foreach ($checkout_history_array as $checkout_response) {
                 $date = $this->formatJSONTime($checkout_response->CheckOutDate);
@@ -950,7 +950,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                  'UserID' => '1',
                  'ActivationDate' => "$jsondate"
                 ];
-    
+
             $response = $this->makeRequest(
                 "patron/{$patron['cat_username']}/holdrequests/$hold_id/inactive",
                 'PUT', $patron['cat_password'], $jsonrequest
@@ -1016,7 +1016,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                  'UserID' => '1',
                  'ActivationDate' => "$jsondate"
                  ];
-    
+
             $response = $this->makeRequest(
                 "patron/{$patron['cat_username']}/holdrequests/$hold_id/active",
                 'PUT', $patron['cat_password'], $jsonrequest

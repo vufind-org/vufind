@@ -598,7 +598,7 @@ class Koha extends AbstractBase
         $sql = "select borrowernumber as ID, firstname as FNAME, " .
             "surname as LNAME, email as EMAIL from borrowers " .
             "where userid = :username";
-        
+
         $parameters = [':username' => $username];
 
         if ($this->validatePasswords) {

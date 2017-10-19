@@ -934,7 +934,7 @@ class DAIA extends AbstractBase implements
         $return['customData']      = $this->getCustomData($item);
 
         $return['limitation_types'] = $item_limitation_types;
-        
+
         return $return;
     }
 

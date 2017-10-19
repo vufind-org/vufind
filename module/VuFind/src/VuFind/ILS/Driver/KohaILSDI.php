@@ -1114,7 +1114,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     $fineValue = "Unknown Charge";
                     break;
                 }
- 
+
                 $transactionLst[] = [
                            'amount'     => $row['amount'],
                            'checkout'   => "N/A",
