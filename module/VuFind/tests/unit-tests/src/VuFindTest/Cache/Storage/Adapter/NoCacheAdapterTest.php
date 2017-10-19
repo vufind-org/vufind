@@ -52,6 +52,6 @@ class NoCacheAdapterTest extends PHPUnit_Framework_TestCase
     {
         $cache = new NoCacheAdapter();
         $cache->setItem('key', 'value');
-        $this->assertFalse((boolean)$cache->hasItem('key'));
+        $this->assertFalse((bool)$cache->hasItem('key'));
     }
 }
