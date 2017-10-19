@@ -540,6 +540,20 @@ class Factory
     }
 
     /**
+     * Construct the Summary helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Summaries
+     */
+    public static function getSummaries(ServiceManager $sm)
+    {
+        $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
+            ->get('summaries');
+        return new ContentLoader($loader);
+    }
+
+    /**
      * Construct the SyndeticsPlus helper.
      *
      * @param ServiceManager $sm Service manager.

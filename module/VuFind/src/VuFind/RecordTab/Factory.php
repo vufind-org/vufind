@@ -251,6 +251,26 @@ class Factory
     }
 
     /**
+     * Factory for TOC tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return TablesOfContents
+     */
+    public static function getTOC(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        // Only instantiate the loader if the feature is enabled:
+        if (isset($config->Content->toc)) {
+            $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
+                ->get('toc');
+        } else {
+            $loader = null;
+        }
+        return new TOC($loader, static::getHideSetting($config, 'toc'));
+    }
+
+    /**
      * Factory for UserComments tab plugin.
      *
      * @param ServiceManager $sm Service manager.

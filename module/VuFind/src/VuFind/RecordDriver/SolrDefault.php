@@ -739,6 +739,11 @@ class SolrDefault extends AbstractBase
         // Get LCCN from Index
         $raw = isset($this->fields['lccn']) ? $this->fields['lccn'] : '';
 
+        // First call number only.
+        if (is_array($raw)) {
+            $raw = reset($raw);
+        }
+
         // Remove all blanks.
         $raw = preg_replace('{[ \t]+}', '', $raw);
 

@@ -91,4 +91,38 @@ class Factory
             ? $config->Content->reviews : '';
         return new Loader($loader, $providers);
     }
+
+    /**
+     * Create Summaries loader
+     *
+     * @param ServiceManager $sm Service manager
+     *
+     * @return mixed
+     */
+    public static function getSummaries(ServiceManager $sm)
+    {
+        $loader = $sm->getServiceLocator()
+            ->get('VuFind\ContentSummariesPluginManager');
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $providers = isset($config->Content->summaries)
+            ? $config->Content->summaries : '';
+        return new Loader($loader, $providers);
+    }
+
+    /**
+     * Create TOC loader
+     *
+     * @param ServiceManager $sm Service manager
+     *
+     * @return mixed
+     */
+    public static function getTOC(ServiceManager $sm)
+    {
+        $loader = $sm->getServiceLocator()
+            ->get('VuFind\ContentTOCPluginManager');
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $providers = isset($config->Content->toc)
+            ? $config->Content->toc : '';
+        return new Loader($loader, $providers);
+    }
 }

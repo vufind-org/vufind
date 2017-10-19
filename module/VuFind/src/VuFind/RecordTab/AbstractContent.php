@@ -101,6 +101,8 @@ abstract class AbstractContent extends AbstractBase
             $isbn = $this->getRecordDriver()->tryMethod('getCleanISBN');
             $this->results = (null === $this->loader || empty($isbn))
                 ? [] : $this->loader->loadByIsbn($isbn);
+            $this->results = (null === $this->loader || empty($isbn))
+                ? [] : $this->loader->loadByIsbn($isbn);
         }
         return $this->results;
     }

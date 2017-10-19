@@ -2,7 +2,13 @@
     // Set page title.
     $this->headTitle($this->translate('Table of Contents') . ': ' . $this->driver->getBreadcrumb());
 
-    $toc = $this->driver->getTOC();
+    $toc_content = $this->tab->getContent();
+    $toc = [];
+    if (empty($toc_content)) {
+        $toc = $this->driver->getTOC();
+    } else {
+        $toc = reset($toc_content);
+    }
 ?>
 <? if (!empty($toc)): ?>
   <strong><?=$this->transEsc('Table of Contents')?>: </strong>
