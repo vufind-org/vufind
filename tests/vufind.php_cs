@@ -27,6 +27,7 @@ $rules = [
     'magic_constant_casing' => true,
     'method_argument_space' => true,
     'method_separation' => true,
+    'native_function_casing' => true,
     'no_blank_lines_after_class_opening' => true,
     'no_blank_lines_after_phpdoc' => true,
     'no_blank_lines_before_namespace' => true,
