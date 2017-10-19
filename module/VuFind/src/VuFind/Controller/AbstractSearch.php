@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller;
+
 use VuFind\Search\RecommendListener, VuFind\Solr\Utils as SolrUtils;
 use Zend\Stdlib\Parameters;
 

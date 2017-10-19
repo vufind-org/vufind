@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ILS\Logic;
+
 use VuFind\ILS\Connection as ILSConnection,
     VuFind\Exception\ILS as ILSException;
 

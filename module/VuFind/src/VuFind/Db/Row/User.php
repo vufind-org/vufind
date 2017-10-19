@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Row;
+
 use Zend\Db\Sql\Expression,
     Zend\Db\Sql\Predicate\Predicate,
     Zend\Db\Sql\Sql,

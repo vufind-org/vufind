@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use PDO, PDOException;
 use VuFind\Exception\ILS as ILSException;
 use Zend\Log\LoggerInterface;

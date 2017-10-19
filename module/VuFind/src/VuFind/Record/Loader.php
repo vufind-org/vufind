@@ -28,6 +28,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Record;
+
 use VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\RecordDriver\PluginManager as RecordFactory,
     VuFindSearch\Service as SearchService,

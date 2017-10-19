@@ -31,6 +31,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use DOMDocument, VuFind\Exception\ILS as ILSException,
     VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface,
     Zend\Log\LoggerAwareInterface as LoggerAwareInterface;

@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use PDO, PDOException, VuFind\Exception\ILS as ILSException,
     VuFind\I18n\Translator\TranslatorAwareInterface;
 

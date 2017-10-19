@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Cache;
+
 use Zend\Cache\StorageFactory, Zend\Config\Config;
 
 /**

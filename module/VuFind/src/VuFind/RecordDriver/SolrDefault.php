@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
+
 use VuFindCode\ISBN, VuFind\View\Helper\Root\RecordLink;
 
 /**

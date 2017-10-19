@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development
  */
 namespace VuFindLocalTemplate;
+
 use Zend\ModuleManager\ModuleManager,
     Zend\Mvc\MvcEvent;
 

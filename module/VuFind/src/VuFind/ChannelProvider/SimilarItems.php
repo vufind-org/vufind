@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ChannelProvider;
+
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\Search\Base\Params, VuFind\Search\Base\Results;

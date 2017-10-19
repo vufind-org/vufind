@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFind\Controller;
+
 use VuFind\Exception\Forbidden as ForbiddenException,
     VuFind\Exception\Mail as MailException,
     VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;

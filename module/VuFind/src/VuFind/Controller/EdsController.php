@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
 use VuFind\Solr\Utils as SolrUtils;
 use Zend\ServiceManager\ServiceLocatorInterface;
 

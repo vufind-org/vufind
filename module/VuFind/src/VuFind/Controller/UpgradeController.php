@@ -28,6 +28,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
 use ArrayObject, VuFind\Config\Locator as ConfigLocator,
     VuFind\Cookie\Container as CookieContainer,
     VuFind\Cookie\CookieManager,

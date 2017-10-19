@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Solr;
+
 use VuFind\Db\Table\ChangeTracker, VuFind\Search\BackendManager;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\Document\AbstractDocument;

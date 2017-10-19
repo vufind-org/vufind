@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
+
 use Zend\Db\Adapter\Adapter as DbAdapter, Zend\Db\Metadata\Metadata as DbMetadata,
     Zend\Mvc\Controller\Plugin\AbstractPlugin;
 

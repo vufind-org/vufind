@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Favorites;
+
 use VuFind\Db\Table\Resource as ResourceTable;
 use VuFind\Db\Table\UserList as ListTable;
 use VuFind\Exception\ListPermission as ListPermissionException;

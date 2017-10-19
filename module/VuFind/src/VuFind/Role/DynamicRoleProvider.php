@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Role;
+
 use ZfcRbac\Role\RoleProviderInterface;
 use Rbac\Role\Role;
 

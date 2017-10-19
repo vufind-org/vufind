@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
+
 use VuFind\Auth\ChoiceAuth, VuFind\Auth\PluginManager,
     VuFind\Db\Row\User as UserRow, Zend\Config\Config,
     Zend\Http\PhpEnvironment\Request;

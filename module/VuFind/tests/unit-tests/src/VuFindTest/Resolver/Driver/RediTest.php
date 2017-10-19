@@ -27,6 +27,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Resolver\Driver;
+
 use VuFind\Resolver\Driver\Redi;
 
 use Zend\Http\Client\Adapter\Test as TestAdapter;

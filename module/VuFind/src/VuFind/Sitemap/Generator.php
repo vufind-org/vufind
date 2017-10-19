@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Sitemap;
+
 use VuFindSearch\Backend\Solr\Backend, VuFind\Search\BackendManager,
     VuFindSearch\ParamBag, Zend\Config\Config;
 

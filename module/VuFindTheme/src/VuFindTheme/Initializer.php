@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFindTheme;
+
 use Zend\Config\Config;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\View\Http\InjectTemplateListener as BaseInjectTemplateListener;

@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Feed\Writer\Extension\OpenSearch;
+
 use Zend\Stdlib\StringUtils,
     Zend\Feed\Uri,
     Zend\Feed\Writer\Extension\ITunes\Feed as ParentFeed;

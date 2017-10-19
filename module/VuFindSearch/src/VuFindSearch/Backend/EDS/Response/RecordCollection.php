@@ -27,6 +27,7 @@
  * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\EDS\Response;
+
 use VuFindSearch\Response\AbstractRecordCollection;
 
 /**

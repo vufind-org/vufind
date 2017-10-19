@@ -32,6 +32,7 @@
  * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\Primo;
+
 use Zend\Http\Client as HttpClient;
 
 /**

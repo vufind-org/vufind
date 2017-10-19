@@ -28,6 +28,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use VuFind\Search\Base\Results,
     VuFind\Search\Results\PluginManager,
     VuFind\Search\SearchTabsHelper,

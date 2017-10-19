@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/indexing Wiki
  */
 namespace VuFind\XSLT\Import;
+
 use DOMDocument, VuFind\Config\Locator as ConfigLocator;
 
 /**

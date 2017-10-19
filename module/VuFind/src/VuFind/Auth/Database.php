@@ -28,6 +28,7 @@
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
 namespace VuFind\Auth;
+
 use VuFind\Exception\Auth as AuthException, Zend\Crypt\Password\Bcrypt;
 
 /**

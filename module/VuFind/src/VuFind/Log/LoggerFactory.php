@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Log;
+
 use Zend\Config\Config;
 use Zend\Log\Writer\WriterInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;

@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\View\Helper\Root;
+
 use VuFind\Search\Base\Options;
 
 /**

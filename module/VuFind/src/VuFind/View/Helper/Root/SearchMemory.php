@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use VuFind\Search\Memory, Zend\View\Helper\AbstractHelper;
 
 /**

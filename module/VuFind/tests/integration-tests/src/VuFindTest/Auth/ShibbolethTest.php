@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
+
 use VuFind\Auth\Shibboleth, VuFind\Db\Table\User, Zend\Config\Config;
 
 /**

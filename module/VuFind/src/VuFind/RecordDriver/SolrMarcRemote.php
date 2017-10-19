@@ -29,6 +29,7 @@
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
+
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface,
     Zend\Log\LoggerAwareInterface as LoggerAwareInterface;
 

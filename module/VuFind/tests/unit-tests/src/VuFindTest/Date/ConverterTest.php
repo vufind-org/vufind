@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Date;
+
 use VuFind\Date\Converter, VuFind\Exception\Date as DateException,
     Zend\Config\Config;
 

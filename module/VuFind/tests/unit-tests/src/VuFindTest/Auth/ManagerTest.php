@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
+
 use VuFind\Auth\Manager, VuFind\Auth\PluginManager,
     VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
     Zend\Config\Config, Zend\Session\SessionManager;

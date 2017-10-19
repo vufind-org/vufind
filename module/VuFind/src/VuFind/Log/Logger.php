@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Log;
+
 use Zend\Log\Logger as BaseLogger;
 
 /**

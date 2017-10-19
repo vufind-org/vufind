@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Auth;
+
 use VuFind\Cookie\CookieManager,
     VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
     VuFind\Exception\Auth as AuthException,

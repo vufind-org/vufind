@@ -28,6 +28,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Record;
+
 use VuFind\Db\Table\Record as Record,
     VuFind\RecordDriver\PluginManager as RecordFactory,
     Zend\Config\Config as Config;

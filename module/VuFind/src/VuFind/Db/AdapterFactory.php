@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db;
+
 use Zend\Db\Adapter\Adapter;
 
 /**
