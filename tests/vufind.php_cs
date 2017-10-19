@@ -15,6 +15,8 @@ $rules = [
     'concat_space' => ['spacing' => 'one'],
     'elseif' => true,
     'encoding' => true,
+    'full_opening_tag' => true,
+    'function_declaration' => true,
     'lowercase_keywords' => true,
     'no_blank_lines_after_class_opening' => true,
     'no_blank_lines_after_phpdoc' => true,
