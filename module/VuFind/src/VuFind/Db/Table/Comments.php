@@ -79,7 +79,7 @@ class Comments extends Gateway
                 ['u' => 'user'], 'u.id = comments.user_id',
                 ['firstname', 'lastname']
             );
-            $select->where->equalTo('comments.resource_id',  $resource->id);
+            $select->where->equalTo('comments.resource_id', $resource->id);
             $select->order('comments.created');
         };
 

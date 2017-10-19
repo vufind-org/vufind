@@ -678,20 +678,20 @@ class Generator
         // Generate 5 lines of text, 4 offset in a border color
         if ($scolor) {
             imagettftext(
-                $this->im, $fontSize, 0, $x,   $y + 1, $scolor, $font, $text
+                $this->im, $fontSize, 0, $x, $y + 1, $scolor, $font, $text
             );
             imagettftext(
-                $this->im, $fontSize, 0, $x,   $y - 1, $scolor, $font, $text
+                $this->im, $fontSize, 0, $x, $y - 1, $scolor, $font, $text
             );
             imagettftext(
-                $this->im, $fontSize, 0, $x + 1, $y,   $scolor, $font, $text
+                $this->im, $fontSize, 0, $x + 1, $y, $scolor, $font, $text
             );
             imagettftext(
-                $this->im, $fontSize, 0, $x - 1, $y,   $scolor, $font, $text
+                $this->im, $fontSize, 0, $x - 1, $y, $scolor, $font, $text
             );
         }
         // 1 centered in main color
-        imagettftext($this->im, $fontSize, 0, $x,   $y,   $mcolor, $font, $text);
+        imagettftext($this->im, $fontSize, 0, $x, $y, $mcolor, $font, $text);
     }
 
     /**

@@ -238,7 +238,7 @@ abstract class EdsApi_REST_Base
             $authInfo['orgid'] = $org;
         }
         $messageBody = json_encode($authInfo);
-        return $this->call($url, null,  null, 'POST', $messageBody);
+        return $this->call($url, null, null, 'POST', $messageBody);
     }
 
     /**

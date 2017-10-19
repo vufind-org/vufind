@@ -424,7 +424,7 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
                 $fine = $this->picaRecode($row[5]);
                 $amount = (null == $row[2]) ? 0 : $row[2] * 100;
                 //$balance = (null==$row[3])?0:$row[3]*100;
-                $checkout = substr($row[3], 0,  12);
+                $checkout = substr($row[3], 0, 12);
                 $duedate = substr($row[4], 0, 12);
                 $title = $this->picaRecode(substr($row[6], 0, 12));
                 $result[] = [
