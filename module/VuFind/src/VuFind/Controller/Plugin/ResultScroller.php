@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Controller\Plugin;
+
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\Session\Container as SessionContainer;

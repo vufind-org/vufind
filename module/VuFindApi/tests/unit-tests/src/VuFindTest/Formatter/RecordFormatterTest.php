@@ -27,6 +27,7 @@
  * @link     https://vufind.org
  */
 namespace VuFindTest\Formatter;
+
 use VuFindApi\Formatter\RecordFormatter;
 use VuFind\I18n\TranslatableString;
 

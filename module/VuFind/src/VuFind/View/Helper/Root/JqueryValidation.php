@@ -27,6 +27,7 @@
  * @link     http://www.jquery.com   jQuery Project Page
  */
 namespace VuFind\View\Helper\Root;
+
 use Zend\View\Helper\AbstractHelper;
 
 /**

@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\Search\Params;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**

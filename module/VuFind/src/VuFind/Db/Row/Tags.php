@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Row;
+
 use VuFind\Db\Table\Resource as ResourceTable, Zend\Db\Sql\Expression;
 
 /**

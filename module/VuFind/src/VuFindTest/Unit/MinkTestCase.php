@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Unit;
+
 use Behat\Mink\Driver\Selenium2Driver, Behat\Mink\Session,
     Behat\Mink\Element\Element,
     VuFind\Config\Locator as ConfigLocator,

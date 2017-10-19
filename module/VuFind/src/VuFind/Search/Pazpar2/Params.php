@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Pazpar2;
+
 use VuFindSearch\ParamBag;
 
 /**

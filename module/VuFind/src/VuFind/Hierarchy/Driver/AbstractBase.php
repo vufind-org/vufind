@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\Driver;
+
 use VuFind\Hierarchy\TreeDataSource\PluginManager as DataManager,
     VuFind\Hierarchy\TreeRenderer\PluginManager as RendererManager;
 

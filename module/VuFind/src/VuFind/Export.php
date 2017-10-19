@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind;
+
 use VuFind\SimpleXML, Zend\Config\Config;
 
 /**

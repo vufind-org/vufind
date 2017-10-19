@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
 namespace VuFind\Cover;
+
 use VuFindCode\ISBN, VuFind\Content\Covers\PluginManager as ApiManager;
 
 /**

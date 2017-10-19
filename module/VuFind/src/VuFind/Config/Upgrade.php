@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Config;
+
 use VuFind\Config\Writer as ConfigWriter,
     VuFind\Exception\FileAccess as FileAccessException;
 

@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Auth;
+
 use VuFind\Auth\ILSAuthenticator, VuFind\Auth\Manager,
     VuFind\Db\Row\User, VuFind\ILS\Connection as ILSConnection;
 

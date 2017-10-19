@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindSearch\Backend\WorldCat;
+
 use VuFindSearch\ParamBag;
 
 /**

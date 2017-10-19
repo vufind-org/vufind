@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Summon;
+
 use SerialsSolutions_Summon_Query as SummonQuery,
     VuFind\Solr\Utils as SolrUtils,
     VuFindSearch\ParamBag;

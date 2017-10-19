@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
 use VuFind\Config\Locator as ConfigLocator,
     VuFind\Config\Writer as ConfigWriter,
     Zend\Mvc\MvcEvent,

@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\OAI;
+
 use SimpleXMLElement,
     VuFind\Exception\RecordMissing as RecordMissingException, VuFind\SimpleXML;
 

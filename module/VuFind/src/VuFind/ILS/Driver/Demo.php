@@ -32,6 +32,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use ArrayObject, VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException,
     VuFindSearch\Query\Query, VuFindSearch\Service as SearchService,

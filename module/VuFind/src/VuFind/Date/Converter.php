@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Date;
+
 use DateTime, DateTimeZone, VuFind\Exception\Date as DateException;
 
 /**

@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
 namespace VuFindDevTools;
+
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 use Zend\Config\Config;
 use Zend\I18n\Translator\TextDomain;

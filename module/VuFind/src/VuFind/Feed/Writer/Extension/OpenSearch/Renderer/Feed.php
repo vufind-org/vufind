@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Feed\Writer\Extension\OpenSearch\Renderer;
+
 use DOMDocument, DOMElement,
     Zend\Feed\Writer\Extension\AbstractRenderer;
 

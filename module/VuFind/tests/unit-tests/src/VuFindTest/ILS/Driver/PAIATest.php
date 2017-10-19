@@ -27,6 +27,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\ILS\Driver;
+
 use VuFind\ILS\Driver\PAIA;
 
 use Zend\Http\Client\Adapter\Test as TestAdapter;

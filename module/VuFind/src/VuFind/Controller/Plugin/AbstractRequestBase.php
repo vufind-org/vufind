@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
+
 use VuFind\Crypt\HMAC, VuFind\ILS\Connection;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container,
     Zend\Session\SessionManager;

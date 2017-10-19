@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Mailer;
+
 use Zend\Mail\Transport\InMemory;
 use Zend\Mail\Transport\Smtp, Zend\Mail\Transport\SmtpOptions;
 use Zend\ServiceManager\ServiceLocatorInterface;

@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Base;
+
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**

@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
+
 use VuFind\I18n\ExtendedIniNormalizer,
     VuFind\I18n\Translator\Loader\ExtendedIniReader,
     Zend\Console\Console;

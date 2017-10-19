@@ -28,6 +28,7 @@
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
+
 use VuFind\Exception\ILS as ILSException,
     VuFind\View\Helper\Root\RecordLink,
     VuFind\XSLT\Processor as XSLTProcessor;

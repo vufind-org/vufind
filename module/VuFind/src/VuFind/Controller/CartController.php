@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
 use VuFind\Exception\Forbidden as ForbiddenException,
     VuFind\Exception\Mail as MailException,
     Zend\ServiceManager\ServiceLocatorInterface,

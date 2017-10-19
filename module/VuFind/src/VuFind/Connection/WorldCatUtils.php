@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Connection;
+
 use File_MARCXML, VuFind\XSLT\Processor as XSLTProcessor, Zend\Config\Config;
 
 /**

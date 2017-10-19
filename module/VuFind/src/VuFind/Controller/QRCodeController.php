@@ -27,6 +27,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller;
+
 use VuFind\QRCode\Loader;
 
 /**

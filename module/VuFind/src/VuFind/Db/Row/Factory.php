@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Db\Row;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

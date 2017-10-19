@@ -25,6 +25,7 @@
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  */
 namespace VuFind\ILS\Driver;
+
 use File_MARC, VuFind\Exception\ILS as ILSException;
 
 /**

@@ -30,6 +30,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use PDO, PDOException, VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException;
 

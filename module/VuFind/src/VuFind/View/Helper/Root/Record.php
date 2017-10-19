@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use VuFind\Cover\Router as CoverRouter;
 use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
 

@@ -28,6 +28,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Search;
+
 use VuFind\Search\Results\PluginManager, Zend\View\Helper\Url, Zend\Http\Request;
 
 /**

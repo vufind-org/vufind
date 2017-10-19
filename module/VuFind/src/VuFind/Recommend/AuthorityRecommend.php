@@ -27,6 +27,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Recommend;
+
 use VuFindSearch\Backend\Exception\RequestErrorException,
     Zend\Http\Request, Zend\StdLib\Parameters;
 

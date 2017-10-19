@@ -27,6 +27,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Auth;
+
 use VuFind\Db\Row\User, VuFind\Exception\Auth as AuthException;
 
 /**
