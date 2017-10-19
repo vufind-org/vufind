@@ -28,8 +28,8 @@
 namespace VuFindConsole\Controller;
 
 use Zend\Code\Generator\ClassGenerator;
-use Zend\Code\Generator\MethodGenerator;
 use Zend\Code\Generator\FileGenerator;
+use Zend\Code\Generator\MethodGenerator;
 use Zend\Code\Reflection\ClassReflection;
 use Zend\Console\Console;
 

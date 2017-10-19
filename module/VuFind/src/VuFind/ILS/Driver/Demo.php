@@ -33,10 +33,12 @@
  */
 namespace VuFind\ILS\Driver;
 
-use ArrayObject, VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException,
-    VuFindSearch\Query\Query, VuFindSearch\Service as SearchService,
-    Zend\Session\Container as SessionContainer;
+use ArrayObject;
+use VuFind\Exception\Date as DateException;
+use VuFind\Exception\ILS as ILSException;
+use VuFindSearch\Query\Query;
+use VuFindSearch\Service as SearchService;
+use Zend\Session\Container as SessionContainer;
 
 /**
  * Advanced Dummy ILS Driver -- Returns sample values based on Solr index.

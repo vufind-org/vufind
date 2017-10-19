@@ -28,7 +28,8 @@
  */
 namespace VuFind\Recommend;
 
-use VuFind\Connection\OpenLibrary, VuFind\Solr\Utils as SolrUtils;
+use VuFind\Connection\OpenLibrary;
+use VuFind\Solr\Utils as SolrUtils;
 
 /**
  * OpenLibrarySubjects Recommendations Module

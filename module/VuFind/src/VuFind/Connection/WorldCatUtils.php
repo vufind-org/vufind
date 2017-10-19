@@ -27,7 +27,7 @@
  */
 namespace VuFind\Connection;
 
-use File_MARCXML, VuFind\XSLT\Processor as XSLTProcessor, Zend\Config\Config;
+use Zend\Config\Config;
 
 /**
  * World Cat Utilities

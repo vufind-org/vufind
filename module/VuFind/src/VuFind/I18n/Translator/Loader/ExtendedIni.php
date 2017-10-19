@@ -27,9 +27,9 @@
  */
 namespace VuFind\I18n\Translator\Loader;
 
-use Zend\I18n\Exception\InvalidArgumentException,
-    Zend\I18n\Translator\Loader\FileLoaderInterface,
-    Zend\I18n\Translator\TextDomain;
+use Zend\I18n\Exception\InvalidArgumentException;
+use Zend\I18n\Translator\Loader\FileLoaderInterface;
+use Zend\I18n\Translator\TextDomain;
 
 /**
  * Handles the language loading and language file parsing

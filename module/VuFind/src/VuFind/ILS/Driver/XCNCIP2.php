@@ -27,8 +27,8 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\ILS as ILSException,
-    VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * XC NCIP Toolkit (v2) ILS Driver

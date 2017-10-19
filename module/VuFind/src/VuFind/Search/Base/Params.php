@@ -27,9 +27,11 @@
  */
 namespace VuFind\Search\Base;
 
-use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query,
-    VuFindSearch\Query\QueryGroup;
-use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
+use VuFind\Search\QueryAdapter;
+use VuFind\Solr\Utils as SolrUtils;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
+use VuFindSearch\Query\Query;
+use VuFindSearch\Query\QueryGroup;
 
 /**
  * Abstract parameters search model.

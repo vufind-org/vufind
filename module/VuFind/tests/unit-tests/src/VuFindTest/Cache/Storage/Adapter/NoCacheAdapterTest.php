@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Cache\Storage\Adapter;
 
-use VuFind\Cache\Storage\Adapter\NoCacheAdapter;
-
 use PHPUnit_Framework_TestCase;
+
+use VuFind\Cache\Storage\Adapter\NoCacheAdapter;
 
 /**
  * Unit tests for VuFind NoCacheAdapter.

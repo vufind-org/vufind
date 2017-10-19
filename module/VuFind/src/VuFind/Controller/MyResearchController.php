@@ -27,14 +27,14 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Auth as AuthException,
-    VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Exception\ILS as ILSException,
-    VuFind\Exception\Mail as MailException,
-    VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\RecommendListener, Zend\Stdlib\Parameters,
-    Zend\View\Model\ViewModel;
+use VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\ListPermission as ListPermissionException;
+use VuFind\Exception\Mail as MailException;
+use VuFind\Search\RecommendListener;
+use Zend\Stdlib\Parameters;
+use Zend\View\Model\ViewModel;
 
 /**
  * Controller for the user account area.

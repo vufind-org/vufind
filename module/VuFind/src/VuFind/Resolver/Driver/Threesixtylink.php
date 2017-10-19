@@ -29,7 +29,8 @@
  */
 namespace VuFind\Resolver\Driver;
 
-use DOMDocument, DOMXpath;
+use DOMDocument;
+use DOMXpath;
 
 /**
  * 360Link Link Resolver Driver

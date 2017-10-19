@@ -29,8 +29,8 @@
  */
 namespace VuFind\Role\PermissionProvider;
 
-use Zend\Http\PhpEnvironment\Request;
 use VuFind\Auth\Shibboleth as ShibbolethAuth;
+use Zend\Http\PhpEnvironment\Request;
 
 /**
  * Shibboleth permission provider for VuFind.

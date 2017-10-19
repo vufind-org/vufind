@@ -28,7 +28,8 @@
  */
 namespace VuFind\Cover;
 
-use VuFindCode\ISBN, VuFind\Content\Covers\PluginManager as ApiManager;
+use VuFind\Content\Covers\PluginManager as ApiManager;
+use VuFindCode\ISBN;
 
 /**
  * Book Cover Generator

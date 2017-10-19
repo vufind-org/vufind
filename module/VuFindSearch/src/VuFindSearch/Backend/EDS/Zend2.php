@@ -28,9 +28,9 @@
 namespace VuFindSearch\Backend\EDS;
 
 require_once dirname(__FILE__) . '/Base.php';
+use Zend\Http\Client\Adapter\Curl as CurlAdapter;
 use Zend\Http\Client as Zend2HttpClient;
 use Zend\Log\LoggerAwareInterface;
-use Zend\Http\Client\Adapter\Curl as CurlAdapter;
 
 /**
  * EBSCO EDS API Zend2 Framework implementation

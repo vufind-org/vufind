@@ -28,14 +28,12 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Exception\ILS as ILSException,
-    Zend\Mvc\Controller\AbstractActionController,
-    Zend\Mvc\MvcEvent,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\View\Model\ViewModel,
-    ZfcRbac\Service\AuthorizationServiceAwareInterface,
-    ZfcRbac\Service\AuthorizationServiceAwareTrait;
+use VuFind\Exception\ILS as ILSException;
+use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Mvc\MvcEvent;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\View\Model\ViewModel;
+use ZfcRbac\Service\AuthorizationServiceAwareInterface;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other

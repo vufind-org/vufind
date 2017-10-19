@@ -27,8 +27,8 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFind\Search\UrlQueryHelper;
 use VuFind\Search\Base\Params;
+use VuFind\Search\UrlQueryHelper;
 
 /**
  * Factory to build UrlQueryHelper.

@@ -28,7 +28,8 @@
 namespace VuFind\ChannelProvider;
 
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Search\Base\Params, VuFind\Search\Base\Results;
+use VuFind\Search\Base\Params;
+use VuFind\Search\Base\Results;
 use Zend\Mvc\Controller\Plugin\Url;
 use Zend\Stdlib\Parameters;
 

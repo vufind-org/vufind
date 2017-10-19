@@ -27,14 +27,16 @@
  */
 namespace VuFindConsole\Controller;
 
-use File_MARC, File_MARCXML, VuFind\Sitemap\Generator as Sitemap;
+use File_MARC;
+use File_MARCXML;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Sitemap\Generator as Sitemap;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 use Zend\Console\Console;
-use Zend\Crypt\Symmetric\Openssl,
-    Zend\Crypt\BlockCipher as BlockCipher;
+use Zend\Crypt\BlockCipher as BlockCipher;
+use Zend\Crypt\Symmetric\Openssl;
 
 /**
  * This controller handles various command-line tools

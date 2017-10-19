@@ -27,7 +27,8 @@
  */
 namespace VuFindTest\Auth;
 
-use VuFind\Auth\ILS, VuFind\Db\Table\User;
+use VuFind\Auth\ILS;
+use VuFind\Db\Table\User;
 
 /**
  * ILS authentication test class.

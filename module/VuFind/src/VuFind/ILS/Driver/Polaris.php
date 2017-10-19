@@ -26,8 +26,7 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * VuFind Connector for Polaris

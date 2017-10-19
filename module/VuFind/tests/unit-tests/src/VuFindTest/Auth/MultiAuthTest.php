@@ -27,7 +27,8 @@
  */
 namespace VuFindTest\Auth;
 
-use VuFind\Auth\MultiAuth, Zend\Config\Config;
+use VuFind\Auth\MultiAuth;
+use Zend\Config\Config;
 
 /**
  * LDAP authentication test class.

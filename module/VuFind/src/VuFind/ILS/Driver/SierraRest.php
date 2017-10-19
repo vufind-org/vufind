@@ -28,10 +28,10 @@
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\VuFind\Exception;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
 use Zend\Log\LoggerAwareInterface;
-use VuFind\Exception\VuFind\Exception;
 
 /**
  * III Sierra REST API driver

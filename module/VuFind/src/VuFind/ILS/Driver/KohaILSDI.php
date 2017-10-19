@@ -28,10 +28,11 @@
  */
 namespace VuFind\ILS\Driver;
 
-use PDO, PDOException;
+use PDO;
+use PDOException;
+use VuFind\Exception\Date as DateException;
 use VuFind\Exception\ILS as ILSException;
 use Zend\Log\LoggerInterface;
-use VuFind\Exception\Date as DateException;
 
 /**
  * VuFind Driver for Koha, using web APIs (ILSDI)

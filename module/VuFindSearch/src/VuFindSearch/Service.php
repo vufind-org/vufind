@@ -29,13 +29,13 @@
 namespace VuFindSearch;
 
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Feature\RetrieveBatchInterface;
-use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Feature\RandomInterface;
+use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
-use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventManager;
+use Zend\EventManager\EventManagerInterface;
 
 /**
  * Search service.

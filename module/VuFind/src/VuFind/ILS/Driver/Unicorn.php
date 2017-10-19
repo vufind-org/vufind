@@ -26,7 +26,8 @@
  */
 namespace VuFind\ILS\Driver;
 
-use File_MARC, VuFind\Exception\ILS as ILSException;
+use File_MARC;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)

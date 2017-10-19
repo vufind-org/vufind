@@ -27,7 +27,9 @@
  */
 namespace VuFindTest\Auth;
 
-use VuFind\Auth\Database, Zend\Db\ResultSet\ResultSet, Zend\Stdlib\Parameters;
+use VuFind\Auth\Database;
+use Zend\Db\ResultSet\ResultSet;
+use Zend\Stdlib\Parameters;
 
 /**
  * Database authentication test class.

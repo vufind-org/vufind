@@ -31,9 +31,9 @@
  */
 namespace VuFind\ILS;
 
-use VuFind\Exception\ILS as ILSException,
-    VuFind\ILS\Driver\DriverInterface,
-    VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ILS\Driver\DriverInterface;
 use Zend\Log\LoggerAwareInterface;
 
 /**

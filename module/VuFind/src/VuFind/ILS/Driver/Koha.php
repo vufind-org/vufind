@@ -28,7 +28,9 @@
  */
 namespace VuFind\ILS\Driver;
 
-use PDO, PDOException, VuFind\Exception\ILS as ILSException;
+use PDO;
+use PDOException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * VuFind Driver for Koha (version: 3.02)

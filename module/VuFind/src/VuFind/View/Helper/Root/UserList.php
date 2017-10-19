@@ -27,7 +27,7 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Db\Row\UserList as UserListRow, Zend\View\Helper\AbstractHelper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * List view helper

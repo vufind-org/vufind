@@ -27,10 +27,13 @@
  */
 namespace VuFind\Auth;
 
-use VuFind\Cookie\CookieManager,
-    VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
-    VuFind\Exception\Auth as AuthException,
-    Zend\Config\Config, Zend\Session\SessionManager, Zend\Validator\Csrf;
+use VuFind\Cookie\CookieManager;
+use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Table\User as UserTable;
+use VuFind\Exception\Auth as AuthException;
+use Zend\Config\Config;
+use Zend\Session\SessionManager;
+use Zend\Validator\Csrf;
 
 /**
  * Wrapper class for handling logged-in user in session.

@@ -27,8 +27,8 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
-use VuFind\View\Helper\Root\Translate;
 use VuFind\I18n\TranslatableString;
+use VuFind\View\Helper\Root\Translate;
 
 /**
  * Translate view helper Test Class (and by extension, the TranslatorAwareTrait)

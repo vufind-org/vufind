@@ -28,7 +28,9 @@
  */
 namespace VuFindTest\Content\Covers;
 
-use VuFindCode\ISBN, VuFind\Content\Covers\ContentCafe, Zend\Config\Config;
+use VuFind\Content\Covers\ContentCafe;
+use VuFindCode\ISBN;
+use Zend\Config\Config;
 
 /**
  * Unit tests for ContentCafe cover loader.

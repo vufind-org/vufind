@@ -29,7 +29,7 @@
  */
 namespace VuFindTest\ILS\Driver;
 
-use VuFind\ILS\Driver\MultiBackend, VuFind\Config\Reader as ConfigReader;
+use VuFind\ILS\Driver\MultiBackend;
 use Zend\Log\Writer\Mock;
 
 /**

@@ -32,9 +32,10 @@
  */
 namespace VuFind\ILS\Driver;
 
-use DOMDocument, VuFind\Exception\ILS as ILSException,
-    VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface,
-    Zend\Log\LoggerAwareInterface as LoggerAwareInterface;
+use DOMDocument;
+use VuFind\Exception\ILS as ILSException;
+use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
+use Zend\Log\LoggerAwareInterface as LoggerAwareInterface;
 
 /**
  * ILS Driver for VuFind to query availability information via DAIA.

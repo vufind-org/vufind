@@ -28,8 +28,8 @@
  */
 namespace VuFindSearch\Backend\EIT;
 
-use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\Exception\HttpErrorException;
+use VuFindSearch\ParamBag;
 
 use Zend\Http\Request;
 

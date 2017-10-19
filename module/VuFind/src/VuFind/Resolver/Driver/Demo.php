@@ -29,8 +29,6 @@
  */
 namespace VuFind\Resolver\Driver;
 
-use DOMDocument, DOMXpath;
-
 /**
  * Demo Link Resolver Driver
  *

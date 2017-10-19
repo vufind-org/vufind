@@ -36,7 +36,8 @@
  */
 namespace VuFind\Resolver\Driver;
 
-use DOMDocument, DOMXpath;
+use DOMDocument;
+use DOMXpath;
 
 /**
  * EZB Link Resolver Driver

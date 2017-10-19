@@ -27,8 +27,10 @@
  */
 namespace VuFind\Sitemap;
 
-use VuFindSearch\Backend\Solr\Backend, VuFind\Search\BackendManager,
-    VuFindSearch\ParamBag, Zend\Config\Config;
+use VuFind\Search\BackendManager;
+use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\ParamBag;
+use Zend\Config\Config;
 
 /**
  * Class for generating sitemaps

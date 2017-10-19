@@ -29,11 +29,11 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Search\Base\Results,
-    VuFind\Search\Results\PluginManager,
-    VuFind\Search\SearchTabsHelper,
-    Zend\View\Helper\Url,
-    Zend\Http\Request;
+use VuFind\Search\Base\Results;
+use VuFind\Search\Results\PluginManager;
+use VuFind\Search\SearchTabsHelper;
+use Zend\Http\Request;
+use Zend\View\Helper\Url;
 
 /**
  * "Search tabs" view helper

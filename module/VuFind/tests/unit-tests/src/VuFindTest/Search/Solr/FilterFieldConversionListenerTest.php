@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Search\Solr;
 
-use VuFindSearch\ParamBag;
-
 use VuFind\Search\Solr\FilterFieldConversionListener;
+
+use VuFindSearch\ParamBag;
 use VuFindTest\Unit\TestCase;
 use Zend\EventManager\Event;
 

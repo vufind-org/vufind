@@ -27,9 +27,6 @@
  */
 namespace VuFind\Recommend;
 
-use VuFindSearch\Query\Query,
-    VuFindSearch\ParamBag;
-
 /**
  * RandomRecommend Module
  *

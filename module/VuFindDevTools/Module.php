@@ -27,9 +27,6 @@
  */
 namespace VuFindDevTools;
 
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
-
 /**
  * VuFind Developer Tools module.
  *

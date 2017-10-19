@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Query;
 
+use PHPUnit_Framework_TestCase;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for QueryGroup class.

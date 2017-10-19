@@ -27,7 +27,9 @@
  */
 namespace VuFind\ILS\Driver;
 
-use PDO, PDOException, VuFind\Exception\ILS as ILSException;
+use PDO;
+use PDOException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * VuFind Connector for Evergreen

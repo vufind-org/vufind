@@ -29,13 +29,14 @@
  */
 namespace VuFind\Controller;
 
-use ArrayObject, VuFind\Config\Locator as ConfigLocator,
-    VuFind\Cookie\Container as CookieContainer,
-    VuFind\Cookie\CookieManager,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Mvc\MvcEvent,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\Session\Container;
+use ArrayObject;
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Cookie\Container as CookieContainer;
+use VuFind\Cookie\CookieManager;
+use VuFind\Exception\RecordMissing as RecordMissingException;
+use Zend\Mvc\MvcEvent;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Session\Container;
 
 /**
  * Class controls VuFind upgrading.

@@ -29,7 +29,8 @@
 namespace VuFind\Recommend;
 
 use VuFindSearch\Query\Query;
-use Zend\Http\Request, Zend\StdLib\Parameters;
+use Zend\Http\Request;
+use Zend\StdLib\Parameters;
 
 /**
  * AuthorFacets Recommendations Module

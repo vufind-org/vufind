@@ -28,7 +28,8 @@
  */
 namespace VuFindTest\Content\Covers;
 
-use VuFindCode\ISBN, VuFind\Content\Covers\OpenLibrary;
+use VuFind\Content\Covers\OpenLibrary;
+use VuFindCode\ISBN;
 
 /**
  * Unit tests for OpenLibrary cover loader.

@@ -28,9 +28,9 @@
  */
 namespace VuFindSearch\Backend\Primo\Response;
 
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
-use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Backend\Solr\Response\Json\Record;
+use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 /**
  * Simple factory for record collection.

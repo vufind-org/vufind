@@ -28,8 +28,8 @@
  */
 namespace VuFind\Config\Reader;
 
-use Zend\Config\Reader\ReaderInterface;
 use Zend\Cache\Storage\StorageInterface;
+use Zend\Config\Reader\ReaderInterface;
 
 /**
  * This class decorates a configuration file reader with caching support.

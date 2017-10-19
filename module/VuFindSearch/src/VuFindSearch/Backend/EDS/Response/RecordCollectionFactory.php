@@ -27,8 +27,8 @@
  */
 namespace VuFindSearch\Backend\EDS\Response;
 
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 /**
  * Factory for record collection.

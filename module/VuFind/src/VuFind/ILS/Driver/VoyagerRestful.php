@@ -31,8 +31,10 @@
  */
 namespace VuFind\ILS\Driver;
 
-use PDO, PDOException, VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException;
+use PDO;
+use PDOException;
+use VuFind\Exception\Date as DateException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Voyager Restful ILS Driver

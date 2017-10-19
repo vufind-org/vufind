@@ -27,9 +27,6 @@
  */
 namespace VuFindAdmin;
 
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
-
 /**
  * VuFind Admin Tools module.
  *

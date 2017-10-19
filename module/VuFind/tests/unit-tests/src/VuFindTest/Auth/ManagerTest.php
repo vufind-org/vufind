@@ -27,9 +27,12 @@
  */
 namespace VuFindTest\Auth;
 
-use VuFind\Auth\Manager, VuFind\Auth\PluginManager,
-    VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
-    Zend\Config\Config, Zend\Session\SessionManager;
+use VuFind\Auth\Manager;
+use VuFind\Auth\PluginManager;
+use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Table\User as UserTable;
+use Zend\Config\Config;
+use Zend\Session\SessionManager;
 
 /**
  * Authentication manager test class.

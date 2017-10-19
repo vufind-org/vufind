@@ -27,8 +27,8 @@
  */
 namespace VuFind\Config;
 
-use VuFind\Config\Writer as ConfigWriter,
-    VuFind\Exception\FileAccess as FileAccessException;
+use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Exception\FileAccess as FileAccessException;
 
 /**
  * Class to upgrade previous VuFind configurations to the current version

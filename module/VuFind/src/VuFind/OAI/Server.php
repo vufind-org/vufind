@@ -27,8 +27,9 @@
  */
 namespace VuFind\OAI;
 
-use SimpleXMLElement,
-    VuFind\Exception\RecordMissing as RecordMissingException, VuFind\SimpleXML;
+use SimpleXMLElement;
+use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\SimpleXML;
 
 /**
  * OAI Server class
