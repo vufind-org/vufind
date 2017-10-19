@@ -520,6 +520,7 @@ class LuceneSyntaxHelper
         $input = preg_replace('/(\:[:\s]+|[:\s]+:)' . $lookahead . '/', ' ', $input);
         return trim($input, ':');
     }
+
     /**
      * Prepare input to be used in a SOLR query.
      *

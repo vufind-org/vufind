@@ -615,6 +615,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
             );
         }
     }
+
     /**
      * Validate the credentials in the provided request, but do not change the state
      * of the current logged-in user. Return true for valid credentials, false

@@ -611,6 +611,7 @@ class GenerateController extends AbstractBase
         }
         Console::writeLine("Successfully updated $configPath");
     }
+
     /**
      * Update the configuration of a target module.
      *

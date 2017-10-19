@@ -629,6 +629,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         return $fineList;
     }
+
     /**
      * Get Patron Profile
      *

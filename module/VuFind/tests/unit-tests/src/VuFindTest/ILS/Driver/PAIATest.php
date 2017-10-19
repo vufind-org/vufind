@@ -459,6 +459,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $this->assertEquals(false, $result_expired);
         $this->assertEquals(false, $resultStorage_expired);
     }
+
     /**
      * Test
      *

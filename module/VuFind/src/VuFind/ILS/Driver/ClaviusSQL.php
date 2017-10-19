@@ -170,6 +170,7 @@ class ClaviusSQL extends AbstractBase
         }
         return $this->locations;
     }
+
     /**
      * Get list of fine types
      *

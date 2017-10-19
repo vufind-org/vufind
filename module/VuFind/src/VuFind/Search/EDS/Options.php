@@ -221,6 +221,7 @@ class Options extends \VuFind\Search\Base\Options
     {
         return $this->defaultExpanders;
     }
+
     /**
      * Return the route name of the action used for performing advanced searches.
      * Returns false if the feature is not supported.

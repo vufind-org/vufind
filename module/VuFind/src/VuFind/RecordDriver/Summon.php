@@ -526,6 +526,7 @@ class Summon extends SolrDefault
     {
         return $this->fields['ID'][0];
     }
+
     /**
      * Get the title of the item that contains this record (i.e. MARC 773s of a
      * journal).
