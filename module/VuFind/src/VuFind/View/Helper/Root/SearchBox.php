@@ -318,7 +318,7 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                         && $activeHandler == $searchVal;
                     if ($selected) {
                         $selectedFound = true;
-                    } else if ($backupSelectedIndex === false
+                    } elseif ($backupSelectedIndex === false
                         && $target == $activeSearchClass
                     ) {
                         $backupSelectedIndex = count($handlers);
@@ -330,7 +330,7 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                         'selected' => $selected
                     ];
                 }
-            } else if ($type == 'External') {
+            } elseif ($type == 'External') {
                 $handlers[] = [
                     'value' => $type . ':' . $target, 'label' => $label,
                     'indent' => false, 'selected' => false

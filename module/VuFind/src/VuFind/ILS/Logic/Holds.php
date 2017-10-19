@@ -218,7 +218,7 @@ class Holds
 
             if ($mode == "disabled") {
                 $holdings = $this->standardHoldings($result);
-            } else if ($mode == "driver") {
+            } elseif ($mode == "driver") {
                 $holdings = $this->driverHoldings($result, $config, !empty($blocks));
             } else {
                 $holdings = $this->generateHoldings($result, $mode, $config);

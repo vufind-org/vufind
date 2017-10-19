@@ -525,10 +525,10 @@ class Params
         if ($view == 'rss') {
             // RSS is a special case that does not require config validation
             $this->setView('rss');
-        } else if (!empty($view) && in_array($view, $validViews)) {
+        } elseif (!empty($view) && in_array($view, $validViews)) {
             // make sure the url parameter is a valid view
             $this->setView($view);
-        } else if (!empty($this->lastView)
+        } elseif (!empty($this->lastView)
             && in_array($this->lastView, $validViews)
         ) {
             // if there is nothing in the URL, see if we had a previous value
@@ -1070,7 +1070,7 @@ class Params
         if ($firstChar == '-') {
             $operator = 'NOT';
             $field = substr($field, 1);
-        } else if ($firstChar == '~') {
+        } elseif ($firstChar == '~') {
             $operator = 'OR';
             $field = substr($field, 1);
         } else {
@@ -1154,7 +1154,7 @@ class Params
         // Pad to four digits:
         if (strlen($year) == 2) {
             $year = '19' . $year;
-        } else if (strlen($year) == 3) {
+        } elseif (strlen($year) == 3) {
             $year = '0' . $year;
         }
 

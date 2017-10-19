@@ -178,11 +178,11 @@ class SearchRequestModel
                 foreach ($values as $filter) {
                     if (substr($filter, 0, 6) == 'LIMIT|') {
                         $this->addLimiter(substr($filter, 6));
-                    } else if (substr($filter, 0, 7) == 'EXPAND:') {
+                    } elseif (substr($filter, 0, 7) == 'EXPAND:') {
                         $this->addExpander(substr($filter, 7));
-                    } else if (substr($filter, 0, 11) == 'SEARCHMODE:') {
+                    } elseif (substr($filter, 0, 11) == 'SEARCHMODE:') {
                         $this->searchMode = substr($filter, 11, null);
-                    } else if (substr($filter, 0, 15) == 'PublicationDate') {
+                    } elseif (substr($filter, 0, 15) == 'PublicationDate') {
                         $this->addLimiter($this->formatDateLimiter($filter));
                     } else {
                         $this->addFilter("$cnt,$filter");

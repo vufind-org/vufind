@@ -186,7 +186,7 @@ class Service
                 }
                 if (!$response) {
                     $response = $next;
-                } else if ($record = $next->first()) {
+                } elseif ($record = $next->first()) {
                     $response->add($record);
                 }
             }
@@ -269,7 +269,7 @@ class Service
                     }
                     if (!$response) {
                         $response = $currentBatch;
-                    } else if ($record = $currentBatch->first()) {
+                    } elseif ($record = $currentBatch->first()) {
                         $response->add($record);
                     }
                 }

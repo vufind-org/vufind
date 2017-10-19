@@ -127,7 +127,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
                 $retVal['selected'] = $this
                     ->createSelectedTab($key, $class, $label, $permissionName);
                 $retVal['tabs'][] = $retVal['selected'];
-            } else if ($type == 'basic') {
+            } elseif ($type == 'basic') {
                 if (!isset($activeOptions)) {
                     $activeOptions
                         = $this->results->get($activeSearchClass)->getOptions();
@@ -138,7 +138,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
                 $retVal['tabs'][] = $this->createBasicTab(
                     $key, $class, $label, $newUrl, $permissionName
                 );
-            } else if ($type == 'advanced') {
+            } elseif ($type == 'advanced') {
                 $retVal['tabs'][] = $this->createAdvancedTab(
                     $key, $class, $label, $filters, $permissionName
                 );

@@ -380,7 +380,7 @@ class SolrMarc extends SolrDefault
             ? $this->mainConfig->Record->replaceMarc260 : false;
         if (count($pubResults) > 0) {
             return $replace260 ? $pubResults : array_merge($results, $pubResults);
-        } else if (count($copyResults) > 0) {
+        } elseif (count($copyResults) > 0) {
             return $replace260 ? $copyResults : array_merge($results, $copyResults);
         }
 
@@ -932,7 +932,7 @@ class SolrMarc extends SolrDefault
                     ? $matches[2]
                     : trim(str_replace(range('a', 'z'), '', ($matches[2])));
             }
-        } else if ($prefix == null) {
+        } elseif ($prefix == null) {
             // If no prefix was given or found, we presume it is a raw bib record
             return $text;
         }

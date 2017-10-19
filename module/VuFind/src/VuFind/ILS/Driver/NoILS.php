@@ -152,7 +152,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
                     )
                 ]
             ];
-        } else if ($useStatus == "marc") {
+        } elseif ($useStatus == "marc") {
             // Retrieve record from index:
             $recordDriver = $this->getSolrRecord($id);
             return $this->getFormattedMarcDetails($recordDriver, 'MarcStatus');

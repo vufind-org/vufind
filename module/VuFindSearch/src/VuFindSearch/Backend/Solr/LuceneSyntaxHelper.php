@@ -587,7 +587,7 @@ class LuceneSyntaxHelper
             || $this->caseSensitiveBooleans === "0"
         ) {
             return $this->allBools;
-        } else if ($this->caseSensitiveBooleans === true
+        } elseif ($this->caseSensitiveBooleans === true
             || $this->caseSensitiveBooleans === 1
             || $this->caseSensitiveBooleans === "1"
         ) {

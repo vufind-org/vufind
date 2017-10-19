@@ -732,7 +732,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $params = ['view' => 'full'];
         if (!empty($patron['id'])) {
             $params['patron'] = $patron['id'];
-        } else if (isset($this->defaultPatronId)) {
+        } elseif (isset($this->defaultPatronId)) {
             $params['patron'] = $this->defaultPatronId;
         }
         $xml = $this->doRestDLFRequest(['record', $resource, 'items'], $params);
@@ -787,7 +787,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             if (preg_match($dueDateWithStatusRegEx, $status, $matches)) {
                 $duedate = $this->parseDate($matches[1]);
                 $requested = (trim($matches[2]) == "Requested");
-            } else if (preg_match($dueDateRegEx, $status, $matches)) {
+            } elseif (preg_match($dueDateRegEx, $status, $matches)) {
                 $duedate = $this->parseDate($matches[1]);
             } else {
                 $duedate = null;
@@ -1569,12 +1569,12 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     {
         if ($date == null || $date == "") {
             return "";
-        } else if (preg_match("/^[0-9]{8}$/", $date) === 1) { // 20120725
+        } elseif (preg_match("/^[0-9]{8}$/", $date) === 1) { // 20120725
             return $this->dateConverter->convertToDisplayDate('Ynd', $date);
-        } else if (preg_match("/^[0-9]+\/[A-Za-z]{3}\/[0-9]{4}$/", $date) === 1) {
+        } elseif (preg_match("/^[0-9]+\/[A-Za-z]{3}\/[0-9]{4}$/", $date) === 1) {
             // 13/jan/2012
             return $this->dateConverter->convertToDisplayDate('d/M/Y', $date);
-        } else if (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{4}$/", $date) === 1) {
+        } elseif (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{4}$/", $date) === 1) {
             // 13/7/2012
             return $this->dateConverter->convertToDisplayDate('d/m/Y', $date);
         } else {
@@ -1676,7 +1676,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             // locationId in pickupLocations array
             reset($pickupLocations);
             return key($pickupLocations);
-        } else if (isset($this->preferredPickUpLocations)) {
+        } elseif (isset($this->preferredPickUpLocations)) {
             return $this->preferredPickUpLocations[0];
         } else {
             throw new ILSException(

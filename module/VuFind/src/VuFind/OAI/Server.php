@@ -614,7 +614,7 @@ class Server
         $listSize = $deletedCount + $nonDeletedCount;
         if ($listSize > $currentCursor) {
             $this->saveResumptionToken($xml, $params, $currentCursor, $listSize);
-        } else if ($solrOffset > 0) {
+        } elseif ($solrOffset > 0) {
             // If we reached the end of the list but there is more than one page, we
             // still need to display an empty <resumptionToken> tag:
             $token = $xml->addChild('resumptionToken');
@@ -734,7 +734,7 @@ class Server
                 // use hidden filter here to allow for complex queries;
                 // plain old addFilter expects simple field:value queries.
                 $params->addHiddenFilter($this->setQueries[$set]);
-            } else if (null !== $this->setField) {
+            } elseif (null !== $this->setField) {
                 $params->addFilter(
                     $this->setField . ':"' . addcslashes($set, '"') . '"'
                 );
@@ -842,7 +842,7 @@ class Server
             } else {
                 return true;
             }
-        } else if (strpos($until, 'T') && strpos($until, 'Z')) {
+        } elseif (strpos($until, 'T') && strpos($until, 'Z')) {
             return true;
         }
 
