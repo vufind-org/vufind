@@ -132,9 +132,9 @@ class SearchTabsHelperTest extends TestCase
     {
         $helper = $this->getSearchTabsHelper();
         $this->assertEquals(
-            $this->tabConfig['default_unfiltered'],  $helper->getTabConfig()
+            $this->tabConfig['default_unfiltered'], $helper->getTabConfig()
         );
-        $this->assertEquals($this->filterConfig,  $helper->getTabFilterConfig());
+        $this->assertEquals($this->filterConfig, $helper->getTabFilterConfig());
     }
 
     /**

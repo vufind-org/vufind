@@ -148,13 +148,13 @@ class Horizon extends AbstractBase
             if (in_array(strtolower('available:0'), $arrayValues)) {
                 $available = 0;
             }
-            if (in_array(strtolower('reserve:N'),   $arrayValues)) {
+            if (in_array(strtolower('reserve:N'), $arrayValues)) {
                 $reserve  = 'N';
             }
-            if (in_array(strtolower('reserve:Y'),   $arrayValues)) {
+            if (in_array(strtolower('reserve:Y'), $arrayValues)) {
                 $reserve  = 'Y';
             }
-            if (in_array(strtolower('duedate:0'),   $arrayValues)) {
+            if (in_array(strtolower('duedate:0'), $arrayValues)) {
                 $duedate  = '';
             }
         } else {
@@ -510,7 +510,7 @@ class Horizon extends AbstractBase
             $sqlStmt = mssql_query($sql);
             $row = mssql_fetch_assoc($sqlStmt);
             if ($row) {
-                list($lastname,$firstname) = explode(', ', $row['FULLNAME']);
+                list($lastname, $firstname) = explode(', ', $row['FULLNAME']);
                 $user = ['id' => $username,
                               'firstname' => $firstname,
                               'lastname' => $lastname,
@@ -807,7 +807,7 @@ class Horizon extends AbstractBase
 
             $row = mssql_fetch_assoc($sqlStmt);
             if ($row) {
-                list($lastname,$firstname) = explode(', ', $row['FULLNAME']);
+                list($lastname, $firstname) = explode(', ', $row['FULLNAME']);
                 $profile = ['lastname' => $lastname,
                                 'firstname' => $firstname,
                                 'address1' => $row['ADDRESS1'],
