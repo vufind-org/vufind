@@ -31,11 +31,11 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * Factory for instantiating content loaders
  *
- * @category VuFind2
- * @package  Content
- * @author   John Jung <jej@uchicago.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @category           VuFind2
+ * @package            Content
+ * @author             John Jung <jej@uchicago.edu>
+ * @license            http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link               http://vufind.org/wiki/vufind2:developer_manual Wiki
  * @codeCoverageIgnore
  */
 class Factory

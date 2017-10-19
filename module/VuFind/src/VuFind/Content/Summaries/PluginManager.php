@@ -1,5 +1,6 @@
 <?php 
 /**
+ * Summaries content loader plugin manager
  *
  * PHP version 5
  *
