@@ -65,6 +65,7 @@ class SearchHandlerTest extends PHPUnit_Framework_TestCase
         $hndl = new SearchHandler($spec);
         $this->assertEquals('(id:("escaped\"quote" OR not OR quoted OR "basic phrase"))', $hndl->createSimpleQueryString('"escaped\"quote" not quoted "basic phrase"'));
     }
+
     /**
      * Test toArray() method.
      *

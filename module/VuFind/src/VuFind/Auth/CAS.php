@@ -265,6 +265,7 @@ class CAS extends AbstractBase
 
         return $sortedUserAttributes;
     }
+
     /**
      * Establishes phpCAS Configuration and Enables the phpCAS Client
      *

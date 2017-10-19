@@ -52,6 +52,7 @@ class FavoriteFacetsTest extends \VuFindTest\Unit\TestCase
         $params->expects($this->exactly(0))->method('addFacet'); // no facets are expected in this case
         $this->getFavoriteFacets($results, 'disabled');
     }
+
     /**
      * Test facet initialization with enabled tags.
      *

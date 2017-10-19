@@ -2543,66 +2543,87 @@ trait ILSMockTrait
     public function cancelHolds($cancelDetails)
     {
     }
+
     public function cancelILLRequests($cancelDetails)
     {
     }
+
     public function cancelStorageRetrievalRequests($cancelDetails)
     {
     }
+
     public function checkRequestIsValid($id, $data, $patron)
     {
     }
+
     public function checkILLRequestIsValid($id, $data, $patron)
     {
     }
+
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
     }
+
     public function getCancelHoldDetails($holdDetails)
     {
     }
+
     public function getCancelILLRequestDetails($holdDetails)
     {
     }
+
     public function getCancelStorageRetrievalRequestDetails($holdDetails)
     {
     }
+
     public function getConfig($function, $params = null)
     {
     }
+
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
     }
+
     public function getDefaultRequestGroup($patron = false, $holdDetails = null)
     {
     }
+
     public function getMyILLRequests($patron)
     {
     }
+
     public function getILLPickUpLibraries($patron = false, $holdDetails = null)
     {
     }
+
     public function getILLPickUpLocations($id, $pickupLib, $patron)
     {
     }
+
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
     }
+
     public function getRenewDetails($checkoutDetails)
     {
     }
+
     public function getRequestGroups($bibId = null, $patron = null, $holdDetails = null)
     {
     }
+
     public function placeHold($holdDetails)
     {
     }
+
     public function placeILLRequest($holdDetails)
     {
     }
+
     public function placeStorageRetrievalRequest($details)
     {
     }
+
     public function renewMyItems($renewDetails)
     {
     }
@@ -2618,6 +2639,7 @@ class VoyagerMock extends \VuFind\ILS\Driver\Voyager
 class VoyagerNoSupportMock extends \VuFind\ILS\Driver\Voyager
 {
     use ILSMockTrait;
+
     public function supportsMethod(...$args)
     {
         return false;

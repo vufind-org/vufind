@@ -118,6 +118,7 @@ class Feed extends ParentFeed
         $this->encoding      = $enc;
         return $this;
     }
+
     /**
      * Get feed encoding
      *
