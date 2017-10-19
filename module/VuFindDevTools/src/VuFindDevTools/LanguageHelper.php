@@ -160,7 +160,7 @@ class LanguageHelper
         if (isset($this->config->Languages->$lang)) {
             return $this->config->Languages->$lang;
         }
-        switch($lang) {
+        switch ($lang) {
         case 'en-gb':
             return 'British English';
         case 'pt-br':

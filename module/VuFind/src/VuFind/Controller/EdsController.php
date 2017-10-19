@@ -288,7 +288,6 @@ class EdsController extends AbstractSearch
             // Explicitly execute search within controller -- this allows us to
             // catch exceptions more reliably:
             $results->performAndProcessSearch();
-
         } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
             if ($e->hasTag('VuFind\Search\ParserError')) {
                 // If it's a parse error or the user specified an invalid field, we

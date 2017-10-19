@@ -260,5 +260,4 @@ class Feed extends ParentFeed
     {
         return $this->links;
     }
-
 }

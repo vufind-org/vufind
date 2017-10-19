@@ -172,7 +172,7 @@ class SearchRequestModel
     public function setParameters($parameters = [])
     {
         foreach ($parameters as $key => $values) {
-            switch($key) {
+            switch ($key) {
             case 'filters':
                 $cnt = 1;
                 foreach ($values as $filter) {
@@ -381,13 +381,13 @@ class SearchRequestModel
         return addcslashes($value, ":,");
     }
     
-     /**
-      * Escape characters that may be present in the action parameter syntax
-      *
-      * @param string $value The value to escape
-      *
-      * @return string       The value with special characters escaped
-      */
+    /**
+     * Escape characters that may be present in the action parameter syntax
+     *
+     * @param string $value The value to escape
+     *
+     * @return string       The value with special characters escaped
+     */
     public static function escapeSpecialCharactersForActions($value)
     {
         return addcslashes($value, ":,()");

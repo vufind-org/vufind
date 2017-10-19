@@ -211,7 +211,7 @@ class Generator
      */
     protected function getColor($color)
     {
-        switch (strtolower($color)){
+        switch (strtolower($color)) {
         case 'black':
             return imagecolorallocate($this->im, 0, 0, 0);
         case 'silver':
@@ -754,7 +754,7 @@ class Generator
         $p = (int)($v * (1.0 - $s));
         $q = (int)($v * (1.0 - $s * $f));
         $t = (int)($v * (1.0 - $s * (1.0 - $f)));
-        switch($i) {
+        switch ($i) {
         case 0:
             return imagecolorallocate($this->im, $v, $t, $p);
         case 1:

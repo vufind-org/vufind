@@ -202,5 +202,4 @@ class Spellcheck implements IteratorAggregate, Countable
     {
         return (strlen($b) - strlen($a));
     }
-
 }

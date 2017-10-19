@@ -504,8 +504,7 @@ class NewGenLib extends AbstractBase
         try {
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
 

@@ -81,5 +81,4 @@ interface BackendInterface
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
     public function retrieve($id, ParamBag $params = null);
-
 }

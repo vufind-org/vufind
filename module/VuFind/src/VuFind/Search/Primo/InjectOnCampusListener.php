@@ -126,5 +126,4 @@ class InjectOnCampusListener
 
         return $event;
     }
-
 }

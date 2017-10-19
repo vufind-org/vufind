@@ -99,7 +99,7 @@ abstract class EdsApi_REST_Base
     {
         if (is_array($settings)) {
             foreach ($settings as $key => $value) {
-                switch($key) {
+                switch ($key) {
                 case 'debug':
                     $this->debug = $value;
                     break;
@@ -190,7 +190,6 @@ abstract class EdsApi_REST_Base
         $url = $this->edsApiHost . '/retrieve';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs);
-
     }
 
     /**
@@ -332,7 +331,7 @@ abstract class EdsApi_REST_Base
         //process response.
         try {
             $result = json_decode($input, true);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw new EbscoEdsApiException(
                 'An error occurred when processing EDS Api response: '
                 . $e->getMessage()

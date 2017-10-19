@@ -467,7 +467,9 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
      */
     protected function prfz($str)
     {
-        $x = 0; $y = 0; $w = 2;
+        $x = 0;
+        $y = 0;
+        $w = 2;
         $stra = str_split($str);
         for ($i = strlen($str); $i > 0; $i--) {
             $c = $stra[$i - 1];
@@ -486,5 +488,4 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
         }
         return $ret;
     }
-
 }

@@ -136,21 +136,21 @@ class ClaviusSQL extends AbstractBase
         //how long (in days) hide new items
         $this->hideNewItemsDays = 0;
         if (isset($this->config['Catalog']['hide_days'])) {
-             $this->c = $this->config['Catalog']['hide_days'];
+            $this->c = $this->config['Catalog']['hide_days'];
         }
     }
 
-     /**
-      * Get list of departments
-      *
-      * This method queries the ILS for a list of departments to be used as input
-      * to the findReserves method
-      *
-      * @throws ILSException
-      *
-      * @return array An associative array with key = department ID,
-      * value = department name.
-      */
+    /**
+     * Get list of departments
+     *
+     * This method queries the ILS for a list of departments to be used as input
+     * to the findReserves method
+     *
+     * @throws ILSException
+     *
+     * @return array An associative array with key = department ID,
+     * value = department name.
+     */
     public function getDepartments()
     {
         if (!is_array($this->locations)) {

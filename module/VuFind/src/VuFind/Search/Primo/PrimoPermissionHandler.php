@@ -242,7 +242,6 @@ class PrimoPermissionHandler
         if ($this->instCode === null) {
             $this->instCode = false;
         }
-
     }
 
     /**

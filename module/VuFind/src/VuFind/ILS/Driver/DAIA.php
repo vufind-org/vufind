@@ -474,7 +474,6 @@ class DAIA extends AbstractBase implements
                 'HTTP status ' . $result->getStatusCode() .
                 ' received, retrieving availability information for record: ' . $id
             );
-
         }
 
         // check if result matches daiaResponseFormat

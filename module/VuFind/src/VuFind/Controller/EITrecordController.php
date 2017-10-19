@@ -70,5 +70,4 @@ class EITrecordController extends AbstractRecord
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
     }
-
 }

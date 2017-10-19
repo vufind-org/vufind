@@ -271,7 +271,7 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
 
             // VuFind's configuration provides four priority options, each
             // combining two of the standard Zend levels.
-            switch(trim($priority)) {
+            switch (trim($priority)) {
             case 'debug':
                 // Set static flag indicating that debug is turned on:
                 $logger->debugNeeded(true);

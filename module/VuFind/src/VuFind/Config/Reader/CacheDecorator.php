@@ -121,5 +121,4 @@ class CacheDecorator implements ReaderInterface
     {
         return md5($string);
     }
-
 }

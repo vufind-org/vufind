@@ -622,7 +622,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     public function testDefaultDriver()
     {
         //Case: The parameters let it know what driver to use
-            //Result: return the function results for that driver
+        //Result: return the function results for that driver
         $patron = $this->getPatron('username', 'institution');
 
         $ILS = $this->getMockILS('Voyager', ['getMyTransactions', 'init']);
@@ -647,7 +647,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $this->assertTrue($returnVal);
 
         //Case: There is a default driver set in the configuration
-            //Result: return the function results for that driver
+        //Result: return the function results for that driver
 
         // We need to clear patron login information so that MultiBackend has to
         // fall back on the defaultDriver implementation
@@ -2143,7 +2143,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $this->setProperty($driver, 'ilsAuth', $mockAuth);
         $result = $driver->getConfig('Holds');
         $this->assertEquals($expected1, $result);
-
     }
 
     /**
@@ -2171,40 +2170,40 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $this->setProperty($driver, 'drivers', $drivers);
 
         //Case: No driver info in params, but default driver has method
-            //Result: A return of false
+        //Result: A return of false
 
         $this->setProperty($driver, 'defaultDriver', 'testing3');
         $methodReturn = $driver->supportsMethod('fail', null);
         $this->assertFalse($methodReturn);
 
         //Case: No driver info in params, though default driver has method
-            //Result: A return of true
+        //Result: A return of true
 
         $methodReturn = $driver->supportsMethod('getStatus', null);
         $this->assertTrue($methodReturn);
         $this->setProperty($driver, 'defaultDriver', null);
 
         //Case: Instance to use is in parameters but does not have method
-            //Result: A return of false
+        //Result: A return of false
 
         $patron = [$this->getPatron('username', 'testing3')];
         $methodReturn = $driver->supportsMethod('fail', $patron);
         $this->assertFalse($methodReturn);
 
         //Case: Instance to use is in parameters and has method
-            //Result: A return of true
+        //Result: A return of true
 
         $methodReturn = $driver->supportsMethod('getStatus', $patron);
         $this->assertTrue($methodReturn);
 
         //Case: No parameters are given
-            //Result: A return of true
+        //Result: A return of true
 
         $methodReturn = $driver->supportsMethod('getStatus', null);
         $this->assertTrue($methodReturn);
 
         //Case: getLoginDrivers and getDefaultLoginDriver are always supported
-            //Result: A return of true
+        //Result: A return of true
 
         $methodReturn = $driver->supportsMethod('getLoginDrivers', null);
         $this->assertTrue($methodReturn);
@@ -2398,7 +2397,9 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
                 [
                     new \VuFind\Date\Converter(),
                     $this->createMock('VuFindSearch\Service'),
-                    function () use ($session) { return $session; }
+                    function () use ($session) {
+                        return $session;
+                    }
                 ]
             )->getMock();
     }
@@ -2423,7 +2424,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
                     ->setConstructorArgs([new \VuFind\Date\Converter()])
                     ->getMock();
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $mock = $this->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'Mock')
                 ->setMethods($methods)->getMock();
         }
@@ -2617,7 +2618,8 @@ class VoyagerMock extends \VuFind\ILS\Driver\Voyager
 class VoyagerNoSupportMock extends \VuFind\ILS\Driver\Voyager
 {
     use ILSMockTrait;
-    public function supportsMethod(...$args) {
+    public function supportsMethod(...$args)
+    {
         return false;
     }
 }

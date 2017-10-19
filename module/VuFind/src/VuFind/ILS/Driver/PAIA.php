@@ -1339,7 +1339,6 @@ class PAIA extends DAIA
             $result['available'] = $doc['status'] == 4 ? true : false;
 
             $results[] = $result;
-
         }
         return $results;
     }
@@ -1359,7 +1358,6 @@ class PAIA extends DAIA
             $result = $this->getBasicDetails($doc);
 
             $results[] = $result;
-
         }
         return $results;
     }

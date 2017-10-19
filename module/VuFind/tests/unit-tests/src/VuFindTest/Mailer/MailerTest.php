@@ -292,6 +292,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
 
 class MockEmailRenderer extends \Zend\View\Renderer\PhpRenderer
 {
-    public function partial($template, $driver) {
+    public function partial($template, $driver)
+    {
     }
 }

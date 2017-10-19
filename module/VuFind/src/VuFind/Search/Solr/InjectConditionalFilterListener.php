@@ -143,5 +143,4 @@ class InjectConditionalFilterListener
 
         return $event;
     }
-
 }

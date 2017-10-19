@@ -117,7 +117,7 @@ class TitleHolds
         if ($this->catalog) {
             $mode = $this->catalog->getTitleHoldsMode();
             if ($mode == 'disabled') {
-                 return false;
+                return false;
             } elseif ($mode == 'driver') {
                 try {
                     $patron = $this->ilsAuth->storedCatalogLogin();
@@ -246,9 +246,8 @@ class TitleHolds
 
         if ($checkHolds != false) {
             if ($type == 'always') {
-                 $addlink = true;
+                $addlink = true;
             } elseif ($type == 'availability') {
-
                 $holdings = $this->getHoldings($id);
                 foreach ($holdings as $holding) {
                     if ($holding['availability']

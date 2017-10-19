@@ -138,6 +138,5 @@ class QueryBuilder
             }
         }
         return $groups;
-
     }
 }

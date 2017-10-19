@@ -58,7 +58,9 @@ class DemoTest extends \VuFindTest\Unit\TestCase
             ->disableOriginalConstructor()->getMock();
         $this->driver = new Demo(
             new \VuFind\Date\Converter(), $this->createMock('VuFindSearch\Service'),
-            function () use ($session) { return $session; }
+            function () use ($session) {
+                return $session;
+            }
         );
         $this->driver->init();
     }

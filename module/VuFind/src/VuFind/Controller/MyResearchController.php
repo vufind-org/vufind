@@ -819,7 +819,7 @@ class MyResearchController extends AbstractBase
 
             return $this->redirect()->toRoute('userList', ['id' => $finalId]);
         } catch (\Exception $e) {
-            switch(get_class($e)) {
+            switch (get_class($e)) {
             case 'VuFind\Exception\ListPermission':
             case 'VuFind\Exception\MissingField':
                 $this->flashMessenger()->addMessage($e->getMessage(), 'error');
@@ -902,7 +902,7 @@ class MyResearchController extends AbstractBase
                 // Success Message
                 $this->flashMessenger()->addMessage('fav_list_delete', 'success');
             } catch (\Exception $e) {
-                switch(get_class($e)) {
+                switch (get_class($e)) {
                 case 'VuFind\Exception\LoginRequired':
                 case 'VuFind\Exception\ListPermission':
                     $user = $this->getUser();

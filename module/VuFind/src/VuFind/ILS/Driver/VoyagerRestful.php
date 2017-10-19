@@ -1427,7 +1427,6 @@ EOT;
         $itemId = false
     ) {
         if (!empty($bibId) && !empty($patronId) && !empty($request)) {
-
             $hierarchy = [];
 
             // Build Hierarchy
@@ -1995,7 +1994,7 @@ EOT;
             return $this->holdError('hold_invalid_request_group');
         }
 
-            // Optional check that the bib has items
+        // Optional check that the bib has items
         if ($this->checkItemsExist) {
             $exist = $this->itemsExist(
                 $bibId,
@@ -2080,7 +2079,7 @@ EOT;
         foreach ($details as $cancelDetails) {
             list($itemId, $cancelCode) = explode('|', $cancelDetails);
 
-             // Create Rest API Cancel Key
+            // Create Rest API Cancel Key
             $cancelID = $this->ws_dbKey . '|' . $cancelCode;
 
             // Build Hierarchy
@@ -2112,7 +2111,6 @@ EOT;
                         ? 'hold_cancel_success' : 'hold_cancel_fail',
                     'sysMessage' => ($reply == 'ok') ? false : $reply,
                 ];
-
             } else {
                 $response[$itemId] = [
                     'success' => false, 'status' => 'hold_cancel_fail'
@@ -2577,7 +2575,7 @@ EOT;
         foreach ($details as $cancelDetails) {
             list($dbKey, $itemId, $cancelCode) = explode('|', $cancelDetails);
 
-             // Create Rest API Cancel Key
+            // Create Rest API Cancel Key
             $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . '|' . $cancelCode;
 
             // Build Hierarchy
@@ -2609,7 +2607,6 @@ EOT;
                         : 'storage_retrieval_request_cancel_fail',
                     'sysMessage' => ($reply == 'ok') ? false : $reply,
                 ];
-
             } else {
                 $response[$itemId] = [
                     'success' => false,
@@ -3176,7 +3173,7 @@ EOT;
         foreach ($details as $cancelDetails) {
             list($dbKey, $itemId, $type, $cancelCode) = explode('|', $cancelDetails);
 
-             // Create Rest API Cancel Key
+            // Create Rest API Cancel Key
             $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . '|' . $cancelCode;
 
             // Build Hierarchy
@@ -3214,7 +3211,6 @@ EOT;
                         ? 'ill_request_cancel_success' : 'ill_request_cancel_fail',
                     'sysMessage' => ($reply == 'ok') ? false : $reply,
                 ];
-
             } else {
                 $response[$itemId] = [
                     'success' => false,

@@ -362,5 +362,4 @@ class DeduplicationListener
         array_unshift($result, '');
         return array_flip($result);
     }
-
 }

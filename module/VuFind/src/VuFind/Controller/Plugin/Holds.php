@@ -169,7 +169,7 @@ class Holds extends AbstractRequestBase
                 return $cancelResults;
             }
         } else {
-             $flashMsg->addMessage('hold_empty_selection', 'error');
+            $flashMsg->addMessage('hold_empty_selection', 'error');
         }
         return [];
     }

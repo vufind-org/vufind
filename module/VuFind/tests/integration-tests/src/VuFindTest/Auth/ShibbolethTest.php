@@ -228,6 +228,6 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      */
     public static function tearDownAfterClass()
     {
-         static::removeUsers('testuser');
-   }
+        static::removeUsers('testuser');
+    }
 }

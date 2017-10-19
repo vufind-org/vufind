@@ -203,7 +203,6 @@ class EIT extends SolrDefault
             return isset($this->controlInfo['artinfo']['aug']['au'])
                 ? [$this->controlInfo['artinfo']['aug']['au']] : [];
         }
-
     }
 
     /**
@@ -397,7 +396,7 @@ class EIT extends SolrDefault
         $pagecount = $this->getContainerPageCount();
         $endpage = $startpage + $pagecount;
         if ($endpage != 0) {
-                return $endpage;
+            return $endpage;
         } else {
             return null;
         }

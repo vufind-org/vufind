@@ -152,5 +152,4 @@ class UserTest extends \VuFindTest\Unit\TestCase
 
         return $user;
     }
-
 }
