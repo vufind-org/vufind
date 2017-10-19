@@ -189,7 +189,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         return $body;
     }
 
-        /**
+    /**
      * Retrieve a specific record.
      *
      * @param string   $id     Record ID to retrieve

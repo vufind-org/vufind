@@ -57,15 +57,15 @@ class Evergreen extends AbstractBase
     protected $dbName;
 
      /**
-     * Initialize the driver.
-     *
-     * Validate configuration and perform all resource-intensive tasks needed to
-     * make the driver active.
-     *
-     * @throws ILSException
-     * @throws PDOException
-     * @return void
-     */
+      * Initialize the driver.
+      *
+      * Validate configuration and perform all resource-intensive tasks needed to
+      * make the driver active.
+      *
+      * @throws ILSException
+      * @throws PDOException
+      * @return void
+      */
     public function init()
     {
         if (empty($this->config)) {
