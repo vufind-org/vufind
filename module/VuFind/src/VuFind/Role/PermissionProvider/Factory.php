@@ -109,7 +109,7 @@ class Factory
             $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService')
         );
     }
-    
+
     /**
      * Factory for User
      *
