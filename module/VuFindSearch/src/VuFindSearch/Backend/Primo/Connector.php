@@ -325,7 +325,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             $qs[] = "loc=adaptor,primo_central_multiple_fe";
 
             if ($this->debug) {
-                print "URL: " . implode('&', $qs);
+                echo "URL: " . implode('&', $qs);
             }
 
             // Send Request
