@@ -10,6 +10,7 @@ $rules = [
         'operators' => ['=' => null, '=>' => null],
     ],
     'blank_line_after_namespace' => true,
+    'braces' => true,
     'concat_space' => ['spacing' => 'one'],
     'elseif' => true,
     'encoding' => true,
