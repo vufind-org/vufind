@@ -52,7 +52,7 @@ class NamedListTest extends TestCase
         $list = new NamedList([['first term', 'info'], ['second term', 'info']]);
         $keys = [];
         foreach ($list as $key => $value) {
-            $keys [] = $key;
+            $keys[] = $key;
         }
         $this->assertEquals(['first term', 'second term'], $keys);
     }
