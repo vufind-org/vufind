@@ -124,7 +124,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         return [
             'docs' => $finalDocs,
             'offset' => $offset,
-            'total' => (integer)$xml->Hits
+            'total' => (int)$xml->Hits
         ];
     }
 
@@ -215,7 +215,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         return [
             'docs' => $finalDocs,
             'offset' => 0,
-            'total' => (integer)$xml->Hits
+            'total' => (int)$xml->Hits
         ];
     }
 }
