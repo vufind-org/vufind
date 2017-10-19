@@ -118,7 +118,7 @@ class TitleHolds
             $mode = $this->catalog->getTitleHoldsMode();
             if ($mode == 'disabled') {
                  return false;
-            } else if ($mode == 'driver') {
+            } elseif ($mode == 'driver') {
                 try {
                     $patron = $this->ilsAuth->storedCatalogLogin();
                     if (!$patron) {

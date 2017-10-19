@@ -2230,7 +2230,7 @@ EOT;
                     if ($dueTimeStamp !== false && is_numeric($dueTimeStamp)) {
                         if ($now > $dueTimeStamp) {
                             $dueStatus = 'overdue';
-                        } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
+                        } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
                             $dueStatus = 'due';
                         }
                     }

@@ -373,7 +373,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             && $this->checkCapability('cancelHolds', [$params ?: []])
         ) {
             $response = ['function' => "cancelHolds"];
-        } else if (isset($this->config->cancel_holds_enabled)
+        } elseif (isset($this->config->cancel_holds_enabled)
             && $this->config->cancel_holds_enabled == true
             && $this->checkCapability('getCancelHoldLink', [$params ?: []])
         ) {
@@ -408,7 +408,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             && $this->checkCapability('renewMyItems', [$params ?: []])
         ) {
             $response = ['function' => "renewMyItems"];
-        } else if (isset($this->config->renewals_enabled)
+        } elseif (isset($this->config->renewals_enabled)
             && $this->config->renewals_enabled == true
             && $this->checkCapability('renewMyItemsLink', [$params ?: []])
         ) {

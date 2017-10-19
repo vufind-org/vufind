@@ -184,7 +184,7 @@ class DynamicRoleProvider implements RoleProviderInterface
             $currentRoles = $providerObj->getPermissions($options);
             if ($roles === null) {
                 $roles = $currentRoles;
-            } else if ($mode == 'ANY') {
+            } elseif ($mode == 'ANY') {
                 $roles = array_merge($roles, $currentRoles);
             } else {
                 $roles = array_intersect($roles, $currentRoles);

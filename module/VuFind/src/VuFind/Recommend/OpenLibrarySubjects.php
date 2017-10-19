@@ -203,7 +203,7 @@ class OpenLibrarySubjects implements RecommendInterface,
         $to = $request->get($field . 'to');
         if (!is_null($from) && !is_null($to)) {
             $range = ['from' => $from, 'to' => $to];
-        } else if (is_object($params)) {
+        } elseif (is_object($params)) {
             $currentFilters = $params->getFilters();
             if (isset($currentFilters[$field][0])) {
                 $range = SolrUtils::parseRange($currentFilters[$field][0]);

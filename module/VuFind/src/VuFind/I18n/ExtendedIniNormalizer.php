@@ -55,7 +55,7 @@ class ExtendedIniNormalizer
             $full = $dir . '/' . $file;
             if ($file != '.' && $file != '..' && is_dir($full)) {
                 $this->normalizeDirectory($full);
-            } else if (substr($file, -4) == '.ini') {
+            } elseif (substr($file, -4) == '.ini') {
                 $this->normalizeFile($full);
             }
         }

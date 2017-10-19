@@ -54,7 +54,7 @@ class Truncate extends AbstractHelper
     {
         if ($len == 0) {
             return '';
-        } else if (strlen($str) > $len) {
+        } elseif (strlen($str) > $len) {
             if (function_exists('mb_substr')) {
                 return trim(mb_substr($str, 0, $len, 'UTF-8')) . $append;
             } else {

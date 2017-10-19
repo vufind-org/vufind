@@ -153,7 +153,7 @@ class QueryBuilder implements QueryBuilderInterface
                         $params->set('hl.q', $oldString);
                     }
                 }
-            } else if ($handler->hasDismax()) {
+            } elseif ($handler->hasDismax()) {
                 $params->set('qf', implode(' ', $handler->getDismaxFields()));
                 $params->set('qt', $handler->getDismaxHandler());
                 foreach ($handler->getDismaxParams() as $param) {
@@ -351,7 +351,7 @@ class QueryBuilder implements QueryBuilderInterface
         }
         if ($advanced && $handler) {
             return $handler->createAdvancedQueryString($string);
-        } else if ($handler) {
+        } elseif ($handler) {
             return $handler->createSimpleQueryString($string);
         } else {
             return $string;

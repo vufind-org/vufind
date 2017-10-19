@@ -801,15 +801,15 @@ class SolrDefault extends AbstractBase
         $formats = $this->getFormats();
         if (in_array('Book', $formats)) {
             return 'Book';
-        } else if (in_array('Article', $formats)) {
+        } elseif (in_array('Article', $formats)) {
             return 'Article';
-        } else if (in_array('Journal', $formats)) {
+        } elseif (in_array('Journal', $formats)) {
             return 'Journal';
-        } else if (isset($formats[0])) {
+        } elseif (isset($formats[0])) {
             return $formats[0];
-        } else if (strlen($this->getCleanISSN()) > 0) {
+        } elseif (strlen($this->getCleanISSN()) > 0) {
             return 'Journal';
-        } else if (strlen($this->getCleanISBN()) > 0) {
+        } elseif (strlen($this->getCleanISBN()) > 0) {
             return 'Book';
         }
         return 'UnknownFormat';

@@ -72,7 +72,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
                 $marc = new File_MARCXML($i, File_MARCXML::SOURCE_STRING);
                 return new Record($marc->next());
             };
-        } else if (!is_callable($recordFactory)) {
+        } elseif (!is_callable($recordFactory)) {
             throw new InvalidArgumentException('Record factory must be callable.');
         }
         $this->recordFactory = $recordFactory;

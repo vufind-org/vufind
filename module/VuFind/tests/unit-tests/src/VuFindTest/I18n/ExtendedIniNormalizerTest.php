@@ -70,7 +70,7 @@ class ExtendedIniNormalizerTest extends \VuFindTest\Unit\TestCase
             $full = $dir . '/' . $file;
             if ($file != '.' && $file != '..' && is_dir($full)) {
                 $this->checkDirectory($normalizer, $full);
-            } else if (substr($file, -4) == '.ini') {
+            } elseif (substr($file, -4) == '.ini') {
                 $this->assertEquals(
                     $normalizer->normalizeFileToString($full),
                     file_get_contents($full),

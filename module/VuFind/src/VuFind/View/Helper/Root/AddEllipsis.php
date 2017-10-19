@@ -70,7 +70,7 @@ class AddEllipsis extends AbstractHelper
                 // otherwise, unless we already have the full string, add ellipses.
                 if (strlen($fullString) < 160) {
                     $title .= substr($fullString, $pos + strlen($dehighlighted));
-                } else if ($pos + strlen($dehighlighted) < strlen($fullString)) {
+                } elseif ($pos + strlen($dehighlighted) < strlen($fullString)) {
                     $title = trim($title) . '...';
                 }
                 return $title;

@@ -717,7 +717,7 @@ class AbstractRecord extends AbstractBase
             && !$this->getUser()
         ) {
             return $this->forceLogin(null);
-        } else if ($this->params()->fromQuery('catalogLogin', 'false') == 'true'
+        } elseif ($this->params()->fromQuery('catalogLogin', 'false') == 'true'
             && !is_array($patron = $this->catalogLogin())
         ) {
             return $patron;

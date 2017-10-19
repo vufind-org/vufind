@@ -664,7 +664,7 @@ abstract class Options implements TranslatorAwareInterface
     {
         if (isset($this->basicHandlers[$field])) {
             return $this->translate($this->basicHandlers[$field]);
-        } else if (isset($this->advancedHandlers[$field])) {
+        } elseif (isset($this->advancedHandlers[$field])) {
             return $this->translate($this->advancedHandlers[$field]);
         } else {
             return $field;

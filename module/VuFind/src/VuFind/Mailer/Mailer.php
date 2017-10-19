@@ -147,7 +147,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     {
         if ($to instanceof AddressList) {
             $recipients = $to;
-        } else if ($to instanceof Address) {
+        } elseif ($to instanceof Address) {
             $recipients = new AddressList();
             $recipients->add($to);
         } else {

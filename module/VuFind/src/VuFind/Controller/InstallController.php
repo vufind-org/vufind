@@ -335,16 +335,16 @@ class InstallController extends AbstractBase
         if (!preg_match('/^\w*$/', $view->dbname)) {
             $this->flashMessenger()
                 ->addMessage('Database name must be alphanumeric.', 'error');
-        } else if (!preg_match('/^\w*$/', $view->dbuser)) {
+        } elseif (!preg_match('/^\w*$/', $view->dbuser)) {
             $this->flashMessenger()
                 ->addMessage('Database user must be alphanumeric.', 'error');
-        } else if ($skip || $this->formWasSubmitted('submit')) {
+        } elseif ($skip || $this->formWasSubmitted('submit')) {
             $newpass = $this->params()->fromPost('dbpass');
             $newpassConf = $this->params()->fromPost('dbpassconfirm');
             if ((empty($newpass) || empty($newpassConf))) {
                 $this->flashMessenger()
                     ->addMessage('Password fields must not be blank.', 'error');
-            } else if ($newpass != $newpassConf) {
+            } elseif ($newpass != $newpassConf) {
                 $this->flashMessenger()
                     ->addMessage('Password fields must match.', 'error');
             } else {

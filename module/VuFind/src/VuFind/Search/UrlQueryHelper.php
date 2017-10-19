@@ -149,7 +149,7 @@ class UrlQueryHelper
                     }
                 }
             }
-        } else if ($this->queryObject instanceof Query) {
+        } elseif ($this->queryObject instanceof Query) {
             $search = $this->queryObject->getString();
             if (!empty($search)) {
                 $this->urlParams[$this->getBasicSearchParam()] = $search;
@@ -371,7 +371,7 @@ class UrlQueryHelper
         // Account for operators:
         if ($operator == 'NOT') {
             $field = '-' . $field;
-        } else if ($operator == 'OR') {
+        } elseif ($operator == 'OR') {
             $field = '~' . $field;
         }
 

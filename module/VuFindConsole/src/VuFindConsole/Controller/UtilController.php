@@ -565,7 +565,7 @@ class UtilController extends AbstractBase
         if (!is_array($result)) {
             Console::writeLine("Could not obtain suppressed record list from ILS.");
             return $this->getFailureResponse();
-        } else if (empty($result)) {
+        } elseif (empty($result)) {
             Console::writeLine("No suppressed records to delete.");
             return $this->getSuccessResponse();
         }

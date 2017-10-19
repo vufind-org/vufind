@@ -2252,9 +2252,9 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
                     function ($param) use ($voyager, $demo, $dummyILS) {
                         if ($param == 'Voyager') {
                             return $voyager;
-                        } else if ($param == 'Demo') {
+                        } elseif ($param == 'Demo') {
                             return $demo;
-                        } else if ($param == 'DummyILS') {
+                        } elseif ($param == 'DummyILS') {
                             return $dummyILS;
                         }
                         return null;

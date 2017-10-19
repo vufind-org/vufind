@@ -372,7 +372,7 @@ class ResultScroller extends AbstractPlugin
         if (count($this->data->currIds) > 1) {
             $pos = count($this->data->currIds) - 2;
             $retVal['previousRecord'] = $this->data->currIds[$pos];
-        } else if (count($this->data->prevIds) > 0) {
+        } elseif (count($this->data->prevIds) > 0) {
             $prevPos = count($this->data->prevIds) - 1;
             $retVal['previousRecord'] = $this->data->prevIds[$prevPos];
         }
@@ -485,11 +485,11 @@ class ResultScroller extends AbstractPlugin
                     // the current record is somewhere in the middle of the current
                     // page, ie: not first or last
                     return $this->scrollOnCurrentPage($retVal, $pos);
-                } else if ($pos == 0) {
+                } elseif ($pos == 0) {
                     // this record is first record on the current page
                     return $this
                         ->fetchPreviousPage($retVal, $lastSearch, $pos, $count);
-                } else if ($pos == $count - 1) {
+                } elseif ($pos == $count - 1) {
                     // this record is last record on the current page
                     return $this->fetchNextPage($retVal, $lastSearch, $pos);
                 }

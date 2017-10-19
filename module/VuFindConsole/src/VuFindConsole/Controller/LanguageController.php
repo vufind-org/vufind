@@ -279,7 +279,7 @@ class LanguageController extends AbstractBase
         $normalizer = new ExtendedIniNormalizer();
         if (is_dir($target)) {
             $normalizer->normalizeDirectory($target);
-        } else if (is_file($target)) {
+        } elseif (is_file($target)) {
             $normalizer->normalizeFile($target);
         } else {
             Console::writeLine("{$target} does not exist.");

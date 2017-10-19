@@ -190,7 +190,7 @@ class AbstractSearch extends AbstractBase
             || $noRecommend === 'true' || $noRecommend === true
         ) {
             return [];
-        } else if ($noRecommend === 0 || $noRecommend === '0'
+        } elseif ($noRecommend === 0 || $noRecommend === '0'
             || $noRecommend === 'false' || $noRecommend === false
         ) {
             return $all;

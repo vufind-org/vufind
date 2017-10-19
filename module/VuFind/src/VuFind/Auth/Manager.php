@@ -427,7 +427,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
                     ->select(['id' => $this->session->userId]);
                 $this->currentUser = count($results) < 1
                     ? false : $results->current();
-            } else if (isset($this->session->userDetails)) {
+            } elseif (isset($this->session->userDetails)) {
                 // privacy mode
                 $results = $this->userTable->createRow();
                 $results->exchangeArray($this->session->userDetails);

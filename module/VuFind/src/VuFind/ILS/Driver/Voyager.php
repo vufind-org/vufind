@@ -1430,7 +1430,7 @@ EOT;
             if (is_numeric($dueTimeStamp)) {
                 if ($now > $dueTimeStamp) {
                     $dueStatus = "overdue";
-                } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
+                } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
                     $dueStatus = "due";
                 }
             }
@@ -2020,7 +2020,7 @@ EOT;
                 $addr1 = utf8_encode($row['ADDRESS_LINE1']);
                 if ($validator->isValid($addr1)) {
                     $patron['email'] = $addr1;
-                } else if (!isset($patron['address1'])) {
+                } elseif (!isset($patron['address1'])) {
                     if (!empty($addr1)) {
                         $patron['address1'] = $addr1;
                     }

@@ -217,7 +217,7 @@ class EIT extends SolrDefault
             return [
                 $this->controlInfo['pubinfo']['dt']['@attributes']['year']
             ];
-        } else if (isset($this->controlInfo['pubinfo']['dt'])) {
+        } elseif (isset($this->controlInfo['pubinfo']['dt'])) {
             return [$this->controlInfo['pubinfo']['dt']];
         } else {
             return [];
@@ -426,9 +426,9 @@ class EIT extends SolrDefault
         $formats = $this->getFormats();
         if (in_array('Book', $formats)) {
             return 'Book';
-        } else if (in_array('Article', $formats)) {
+        } elseif (in_array('Article', $formats)) {
             return 'Article';
-        } else if (in_array('Journal', $formats)) {
+        } elseif (in_array('Journal', $formats)) {
             return 'Journal';
         }
         // Defaulting to "Article" because many EBSCO databases have things like

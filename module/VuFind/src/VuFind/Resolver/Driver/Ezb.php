@@ -198,17 +198,17 @@ class Ezb extends AbstractBase
             if (isset($value) && $value !== '') {
                 if ($key == 'rfr_id') {
                     $newKey = 'sid';
-                } else if ($key == 'rft.date') {
+                } elseif ($key == 'rft.date') {
                     $newKey = 'date';
-                } else if ($key == 'rft.issn') {
+                } elseif ($key == 'rft.issn') {
                     $newKey = 'issn';
-                } else if ($key == 'rft.volume') {
+                } elseif ($key == 'rft.volume') {
                     $newKey = 'volume';
-                } else if ($key == 'rft.issue') {
+                } elseif ($key == 'rft.issue') {
                     $newKey = 'issue';
-                } else if ($key == 'rft.spage') {
+                } elseif ($key == 'rft.spage') {
                     $newKey = 'spage';
-                } else if ($key == 'rft.pages') {
+                } elseif ($key == 'rft.pages') {
                     $newKey = 'pages';
                 } else {
                     $newKey = false;

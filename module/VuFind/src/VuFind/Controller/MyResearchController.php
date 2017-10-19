@@ -358,7 +358,7 @@ class MyResearchController extends AbstractBase
         if (($id = $this->params()->fromQuery('save', false)) !== false) {
             $this->setSavedFlagSecurely($id, true, $user->id);
             $this->flashMessenger()->addMessage('search_save_success', 'success');
-        } else if (($id = $this->params()->fromQuery('delete', false)) !== false) {
+        } elseif (($id = $this->params()->fromQuery('delete', false)) !== false) {
             $this->setSavedFlagSecurely($id, false, $user->id);
             $this->flashMessenger()->addMessage('search_unsave_success', 'success');
         } else {

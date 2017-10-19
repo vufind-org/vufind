@@ -238,9 +238,9 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
                           ];
                 if ($row[6] == '81') {
                     $result['group'] = $this->translate('Staff');
-                } else if ($row[6] == '1') {
+                } elseif ($row[6] == '1') {
                     $result['group'] = $this->translate('Student');
-                } else if ($row[6] == '30') {
+                } elseif ($row[6] == '30') {
                     $result['group'] = $this->translate('Residents');
                 }
                 $row = sybase_fetch_row($sqlStmt);

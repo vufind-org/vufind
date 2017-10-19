@@ -156,7 +156,7 @@ class Converter
             foreach ($details['errors'] as $error) {
                 $errors .= $error . " ";
             }
-        } else if (is_array($details['warnings'])) {
+        } elseif (is_array($details['warnings'])) {
             foreach ($details['warnings'] as $warning) {
                 $errors .= $warning . " ";
             }
