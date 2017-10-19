@@ -28,8 +28,8 @@
  */
 namespace VuFindSearch\Backend\Solr\Document;
 
-use VuFindSearch\Backend\Solr\Record\SerializableRecordInterface;
 use SplObjectStorage;
+use VuFindSearch\Backend\Solr\Record\SerializableRecordInterface;
 use XMLWriter;
 
 /**

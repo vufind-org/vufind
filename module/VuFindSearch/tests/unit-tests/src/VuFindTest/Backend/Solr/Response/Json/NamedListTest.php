@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\Solr\Json\Response;
 
-use VuFindSearch\Backend\Solr\Response\Json\NamedList;
 use PHPUnit_Framework_TestCase as TestCase;
+use VuFindSearch\Backend\Solr\Response\Json\NamedList;
 
 /**
  * Unit tests for SOLR NamedList.

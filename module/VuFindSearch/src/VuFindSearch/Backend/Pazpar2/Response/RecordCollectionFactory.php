@@ -28,8 +28,8 @@
  */
 namespace VuFindSearch\Backend\Pazpar2\Response;
 
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 /**
  * Simple factory for record collection.

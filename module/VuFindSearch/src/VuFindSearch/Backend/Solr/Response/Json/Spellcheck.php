@@ -28,9 +28,9 @@
  */
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
-use IteratorAggregate;
 use ArrayObject;
 use Countable;
+use IteratorAggregate;
 
 /**
  * SOLR spellcheck information.

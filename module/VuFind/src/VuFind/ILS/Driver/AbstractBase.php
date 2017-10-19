@@ -27,8 +27,8 @@
  */
 namespace VuFind\ILS\Driver;
 
-use Zend\Cache\Storage\StorageInterface,
-    VuFind\Cache\KeyGeneratorTrait;
+use VuFind\Cache\KeyGeneratorTrait;
+use Zend\Cache\Storage\StorageInterface;
 
 /**
  * Default ILS driver base class.

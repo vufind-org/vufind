@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\EIT\Response\XML;
 
-use VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory;
 use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory;
 
 /**
  * Unit tests for EIT record collection factory.

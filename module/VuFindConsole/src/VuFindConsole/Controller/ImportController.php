@@ -27,7 +27,8 @@
  */
 namespace VuFindConsole\Controller;
 
-use VuFind\XSLT\Importer, Zend\Console\Console;
+use VuFind\XSLT\Importer;
+use Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools

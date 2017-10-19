@@ -30,11 +30,14 @@
  */
 namespace VuFind\ILS\Driver;
 
-use File_MARC, Yajra\Pdo\Oci8, PDO, PDOException,
-    VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException,
-    VuFind\I18n\Translator\TranslatorAwareInterface,
-    Zend\Validator\EmailAddress as EmailAddressValidator;
+use File_MARC;
+use PDO;
+use PDOException;
+use VuFind\Exception\Date as DateException;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use Yajra\Pdo\Oci8;
+use Zend\Validator\EmailAddress as EmailAddressValidator;
 
 /**
  * Voyager ILS Driver

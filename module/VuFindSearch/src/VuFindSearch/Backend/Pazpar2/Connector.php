@@ -27,8 +27,8 @@
  */
 namespace VuFindSearch\Backend\Pazpar2;
 
-use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\Exception\HttpErrorException;
+use VuFindSearch\ParamBag;
 
 use Zend\Http\Request;
 

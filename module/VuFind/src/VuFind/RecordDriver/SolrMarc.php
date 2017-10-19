@@ -29,9 +29,8 @@
  */
 namespace VuFind\RecordDriver;
 
-use VuFind\Exception\ILS as ILSException,
-    VuFind\View\Helper\Root\RecordLink,
-    VuFind\XSLT\Processor as XSLTProcessor;
+use VuFind\View\Helper\Root\RecordLink;
+use VuFind\XSLT\Processor as XSLTProcessor;
 
 /**
  * Model for MARC records in Solr.

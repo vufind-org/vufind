@@ -27,10 +27,10 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Exception\Mail as MailException,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\Session\Container;
+use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Exception\Mail as MailException;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Session\Container;
 
 /**
  * Book Bag / Bulk Action Controller

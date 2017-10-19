@@ -27,7 +27,8 @@
  */
 namespace VuFind\Cache;
 
-use Zend\Cache\StorageFactory, Zend\Config\Config;
+use Zend\Cache\StorageFactory;
+use Zend\Config\Config;
 
 /**
  * VuFind Cache Manager

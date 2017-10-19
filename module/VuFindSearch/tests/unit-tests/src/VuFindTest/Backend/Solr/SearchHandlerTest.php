@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\Solr;
 
-use VuFindSearch\Backend\Solr\SearchHandler;
 use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\Solr\SearchHandler;
 
 /**
  * Unit tests for SOLR search handler.

@@ -27,8 +27,8 @@
  */
 namespace VuFind\Hierarchy\Driver;
 
-use VuFind\Hierarchy\TreeDataSource\PluginManager as DataManager,
-    VuFind\Hierarchy\TreeRenderer\PluginManager as RendererManager;
+use VuFind\Hierarchy\TreeDataSource\PluginManager as DataManager;
+use VuFind\Hierarchy\TreeRenderer\PluginManager as RendererManager;
 
 /**
  * Hierarchy interface class.

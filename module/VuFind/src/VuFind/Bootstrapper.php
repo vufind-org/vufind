@@ -27,7 +27,9 @@
  */
 namespace VuFind;
 
-use Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
+use Zend\Console\Console;
+use Zend\Mvc\MvcEvent;
+use Zend\Mvc\Router\Http\RouteMatch;
 
 /**
  * VuFind Bootstrapper

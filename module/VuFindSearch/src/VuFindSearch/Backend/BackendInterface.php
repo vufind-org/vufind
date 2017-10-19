@@ -28,8 +28,8 @@
  */
 namespace VuFindSearch\Backend;
 
-use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Query\AbstractQuery;
 
 /**
  * Search backend interface definition.

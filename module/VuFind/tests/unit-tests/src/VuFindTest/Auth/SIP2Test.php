@@ -27,7 +27,8 @@
  */
 namespace VuFindTest\Auth;
 
-use VuFind\Auth\SIP2, Zend\Config\Config;
+use VuFind\Auth\SIP2;
+use Zend\Config\Config;
 
 /**
  * SIP2 authentication test class.

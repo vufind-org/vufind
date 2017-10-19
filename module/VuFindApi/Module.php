@@ -27,9 +27,6 @@
  */
 namespace VuFindApi;
 
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
-
 /**
  * VuFind Api module.
  *

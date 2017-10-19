@@ -27,7 +27,8 @@
  */
 namespace VuFindTest\View\Helper;
 
-use VuFindTheme\ResourceContainer, VuFindTheme\View\Helper\HeadThemeResources;
+use VuFindTheme\ResourceContainer;
+use VuFindTheme\View\Helper\HeadThemeResources;
 
 /**
  * HeadThemeResources view helper Test Class

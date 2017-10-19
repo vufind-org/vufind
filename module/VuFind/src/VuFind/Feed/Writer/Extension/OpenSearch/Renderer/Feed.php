@@ -27,8 +27,9 @@
  */
 namespace VuFind\Feed\Writer\Extension\OpenSearch\Renderer;
 
-use DOMDocument, DOMElement,
-    Zend\Feed\Writer\Extension\AbstractRenderer;
+use DOMDocument;
+use DOMElement;
+use Zend\Feed\Writer\Extension\AbstractRenderer;
 
 /**
  * Zend\Feed\Renderer\Feed extension for Open Search

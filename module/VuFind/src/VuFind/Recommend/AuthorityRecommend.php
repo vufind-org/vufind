@@ -28,8 +28,9 @@
  */
 namespace VuFind\Recommend;
 
-use VuFindSearch\Backend\Exception\RequestErrorException,
-    Zend\Http\Request, Zend\StdLib\Parameters;
+use VuFindSearch\Backend\Exception\RequestErrorException;
+use Zend\Http\Request;
+use Zend\StdLib\Parameters;
 
 /**
  * AuthorityRecommend Module

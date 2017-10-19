@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Backend\EDS;
 
+use InvalidArgumentException;
 use VuFindSearch\Backend\EDS\Backend;
 use VuFindSearch\Query\Query;
-use InvalidArgumentException;
 
 /**
  * Unit tests for EDS backend.

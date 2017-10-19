@@ -29,6 +29,7 @@
 namespace VuFind\Controller;
 
 use VuFindSearch\ParamBag;
+
 /**
  * AlphabrowseController Class
  *

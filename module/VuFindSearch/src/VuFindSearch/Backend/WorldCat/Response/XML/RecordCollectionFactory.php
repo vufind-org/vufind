@@ -28,9 +28,9 @@
  */
 namespace VuFindSearch\Backend\WorldCat\Response\XML;
 
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
-use VuFindSearch\Exception\InvalidArgumentException;
 use File_MARCXML;
+use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 /**
  * Simple XML-based factory for record collection.

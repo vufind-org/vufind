@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use Zend\Config\Config;
 use VuFind\Auth\Manager as AuthManager;
+use Zend\Config\Config;
 
 /**
  * Redirects the user to the appropriate default VuFind action.

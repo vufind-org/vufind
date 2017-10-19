@@ -37,8 +37,8 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\Date as DateException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Aleph Translator Class

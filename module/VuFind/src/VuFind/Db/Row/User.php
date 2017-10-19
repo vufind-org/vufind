@@ -27,12 +27,9 @@
  */
 namespace VuFind\Db\Row;
 
-use Zend\Db\Sql\Expression,
-    Zend\Db\Sql\Predicate\Predicate,
-    Zend\Db\Sql\Sql,
-    Zend\Crypt\Symmetric\Openssl,
-    Zend\Crypt\Password\Bcrypt,
-    Zend\Crypt\BlockCipher as BlockCipher;
+use Zend\Crypt\BlockCipher as BlockCipher;
+use Zend\Crypt\Symmetric\Openssl;
+use Zend\Db\Sql\Expression;
 
 /**
  * Row Definition for user

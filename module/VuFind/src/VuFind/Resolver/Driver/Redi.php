@@ -29,7 +29,8 @@
  */
 namespace VuFind\Resolver\Driver;
 
-use DOMDocument, Zend\Dom\DOMXPath;
+use DOMDocument;
+use Zend\Dom\DOMXPath;
 
 /**
  * ReDi Link Resolver Driver

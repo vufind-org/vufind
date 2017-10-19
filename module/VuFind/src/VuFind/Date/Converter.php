@@ -28,7 +28,9 @@
  */
 namespace VuFind\Date;
 
-use DateTime, DateTimeZone, VuFind\Exception\Date as DateException;
+use DateTime;
+use DateTimeZone;
+use VuFind\Exception\Date as DateException;
 
 /**
  * Date/time conversion functionality.

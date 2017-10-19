@@ -27,7 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Cover\CachingProxy, VuFind\Cover\Loader;
+use VuFind\Cover\CachingProxy;
+use VuFind\Cover\Loader;
 
 /**
  * Generates covers for book entries

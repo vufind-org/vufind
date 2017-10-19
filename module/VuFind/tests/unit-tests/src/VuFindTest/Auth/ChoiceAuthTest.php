@@ -27,9 +27,11 @@
  */
 namespace VuFindTest\Auth;
 
-use VuFind\Auth\ChoiceAuth, VuFind\Auth\PluginManager,
-    VuFind\Db\Row\User as UserRow, Zend\Config\Config,
-    Zend\Http\PhpEnvironment\Request;
+use VuFind\Auth\ChoiceAuth;
+use VuFind\Auth\PluginManager;
+use VuFind\Db\Row\User as UserRow;
+use Zend\Config\Config;
+use Zend\Http\PhpEnvironment\Request;
 
 /**
  * ChoiceAuth test class.

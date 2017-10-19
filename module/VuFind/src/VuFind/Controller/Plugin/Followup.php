@@ -27,7 +27,8 @@
  */
 namespace VuFind\Controller\Plugin;
 
-use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Zend\Session\Container;
 
 /**
  * Zend action helper to deal with login followup; responsible for remembering URLs

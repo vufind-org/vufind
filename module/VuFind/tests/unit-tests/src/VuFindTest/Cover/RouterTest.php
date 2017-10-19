@@ -27,7 +27,8 @@
  */
 namespace VuFindTest\Cover;
 
-use VuFind\Cover\Router, VuFindTest\RecordDriver\TestHarness;
+use VuFind\Cover\Router;
+use VuFindTest\RecordDriver\TestHarness;
 
 /**
  * Cover Router Test Class

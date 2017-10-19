@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Formatter;
 
-use VuFindApi\Formatter\RecordFormatter;
 use VuFind\I18n\TranslatableString;
+use VuFindApi\Formatter\RecordFormatter;
 
 /**
  * Unit tests for record formatter.

@@ -27,9 +27,9 @@
  */
 namespace VuFind\Search\Summon;
 
-use SerialsSolutions_Summon_Query as SummonQuery,
-    VuFind\Solr\Utils as SolrUtils,
-    VuFindSearch\ParamBag;
+use SerialsSolutions_Summon_Query as SummonQuery;
+use VuFind\Solr\Utils as SolrUtils;
+use VuFindSearch\ParamBag;
 
 /**
  * Summon Search Parameters

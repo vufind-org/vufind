@@ -28,9 +28,9 @@
  */
 namespace VuFindConsole\Controller;
 
-use Zend\Console\Console,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\Mvc\Controller\AbstractActionController;
+use Zend\Console\Console;
+use Zend\Mvc\Controller\AbstractActionController;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other

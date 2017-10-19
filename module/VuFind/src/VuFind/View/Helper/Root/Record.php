@@ -28,7 +28,8 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Cover\Router as CoverRouter;
-use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
+use Zend\View\Exception\RuntimeException;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Record driver view helper

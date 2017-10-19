@@ -27,7 +27,8 @@
  */
 namespace VuFindTest\Role;
 
-use VuFind\Role\DynamicRoleProvider, VuFind\Role\PermissionProvider\PluginManager;
+use VuFind\Role\DynamicRoleProvider;
+use VuFind\Role\PermissionProvider\PluginManager;
 
 /**
  * Dynamic Role Provider Test Class

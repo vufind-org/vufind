@@ -28,7 +28,8 @@
  */
 namespace VuFind\RecordDriver;
 
-use VuFindCode\ISBN, VuFind\View\Helper\Root\RecordLink;
+use VuFind\View\Helper\Root\RecordLink;
+use VuFindCode\ISBN;
 
 /**
  * Default model for Solr records -- used when a more specific model based on

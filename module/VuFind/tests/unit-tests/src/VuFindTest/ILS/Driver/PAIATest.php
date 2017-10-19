@@ -28,12 +28,12 @@
  */
 namespace VuFindTest\ILS\Driver;
 
-use VuFind\ILS\Driver\PAIA;
-
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Response as HttpResponse;
-
 use InvalidArgumentException;
+
+use VuFind\ILS\Driver\PAIA;
+use Zend\Http\Client\Adapter\Test as TestAdapter;
+
+use Zend\Http\Response as HttpResponse;
 
 /**
  * ILS driver test

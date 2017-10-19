@@ -27,7 +27,9 @@
  */
 namespace VuFindTest\Auth;
 
-use VuFind\Auth\Shibboleth, VuFind\Db\Table\User, Zend\Config\Config;
+use VuFind\Auth\Shibboleth;
+use VuFind\Db\Table\User;
+use Zend\Config\Config;
 
 /**
  * Shibboleth authentication test class.

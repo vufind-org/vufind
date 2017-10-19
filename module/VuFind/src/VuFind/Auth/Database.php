@@ -29,7 +29,8 @@
  */
 namespace VuFind\Auth;
 
-use VuFind\Exception\Auth as AuthException, Zend\Crypt\Password\Bcrypt;
+use VuFind\Exception\Auth as AuthException;
+use Zend\Crypt\Password\Bcrypt;
 
 /**
  * Database authentication class

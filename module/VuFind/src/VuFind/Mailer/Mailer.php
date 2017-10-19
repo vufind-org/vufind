@@ -27,11 +27,11 @@
  */
 namespace VuFind\Mailer;
 
-use VuFind\Exception\Mail as MailException,
-    Zend\Mail\Address,
-    Zend\Mail\AddressList,
-    Zend\Mail\Message,
-    Zend\Mail\Header\ContentType;
+use VuFind\Exception\Mail as MailException;
+use Zend\Mail\Address;
+use Zend\Mail\AddressList;
+use Zend\Mail\Header\ContentType;
+use Zend\Mail\Message;
 
 /**
  * VuFind Mailer Class

@@ -27,10 +27,10 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Config\Locator as ConfigLocator,
-    VuFind\Config\Writer as ConfigWriter,
-    Zend\Mvc\MvcEvent,
-    Zend\Crypt\Password\Bcrypt;
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\Writer as ConfigWriter;
+use Zend\Crypt\Password\Bcrypt;
+use Zend\Mvc\MvcEvent;
 
 /**
  * Class controls VuFind auto-configuration.

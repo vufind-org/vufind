@@ -28,8 +28,8 @@
  */
 namespace VuFind\ILS\Logic;
 
-use VuFind\ILS\Connection as ILSConnection,
-    VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\ILS\Connection as ILSConnection;
 
 /**
  * Hold Logic Class
