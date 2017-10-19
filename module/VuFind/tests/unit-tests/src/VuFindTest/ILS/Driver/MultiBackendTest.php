@@ -2466,7 +2466,6 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      */
     public function init()
     {
-        return;
     }
 
     /**
