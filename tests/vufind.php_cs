@@ -53,6 +53,7 @@ $rules = [
     'no_whitespace_in_blank_line' => true,
     'phpdoc_no_access' => true,
     'single_blank_line_at_eof' => true,
+    'short_scalar_cast' => true,
     'ternary_operator_spaces' => true,
     'visibility_required' => true,
 ];
