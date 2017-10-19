@@ -287,15 +287,15 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
             $sqlStmt = sybase_query($sql);
             while ($row = sybase_fetch_row($sqlStmt)) {
                 $result[$count] = [
-                    'id'      => $row[0]
-                   ,'duedate' => substr($row[13], 0, 12)
-                   ,'barcode' => $row[31]
-                   ,'renew'   => $row[7]
-                   ,'publication_year' => $row[45]
-                   ,'renewable' => $row[61]
-                   ,'message' => $row[60]
-                   ,'title'   => $this->picaRecode($row[44])
-                   ,'item_id' => $row[7]
+                    'id' => $row[0],
+                    'duedate' => substr($row[13], 0, 12),
+                    'barcode' => $row[31],
+                    'renew' => $row[7],
+                    'publication_year' => $row[45],
+                    'renewable' => $row[61],
+                    'message' => $row[60],
+                    'title' => $this->picaRecode($row[44]),
+                    'item_id' => $row[7]
                 ];
                 $count++;
             }
