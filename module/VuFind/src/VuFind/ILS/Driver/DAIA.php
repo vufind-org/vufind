@@ -1305,7 +1305,7 @@ class DAIA extends AbstractBase implements
         foreach ($messages as $message) {
             if (isset($message['content'])) {
                 $this->debug(
-                    'Message in DAIA response (' . (string) $context . '): ' .
+                    'Message in DAIA response (' . (string)$context . '): ' .
                     $message['content']
                 );
             }

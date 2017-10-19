@@ -1382,7 +1382,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
             $linking = $linking[0];
 
-            if (array_key_exists((int) $linking, $textuals)) {
+            if (array_key_exists((int)$linking, $textuals)) {
                 // Skip coded holdings overridden by textual
                 // holdings
                 continue;
@@ -1396,7 +1396,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $decoded_holding .= ' ' . $subfield->getData();
             }
 
-            $ndx = (int) ($linking
+            $ndx = (int)($linking
                           . sprintf("%0{$link_digits}u", $sequence));
             $holdings[$ndx] = trim($decoded_holding);
         }
@@ -1407,7 +1407,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $textual_holding .= ' ' . $note->getData();
             }
 
-            $ndx = (int) ($linking . sprintf("%0{$link_digits}u", 0));
+            $ndx = (int)($linking . sprintf("%0{$link_digits}u", 0));
             $holdings[$ndx] = trim($textual_holding);
         }
 

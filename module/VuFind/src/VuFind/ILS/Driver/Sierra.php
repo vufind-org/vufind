@@ -569,7 +569,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
         try {
             $newItems = [];
             $offset = $limit * ($page - 1);
-            $daysOld = (int) $daysOld;
+            $daysOld = (int)$daysOld;
             if (is_int($daysOld) == false || $daysOld > 30) {
                 $daysOld = "30";
             }
@@ -607,7 +607,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                     $this->db, $query, [$limit, $offset]
                 );
             }
-            $newItems['count'] = (string) pg_num_rows($results);
+            $newItems['count'] = (string)pg_num_rows($results);
             if (pg_num_rows($results) != 0) {
                 while ($record = pg_fetch_row($results)) {
                     $bareNumber = $record[0];

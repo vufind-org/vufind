@@ -694,7 +694,7 @@ class AbstractSearch extends AbstractBase
         $params->initFromRequest($this->getRequest()->getQuery());
         // Get parameters
         $facet = $this->params()->fromQuery('facet');
-        $page = (int) $this->params()->fromQuery('facetpage', 1);
+        $page = (int)$this->params()->fromQuery('facetpage', 1);
         $options = $results->getOptions();
         $facetSortOptions = $options->getFacetSortOptions();
         $sort = $this->params()->fromQuery('facetsort', null);

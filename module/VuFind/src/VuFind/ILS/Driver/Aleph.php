@@ -486,9 +486,9 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $url = "http://$this->host:$this->dlfport/rest-dlf/" . $path;
         $url = $this->appendQueryString($url, $params);
         $result = $this->doHTTPRequest($url, $method, $body);
-        $replyCode = (string) $result->{'reply-code'};
+        $replyCode = (string)$result->{'reply-code'};
         if ($replyCode != "0000") {
-            $replyText = (string) $result->{'reply-text'};
+            $replyText = (string)$result->{'reply-text'};
             $this->logError(
                 "DLF request failed", [
                     'url' => $url, 'reply-code' => $replyCode,
@@ -659,11 +659,11 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 $temp[] = [
                     'id' => $id,
                     'availability' => $availability,
-                    'status' => (string) $status[0],
-                    'location' => (string) $location[0],
-                    'signature' => (string) $signature[0],
+                    'status' => (string)$status[0],
+                    'location' => (string)$location[0],
+                    'signature' => (string)$signature[0],
                     'reserve' => $reserve,
-                    'callnumber' => (string) $signature[0]
+                    'callnumber' => (string)$signature[0]
                 ];
             }
             $holding[] = $temp;
@@ -738,10 +738,10 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         }
         $xml = $this->doRestDLFRequest(['record', $resource, 'items'], $params);
         foreach ($xml->{'items'}->{'item'} as $item) {
-            $item_status         = (string) $item->{'z30-item-status-code'}; // $isc
+            $item_status         = (string)$item->{'z30-item-status-code'}; // $isc
             // $ipsc:
-            $item_process_status = (string) $item->{'z30-item-process-status-code'};
-            $sub_library_code    = (string) $item->{'z30-sub-library-code'}; // $slc
+            $item_process_status = (string)$item->{'z30-item-process-status-code'};
+            $sub_library_code    = (string)$item->{'z30-sub-library-code'}; // $slc
             $z30 = $item->z30;
             if ($this->translator) {
                 $item_status = $this->translator->tab15Translate(
@@ -751,8 +751,8 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 $item_status = [
                     'opac'         => 'Y',
                     'request'      => 'C',
-                    'desc'         => (string) $z30->{'z30-item-status'},
-                    'sub_lib_desc' => (string) $z30->{'z30-sub-library'}
+                    'desc'         => (string)$z30->{'z30-item-status'},
+                    'sub_lib_desc' => (string)$z30->{'z30-sub-library'}
                 ];
             }
             if ($item_status['opac'] != 'Y') {
@@ -760,10 +760,10 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             }
             $availability = false;
             //$reserve = ($item_status['request'] == 'C')?'N':'Y';
-            $collection = (string) $z30->{'z30-collection'};
+            $collection = (string)$z30->{'z30-collection'};
             $collection_desc = ['desc' => $collection];
             if ($this->translator) {
-                $collection_code = (string) $item->{'z30-collection-code'};
+                $collection_code = (string)$item->{'z30-collection-code'};
                 $collection_desc = $this->translator->tab40Translate(
                     $collection_code, $sub_library_code
                 );
@@ -771,7 +771,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $requested = false;
             $duedate = '';
             $addLink = false;
-            $status = (string) $item->{'status'};
+            $status = (string)$item->{'status'};
             if (in_array($status, $this->available_statuses)) {
                 $availability = true;
             }
@@ -812,30 +812,30 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             }
             $item_id = $item->attributes()->href;
             $item_id = substr($item_id, strrpos($item_id, '/') + 1);
-            $note    = (string) $z30->{'z30-note-opac'};
+            $note    = (string)$z30->{'z30-note-opac'};
             $holding[] = [
                 'id'                => $id,
                 'item_id'           => $item_id,
                 'availability'      => $availability,
-                'status'            => (string) $item_status['desc'],
+                'status'            => (string)$item_status['desc'],
                 'location'          => $sub_library_code,
                 'reserve'           => 'N',
-                'callnumber'        => (string) $z30->{'z30-call-no'},
-                'duedate'           => (string) $duedate,
-                'number'            => (string) $z30->{'z30-inventory-number'},
-                'barcode'           => (string) $z30->{'z30-barcode'},
-                'description'       => (string) $z30->{'z30-description'},
+                'callnumber'        => (string)$z30->{'z30-call-no'},
+                'duedate'           => (string)$duedate,
+                'number'            => (string)$z30->{'z30-inventory-number'},
+                'barcode'           => (string)$z30->{'z30-barcode'},
+                'description'       => (string)$z30->{'z30-description'},
                 'notes'             => ($note == null) ? null : [$note],
                 'is_holdable'       => true,
                 'addLink'           => $addLink,
                 'holdtype'          => 'hold',
                 /* below are optional attributes*/
-                'collection'        => (string) $collection,
-                'collection_desc'   => (string) $collection_desc['desc'],
-                'callnumber_second' => (string) $z30->{'z30-call-no-2'},
-                'sub_lib_desc'      => (string) $item_status['sub_lib_desc'],
-                'no_of_loans'       => (string) $z30->{'$no_of_loans'},
-                'requested'         => (string) $requested
+                'collection'        => (string)$collection,
+                'collection_desc'   => (string)$collection_desc['desc'],
+                'callnumber_second' => (string)$z30->{'z30-call-no-2'},
+                'sub_lib_desc'      => (string)$item_status['sub_lib_desc'],
+                'no_of_loans'       => (string)$z30->{'$no_of_loans'},
+                'requested'         => (string)$requested
             ];
         }
         return $holding;
@@ -890,22 +890,22 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             //$docno = (string) $z36->{'z36-doc-number'};
             //$itemseq = (string) $z36->{'z36-item-sequence'};
             //$seq = (string) $z36->{'z36-sequence'};
-            $location = (string) $z36->{'z36_pickup_location'};
-            $reqnum = (string) $z36->{'z36-doc-number'}
-                . (string) $z36->{'z36-item-sequence'}
-                . (string) $z36->{'z36-sequence'};
+            $location = (string)$z36->{'z36_pickup_location'};
+            $reqnum = (string)$z36->{'z36-doc-number'}
+                . (string)$z36->{'z36-item-sequence'}
+                . (string)$z36->{'z36-sequence'};
             $due = $returned = null;
             if ($history) {
                 $due = $item->z36h->{'z36h-due-date'};
                 $returned = $item->z36h->{'z36h-returned-date'};
             } else {
-                $due = (string) $z36->{'z36-due-date'};
+                $due = (string)$z36->{'z36-due-date'};
             }
             //$loaned = (string) $z36->{'z36-loan-date'};
-            $title = (string) $z13->{'z13-title'};
-            $author = (string) $z13->{'z13-author'};
-            $isbn = (string) $z13->{'z13-isbn-issn'};
-            $barcode = (string) $z30->{'z30-barcode'};
+            $title = (string)$z13->{'z13-title'};
+            $author = (string)$z13->{'z13-author'};
+            $isbn = (string)$z13->{'z13-isbn-issn'};
+            $barcode = (string)$z30->{'z30-barcode'};
             $transList[] = [
                 //'type' => $type,
                 'id' => ($history) ? null : $this->barcodeToID($barcode),
@@ -1003,23 +1003,23 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $delete = $item->xpath('@delete');
             $href = $item->xpath('@href');
             $item_id = substr($href[0], strrpos($href[0], '/') + 1);
-            if ((string) $z37->{'z37-request-type'} == "Hold Request" || true) {
+            if ((string)$z37->{'z37-request-type'} == "Hold Request" || true) {
                 $type = "hold";
                 //$docno = (string) $z37->{'z37-doc-number'};
                 //$itemseq = (string) $z37->{'z37-item-sequence'};
-                $seq = (string) $z37->{'z37-sequence'};
-                $location = (string) $z37->{'z37-pickup-location'};
-                $reqnum = (string) $z37->{'z37-doc-number'}
-                    . (string) $z37->{'z37-item-sequence'}
-                    . (string) $z37->{'z37-sequence'};
-                $expire = (string) $z37->{'z37-end-request-date'};
-                $create = (string) $z37->{'z37-open-date'};
-                $holddate = (string) $z37->{'z37-hold-date'};
-                $title = (string) $z13->{'z13-title'};
-                $author = (string) $z13->{'z13-author'};
-                $isbn = (string) $z13->{'z13-isbn-issn'};
-                $barcode = (string) $z30->{'z30-barcode'};
-                $status = (string) $z37->{'z37-status'};
+                $seq = (string)$z37->{'z37-sequence'};
+                $location = (string)$z37->{'z37-pickup-location'};
+                $reqnum = (string)$z37->{'z37-doc-number'}
+                    . (string)$z37->{'z37-item-sequence'}
+                    . (string)$z37->{'z37-sequence'};
+                $expire = (string)$z37->{'z37-end-request-date'};
+                $create = (string)$z37->{'z37-open-date'};
+                $holddate = (string)$z37->{'z37-hold-date'};
+                $title = (string)$z13->{'z13-title'};
+                $author = (string)$z13->{'z13-author'};
+                $isbn = (string)$z13->{'z13-isbn-issn'};
+                $barcode = (string)$z30->{'z30-barcode'};
+                $status = (string)$z37->{'z37-status'};
                 if ($holddate == "00000000") {
                     $holddate = null;
                 } else {
@@ -1096,7 +1096,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 }
                 $statuses[$id] = [
                     'success' => false, 'status' => 'cancel_hold_failed',
-                    'sysMessage' => (string) $message
+                    'sysMessage' => (string)$message
                 ];
             } else {
                 $count++;
@@ -1134,18 +1134,18 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $z13 = $item->z13;
             $z30 = $item->z30;
             //$delete = $item->xpath('@delete');
-            $title = (string) $z13->{'z13-title'};
-            $transactiondate = date('d-m-Y', strtotime((string) $z31->{'z31-date'}));
-            $transactiontype = (string) $z31->{'z31-credit-debit'};
-            $id = (string) $z13->{'z13-doc-number'};
-            $barcode = (string) $z30->{'z30-barcode'};
-            $checkout = (string) $z31->{'z31-date'};
+            $title = (string)$z13->{'z13-title'};
+            $transactiondate = date('d-m-Y', strtotime((string)$z31->{'z31-date'}));
+            $transactiontype = (string)$z31->{'z31-credit-debit'};
+            $id = (string)$z13->{'z13-doc-number'};
+            $barcode = (string)$z30->{'z30-barcode'};
+            $checkout = (string)$z31->{'z31-date'};
             $id = $this->barcodeToID($barcode);
             $mult = ($transactiontype == "Credit") ? 100 : -100;
             $amount
-                = (float)(preg_replace("/[\(\)]/", "", (string) $z31->{'z31-sum'}))
+                = (float)(preg_replace("/[\(\)]/", "", (string)$z31->{'z31-sum'}))
                 * $mult;
-            $cashref = (string) $z31->{'z31-sequence'};
+            $cashref = (string)$z31->{'z31-sequence'};
             //$cashdate = date('d-m-Y', strtotime((string) $z31->{'z31-date'}));
             $balance = 0;
 
@@ -1225,17 +1225,17 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 'library' => $user['college'], 'bor_id' => $user['id']
             ], true
         );
-        $id = (string) $xml->z303->{'z303-id'};
-        $address1 = (string) $xml->z304->{'z304-address-2'};
-        $address2 = (string) $xml->z304->{'z304-address-3'};
-        $zip = (string) $xml->z304->{'z304-zip'};
-        $phone = (string) $xml->z304->{'z304-telephone'};
-        $barcode = (string) $xml->z304->{'z304-address-0'};
-        $group = (string) $xml->z305->{'z305-bor-status'};
-        $expiry = (string) $xml->z305->{'z305-expiry-date'};
-        $credit_sum = (string) $xml->z305->{'z305-sum'};
-        $credit_sign = (string) $xml->z305->{'z305-credit-debit'};
-        $name = (string) $xml->z303->{'z303-name'};
+        $id = (string)$xml->z303->{'z303-id'};
+        $address1 = (string)$xml->z304->{'z304-address-2'};
+        $address2 = (string)$xml->z304->{'z304-address-3'};
+        $zip = (string)$xml->z304->{'z304-zip'};
+        $phone = (string)$xml->z304->{'z304-telephone'};
+        $barcode = (string)$xml->z304->{'z304-address-0'};
+        $group = (string)$xml->z305->{'z305-bor-status'};
+        $expiry = (string)$xml->z305->{'z305-expiry-date'};
+        $credit_sum = (string)$xml->z305->{'z305-sum'};
+        $credit_sign = (string)$xml->z305->{'z305-credit-debit'};
+        $name = (string)$xml->z303->{'z303-name'};
         if (strstr($name, ",")) {
             list($lastname, $firstname) = explode(",", $name);
         } else {
@@ -1367,13 +1367,13 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 $patron['college'] = $this->sublibadm["$home_lib"];
             }
         }
-        $patron['id'] = (string) $id;
-        $patron['barcode'] = (string) $user;
-        $patron['firstname'] = (string) $firstName;
-        $patron['lastname'] = (string) $lastName;
-        $patron['cat_username'] = (string) $user;
+        $patron['id'] = (string)$id;
+        $patron['barcode'] = (string)$user;
+        $patron['firstname'] = (string)$firstName;
+        $patron['lastname'] = (string)$lastName;
+        $patron['cat_username'] = (string)$user;
         $patron['cat_password'] = $password;
-        $patron['email'] = (string) $email_addr;
+        $patron['email'] = (string)$email_addr;
         $patron['major'] = null;
         return $patron;
     }
@@ -1399,8 +1399,8 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         if ($part) {
             foreach ($part[0]->children() as $node) {
                 $arr = $node->attributes();
-                $code = (string) $arr['code'];
-                $loc_name = (string) $node;
+                $code = (string)$arr['code'];
+                $loc_name = (string)$node;
                 $locations[$code] = $loc_name;
             }
         } else {
@@ -1539,9 +1539,9 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 $xml = $this->doXRequest(
                     "find", ["base" => $base, "request" => "BAR=$bar"], false
                 );
-                $docs = (int) $xml->{"no_records"};
+                $docs = (int)$xml->{"no_records"};
                 if ($docs == 1) {
-                    $set = (string) $xml->{"set_number"};
+                    $set = (string)$xml->{"set_number"};
                     $result = $this->doXRequest(
                         "present", ["set_number" => $set, "set_entry" => "1"],
                         false

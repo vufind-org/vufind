@@ -96,7 +96,7 @@ abstract class AbstractBase
         $this->dataManager = $dataManager;
         $this->rendererManager = $rendererManager;
         if (isset($options['enabled'])) {
-            $this->enabled = (bool) $options['enabled'];
+            $this->enabled = (bool)$options['enabled'];
         }
     }
 

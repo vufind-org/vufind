@@ -1080,7 +1080,7 @@ class SolrDefault extends AbstractBase
     public function getPrimaryAuthors()
     {
         return isset($this->fields['author'])
-            ? (array) $this->fields['author'] : [];
+            ? (array)$this->fields['author'] : [];
     }
 
     /**

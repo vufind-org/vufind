@@ -138,7 +138,7 @@ class Generator
         }
         $default['authorFont'] = $this->fontPath($default['authorFont']);
         $default['titleFont']  = $this->fontPath($default['titleFont']);
-        $this->settings = (object) $default;
+        $this->settings = (object)$default;
         $this->initImage();
         $this->initColors();
     }
