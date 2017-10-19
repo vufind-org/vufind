@@ -563,8 +563,8 @@ class Record extends AbstractHelper
         }
 
         switch ($context) {
-        case "core" :
-        case "results" :
+        case "core":
+        case "results":
             $key = 'showIn' . ucwords(strtolower($context));
             break;
         default:
