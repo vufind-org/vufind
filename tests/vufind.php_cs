@@ -9,6 +9,7 @@ $rules = [
         'default' => 'single_space',
         'operators' => ['=' => null, '=>' => null],
     ],
+    'blank_line_after_namespace' => true,
     'concat_space' => ['spacing' => 'one'],
     'encoding' => true,
     'lowercase_keywords' => true,
