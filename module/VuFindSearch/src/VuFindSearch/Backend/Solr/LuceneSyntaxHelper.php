@@ -538,7 +538,7 @@ class LuceneSyntaxHelper
 
         // If the user has entered a lone BOOLEAN operator, convert it to lowercase
         // so it is treated as a word (otherwise it will trigger a fatal error):
-        switch(trim($input)) {
+        switch (trim($input)) {
         case 'OR':
             return 'or';
         case 'AND':

@@ -223,7 +223,7 @@ class Server
         if (!$this->hasParam('verb')) {
             return $this->showError('badVerb', 'Missing Verb Argument');
         } else {
-            switch($this->params['verb']) {
+            switch ($this->params['verb']) {
             case 'GetRecord':
                 return $this->getRecord();
             case 'Identify':

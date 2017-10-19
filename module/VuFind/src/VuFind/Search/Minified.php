@@ -138,7 +138,7 @@ class Minified
         // search class ID for the object we're about to construct:
         if (!isset($this->cl)) {
             $fixType = true;    // by default, assume we need to fix type
-            switch($this->ty) {
+            switch ($this->ty) {
             case 'Summon':
             case 'SummonAdvanced':
                 $this->cl = 'Summon';

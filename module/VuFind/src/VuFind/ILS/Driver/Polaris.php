@@ -245,7 +245,6 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'position' => $holds_response->QueuePosition,
                 'title'    => $holds_response->Title,
             ];
-
         }
         return $holds;
     }
@@ -303,7 +302,6 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 //'designation' => $designation,
                 'holdable' => $holdings_response->Holdable,
             ];
-
         }
         return $holding;
     }
@@ -431,14 +429,13 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
       
             if ($reply_response->StatusValue == 1) {
                 // auto-reply success
-                  return [ 'success' => true,  'sysMessage' => $response->Message ];
+                return [ 'success' => true,  'sysMessage' => $response->Message ];
             } else {
-                  return [ 'success' => false, 'sysMessage' => $response->Message ];
+                return [ 'success' => false, 'sysMessage' => $response->Message ];
             }
         } else {
             return [ 'success' => false, 'sysMessage' => $response->Message ];
         }
-
     }
 
     /**
@@ -631,7 +628,6 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         return $fineList;
-
     }
     /**
      * Get Patron Profile
@@ -753,7 +749,6 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'sysMessage' => $response->ItemRenewResult->BlockRows[0]->ErrorDesc,
                 ];
             }
-
         }
         $result = [
             'count' => $count, 'details' => $item_response,

@@ -341,7 +341,7 @@ class Holds
                             = ($holds_override && isset($copy['holdOverride']))
                             ? $copy['holdOverride'] : $type;
 
-                        switch($currentType) {
+                        switch ($currentType) {
                         case "all":
                             $addlink = true; // always provide link
                             break;

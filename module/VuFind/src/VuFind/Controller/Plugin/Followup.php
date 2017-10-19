@@ -91,7 +91,6 @@ class Followup extends AbstractPlugin
         }
         return isset($this->session->$key)
             ? $this->session->$key : $default;
-
     }
 
     /**

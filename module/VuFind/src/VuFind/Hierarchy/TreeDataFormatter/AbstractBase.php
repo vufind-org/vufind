@@ -129,14 +129,14 @@ abstract class AbstractBase
         return $retVal;
     }
 
-     /**
-      * Get the titles of this item within parent collections. Returns an array
-      * of parent ID => sequence number.
-      *
-      * @param object $fields Solr fields
-      *
-      * @return Array
-      */
+    /**
+     * Get the titles of this item within parent collections. Returns an array
+     * of parent ID => sequence number.
+     *
+     * @param object $fields Solr fields
+     *
+     * @return Array
+     */
     protected function getTitlesInHierarchy($fields)
     {
         $retVal = [];

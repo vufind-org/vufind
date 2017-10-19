@@ -857,7 +857,7 @@ class SolrMarc extends SolrDefault
         // If reference found, exit loop and go straight to end
         // If no reference found, check the next link type instead
         foreach ($linkTypes as $linkType) {
-            switch (trim($linkType)){
+            switch (trim($linkType)) {
             case 'oclc':
                 foreach ($linkFields as $current) {
                     if ($oclc = $this->getIdFromLinkingField($current, 'OCoLC')) {

@@ -502,9 +502,7 @@ class Options extends \VuFind\Search\Base\Options
                         'DefaultOn' => isset($limiter['DefaultOn'])
                             ? $limiter['DefaultOn'] : 'n',
                     ];
-
                 }
-
             }
         }
     }

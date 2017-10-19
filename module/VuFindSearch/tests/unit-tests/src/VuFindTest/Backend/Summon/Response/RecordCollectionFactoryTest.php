@@ -67,7 +67,6 @@ class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
     {
         $factory = new RecordCollectionFactory(
             function () {
-
             }
         );
         $factory->factory('bad');

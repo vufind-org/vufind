@@ -546,9 +546,9 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             }
 
             $library = $this->translatePolicyID('LIBR', $libraryID);
-            $copyNumber = 0; // ItemInfo does not include copy numbers,
-                             // so we generate them under the assumption
-                             // that items are being listed in order.
+            // ItemInfo does not include copy numbers, so we generate them under
+            // the assumption that items are being listed in order.
+            $copyNumber = 0;
 
             $itemInfos = is_array($callInfo->ItemInfo)
                 ? $callInfo->ItemInfo
@@ -1055,18 +1055,18 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         return [];
     }
 
-     /**
-      * Patron Login
-      *
-      * This is responsible for authenticating a patron against the catalog.
-      *
-      * @param string $username The patron username
-      * @param string $password The patron password
-      *
-      * @throws ILSException
-      * @return mixed          Associative array of patron info on successful login,
-      * null on unsuccessful login.
-      */
+    /**
+     * Patron Login
+     *
+     * This is responsible for authenticating a patron against the catalog.
+     *
+     * @param string $username The patron username
+     * @param string $password The patron password
+     *
+     * @throws ILSException
+     * @return mixed          Associative array of patron info on successful login,
+     * null on unsuccessful login.
+     */
     public function patronLogin($username, $password)
     {
         $usernameField = $this->config['Behaviors']['usernameField'];
@@ -1130,7 +1130,6 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         break;
                     }
                 }
-
             }
         }
 
@@ -1332,7 +1331,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 ];
             }
             return $holdList;
-        } catch(SoapFault $e) {
+        } catch (SoapFault $e) {
             return null;
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
@@ -1411,17 +1410,17 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         return $holdDetails['reqnum'];
     }
 
-     /**
-      * Cancel Holds
-      *
-      * Attempts to Cancel a hold on a particular item
-      *
-      * @param array $cancelDetails An array of item and patron data
-      *
-      * @return mixed  An array of data on each request including
-      * whether or not it was successful and a system message (if available)
-      * or boolean false on failure
-      */
+    /**
+     * Cancel Holds
+     *
+     * Attempts to Cancel a hold on a particular item
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return mixed  An array of data on each request including
+     * whether or not it was successful and a system message (if available)
+     * or boolean false on failure
+     */
     public function cancelHolds($cancelDetails)
     {
         $count  = 0;
@@ -1459,17 +1458,17 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         return $result;
     }
 
-     /**
-      * Public Function which retrieves renew, hold and cancel settings from the
-      * driver ini file.
-      *
-      * @param string $function The name of the feature to be checked
-      * @param array  $params   Optional feature-specific parameters (array)
-      *
-      * @return array An array with key-value pairs.
-      *
-      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-      */
+    /**
+     * Public Function which retrieves renew, hold and cancel settings from the
+     * driver ini file.
+     *
+     * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
+     *
+     * @return array An array with key-value pairs.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function getConfig($function, $params = null)
     {
         if (isset($this->config[$function])) {

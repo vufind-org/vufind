@@ -326,7 +326,6 @@ class Connector implements \Zend\Log\LoggerAwareInterface
 
             if ($this->debug) {
                 print "URL: " . implode('&', $qs);
-
             }
 
             // Send Request

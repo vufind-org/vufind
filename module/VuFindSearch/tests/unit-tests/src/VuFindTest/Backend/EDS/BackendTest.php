@@ -245,7 +245,6 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         };
         return new \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory($callback);
     }
-
 }
 
 class BackendMock extends \VuFindSearch\Backend\EDS\Backend

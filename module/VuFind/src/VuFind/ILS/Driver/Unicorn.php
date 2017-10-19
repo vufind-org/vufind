@@ -1118,7 +1118,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'format' => $format
             ];
 
-            return $item;
+        return $item;
     }
 
     /**

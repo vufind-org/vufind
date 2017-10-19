@@ -702,5 +702,4 @@ class SearchController extends AbstractSearch
             ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
             : [];
     }
-
 }

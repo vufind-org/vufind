@@ -561,7 +561,7 @@ class Record extends AbstractHelper
             return false;
         }
 
-        switch($context) {
+        switch ($context) {
         case "core" :
         case "results" :
             $key = 'showIn' . ucwords(strtolower($context));

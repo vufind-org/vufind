@@ -67,7 +67,6 @@ class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
     {
         $fact = new RecordCollectionFactory(
             function () {
-
             }
         );
         $coll = $fact->factory('garbage');

@@ -116,5 +116,4 @@ class UpdateDocument extends AbstractDocument
     ) {
         $this->records->attach($record, $indexAttr);
     }
-
 }

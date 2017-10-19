@@ -1057,7 +1057,7 @@ EOT;
                         = $this->pickStatus($availability['otherStatuses']);
                 }
 
-                 // Convert Voyager Format to display format
+                // Convert Voyager Format to display format
                 $dueDate = false;
                 if (!empty($row['DUEDATE'])) {
                     $dueDate = $this->dateFormat->convertToDisplayDate(
@@ -1746,7 +1746,6 @@ EOT;
         $returnList = [];
 
         if (!empty($holdList)) {
-
             $sortHoldList = [];
             // Get a unique List of Bib Ids
             foreach ($holdList as $holdItem) {

@@ -129,5 +129,4 @@ class ErrorListener extends AbstractErrorListener
         }
         return self::TYPE_OTHER;
     }
-
 }

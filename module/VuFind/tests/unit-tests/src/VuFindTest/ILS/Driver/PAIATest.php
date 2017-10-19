@@ -539,14 +539,14 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 
         $this->assertEquals($this->renewTestResult, $result);
 
-    /* TODO: make me work
-        $conn_fail = $this->createConnector('renew_error.json');
-        $connfail->setConfig($this->validConfig);
-        $conn_fail->init();
-        $result_fail = $conn_fail->renewMyItems($renew_request);
+        /* TODO: make me work
+            $conn_fail = $this->createConnector('renew_error.json');
+            $connfail->setConfig($this->validConfig);
+            $conn_fail->init();
+            $result_fail = $conn_fail->renewMyItems($renew_request);
 
-        $this->assertEquals($this->failedRenewTestResult, $result_fail);
-    */
+            $this->assertEquals($this->failedRenewTestResult, $result_fail);
+        */
     }
 
     /**

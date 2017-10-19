@@ -52,7 +52,7 @@ class Browse extends AbstractHelper
     {
         $action = strToLower($action);
         $backup = strToLower($backup);
-        switch($action) {
+        switch ($action) {
         case 'dewey':
             return 'dewey-hundreds';
         case 'lcc':

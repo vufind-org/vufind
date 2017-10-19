@@ -763,7 +763,7 @@ class Horizon extends AbstractBase
             $sqlStmt = mssql_query($sql);
 
             while ($row = mssql_fetch_assoc($sqlStmt)) {
-                 $fineList[] = ['amount'     => $row['AMOUNT'],
+                $fineList[] = ['amount'     => $row['AMOUNT'],
                                      'checkout'   => $row['CHECKOUT'],
                                     'fine' => $row['FINE'],
                                      'balance'    => $row['BALANCE'],

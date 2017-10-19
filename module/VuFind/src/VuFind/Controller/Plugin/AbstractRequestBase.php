@@ -200,7 +200,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
         }
 
         // If we got this far, something is wrong!
-         return false;
+        return false;
     }
 
     /**
@@ -248,7 +248,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
         }
 
         // If we got this far, something is wrong!
-         return false;
+        return false;
     }
 
     /**

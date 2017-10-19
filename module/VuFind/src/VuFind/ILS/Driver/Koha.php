@@ -248,8 +248,7 @@ class Koha extends AbstractBase
                 ];
             }
             return $holding;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -315,8 +314,7 @@ class Koha extends AbstractBase
                 ];
             }
             return $fineLst;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -356,8 +354,7 @@ class Koha extends AbstractBase
                 ];
             }
             return $holdLst;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -398,8 +395,7 @@ class Koha extends AbstractBase
                 return $profile;
             }
             return null;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -438,8 +434,7 @@ class Koha extends AbstractBase
                 ];
             }
             return $transactionLst;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -480,8 +475,7 @@ class Koha extends AbstractBase
 
                 $blocks[] = implode(' - ', $block);
             }
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
 
@@ -587,8 +581,7 @@ class Koha extends AbstractBase
             } else {
                 return null;
             }
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
 
@@ -637,8 +630,7 @@ class Koha extends AbstractBase
                 return $patron;
             }
             return null;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }

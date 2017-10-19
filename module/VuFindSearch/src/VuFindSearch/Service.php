@@ -242,7 +242,7 @@ class Service
             } elseif ($total_records < $limit) {
                 // Result set smaller than limit? Get everything and shuffle:
                 try {
-                     $response = $backend->search($query, 0, $limit, $params);
+                    $response = $backend->search($query, 0, $limit, $params);
                 } catch (BackendException $e) {
                     $this->triggerError($e, $args);
                     throw $e;
@@ -413,5 +413,4 @@ class Service
     {
         $this->getEventManager()->trigger(self::EVENT_POST, $response, $args);
     }
-
 }

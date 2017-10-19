@@ -334,7 +334,6 @@ class Params extends \VuFind\Search\Base\Params
                     $ssLimiter['selectedvalue'], $ssLimiter['description']
                 );
             }
-
         }
     }
 
@@ -354,7 +353,6 @@ class Params extends \VuFind\Search\Base\Params
                     $expander['selectedvalue'], $expander['description']
                 );
             }
-
         }
     }
 

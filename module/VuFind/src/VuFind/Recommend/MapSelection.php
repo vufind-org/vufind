@@ -547,7 +547,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                             $recId, $ctrLongLat[0], $ctrLongLat[1], $recTitle
                         ];
                     }
-
                 }
             }
         }

@@ -259,7 +259,7 @@ class BrowseController extends AbstractBase
                 ? 'filter[]=' . $this->params()->fromQuery('query_field') . ':'
                     . urlencode($this->params()->fromQuery('query')) . '&'
                 : '';
-            switch($this->getCurrentAction()) {
+            switch ($this->getCurrentAction()) {
             case 'LCC':
                 $view->paramTitle .= 'filter[]=callnumber-subject:';
                 break;
@@ -539,7 +539,7 @@ class BrowseController extends AbstractBase
     protected function getSecondaryList($facet)
     {
         $category = $this->getCategory();
-        switch($facet) {
+        switch ($facet) {
         case 'alphabetical':
             return ['', $this->getAlphabetList()];
         case 'dewey':
@@ -660,7 +660,7 @@ class BrowseController extends AbstractBase
         if ($action == null) {
             $action = $this->getCurrentAction();
         }
-        switch(strToLower($action)) {
+        switch (strToLower($action)) {
         case 'alphabetical':
             return $this->getCategory();
         case 'dewey':

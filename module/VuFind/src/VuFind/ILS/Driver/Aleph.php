@@ -92,7 +92,8 @@ class AlephTranslator
             if (preg_match("/!!/", $line)) {
                 $line = chop($line);
                 $rgxp = AlephTranslator::regexp($line);
-            } if (preg_match("/!.*/", $line) || $rgxp == "" || $line == "") {
+            }
+            if (preg_match("/!.*/", $line) || $rgxp == "" || $line == "") {
             } else {
                 $line = str_pad($line, 80);
                 $matches = "";

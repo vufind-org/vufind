@@ -199,7 +199,6 @@ class Redi extends AbstractBase
 
         if ($ezbResultsNodesText->length == $ezbResultsNodesURL->length) {
             for ($i = 0; $i < $ezbResultsNodesText->length; $i++) {
-
                 $accessClass = 'unknown';
                 $accessClassExpressions = [
                     "denied"    => "//div[@class='t_ezb_result']["
