@@ -377,11 +377,13 @@ $config = [
             'content_summaries' => [
                 'factories' => [
                     'syndetics' => 'VuFind\Content\Summaries\Factory::getSyndetics',
+                    'syndeticsplus' => 'VuFind\Content\Summaries\Factory::getSyndeticsPlus',
                 ],
             ],
             'content_toc' => [
                 'factories' => [
                     'syndetics' => 'VuFind\Content\TOC\Factory::getSyndetics',
+                    'syndeticsplus' => 'VuFind\Content\TOC\Factory::getSyndeticsPlus',
                 ],
             ],
             'content_covers' => [

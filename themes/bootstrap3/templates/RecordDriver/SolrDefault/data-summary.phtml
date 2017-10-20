@@ -5,9 +5,13 @@
     endforeach;
     $isbn = $this->driver->getCleanISBN();
     $summaries = $this->summaries($isbn);
-    foreach ($summaries as $provider => $list) {
-        foreach ($list as $summary) {
-            ?><?=$this->escapeHtml($summary) ?><br /><?
+    foreach ($summaries as $provider => $content) {
+        foreach ($content as $summary) {
+            if ($provider == 'SyndeticsPlus') {
+                ?><?=$summary ?><?
+            } else {
+                ?><?=$this->escapeHtml($summary) ?><br /><?
+            }
         }
     }
 ?>

@@ -2,21 +2,36 @@
     // Set page title.
     $this->headTitle($this->translate('Table of Contents') . ': ' . $this->driver->getBreadcrumb());
 
-    $toc_content = $this->tab->getContent();
-    $toc = [];
-    if (empty($toc_content)) {
+    // TOCs supplied by the driver will be indexed arrays.
+    // TOCs supplied through Content will be associative arrays.
+    $toc = $this->tab->getContent();
+    $toc_from_driver = false;
+    if (empty($toc)) {
         $toc = $this->driver->getTOC();
-    } else {
-        $toc = reset($toc_content);
+        $toc_from_driver = true;
     }
 ?>
 <? if (!empty($toc)): ?>
   <strong><?=$this->transEsc('Table of Contents')?>: </strong>
-  <ul class="toc">
-    <? foreach ($toc as $line): ?>
-      <li><?=$this->escapeHtml($line)?></li>
+  <? if ($toc_from_driver): ?>
+    <ul class="toc">
+      <? foreach ($toc as $line): ?>
+        <li><?=$this->escapeHtml($line)?></li>
+      <? endforeach; ?>
+    </ul>
+  <? else: ?>
+    <? foreach ($toc as $provider => $content): ?>
+      <? if ($provider == 'SyndeticsPlus'): ?>
+        <?=$content?>
+      <? else: ?>
+        <ul class="toc">
+        <? foreach ($content as $line): ?>
+          <li><?=$this->escapeHtml($line)?></li>
+        <? endforeach; ?>
+        </ul>
+      <? endif; ?>
     <? endforeach; ?>
-  </ul>
+  <? endif; ?>
 <? else: ?>
   <?=$this->transEsc("Table of Contents unavailable")?>.
 <? endif; ?>
