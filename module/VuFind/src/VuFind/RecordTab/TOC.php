@@ -56,6 +56,6 @@ class TOC extends AbstractContent
     public function isActive()
     {
         $toc = $this->getRecordDriver()->tryMethod('getTOC');
-        return parent::isActive() || !empty($toc);
+        return !empty($toc) || parent::isActive();
     }
 }

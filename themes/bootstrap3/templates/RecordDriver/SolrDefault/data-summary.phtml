@@ -1,13 +1,13 @@
 <? 
     $summaries = $this->driver->getSummary(); 
     foreach ($summaries as $summary):
-        ?><?=$summary ?><br /><?
+        ?><?=$this->escapeHtml($summary) ?><br /><?
     endforeach;
     $isbn = $this->driver->getCleanISBN();
     $summaries = $this->summaries($isbn);
     foreach ($summaries as $provider => $list) {
         foreach ($list as $summary) {
-            ?><?=$summary ?><br /><?
+            ?><?=$this->escapeHtml($summary) ?><br /><?
         }
     }
 ?>
