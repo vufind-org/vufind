@@ -568,7 +568,9 @@ class RecordController extends \VuFind\Controller\RecordController
                     // Failure: use flash messenger to display messages, stay on
                     // the current form.
                     if (isset($results['status'])) {
-                        $this->flashMessenger()->addMessage($results['status'], 'error');
+                        $this->flashMessenger()->addMessage(
+                            $results['status'], 'error'
+                        );
                     }
                     if (isset($results['sysMessage'])) {
                         $this->flashMessenger()
