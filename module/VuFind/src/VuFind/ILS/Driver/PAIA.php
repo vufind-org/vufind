@@ -30,6 +30,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -369,7 +370,7 @@ class PAIA extends DAIA
      */
     public function getCancelHoldDetails($checkOutDetails)
     {
-        return($checkOutDetails['cancel_details']);
+        return $checkOutDetails['cancel_details'];
     }
 
     /**
@@ -475,6 +476,7 @@ class PAIA extends DAIA
         // Not yet implemented
         return false;
     }
+
     /**
      * Place ILL Request
      *
@@ -583,7 +585,7 @@ class PAIA extends DAIA
             $paiaCurrencyPattern = "/^([0-9]+\.[0-9][0-9]) ([A-Z][A-Z][A-Z])$/";
             if (preg_match($paiaCurrencyPattern, $fee, $feeMatches)) {
                 // VuFind expects fees in PENNIES
-                return ($feeMatches[1] * 100);
+                return $feeMatches[1] * 100;
             }
             return $fee;
         };
@@ -802,7 +804,7 @@ class PAIA extends DAIA
      */
     public function getRenewDetails($checkOutDetails)
     {
-        return($checkOutDetails['renew_details']);
+        return $checkOutDetails['renew_details'];
     }
 
     /**
@@ -1338,10 +1340,10 @@ class PAIA extends DAIA
             $result['available'] = $doc['status'] == 4 ? true : false;
 
             $results[] = $result;
-
         }
         return $results;
     }
+
     /**
      * This PAIA helper function allows custom overrides for mapping of PAIA response
      * to getMyStorageRetrievalRequests data structure.
@@ -1358,7 +1360,6 @@ class PAIA extends DAIA
             $result = $this->getBasicDetails($doc);
 
             $results[] = $result;
-
         }
         return $results;
     }
@@ -1499,7 +1500,7 @@ class PAIA extends DAIA
             );
         }
         // return any result as error-handling is done elsewhere
-        return ($result->getBody());
+        return $result->getBody();
     }
 
     /**
@@ -1535,7 +1536,7 @@ class PAIA extends DAIA
             );
         }
         // return any result as error-handling is done elsewhere
-        return ($result->getBody());
+        return $result->getBody();
     }
 
     /**
@@ -1735,7 +1736,7 @@ class PAIA extends DAIA
     public function checkRequestIsValid($id, $data, $patron)
     {
         // TODO: make this more configurable
-        if (isset($patron['status']) && $patron['status']  == 0
+        if (isset($patron['status']) && $patron['status'] == 0
             && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
             && in_array('write_items', $this->getScope())
         ) {

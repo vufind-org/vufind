@@ -140,7 +140,7 @@ class SearchHandler
                 list($name, $value) = $param;
                 if ($name === 'bq') {
                     $boostQuery[] = $value;
-                } else if ($name === 'bf') {
+                } elseif ($name === 'bf') {
                     // BF parameter may contain multiple space-separated functions
                     // with individual boosts.  We need to parse this into _val_
                     // query components:

@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Autocomplete;
+
 use VuFind\Autocomplete\Tag;
 
 /**

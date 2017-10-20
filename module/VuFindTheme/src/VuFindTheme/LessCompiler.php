@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFindTheme;
+
 use Zend\Console\Console;
 
 /**

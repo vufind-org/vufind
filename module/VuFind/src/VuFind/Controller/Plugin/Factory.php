@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Controller\Plugin;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -144,7 +145,8 @@ class Factory
     {
         $pdm = $sm->getServiceLocator()->get('VuFind\Role\PermissionDeniedManager');
         $pm = $sm->getServiceLocator()->get('VuFind\Role\PermissionManager');
-        return new Permission($pm, $pdm);
+        $auth = $sm->getServiceLocator()->get('VuFind\AuthManager');
+        return new Permission($pm, $pdm, $auth);
     }
 
     /**

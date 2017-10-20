@@ -32,10 +32,13 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use ArrayObject, VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException,
-    VuFindSearch\Query\Query, VuFindSearch\Service as SearchService,
-    Zend\Session\Container as SessionContainer;
+
+use ArrayObject;
+use VuFind\Exception\Date as DateException;
+use VuFind\Exception\ILS as ILSException;
+use VuFindSearch\Query\Query;
+use VuFindSearch\Service as SearchService;
+use Zend\Session\Container as SessionContainer;
 
 /**
  * Advanced Dummy ILS Driver -- Returns sample values based on Solr index.
@@ -210,7 +213,7 @@ class Demo extends AbstractBase
     {
         // Load service configuration; return empty array if no services defined.
         $services = isset($this->config['Records']['services'])
-            ? (array) $this->config['Records']['services']
+            ? (array)$this->config['Records']['services']
             : [];
         if (empty($services)) {
             return [];
@@ -218,7 +221,7 @@ class Demo extends AbstractBase
 
         // Make it more likely we have a single service than many:
         $count = rand(1, 5) == 1 ? rand(1, count($services)) : 1;
-        $keys = (array) array_rand($services, $count);
+        $keys = (array)array_rand($services, $count);
         $fakeServices = [];
 
         foreach ($keys as $key) {
@@ -533,7 +536,7 @@ class Demo extends AbstractBase
      */
     protected function getSimulatedStatus($id, array $patron = null)
     {
-        $id = (string) $id;
+        $id = (string)$id;
 
         // Do we have a fake status persisted in the session?
         $session = $this->getSession();
@@ -721,6 +724,7 @@ class Demo extends AbstractBase
             'city'            => 'City',
             'country'         => 'Country',
             'phone'           => '1900 CALL ME',
+            'mobile_phone'    => '1234567890',
             'group'           => 'Library Staff',
             'expiration_date' => 'Someday'
         ];

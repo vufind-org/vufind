@@ -28,6 +28,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
+
 use minSO;
 use VuFind\Db\Row\RowGateway;
 use Zend\Db\Adapter\Adapter;
@@ -109,15 +110,23 @@ class Search extends Gateway
     }
 
     /**
-     * Delete unsaved searches for a particular session.
+     * Destroy unsaved searches belonging to the specified session/user.
      *
      * @param string $sid Session ID of current user.
+     * @param int    $uid User ID of current user (optional).
      *
      * @return void
      */
-    public function destroySession($sid)
+    public function destroySession($sid, $uid = null)
     {
-        $this->delete(['session_id' => $sid, 'saved' => 0]);
+        $callback = function ($select) use ($sid, $uid) {
+            $select->where->equalTo('session_id', $sid)->and->equalTo('saved', 0);
+            if ($uid !== null) {
+                $select->where->OR
+                    ->equalTo('user_id', $uid)->and->equalTo('saved', 0);
+            }
+        };
+        return $this->delete($callback);
     }
 
     /**
@@ -132,7 +141,7 @@ class Search extends Gateway
     {
         $callback = function ($select) use ($sid, $uid) {
             $select->where->equalTo('session_id', $sid)->and->equalTo('saved', 0);
-            if ($uid != null) {
+            if ($uid !== null) {
                 $select->where->OR->equalTo('user_id', $uid);
             }
             $select->order('created');

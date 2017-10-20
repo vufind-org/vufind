@@ -66,5 +66,4 @@ trait RecordCacheAwareTrait
     {
         return $this->recordCache;
     }
-
 }

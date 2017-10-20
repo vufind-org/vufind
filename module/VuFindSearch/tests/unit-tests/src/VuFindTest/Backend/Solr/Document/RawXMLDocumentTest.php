@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Backend\Solr\Document;
 
-use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
-
 use PHPUnit_Framework_TestCase;
+
+use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 
 /**
  * Unit tests for SOLR raw XML document class.

@@ -29,6 +29,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindTheme\View\Helper;
+
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -74,7 +75,7 @@ trait ConcatTrait
      *
      * @param stdClass $item Element object
      * @param string   $path New path string
-
+     *
      * @return void
      */
     abstract protected function setResourceFilePath($item, $path);

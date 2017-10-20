@@ -27,10 +27,12 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException;
+
+use PDO;
+use PDOException;
+use VuFind\Exception\Date as DateException;
 use VuFind\Exception\ILS as ILSException;
 use Zend\Log\LoggerInterface;
-use VuFind\Exception\Date as DateException;
 
 /**
  * VuFind Driver for Koha, using web APIs (ILSDI)
@@ -116,6 +118,13 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     protected $dateConverter;
 
     /**
+     * Should validate passwords against Koha system?
+     *
+     * @var boolean
+     */
+    protected $validatePasswords;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -161,6 +170,14 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->availableLocationsDefault
             = isset($this->config['Other']['availableLocations'])
             ? $this->config['Other']['availableLocations'] : [];
+
+        // If we are using SAML/Shibboleth for authentication for both ourselves
+        // and Koha then we can't validate the patrons passwords against Koha as
+        // they won't have one. (Double negative logic used so that if the config
+        // option isn't present in KohaILSDI.ini then ILS passwords will be
+        // validated)
+        $this->validatePasswords
+            = empty($this->config['Catalog']['dontValidatePasswords']);
 
         $this->debug("Config Summary:");
         $this->debug("DB Host: " . $this->host);
@@ -299,8 +316,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getField($contents, $default = "Unknown")
     {
-        if ((string) $contents != "") {
-            return (string) $contents;
+        if ((string)$contents != "") {
+            return (string)$contents;
         } else {
             return $default;
         }
@@ -534,8 +551,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                         $sqlSt->execute();
                         $this->pickupEnableBranchcodes = $sqlSt->fetch();
                     } catch (PDOException $e) {
-                            $this->debug('Connection failed: ' . $e->getMessage());
-                            throw new ILSException($e->getMessage());
+                        $this->debug('Connection failed: ' . $e->getMessage());
+                        throw new ILSException($e->getMessage());
                     }
                 } elseif (!empty($holdDetails['level'])
                     && $holdDetails['level'] == 'title'
@@ -552,8 +569,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                             $this->pickupEnableBranchcodes[] = $row['holdingbranch'];
                         }
                     } catch (PDOException $e) {
-                            $this->debug('Connection failed: ' . $e->getMessage());
-                            throw new ILSException($e->getMessage());
+                        $this->debug('Connection failed: ' . $e->getMessage());
+                        throw new ILSException($e->getMessage());
                     }
                 }
             }
@@ -575,17 +592,17 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         }
         return $this->locations;
 
-            // we get them from the API
-            // FIXME: Not yet possible: API incomplete.
-            // TODO: When API: pull locations dynamically from API.
-            /* $response = $this->makeRequest("organizations/branch"); */
-            /* $locations_response_array = $response->OrganizationsGetRows; */
-            /* foreach ($locations_response_array as $location_response) { */
-            /*     $locations[] = array( */
-            /*         'locationID'      => $location_response->OrganizationID, */
-            /*         'locationDisplay' => $location_response->Name, */
-            /*     ); */
-            /* } */
+        // we get them from the API
+        // FIXME: Not yet possible: API incomplete.
+        // TODO: When API: pull locations dynamically from API.
+        /* $response = $this->makeRequest("organizations/branch"); */
+        /* $locations_response_array = $response->OrganizationsGetRows; */
+        /* foreach ($locations_response_array as $location_response) { */
+        /*     $locations[] = array( */
+        /*         'locationID'      => $location_response->OrganizationID, */
+        /*         'locationDisplay' => $location_response->Name, */
+        /*     ); */
+        /* } */
     }
 
     /**
@@ -745,7 +762,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getHolding($id, array $patron = null)
     {
-
         $this->debug(
             "Function getHolding($id, "
                . implode(",", (array)$patron)
@@ -913,7 +929,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $holding[] = [
                 'id'           => $id,
-                'availability' => (string) $available,
+                'availability' => (string)$available,
                 'item_id'      => $rowItem['ITEMNO'],
                 'status'       => $status,
                 'location'     => $loc,
@@ -927,7 +943,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     ((null == $rowItem['CALLNO']) || ($rowItem['DOCTYPE'] == "PE"))
                         ? '' : $rowItem['CALLNO'],
                 'duedate'      => ($onTransfer || $waiting)
-                    ? '' : (string) $duedate_formatted,
+                    ? '' : (string)$duedate_formatted,
                 'barcode'      => (null == $rowItem['BARCODE'])
                     ? 'Unknown' : $rowItem['BARCODE'],
                 'number'       => (null == $rowItem['COPYNO'])
@@ -935,7 +951,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 'requests_placed' => $reservesCount ? $reservesCount : 0,
                 'frameworkcode' => $rowItem['DOCTYPE'],
             ];
-
         }
 
         //file_put_contents('holding.txt', print_r($holding,TRUE), FILE_APPEND);
@@ -966,7 +981,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
-
         $this->debug("getNewItems called $page|$limit|$daysOld|$fundId");
 
         $items = [];
@@ -1052,8 +1066,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
-                switch ($row['fine'])
-                {
+                switch ($row['fine']) {
                 case 'A':
                     $fineValue = "Account Management Fee";
                     break;
@@ -1131,8 +1144,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 ];
             }
             return $transactionLst;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -1347,8 +1359,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
                 $blocks[] = implode(' - ', $block);
             }
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
 
@@ -1847,14 +1858,15 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function patronLogin($username, $password)
     {
-        //       $idObj = $this->makeRequest(
-        //         "AuthenticatePatron" . "&username=" . $username
-        //       . "&password=" . $password
-        // );
-        $idObj = $this->makeRequest(
-            "LookupPatron" . "&id=" . urlencode($username)
-            . "&id_type=userid"
-        );
+        $request = "LookupPatron" . "&id=" . urlencode($username)
+            . "&id_type=userid";
+
+        if ($this->validatePasswords) {
+            $request = "AuthenticatePatron" . "&username="
+                . urlencode($username) . "&password=" . $password;
+        }
+
+        $idObj = $this->makeRequest($request);
 
         $this->debug("username: " . $username);
         $this->debug("Code: " . $idObj->{'code'});

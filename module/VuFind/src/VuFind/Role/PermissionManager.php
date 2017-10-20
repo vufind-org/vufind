@@ -27,6 +27,7 @@
  * @link     http://vufind.org/wiki/ Wiki
  */
 namespace VuFind\Role;
+
 use ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**

@@ -28,8 +28,8 @@
  */
 namespace VuFind\Search\Solr;
 
-use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
+use Zend\EventManager\SharedEventManagerInterface;
 
 /**
  * Listener to convert one field to another in filters (for legacy purposes).

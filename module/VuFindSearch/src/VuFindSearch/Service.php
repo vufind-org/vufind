@@ -29,13 +29,13 @@
 namespace VuFindSearch;
 
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Feature\RetrieveBatchInterface;
-use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Feature\RandomInterface;
+use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
-use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventManager;
+use Zend\EventManager\EventManagerInterface;
 
 /**
  * Search service.
@@ -186,7 +186,7 @@ class Service
                 }
                 if (!$response) {
                     $response = $next;
-                } else if ($record = $next->first()) {
+                } elseif ($record = $next->first()) {
                     $response->add($record);
                 }
             }
@@ -242,7 +242,7 @@ class Service
             } elseif ($total_records < $limit) {
                 // Result set smaller than limit? Get everything and shuffle:
                 try {
-                     $response = $backend->search($query, 0, $limit, $params);
+                    $response = $backend->search($query, 0, $limit, $params);
                 } catch (BackendException $e) {
                     $this->triggerError($e, $args);
                     throw $e;
@@ -269,7 +269,7 @@ class Service
                     }
                     if (!$response) {
                         $response = $currentBatch;
-                    } else if ($record = $currentBatch->first()) {
+                    } elseif ($record = $currentBatch->first()) {
                         $response->add($record);
                     }
                 }
@@ -356,7 +356,7 @@ class Service
         if (!isset($this->backends[$backend])) {
             $response = $this->getEventManager()->triggerUntil(
                 function ($o) {
-                    return ($o instanceof BackendInterface);
+                    return $o instanceof BackendInterface;
                 },
                 self::EVENT_RESOLVE,
                 $this,
@@ -413,5 +413,4 @@ class Service
     {
         $this->getEventManager()->trigger(self::EVENT_POST, $response, $args);
     }
-
 }

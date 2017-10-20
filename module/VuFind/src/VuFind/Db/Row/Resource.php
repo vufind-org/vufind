@@ -26,9 +26,9 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Row;
-use VuFind\Date\Converter as DateConverter,
-    VuFind\Exception\Date as DateException,
-    VuFind\Exception\LoginRequired as LoginRequiredException;
+
+use VuFind\Exception\Date as DateException;
+use VuFind\Exception\LoginRequired as LoginRequiredException;
 
 /**
  * Row Definition for resource

@@ -1447,7 +1447,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
             $this->error("No configuration found for source '$source'");
             return null;
         }
-        $driverInst = clone($this->driverManager->get($driver));
+        $driverInst = clone $this->driverManager->get($driver);
         $driverInst->setConfig($config);
         $driverInst->init();
         return $driverInst;
@@ -1517,17 +1517,17 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
     }
 
     /**
-    * Change global ID's to local ID's in the given array
-    *
-    * @param mixed  $data         The data to be modified, normally
-    * array or array of arrays
-    * @param string $source       Source code
-    * @param array  $modifyFields Fields to be modified in the array
-    * @param array  $ignoreFields Fields to be ignored during recursive processing
-    *
-    * @return mixed     Modified array or empty/null if that input was
-    *                   empty/null
-    */
+     * Change global ID's to local ID's in the given array
+     *
+     * @param mixed  $data         The data to be modified, normally
+     * array or array of arrays
+     * @param string $source       Source code
+     * @param array  $modifyFields Fields to be modified in the array
+     * @param array  $ignoreFields Fields to be ignored during recursive processing
+     *
+     * @return mixed     Modified array or empty/null if that input was
+     *                   empty/null
+     */
     protected function stripIdPrefixes($data, $source,
         $modifyFields = ['id', 'cat_username'], $ignoreFields = []
     ) {

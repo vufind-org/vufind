@@ -26,11 +26,12 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\VuFind\Exception;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
 use Zend\Log\LoggerAwareInterface;
-use VuFind\Exception\VuFind\Exception;
 
 /**
  * III Sierra REST API driver
@@ -505,7 +506,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'limit' => 10000,
                 'offset' => 0,
                 'fields' => 'item,dueDate,numberOfRenewals,outDate,recallDate'
-                    . ',callNumber'
+                    . ',callNumber,barcode'
             ],
             'GET',
             $patron
@@ -519,6 +520,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'id' => '',
                 'checkout_id' => $this->extractId($entry['id']),
                 'item_id' => $this->extractId($entry['item']),
+                'barcode' => $entry['barcode'],
                 'duedate' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['dueDate']
                 ),
