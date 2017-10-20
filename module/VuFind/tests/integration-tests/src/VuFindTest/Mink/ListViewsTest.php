@@ -26,6 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFindTest\Mink;
+
 use Behat\Mink\Element\Element;
 
 /**

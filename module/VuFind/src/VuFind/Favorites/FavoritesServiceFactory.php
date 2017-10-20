@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Favorites;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**

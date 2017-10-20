@@ -27,14 +27,14 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Auth as AuthException,
-    VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Exception\ILS as ILSException,
-    VuFind\Exception\Mail as MailException,
-    VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\RecommendListener, Zend\Stdlib\Parameters,
-    Zend\View\Model\ViewModel;
+use VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\ListPermission as ListPermissionException;
+use VuFind\Exception\Mail as MailException;
+use VuFind\Search\RecommendListener;
+use Zend\Stdlib\Parameters;
+use Zend\View\Model\ViewModel;
 
 /**
  * Controller for the user account area.
@@ -358,7 +358,7 @@ class MyResearchController extends AbstractBase
         if (($id = $this->params()->fromQuery('save', false)) !== false) {
             $this->setSavedFlagSecurely($id, true, $user->id);
             $this->flashMessenger()->addMessage('search_save_success', 'success');
-        } else if (($id = $this->params()->fromQuery('delete', false)) !== false) {
+        } elseif (($id = $this->params()->fromQuery('delete', false)) !== false) {
             $this->setSavedFlagSecurely($id, false, $user->id);
             $this->flashMessenger()->addMessage('search_unsave_success', 'success');
         } else {
@@ -819,7 +819,7 @@ class MyResearchController extends AbstractBase
 
             return $this->redirect()->toRoute('userList', ['id' => $finalId]);
         } catch (\Exception $e) {
-            switch(get_class($e)) {
+            switch (get_class($e)) {
             case 'VuFind\Exception\ListPermission':
             case 'VuFind\Exception\MissingField':
                 $this->flashMessenger()->addMessage($e->getMessage(), 'error');
@@ -902,7 +902,7 @@ class MyResearchController extends AbstractBase
                 // Success Message
                 $this->flashMessenger()->addMessage('fav_list_delete', 'success');
             } catch (\Exception $e) {
-                switch(get_class($e)) {
+                switch (get_class($e)) {
                 case 'VuFind\Exception\LoginRequired':
                 case 'VuFind\Exception\ListPermission':
                     $user = $this->getUser();
@@ -1200,10 +1200,13 @@ class MyResearchController extends AbstractBase
             }
         }
 
+        $displayItemBarcode
+            = !empty($config->Catalog->display_checked_out_item_barcode);
+
         return $this->createViewModel(
             compact(
                 'transactions', 'renewForm', 'renewResult', 'paginator',
-                'hiddenTransactions'
+                'hiddenTransactions', 'displayItemBarcode'
             )
         );
     }

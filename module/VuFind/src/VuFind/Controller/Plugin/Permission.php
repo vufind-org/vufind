@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
+
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Role\PermissionDeniedManager;

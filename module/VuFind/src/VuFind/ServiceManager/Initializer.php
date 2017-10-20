@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ServiceManager;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

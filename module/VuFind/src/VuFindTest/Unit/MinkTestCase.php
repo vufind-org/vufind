@@ -27,10 +27,12 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Unit;
-use Behat\Mink\Driver\Selenium2Driver, Behat\Mink\Session,
-    Behat\Mink\Element\Element,
-    VuFind\Config\Locator as ConfigLocator,
-    VuFind\Config\Writer as ConfigWriter;
+
+use Behat\Mink\Driver\Selenium2Driver;
+use Behat\Mink\Element\Element;
+use Behat\Mink\Session;
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\Writer as ConfigWriter;
 
 /**
  * Abstract base class for PHPUnit test cases using Mink.

@@ -29,13 +29,13 @@
 namespace VuFind\Search\Factory;
 
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\Pazpar2\Response\RecordCollectionFactory;
-use VuFindSearch\Backend\Pazpar2\QueryBuilder;
-use VuFindSearch\Backend\Pazpar2\Connector;
 use VuFindSearch\Backend\Pazpar2\Backend;
+use VuFindSearch\Backend\Pazpar2\Connector;
+use VuFindSearch\Backend\Pazpar2\QueryBuilder;
+use VuFindSearch\Backend\Pazpar2\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for Pazpar2 backends.

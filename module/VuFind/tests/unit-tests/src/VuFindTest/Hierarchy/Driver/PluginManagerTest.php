@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Hierarchy\Driver;
+
 use VuFind\Hierarchy\Driver\PluginManager;
 
 /**

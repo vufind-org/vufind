@@ -170,7 +170,6 @@ class TagsController extends AbstractAdmin
                 return $this->confirmTagsDelete($ids, $originUrl, $newUrl);
             }
             $delete = $tags->deleteByIdArray($ids);
-
         }
 
         if (0 == $delete) {

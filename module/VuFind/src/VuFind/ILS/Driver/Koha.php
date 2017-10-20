@@ -27,7 +27,10 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\ILS as ILSException;
+
+use PDO;
+use PDOException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * VuFind Driver for Koha (version: 3.02)
@@ -247,8 +250,7 @@ class Koha extends AbstractBase
                 ];
             }
             return $holding;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -314,8 +316,7 @@ class Koha extends AbstractBase
                 ];
             }
             return $fineLst;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -355,8 +356,7 @@ class Koha extends AbstractBase
                 ];
             }
             return $holdLst;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -397,8 +397,7 @@ class Koha extends AbstractBase
                 return $profile;
             }
             return null;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -437,8 +436,7 @@ class Koha extends AbstractBase
                 ];
             }
             return $transactionLst;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -479,8 +477,7 @@ class Koha extends AbstractBase
 
                 $blocks[] = implode(' - ', $block);
             }
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
 
@@ -586,8 +583,7 @@ class Koha extends AbstractBase
             } else {
                 return null;
             }
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
 
@@ -604,7 +600,7 @@ class Koha extends AbstractBase
         $sql = "select borrowernumber as ID, firstname as FNAME, " .
             "surname as LNAME, email as EMAIL from borrowers " .
             "where userid = :username";
-        
+
         $parameters = [':username' => $username];
 
         if ($this->validatePasswords) {
@@ -636,8 +632,7 @@ class Koha extends AbstractBase
                 return $patron;
             }
             return null;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -653,10 +648,10 @@ class Koha extends AbstractBase
     {
         if (empty($date)) {
             return "";
-        } else if (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
+        } elseif (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
             // YYYY-MM-DD HH:MM:SS
             return $this->dateConverter->convertToDisplayDate('Y-m-d H:i:s', $date);
-        } else if (preg_match("/^\d{4}-\d{2}-\d{2}$/", $date) === 1) { // YYYY-MM-DD
+        } elseif (preg_match("/^\d{4}-\d{2}-\d{2}$/", $date) === 1) { // YYYY-MM-DD
             return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
         } else {
             error_log("Unexpected date format: $date");
@@ -675,7 +670,7 @@ class Koha extends AbstractBase
     {
         if (empty($date)) {
             return "";
-        } else if (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
+        } elseif (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
             // YYYY-MM-DD HH:MM:SS
             return
                 $this->dateConverter->convertToDisplayDateAndTime(

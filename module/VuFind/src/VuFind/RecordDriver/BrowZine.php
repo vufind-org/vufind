@@ -69,6 +69,7 @@ class BrowZine extends SolrDefault
             ? $this->fields['name']
             : parent::getTitle();
     }
+
     /**
      * Returns one of three things: a full URL to a thumbnail preview of the record
      * if an image is available in an external system; an array of parameters to

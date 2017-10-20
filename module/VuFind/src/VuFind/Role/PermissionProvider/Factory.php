@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\Role\PermissionProvider;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -108,7 +109,7 @@ class Factory
             $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService')
         );
     }
-    
+
     /**
      * Factory for User
      *

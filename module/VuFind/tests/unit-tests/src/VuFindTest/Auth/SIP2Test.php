@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
-use VuFind\Auth\SIP2, Zend\Config\Config;
+
+use VuFind\Auth\SIP2;
+use Zend\Config\Config;
 
 /**
  * SIP2 authentication test class.
@@ -51,7 +53,7 @@ class SIP2Test extends \VuFindTest\Unit\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = clone($this->getAuthManager()->get('SIP2'));
+        $obj = clone $this->getAuthManager()->get('SIP2');
         $obj->setConfig($config);
         return $obj;
     }
