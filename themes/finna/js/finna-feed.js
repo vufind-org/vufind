@@ -208,13 +208,14 @@ finna.feed = (function finnaFeed() {
   }
 
   function getCarouselSettings(settings) {
+    var autoplay = typeof settings.autoplay !== 'boolean' ? parseInt(settings.autoplay, 10) : 0;
     return {
       dots: settings.dots,
       swipe: !settings.vertical,
       infinite: true,
       touchThreshold: 8,
-      autoplay: parseInt(settings.autoplay, 10) !== 0,
-      autoplaySpeed: settings.autoplay,
+      autoplay: autoplay !== 0,
+      autoplaySpeed: autoplay,
       slidesToShow: settings.slidesToShow.desktop,
       slidesToScroll: settings.scrolledItems.desktop,
       speed: calculateScrollSpeed(settings.scrolledItems.desktop, settings.scrollSpeed),
