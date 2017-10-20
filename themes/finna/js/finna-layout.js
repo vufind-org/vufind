@@ -697,8 +697,8 @@ finna.layout = (function finnaLayout() {
 
   function initOrganisationInfoWidgets() {
     $('.organisation-info[data-init="1"]').map(function setupOrganisationInfo() {
-      var service = finna.organisationInfo();
-      var widget = finna.organisationInfoWidget();
+      var service = finna.organisationInfo;
+      var widget = finna.organisationInfoWidget;
       widget.init($(this), service);
       widget.loadOrganisationList();
     });
