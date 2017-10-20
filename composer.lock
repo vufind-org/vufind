@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "116701a4cd326d6a60a88702ad77dfe4",
+    "content-hash": "d7ac6b8a53b6bb5d47d0741f000a79e1",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -2524,26 +2524,26 @@
         },
         {
             "name": "zendframework/zend-hydrator",
-            "version": "1.1.0",
+            "version": "2.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-hydrator.git",
-                "reference": "22652e1661a5a10b3f564cf7824a2206cf5a4a65"
+                "reference": "de0d6465fbc4b7ca345fddc148834c321c4b361f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-hydrator/zipball/22652e1661a5a10b3f564cf7824a2206cf5a4a65",
-                "reference": "22652e1661a5a10b3f564cf7824a2206cf5a4a65",
+                "url": "https://api.github.com/repos/zendframework/zend-hydrator/zipball/de0d6465fbc4b7ca345fddc148834c321c4b361f",
+                "reference": "de0d6465fbc4b7ca345fddc148834c321c4b361f",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5 || ^7.0",
-                "zendframework/zend-stdlib": "^2.7 || ^3.0"
+                "php": "^5.6 || ^7.0",
+                "zendframework/zend-stdlib": "^3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.0",
-                "squizlabs/php_codesniffer": "^2.0@dev",
-                "zendframework/zend-eventmanager": "^2.6.2 || ^3.0",
+                "phpunit/phpunit": "^5.7.21 || ^6.3",
+                "zendframework/zend-coding-standard": "~1.0.0",
+                "zendframework/zend-eventmanager": "^3.0",
                 "zendframework/zend-filter": "^2.6",
                 "zendframework/zend-inputfilter": "^2.6",
                 "zendframework/zend-serializer": "^2.6.1",
@@ -2560,8 +2560,12 @@
                 "branch-alias": {
                     "dev-release-1.0": "1.0-dev",
                     "dev-release-1.1": "1.1-dev",
-                    "dev-master": "2.0-dev",
-                    "dev-develop": "2.1-dev"
+                    "dev-master": "2.3-dev",
+                    "dev-develop": "2.4-dev"
+                },
+                "zf": {
+                    "component": "Zend\\Hydrator",
+                    "config-provider": "Zend\\Hydrator\\ConfigProvider"
                 }
             },
             "autoload": {
@@ -2578,7 +2582,7 @@
                 "hydrator",
                 "zf2"
             ],
-            "time": "2016-02-18T22:38:26+00:00"
+            "time": "2017-10-02T15:01:27+00:00"
         },
         {
             "name": "zendframework/zend-i18n",
@@ -3566,45 +3570,31 @@
         },
         {
             "name": "zendframework/zend-stdlib",
-            "version": "2.7.7",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-stdlib.git",
-                "reference": "0e44eb46788f65e09e077eb7f44d2659143bcc1f"
+                "reference": "debedcfc373a293f9250cc9aa03cf121428c8e78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-stdlib/zipball/0e44eb46788f65e09e077eb7f44d2659143bcc1f",
-                "reference": "0e44eb46788f65e09e077eb7f44d2659143bcc1f",
+                "url": "https://api.github.com/repos/zendframework/zend-stdlib/zipball/debedcfc373a293f9250cc9aa03cf121428c8e78",
+                "reference": "debedcfc373a293f9250cc9aa03cf121428c8e78",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5 || ^7.0",
-                "zendframework/zend-hydrator": "~1.1"
+                "php": "^5.6 || ^7.0"
             },
             "require-dev": {
                 "athletic/athletic": "~0.1",
-                "fabpot/php-cs-fixer": "1.7.*",
                 "phpunit/phpunit": "~4.0",
-                "zendframework/zend-config": "~2.5",
-                "zendframework/zend-eventmanager": "~2.5",
-                "zendframework/zend-filter": "~2.5",
-                "zendframework/zend-inputfilter": "~2.5",
-                "zendframework/zend-serializer": "~2.5",
-                "zendframework/zend-servicemanager": "~2.5"
-            },
-            "suggest": {
-                "zendframework/zend-eventmanager": "To support aggregate hydrator usage",
-                "zendframework/zend-filter": "To support naming strategy hydrator usage",
-                "zendframework/zend-serializer": "Zend\\Serializer component",
-                "zendframework/zend-servicemanager": "To support hydrator plugin manager usage"
+                "squizlabs/php_codesniffer": "^2.6.2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-release-2.7": "2.7-dev",
-                    "dev-master": "3.0-dev",
-                    "dev-develop": "3.1-dev"
+                    "dev-master": "3.1-dev",
+                    "dev-develop": "3.2-dev"
                 }
             },
             "autoload": {
@@ -3621,7 +3611,7 @@
                 "stdlib",
                 "zf2"
             ],
-            "time": "2016-04-12T21:17:31+00:00"
+            "time": "2016-09-13T14:38:50+00:00"
         },
         {
             "name": "zendframework/zend-text",
@@ -4749,37 +4739,40 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.6.1",
+            "version": "1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "8e6e04167378abf1ddb4d3522d8755c5fd90d102"
+                "reference": "3b8a3a99ba1f6a3952ac2747d989303cbd6b7a3e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/8e6e04167378abf1ddb4d3522d8755c5fd90d102",
-                "reference": "8e6e04167378abf1ddb4d3522d8755c5fd90d102",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/3b8a3a99ba1f6a3952ac2747d989303cbd6b7a3e",
+                "reference": "3b8a3a99ba1f6a3952ac2747d989303cbd6b7a3e",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4.0"
+                "php": "^5.6 || ^7.0"
             },
             "require-dev": {
-                "doctrine/collections": "1.*",
-                "phpunit/phpunit": "~4.1"
+                "doctrine/collections": "^1.0",
+                "doctrine/common": "^2.6",
+                "phpunit/phpunit": "^4.1"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "DeepCopy\\": "src/DeepCopy/"
-                }
+                },
+                "files": [
+                    "src/DeepCopy/deep_copy.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Create deep copies (clones) of your objects",
-            "homepage": "https://github.com/myclabs/DeepCopy",
             "keywords": [
                 "clone",
                 "copy",
@@ -4787,7 +4780,7 @@
                 "object",
                 "object graph"
             ],
-            "time": "2017-04-12T18:52:22+00:00"
+            "time": "2017-10-19T19:58:43+00:00"
         },
         {
             "name": "pdepend/pdepend",
