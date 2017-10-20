@@ -16,7 +16,8 @@ HMACKeys = item_id:holdtype:level
 defaultRequiredDate = 0:0:2
 
 ; extraHoldFields - A colon-separated list used to display extra visible fields in the
-; place holds form. Supported values are "requiredByDate" and "pickUpLocation"
+; place holds form. Supported values are "requiredByDate", "pickUpLocation" and
+; "acceptTerms"
 extraHoldFields = requiredByDate:pickUpLocation
 
 ; A Pick Up Location Code used to pre-select the pick up location drop down list and
@@ -33,6 +34,14 @@ defaultPickUpLocation = ""
 
 ; This setting can be used to exclude locations from the pickup location list
 excludePickupLocations = 1:6:10:15:29:32:34:37:38:39:53:79:87:88
+
+; Optional help texts that can be displayed on the hold form
+;helpText = "Help text for all languages."
+;helpText[en-gb] = "Help text for English language."
+
+; Optional label for the "acceptTerms" extra field
+;acceptTermsText = "I accept the terms in any language."
+;acceptTermsText[en-gb] = "I accept the terms in English."
 
 ; Changing of pickup location is enabled if method parameter is set. Only valid value
 ; is 'driver'.

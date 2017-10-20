@@ -111,7 +111,7 @@ defaultRequiredDate = 0:1:0
 
 ; extraHoldFields - A colon-separated list used to display extra visible fields in the
 ; place holds form. Supported values are "comments", "requiredByDate",
-; "pickUpLocation" and "requestGroup"
+; "pickUpLocation", "requestGroup" and "acceptTerms"
 extraHoldFields = comments:requiredByDate:pickUpLocation
 
 ; A Pick Up Location Code used to pre-select the pick up location drop down list and
@@ -183,6 +183,10 @@ checkLoans = true
 ;helpText = "Help text for all languages."
 ;helpText[en-gb] = "Help text for English language."
 
+; Optional label for the "acceptTerms" extra field
+;acceptTermsText = "I accept the terms in any language."
+;acceptTermsText[en-gb] = "I accept the terms in English."
+
 ; This section controls call slip behavior. To enable, uncomment (at minimum) the
 ; HMACKeys and extraFields settings below.
 [StorageRetrievalRequests]
@@ -194,8 +198,8 @@ checkLoans = true
 ;HMACKeys = item_id:holdings_id
 
 ; extraFields - A colon-separated list used to display extra visible fields in the
-; place call slip request form. Supported values are "comments", "pickUpLocation"
-; and "item-issue"
+; place call slip request form. Supported values are "comments", "pickUpLocation",
+; "item-issue" and "acceptTerms"
 ;extraFields = item-issue:comments
 
 ; The maximum number of holding items to generate request links for. The process of
@@ -222,6 +226,14 @@ display_statuses = 1:2:3:5:8:9
 ; N.B. If you enable this setting, also include "requestType" in HMACKeys above.
 ;pickupByCallSlipGroup = true
 
+; Optional help texts that can be displayed on the call slip request form
+;helpText = "ILL Help text for all languages."
+;helpText[en-gb] = "ILL Help text for English language."
+
+; Optional label for the "acceptTerms" extra field
+;acceptTermsText = "I accept the terms in any language."
+;acceptTermsText[en-gb] = "I accept the terms in English."
+
 ; This section controls UB (Universal Borrowing, ILL in VuFind) behavior. To enable,
 ; uncomment (at minimum) the HMACKeys and extraFields settings below. See also
 ; section ILLRequestSources for mapping between patron ID's and UB libraries.
@@ -232,8 +244,8 @@ HMACKeys = item_id:holdings_id
 
 ; extraFields - A colon-separated list used to display extra visible fields in the
 ; request form. Supported values are "pickUpLibrary",
-; "pickUpLibraryLocation", "requiredByDate" and "comments" (although comments are
-; not properly stored for UB requests at least in version 8.1)
+; "pickUpLibraryLocation", "requiredByDate", "comments" and "acceptTerms"
+; (although comments are not properly stored for UB requests at least in version 8.1)
 extraFields = pickUpLibrary:pickUpLibraryLocation:requiredByDate
 
 ; defaultRequiredDate - A colon-separated list used to set the default "not required
@@ -244,6 +256,10 @@ defaultRequiredDate = 0:1:0
 ; Optional help texts that can be displayed on the ILL form
 ;helpText = "ILL Help text for all languages."
 ;helpText[en-gb] = "ILL Help text for English language."
+
+; Optional label for the "acceptTerms" extra field
+;acceptTermsText = "I accept the terms in any language."
+;acceptTermsText[en-gb] = "I accept the terms in English."
 
 ; This section lists the valid patron id prefixes for UB (ILL in VuFind) requests,
 ; and maps them to the their Voyager UB library IDs. Any patron of another library

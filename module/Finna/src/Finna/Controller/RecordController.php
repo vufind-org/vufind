@@ -308,4 +308,436 @@ class RecordController extends \VuFind\Controller\RecordController
         }
         return $result;
     }
+
+    /**
+     * Action for dealing with holds.
+     *
+     * @return mixed
+     */
+    public function holdAction()
+    {
+        $driver = $this->loadRecord();
+
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        // If we're not supposed to be here, give up now!
+        $catalog = $this->getILS();
+        $checkHolds = $catalog->checkFunction(
+            'Holds',
+            [
+                'id' => $driver->getUniqueID(),
+                'patron' => $patron
+            ]
+        );
+        if (!$checkHolds) {
+            return $this->redirectToRecord();
+        }
+
+        // Do we have valid information?
+        // Sets $this->logonURL and $this->gatheredDetails
+        $gatheredDetails = $this->holds()->validateRequest($checkHolds['HMACKeys']);
+        if (!$gatheredDetails) {
+            return $this->redirectToRecord();
+        }
+
+        // Block invalid requests:
+        $validRequest = $catalog->checkRequestIsValid(
+            $driver->getUniqueID(), $gatheredDetails, $patron
+        );
+        if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
+            $this->flashMessenger()->addErrorMessage(
+                is_array($validRequest)
+                    ? $validRequest['status'] : 'hold_error_blocked'
+            );
+            return $this->redirectToRecord('#top');
+        }
+
+        // Send various values to the view so we can build the form:
+        $requestGroups = $catalog->checkCapability(
+            'getRequestGroups', [$driver->getUniqueID(), $patron, $gatheredDetails]
+        ) ? $catalog->getRequestGroups(
+            $driver->getUniqueID(), $patron, $gatheredDetails
+        ) : [];
+        $extraHoldFields = isset($checkHolds['extraHoldFields'])
+            ? explode(":", $checkHolds['extraHoldFields']) : [];
+
+        $requestGroupNeeded = in_array('requestGroup', $extraHoldFields)
+            && !empty($requestGroups)
+            && (empty($gatheredDetails['level'])
+                || ($gatheredDetails['level'] != 'copy'
+                    || count($requestGroups) > 1));
+
+        $pickupDetails = $gatheredDetails;
+        if (!$requestGroupNeeded && !empty($requestGroups)
+            && count($requestGroups) == 1
+        ) {
+            // Request group selection is not required, but we have a single request
+            // group, so make sure pickup locations match with the group
+            $pickupDetails['requestGroupId'] = $requestGroups[0]['id'];
+        }
+        $pickup = $catalog->getPickUpLocations($patron, $pickupDetails);
+
+        // Process form submissions if necessary:
+        if (null !== $this->params()->fromPost('placeHold')) {
+            // If the form contained a pickup location or request group, make sure
+            // they are valid:
+            $validGroup = $this->holds()->validateRequestGroupInput(
+                $gatheredDetails, $extraHoldFields, $requestGroups
+            );
+            $validPickup = $validGroup && $this->holds()->validatePickUpInput(
+                $gatheredDetails['pickUpLocation'], $extraHoldFields, $pickup
+            );
+            if (!$validGroup) {
+                $this->flashMessenger()
+                    ->addMessage('hold_invalid_request_group', 'error');
+            } elseif (!$validPickup) {
+                $this->flashMessenger()->addMessage('hold_invalid_pickup', 'error');
+            } elseif (in_array('acceptTerms', $extraHoldFields)
+                && empty($gatheredDetails['acceptTerms'])
+            ) {
+                $this->flashMessenger()->addMessage(
+                    'must_accept_terms', 'error'
+                );
+            } else {
+                // If we made it this far, we're ready to place the hold;
+                // if successful, we will redirect and can stop here.
+
+                // Add Patron Data to Submitted Data
+                $holdDetails = $gatheredDetails + ['patron' => $patron];
+
+                // Attempt to place the hold:
+                $function = (string)$checkHolds['function'];
+                $results = $catalog->$function($holdDetails);
+
+                // Success: Go to Display Holds
+                if (isset($results['success']) && $results['success'] == true) {
+                    $msg = [
+                        'html' => true,
+                        'msg' => 'hold_place_success_html',
+                        'tokens' => [
+                            '%%url%%' => $this->url()->fromRoute('myresearch-holds')
+                        ],
+                    ];
+                    $this->flashMessenger()->addMessage($msg, 'success');
+                    return $this->redirectToRecord('#top');
+                } else {
+                    // Failure: use flash messenger to display messages, stay on
+                    // the current form.
+                    if (isset($results['status'])) {
+                        $this->flashMessenger()
+                            ->addMessage($results['status'], 'error');
+                    }
+                    if (isset($results['sysMessage'])) {
+                        $this->flashMessenger()
+                            ->addMessage($results['sysMessage'], 'error');
+                    }
+                }
+            }
+        }
+
+        // Find and format the default required date:
+        $defaultRequired = $this->holds()->getDefaultRequiredDate(
+            $checkHolds, $catalog, $patron, $gatheredDetails
+        );
+        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
+            ->convertToDisplayDate("U", $defaultRequired);
+        try {
+            $defaultPickup
+                = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
+        } catch (\Exception $e) {
+            $defaultPickup = false;
+        }
+        try {
+            $defaultRequestGroup = empty($requestGroups)
+                ? false
+                : $catalog->getDefaultRequestGroup($patron, $gatheredDetails);
+        } catch (\Exception $e) {
+            $defaultRequestGroup = false;
+        }
+
+        $view = $this->createViewModel(
+            [
+                'gatheredDetails' => $gatheredDetails,
+                'pickup' => $pickup,
+                'defaultPickup' => $defaultPickup,
+                'homeLibrary' => $this->getUser()->home_library,
+                'extraHoldFields' => $extraHoldFields,
+                'defaultRequiredDate' => $defaultRequired,
+                'requestGroups' => $requestGroups,
+                'defaultRequestGroup' => $defaultRequestGroup,
+                'requestGroupNeeded' => $requestGroupNeeded,
+                'helpText' => isset($checkHolds['helpText'])
+                    ? $checkHolds['helpText'] : null,
+                'acceptTermsText' => isset($checkHolds['acceptTermsText'])
+                    ? $checkHolds['acceptTermsText'] : null
+            ]
+        );
+        $view->setTemplate('record/hold');
+        return $view;
+    }
+
+    /**
+     * Action for dealing with storage retrieval requests.
+     *
+     * @return mixed
+     */
+    public function storageRetrievalRequestAction()
+    {
+        $driver = $this->loadRecord();
+
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        // If we're not supposed to be here, give up now!
+        $catalog = $this->getILS();
+        $checkRequests = $catalog->checkFunction(
+            'StorageRetrievalRequests',
+            [
+                'id' => $driver->getUniqueID(),
+                'patron' => $patron
+            ]
+        );
+        if (!$checkRequests) {
+            return $this->redirectToRecord();
+        }
+
+        // Do we have valid information?
+        // Sets $this->logonURL and $this->gatheredDetails
+        $gatheredDetails = $this->storageRetrievalRequests()->validateRequest(
+            $checkRequests['HMACKeys']
+        );
+        if (!$gatheredDetails) {
+            return $this->redirectToRecord();
+        }
+
+        // Block invalid requests:
+        $validRequest = $catalog->checkStorageRetrievalRequestIsValid(
+            $driver->getUniqueID(), $gatheredDetails, $patron
+        );
+        if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
+            $this->flashMessenger()->addErrorMessage(
+                is_array($validRequest)
+                    ? $validRequest['status']
+                    : 'storage_retrieval_request_error_blocked'
+            );
+            return $this->redirectToRecord('#top');
+        }
+
+        // Send various values to the view so we can build the form:
+        $pickup = $catalog->getPickUpLocations($patron, $gatheredDetails);
+        $extraFields = isset($checkRequests['extraFields'])
+            ? explode(":", $checkRequests['extraFields']) : [];
+
+        // Process form submissions if necessary:
+        if (!is_null($this->params()->fromPost('placeStorageRetrievalRequest'))) {
+            if (in_array('acceptTerms', $extraFields)
+                && empty($gatheredDetails['acceptTerms'])
+            ) {
+                $this->flashMessenger()->addMessage(
+                    'must_accept_terms', 'error'
+                );
+            } else {
+                // If we made it this far, we're ready to place the hold;
+                // if successful, we will redirect and can stop here.
+
+                // Add Patron Data to Submitted Data
+                $details = $gatheredDetails + ['patron' => $patron];
+
+                // Attempt to place the hold:
+                $function = (string)$checkRequests['function'];
+                $results = $catalog->$function($details);
+
+                // Success: Go to Display Storage Retrieval Requests
+                if (isset($results['success']) && $results['success'] == true) {
+                    $msg = [
+                        'html' => true,
+                        'msg' => 'storage_retrieval_request_place_success_html',
+                        'tokens' => [
+                            '%%url%%' => $this->url()
+                                ->fromRoute('myresearch-storageretrievalrequests')
+                        ],
+                    ];
+                    $this->flashMessenger()->addMessage($msg, 'success');
+                    return $this->redirectToRecord('#top');
+                } else {
+                    // Failure: use flash messenger to display messages, stay on
+                    // the current form.
+                    if (isset($results['status'])) {
+                        $this->flashMessenger()->addMessage($results['status'], 'error');
+                    }
+                    if (isset($results['sysMessage'])) {
+                        $this->flashMessenger()
+                            ->addMessage($results['sysMessage'], 'error');
+                    }
+                }
+            }
+        }
+
+        // Find and format the default required date:
+        $defaultRequired = $this->storageRetrievalRequests()
+            ->getDefaultRequiredDate($checkRequests);
+        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
+            ->convertToDisplayDate("U", $defaultRequired);
+        try {
+            $defaultPickup
+                = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
+        } catch (\Exception $e) {
+            $defaultPickup = false;
+        }
+
+        $view = $this->createViewModel(
+            [
+                'gatheredDetails' => $gatheredDetails,
+                'pickup' => $pickup,
+                'defaultPickup' => $defaultPickup,
+                'homeLibrary' => $this->getUser()->home_library,
+                'extraFields' => $extraFields,
+                'defaultRequiredDate' => $defaultRequired,
+                'helpText' => isset($checkRequests['helpText'])
+                    ? $checkRequests['helpText'] : null,
+                'acceptTermsText' => isset($checkHolds['acceptTermsText'])
+                    ? $checkHolds['acceptTermsText'] : null
+            ]
+        );
+        $view->setTemplate('record/storageretrievalrequest');
+        return $view;
+    }
+
+    /**
+     * Action for dealing with ILL requests.
+     *
+     * @return mixed
+     */
+    public function illRequestAction()
+    {
+        $driver = $this->loadRecord();
+
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        // If we're not supposed to be here, give up now!
+        $catalog = $this->getILS();
+        $checkRequests = $catalog->checkFunction(
+            'ILLRequests',
+            [
+                'id' => $driver->getUniqueID(),
+                'patron' => $patron
+            ]
+        );
+        if (!$checkRequests) {
+            return $this->redirectToRecord();
+        }
+
+        // Do we have valid information?
+        // Sets $this->logonURL and $this->gatheredDetails
+        $gatheredDetails = $this->ILLRequests()->validateRequest(
+            $checkRequests['HMACKeys']
+        );
+        if (!$gatheredDetails) {
+            return $this->redirectToRecord();
+        }
+
+        // Block invalid requests:
+        $validRequest = $catalog->checkILLRequestIsValid(
+            $driver->getUniqueID(), $gatheredDetails, $patron
+        );
+        if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
+            $this->flashMessenger()->addErrorMessage(
+                is_array($validRequest)
+                    ? $validRequest['status'] : 'ill_request_error_blocked'
+            );
+            return $this->redirectToRecord('#top');
+        }
+
+        // Send various values to the view so we can build the form:
+
+        $extraFields = isset($checkRequests['extraFields'])
+            ? explode(":", $checkRequests['extraFields']) : [];
+
+        // Process form submissions if necessary:
+        if (!is_null($this->params()->fromPost('placeILLRequest'))) {
+            if (in_array('acceptTerms', $extraFields)
+                && empty($gatheredDetails['acceptTerms'])
+            ) {
+                $this->flashMessenger()->addMessage(
+                    'must_accept_terms', 'error'
+                );
+            } else {
+                // If we made it this far, we're ready to place the hold;
+                // if successful, we will redirect and can stop here.
+
+                // Add Patron Data to Submitted Data
+                $details = $gatheredDetails + ['patron' => $patron];
+
+                // Attempt to place the hold:
+                $function = (string)$checkRequests['function'];
+                $results = $catalog->$function($details);
+
+                // Success: Go to Display ILL Requests
+                if (isset($results['success']) && $results['success'] == true) {
+                    $msg = [
+                        'html' => true,
+                        'msg' => 'ill_request_place_success_html',
+                        'tokens' => [
+                            '%%url%%' => $this->url()
+                                ->fromRoute('myresearch-illrequests')
+                        ],
+                    ];
+                    $this->flashMessenger()->addMessage($msg, 'success');
+                    return $this->redirectToRecord('#top');
+                } else {
+                    // Failure: use flash messenger to display messages, stay on
+                    // the current form.
+                    if (isset($results['status'])) {
+                        $this->flashMessenger()
+                            ->addMessage($results['status'], 'error');
+                    }
+                    if (isset($results['sysMessage'])) {
+                        $this->flashMessenger()
+                            ->addMessage($results['sysMessage'], 'error');
+                    }
+                }
+            }
+        }
+
+        // Find and format the default required date:
+        $defaultRequired = $this->ILLRequests()
+            ->getDefaultRequiredDate($checkRequests);
+        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
+            ->convertToDisplayDate("U", $defaultRequired);
+
+        // Get pickup libraries
+        $pickupLibraries = $catalog->getILLPickUpLibraries(
+            $driver->getUniqueID(), $patron, $gatheredDetails
+        );
+
+        // Get pickup locations. Note that these are independent of pickup library,
+        // and library specific locations must be retrieved when a library is
+        // selected.
+        $pickupLocations = $catalog->getPickUpLocations($patron, $gatheredDetails);
+
+        $view = $this->createViewModel(
+            [
+                'gatheredDetails' => $gatheredDetails,
+                'pickupLibraries' => $pickupLibraries,
+                'pickupLocations' => $pickupLocations,
+                'homeLibrary' => $this->getUser()->home_library,
+                'extraFields' => $extraFields,
+                'defaultRequiredDate' => $defaultRequired,
+                'helpText' => isset($checkRequests['helpText'])
+                    ? $checkRequests['helpText'] : null,
+                'acceptTermsText' => isset($checkHolds['acceptTermsText'])
+                    ? $checkHolds['acceptTermsText'] : null
+            ]
+        );
+        $view->setTemplate('record/illrequest');
+        return $view;
+    }
 }

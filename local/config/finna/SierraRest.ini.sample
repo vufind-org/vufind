@@ -43,7 +43,7 @@ defaultRequiredDate = 0:0:2
 
 ; extraHoldFields - A colon-separated list used to display extra visible fields in the
 ; place holds form. Supported values are "requiredByDate", "requestGroup"
-; (location in Sierra) and "pickUpLocation"
+; (location in Sierra), "pickUpLocation" and "acceptTerms"
 extraHoldFields = requiredByDate:pickUpLocation
 
 ; A Pick Up Location Code used to pre-select the pick up location drop down list and
@@ -61,6 +61,14 @@ item_hold_excluded_item_codes = e
 
 ; This setting specifies which bib levels allow title level holds
 title_hold_bib_levels = a:b:m:d
+
+; Optional help texts that can be displayed on the hold form
+;helpText = "Help text for all languages."
+;helpText[en-gb] = "Help text for English language."
+
+; Optional label for the "acceptTerms" extra field
+;acceptTermsText = "I accept the terms in any language."
+;acceptTermsText[en-gb] = "I accept the terms in English."
 
 ; This section allows modification of the default mapping from item status codes to
 ; VuFind item statuses

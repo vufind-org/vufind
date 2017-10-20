@@ -66,6 +66,86 @@ class Connection extends \VuFind\ILS\Connection
     }
 
     /**
+     * Check Holds
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports Holds.
+     *
+     * @param array $functionConfig The Hold configuration values
+     * @param array $params         An array of function-specific params (or null)
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values either for placing holds via a form or a URL; on failure, false.
+     */
+    protected function checkMethodHolds($functionConfig, $params)
+    {
+        $response = parent::checkMethodHolds($functionConfig, $params);
+
+        if (isset($functionConfig['acceptTermsText'])) {
+            $response['acceptTermsText'] = $this->getHelpText(
+                $functionConfig['acceptTermsText']
+            );
+        }
+
+        return $response;
+    }
+
+    /**
+     * Check Storage Retrieval Request
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports storage
+     * retrieval requests.
+     *
+     * @param array $functionConfig The storage retrieval request configuration
+     * values
+     * @param array $params         An array of function-specific params (or null)
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values either for placing requests via a form; on failure, false.
+     */
+    protected function checkMethodStorageRetrievalRequests($functionConfig, $params)
+    {
+        $response = parent::checkMethodStorageRetrievalRequests(
+            $functionConfig, $params
+        );
+
+        if (isset($functionConfig['acceptTermsText'])) {
+            $response['acceptTermsText'] = $this->getHelpText(
+                $functionConfig['acceptTermsText']
+            );
+        }
+
+        return $response;
+    }
+
+    /**
+     * Check ILL Request
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports storage
+     * retrieval requests.
+     *
+     * @param array $functionConfig The ILL request configuration values
+     * @param array $params         An array of function-specific params (or null)
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values either for placing requests via a form; on failure, false.
+     */
+    protected function checkMethodILLRequests($functionConfig, $params)
+    {
+        $response = parent::checkMethodILLRequests($functionConfig, $params);
+
+        if (isset($functionConfig['acceptTermsText'])) {
+            $response['acceptTermsText'] = $this->getHelpText(
+                $functionConfig['acceptTermsText']
+            );
+        }
+
+        return $response;
+    }
+
+    /**
      * Check for Authorization Status
      *
      * A support method for checkFunction(). This is responsible for checking

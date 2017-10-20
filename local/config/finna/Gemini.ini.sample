@@ -14,8 +14,8 @@ renewalLimit = 3
 HMACKeys = id:item_id:holdtype:level
 
 ; extraHoldFields - A colon-separated list used to display extra visible fields in the
-; place holds form. Supported values are "comments", "requiredByDate" and
-; "pickUpLocation"
+; place holds form. Supported values are "comments", "requiredByDate",
+; "pickUpLocation" and "acceptTerms"
 extraHoldFields = pickUpLocation:requestGroup
 
 ; A Pick Up Location Code used to pre-select the pick up location drop down list and
@@ -32,6 +32,14 @@ defaultPickUpLocation = ""
 ; 3) a value within the Location IDs returned by getPickUpLocations()
 ; This setting is only effective if requestGroup is specified in extraHoldFields.
 defaultRequestGroup = "user-selected"
+
+; Optional help texts that can be displayed on the hold form
+;helpText = "Help text for all languages."
+;helpText[en-gb] = "Help text for English language."
+
+; Optional label for the "acceptTerms" extra field
+;acceptTermsText = "I accept the terms in any language."
+;acceptTermsText[en-gb] = "I accept the terms in English."
 
 [cancelHolds]
 HMACKeys = id

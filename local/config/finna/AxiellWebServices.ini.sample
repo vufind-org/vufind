@@ -38,7 +38,7 @@ defaultRequiredDate = 0:0:1
 
 ; extraHoldFields - A colon-separated list used to display extra visible fields in the
 ; place holds form. Supported values are "comments", "requiredByDate",
-; "pickUpLocation"  and "requestGroup"
+; "pickUpLocation", "requestGroup" and "acceptTerms"
 extraHoldFields = pickUpLocation
 
 ; A Pick Up Location Code used to pre-select the pick up location drop down list and
@@ -72,6 +72,10 @@ defaultPickUpLocation = 1.001
 ; Optional help texts that can be displayed on the hold form
 ;helpText = "Help text for all languages."
 ;helpText[en-gb] = "Help text for English language."
+
+; Optional label for the "acceptTerms" extra field
+;acceptTermsText = "I accept the terms in any language."
+;acceptTermsText[en-gb] = "I accept the terms in English."
 
 [cancelHolds]
 HMACKeys = id
