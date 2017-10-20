@@ -562,8 +562,7 @@ class Koha extends AbstractBase
                 'count' => $totalCount,
                 'transactions' => $historicLoans
             ];
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
