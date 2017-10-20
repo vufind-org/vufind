@@ -1,3 +1,9 @@
+vufind 4.1 distribution; urgency=low
+
+  * VuFind 4.1 release (see http://vufind.org/wiki/changelog for details)
+
+ -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 2 Oct 2017 09:21:08 UTC
+
 vufind 4.0.1 distribution; urgency=low
 
   * VuFind 4.0.1 release (see http://vufind.org/wiki/changelog for details)

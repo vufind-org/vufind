@@ -1200,10 +1200,13 @@ class MyResearchController extends AbstractBase
             }
         }
 
+        $displayItemBarcode
+            = !empty($config->Catalog->display_checked_out_item_barcode);
+
         return $this->createViewModel(
             compact(
                 'transactions', 'renewForm', 'renewResult', 'paginator',
-                'hiddenTransactions'
+                'hiddenTransactions', 'displayItemBarcode'
             )
         );
     }

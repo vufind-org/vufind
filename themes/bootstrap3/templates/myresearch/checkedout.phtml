@@ -124,6 +124,10 @@
               <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
               <br />
             <? endif; ?>
+            <? if ($this->displayItemBarcode && !empty($ilsDetails['barcode'])): ?>
+              <strong><?=$this->transEsc('Barcode')?>:</strong> <?=$this->escapeHtml($ilsDetails['barcode'])?>
+              <br />
+            <? endif; ?>
 
             <? if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
               <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], [], $ilsDetails['institution_name'])?></strong>

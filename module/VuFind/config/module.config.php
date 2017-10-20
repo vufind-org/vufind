@@ -224,6 +224,7 @@ $config = [
             'VuFind\Role\PermissionDeniedManager' => 'VuFind\Service\Factory::getPermissionDeniedManager',
             'VuFind\Search' => 'VuFind\Service\Factory::getSearchService',
             'VuFind\Search\BackendManager' => 'VuFind\Service\Factory::getSearchBackendManager',
+            'VuFind\Search\History' => 'VuFind\Service\Factory::getSearchHistory',
             'VuFind\Search\Memory' => 'VuFind\Service\Factory::getSearchMemory',
             'VuFind\SearchOptionsPluginManager' => 'VuFind\Service\Factory::getSearchOptionsPluginManager',
             'VuFind\SearchParamsPluginManager' => 'VuFind\Service\Factory::getSearchParamsPluginManager',

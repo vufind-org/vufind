@@ -1,4 +1,4 @@
-/*global deparam, getUrlRoot, grecaptcha, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind */
+/*global deparam, getUrlRoot, grecaptcha, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
 /*exported ajaxTagUpdate, recordDocReady */
 
 /**
@@ -180,6 +180,7 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     } else {
       removeHashFromLocation();
     }
+    setupJumpMenus($newTab);
   });
   return false;
 }
