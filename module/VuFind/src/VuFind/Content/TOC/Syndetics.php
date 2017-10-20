@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The University of Chicago 2017. 
+ * Copyright (C) The University of Chicago 2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -121,7 +121,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                             $li .= sprintf("%s. ", $nodeList->item(0)->nodeValue);
                         }
 
-                        // Chapter title. 
+                        // Chapter title.
                         $nodeList = $node->getElementsByTagName('t');
                         if ($nodeList->length > 0) {
                             $li .= $nodeList->item(0)->nodeValue;
@@ -136,7 +136,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                 $i++;
             }
         }
-   
+
         return $toc;
     }
 }

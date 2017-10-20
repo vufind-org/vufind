@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The University of Chicago 2017. 
+ * Copyright (C) The University of Chicago 2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -61,7 +61,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      *
      * It first queries the master url for the ISBN entry seeking a summary URL.
      * If a summary URL is found, the script will then use HTTP request to
-     * retrieve summaries. 
+     * retrieve summaries.
      * Configuration:  Sources are processed in order - refer to $sourceList above.
      *
      * @param string           $key     API key
@@ -121,7 +121,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                 }
             }
         }
-    
+
         return $summaries;
     }
 }

@@ -1,10 +1,11 @@
-<?php 
+<?php
+
 /**
  * Summaries content loader plugin manager
  *
  * PHP version 5
  *
- * Copyright (C) The University of Chicago 2017. 
+ * Copyright (C) The University of Chicago 2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
