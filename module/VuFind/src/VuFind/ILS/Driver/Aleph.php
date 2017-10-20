@@ -870,21 +870,21 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $z30 = $item->z30;
             $group = $item->xpath('@href');
             $group = substr(strrchr($group[0], "/"), 1);
-            $location = (string) $z36h->{'z36_pickup_location'};
-            $reqnum = (string) $z36h->{'z36-doc-number'}
-                . (string) $z36h->{'z36-item-sequence'}
-                . (string) $z36h->{'z36-sequence'};
+            $location = (string)$z36h->{'z36_pickup_location'};
+            $reqnum = (string)$z36h->{'z36-doc-number'}
+                . (string)$z36h->{'z36-item-sequence'}
+                . (string)$z36h->{'z36-sequence'};
 
-            $due = (string) $z36h->{'z36h-due-date'};
-            $returned = (string) $z36h->{'z36h-returned-date'};
-            $issued = (string) $z36h->{'z36h-loan-date'};
-            $title = (string) $z13->{'z13-title'};
-            $author = (string) $z13->{'z13-author'};
-            $isbn = (string) $z13->{'z13-isbn-issn'};
-            $barcode = (string) $z30->{'z30-barcode'};
+            $due = (string)$z36h->{'z36h-due-date'};
+            $returned = (string)$z36h->{'z36h-returned-date'};
+            $issued = (string)$z36h->{'z36h-loan-date'};
+            $title = (string)$z13->{'z13-title'};
+            $author = (string)$z13->{'z13-author'};
+            $isbn = (string)$z13->{'z13-isbn-issn'};
+            $barcode = (string)$z30->{'z30-barcode'};
 
             $historicLoans[] = [
-                'id' => (string) $z30->{'z30-doc-number'},
+                'id' => (string)$z30->{'z30-doc-number'},
                 'item_id' => $group,
                 'location' => $location,
                 'title' => $title,
@@ -976,17 +976,17 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             //$itemseq = (string) $z36->{'z36-item-sequence'};
             //$seq = (string) $z36->{'z36-sequence'};
 
-            $location = (string) $z36->{'z36_pickup_location'};
-            $reqnum = (string) $z36->{'z36-doc-number'}
-                . (string) $z36->{'z36-item-sequence'}
-                . (string) $z36->{'z36-sequence'};
+            $location = (string)$z36->{'z36_pickup_location'};
+            $reqnum = (string)$z36->{'z36-doc-number'}
+                . (string)$z36->{'z36-item-sequence'}
+                . (string)$z36->{'z36-sequence'};
 
-            $due = (string) $z36->{'z36-due-date'};
-            $issued = (string) $z36->{'z36-loan-date'};
-            $title = (string) $z13->{'z13-title'};
-            $author = (string) $z13->{'z13-author'};
-            $isbn = (string) $z13->{'z13-isbn-issn'};
-            $barcode = (string) $z30->{'z30-barcode'};
+            $due = (string)$z36->{'z36-due-date'};
+            $issued = (string)$z36->{'z36-loan-date'};
+            $title = (string)$z13->{'z13-title'};
+            $author = (string)$z13->{'z13-author'};
+            $isbn = (string)$z13->{'z13-isbn-issn'};
+            $barcode = (string)$z30->{'z30-barcode'};
 
             $transList[] = [
                 //'type' => $type,
