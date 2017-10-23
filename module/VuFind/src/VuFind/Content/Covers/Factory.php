@@ -112,6 +112,21 @@ class Factory
     }
 
     /**
+     * Create a ContentCafe loader
+     *
+     * @param ServiceManager $sm Service manager
+     *
+     * @return mixed
+     */
+    public static function getObalkyKnih(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $finalConfig = isset($config->ObalkyKnih)
+            ? $config->ObalkyKnih : new \Zend\Config\Config([]);
+        return new ObalkyKnih($finalConfig);
+    }
+
+    /**
      * Create a Syndetics loader
      *
      * @param ServiceManager $sm Service manager

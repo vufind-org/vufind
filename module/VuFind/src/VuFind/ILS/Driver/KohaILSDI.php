@@ -653,7 +653,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             ];
         }
 
-        $this->debug("patron: " . $patron);
+        //$this->debug("patron: " . $patron);
         $this->debug("patron_id: " . $patron_id);
         $this->debug("request_location: " . $request_location);
         $this->debug("item_id: " . $item_id);
@@ -754,7 +754,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                . implode(",", (array)$patron)
                . ") called"
         );
-
         $started = microtime(true);
 
         $holding = [];
@@ -769,7 +768,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             i.copynumber as COPYNO, i.notforloan as NOTFORLOAN,
             i.itemnotes as PUBLICNOTES, b.frameworkcode as DOCTYPE,
             t.frombranch as TRANSFERFROM, t.tobranch as TRANSFERTO,
-            i.itemlost as ITEMLOST, i.itemlost_on AS LOSTON
+            i.itemlost as ITEMLOST, i.itemlost_on AS LOSTON,
+            i.stocknumber as STOCKNUMBER, i.enumchron AS PERIONAME
             from items i join biblio b on i.biblionumber = b.biblionumber
             left outer join
                 (SELECT itemnumber, frombranch, tobranch from branchtransfers
@@ -806,7 +806,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $this->debug('Connection failed: ' . $e->getMessage());
             throw new ILSException($e->getMessage());
         }
-
         $this->debug("Rows count: " . $itemSqlStmt->rowCount());
 
         $notes = $sqlStmtHoldings->fetch();
@@ -863,7 +862,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $status = 'Lost/Missing';
             }
 
-            $duedate_formatted = date_format(new \DateTime($duedate), "m/d/Y");
+            $duedate_formatted = date_format(new \DateTime($duedate), "j. n. Y");
 
             //Retrieving the full branch name
             if ($rowItem['HLDBRNCH'] == null) {
@@ -934,7 +933,9 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 'barcode'      => (null == $rowItem['BARCODE'])
                     ? 'Unknown' : $rowItem['BARCODE'],
                 'number'       => (null == $rowItem['COPYNO'])
-                    ? '' : $rowItem['COPYNO'],
+                    ? ( (null == $rowItem['STOCKNUMBER'] )
+                        ? '' : $rowItem['STOCKNUMBER'] )
+                    : $rowItem['COPYNO'],
                 'requests_placed' => $reservesCount ? $reservesCount : 0,
                 'frameworkcode' => $rowItem['DOCTYPE'],
             ];
@@ -947,7 +948,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             . count($holding) . ", took " . (microtime(true) - $started) .
             " sec"
         );
-
         return $holding;
     }
 
@@ -1124,7 +1124,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                            'balance'    => $row['balance'],
                            'createdate' => $row['createdat'],
                            'duedate' => date_format(
-                               new \DateTime($row['duedate']), "m/d/Y"
+                               new \DateTime($row['duedate']), "j. n. Y"
                            ),
                            'duedate'    => "N/A",
                            'id'         => isset($row['id']) ? $row['id'] : -1,
@@ -1205,7 +1205,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 // FIXME: require exposure of reserves.expirationdate
                 'expire'   => "N/A",
                 'create'   => date_format(
-                    new \DateTime($this->getField($hold->{'reservedate'})), "m/d/Y"
+                    new \DateTime($this->getField($hold->{'reservedate'})), "j. n. Y"
                 ),
                 'position' => $this->getField($hold->{'priority'}),
                 'title' => $this->getField($hold->{'title'}),
@@ -1401,7 +1401,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     new \DateTime(
                         $this->getField($loan->{'date_due'})
                     ),
-                    "m/d/Y"
+                    "j. n. Y"
                 ),
                 'id'        => $this->getField($loan->{'biblionumber'}),
                 'item_id'   => $this->getField($loan->{'itemnumber'}),
@@ -1460,7 +1460,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     = explode(" ", $this->getField($rsp->{'date_due'}));
                 $retVal['details'][$renewItem] = [
                     "success"  => true,
-                    "new_date" => $date,
+                    "new_date" => date_format(new \DateTime($date), "j. n. Y"),
                     "new_time" => $time,
                     "item_id"  => $renewItem,
                 ];
