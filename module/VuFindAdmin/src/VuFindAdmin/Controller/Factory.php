@@ -27,8 +27,6 @@
  */
 namespace VuFindAdmin\Controller;
 
-use Zend\ServiceManager\ServiceManager;
-
 /**
  * Factory for controllers.
  *

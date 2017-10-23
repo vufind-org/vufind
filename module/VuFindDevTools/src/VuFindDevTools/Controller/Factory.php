@@ -27,8 +27,6 @@
  */
 namespace VuFindDevTools\Controller;
 
-use Zend\ServiceManager\ServiceManager;
-
 /**
  * Factory for controllers.
  *
