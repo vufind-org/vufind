@@ -7,7 +7,7 @@
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('Your Loan History')?></h2>
+  <h2><?=$this->transEsc('Loan History')?></h2>
   <?=$this->flashmessages()?>
 
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
