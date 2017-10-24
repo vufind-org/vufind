@@ -42,7 +42,6 @@ $rules = [
     'no_spaces_around_offset' => true,
     'no_spaces_inside_parenthesis' => true,
     'no_trailing_whitespace' => true,
-    //'no_trailing_whitespace_in_comment' => true,
     'no_unneeded_control_parentheses' => true,
     'no_unneeded_curly_braces' => true,
     'no_unused_imports' => true,
@@ -59,7 +58,7 @@ $rules = [
     'standardize_not_equals' => true,
     'switch_case_semicolon_to_colon' => true,
     'switch_case_space' => true,
-    //'ternary_operator_spaces' => true,
+    //'ternary_operator_spaces' => true, // disabled due to bug in php-cs-fixer 2.7.1
     'visibility_required' => true,
 ];
 
