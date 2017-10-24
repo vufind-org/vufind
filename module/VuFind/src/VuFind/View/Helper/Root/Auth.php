@@ -57,7 +57,8 @@ class Auth extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \VuFind\Auth\Manager $manager Authentication manager
+     * @param \VuFind\Auth\Manager          $manager          Authentication manager
+     * @param \VuFind\Auth\ILSAuthenticator $ilsAuthenticator ILS Authenticator
      */
     public function __construct(\VuFind\Auth\Manager $manager,
         \VuFind\Auth\ILSAuthenticator $ilsAuthenticator
