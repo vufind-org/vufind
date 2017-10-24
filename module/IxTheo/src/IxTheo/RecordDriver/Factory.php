@@ -2,7 +2,7 @@
 
 namespace IxTheo\RecordDriver;
 
-class Factory extends \VuFind\RecordDriver\Factory
+class Factory extends \TuFind\RecordDriver\Factory
 {
     /**
      * Factory for SolrDefault record driver.
