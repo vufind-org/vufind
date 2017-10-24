@@ -122,7 +122,7 @@
     <? endforeach; ?>
     <?=$this->paginator ? $this->paginationControl($this->paginator, 'Sliding', 'Helpers/pagination.phtml', array('params' => $this->params)) : ''?>
   <? else: ?>
-    <?=$this->transEsc('You do not have any loans in the loan history')?>.
+    <?=$this->transEsc('loan_history_empty')?>
   <? endif; ?>
 </div>
 
