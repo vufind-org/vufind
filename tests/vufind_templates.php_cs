@@ -5,7 +5,7 @@ $finder = PhpCsFixer\Finder::create()->in(__DIR__ . '/../themes')
 
 $rules = [
     'align_multiline_comment' => true,
-    //'array_syntax' => ['syntax' => 'short'],
+    'array_syntax' => ['syntax' => 'short'],
     'binary_operator_spaces' => [
         'default' => 'single_space',
     ],
