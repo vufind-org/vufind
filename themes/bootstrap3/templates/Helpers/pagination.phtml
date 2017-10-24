@@ -36,7 +36,7 @@
     <? endforeach; ?>
 
     <!-- Last page link -->
-    <li<? if (isset($this->last)  && $this->last != $this->current): ?>>
+    <li<? if (isset($this->last) && $this->last != $this->current): ?>>
       <? $newParams = $this->params; $newParams['page'] = $this->last; ?>
       <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
         <?=$this->translate('Last')?>
