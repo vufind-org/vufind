@@ -2,7 +2,7 @@
 
 namespace KrimDok\RecordDriver;
 
-class SolrMarc extends \KrimDok\RecordDriver\SolrDefault
+class SolrMarc extends SolrDefault
 {
     /**
      * Get all subject headings associated with this record.  Each heading is

@@ -13,7 +13,7 @@ use VuFind\Record\Loader;
 use VuFindSearch\Query\Query as Query, VuFindSearch\Service as SearchService;
 use VuFindSearch\ParamBag;
 
-class KrimDok extends NoILS
+class KrimDokILS extends NoILS
 {
     protected $searchService;
 
@@ -60,6 +60,11 @@ class KrimDok extends NoILS
             $results[] = ['id' => $record->getUniqueID()];
         }
         return ['count' => count($results), 'results' => $results];
+    }
+
+    public function getOfflineMode()
+    {
+        return 'ils-none';
     }
 
     /**

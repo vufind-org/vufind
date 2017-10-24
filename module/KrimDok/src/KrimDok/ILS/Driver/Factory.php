@@ -7,9 +7,9 @@ use Zend\ServiceManager\ServiceManager;
 
 class Factory extends \VuFind\ILS\Driver\Factory
 {
-    public static function getKrimDok(ServiceManager $sm)
+    public static function getKrimDokILS(ServiceManager $sm)
     {
-        return new KrimDok(
+        return new KrimDokILS(
             $sm->getServiceLocator()->get('VuFind\RecordLoader'),
             $sm->getServiceLocator()->get('VuFind\Search')
         );

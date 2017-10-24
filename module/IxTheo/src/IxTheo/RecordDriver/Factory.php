@@ -2,7 +2,7 @@
 
 namespace IxTheo\RecordDriver;
 
-class Factory
+class Factory extends \VuFind\RecordDriver\Factory
 {
     /**
      * Factory for SolrDefault record driver.
@@ -11,7 +11,7 @@ class Factory
      *
      * @return SolrDefault
      */
-    public static function getSolrDefault(ServiceManager $sm)
+    public static function getSolrDefault(\Zend\ServiceManager\ServiceManager $sm)
     {
         $driver = new SolrDefault(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
@@ -31,7 +31,7 @@ class Factory
      */
     public static function getSolrMarc(\Zend\ServiceManager\ServiceManager $sm)
     {
-        $driver = new \IxTheo\RecordDriver\SolrMarc(
+        $driver = new SolrMarc(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
