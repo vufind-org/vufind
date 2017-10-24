@@ -12,7 +12,7 @@
 
 <div class="browse-container">
   <div class="browse-list<? if (!empty($this->categoryList) || !empty($this->secondaryList)): ?> hidden-xs<? endif ?>" id="list1">
-    <? foreach ($this->browseOptions as $item=>$currentOption): ?>
+    <? foreach ($this->browseOptions as $item => $currentOption): ?>
       <a href="<?=$this->url('browse-' . strtolower($currentOption['action'])); ?>" class="browse-item<? if($currentOption['action'] == $this->currentAction): ?> active<? endif; ?>">
         <?=$this->transEsc($currentOption['description']) ?>
         <span class="pull-right flip"><i class="fa fa-angle-right" title="<?=$this->transEsc('more') ?>"></i></span>
@@ -22,7 +22,7 @@
 
   <? if (!empty($this->categoryList)): ?>
     <div class="browse-list<? if (!empty($this->secondaryList) || !empty($this->resultList)): ?> hidden-xs<? endif ?>" id="list2">
-      <? foreach($this->categoryList as $findby=>$category): ?>
+      <? foreach($this->categoryList as $findby => $category): ?>
         <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&amp;query_field=<?=$this->browse()->getSolrField($findby, $this->currentAction) ?>" class="browse-item<? if (!is_string($category)): ?> with-badge<? endif; ?><? if ($this->findby == $findby): ?> active<? endif; ?>">
           <? if(is_string($category)): ?>
             <?=$this->transEsc($category)?>
@@ -46,7 +46,7 @@
           $url .= '&amp;facet_prefix=' . urlencode($secondary['displayText']);
         }
         if ($this->secondaryParams) {
-          foreach($this->secondaryParams as $var=>$val) {
+          foreach($this->secondaryParams as $var => $val) {
             $url .= '&amp;' . $var .'=' . urlencode($val);
           }
         }
@@ -71,7 +71,7 @@
   <? if (!empty($this->resultList)): ?>
     <div class="browse-list" id="list4">
     <? foreach($this->resultList as $result): ?>
-      <a class="browse-item with-badge" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['value']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&amp;<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>">
+      <a class="browse-item with-badge" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['value']) ?><? if ($this->searchParams): foreach($this->searchParams as $var => $val): ?>&amp;<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>">
         <?=$this->escapeHtml($result['displayText'])?>
         <span class="badge"><?=number_format($result['count']) ?></span>
       </a>
