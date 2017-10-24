@@ -22,7 +22,7 @@
 <? endif; ?>
 <? $this->layout()->srmessage = $showingResults; ?>
 <? if ($qtime = $this->results->getQuerySpeed()): ?>
-  <?=$showingResults; ?><span class="search-query-time">, <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?></span>
+  <?=$showingResults; ?><span class="search-query-time">, <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2) . $this->transEsc('seconds_abbrev')?></span>
 <? else: ?>
   <?=$showingResults; ?>
 <? endif; ?>

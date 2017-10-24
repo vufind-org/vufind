@@ -83,7 +83,7 @@
       <? endif; ?>
 
       <? if ($this->driver->hasPdfAvailable()): ?>
-        <a href="<?= $this->recordLink()->getUrl($this->driver).'/PDF'; ?>" class="icon pdf fulltext" target="_blank">
+        <a href="<?= $this->recordLink()->getUrl($this->driver) . '/PDF'; ?>" class="icon pdf fulltext" target="_blank">
           <?=$this->transEsc('PDF Full Text')?>
         </a>
       <? endif; ?>
