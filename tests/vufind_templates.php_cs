@@ -12,7 +12,7 @@ $rules = [
     'blank_line_after_namespace' => true,
     //'braces' => true, // disabled because we don't want to create inconsistent indentation, but useful to normalize control structure spacing
     'cast_spaces' => ['space' => 'none'],
-    //'concat_space' => ['spacing' => 'one'],
+    'concat_space' => ['spacing' => 'one'],
     'elseif' => true,
     'encoding' => true,
     //'full_opening_tag' => true,
