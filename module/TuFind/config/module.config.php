@@ -17,8 +17,8 @@ $config = [
                     'defaults' => [
                         'controller' => 'Proxy',
                         'action'     => 'Load',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'pdaproxy-load' => [
                 'type' => 'Zend\Mvc\Router\Http\Literal',
@@ -27,11 +27,21 @@ $config = [
                     'defaults' => [
                         'controller' => 'PDAProxy',
                         'action'     => 'Load',
-                    ]
-                ]
-            ]
-        ]
-    ]
+                    ],
+                ],
+            ],
+        ],
+    ],
+    'vufind' => [
+        'plugin_managers' => [
+            'recorddriver' => [
+                'factories' => [
+                    'solrdefault' => 'TuFind\RecordDriver\Factory::getSolrDefault',
+                    'solrmarc' => 'TuFind\RecordDriver\Factory::getSolrMarc',
+                ],
+            ],
+        ],
+    ],
 ];
 
 return $config;
