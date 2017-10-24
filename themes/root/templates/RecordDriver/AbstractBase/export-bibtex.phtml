@@ -11,11 +11,11 @@ $journalTitle = $this->driver->tryMethod('getContainerTitle');
 $formats = $this->driver->tryMethod('getFormats');
 if ($marcProceedingsField) {
     $format = 'proceedings';
-} else if ($marcPhdField) {
+} elseif ($marcPhdField) {
     $format = 'phdthesis';
-} else if (!empty($journalTitle) || (is_array($formats) && in_array('Article', $formats))) {
+} elseif (!empty($journalTitle) || (is_array($formats) && in_array('Article', $formats))) {
     $format = 'article';
-} else if (is_array($formats) && in_array('Journal', $formats)) {
+} elseif (is_array($formats) && in_array('Journal', $formats)) {
     $format = 'misc';
 } else {
     $format = 'book';
