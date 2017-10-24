@@ -40,7 +40,7 @@ $rules = [
     'no_mixed_echo_print' => true,
     'no_singleline_whitespace_before_semicolons' => true,
     //'no_spaces_after_function_name' => true,
-    //'no_spaces_around_offset' => true,
+    'no_spaces_around_offset' => true,
     'no_spaces_inside_parenthesis' => true,
     'no_trailing_whitespace' => true,
     //'no_trailing_whitespace_in_comment' => true,
@@ -53,15 +53,15 @@ $rules = [
     'ordered_imports' => true,
     'phpdoc_no_access' => true,
     //'single_blank_line_at_eof' => true,
-    //'single_class_element_per_statement' => true,
+    'single_class_element_per_statement' => true,
     'single_import_per_statement' => true,
     'single_line_after_imports' => true,
     'short_scalar_cast' => true,
-    //'standardize_not_equals' => true,
+    'standardize_not_equals' => true,
     'switch_case_semicolon_to_colon' => true,
     'switch_case_space' => true,
     //'ternary_operator_spaces' => true,
-    //'visibility_required' => true,
+    'visibility_required' => true,
 ];
 
 return PhpCsFixer\Config::create()
