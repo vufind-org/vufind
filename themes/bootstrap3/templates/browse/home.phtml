@@ -47,13 +47,13 @@
         }
         if ($this->secondaryParams) {
           foreach($this->secondaryParams as $var => $val) {
-            $url .= '&amp;' . $var .'=' . urlencode($val);
+            $url .= '&amp;' . $var . '=' . urlencode($val);
           }
         }
         $viewRecord = !empty($this->categoryList) && $this->currentAction != 'Tag' && $this->findby != 'alphabetical';
         $hasBadge = $this->findby != 'alphabetical' && isset($secondary['count']);
       ?>
-      <a href="<?=$url ?>" class="browse-item<? if ($hasBadge): ?> with-badge<? endif; ?><? if ($this->query == $secondary['value'].'' || $this->query == $secondary['value'].'*'): ?> active<? endif; ?>">
+      <a href="<?=$url ?>" class="browse-item<? if ($hasBadge): ?> with-badge<? endif; ?><? if ($this->query == $secondary['value'] . '' || $this->query == $secondary['value'] . '*'): ?> active<? endif; ?>">
         <?=$this->escapeHtml($secondary['displayText']) ?>
         <? if ($hasBadge): ?>
           <span class="badge"><?=number_format($secondary['count']) ?></span>

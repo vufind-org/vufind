@@ -33,7 +33,7 @@
             <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10" class="form-control">
               <? foreach ($facet['LimiterValues'] as $id => $facetValue): ?>
                 <? $value = $facetValue['Value']; ?>
-                <option value="<?='LIMIT|'.$this->escapeHtmlAttr($field . ':' . $facetValue['Value'])?>"<?=(isset($facetValue['selected']) && $facetValue['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($facetValue['Value'])?></option>
+                <option value="<?='LIMIT|' . $this->escapeHtmlAttr($field . ':' . $facetValue['Value'])?>"<?=(isset($facetValue['selected']) && $facetValue['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($facetValue['Value'])?></option>
               <? endforeach; ?>
             </select>
             <!-- <br/> -->
@@ -42,7 +42,7 @@
             $value = $facet['LimiterValues'][0]['Value'] ?>
             <div class="checkbox">
               <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>">
-                <input id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($facet['LimiterValues'][0]['selected']) && $facet['LimiterValues'][0]['selected'])?'checked="checked"':''?> name="filter[]" value="<?=$this->escapeHtmlAttr('LIMIT|'.$field . ':' . $value)?>">
+                <input id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($facet['LimiterValues'][0]['selected']) && $facet['LimiterValues'][0]['selected'])?'checked="checked"':''?> name="filter[]" value="<?=$this->escapeHtmlAttr('LIMIT|' . $field . ':' . $value)?>">
                 <?=$this->transEsc('eds_limiter_' . $field, [], $facet['Label'])?>
               </label>
             </div>
