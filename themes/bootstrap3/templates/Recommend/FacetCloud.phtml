@@ -12,7 +12,7 @@
         <?
         foreach ($facets['list'] as $i => $facetItem) {
             if ($i < $cloudLimit) {
-                echo (($i == 0) ? '' : ', ')
+                echo(($i == 0) ? '' : ', ')
                     . '<a href="' . $blankResults->getUrlQuery()->addFacet($title, $facetItem['value']) . '">'
                     . $this->escapeHtml($facetItem['displayText'])
                     . '</a> (' . $this->escapeHtml($facetItem['count']) . ')';
