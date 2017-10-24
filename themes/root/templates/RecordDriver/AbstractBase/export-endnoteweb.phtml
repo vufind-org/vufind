@@ -4,7 +4,7 @@ $formats = isset($this->overrideFormats) ? $this->overrideFormats : $this->drive
 if (is_array($formats)) {
     foreach ($formats as $format) {
         switch (strtolower($format)) {
-            case "book";
+            case "book":
                 $format = "BOOK";
                 break;
             case "journal":
