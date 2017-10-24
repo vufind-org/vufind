@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
+
 use Behat\Mink\Element\Element;
 
 /**
@@ -147,8 +148,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     protected function addCurrentPageToCart(Element $page, Element $updateCart,
         $selectAllId = '#addFormCheckboxSelectAll'
-    )
-    {
+    ) {
         $selectAll = $page->find('css', $selectAllId);
         $selectAll->check();
         $updateCart->click();
@@ -193,7 +193,8 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return Element
      */
-    protected function setUpGenericCartTest($extraConfigs = []) {
+    protected function setUpGenericCartTest($extraConfigs = [])
+    {
         // Activate the cart:
         $extraConfigs['config']['Site'] = ['showBookBag' => true];
         $this->changeConfigs($extraConfigs);
@@ -305,7 +306,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddingDuplicates()
     {
-         // Activate the cart:
+        // Activate the cart:
         $this->changeConfigs(
             [
                 'config' => [
@@ -325,7 +326,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
         $this->tryAddingDuplicatesToCart($page, $updateCart);
         $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
-   }
+    }
 
     /**
      * Test that the cart limit is enforced from search results.
@@ -334,7 +335,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testOverfillingCart()
     {
-         // Activate the cart:
+        // Activate the cart:
         $this->changeConfigs(
             [
                 'config' => [
@@ -353,7 +354,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $updateCart = $this->findCss($page, '#updateCart');
         $this->addCurrentPageToCart($page, $updateCart);
         $this->assertEquals('1', $this->findCss($page, '#cartItems strong')->getText());
-   }
+    }
 
     /**
      * Test that the cart limit is enforced from record pages.
@@ -362,7 +363,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testOverfillingCartFromRecordPage()
     {
-         // Activate the cart:
+        // Activate the cart:
         $this->changeConfigs(
             ['config' => ['Site' => ['showBookBag' => true, 'bookBagMaxSize' => 1]]]
         );
@@ -387,7 +388,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $add = $this->findCss($page, '.cart-add');
         $add->click();
         $this->assertEquals('1 items (Full)', $cartItems->getText());
-   }
+    }
 
     /**
      * Test that the record "add to cart" button functions.
@@ -396,7 +397,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddingMultipleRecordsFromRecordPage()
     {
-         // Activate the cart:
+        // Activate the cart:
         $this->changeConfigs(
             ['config' => ['Site' => ['showBookBag' => true]]]
         );
@@ -409,7 +410,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
                 $x . ' items', $this->findCss($page, '#cartItems')->getText()
             );
         }
-   }
+    }
 
     /**
      * Test that we can put items in the cart and then remove them with the
@@ -478,7 +479,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testFillCartUsingBottomControls()
     {
-         // Activate the cart:
+        // Activate the cart:
         $this->changeConfigs(
             [
                 'config' => [
@@ -746,7 +747,8 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         return $elements;
     }
 
-    public function testToolbarVisibilityConfigCombinations() {
+    public function testToolbarVisibilityConfigCombinations()
+    {
         $page = $this->getSearchResultsPage();
         $elements = $this->runConfigCombo($page, [
             'showBookBag' => true,

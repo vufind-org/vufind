@@ -33,8 +33,8 @@ use VuFindSearch\Backend\BrowZine\Connector;
 use VuFindSearch\Backend\BrowZine\QueryBuilder;
 use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for BrowZine backend.

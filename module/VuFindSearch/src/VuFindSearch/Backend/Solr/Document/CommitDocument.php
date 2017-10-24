@@ -88,5 +88,4 @@ class CommitDocument extends AbstractDocument
         $writer->endDocument();
         return $writer->flush();
     }
-
 }

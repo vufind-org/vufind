@@ -3,6 +3,7 @@
 ChangeLog
 \#*
 .\#*
+.php_cs.cache
 TAGS
 *~
 /downloads

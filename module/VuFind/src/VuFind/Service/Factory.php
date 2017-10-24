@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Service;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -613,13 +614,13 @@ class Factory
      */
     public static function getPermissionManager(ServiceManager $sm)
     {
-            $permManager = new \VuFind\Role\PermissionManager(
-                $sm->get('VuFind\Config')->get('permissions')->toArray()
-            );
-            $permManager->setAuthorizationService(
-                $sm->get('ZfcRbac\Service\AuthorizationService')
-            );
-            return $permManager;
+        $permManager = new \VuFind\Role\PermissionManager(
+            $sm->get('VuFind\Config')->get('permissions')->toArray()
+        );
+        $permManager->setAuthorizationService(
+            $sm->get('ZfcRbac\Service\AuthorizationService')
+        );
+        return $permManager;
     }
 
     /**
@@ -719,6 +720,22 @@ class Factory
         $manager = new \VuFind\Search\BackendManager($registry);
 
         return $manager;
+    }
+
+    /**
+     * Construct the search history helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Search\History
+     */
+    public static function getSearchHistory(ServiceManager $sm)
+    {
+        $searchTable = $sm->get('VuFind\DbTablePluginManager')
+            ->get("Search");
+        $resultsManager = $sm->get('VuFind\SearchResultsPluginManager');
+        $sessionId = $sm->get('VuFind\SessionManager')->getId();
+        return new \VuFind\Search\History($searchTable, $sessionId, $resultsManager);
     }
 
     /**

@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Backend\BrowZine;
 
+use PHPUnit_Framework_TestCase;
 use VuFindSearch\Backend\BrowZine\QueryBuilder;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for BrowZine query builder

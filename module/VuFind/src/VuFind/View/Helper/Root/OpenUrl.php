@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use VuFind\Resolver\Driver\PluginManager;
 
 /**
@@ -305,7 +306,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
 
         // If we got this far, use the defaults -- true for results, false for
         // everywhere else.
-        return ($this->area == 'results');
+        return $this->area == 'results';
     }
 
     /**
@@ -425,7 +426,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         }
 
         // Did all the rules match?
-        return ($ruleMatchCounter == count($rules));
+        return $ruleMatchCounter == count($rules);
     }
 
     /**

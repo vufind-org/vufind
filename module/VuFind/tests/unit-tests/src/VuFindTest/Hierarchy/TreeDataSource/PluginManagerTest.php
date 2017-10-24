@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Hierarchy\TreeDataSource;
+
 use VuFind\Hierarchy\TreeDataSource\PluginManager;
 
 /**

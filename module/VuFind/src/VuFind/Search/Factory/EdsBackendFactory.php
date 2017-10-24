@@ -28,14 +28,14 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\EDS\Zend2 as Connector;
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
-use VuFindSearch\Backend\EDS\QueryBuilder;
 use VuFindSearch\Backend\EDS\Backend;
+use VuFindSearch\Backend\EDS\QueryBuilder;
+use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
+use VuFindSearch\Backend\EDS\Zend2 as Connector;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for EDS backends.

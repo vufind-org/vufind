@@ -27,6 +27,7 @@
  * @link     http://www.jquery.com   jQuery Project Page
  */
 namespace VuFind\View\Helper\Root;
+
 use Zend\View\Helper\AbstractHelper;
 
 /**
@@ -58,7 +59,7 @@ class JqueryValidation extends AbstractHelper
         $rules = [];
         foreach ($supported_rules as $rule) {
             if (isset($params[$rule])) {
-                switch($rule) {
+                switch ($rule) {
                 case 'equalTo':
                     $rules[] = "equalTo:'" . $params['equalToField'] . "'";
                     $messages[$rule] = $params[$rule];

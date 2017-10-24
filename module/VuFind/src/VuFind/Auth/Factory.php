@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Auth;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

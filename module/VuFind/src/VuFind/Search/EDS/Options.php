@@ -77,7 +77,7 @@ class Options extends \VuFind\Search\Base\Options
      * Available limiter options
      *
      * @var unknown
-    */
+     */
     protected $limiterOptions = [];
 
     /**
@@ -221,6 +221,7 @@ class Options extends \VuFind\Search\Base\Options
     {
         return $this->defaultExpanders;
     }
+
     /**
      * Return the route name of the action used for performing advanced searches.
      * Returns false if the feature is not supported.
@@ -459,7 +460,7 @@ class Options extends \VuFind\Search\Base\Options
                         'Label' => $mode['Label'], 'Value' => $mode['Mode']
                     ];
                     if (isset($mode['DefaultOn'])
-                        &&  'y' == $mode['DefaultOn']
+                        && 'y' == $mode['DefaultOn']
                     ) {
                         $this->defaultMode = $mode['Mode'];
                     }
@@ -502,9 +503,7 @@ class Options extends \VuFind\Search\Base\Options
                         'DefaultOn' => isset($limiter['DefaultOn'])
                             ? $limiter['DefaultOn'] : 'n',
                     ];
-
                 }
-
             }
         }
     }

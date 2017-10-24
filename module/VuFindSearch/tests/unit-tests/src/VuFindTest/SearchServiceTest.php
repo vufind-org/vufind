@@ -28,17 +28,17 @@
  */
 namespace VuFindTest;
 
-use VuFindSearch\Service;
-use VuFindSearch\ParamBag;
+use PHPUnit_Framework_TestCase as TestCase;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
-use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Feature\RandomInterface;
+use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Feature\SimilarInterface;
+use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Response\AbstractRecordCollection;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use VuFindSearch\Service;
 
 /**
  * Unit tests for search service.

@@ -26,8 +26,11 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Auth;
-use VuFind\Auth\ILSAuthenticator, VuFind\Auth\Manager,
-    VuFind\Db\Row\User, VuFind\ILS\Connection as ILSConnection;
+
+use VuFind\Auth\ILSAuthenticator;
+use VuFind\Auth\Manager;
+use VuFind\Db\Row\User;
+use VuFind\ILS\Connection as ILSConnection;
 
 /**
  * ILS Authenticator Manager Test Class
