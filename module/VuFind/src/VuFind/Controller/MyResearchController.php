@@ -1279,6 +1279,11 @@ class MyResearchController extends AbstractBase
         // Get checked out item details:
         $result = $catalog->getMyTransactionHistory($patron, $params);
 
+        if (isset($result['success']) && !$result['success']) {
+            $this->flashMessenger()->addErrorMessage($result['status']);
+            return $this->createViewModel();
+        }
+
         // Build paginator if needed:
         if ($ilsPaging && $limit < $result['count']) {
             $adapter = new \Zend\Paginator\Adapter\NullFill($result['count']);

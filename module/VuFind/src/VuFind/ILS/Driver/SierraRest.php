@@ -648,6 +648,14 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             'GET',
             $patron
         );
+        if (isset($result['code'])) {
+            return [
+                'success' => false,
+                'status' => 146 === $result['code']
+                    ? 'ils_transaction_history_disabled'
+                    : 'ils_connection_failed'
+            ];
+        }
         $transactions = [];
         foreach ($result['entries'] as $entry) {
             $transaction = [
@@ -683,7 +691,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         }
 
         return [
-            'count' => $result['total'],
+            'count' => isset($result['total']) ? $result['total'] : 0,
             'transactions' => $transactions
         ];
     }
