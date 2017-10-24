@@ -10,7 +10,7 @@ $rules = [
         'default' => 'single_space',
     ],
     'blank_line_after_namespace' => true,
-    //'braces' => true,
+    //'braces' => true, // disabled because we don't want to create inconsistent indentation, but useful to normalize control structure spacing
     'cast_spaces' => ['space' => 'none'],
     //'concat_space' => ['spacing' => 'one'],
     'elseif' => true,
