@@ -14,7 +14,7 @@ $rules = [
     //'braces' => true,
     'cast_spaces' => ['space' => 'none'],
     //'concat_space' => ['spacing' => 'one'],
-    //'elseif' => true,
+    'elseif' => true,
     'encoding' => true,
     //'full_opening_tag' => true,
     'function_declaration' => true,
