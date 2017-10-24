@@ -1,6 +1,6 @@
 <?
     $previews = isset($this->config->Content->previews)
-        ? explode(',', $this->config->Content->previews) : array();
+        ? explode(',', $this->config->Content->previews) : [];
     if (!empty($previews)) {
         $idClasses = $this->record($this->driver)->getPreviewIds();
 

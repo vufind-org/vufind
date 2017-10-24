@@ -83,7 +83,7 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
     }
     for ($i = 0; $i < $total; $i++) {
         if (isset($pubPlaces[$i])) {
-            echo "address = {" . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': ') . "},\n";
+            echo "address = {" . rtrim(str_replace(['[', ']'], '', $pubPlaces[$i]), ': ') . "},\n";
         }
         if (isset($pubNames[$i])) {
             echo "publisher = {" . rtrim($pubNames[$i], ", ") . "},\n";
