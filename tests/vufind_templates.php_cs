@@ -15,7 +15,7 @@ $rules = [
     'concat_space' => ['spacing' => 'one'],
     'elseif' => true,
     'encoding' => true,
-    //'full_opening_tag' => true,
+    //'full_opening_tag' => true, // using full tags is best practice, but it detracts from readability; we should discuss
     'function_declaration' => true,
     'function_typehint_space' => true,
     'indentation_type' => true,
