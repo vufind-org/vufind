@@ -4,6 +4,7 @@ ChangeLog
 \#*
 .\#*
 .php_cs.cache
+.php_cs_template.cache
 TAGS
 *~
 /downloads

@@ -43,7 +43,7 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
             echo "%D $date\n";
         }
         if (isset($pubPlaces[$i])) {
-            echo "%C " . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': '). "\n";
+            echo "%C " . rtrim(str_replace(['[', ']'], '', $pubPlaces[$i]), ': ') . "\n";
         }
     }
 }

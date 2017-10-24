@@ -6,13 +6,13 @@
 ?>
 <? if ($expandFacetSet): ?>
   <div class="sidegroup">
-    <? foreach ($expandFacetSet as $title=>$facets): ?>
+    <? foreach ($expandFacetSet as $title => $facets): ?>
       <dl class="narrowList navmenu">
         <dt><?=$this->transEsc($facets['label']) ?></dt>
         <?
         foreach ($facets['list'] as $i => $facetItem) {
             if ($i < $cloudLimit) {
-                echo (($i == 0) ? '' : ', ')
+                echo(($i == 0) ? '' : ', ')
                     . '<a href="' . $blankResults->getUrlQuery()->addFacet($title, $facetItem['value']) . '">'
                     . $this->escapeHtml($facetItem['displayText'])
                     . '</a> (' . $this->escapeHtml($facetItem['count']) . ')';

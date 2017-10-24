@@ -9,7 +9,7 @@
     <? if (!empty($tagFilterList)): ?>
       <? $field = $sideFacetSet['tags']['label']; ?>
       <? foreach ($tagFilterList as $filter): ?>
-        <? $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value']); ?>
+        <? $removeLink = $this->currentPath() . $results->getUrlQuery()->removeFacet($filter['field'], $filter['value']); ?>
         <a class="list-group-item active" href="<?=$removeLink?>">
           <span class="pull-right flip"><i class="fa fa-minus-circle" aria-hidden="true"></i></span>
           <?=$this->escapeHtml($filter['displayText'])?>
@@ -18,7 +18,7 @@
     <? endif; ?>
     <? foreach($sideFacetSet['tags']['list'] as $thisFacet): ?>
       <? if(!$thisFacet['isApplied']): ?>
-        <a class="list-group-item" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet('tags', $thisFacet['value'])?>">
+        <a class="list-group-item" href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $thisFacet['value'])?>">
           <span class="badge"><?=$this->escapeHtml($thisFacet['count'])?></span>
           <?=$this->escapeHtml($thisFacet['displayText'])?>
         </a>
