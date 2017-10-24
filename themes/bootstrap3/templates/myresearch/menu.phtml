@@ -1,6 +1,7 @@
 <?
   $user = $this->auth()->isLoggedIn();
-  $capabilityParams = $user ? $user->toArray() : [];
+  $patron = $user ? $this->auth()->getILSPatron() : false;
+  $capabilityParams = $patron ? ['patron' => $patron] : [];
 ?>
 <h4><?=$this->transEsc('Your Account')?></h4>
 <div class="myresearch-menu">
@@ -56,13 +57,13 @@
       <i class="fa fa-fw fa-search" aria-hidden="true"></i> <?=$this->transEsc('history_saved_searches')?>
     </a>
   <? endif; ?>
-  <? if ($user = $this->auth()->isLoggedIn()): ?>
+  <? if ($user): ?>
     <a href="<?=$this->url('myresearch-logout')?>">
       <i class="fa fa-fw fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?>
     </a>
   <? endif; ?>
 </div>
-<? if ($this->auth()->isLoggedIn() && $this->auth()->getManager()->supportsPasswordChange()): ?>
+<? if ($user && $this->auth()->getManager()->supportsPasswordChange()): ?>
   <h4><?=$this->transEsc('Preferences')?></h4>
   <div class="myresearch-menu">
     <a href="<?=$this->url('myresearch-changepassword') ?>"<?=$this->active == 'newpassword' ? ' class="active"' : ''?>>
@@ -70,7 +71,7 @@
     </a>
   </div>
 <? endif; ?>
-<? if ($this->userlist()->getMode() !== 'disabled' && $user = $this->auth()->isLoggedIn()): ?>
+<? if ($user && $this->userlist()->getMode() !== 'disabled'): ?>
   <h4><?=$this->transEsc('Your Lists')?></h4>
   <div class="myresearch-menu">
     <a href="<?=$this->url('myresearch-favorites')?>"<?=$this->active == 'favorites' ? ' class="active"' : ''?>>
