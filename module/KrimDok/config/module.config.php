@@ -35,7 +35,7 @@ $config = [
         'plugin_managers' => [
             'ils_driver' => [
                 'factories' => [
-                    'KrimDok' => 'KrimDok\ILS\Driver\Factory::getKrimDok'
+                    'KrimDokILS' => 'KrimDok\ILS\Driver\Factory::getKrimDokILS'
                 ],
             ],
             'recorddriver' => [
