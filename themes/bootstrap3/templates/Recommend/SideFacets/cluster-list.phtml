@@ -64,7 +64,7 @@
 <? endforeach; ?>
 
 <? /* LESS and SEE MORE links */ ?>
-<? if ($i >= $this->facets_before_more): ?>
+<? if (isset($i) && $i >= $this->facets_before_more): ?>
   <? if ($this->showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
     <? $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&amp;facet='.$this->title.'&amp;facetop='.$thisFacet['operator'].'&amp;facetexclude='.($this->allowExclude ? 1 : 0); ?>
     <a class="facet narrow-toggle <?=$moreClass ?>" data-lightbox href="<?=$moreUrl ?>" rel="nofollow"><?=$this->transEsc('see all')?> ...</a>
