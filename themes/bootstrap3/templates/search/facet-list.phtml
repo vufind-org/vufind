@@ -7,8 +7,9 @@
   }
   $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . urlencode($this->facet) . '&amp;facetexclude=' . $this->exclude . '&amp;facetop=' . $this->operator;
   $searchAction = $this->url($options->getSearchAction());
-  if ($this->recordId) {
-    $searchAction .= $this->recordId;
+  if (!empty($this->baseUriExtra)) {
+    $searchAction .= urlencode($this->baseUriExtra);
+    $urlBase .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
   }
 ?>
 <h2><?=$this->transEsc($this->facetLabel) ?></h2>

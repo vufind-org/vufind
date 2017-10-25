@@ -68,8 +68,8 @@
   <? if ($this->showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
     <?
       $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0);
-      if (!empty($this->currentRecordId)) {
-        $moreUrl .= '&amp;recordId=' . urlencode($this->currentRecordId);
+      if (!empty($this->baseUriExtra)) {
+        $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
       }
     ?>
     <a class="facet narrow-toggle <?=$moreClass ?>" data-lightbox href="<?=$moreUrl ?>" rel="nofollow"><?=$this->transEsc('see all')?> ...</a>

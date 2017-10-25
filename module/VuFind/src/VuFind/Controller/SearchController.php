@@ -80,9 +80,7 @@ class SearchController extends AbstractSearch
     public function collectionfacetlistAction()
     {
         $this->searchClassId = 'SolrCollection';
-        $view = $this->facetListAction();
-        $view->recordId = $this->params()->fromQuery('recordId');
-        return $view;
+        return $this->facetListAction();
     }
 
     /**
