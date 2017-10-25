@@ -65,6 +65,12 @@ $rules = [
     'visibility_required' => true,
 ];
 
+$cacheDir = __DIR__ . '/../.php_cs_cache';
+if (!is_dir($cacheDir)) {
+    mkdir($cacheDir);
+}
+
 return PhpCsFixer\Config::create()
+    ->setCacheFile($cacheDir . '/.code.cache')
     ->setRules($rules)
     ->setFinder($finder);
