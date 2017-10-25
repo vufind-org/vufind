@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -186,7 +187,7 @@ class Innovative extends AbstractBase implements
                 // names
                 if ($count == 1) {
                     $keys[$i] = $cols[$i];
-                } else if ($count > 1) { // not the first row, has holding info
+                } elseif ($count > 1) { // not the first row, has holding info
                     //look for location column
                     if (stripos($keys[$i], $loc_col_name) > -1) {
                         $ret[$count - 2]['location'] = strip_tags($cols[$i]);

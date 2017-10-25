@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
+
 use VuFind\View\Helper\Root\GoogleAnalytics;
 
 /**

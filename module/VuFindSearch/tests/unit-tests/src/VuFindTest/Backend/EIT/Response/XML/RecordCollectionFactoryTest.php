@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\EIT\Response\XML;
 
-use VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory;
 use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory;
 
 /**
  * Unit tests for EIT record collection factory.
@@ -67,7 +67,6 @@ class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
     {
         $fact = new RecordCollectionFactory(
             function () {
-
             }
         );
         $coll = $fact->factory('garbage');

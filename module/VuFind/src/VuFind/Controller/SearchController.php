@@ -171,7 +171,7 @@ class SearchController extends AbstractSearch
         ) {
             $illYes['selected'] = true;
             $savedSearch->getParams()->removeFilter('illustrated:Illustrated');
-        } else if ($savedSearch
+        } elseif ($savedSearch
             && $savedSearch->getParams()->hasFilter('illustrated:"Not Illustrated"')
         ) {
             $illNo['selected'] = true;
@@ -684,8 +684,8 @@ class SearchController extends AbstractSearch
     protected function resultScrollerActive()
     {
         $config = $this->serviceLocator->get('VuFind\Config')->get('config');
-        return (isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation);
+        return isset($config->Record->next_prev_navigation)
+            && $config->Record->next_prev_navigation;
     }
 
     /**
@@ -713,5 +713,4 @@ class SearchController extends AbstractSearch
             ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
             : [];
     }
-
 }

@@ -30,7 +30,7 @@
       <? endforeach; ?>
       <?=$this->context()->renderInContext('search/controls/showing.phtml',
                                           ['lookfor' => $lookfor, 'recordTotal' => $recordTotal,
-                                           'params' => $params, 'results' => $results] ) ?>
+                                           'params' => $params, 'results' => $results]) ?>
     <? else: ?>
       <h3><?=$this->transEsc('nohit_heading')?></h3>
     <? endif; ?>

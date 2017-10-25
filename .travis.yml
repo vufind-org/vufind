@@ -17,7 +17,8 @@ before_script:
 cache:
   directories:
     - downloads
-    - $HOME/.composer/cache
+    - .php_cs_cache
+    - $HOME/.composer/cache/files
 
 script:
-  - vendor/bin/phing phpunitfast phpcs-console php-cs-fixer-dryrun eslint
+  - vendor/bin/phing eslint phpunitfast phpcs-console php-cs-fixer-dryrun

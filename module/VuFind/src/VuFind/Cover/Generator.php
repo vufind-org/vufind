@@ -138,7 +138,7 @@ class Generator
         }
         $default['authorFont'] = $this->fontPath($default['authorFont']);
         $default['titleFont']  = $this->fontPath($default['titleFont']);
-        $this->settings = (object) $default;
+        $this->settings = (object)$default;
         $this->initImage();
         $this->initColors();
     }
@@ -211,7 +211,7 @@ class Generator
      */
     protected function getColor($color)
     {
-        switch (strtolower($color)){
+        switch (strtolower($color)) {
         case 'black':
             return imagecolorallocate($this->im, 0, 0, 0);
         case 'silver':
@@ -678,20 +678,20 @@ class Generator
         // Generate 5 lines of text, 4 offset in a border color
         if ($scolor) {
             imagettftext(
-                $this->im, $fontSize, 0, $x,   $y + 1, $scolor, $font, $text
+                $this->im, $fontSize, 0, $x, $y + 1, $scolor, $font, $text
             );
             imagettftext(
-                $this->im, $fontSize, 0, $x,   $y - 1, $scolor, $font, $text
+                $this->im, $fontSize, 0, $x, $y - 1, $scolor, $font, $text
             );
             imagettftext(
-                $this->im, $fontSize, 0, $x + 1, $y,   $scolor, $font, $text
+                $this->im, $fontSize, 0, $x + 1, $y, $scolor, $font, $text
             );
             imagettftext(
-                $this->im, $fontSize, 0, $x - 1, $y,   $scolor, $font, $text
+                $this->im, $fontSize, 0, $x - 1, $y, $scolor, $font, $text
             );
         }
         // 1 centered in main color
-        imagettftext($this->im, $fontSize, 0, $x,   $y,   $mcolor, $font, $text);
+        imagettftext($this->im, $fontSize, 0, $x, $y, $mcolor, $font, $text);
     }
 
     /**
@@ -754,7 +754,7 @@ class Generator
         $p = (int)($v * (1.0 - $s));
         $q = (int)($v * (1.0 - $s * $f));
         $t = (int)($v * (1.0 - $s * (1.0 - $f)));
-        switch($i) {
+        switch ($i) {
         case 0:
             return imagecolorallocate($this->im, $v, $t, $p);
         case 1:

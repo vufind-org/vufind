@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
+
 use VuFind\View\Helper\Root\Citation;
 
 /**
@@ -40,7 +41,7 @@ use VuFind\View\Helper\Root\Citation;
 class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
     /**
- * Sample citations -- each element of this array contains three elements --
+     * Sample citations -- each element of this array contains three elements --
      * the raw input data and the expected apa/mla output citations.
      *
      * @var array

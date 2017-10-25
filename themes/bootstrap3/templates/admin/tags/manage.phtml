@@ -11,7 +11,7 @@
 
   <?=$this->flashmessages()?>
 
-  <form class="form-tags-manage" action="<?= $this->url('admin/tags', array('action' => 'Manage'));?>" method="post" role="form">
+  <form class="form-tags-manage" action="<?= $this->url('admin/tags', ['action' => 'Manage']);?>" method="post" role="form">
     <div class="form-group">
       <label for="type" class="control-label"><?=$this->translate('delete_tags_by')?>:</label>
       <select id="type" name="type" class="form-control">
@@ -24,7 +24,7 @@
   </form>
 
   <? if(false !== $this->type):?>
-    <form class="form-tags-manage" action="<?= $this->url('admin/tags', array('action' => 'Delete'))?>" method="post">
+    <form class="form-tags-manage" action="<?= $this->url('admin/tags', ['action' => 'Delete'])?>" method="post">
       <input type="hidden" name="origin" value="manage" />
       <input type="hidden" name="type" value="<?= $this->type; ?>" />
       <? if("user" == $type):?>

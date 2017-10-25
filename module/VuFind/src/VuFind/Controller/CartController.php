@@ -26,10 +26,11 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Exception\Mail as MailException,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\Session\Container;
+
+use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Exception\Mail as MailException;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Session\Container;
 
 /**
  * Book Bag / Bulk Action Controller
@@ -82,11 +83,11 @@ class CartController extends AbstractBase
     {
         if (strlen($this->params()->fromPost('email', '')) > 0) {
             return 'Email';
-        } else if (strlen($this->params()->fromPost('print', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('print', '')) > 0) {
             return 'PrintCart';
-        } else if (strlen($this->params()->fromPost('saveCart', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('saveCart', '')) > 0) {
             return 'Save';
-        } else if (strlen($this->params()->fromPost('export', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('export', '')) > 0) {
             return 'Export';
         }
         // Check if the user is in the midst of a login process; if not,
@@ -155,13 +156,13 @@ class CartController extends AbstractBase
         // Add items if necessary:
         if (strlen($this->params()->fromPost('empty', '')) > 0) {
             $this->getCart()->emptyCart();
-        } else if (strlen($this->params()->fromPost('delete', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('delete', '')) > 0) {
             if (empty($ids)) {
                 return $this->redirectToSource('error', 'bulk_noitems_advice');
             } else {
                 $this->getCart()->removeItems($ids);
             }
-        } else if (strlen($this->params()->fromPost('add', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('add', '')) > 0) {
             if (empty($ids)) {
                 return $this->redirectToSource('error', 'bulk_noitems_advice');
             } else {
@@ -202,14 +203,14 @@ class CartController extends AbstractBase
         $controller = 'Cart';   // assume Cart unless overridden below.
         if (strlen($this->params()->fromPost('email', '')) > 0) {
             $action = 'Email';
-        } else if (strlen($this->params()->fromPost('print', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('print', '')) > 0) {
             $action = 'PrintCart';
-        } else if (strlen($this->params()->fromPost('delete', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('delete', '')) > 0) {
             $controller = 'MyResearch';
             $action = 'Delete';
-        } else if (strlen($this->params()->fromPost('add', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('add', '')) > 0) {
             $action = 'Home';
-        } else if (strlen($this->params()->fromPost('export', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('export', '')) > 0) {
             $action = 'Export';
         } else {
             throw new \Exception('Unrecognized bulk action.');

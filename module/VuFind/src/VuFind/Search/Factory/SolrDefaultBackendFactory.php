@@ -28,9 +28,9 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
-use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\Solr\Connector;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 
 /**
  * Factory for the default SOLR backend.

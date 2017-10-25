@@ -31,9 +31,6 @@ namespace VuFindTest\Search\Primo;
 use VuFind\Search\Primo\PrimoPermissionHandler;
 use VuFindTest\Unit\TestCase;
 
-use ZfcRbac\Service\AuthorizationServiceAwareInterface,
-    ZfcRbac\Service\AuthorizationServiceAwareTrait;
-
 /**
  * Unit tests for Primo Permission Handler.
  *
@@ -809,7 +806,8 @@ class PrimoPermissionHandlerTest extends TestCase
      *
      * @return void
      */
-    public function handlerMemberAuthNotSuccessfullCallback($param) {
+    public function handlerMemberAuthNotSuccessfullCallback($param)
+    {
         if ($param == 'primo.MEMBER') {
             return false;
         }
@@ -822,7 +820,8 @@ class PrimoPermissionHandlerTest extends TestCase
      *
      * @return void
      */
-    public function handlerMemberAuthSuccessfullCallback($param) {
+    public function handlerMemberAuthSuccessfullCallback($param)
+    {
         if ($param == 'primo.MEMBER') {
             return true;
         }
@@ -835,7 +834,8 @@ class PrimoPermissionHandlerTest extends TestCase
      *
      * @return void
      */
-    public function handlerDefaultAuthSuccessfullCallback($param) {
+    public function handlerDefaultAuthSuccessfullCallback($param)
+    {
         if ($param == 'primo.defaultRule') {
             return true;
         }
@@ -848,7 +848,8 @@ class PrimoPermissionHandlerTest extends TestCase
      *
      * @return void
      */
-    public function handlerDefaultAuthNotSuccessfullCallback($param) {
+    public function handlerDefaultAuthNotSuccessfullCallback($param)
+    {
         if ($param == 'primo.defaultRule') {
             return false;
         }
@@ -861,7 +862,8 @@ class PrimoPermissionHandlerTest extends TestCase
      *
      * @return void
      */
-    public function handlerMemberIsOnCampusCallback($param) {
+    public function handlerMemberIsOnCampusCallback($param)
+    {
         if ($param == 'primo.defaultRule') {
             return false;
         }
@@ -880,7 +882,8 @@ class PrimoPermissionHandlerTest extends TestCase
      *
      * @return void
      */
-    public function handlerMemberIsNotOnCampusCallback($param) {
+    public function handlerMemberIsNotOnCampusCallback($param)
+    {
         if ($param == 'primo.defaultRule') {
             return false;
         }
@@ -899,7 +902,8 @@ class PrimoPermissionHandlerTest extends TestCase
      *
      * @return void
      */
-    public function handlerIsNotAMemberCallback($param) {
+    public function handlerIsNotAMemberCallback($param)
+    {
         if ($param == 'primo.defaultRule') {
             return false;
         }
@@ -915,7 +919,8 @@ class PrimoPermissionHandlerTest extends TestCase
      *
      * @return void
      */
-    public function handlerIsOnDefaultCampusCallback($param) {
+    public function handlerIsOnDefaultCampusCallback($param)
+    {
         if ($param == 'primo.defaultRule') {
             return true;
         }

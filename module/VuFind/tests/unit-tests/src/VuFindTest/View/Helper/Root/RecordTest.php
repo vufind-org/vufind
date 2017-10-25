@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
-use VuFind\View\Helper\Root\Record, Zend\View\Exception\RuntimeException;
+
+use VuFind\View\Helper\Root\Record;
+use Zend\View\Exception\RuntimeException;
 
 /**
  * Record view helper Test Class

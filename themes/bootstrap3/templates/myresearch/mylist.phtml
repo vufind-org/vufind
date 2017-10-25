@@ -7,13 +7,13 @@
 
   // Set up breadcrumbs:
   $currPage = isset($list) ? 'List' : 'Favorites';
-  $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
 
   // Load Javascript only if list view parameter is NOT full:
-  if ($this->params->getOptions()->getListViewOption()!="full") {
+  if ($this->params->getOptions()->getListViewOption() != "full") {
     $this->headScript()->appendFile("record.js");
     $this->headScript()->appendFile("embedded_record.js");
   }
@@ -35,7 +35,7 @@
         <?
           $transParams = [
             '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
-            '%%end%%'   => $this->localizedNumber($this->results->getEndRecord()),
+            '%%end%%' => $this->localizedNumber($this->results->getEndRecord()),
             '%%total%%' => $this->localizedNumber($recordTotal)
           ];
         ?>
@@ -69,7 +69,7 @@
   <? if ($recordTotal > 0): ?>
     <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account])?>
-      <? foreach ($this->results->getResults() as $i=>$current): ?>
+      <? foreach ($this->results->getResults() as $i => $current): ?>
         <?=$this->record($current)->getListEntry($list, $user)?>
       <? endforeach; ?>
     </form>

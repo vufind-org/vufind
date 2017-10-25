@@ -49,7 +49,7 @@ class Options extends \VuFind\Search\Base\Options
         $this->searchIni = $this->facetsIni = 'Pazpar2';
 
         $this->limitOptions = [$this->defaultLimit];
-        
+
         // Load source settings
         $searchSettings = $configLoader->get($this->searchIni);
         if (isset($searchSettings->IndexSources)

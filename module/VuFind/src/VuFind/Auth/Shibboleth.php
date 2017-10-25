@@ -31,6 +31,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Auth;
+
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -204,13 +205,11 @@ class Shibboleth extends AbstractBase
             $shibTarget = $target;
         }
         $append = (strpos($shibTarget, '?') !== false) ? '&' : '?';
+        // Adding the auth_method parameter makes it possible to handle logins when
+        // using an auth method that proxies others.
         $sessionInitiator = $config->Shibboleth->login
             . '?target=' . urlencode($shibTarget)
             . urlencode($append . 'auth_method=Shibboleth');
-                                                    // makes it possible to
-                                                    // handle logins when using
-                                                    // an auth method that
-                                                    // proxies others
 
         if (isset($config->Shibboleth->provider_id)) {
             $sessionInitiator = $sessionInitiator . '&entityID=' .

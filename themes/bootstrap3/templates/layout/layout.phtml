@@ -134,7 +134,7 @@ JS;
     ?>
     <header class="hidden-print">
       <? if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
-        <span class="sr-only"><?=$this->layout()->srmessage ?></span>
+        <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
       <? endif; ?>
       <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
@@ -150,13 +150,13 @@ JS;
               <? if(count($this->layout()->breadcrumbs) > 1): ?>
                 <?=$this->render('breadcrumbs/multi.phtml', [
                     'parents' => $this->layout()->breadcrumbs,
-                    'title'   => $this->layout()->title,
-                    'from'    => $this->layout()->from
+                    'title' => $this->layout()->title,
+                    'from' => $this->layout()->from
                   ]) ?>
               <? else: ?>
                 <?=$this->render('breadcrumbs/default.phtml', [
                     'parents' => $this->layout()->breadcrumbs,
-                    'title'   => $this->layout()->title
+                    'title' => $this->layout()->title
                   ]) ?>
               <? endif; ?>
             <? else: ?>
