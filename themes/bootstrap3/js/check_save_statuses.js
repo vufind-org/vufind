@@ -3,13 +3,18 @@
 
 function displaySaveStatus(itemLists, $item) {
   if (itemLists.length > 0) {
+    // If we got lists back, display them!
     var html = '<ul>' + itemLists.map(function convertToLi(l) {
       return '<li><a href="' + l.list_url + '">' + htmlEncode(l.list_title) + '</a></li>';
     }).join('') + '</ul>';
-    $item.removeClass('js-save-pending');
     $item.find('.savedLists').addClass('loaded');
     $item.find('.js-load').replaceWith(html);
+  } else {
+    // If we got nothing back, remove the pending status:
+    $item.find('.js-load').remove();
   }
+  // No matter what, clear the flag that we have a pending save:
+  $item.removeClass('js-save-pending');
 }
 
 function saveStatusFail(response, textStatus) {
