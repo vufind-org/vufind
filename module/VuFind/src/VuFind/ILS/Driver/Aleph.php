@@ -842,17 +842,106 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     }
 
     /**
-     * Get Patron Transaction History
+     * Get Patron Loan History
      *
-     * @param array $user The patron array from patronLogin
+     * @param array $user   The patron array from patronLogin
+     * @param array $params Parameters
      *
      * @throws \VuFind\Exception\Date
      * @throws ILSException
-     * @return array      Array of the patron's transactions on success.
+     * @return array      Array of the patron's historic loans on success.
      */
-    public function getMyHistory($user)
+    public function getMyTransactionHistory($user, $params = null)
     {
-        return $this->getMyTransactions($user, true);
+        $userId = $user['id'];
+        $historicLoans = [];
+        $requestParams = [
+            "view" => "full",
+            "type" => "history",
+        ];
+
+        $xml = $this->doRestDLFRequest(
+            ['patron', $userId, 'circulationActions', 'loans'], $requestParams
+        );
+
+        foreach ($xml->xpath('//loan') as $item) {
+            $z36h = $item->z36h;
+            $z13 = $item->z13;
+            $z30 = $item->z30;
+            $group = $item->xpath('@href');
+            $group = substr(strrchr($group[0], "/"), 1);
+            $location = (string)$z36h->{'z36_pickup_location'};
+            $reqnum = (string)$z36h->{'z36-doc-number'}
+                . (string)$z36h->{'z36-item-sequence'}
+                . (string)$z36h->{'z36-sequence'};
+
+            $due = (string)$z36h->{'z36h-due-date'};
+            $returned = (string)$z36h->{'z36h-returned-date'};
+            $issued = (string)$z36h->{'z36h-loan-date'};
+            $title = (string)$z13->{'z13-title'};
+            $author = (string)$z13->{'z13-author'};
+            $isbn = (string)$z13->{'z13-isbn-issn'};
+            $barcode = (string)$z30->{'z30-barcode'};
+
+            $historicLoans[] = [
+                'id' => (string)$z30->{'z30-doc-number'},
+                'item_id' => $group,
+                'location' => $location,
+                'title' => $title,
+                'author' => $author,
+                'isbn' => [$isbn],
+                'reqnum' => $reqnum,
+                'barcode' => $barcode,
+                'checkoutDate' => $this->parseDate($issued),
+                'dueDate' => $this->parseDate($due),
+                'returnDate' => $this->parseDate($returned),
+                '_checkoutDate' => $issued,
+                '_dueDate' => $due,
+                '_returnDate' => $returned,
+            ];
+        }
+
+        if (isset($params['sort'])) {
+            switch ($params['sort']) {
+            case 'checkout asc':
+                $sorter = function ($a, $b) {
+                    return strcmp($a['_checkoutDate'], $b['_checkoutDate']);
+                };
+                break;
+            case 'return desc':
+                $sorter = function ($a, $b) {
+                    return strcmp($b['_returnDate'], $a['_returnDate']);
+                };
+                break;
+            case 'return asc':
+                $sorter = function ($a, $b) {
+                    return strcmp($a['_returnDate'], $b['_returnDate']);
+                };
+                break;
+            case 'due desc':
+                $sorter = function ($a, $b) {
+                    return strcmp($b['_dueDate'], $a['_dueDate']);
+                };
+                break;
+            case 'due asc':
+                $sorter = function ($a, $b) {
+                    return strcmp($a['_dueDate'], $b['_dueDate']);
+                };
+                break;
+            default:
+                $sorter = function ($a, $b) {
+                    return strcmp($b['_checkoutDate'], $a['_checkoutDate']);
+                };
+                break;
+            }
+
+            usort($historicLoans, $sorter);
+        }
+
+        return [
+            'count' => count($historicLoans),
+            'transactions' => $historicLoans,
+        ];
     }
 
     /**
@@ -861,25 +950,21 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
      *
-     * @param array $user    The patron array from patronLogin
-     * @param bool  $history Include history of transactions (true) or just get
-     * current ones (false).
+     * @param array $user The patron array from patronLogin
      *
      * @throws \VuFind\Exception\Date
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($user, $history = false)
+    public function getMyTransactions($user)
     {
         $userId = $user['id'];
         $transList = [];
         $params = ["view" => "full"];
-        if ($history) {
-            $params["type"] = "history";
-        }
         $xml = $this->doRestDLFRequest(
             ['patron', $userId, 'circulationActions', 'loans'], $params
         );
+
         foreach ($xml->xpath('//loan') as $item) {
             $z36 = $item->z36;
             $z13 = $item->z13;
@@ -890,25 +975,22 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             //$docno = (string) $z36->{'z36-doc-number'};
             //$itemseq = (string) $z36->{'z36-item-sequence'};
             //$seq = (string) $z36->{'z36-sequence'};
+
             $location = (string)$z36->{'z36_pickup_location'};
             $reqnum = (string)$z36->{'z36-doc-number'}
                 . (string)$z36->{'z36-item-sequence'}
                 . (string)$z36->{'z36-sequence'};
-            $due = $returned = null;
-            if ($history) {
-                $due = $item->z36h->{'z36h-due-date'};
-                $returned = $item->z36h->{'z36h-returned-date'};
-            } else {
-                $due = (string)$z36->{'z36-due-date'};
-            }
-            //$loaned = (string) $z36->{'z36-loan-date'};
+
+            $due = (string)$z36->{'z36-due-date'};
+            $issued = (string)$z36->{'z36-loan-date'};
             $title = (string)$z13->{'z13-title'};
             $author = (string)$z13->{'z13-author'};
             $isbn = (string)$z13->{'z13-isbn-issn'};
             $barcode = (string)$z30->{'z30-barcode'};
+
             $transList[] = [
                 //'type' => $type,
-                'id' => ($history) ? null : $this->barcodeToID($barcode),
+                'id' => $this->barcodeToID($barcode),
                 'item_id' => $group,
                 'location' => $location,
                 'title' => $title,
@@ -916,14 +998,15 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 'isbn' => [$isbn],
                 'reqnum' => $reqnum,
                 'barcode' => $barcode,
+                'issuedate' => $this->parseDate($issued),
                 'duedate' => $this->parseDate($due),
-                'returned' => $this->parseDate($returned),
                 //'holddate' => $holddate,
                 //'delete' => $delete,
                 'renewable' => true,
                 //'create' => $this->parseDate($create)
             ];
         }
+
         return $transList;
     }
 
@@ -1584,8 +1667,29 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     }
 
     /**
-     * Public Function which retrieves renew, hold and cancel settings from the
-     * driver ini file.
+     * Helper method to determine whether or not a certain method can be
+     * called on this driver.  Required method for any smart drivers.
+     *
+     * @param string $method The name of the called method.
+     * @param array  $params Array of passed parameters
+     *
+     * @return bool True if the method can be called with the given parameters,
+     * false otherwise.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function supportsMethod($method, $params)
+    {
+        // Loan history is only available if properly configured
+        if ($method == 'getMyTransactionHistory') {
+            return !empty($this->config['TransactionHistory']['enabled']);
+        }
+        return is_callable([$this, $method]);
+    }
+
+    /**
+     * Public Function which retrieves historic loan, renew, hold and cancel
+     * settings from the driver ini file.
      *
      * @param string $func   The name of the feature to be checked
      * @param array  $params Optional feature-specific parameters (array)
@@ -1604,6 +1708,21 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 "HMACKeys" => "id:item_id",
                 "extraHoldFields" => "comments:requiredByDate:pickUpLocation",
                 "defaultRequiredDate" => "0:1:0"
+            ];
+        } elseif ('getMyTransactionHistory' === $func) {
+            if (empty($this->config['TransactionHistory']['enabled'])) {
+                return false;
+            }
+            return [
+                'sort' => [
+                    'checkout desc' => 'sort_checkout_date_desc',
+                    'checkout asc' => 'sort_checkout_date_asc',
+                    'return desc' => 'sort_return_date_desc',
+                    'return asc' => 'sort_return_date_asc',
+                    'due desc' => 'sort_due_date_desc',
+                    'due asc' => 'sort_due_date_asc'
+                ],
+                'default_sort' => 'checkout desc',
             ];
         } else {
             return [];

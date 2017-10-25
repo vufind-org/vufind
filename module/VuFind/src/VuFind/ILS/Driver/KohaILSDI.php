@@ -511,13 +511,26 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getConfig($function)
     {
-        $functionConfig = "";
-        if (isset($this->config[$function])) {
-            $functionConfig = $this->config[$function];
-        } else {
-            $functionConfig = false;
+        if ('getMyTransactionHistory' === $function) {
+            if (empty($this->config['TransactionHistory']['enabled'])) {
+                return false;
+            }
+            return [
+                'max_results' => 100,
+                'sort' => [
+                    'checkout desc' => 'sort_checkout_date_desc',
+                    'checkout asc' => 'sort_checkout_date_asc',
+                    'return desc' => 'sort_return_date_desc',
+                    'return asc' => 'sort_return_date_asc',
+                    'due desc' => 'sort_due_date_desc',
+                    'due asc' => 'sort_due_date_asc'
+                ],
+                'default_sort' => 'checkout desc'
+            ];
         }
-        return $functionConfig;
+        return isset($this->config[$function])
+            ? $this->config[$function]
+            : false;
     }
 
     /**
@@ -1383,6 +1396,89 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Get Patron Loan History
+     *
+     * This is responsible for retrieving all historic loans (i.e. items previously
+     * checked out and then returned), for a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
+     *
+     * @throws \VuFind\Exception\Date
+     * @throws ILSException
+     * @return array        Array of the patron's transactions on success.
+     */
+    public function getMyTransactionHistory($patron, $params)
+    {
+        $id = 0;
+        $historicLoans = [];
+        $row = $sql = $sqlStmt = '';
+        try {
+            if (!$this->db) {
+                $this->initDb();
+            }
+            $id = $patron['id'];
+
+            // Get total count first
+            $sql = "select count(*) as cnt from old_issues " .
+                "where old_issues.borrowernumber = :id";
+            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->execute([':id' => $id]);
+            $totalCount = $sqlStmt->fetch()['cnt'];
+
+            // Get rows
+            $limit = isset($params['limit']) ? (int)$params['limit'] : 50;
+            $start = isset($params['page'])
+                ? ((int)$params['page'] - 1) * $limit : 0;
+            if (isset($params['sort'])) {
+                $parts = explode(' ', $params['sort'], 2);
+                switch ($parts[0]) {
+                case 'return':
+                    $sort = 'RETURNED';
+                    break;
+                case 'due':
+                    $sort = 'DUEDATE';
+                    break;
+                default:
+                    $sort = 'ISSUEDATE';
+                    break;
+                }
+                $sort .= isset($parts[1]) && 'asc' === $parts[1] ? ' asc' : ' desc';
+            } else {
+                $sort = 'ISSUEDATE desc';
+            }
+            $sql = "select old_issues.issuedate as ISSUEDATE, " .
+                "old_issues.date_due as DUEDATE, items.biblionumber as " .
+                "BIBNO, items.barcode BARCODE, old_issues.returndate as RETURNED, " .
+                "biblio.title as TITLE " .
+                "from old_issues join items " .
+                "on old_issues.itemnumber = items.itemnumber " .
+                "join biblio on items.biblionumber = biblio.biblionumber " .
+                "where old_issues.borrowernumber = :id " .
+                "order by $sort limit $start,$limit";
+            $sqlStmt = $this->db->prepare($sql);
+
+            $sqlStmt->execute([':id' => $id]);
+            foreach ($sqlStmt->fetchAll() as $row) {
+                $historicLoans[] = [
+                    'title' => $row['TITLE'],
+                    'checkoutDate' => $this->displayDateTime($row['ISSUEDATE']),
+                    'dueDate' => $this->displayDateTime($row['DUEDATE']),
+                    'id' => $row['BIBNO'],
+                    'barcode' => $row['BARCODE'],
+                    'returnDate' => $this->displayDateTime($row['RETURNED']),
+                ];
+            }
+            return [
+                'count' => $totalCount,
+                'transactions' => $historicLoans
+            ];
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+    }
+
+    /**
      * Get Patron Transactions
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
@@ -1824,5 +1920,71 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         } else {
             return null;
         }
+    }
+
+    /**
+     * Convert a database date to a displayable date.
+     *
+     * @param string $date Date to convert
+     *
+     * @return string
+     */
+    public function displayDate($date)
+    {
+        if (empty($date)) {
+            return "";
+        } elseif (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
+            // YYYY-MM-DD HH:MM:SS
+            return $this->dateConverter->convertToDisplayDate('Y-m-d H:i:s', $date);
+        } elseif (preg_match("/^\d{4}-\d{2}-\d{2}$/", $date) === 1) { // YYYY-MM-DD
+            return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
+        } else {
+            error_log("Unexpected date format: $date");
+            return $date;
+        }
+    }
+
+    /**
+     * Convert a database datetime to a displayable date and time.
+     *
+     * @param string $date Datetime to convert
+     *
+     * @return string
+     */
+    public function displayDateTime($date)
+    {
+        if (empty($date)) {
+            return "";
+        } elseif (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
+            // YYYY-MM-DD HH:MM:SS
+            return
+                $this->dateConverter->convertToDisplayDateAndTime(
+                    'Y-m-d H:i:s', $date
+                );
+        } else {
+            error_log("Unexpected date format: $date");
+            return $date;
+        }
+    }
+
+    /**
+     * Helper method to determine whether or not a certain method can be
+     * called on this driver.  Required method for any smart drivers.
+     *
+     * @param string $method The name of the called method.
+     * @param array  $params Array of passed parameters
+     *
+     * @return bool True if the method can be called with the given parameters,
+     * false otherwise.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function supportsMethod($method, $params)
+    {
+        // Loan history is only available if properly configured
+        if ($method == 'getMyTransactionHistory') {
+            return !empty($this->config['TransactionHistory']['enabled']);
+        }
+        return is_callable([$this, $method]);
     }
 }

@@ -973,6 +973,145 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Construct a historic transaction list for getMyTransactionHistory; may be
+     * random or pre-set depending on Demo.ini settings.
+     *
+     * @return array
+     */
+    protected function getHistoricTransactionList()
+    {
+        $this->checkIntermittentFailure();
+        // If Demo.ini includes a fixed set of transactions, load those; otherwise
+        // build some random ones.
+        return isset($this->config['Records']['historicTransactions'])
+            ? json_decode($this->config['Records']['historicTransactions'], true)
+            : $this->getRandomHistoricTransactionList();
+    }
+
+    /**
+     * Construct a random set of transactions for getMyTransactionHistory().
+     *
+     * @return array
+     */
+    protected function getRandomHistoricTransactionList()
+    {
+        // How many items are there?  %10 - 1 = 10% chance of none,
+        // 90% of 1-150 (give or take some odd maths)
+        $trans = rand() % 10 - 1 > 0 ? rand() % 15 : 0;
+
+        $transList = [];
+        for ($i = 0; $i < $trans; $i++) {
+            // Checkout date
+            $relative = rand() % 300;
+            $checkoutDate = strtotime("now -$relative days");
+            // Due date (7-30 days from checkout)
+            $dueDate = $checkoutDate + 60 * 60 * 24 * (rand() % 23 + 7);
+            // Return date (1-40 days from checkout and < now)
+            $returnDate = min(
+                [$checkoutDate + 60 * 60 * 24 * (rand() % 39 + 1), time()]
+            );
+
+            // Create a generic transaction:
+            $transList[] = $this->getRandomItemIdentifier() + [
+                'checkoutDate' => $this->dateConverter->convertToDisplayDate(
+                    'U', $checkoutDate
+                ),
+                'dueDate' => $this->dateConverter->convertToDisplayDate(
+                    'U', $dueDate
+                ),
+                'returnDate' => $this->dateConverter->convertToDisplayDate(
+                    'U', $returnDate
+                ),
+                // Raw dates for sorting
+                '_checkoutDate' => $checkoutDate,
+                '_dueDate' => $dueDate,
+                '_returnDate' => $returnDate,
+                'barcode' => sprintf("%08d", rand() % 50000),
+                'item_id' => $i,
+            ];
+            if ($this->idsInMyResearch) {
+                $transList[$i]['id'] = $this->getRandomBibId();
+                $transList[$i]['source'] = $this->getRecordSource();
+            } else {
+                $transList[$i]['title'] = 'Demo Title ' . $i;
+            }
+        }
+        return $transList;
+    }
+
+    /**
+     * Get Patron Loan History
+     *
+     * This is responsible for retrieving all historic transactions for a specific
+     * patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
+     *
+     * @return mixed        Array of the patron's historic transactions on success.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getMyTransactionHistory($patron, $params)
+    {
+        $this->checkIntermittentFailure();
+        $session = $this->getSession();
+        if (!isset($session->historicLoans)) {
+            $session->historicLoans = $this->getHistoricTransactionList();
+        }
+
+        // Sort and splice the list
+        $historicLoans = $session->historicLoans;
+        if (isset($params['sort'])) {
+            switch ($params['sort']) {
+            case 'checkout asc':
+                $sorter = function ($a, $b) {
+                    return strcmp($a['_checkoutDate'], $b['_checkoutDate']);
+                };
+                break;
+            case 'return desc':
+                $sorter = function ($a, $b) {
+                    return strcmp($b['_returnDate'], $a['_returnDate']);
+                };
+                break;
+            case 'return asc':
+                $sorter = function ($a, $b) {
+                    return strcmp($a['_returnDate'], $b['_returnDate']);
+                };
+                break;
+            case 'due desc':
+                $sorter = function ($a, $b) {
+                    return strcmp($b['_dueDate'], $a['_dueDate']);
+                };
+                break;
+            case 'due asc':
+                $sorter = function ($a, $b) {
+                    return strcmp($a['_dueDate'], $b['_dueDate']);
+                };
+                break;
+            default:
+                $sorter = function ($a, $b) {
+                    return strcmp($b['_checkoutDate'], $a['_checkoutDate']);
+                };
+                break;
+            }
+
+            usort($historicLoans, $sorter);
+        }
+
+        $limit = isset($params['limit']) ? (int)$params['limit'] : 50;
+        $start = isset($params['page'])
+            ? ((int)$params['page'] - 1) * $limit : 0;
+
+        $historicLoans = array_splice($historicLoans, $start, $limit);
+
+        return [
+            'count' => count($session->historicLoans),
+            'transactions' => $historicLoans
+        ];
+    }
+
+    /**
      * Get Pick Up Locations
      *
      * This is responsible get a list of valid library locations for holds / recall
@@ -2035,6 +2174,23 @@ class Demo extends AbstractBase
             return isset($this->config['changePassword'])
                 ? $this->config['changePassword']
                 : ['minLength' => 4, 'maxLength' => 20];
+        }
+        if ($function == 'getMyTransactionHistory') {
+            if (empty($this->config['TransactionHistory']['enabled'])) {
+                return false;
+            }
+            return [
+                'max_results' => 100,
+                'sort' => [
+                    'checkout desc' => 'sort_checkout_date_desc',
+                    'checkout asc' => 'sort_checkout_date_asc',
+                    'return desc' => 'sort_return_date_desc',
+                    'return asc' => 'sort_return_date_asc',
+                    'due desc' => 'sort_due_date_desc',
+                    'due asc' => 'sort_due_date_asc'
+                ],
+                'default_sort' => 'checkout desc'
+            ];
         }
         return [];
     }

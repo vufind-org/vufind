@@ -456,6 +456,30 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
     }
 
     /**
+     * Get Patron Transaction History
+     *
+     * This is responsible for retrieving all historic transactions
+     * (i.e. checked out items) by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Retrieval params
+     *
+     * @return array        Array of the patron's transactions
+     */
+    public function getMyTransactionHistory($patron, $params)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $transactions = $driver->getMyTransactionHistory(
+                $this->stripIdPrefixes($patron, $source), $params
+            );
+            return $this->addIdPrefixes($transactions, $source);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
      * Get Renew Details
      *
      * In order to renew an item, the ILS requires information on the item and
