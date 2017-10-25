@@ -181,7 +181,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
         // The Authorised Values Category use for locations should default to 'LOC'
         $this->locationAuthorisedValuesCategory
-            = $this->config['Catalog']['locationAuthorisedValuesCategory']
+            = isset($this->config['Catalog']['locationAuthorisedValuesCategory'])
             ? $this->config['Catalog']['locationAuthorisedValuesCategory']
             : 'LOC';
 
