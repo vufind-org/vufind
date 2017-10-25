@@ -179,6 +179,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->validatePasswords
             = empty($this->config['Catalog']['dontValidatePasswords']);
 
+        // The Authorised Values Category use for locations should default to 'LOC'
+        $this->locationAuthorisedValuesCategory
+            = isset($this->config['Catalog']['locationAuthorisedValuesCategory'])
+            ? $this->config['Catalog']['locationAuthorisedValuesCategory']
+            : 'LOC';
+
         $this->debug("Config Summary:");
         $this->debug("DB Host: " . $this->host);
         $this->debug("ILS URL: " . $this->ilsBaseUrl);
@@ -244,6 +250,24 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $this->db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             // set communication enoding to utf8
             $this->db->exec("SET NAMES utf8");
+
+            // Drop the ONLY_FULL_GROUP_BY entry from sql_mode as it breaks this
+            // ILS Driver on modern
+            $setSqlModes = $this->db->prepare("SET sql_mode = :sqlMode");
+
+            $sqlModes = $this->db->query("SELECT @@sql_mode");
+            foreach ($sqlModes as $row) {
+                $sqlMode = implode(
+                    ',',
+                    array_filter(
+                        explode(',', $row['@@sql_mode']),
+                        function ($mode) {
+                            return $mode != "ONLY_FULL_GROUP_BY";
+                        }
+                    )
+                );
+                $setSqlModes->execute(['sqlMode' => $sqlMode]);
+            }
         } catch (PDOException $e) {
             $this->debug('Connection failed: ' . $e->getMessage());
             throw new ILSException($e->getMessage());
@@ -775,7 +799,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 (SELECT itemnumber, frombranch, tobranch from branchtransfers
                 where datearrived IS NULL) as t USING (itemnumber)
             left join authorised_values as av on i.location = av.authorised_value
-            where i.biblionumber = :id AND av.category = 'LOC'
+            where i.biblionumber = :id AND av.category = :av_category
             order by i.itemnumber DESC";
         $sqlReserves = "select count(*) as RESERVESCOUNT from reserves "
             . "WHERE biblionumber = :id AND found IS NULL";
@@ -796,7 +820,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         }
         try {
             $itemSqlStmt = $this->db->prepare($sql);
-            $itemSqlStmt->execute([':id' => $id]);
+            $itemSqlStmt->execute(
+                [
+                    ':id' => $id,
+                    ':av_category' => $this->locationAuthorisedValuesCategory,
+                ]
+            );
             $sqlStmtReserves = $this->db->prepare($sqlReserves);
             $sqlStmtWaitingReserve = $this->db->prepare($sqlWaitingReserve);
             $sqlStmtReserves->execute([':id' => $id]);
@@ -1495,6 +1524,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             if (!$this->db) {
                 $this->initDb();
             }
+
             $sql = "SELECT b.title, b.biblionumber,
                        MAX(CONCAT(s.publisheddate, ' / ',s.serialseq))
                          AS 'date and enumeration'
