@@ -196,6 +196,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#make-list')->click();
         $this->findCss($page, '#list_title')->setValue('Login Test List');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->assertEquals(
             $this->findCss($page, '#save_list option[selected]')->getHtml(),
             'Login Test List'
