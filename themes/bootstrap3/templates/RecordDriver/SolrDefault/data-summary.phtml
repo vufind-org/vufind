@@ -4,6 +4,7 @@
 <? $isbn = $this->driver->getCleanISBN(); ?>
 <? foreach ($this->summaries($isbn) as $provider => $content): ?>
   <? foreach ($content as $summary): ?>
-    <?=($provider == 'SyndeticsPlus') ? $summary : ($this->escapeHtml($summary) . '<br />')?>
+    <? $htmlContent = substr($summary, 0, 1) == '<' && substr($summary, -1) == '>'; ?>
+    <?=$htmlContent ? $summary : ($this->escapeHtml($summary) . '<br />')?>
   <? endforeach; ?>
 <? endforeach; ?>
