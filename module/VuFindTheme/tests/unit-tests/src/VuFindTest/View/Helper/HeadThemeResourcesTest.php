@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper;
-use VuFindTheme\ResourceContainer, VuFindTheme\View\Helper\HeadThemeResources;
+
+use VuFindTheme\ResourceContainer;
+use VuFindTheme\View\Helper\HeadThemeResources;
 
 /**
  * HeadThemeResources view helper Test Class

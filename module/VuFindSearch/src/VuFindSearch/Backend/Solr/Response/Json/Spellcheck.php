@@ -28,9 +28,9 @@
  */
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
-use IteratorAggregate;
 use ArrayObject;
 use Countable;
+use IteratorAggregate;
 
 /**
  * SOLR spellcheck information.
@@ -200,7 +200,6 @@ class Spellcheck implements IteratorAggregate, Countable
      */
     public function compareTermLength($a, $b)
     {
-        return (strlen($b) - strlen($a));
+        return strlen($b) - strlen($a);
     }
-
 }

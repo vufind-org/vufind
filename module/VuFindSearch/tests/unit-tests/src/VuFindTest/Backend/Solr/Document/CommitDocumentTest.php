@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Backend\Solr\Document;
 
-use VuFindSearch\Backend\Solr\Document\CommitDocument;
-
 use PHPUnit_Framework_TestCase;
+
+use VuFindSearch\Backend\Solr\Document\CommitDocument;
 
 /**
  * Unit tests for SOLR update document class.

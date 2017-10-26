@@ -27,6 +27,7 @@
  * Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use Zend\View\Helper\AbstractHelper;
 

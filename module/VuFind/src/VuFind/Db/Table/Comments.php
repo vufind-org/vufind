@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
+
 use VuFind\Db\Row\RowGateway;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Expression;
@@ -78,7 +79,7 @@ class Comments extends Gateway
                 ['u' => 'user'], 'u.id = comments.user_id',
                 ['firstname', 'lastname']
             );
-            $select->where->equalTo('comments.resource_id',  $resource->id);
+            $select->where->equalTo('comments.resource_id', $resource->id);
             $select->order('comments.created');
         };
 

@@ -11,20 +11,20 @@
 
   <?=$this->flashmessages()?>
 
-  <form class="form-tags-manage" action="<?= $this->url('admin/tags', array('action' => 'Manage'));?>" method="post" role="form">
+  <form class="form-tags-manage" action="<?= $this->url('admin/tags', ['action' => 'Manage']);?>" method="post" role="form">
     <div class="form-group">
       <label for="type" class="control-label"><?=$this->translate('delete_tags_by')?>:</label>
       <select id="type" name="type" class="form-control">
-        <option value="user" <? if("user" == $this->type) echo " selected=selected";?>><?=$this->translate('Username')?></option>
-        <option value="tag" <? if("tag" == $this->type) echo " selected=selected";?>><?=$this->translate('Tag')?></option>
-        <option value="resource" <? if("resource" == $this->type) echo " selected=selected";?>><?=$this->translate('Title')?></option>
+        <option value="user" <?=("user" == $this->type) ? ' selected=selected' : ''?>><?=$this->translate('Username')?></option>
+        <option value="tag" <?=("tag" == $this->type) ? ' selected=selected' : ''?>><?=$this->translate('Tag')?></option>
+        <option value="resource" <?=("resource" == $this->type) ? ' selected=selected' : ''?>><?=$this->translate('Title')?></option>
       </select>
       <input type="submit" value="<?=$this->translate('Submit')?>" class="btn btn-primary"/>
     </div>
   </form>
 
   <? if(false !== $this->type):?>
-    <form class="form-tags-manage" action="<?= $this->url('admin/tags', array('action' => 'Delete'))?>" method="post">
+    <form class="form-tags-manage" action="<?= $this->url('admin/tags', ['action' => 'Delete'])?>" method="post">
       <input type="hidden" name="origin" value="manage" />
       <input type="hidden" name="type" value="<?= $this->type; ?>" />
       <? if("user" == $type):?>

@@ -58,7 +58,7 @@ class Holds extends AbstractRequestBase
                 // Build OPAC URL
                 $ilsDetails['cancel_link']
                     = $catalog->getCancelHoldLink($ilsDetails);
-            } else if (isset($ilsDetails['cancel_details'])) {
+            } elseif (isset($ilsDetails['cancel_details'])) {
                 // The ILS driver provided cancel details up front. If the
                 // details are an empty string (flagging lack of support), we
                 // should unset it to prevent confusion; otherwise, we'll leave it
@@ -106,7 +106,7 @@ class Holds extends AbstractRequestBase
         $selected = $params->fromPost('cancelSelected');
         if (!empty($all)) {
             $details = $params->fromPost('cancelAllIDS');
-        } else if (!empty($selected)) {
+        } elseif (!empty($selected)) {
             $details = $params->fromPost('cancelSelectedIDS');
         } else {
             // No button pushed -- no action needed
@@ -169,7 +169,7 @@ class Holds extends AbstractRequestBase
                 return $cancelResults;
             }
         } else {
-             $flashMsg->addMessage('hold_empty_selection', 'error');
+            $flashMsg->addMessage('hold_empty_selection', 'error');
         }
         return [];
     }

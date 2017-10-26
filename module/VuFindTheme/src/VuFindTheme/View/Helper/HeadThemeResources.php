@@ -145,10 +145,12 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         $favicon = $this->container->getFavicon();
         if (!empty($favicon)) {
             $imageLink = $this->getView()->plugin('imagelink');
-            $headLink([
-                'href' => $imageLink($favicon),
-                'type' => 'image/x-icon', 'rel' => 'shortcut icon'
-            ]);
+            $headLink(
+                [
+                    'href' => $imageLink($favicon),
+                    'type' => 'image/x-icon', 'rel' => 'shortcut icon'
+                ]
+            );
         }
     }
 
