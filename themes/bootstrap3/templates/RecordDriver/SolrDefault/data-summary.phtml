@@ -1,17 +1,9 @@
-<? 
-    $summaries = $this->driver->getSummary(); 
-    foreach ($summaries as $summary):
-        ?><?=$this->escapeHtml($summary) ?><br /><?
-    endforeach;
-    $isbn = $this->driver->getCleanISBN();
-    $summaries = $this->summaries($isbn);
-    foreach ($summaries as $provider => $content) {
-        foreach ($content as $summary) {
-            if ($provider == 'SyndeticsPlus') {
-                ?><?=$summary ?><?
-            } else {
-                ?><?=$this->escapeHtml($summary) ?><br /><?
-            }
-        }
-    }
-?>
+<? foreach ($this->driver->getSummary() as $summary): ?>
+  <?=$this->escapeHtml($summary) ?><br />
+<? endforeach; ?>
+<? $isbn = $this->driver->getCleanISBN(); ?>
+<? foreach ($this->summaries($isbn) as $provider => $content): ?>
+  <? foreach ($content as $summary): ?>
+    <?=($provider == 'SyndeticsPlus') ? $summary : ($this->escapeHtml($summary) . '<br />')?>
+  <? endforeach; ?>
+<? endforeach; ?>
