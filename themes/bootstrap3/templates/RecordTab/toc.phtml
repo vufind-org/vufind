@@ -4,7 +4,10 @@
 
     $toc = $this->tab->getContent();
     if (empty($toc)) {
-        $toc['RecordDriver'] = $this->driver->getTOC();
+        $driverToc = $this->driver->getTOC();
+        if (!empty($driverToc)) {
+            $toc['RecordDriver'] = $driverToc;
+        }
     }
 ?>
 <? if (!empty($toc)): ?>
