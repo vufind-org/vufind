@@ -83,7 +83,7 @@ abstract class AbstractSyndetics extends AbstractBase
      * @return \Zend\Http\Client
      * @throws \Exception
      */
-    protected function getHttpClient($url)
+    protected function getHttpClient($url = null)
     {
         $client = parent::getHttpClient($url);
         $client->setOptions(['timeout' => $this->timeout]);
