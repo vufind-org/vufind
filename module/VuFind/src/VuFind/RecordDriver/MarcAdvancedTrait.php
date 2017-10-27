@@ -29,6 +29,9 @@
  */
 namespace VuFind\RecordDriver;
 
+use VuFind\View\Helper\Root\RecordLink;
+use VuFind\XSLT\Processor as XSLTProcessor;
+
 /**
  * Functions to add advanced MARC-driven functionality to a record driver already
  * powered by the standard index spec. Depends upon MarcAwareTrait.

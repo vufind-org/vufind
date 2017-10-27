@@ -29,9 +29,6 @@
  */
 namespace VuFind\RecordDriver;
 
-use VuFind\View\Helper\Root\RecordLink;
-use VuFind\XSLT\Processor as XSLTProcessor;
-
 /**
  * Model for MARC records in Solr.
  *
