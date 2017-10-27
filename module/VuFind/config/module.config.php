@@ -187,6 +187,8 @@ $config = [
             'VuFind\ContentCoversPluginManager' => 'VuFind\Service\Factory::getContentCoversPluginManager',
             'VuFind\ContentExcerptsPluginManager' => 'VuFind\Service\Factory::getContentExcerptsPluginManager',
             'VuFind\ContentReviewsPluginManager' => 'VuFind\Service\Factory::getContentReviewsPluginManager',
+            'VuFind\ContentSummariesPluginManager' => 'VuFind\Service\Factory::getContentSummariesPluginManager',
+            'VuFind\ContentTOCPluginManager' => 'VuFind\Service\Factory::getContentTOCPluginManager',
             'VuFind\CookieManager' => 'VuFind\Service\Factory::getCookieManager',
             'VuFind\Cover\Router' => 'VuFind\Service\Factory::getCoverRouter',
             'VuFind\DateConverter' => 'VuFind\Service\Factory::getDateConverter',
@@ -356,6 +358,8 @@ $config = [
                     'authornotes' => 'VuFind\Content\Factory::getAuthorNotes',
                     'excerpts' => 'VuFind\Content\Factory::getExcerpts',
                     'reviews' => 'VuFind\Content\Factory::getReviews',
+                    'summaries' => 'VuFind\Content\Factory::getSummaries',
+                    'toc' => 'VuFind\Content\Factory::getTOC',
                 ],
             ],
             'content_authornotes' => [
@@ -368,6 +372,18 @@ $config = [
                 'factories' => [
                     'syndetics' => 'VuFind\Content\Excerpts\Factory::getSyndetics',
                     'syndeticsplus' => 'VuFind\Content\Excerpts\Factory::getSyndeticsPlus',
+                ],
+            ],
+            'content_summaries' => [
+                'factories' => [
+                    'syndetics' => 'VuFind\Content\Summaries\Factory::getSyndetics',
+                    'syndeticsplus' => 'VuFind\Content\Summaries\Factory::getSyndeticsPlus',
+                ],
+            ],
+            'content_toc' => [
+                'factories' => [
+                    'syndetics' => 'VuFind\Content\TOC\Factory::getSyndetics',
+                    'syndeticsplus' => 'VuFind\Content\TOC\Factory::getSyndeticsPlus',
                 ],
             ],
             'content_covers' => [
@@ -573,13 +589,13 @@ $config = [
                     'preview' => 'VuFind\RecordTab\Factory::getPreview',
                     'reviews' => 'VuFind\RecordTab\Factory::getReviews',
                     'similaritemscarousel' => 'VuFind\RecordTab\Factory::getSimilarItemsCarousel',
+                    'toc' => 'VuFind\RecordTab\Factory::getTOC',
                     'usercomments' => 'VuFind\RecordTab\Factory::getUserComments',
                 ],
                 'invokables' => [
                     'description' => 'VuFind\RecordTab\Description',
                     'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
                     'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
-                    'toc' => 'VuFind\RecordTab\TOC',
                 ],
                 'initializers' => [
                     'ZfcRbac\Initializer\AuthorizationServiceInitializer'
