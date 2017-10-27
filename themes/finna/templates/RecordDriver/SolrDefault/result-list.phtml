@@ -120,7 +120,7 @@ if ($img):
                       $result = $class . ' ' . $subfield;
                       $classForTranslation = 'classification::' . str_replace('::', ' ', $result);
                       ?>
-                      <? if (!$this->translationEmpty($classForTranslation) && $i < 1): ?><a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><?=$this->transEsc($classForTranslation) . '<span class="classification-detail"> (' . $this->escapeHtml($result) . ')</span>' ;?></a><br/><? endif; ?>
+                      <? if (!$this->translationEmpty($classForTranslation) && $i < 1): ?><a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><?=$this->transEsc($classForTranslation) . '<span class="classification-detail"> (' . $this->escapeHtml($result) . ')</span>';?></a><br/><? endif; ?>
                   <?
                     }
                   }
@@ -205,7 +205,7 @@ if ($img):
                 <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
             <? endif; ?>
 
-            <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
+            <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
         </div>
       </div>
     </div>

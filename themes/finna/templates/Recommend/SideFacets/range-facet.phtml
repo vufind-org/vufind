@@ -15,9 +15,9 @@
 <? if ($facet['type'] == 'date'): ?>
     <?
     $min = !empty($facet[$title]['values'][0]) ? min($facet[$title]['values'][0], 1400) : 1400;
-    $future = date('Y', time()+31536000);
+    $future = date('Y', time() + 31536000);
     $max = !empty($facet[$title]['values'][1]) ? max($future, $facet[$title]['values'][1]) : $future;
-    $low  = !empty($facet[$title]['values'][0]) ? $facet[$title]['values'][0] : $min;
+    $low = !empty($facet[$title]['values'][0]) ? $facet[$title]['values'][0] : $min;
     $high = !empty($facet[$title]['values'][1]) ? $facet[$title]['values'][1] : $max;
     $reversed = $this->layout()->rtl ? 'true' : 'false';
     $script = <<<JS

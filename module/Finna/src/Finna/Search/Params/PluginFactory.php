@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Search\Params;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -63,6 +64,6 @@ class PluginFactory extends \VuFind\Search\Params\PluginFactory
 
         $configLoader = $serviceLocator->getServiceLocator()->get('VuFind\Config');
         // Clone the options instance in case caller modifies it:
-        return new $class(clone($options), $configLoader, ...$extraParams);
+        return new $class(clone $options, $configLoader, ...$extraParams);
     }
 }

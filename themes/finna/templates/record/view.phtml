@@ -54,7 +54,7 @@
     <div class="record-back hidden-print">
     <?
       $html = '<span class="btn btn-primary"><i class="fa fa-arrow-left"></i> <i class="fa fa-search"></i></span>';
-      $html .= '<span class="back-to-search-text hidden-xs">'.$this->transEsc('Back to search results').'</span>';
+      $html .= '<span class="back-to-search-text hidden-xs">' . $this->transEsc('Back to search results') . '</span>';
       $previousSearch = $this->searchMemory()->getLastSearchLink($html);
       if ($previousSearch !== ''):
     ?>
@@ -161,7 +161,7 @@
       </div>
     </div>
 
-    <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenURL()).'"></span>':''?>
+    <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>
   </div>
 
   <div class="sidebar right">

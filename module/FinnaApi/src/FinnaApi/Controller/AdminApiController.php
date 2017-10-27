@@ -27,6 +27,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace FinnaApi\Controller;
+
 use Finna\View\Helper\Root\RecordDataFormatterFactory;
 
 /**

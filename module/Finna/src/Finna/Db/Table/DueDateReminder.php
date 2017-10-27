@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace Finna\Db\Table;
+
 use VuFind\Crypt\HMAC;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Table\PluginManager;

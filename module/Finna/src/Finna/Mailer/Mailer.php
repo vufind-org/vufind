@@ -28,11 +28,10 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace Finna\Mailer;
-use VuFind\Exception\Mail as MailException,
-    Zend\Mail\Address,
-    Zend\Mail\AddressList,
-    Zend\Mail\Message,
-    Zend\Mail\Header\ContentType;
+
+use VuFind\Exception\Mail as MailException;
+use Zend\Mail\Address;
+use Zend\Mail\Message;
 
 /**
  * VuFind Mailer Class
@@ -46,7 +45,7 @@ use VuFind\Exception\Mail as MailException,
  */
 class Mailer  extends \VuFind\Mailer\Mailer
 {
-     /**
+    /**
      * Send an email message representing a record.
      *
      * @param string                            $to      Recipient email address

@@ -26,8 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Db\Row;
-use Finna\Db\Table\Fee,
-    Finna\Db\Table\TransactionFees;
 
 /**
  * Row definition for online payment transaction

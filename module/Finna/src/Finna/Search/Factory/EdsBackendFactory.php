@@ -30,8 +30,8 @@
  */
 namespace Finna\Search\Factory;
 
-use VuFindSearch\Backend\EDS\Zend2 as Connector;
 use VuFindSearch\Backend\EDS\Backend;
+use VuFindSearch\Backend\EDS\Zend2 as Connector;
 use Zend\Console\Console;
 
 /**

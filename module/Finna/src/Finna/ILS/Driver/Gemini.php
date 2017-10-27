@@ -27,11 +27,10 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace Finna\ILS\Driver;
-use SoapClient, SoapFault, SoapHeader, File_MARC, PDO, PDOException, DOMDocument,
-    VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException,
-    VuFind\I18n\Translator\TranslatorAwareInterface as TranslatorAwareInterface;
+
 use VuFind\Exception\Date;
+use VuFind\Exception\Date as DateException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Gemini REST API Driver
@@ -240,10 +239,10 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         ];
         $response = $this->makeRequest('GetItem', $params);
 
-        $itemsTotal =  (int) $response->MarcRecord->Overview->TotalCount;
-        $orderedTotal = (int) $response->MarcRecord->Overview->Ordered;
-        $reservationsTotal =  (int) $response->MarcRecord->Overview->QueueLength;
-        $availability = (string) $response->MarcRecord->Overview->IsAvailable
+        $itemsTotal =  (int)$response->MarcRecord->Overview->TotalCount;
+        $orderedTotal = (int)$response->MarcRecord->Overview->Ordered;
+        $reservationsTotal =  (int)$response->MarcRecord->Overview->QueueLength;
+        $availability = (string)$response->MarcRecord->Overview->IsAvailable
             == 'true' ? true : false;
         $availableTotal = 0;
         $holdableTotal = false;
@@ -252,23 +251,23 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
 
         // Build Holdings Array
         foreach ($response->MarcRecord->Item as $item) {
-            $department = (string) $item->Department;
-            $branch = (string) $item->PlacedAtUnit;
-            $branchId = (int) $item->PlacedAtUnitId;
-            $shelf = (string) $item->Shelf;
+            $department = (string)$item->Department;
+            $branch = (string)$item->PlacedAtUnit;
+            $branchId = (int)$item->PlacedAtUnitId;
+            $shelf = (string)$item->Shelf;
             $journalInfo = null;
 
             if (!$item->PermitLoan) {
                 $status = 'status_On Reference Desk';
                 $available = true;
             } else {
-                $status = (string) $item->StatusCode;
+                $status = (string)$item->StatusCode;
                 $status = $this->mapStatusCode($status);
                 $available = $status == 'Available';
 
                 if ($status == 'Charged') {
                     $dueDate = $this->dateFormat->convertToDisplayDate(
-                        'Y-m-d', (string) $item->DueDate
+                        'Y-m-d', (string)$item->DueDate
                     );
                 } else {
                     $dueDate = '';
@@ -279,7 +278,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
                 $availableTotal++;
             }
 
-            $holdable = (int) $item->PermitReservation == 0 ? true : false;
+            $holdable = (int)$item->PermitReservation == 0 ? true : false;
 
             if ($holdable) {
                 $holdableTotal = true;
@@ -297,9 +296,9 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
 
             $holding = [
                'id' => $id,
-               'barcode' => (string) $item->BarCode,
-               'callnumber' =>  (string) $item->Shelf,
-               'item_id' => (string) $item->ItemId,
+               'barcode' => (string)$item->BarCode,
+               'callnumber' =>  (string)$item->Shelf,
+               'item_id' => (string)$item->ItemId,
                'holdings_id' => $shelf,
                'availability' => $available,
                'availabilityInfo' => [
@@ -363,7 +362,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         ];
         $response = $this->makeRequest('LoginPatron', $params);
 
-        $statusId = (string) $response->Result['id'];
+        $statusId = (string)$response->Result['id'];
 
         if ($statusId != '0') {
             return null;
@@ -373,41 +372,41 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
 
         $info = $response->Patron;
 
-        $names = explode(', ', (string) $info->Name, 2);
+        $names = explode(', ', (string)$info->Name, 2);
         $lastname = $names[0];
         $firstname = isset($names[1]) ? $names[1] : '';
 
         $activatedServices = [
-            'pickUpNotice' => (int) $info->SendRes,
-            'overdueNotice' => (int) $info->SendRemind,
-            'dueDateNotice' => (int) $info->SendRecall
+            'pickUpNotice' => (int)$info->SendRes,
+            'overdueNotice' => (int)$info->SendRemind,
+            'dueDateNotice' => (int)$info->SendRecall
         ];
 
         $messagingSettings = $this->processMessagingSettings($activatedServices);
 
         $fullData = [
-            'MainAddrLine1' => (string) $info->MainAddrLine1,
-            'MainZip' => (string) $info->MainZip,
-            'MainPlace' => (string) $info->MainPlace,
-            'MainCountry' => (string) $info->MainCountry,
-            'MainPhone' => (string) $info->MainPhone,
-            'Mobile' => (string) $info->Mobile,
-            'MainEmail' => (string) $info->MainEmail
+            'MainAddrLine1' => (string)$info->MainAddrLine1,
+            'MainZip' => (string)$info->MainZip,
+            'MainPlace' => (string)$info->MainPlace,
+            'MainCountry' => (string)$info->MainCountry,
+            'MainPhone' => (string)$info->MainPhone,
+            'Mobile' => (string)$info->Mobile,
+            'MainEmail' => (string)$info->MainEmail
         ];
 
         $user = [
-            'id' => (string) $info->PatronId,
+            'id' => (string)$info->PatronId,
             'cat_username' => $username,
             'cat_password' => $password,
             'lastname' => $lastname,
             'firstname' => $firstname,
-            'email' => (string) $info->MainEmail,
-            'address1' => (string) $info->MainAddrLine1,
-            'zip' => (string) $info->MainZip,
-            'city' => (string) $info->MainPlace,
-            'country' => (string) $info->MainCountry,
-            'phone' => (string) $info->MainPhone,
-            'smsnumber' => (string) $info->Mobile,
+            'email' => (string)$info->MainEmail,
+            'address1' => (string)$info->MainAddrLine1,
+            'zip' => (string)$info->MainZip,
+            'city' => (string)$info->MainPlace,
+            'country' => (string)$info->MainCountry,
+            'phone' => (string)$info->MainPhone,
+            'smsnumber' => (string)$info->Mobile,
             'phoneLocalCode' => null,
             'phoneAreaCode' => null,
             'major' => null,
@@ -468,22 +467,21 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         }
 
         foreach ($response->Loans->Loan as $loan) {
-            $itemId = (string) $loan->ItemId;
+            $itemId = (string)$loan->ItemId;
 
             $transactions[] = [
-                'id' => (string) $loan->MarcRecordId,
-                'item_id' => (string) $loan->LoanId,
-                'barcode' => (string) $loan->ItemId,
+                'id' => (string)$loan->MarcRecordId,
+                'item_id' => (string)$loan->LoanId,
+                'barcode' => (string)$loan->ItemId,
                 'duedate' =>  $this->dateFormat->convertToDisplayDate(
-                    'Y-m-d', (string) $loan->DueTime
+                    'Y-m-d', (string)$loan->DueTime
                 ),
-                'title' => (string) $loan->WorkTitle,
-                'author' => (string) $loan->WorkAuthor,
-                'renewable' => (string) $loan->CanBeRenewed == 'true' ? true : false,
-                'renewalCount' => (int) $loan->Renewals,
+                'title' => (string)$loan->WorkTitle,
+                'author' => (string)$loan->WorkAuthor,
+                'renewable' => (string)$loan->CanBeRenewed == 'true' ? true : false,
+                'renewalCount' => (int)$loan->Renewals,
                 'renewalLimit' => $this->config['Loans']['renewalLimit']
             ];
-
         }
         return $transactions;
     }
@@ -558,7 +556,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
             ];
             $response = $this->makeRequest('renewloan', $params);
 
-            $statusId = (string) $response->Result['id'];
+            $statusId = (string)$response->Result['id'];
 
             if ($statusId == '0') {
                 $success = true;
@@ -612,23 +610,23 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
 
         foreach ($response->Reservations->Reservation as $reservation) {
             $hold = [
-                'id' => (string) $reservation->MarcRecordId,
-                'type' => (string) $reservation->Status,
-                'location' => (string) $reservation->DeliverAt,
-                'reqnum' => (string) $reservation->ReservationId,
+                'id' => (string)$reservation->MarcRecordId,
+                'type' => (string)$reservation->Status,
+                'location' => (string)$reservation->DeliverAt,
+                'reqnum' => (string)$reservation->ReservationId,
                 'expire' => $this->dateFormat->convertToDisplayDate(
-                    'Y-m-d', (string) $reservation->ValidUntil
+                    'Y-m-d', (string)$reservation->ValidUntil
                 ),
                 'create' => $this->dateFormat->convertToDisplayDate(
-                    'Y-m-d', (string) $reservation->Activation
+                    'Y-m-d', (string)$reservation->Activation
                 ),
-                'position' => (string) $reservation->NumberInQueue,
+                'position' => (string)$reservation->NumberInQueue,
                 'available'
-                    => (string) $reservation->reservationStatus == 'fetchable',
-                'modifiable' => (string) $reservation->reservationStatus == 'active',
-                'item_id' => (string) $reservation->ItemId,
-                'requestId' => (string) $reservation->ReservationId,
-                'title' => (string) $reservation->WorkTitle
+                    => (string)$reservation->reservationStatus == 'fetchable',
+                'modifiable' => (string)$reservation->reservationStatus == 'active',
+                'item_id' => (string)$reservation->ItemId,
+                'requestId' => (string)$reservation->ReservationId,
+                'title' => (string)$reservation->WorkTitle
             ];
             $holdsList[] = $hold;
         }
@@ -667,7 +665,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         return true;
     }
 
-     /**
+    /**
      * Get request groups
      *
      * @param integer $bibId       BIB ID
@@ -693,12 +691,12 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         $response = $this->makeRequest('GetItem', $params);
 
         foreach ($response->MarcRecord->Item as $item) {
-            $unitId = (string) $item->BelongToUnitId;
+            $unitId = (string)$item->BelongToUnitId;
 
             if ($item->PermitReservation) {
                 $unit = [
                   'id'   => $unitId,
-                  'name' => (string) $item->BelongToUnit
+                  'name' => (string)$item->BelongToUnit
                 ];
                 $results[] = $unit;
             }
@@ -752,15 +750,15 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
 
         foreach ($response->Unit as $unit) {
             foreach ($unit->description as $description) {
-                $lang = (string) $description->attributes()['lang'];
+                $lang = (string)$description->attributes()['lang'];
 
                 if ($lang == $interfaceLanguage) {
-                    $unitName = (string) $description;
+                    $unitName = (string)$description;
                 }
             }
 
             $unit = [
-                'locationID'   => (string) $unit->UnitId,
+                'locationID'   => (string)$unit->UnitId,
                 'locationDisplay' => $unitName
             ];
             $results[] = $unit;
@@ -871,7 +869,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         ];
         $response = $this->makeRequest('addreservation', $params);
 
-        $statusId = (string) $response->Result['id'];
+        $statusId = (string)$response->Result['id'];
 
         if ($statusId == '0') {
             $success = true;
@@ -915,7 +913,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
             ];
             $response = $this->makeRequest('removereservation', $params);
 
-            $statusId = (string) $response->Result['id'];
+            $statusId = (string)$response->Result['id'];
 
             if ($statusId == '0') {
                 $results[$details] = [
@@ -927,7 +925,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
                 $results[$details] = [
                     'success' => false,
                     'status' => 'hold_cancel_fail',
-                    'sysMessage' => (string) $response->Result->Message
+                    'sysMessage' => (string)$response->Result->Message
                 ];
             }
         }
@@ -981,7 +979,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         $xml = $this->createPatronUpdateXML($patron, $details);
         $response = $this->makeRequest('PatronUpdWDelay', false, 'POST', $xml);
 
-        $statusId = (string) $response->Result['id'];
+        $statusId = (string)$response->Result['id'];
 
         if ($statusId != '0') {
             return  [
@@ -1013,7 +1011,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         $xml = $this->createPatronUpdateXML($patron, $details);
         $response = $this->makeRequest('PatronUpdWDelay', false, 'POST', $xml);
 
-        $statusId = (string) $response->Result['id'];
+        $statusId = (string)$response->Result['id'];
 
         if ($statusId != '0') {
             return  [
@@ -1045,7 +1043,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         $xml = $this->createPatronUpdateXML($patron, $details);
         $response = $this->makeRequest('PatronUpdWDelay', false, 'POST', $xml);
 
-        $statusId = (string) $response->Result['id'];
+        $statusId = (string)$response->Result['id'];
 
         if ($statusId != '0') {
             return  [
@@ -1106,7 +1104,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         $xml = $this->createPatronUpdateXML($patron, $request);
         $response = $this->makeRequest('PatronUpdWDelay', false, 'POST', $xml);
 
-        $statusId = (string) $response->Result['id'];
+        $statusId = (string)$response->Result['id'];
 
         if ($statusId != '0') {
             return  [
@@ -1144,7 +1142,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         ];
         $response = $this->makeRequest('changepatronpincode', $params);
 
-        $statusId = (string) $response->Result['id'];
+        $statusId = (string)$response->Result['id'];
 
         if ($statusId == '0') {
             return  [
@@ -1156,7 +1154,6 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
                'success' => false,
                'status' => $this->mapErrorCodeChangePassword($statusId)
             ];
-
         }
     }
 
@@ -1185,7 +1182,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
 
         foreach ($response->MessTypeChoices as $messTypeChoice) {
             $messagingService
-                = $messagingServiceMap[(string) $messTypeChoice['MessageType']];
+                = $messagingServiceMap[(string)$messTypeChoice['MessageType']];
             $messagingServiceLabel
                 = $this->translate("messaging_settings_type_$messagingService");
 
@@ -1198,7 +1195,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
             ];
 
             for ($i = 0; $i <= 3; $i++) {
-                if ('1' == substr((string) $messTypeChoice->Choices, $i, 1)) {
+                if ('1' == substr((string)$messTypeChoice->Choices, $i, 1)) {
                     // dueDateNotice supports messaging option 'none'
                     // instead of 'letter'
                     if (!$messagingService == 'dueDateNotice' && $i == 0) {
@@ -1319,7 +1316,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
             $client = $this->createHttpClient($urlParams);
             // Add web services database key
             $client->setParameterGet($params);
-        } else if (false !== $xml) {
+        } elseif (false !== $xml) {
             $client = $this->createHttpClient($urlParams);
             $client->getRequest()->getHeaders()
                 ->addHeaderLine('Content-Type', 'application/xml');
@@ -1447,7 +1444,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         return 'renew_denied';
     }
 
-     /**
+    /**
      * Map error codes of place hold
      *
      * @param string $errorCode as a string

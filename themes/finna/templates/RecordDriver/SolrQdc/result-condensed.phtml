@@ -198,7 +198,7 @@
                 <? endforeach; ?>
             <? endif; ?>
 
-            <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
+            <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
         </div>
 
         <? /* Saved lists */ ?>
@@ -211,7 +211,7 @@
         <? endif; ?>
       </div>
     </div>
-    <? if ($thumbnail ): ?>
+    <? if ($thumbnail): ?>
     <div class="media-<?=$thumbnailAlignment ?> resultThumb <?= $thumbnailAlignment == 'right' ? '' : 'hidden-sm hidden-md hidden-lg'?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />

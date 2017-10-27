@@ -27,6 +27,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Db\Table;
+
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Table\PluginManager;
 use Zend\Db\Adapter\Adapter;
@@ -397,7 +398,7 @@ class Transaction extends \VuFind\Db\Table\Gateway
             $dateStr = date("Y-m-d H:i:s", $timestamp);
             if ($status == self::STATUS_PAID) {
                 $t->paid = $dateStr;
-            } else if ($status == self::STATUS_COMPLETE) {
+            } elseif ($status == self::STATUS_COMPLETE) {
                 $t->registered = $dateStr;
             }
 

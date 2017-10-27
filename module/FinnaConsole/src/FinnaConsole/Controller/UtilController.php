@@ -49,7 +49,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     {
         return $this->runService('Finna\AccountExpirationReminders');
     }
-    
+
     /**
      * Sends due date reminders.
      *

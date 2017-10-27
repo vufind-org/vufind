@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Search\Favorites;
+
 use Finna\Controller\MyResearchController;
 
 /**
@@ -78,5 +79,4 @@ class Options extends \VuFind\Search\Favorites\Options
             $this->sortOptions[$key] = $value;
         }
     }
-
 }

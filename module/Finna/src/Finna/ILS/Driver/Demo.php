@@ -32,6 +32,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace Finna\ILS\Driver;
+
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -108,7 +109,7 @@ class Demo extends \VuFind\ILS\Driver\Demo
                 if (!$fine['payableOnline'] && !$fine['accruedFine']) {
                     $nonPayableReason
                         = 'online_payment_fines_contain_nonpayable_fees';
-                } else if ($fine['payableOnline']) {
+                } elseif ($fine['payableOnline']) {
                     $amount += $fine['balance'];
                 }
             }

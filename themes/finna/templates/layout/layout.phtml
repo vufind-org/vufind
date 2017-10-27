@@ -268,7 +268,7 @@ JS;
       }
     ?>
     <header class="hidden-print">
-      <? if (!empty($_SERVER['HTTP_USER_AGENT']) && preg_match('/(?i)msie [5-8]/',$_SERVER['HTTP_USER_AGENT'])): ?>
+      <? if (!empty($_SERVER['HTTP_USER_AGENT']) && preg_match('/(?i)msie [5-8]/', $_SERVER['HTTP_USER_AGENT'])): ?>
       <div class="container-fluid system-messages">
         <?=$this->translate('outdated_browser_message_html');?>
       </div>
@@ -320,14 +320,14 @@ JS;
                   <? if(count($this->layout()->breadcrumbs) > 1): ?>
                     <?=$this->render('breadcrumbs/multi.phtml', [
                         'parents' => $this->layout()->breadcrumbs,
-                        'title'   => $this->layout()->title,
-                        'end'     => $this->layout()->breadcrumbEnd,
-                        'from'    => $this->layout()->from
+                        'title' => $this->layout()->title,
+                        'end' => $this->layout()->breadcrumbEnd,
+                        'from' => $this->layout()->from
                       ]) ?>
                   <? else: ?>
                     <?=$this->render('breadcrumbs/default.phtml', [
                         'parents' => $this->layout()->breadcrumbs,
-                        'title'   => $this->layout()->title
+                        'title' => $this->layout()->title
                       ]) ?>
                   <? endif; ?>
                 <? else: ?>

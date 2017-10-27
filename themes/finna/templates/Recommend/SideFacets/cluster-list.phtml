@@ -1,14 +1,14 @@
-  <? foreach ($cluster['list'] as $i=>$thisFacet): ?>
+  <? foreach ($cluster['list'] as $i => $thisFacet): ?>
      <?
       if(strlen($thisFacet['displayText']) == 0) {
         $thisFacet['displayText'] = "-";
       }
     ?>
-    <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtmlAttr($title).' hidden'; ?>
+    <? $moreClass = 'narrowGroupHidden-' . $this->escapeHtmlAttr($title) . ' hidden'; ?>
     <? if ($i == $facets_before_more): ?>
-      <? $idAndClass = 'id="more-narrowGroupHidden-'.$this->escapeHtmlAttr($title).'" class="list-group-item less-narrow-toggle"'; ?>
+      <? $idAndClass = 'id="more-narrowGroupHidden-' . $this->escapeHtmlAttr($title) . '" class="list-group-item less-narrow-toggle"'; ?>
       <? if ($facetLightbox = $options->getFacetListAction()): ?>
-        <? $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&facet='.$title.'&facetop='.$thisFacet['operator'].'&facetexclude='.($allowExclude ? 1 : 0); ?>
+        <? $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&facet=' . $title . '&facetop=' . $thisFacet['operator'] . '&facetexclude=' . ($allowExclude ? 1 : 0); ?>
       <? else: ?>
         <? $moreUrl = '#'; ?>
       <? endif; ?>

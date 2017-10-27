@@ -27,6 +27,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace Finna\Search\Solr;
+
 use VuFind\Solr\Utils;
 
 /**

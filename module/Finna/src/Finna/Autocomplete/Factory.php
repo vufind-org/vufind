@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace Finna\Autocomplete;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

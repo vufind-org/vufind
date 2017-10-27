@@ -29,11 +29,11 @@
  */
 namespace FinnaSearch\Backend\Solr;
 
+use VuFindSearch\Backend\Solr\Response\Json\Terms;
+
 use VuFindSearch\ParamBag;
 
 use VuFindSearch\Response\RecordCollectionInterface;
-
-use VuFindSearch\Backend\Solr\Response\Json\Terms;
 
 /**
  * SOLR backend.
@@ -65,7 +65,7 @@ class Backend extends \VuFindSearch\Backend\Solr\Backend
             $response = $this->connector->retrieve($id, $params);
             $results = json_decode($response, true);
             if (!empty($results['response']['docs'][0])) {
-                $params = $defaultParams ? clone($defaultParams) : new ParamBag();
+                $params = $defaultParams ? clone $defaultParams : new ParamBag();
                 $this->injectResponseWriter($params);
                 $params->mergeWith(
                     $this->getSimilarBuilder()
@@ -75,7 +75,7 @@ class Backend extends \VuFindSearch\Backend\Solr\Backend
                 $response = $this->connector->search($params);
             }
         } else {
-            $params = $defaultParams ? clone($defaultParams) : new ParamBag();
+            $params = $defaultParams ? clone $defaultParams : new ParamBag();
             $this->injectResponseWriter($params);
             $params->mergeWith($this->getSimilarBuilder()->build($id, $params));
             $response = $this->connector->similar($id, $params);

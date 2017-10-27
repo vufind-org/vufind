@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use VuFind\Exception\Date as DateException;
 use VuFind\Exception\ILS as ILSException;
 
@@ -462,7 +463,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if (is_numeric($dueTimeStamp)) {
                 if ($now > $dueTimeStamp) {
                     $dueStatus = 'overdue';
-                } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
+                } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
                     $dueStatus = 'due';
                 }
             }
@@ -625,7 +626,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if (is_numeric($dueTimeStamp)) {
                 if ($now > $dueTimeStamp) {
                     $dueStatus = 'overdue';
-                } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
+                } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
                     $dueStatus = 'due';
                 }
             }
@@ -1725,7 +1726,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         static $cachedRecords = [];
         if (!isset($cachedRecords[$id])) {
-             $cachedRecords[$id] = $this->makeRequest(
+            $cachedRecords[$id] = $this->makeRequest(
                  ['v1', 'biblios', $id]
              );
         }

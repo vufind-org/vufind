@@ -207,14 +207,13 @@ class Paytrail extends BaseHandler
                 'transactionId' => $orderNum,
                 'amount' => $amount
             ];
-        } else if ($status == self::PAYMENT_FAILURE) {
+        } elseif ($status == self::PAYMENT_FAILURE) {
             $this->setTransactionCancelled($orderNum);
             return 'online_payment_canceled';
         } else {
             $this->setTransactionUnknownResponse($orderNum, $status);
             return 'online_payment_failed';
         }
-
     }
 
     /**

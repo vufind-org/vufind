@@ -29,8 +29,8 @@
 namespace Finna\ILS\Driver;
 
 use Finna\ILS\SIP2;
-use VuFind\Exception\ILS as ILSException;
 use PDO;
+use VuFind\Exception\ILS as ILSException;
 use Zend\Validator\EmailAddress as EmailAddressValidator;
 
 /**
@@ -182,7 +182,6 @@ trait VoyagerFinna
             $where = array_merge(
                 $where, ["LINE_ITEM_STATUS.LINE_ITEM_STATUS_DESC in ($statuses)"]
             );
-
         }
 
         if (!empty($this->config['Holdings']['order_formats'])) {
@@ -205,7 +204,6 @@ trait VoyagerFinna
                     "BIB_TEXT.BIB_FORMAT in ($formats)"
                 ]
             );
-
         }
 
         $sqlArray = [
@@ -466,7 +464,7 @@ trait VoyagerFinna
                     'secondary_login_field_label' => $label
                 ];
             }
-        } else if ($function == 'onlinePayment'
+        } elseif ($function == 'onlinePayment'
             && isset($this->config['OnlinePayment'])
         ) {
             return $this->config['OnlinePayment'];
@@ -525,7 +523,7 @@ trait VoyagerFinna
                 $addr1 = utf8_encode($row['ADDRESS_LINE1']);
                 if ($validator->isValid($addr1)) {
                     $patron['email'] = $addr1;
-                } else if (!isset($patron['address1'])) {
+                } elseif (!isset($patron['address1'])) {
                     if (!empty($addr1)) {
                         $patron['address1'] = $addr1;
                     }
@@ -556,7 +554,7 @@ trait VoyagerFinna
                     }
                 }
             }
-            return (empty($patron) ? null : $patron);
+            return empty($patron) ? null : $patron;
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
@@ -602,7 +600,7 @@ trait VoyagerFinna
                 if (!$fine['payableOnline'] && !$fine['accruedFine']) {
                     $nonPayableReason
                         = 'online_payment_fines_contain_nonpayable_fees';
-                } else if ($fine['payableOnline']) {
+                } elseif ($fine['payableOnline']) {
                     $amount += $fine['balance'];
                 }
             }

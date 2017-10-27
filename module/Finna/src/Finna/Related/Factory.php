@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
  */
 namespace Finna\Related;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Search;
+
 use VuFind\Search\QueryAdapter;
 
 /**
@@ -36,7 +37,7 @@ use VuFind\Search\QueryAdapter;
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
-*/
+ */
 trait FinnaParams
 {
     /**

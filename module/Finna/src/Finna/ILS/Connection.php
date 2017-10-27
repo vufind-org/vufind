@@ -29,6 +29,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace Finna\ILS;
+
 use VuFind\Exception\ILS as ILSException;
 
 /**

@@ -28,8 +28,8 @@
  * @link     https://vufind.org Main Site
  */
 namespace Finna\Controller;
-use VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Exception\Mail as MailException;
+
+use VuFind\Exception\Mail as MailException;
 
 /**
  * Book Bag / Bulk Action Controller
@@ -47,7 +47,7 @@ class CartController extends \VuFind\Controller\CartController
      * Email a batch of records.
      *
      * @return mixed
-    */
+     */
     public function emailAction()
     {
         // Retrieve ID list:

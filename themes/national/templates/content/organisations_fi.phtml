@@ -14,15 +14,15 @@
 <div class="row">
   <div class="col-sm-4">
     <h4><?=$this->TransEsc('organisation_archives', ['%%cnt%%' => count($organisationList['arc'])]) ?></h4>
-    <?= $this->partial('content/organisation-list.phtml', array('list' => $organisationList['arc'])); ?>
+    <?= $this->partial('content/organisation-list.phtml', ['list' => $organisationList['arc']]); ?>
   </div>
   <div class="col-sm-4">
     <h4><?=$this->TransEsc('organisation_libraries', ['%%cnt%%' => count($organisationList['lib'])]) ?></h4>
-    <?= $this->partial('content/organisation-list.phtml', array('list' => $organisationList['lib'])); ?>
+    <?= $this->partial('content/organisation-list.phtml', ['list' => $organisationList['lib']]); ?>
   </div>
   <div class="col-sm-4">
     <h4><?=$this->TransEsc('organisation_museums', ['%%cnt%%' => count($organisationList['mus'])]) ?></h4>
-    <?= $this->partial('content/organisation-list.phtml', array('list' => $organisationList['mus'])); ?>
+    <?= $this->partial('content/organisation-list.phtml', ['list' => $organisationList['mus']]); ?>
   </div>
 </div>
 </div>

@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace FinnaTheme\View\Helper;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

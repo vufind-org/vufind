@@ -28,6 +28,7 @@
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
 namespace Finna\RecordTab;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

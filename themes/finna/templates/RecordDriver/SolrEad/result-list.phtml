@@ -31,7 +31,7 @@ if ($img):
             $summTitle = $this->driver->getTitle();
             if (!empty($summHighlightedTitle)) {
               echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-            } else if (!empty($summTitle)) {
+            } elseif (!empty($summTitle)) {
               echo $this->escapeHtml($this->truncate($summTitle, 180));
             } else {
               echo $this->transEsc('Title not available');
@@ -146,7 +146,7 @@ if ($img):
             <? endif; ?>
 
             <? $openUrl = $this->driver->getOpenURL(); ?>
-            <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
+            <?=$openUrl?'<span class="Z3988" title="' . $this->escapeHtmlAttr($openUrl) . '"></span>':''?>
         </div>
         <div class="clearfix visible-xs"></div>
         <? if ($this->userlist()->getMode() !== 'disabled'): ?>
@@ -157,7 +157,7 @@ if ($img):
         <? endif; ?>
       </div>
     </div>
-    <? if ($thumbnail ): ?>
+    <? if ($thumbnail): ?>
     <div class="media-<?=$thumbnailAlignment ?> resultThumb <?=$this->escapeHtmlAttr($coverDetails['size'])?> <?= $thumbnailAlignment == 'right' ? '' : 'hidden-sm hidden-md hidden-lg'?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />

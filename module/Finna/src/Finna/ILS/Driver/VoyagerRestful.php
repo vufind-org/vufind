@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace Finna\ILS\Driver;
-use PDO, PDOException;
+
+use PDO;
+use PDOException;
 
 /**
  * Voyager Restful ILS Driver

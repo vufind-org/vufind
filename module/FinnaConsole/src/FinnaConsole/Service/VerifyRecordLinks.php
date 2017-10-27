@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace FinnaConsole\Service;
+
 use Zend\Db\Sql\Select;
 
 /**
@@ -100,7 +101,7 @@ class VerifyRecordLinks extends AbstractService implements ConsoleServiceInterfa
             );
 
             foreach ($commentsRecord as $record) {
-                list($source,) = explode('.', $record->record_id, 2);
+                list($source, ) = explode('.', $record->record_id, 2);
                 if ($source == 'pci') {
                     continue;
                 }

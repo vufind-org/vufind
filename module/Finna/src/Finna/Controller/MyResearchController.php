@@ -28,6 +28,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Controller;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Session\SessionManager;
 
@@ -958,7 +959,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     throw new \Exception('Invalid parameters.');
                 }
                 $search->setSchedule(0);
-            } else if ($type == 'reminder') {
+            } elseif ($type == 'reminder') {
                 $user = $this->getTable('User')->select(['id' => $id])->current();
                 if (!$user) {
                     throw new \Exception('Invalid parameters.');

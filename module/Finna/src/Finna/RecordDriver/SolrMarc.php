@@ -509,7 +509,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
      */
     public function getFilteredXML()
     {
-        $record = clone($this->getMarcRecord());
+        $record = clone $this->getMarcRecord();
         $record->deleteFields('520');
         $componentIds = $this->getFieldArray('979', 'a');
         if ($componentIds) {

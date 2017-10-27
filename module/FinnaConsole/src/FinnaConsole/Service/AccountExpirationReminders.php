@@ -29,13 +29,13 @@
  */
 namespace FinnaConsole\Service;
 
+use DateInterval;
+use DateTime;
 use Zend\Db\Sql\Select;
 use Zend\ServiceManager\ServiceManager;
+
 use Zend\View\Resolver\AggregateResolver;
 use Zend\View\Resolver\TemplatePathStack;
-
-use DateTime;
-use DateInterval;
 
 /**
  * Console service for reminding users x days before account expiration
@@ -224,7 +224,7 @@ class AccountExpirationReminders extends AbstractService
      */
     protected function getUsersToRemind($days, $remindDaysBefore, $frequency)
     {
-        $expireDate = date('Y-m-d', strtotime(sprintf('-%d days', (int) $days)));
+        $expireDate = date('Y-m-d', strtotime(sprintf('-%d days', (int)$days)));
 
         $users = $this->table->select(
             function (Select $select) use ($expireDate) {

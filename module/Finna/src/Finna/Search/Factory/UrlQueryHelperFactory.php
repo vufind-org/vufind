@@ -28,6 +28,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace Finna\Search\Factory;
+
 use Finna\Search\UrlQueryHelper;
 use VuFind\Search\Base\Params;
 

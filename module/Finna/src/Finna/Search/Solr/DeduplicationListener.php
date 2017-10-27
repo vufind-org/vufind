@@ -27,6 +27,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Search\Solr;
+
 use Zend\EventManager\EventInterface;
 
 /**

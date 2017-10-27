@@ -120,7 +120,7 @@
                 foreach ($field as $j => $subfield) {
                   $result = $this->escapeHtml($class) . ' ' . $this->escapeHtml($subfield);
                   ?>
-                  <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><? if (!$this->translationEmpty('classification::'.$result)): ?><?=$this->transEsc('classification::'.$result).'<span class="classification-detail"> (' . $result . ')</span>' ;?><? else: ?><?= $result; ?><? endif; ?></a>
+                  <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><? if (!$this->translationEmpty('classification::' . $result)): ?><?=$this->transEsc('classification::' . $result) . '<span class="classification-detail"> (' . $result . ')</span>';?><? else: ?><?= $result; ?><? endif; ?></a>
               <?
                 }
               }
@@ -215,7 +215,7 @@
               <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span> <span class="sr-only hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
             <? endif; ?>
 
-            <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
+            <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
         </div>
           <? /* Hierarchy tree link */ ?>
           <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>

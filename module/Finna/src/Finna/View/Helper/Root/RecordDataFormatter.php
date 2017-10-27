@@ -44,12 +44,12 @@ namespace Finna\View\Helper\Root;
 class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
 {
     /**
-    * Filter unnecessary fields from Marc records.
-    *
-    * @param array $coreFields data to filter.
-    *
-    * @return array
-    */
+     * Filter unnecessary fields from Marc records.
+     *
+     * @param array $coreFields data to filter.
+     *
+     * @return array
+     */
     public function filterMarcFields($coreFields)
     {
         $filter = [
@@ -66,12 +66,12 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
     }
 
     /**
-    * Filter unnecessary fields from Lido records.
-    *
-    * @param array $coreFields data to filter.
-    *
-    * @return array
-    */
+     * Filter unnecessary fields from Lido records.
+     *
+     * @param array $coreFields data to filter.
+     *
+     * @return array
+     */
     public function filterLidoFields($coreFields)
     {
         $filter = [
@@ -88,12 +88,12 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
     }
 
     /**
-    * Filter unnecessary fields from QDC records.
-    *
-    * @param array $coreFields data to filter.
-    *
-    * @return array
-    */
+     * Filter unnecessary fields from QDC records.
+     *
+     * @param array $coreFields data to filter.
+     *
+     * @return array
+     */
     public function filterQDCFields($coreFields)
     {
         $filter = [
@@ -110,12 +110,12 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
     }
 
     /**
-    * Filter unnecessary fields from EAD records.
-    *
-    * @param array $coreFields data to filter.
-    *
-    * @return array
-    */
+     * Filter unnecessary fields from EAD records.
+     *
+     * @param array $coreFields data to filter.
+     *
+     * @return array
+     */
     public function filterEADFields($coreFields)
     {
         $filter = [
@@ -130,12 +130,12 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
     }
 
     /**
-    * Filter unnecessary fields from Primo records.
-    *
-    * @param array $coreFields data to filter.
-    *
-    * @return array
-    */
+     * Filter unnecessary fields from Primo records.
+     *
+     * @param array $coreFields data to filter.
+     *
+     * @return array
+     */
     public function filterPrimoFields($coreFields)
     {
         $filter = [
@@ -150,12 +150,12 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
     }
 
     /**
-    * Filter unnecessary fields from Primo records.
-    *
-    * @param array $coreFields data to filter.
-    *
-    * @return array
-    */
+     * Filter unnecessary fields from Primo records.
+     *
+     * @param array $coreFields data to filter.
+     *
+     * @return array
+     */
     public function filterForwardFields($coreFields)
     {
         $filter = [

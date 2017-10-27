@@ -27,6 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace FinnaConsole\Service;
+
 use Finna\Db\Table\Resource;
 
 /**

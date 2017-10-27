@@ -94,7 +94,7 @@ class RecordDataFormatterFactory
             [
                 'context' => ['class' => 'recordAuthors'],
                 'labelFunction' => function () {
-                     return 'Contributors';
+                    return 'Contributors';
                 }
             ]
         );

@@ -5,7 +5,7 @@
   <?
     $content = null;
     if ($type === 'list' || $type === 'list grid') {
-      $content = $ind === 4 ? '&hellip;' : $ind+1;
+      $content = $ind === 4 ? '&hellip;' : $ind + 1;
     } else {
       $content = '<span data-src="' . $this->escapeHtmlAttr($img['urls']['small']) . '">IMG</span>';
     }

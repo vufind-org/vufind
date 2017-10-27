@@ -140,7 +140,7 @@ class OrganisationsList extends \Zend\View\Helper\AbstractHelper implements
                     }
                     usort(
                         $list[$sector],
-                        function ($a,$b) {
+                        function ($a, $b) {
                             return strtolower($a['name']) > strtolower($b['name']);
                         }
                     );
@@ -158,5 +158,4 @@ class OrganisationsList extends \Zend\View\Helper\AbstractHelper implements
 
         return $list;
     }
-
 }

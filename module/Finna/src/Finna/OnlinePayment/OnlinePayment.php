@@ -27,6 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\OnlinePayment;
+
 use Zend\I18n\Translator\TranslatorInterface;
 
 /**

@@ -306,7 +306,7 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
      */
     public function getRecord($recordId, $inst_code = null, $onCampus = false)
     {
-        list(,$recordId) = explode('.', $recordId, 2);
+        list(, $recordId) = explode('.', $recordId, 2);
         return parent::getRecord($recordId, $inst_code, $onCampus);
     }
 
@@ -324,7 +324,7 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
     {
         $recordIds = array_map(
             function ($recordId) {
-                list(,$recordId) = explode('.', $recordId, 2);
+                list(, $recordId) = explode('.', $recordId, 2);
                 return $recordId;
             },
             $recordIds

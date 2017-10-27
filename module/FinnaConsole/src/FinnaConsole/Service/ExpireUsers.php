@@ -27,6 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace FinnaConsole\Service;
+
 use Zend\Db\Sql\Select;
 
 /**
@@ -67,7 +68,7 @@ class ExpireUsers extends AbstractService
      */
     public function run($arguments)
     {
-        if (!isset($arguments[0]) || (int) $arguments[0] < 180) {
+        if (!isset($arguments[0]) || (int)$arguments[0] < 180) {
             echo "Usage:\n  php index.php util expire_users <days>\n\n"
                 . "  Anonymizes all user accounts that have not been logged into\n"
                 . "  for past <days> days. Values below 180 are not accepted.\n";
@@ -101,7 +102,7 @@ class ExpireUsers extends AbstractService
      */
     protected function getExpiredUsers($days)
     {
-        $expireDate = date('Y-m-d', strtotime(sprintf('-%d days', (int) $days)));
+        $expireDate = date('Y-m-d', strtotime(sprintf('-%d days', (int)$days)));
 
         return $this->table->select(
             function (Select $select) use ($expireDate) {

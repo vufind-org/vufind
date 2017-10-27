@@ -29,7 +29,7 @@ if ($img):
             $summTitle = $this->driver->getTitle();
             if (!empty($summHighlightedTitle)) {
               echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-            } else if (!empty($summTitle)) {
+            } elseif (!empty($summTitle)) {
               echo $this->escapeHtml($this->truncate($summTitle, 180));
             } else {
               echo $this->transEsc('Title not available');
@@ -104,7 +104,7 @@ if ($img):
             <? endif; ?>
 
             <? $openUrl = $this->driver->getOpenURL(); ?>
-            <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
+            <?=$openUrl?'<span class="Z3988" title="' . $this->escapeHtmlAttr($openUrl) . '"></span>':''?>
         </div>
       </div>
     </div>

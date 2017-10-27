@@ -28,6 +28,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace FinnaTheme\View\Helper;
+
 use Finna\Cache\Manager;
 use Finna\Db\Table\FinnaCache;
 use VuFindTheme\ThemeInfo;

@@ -244,7 +244,7 @@ class DueDateReminders extends AbstractService
                     "$remindCnt reminders and $errorCnt errors to send for user"
                     . " {$user->username} (id {$user->id})"
                 );
-                 $this->sendReminder($user, $remindLoans, $errors);
+                $this->sendReminder($user, $remindLoans, $errors);
             } else {
                 $this->msg(
                     "No loans to remind for user {$user->username} (id {$user->id})"
@@ -409,7 +409,7 @@ class DueDateReminders extends AbstractService
             return false;
         }
 
-        list($userInstitution,) = explode(':', $user['username'], 2);
+        list($userInstitution, ) = explode(':', $user['username'], 2);
 
         if (!$this->currentInstitution
             || $userInstitution != $this->currentInstitution
@@ -550,7 +550,7 @@ class DueDateReminders extends AbstractService
      */
     protected function getUsage()
     {
-// @codingStandardsIgnoreStart
+        // @codingStandardsIgnoreStart
         return <<<EOT
 Usage:
   php index.php util due_date_reminders <vufind_dir> <view_dir>
@@ -560,6 +560,6 @@ Usage:
     view_dir      View directory
 
 EOT;
-// @codingStandardsIgnoreEnd
+        // @codingStandardsIgnoreEnd
     }
 }

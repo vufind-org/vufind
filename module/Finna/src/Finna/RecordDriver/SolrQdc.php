@@ -167,7 +167,7 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
      */
     public function getFilteredXML()
     {
-        $record = clone($this->getSimpleXML());
+        $record = clone $this->getSimpleXML();
         while ($record->abstract) {
             unset($record->abstract[0]);
         }
@@ -229,9 +229,9 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
      *   <ul>routeParams: Parameters for route (optional)</ul>
      *   <ul>queryString: Query params to append after building route (optional)</ul>
      * </li>
-    *
-    * @return array
-    */
+     *
+     * @return array
+     */
     public function getURLs()
     {
         $urls = [];

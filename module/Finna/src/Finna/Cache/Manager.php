@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace Finna\Cache;
+
 use Zend\Config\Config;
 
 /**

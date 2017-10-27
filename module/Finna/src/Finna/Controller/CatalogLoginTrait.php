@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace Finna\Controller;
+
 use VuFind\Exception\ILS as ILSException;
 
 /**

@@ -28,7 +28,8 @@
  * @link     https://vufind.org Main Page
  */
 namespace Finna\Auth;
-use VuFind\Exception\ILS as ILSException, VuFind\ILS\Connection as ILSConnection;
+
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Class for managing ILS-specific authentication.

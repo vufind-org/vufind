@@ -29,7 +29,7 @@
             <? endforeach; ?>
             <? if ($service == 'dueDateAlert'): ?>
               <? foreach ($this->emailDays as $day => $label): ?>
-                <option value="<?=$day+1 ?>"<? if ($data['numOfDays'] == $day+1): ?> selected<? endif; ?>><?=$this->escapeHtml($label) ?></option>
+                <option value="<?=$day + 1 ?>"<? if ($data['numOfDays'] == $day + 1): ?> selected<? endif; ?>><?=$this->escapeHtml($label) ?></option>
               <? endforeach; ?>
             <? endif; ?>
           </select>

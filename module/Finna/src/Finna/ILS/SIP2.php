@@ -47,10 +47,10 @@ class SIP2 extends \sip2
      *
      * @return bool
      */
-// @codingStandardsIgnoreStart
+    // @codingStandardsIgnoreStart
     public function _check_crc($message)
     {
-// @codingStandardsIgnoreEnd
+        // @codingStandardsIgnoreEnd
         if (!$this->error_detection) {
             return true;
         }

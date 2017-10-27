@@ -10,7 +10,7 @@
         $result = $class . ' ' . $subfield;
         $classForTranslation = 'classification::' . str_replace('::', ' ', $result);
         ?>
-        <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><? if (!$this->translationEmpty($classForTranslation)): ?><?=$this->transEsc($classForTranslation).'<span class="classification-detail"> (' . $this->escapeHtml($result) . ')</span>' ;?><? else: ?><?=$this->escapeHtml($result); ?><? endif; ?></a><br/>
+        <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><? if (!$this->translationEmpty($classForTranslation)): ?><?=$this->transEsc($classForTranslation) . '<span class="classification-detail"> (' . $this->escapeHtml($result) . ')</span>';?><? else: ?><?=$this->escapeHtml($result); ?><? endif; ?></a><br/>
       <?
       }
     }

@@ -27,8 +27,9 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Service;
-use Zend\Console\Console,
-    Zend\ServiceManager\ServiceManager;
+
+use Zend\Console\Console;
+use Zend\ServiceManager\ServiceManager;
 
 /**
  * Factory for various top-level VuFind services.

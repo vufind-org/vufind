@@ -26,10 +26,8 @@
  * @link     https://github.com/dmj/vf2-proxy
  */
 namespace Finna;
-use Zend\EventManager\StaticEventManager,
-    Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent,
-    Zend\Console\Console;
+
+use Zend\Mvc\MvcEvent;
 
 /**
  * Module for storing local overrides for Finna.

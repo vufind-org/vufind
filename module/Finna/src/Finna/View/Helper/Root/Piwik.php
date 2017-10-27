@@ -170,7 +170,6 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
             $vars['RecordAvailableOnline'] = $online ? 'yes' : 'no';
             $vars['RecordData' . ($online ? 'Online' : 'Offline')]
                 = $vars['RecordData'];
-
         }
 
         return $vars;

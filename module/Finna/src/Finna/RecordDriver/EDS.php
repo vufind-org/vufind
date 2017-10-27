@@ -238,14 +238,14 @@ class EDS extends \VuFind\RecordDriver\EDS
         $formats = $this->getFormats();
         if (in_array('Book', $formats)) {
             return 'Book';
-        } else if (in_array('Academic Journal', $formats)
+        } elseif (in_array('Academic Journal', $formats)
             || in_array('Magazine', $formats)
             || in_array('Periodical', $formats)
         ) {
             return 'Article';
-        } else if (strlen($this->getCleanISSN()) > 0) {
+        } elseif (strlen($this->getCleanISSN()) > 0) {
             return 'Journal';
-        } else if (strlen($this->getCleanISBN()) > 0) {
+        } elseif (strlen($this->getCleanISBN()) > 0) {
             return 'Book';
         }
         return 'UnknownFormat';

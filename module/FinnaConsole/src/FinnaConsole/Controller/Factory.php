@@ -28,6 +28,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace FinnaConsole\Controller;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

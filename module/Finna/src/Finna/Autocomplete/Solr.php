@@ -154,7 +154,7 @@ class Solr extends \VuFind\Autocomplete\Solr
         $this->facetSettings = $settings;
         $this->facetTranslations = $facetConfig->Results->toArray();
         foreach ($facetConfig->CheckboxFacets->toArray() as $field => $val) {
-            list($field,) = explode(':', $field);
+            list($field, ) = explode(':', $field);
             $this->facetTranslations[$field] = $val;
         }
 
@@ -319,7 +319,7 @@ class Solr extends \VuFind\Autocomplete\Solr
                 $discard = $this->searchObject->getParams()->hasFilter(
                     "$field:" . $value['value']
                 );
-            } else if (isset($value['isApplied']) && $value['isApplied']) {
+            } elseif (isset($value['isApplied']) && $value['isApplied']) {
                 $discard = true;
             }
             if ($discard) {
@@ -420,7 +420,7 @@ class Solr extends \VuFind\Autocomplete\Solr
             $value = $item['value'];
             if (is_bool($value)) {
                 $value = (int)$value;
-            } else if (in_array($value, ['true', 'false'])) {
+            } elseif (in_array($value, ['true', 'false'])) {
                 $value = $value === 'true' ? '1' : '0';
             }
             $item['value'] = $value;

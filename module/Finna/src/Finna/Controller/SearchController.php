@@ -27,8 +27,8 @@
  */
 namespace Finna\Controller;
 
-use Finna\Search\Solr\Options,
-    VuFindCode\ISBN;
+use Finna\Search\Solr\Options;
+use VuFindCode\ISBN;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -360,7 +360,7 @@ class SearchController extends \VuFind\Controller\SearchController
                 $isbn = isset($request['rft_isbn']) ? $request['rft_isbn'] : '';
                 if (isset($request['rft_btitle'])) {
                     $title = $request['rft_btitle'];
-                } else if (isset($request['rft_title'])) {
+                } elseif (isset($request['rft_title'])) {
                     $title = $request['rft_title'];
                 }
             } else {
@@ -371,7 +371,7 @@ class SearchController extends \VuFind\Controller\SearchController
                     ? $request['rft_atitle'] : '';
                 if (isset($request['rft_jtitle'])) {
                     $title = $request['rft_jtitle'];
-                } else if (isset($request['rft_title'])) {
+                } elseif (isset($request['rft_title'])) {
                     $title = $request['rft_title'];
                 }
             }
@@ -380,7 +380,7 @@ class SearchController extends \VuFind\Controller\SearchController
             }
             if (isset($request['rft_aufirst'])) {
                 $author .= ' ' . $request['rft_aufirst'];
-            } else if (isset($request['rft_auinit'])) {
+            } elseif (isset($request['rft_auinit'])) {
                 $author .= ' ' . $request['rft_auinit'];
             }
             $issn = isset($request['rft_issn']) ? $request['rft_issn'] : '';
@@ -399,9 +399,9 @@ class SearchController extends \VuFind\Controller\SearchController
             $atitle = isset($request['atitle']) ? $request['atitle'] : '';
             if (isset($request['jtitle'])) {
                 $title = $request['jtitle'];
-            } else if (isset($request['btitle'])) {
+            } elseif (isset($request['btitle'])) {
                 $title = $request['btitle'];
-            } else if (isset($request['title'])) {
+            } elseif (isset($request['title'])) {
                 $title = $request['title'];
             }
             if (isset($request['aulast'])) {
@@ -409,7 +409,7 @@ class SearchController extends \VuFind\Controller\SearchController
             }
             if (isset($request['aufirst'])) {
                 $author .= ' ' . $request['aufirst'];
-            } else if (isset($request['auinit'])) {
+            } elseif (isset($request['auinit'])) {
                 $author .= ' ' . $request['auinit'];
             }
         }

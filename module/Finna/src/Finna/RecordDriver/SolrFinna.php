@@ -680,9 +680,9 @@ trait SolrFinna
             return 'Article';
         } elseif (in_array('0/Journal/', $formats)) {
             return 'Journal';
-        } else if (strlen($this->getCleanISSN()) > 0) {
+        } elseif (strlen($this->getCleanISSN()) > 0) {
             return 'Journal';
-        } else if (strlen($this->getCleanISBN()) > 0) {
+        } elseif (strlen($this->getCleanISBN()) > 0) {
             return 'Book';
         } elseif (isset($formats[0])) {
             $format = explode('/', $formats[0]);

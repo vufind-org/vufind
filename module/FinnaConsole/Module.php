@@ -26,6 +26,7 @@
  * @link     https://github.com/dmj/vf2-proxy
  */
 namespace FinnaConsole;
+
 use Zend\Console\Adapter\AdapterInterface as Console;
 
 /**

@@ -55,7 +55,6 @@ class PermissionManager extends \VuFind\Role\PermissionManager
                 $permissions = array_merge(
                     $permissions, (array)$value['permission']
                 );
-
             }
         }
         return $permissions;

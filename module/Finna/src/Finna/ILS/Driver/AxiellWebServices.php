@@ -28,15 +28,15 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace Finna\ILS\Driver;
-use SoapClient, SoapFault, SoapHeader, File_MARC, PDO, PDOException, DOMDocument,
-    VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException,
-    VuFind\I18n\Translator\TranslatorAwareInterface as TranslatorAwareInterface,
-    Zend\Validator\EmailAddress as EmailAddressValidator;
-use VuFind\Exception\Date;
-use Zend\Db\Sql\Ddl\Column\Boolean;
+
+use DOMDocument;
+use SoapClient;
 use VuFind\Config\Locator;
-use VuFind\View\Helper\Root\Translate;
+use VuFind\Exception\Date;
+use VuFind\Exception\Date as DateException;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\Translator\TranslatorAwareInterface as TranslatorAwareInterface;
+use Zend\Db\Sql\Ddl\Column\Boolean;
 
 /**
  * Axiell Web Services ILS Driver
@@ -74,10 +74,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     protected $defaultPickUpLocation;
 
     /**
-    * Excluded pickup locations
-    *
-    * @var array
-    */
+     * Excluded pickup locations
+     *
+     * @var array
+     */
     protected $excludePickUpLocations;
 
     /**
@@ -1326,15 +1326,12 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 foreach ($sendMethods as $method) {
                     $methodType = isset($method->sendMethod->value)
                         ? $this->mapCode($method->sendMethod->value) : 'none';
-                    $userCached['messagingServices'][$serviceType]['sendMethods']
-                        [$methodType]['active']
+                    $userCached['messagingServices'][$serviceType]['sendMethods'][$methodType]['active']
                             = isset($method->sendMethod->isActive)
                             && $method->sendMethod->isActive === 'yes';
                 }
 
-                foreach ($userCached['messagingServices'][$serviceType]
-                    ['sendMethods'] as $key => &$data) {
-
+                foreach ($userCached['messagingServices'][$serviceType]['sendMethods'] as $key => &$data) {
                     $methodLabel
                         = $this->translate("messaging_settings_method_$key");
 
@@ -2125,7 +2122,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     {
         $editionA = $a['journalInfo']['edition'];
         $editionB = $b['journalInfo']['edition'];
-        if ($editionA ==  $editionB) {
+        if ($editionA == $editionB) {
             $a['location'] = $a['journalInfo']['location'];
             $b['location'] = $b['journalInfo']['location'];
             return $this->defaultHoldingsSortFunction($a, $b);
@@ -2192,9 +2189,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         } else {
             $key = 'branch_id';
             $sortOrder = $this->holdingsBranchOrder;
-                $locationA
+            $locationA
                     = $a['location'] . ' ' . $a['branch'] . ' ' . $a['department'];
-                $locationB
+            $locationB
                     = $b['location'] . ' ' . $b['branch'] . ' ' . $b['department'];
         }
 

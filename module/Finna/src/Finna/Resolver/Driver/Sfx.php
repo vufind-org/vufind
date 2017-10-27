@@ -109,5 +109,4 @@ class Sfx extends \VuFind\Resolver\Driver\Sfx
         }
         return $records;
     }
-
 }

@@ -28,11 +28,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Record;
-use VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\RecordDriver\PluginManager as RecordFactory,
-    VuFindSearch\Service as SearchService,
-    VuFind\Record\Cache,
-    Finna\Db\Table\Resource;
+
+use VuFind\Exception\RecordMissing as RecordMissingException;
 
 /**
  * Record loader

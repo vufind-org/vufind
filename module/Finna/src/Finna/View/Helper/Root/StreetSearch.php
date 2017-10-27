@@ -50,5 +50,4 @@ class StreetSearch extends \Zend\View\Helper\AbstractHelper
     {
         return $this->getView()->render('Helpers/streetsearch.phtml');
     }
-
 }

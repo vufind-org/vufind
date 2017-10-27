@@ -508,7 +508,7 @@ class Paytrail_Module_Rest_Payment_E1 extends Paytrail_Module_Rest_Payment
             ],
         ];
 
-        foreach($this->getProducts() as $product) {
+        foreach ($this->getProducts() as $product) {
             $data["orderDetails"]["products"][] = [
                 "title" => $product->title,
                 "code" => $product->code,
@@ -655,5 +655,6 @@ class Paytrail_Module_Rest
 
         return $result;
     }
-// @codingStandardsIgnoreEnd
+
+    // @codingStandardsIgnoreEnd
 }

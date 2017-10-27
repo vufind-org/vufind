@@ -28,21 +28,21 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace Finna\Mailer;
-use Zend\Mail\Transport\Smtp, Zend\Mail\Transport\SmtpOptions;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
- /**
- * Factory for instantiating Mailer objects
- *
- * @category VuFind
- * @package  Mailer
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
- *
- * @codeCoverageIgnore
- */
+/**
+  * Factory for instantiating Mailer objects
+  *
+  * @category VuFind
+  * @package  Mailer
+  * @author   Demian Katz <demian.katz@villanova.edu>
+  * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
+  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+  * @link     https://vufind.org/wiki/development Wiki
+  *
+  * @codeCoverageIgnore
+  */
 class Factory extends \VuFind\Mailer\Factory
 {
     /**

@@ -436,9 +436,9 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      *   <ul>routeParams: Parameters for route (optional)</ul>
      *   <ul>queryString: Query params to append after building route (optional)</ul>
      * </li>
-    *
-    * @return array
-    */
+     *
+     * @return array
+     */
     public function getURLs()
     {
         $urls = [];

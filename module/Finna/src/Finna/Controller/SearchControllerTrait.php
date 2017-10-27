@@ -66,7 +66,7 @@ trait SearchControllerTrait
     protected function initCombinedViewFilters()
     {
         $query = $this->getRequest()->getQuery();
-        if (!(boolean)$query->get('combined')) {
+        if (!(bool)$query->get('combined')) {
             return;
         }
 

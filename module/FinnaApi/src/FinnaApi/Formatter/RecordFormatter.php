@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace FinnaApi\Formatter;
+
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\View\HelperPluginManager;
 

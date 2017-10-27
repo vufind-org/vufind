@@ -29,6 +29,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Controller;
+
 use Zend\Mail as Mail;
 
 /**

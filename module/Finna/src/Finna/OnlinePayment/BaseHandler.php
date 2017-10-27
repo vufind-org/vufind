@@ -28,6 +28,7 @@
  * @link     http://docs.paytrail.com/ Paytrail API documentation
  */
 namespace Finna\OnlinePayment;
+
 use Finna\Db\Row\Transaction;
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Log\LoggerAwareInterface;
