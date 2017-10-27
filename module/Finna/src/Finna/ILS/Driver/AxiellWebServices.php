@@ -1268,8 +1268,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             }
         }
 
-        $userCached['messagingServices'] = [];
-
         $validServices = [
            'pickUpNotice'  => [
                'letter', 'email', 'sms', 'none'
@@ -1282,6 +1280,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
            ]
         ];
 
+        $services = [];
         foreach ($validServices as $service => $validMethods) {
             $typeLabel = 'dueDateAlert' === $service
                 ? $this->translate(
@@ -1310,7 +1309,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                     }
                 }
             }
-            $userCached['messagingServices'][$service] = $data;
+            $services[$service] = $data;
         }
 
         if (isset($info->messageServices)) {
@@ -1326,15 +1325,12 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 foreach ($sendMethods as $method) {
                     $methodType = isset($method->sendMethod->value)
                         ? $this->mapCode($method->sendMethod->value) : 'none';
-                    $userCached['messagingServices'][$serviceType]['sendMethods']
-                        [$methodType]['active']
-                            = isset($method->sendMethod->isActive)
+                    $services[$serviceType]['sendMethods'][$methodType]['active']
+                        = isset($method->sendMethod->isActive)
                             && $method->sendMethod->isActive === 'yes';
                 }
 
-                foreach ($userCached['messagingServices'][$serviceType]
-                    ['sendMethods'] as $key => &$data
-                ) {
+                foreach ($services[$serviceType]['sendMethods'] as $key => &$data) {
                     $methodLabel
                         = $this->translate("messaging_settings_method_$key");
 
@@ -1354,14 +1350,13 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                     $data['method'] = $methodLabel;
                 }
 
-                if (isset($userCached['messagingServices'][$serviceType])) {
-                    $userCached['messagingServices'][$serviceType]['active']
-                        = $active;
-                    $userCached['messagingServices'][$serviceType]['numOfDays']
-                        = $numOfDays;
+                if (isset($services[$serviceType])) {
+                    $services[$serviceType]['active'] = $active;
+                    $services[$serviceType]['numOfDays'] = $numOfDays;
                 }
             }
         }
+        $userCached['messagingServices'] = $services;
 
         $this->putCachedData($cacheKey, $userCached);
 
