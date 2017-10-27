@@ -267,9 +267,9 @@ library_cards = true
 ; N.B. Values other than 0 are not supported in the finna theme.
 checked_out_page_size = 0
 
-; The number of checkedout history items to display per page; 0 for no limit (may
-; cause memory problems for users with huge numbers of items). Default = 50.
-;checkout_history_page_size = 50
+; The number of historic loans to display per page; 0 for no limit (may cause
+; memory problems for users with a large number of historic loans). Default = 50
+;historic_loan_page_size = 50
 
 ; Whether to display the item barcode for each loan. Default is false.
 display_checked_out_item_barcode = true

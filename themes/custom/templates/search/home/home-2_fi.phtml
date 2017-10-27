@@ -1,0 +1,81 @@
+<div class="row">
+<div class="col-xs-12">
+  <?= $this->feed("karuselli_varatuimmat"); ?>
+</div>    
+</div>
+
+
+<div class="row">
+<div class="col-xs-12">
+  <?= $this->feed("carousel-1"); ?>
+</div>    
+</div>
+
+
+<div class="row">
+    
+<div class="col-md-4">
+      <div class="infobox">
+   <h2>Uusi lainat tai tee varaus</h2>
+    <p>
+    Lainojen uusiminen ja varausten tekeminen edellyttää kirjautumista. 
+    Kirjautumiseen tarvitset kirjastokortin 
+    tunnuksen ja 4-numeroisen tunnusluvun. Tunnusluvun saat kirjastosta. </p>
+    <p>Kirjaudu sisään sivuston oikeasta yläkulmasta tai 
+<a href="<?=$this->url('myresearch-userlogin')?>"  data-lightbox data-lightbox-onclose="window.location.href="<?=$this->escapeHtmlAttr($this->url('myresearch-home')) ?>">tästä linkistä</a>.</p>
+<p></a>Lainat voit uusia 3 kertaa, jos niistä ei ole varauksia. </p>
+  </div>
+</div> 
+
+
+<div class="col-md-4">
+  <div class="infobox">
+  
+<div class="kirjastohaku row">
+    <div class="col-xs-12">
+        <h2><?=$this->transEsc("nostoleft")?></h2>
+    </div>
+    <div class="col-sm-4 col-xs-4">
+        <a href="<?=$this->imageSrc('kartta_etusivu_iso.jpg');?>" TARGET="_blank"><img src="<?=$this->imageSrc('Vaski-Suomi.png')?>" width="90px" align="center"></a>
+    </div>
+    <div class="col-sm-8 col-xs-8">
+        <ul class="list-bullets">
+            <li>verkkokirjasto tuo yhteisen kokoelman ulottuvillesi</li>
+            <li>yhteinen varausjono</li>
+            <li>sama kirjastokortti käy kaikissa Vaski-kirjastoissa</li>
+            <li>palauta lainat mihin tahansa Vaski-kirjastoon</li>
+        </ul>
+    </div>
+</div>
+
+
+    </div>
+</div>
+
+
+      
+<div class="col-md-4">
+  <div class="infobox">
+  <h2>Kolme kysymystä kirjastosta</h2>
+  
+  
+<div style="position: relative; padding-bottom: 56.85%; padding-top: 25px; height: 0;"><iframe allowfullscreen="" frameborder="0" mozallowfullscreen="" scrolling="no" src="https://kirjastokaista-embed.kirjastot.fi/app/themes/kirjastokaista/scripts/js-1_from_category_embed.php?category=17304" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" webkitallowfullscreen=""></iframe></div>
+
+ 
+</div>
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="row">
+   <div class="col-xs-12">
+  <?= $this->feed("nayttelykaruselli"); ?>
+</div>  
+</div>

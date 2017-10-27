@@ -1,0 +1,64 @@
+<div class="row">
+<div class="col-xs-12">
+  <?= $this->feed("karuselli_varatuimmat"); ?>
+</div>    
+</div>
+
+
+<div class="row">
+<div class="col-xs-12">
+  <?= $this->feed("carousel-1"); ?>
+</div>    
+</div>
+
+
+<div class="row">
+<div class="col-md-6">
+  <div class="infobox">
+  <h2>Förnya dina lån eller reservera</h2>
+    <p>
+    Att förnya lån och reservera förutsätter inloggning. För att logga in behöver du 
+    bibliotekskortets ID-nummer och en fyrsiffrig pinkod. Pinkoden får du på vilket 
+    som helst Vaskibibliotek.
+     </p>
+    <p>Logga in via länken högst till höger eller 
+<a href="<?=$this->url('myresearch-userlogin')?>"  data-lightbox data-lightbox-onclose="window.location.href="<?=$this->escapeHtmlAttr($this->url('myresearch-home')) ?>'>här</a>.</p> 
+  </div>
+</div>
+
+
+
+<div class="col-md-6">
+  <div class="infobox">
+  
+<div class="kirjastohaku row">
+    <div class="col-xs-12">
+        <h2><?=$this->transEsc("nostoleft")?></h2>
+    </div>
+    <div class="col-sm-4 col-xs-4">
+        <a href="<?=$this->imageSrc('kartta_etusivu_iso_sv.jpg');?>" TARGET="_blank"><img src="<?=$this->imageSrc('Vaski-Suomi.png')?>" width="90px" align="center"></a>
+    </div>
+    <div class="col-sm-8 col-xs-8">
+        <ul class="list-bullets">
+            <li>De gemensamma samlingarna är tillgängliga via nätbiblioteket</li>
+            <li>Reserverat material transporteras till det bibliotek du valt</li>
+            <li>Du kan återlämna dina lån till vilket som helst Vaskibibliotek</li>
+            <li>Samma bibliotekskort gäller vid alla Vaskibibliotek</li>
+        </ul>
+</div>
+</div>
+</div>
+</div>
+
+
+</div>
+
+
+
+
+<div class="row">
+   <div class="col-xs-12">
+  <?= $this->feed("nayttelykaruselli"); ?>
+</div>  
+</div>
+
