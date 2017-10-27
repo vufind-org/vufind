@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
-use VuFindHarvest\OaiPmh\HarvesterConsoleRunner, Zend\Console\Console;
+
+use VuFindHarvest\OaiPmh\HarvesterConsoleRunner;
+use Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools

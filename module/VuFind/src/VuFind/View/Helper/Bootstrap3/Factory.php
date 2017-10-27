@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Bootstrap3;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

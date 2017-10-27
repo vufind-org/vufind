@@ -26,10 +26,11 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use DateTime;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use Zend\Feed\Writer\Writer as FeedWriter;
 use Zend\Feed\Writer\Feed;
+use Zend\Feed\Writer\Writer as FeedWriter;
 use Zend\View\Helper\AbstractHelper;
 
 /**

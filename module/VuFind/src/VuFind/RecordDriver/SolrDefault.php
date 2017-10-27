@@ -27,7 +27,9 @@
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFindCode\ISBN, VuFind\View\Helper\Root\RecordLink;
+
+use VuFind\View\Helper\Root\RecordLink;
+use VuFindCode\ISBN;
 
 /**
  * Default model for Solr records -- used when a more specific model based on
@@ -800,15 +802,15 @@ class SolrDefault extends AbstractBase
         $formats = $this->getFormats();
         if (in_array('Book', $formats)) {
             return 'Book';
-        } else if (in_array('Article', $formats)) {
+        } elseif (in_array('Article', $formats)) {
             return 'Article';
-        } else if (in_array('Journal', $formats)) {
+        } elseif (in_array('Journal', $formats)) {
             return 'Journal';
-        } else if (isset($formats[0])) {
+        } elseif (isset($formats[0])) {
             return $formats[0];
-        } else if (strlen($this->getCleanISSN()) > 0) {
+        } elseif (strlen($this->getCleanISSN()) > 0) {
             return 'Journal';
-        } else if (strlen($this->getCleanISBN()) > 0) {
+        } elseif (strlen($this->getCleanISBN()) > 0) {
             return 'Book';
         }
         return 'UnknownFormat';
@@ -1079,7 +1081,7 @@ class SolrDefault extends AbstractBase
     public function getPrimaryAuthors()
     {
         return isset($this->fields['author'])
-            ? (array) $this->fields['author'] : [];
+            ? (array)$this->fields['author'] : [];
     }
 
     /**
@@ -1600,7 +1602,7 @@ class SolrDefault extends AbstractBase
         // Check config setting for what constitutes a collection
         switch ($hierarchyDriver->getCollectionLinkType()) {
         case 'All':
-            return (isset($this->fields['is_hierarchy_id']));
+            return isset($this->fields['is_hierarchy_id']);
         case 'Top':
             return isset($this->fields['is_hierarchy_title'])
                 && isset($this->fields['is_hierarchy_id'])

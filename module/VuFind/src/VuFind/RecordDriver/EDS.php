@@ -391,7 +391,6 @@ class EDS extends SolrDefault
                     return $this->toHTML($item['Data']);
                 }
             }
-
         }
         return '';
     }

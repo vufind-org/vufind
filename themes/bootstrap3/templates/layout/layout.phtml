@@ -150,13 +150,13 @@ JS;
               <? if(count($this->layout()->breadcrumbs) > 1): ?>
                 <?=$this->render('breadcrumbs/multi.phtml', [
                     'parents' => $this->layout()->breadcrumbs,
-                    'title'   => $this->layout()->title,
-                    'from'    => $this->layout()->from
+                    'title' => $this->layout()->title,
+                    'from' => $this->layout()->from
                   ]) ?>
               <? else: ?>
                 <?=$this->render('breadcrumbs/default.phtml', [
                     'parents' => $this->layout()->breadcrumbs,
-                    'title'   => $this->layout()->title
+                    'title' => $this->layout()->title
                   ]) ?>
               <? endif; ?>
             <? else: ?>

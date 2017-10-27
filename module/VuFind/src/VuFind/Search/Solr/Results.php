@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Solr;
+
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
@@ -302,12 +303,14 @@ class Results extends \VuFind\Search\Base\Results
     public function getPartialFieldFacets($facetfields, $removeFilter = true,
         $limit = -1, $facetSort = null, $page = null, $ored = false
     ) {
-        $clone = clone($this);
+        $clone = clone $this;
         $params = $clone->getParams();
 
         // Manipulate facet settings temporarily:
         $params->resetFacetConfig();
         $params->setFacetLimit($limit);
+        // Clear field-specific limits, as they can interfere with retrieval:
+        $params->setFacetLimitByField([]);
         if (null !== $page && $limit != -1) {
             $offset = ($page - 1) * $limit;
             $params->setFacetOffset($offset);

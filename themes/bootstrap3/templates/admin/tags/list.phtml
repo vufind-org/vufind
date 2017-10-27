@@ -11,7 +11,7 @@
 
   <?=$this->flashmessages()?>
 
-  <form class="form-tags-list" action="<?= $this->url('admin/tags', array('action' => 'List'))?>" method="get">
+  <form class="form-tags-list" action="<?= $this->url('admin/tags', ['action' => 'List'])?>" method="get">
     <h3><?=$this->translate('filter_tags')?></h3>
     <div class="tag-controls">
       <label for="user_id">
@@ -50,14 +50,14 @@
       <label for="taglistsubmit">
         <input type="submit" id="taglistsubmit" value="<?=$this->transEsc('Filter')?>" class="btn btn-primary">
         <? if((isset($this->params['user_id']) && !is_null($this->params['user_id'])) || (isset($this->params['tag_id']) && !is_null($this->params['tag_id'])) || (isset($this->params['resource_id']) && !is_null($this->params['resource_id']))):?>
-          <a href="<?= $this->url('admin/tags', array('action' => 'List')); ?>"><?=$this->translate('clear_tag_filter')?></a>
+          <a href="<?= $this->url('admin/tags', ['action' => 'List']); ?>"><?=$this->translate('clear_tag_filter')?></a>
         <? endif;?>
       </label>
     </div>
   </form>
 
   <? if(count($this->results) > 0):?>
-    <form action="<?= $this->url('admin/tags', array('action' => 'Delete'))?>" method="post">
+    <form action="<?= $this->url('admin/tags', ['action' => 'Delete'])?>" method="post">
       <input type="hidden" name="user_id" value="<?=isset($this->params['user_id']) ? $this->params['user_id'] : '' ?>" />
       <input type="hidden" name="tag_id" value="<?=isset($this->params['tag_id']) ? $this->params['tag_id'] : '' ?>" />
       <input type="hidden" name="resource_id" value="<?=isset($this->params['resource_id']) ? $this->params['resource_id'] : '' ?>" />
@@ -90,7 +90,7 @@
       <input type="submit" name="deleteFilter" value="<?=$this->transEsc('delete_all')?>" class="btn btn-danger">
 
     </form>
-    <?=$this->paginationControl($this->results, 'Sliding', 'Helpers/pagination.phtml', array('params' => $this->params))?>
+    <?=$this->paginationControl($this->results, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
   <? else:?>
     <p><?=$this->translate('tag_filter_empty')?></p>
   <? endif;?>

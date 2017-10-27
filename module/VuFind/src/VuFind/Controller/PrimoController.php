@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -69,8 +70,8 @@ class PrimoController extends AbstractSearch
     protected function resultScrollerActive()
     {
         $config = $this->serviceLocator->get('VuFind\Config')->get('Primo');
-        return (isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation);
+        return isset($config->Record->next_prev_navigation)
+            && $config->Record->next_prev_navigation;
     }
 
     /**

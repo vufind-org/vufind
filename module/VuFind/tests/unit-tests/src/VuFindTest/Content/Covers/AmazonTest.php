@@ -27,6 +27,7 @@
  * @link     https://vufind.org
  */
 namespace VuFindTest\Content\Covers;
+
 use VuFindCode\ISBN;
 
 /**

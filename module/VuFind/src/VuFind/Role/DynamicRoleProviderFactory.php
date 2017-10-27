@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Role;
+
 use Zend\ServiceManager\Config;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;

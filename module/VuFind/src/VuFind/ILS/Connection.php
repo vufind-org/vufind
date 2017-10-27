@@ -30,9 +30,10 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS;
-use VuFind\Exception\ILS as ILSException,
-    VuFind\ILS\Driver\DriverInterface,
-    VuFind\I18n\Translator\TranslatorAwareInterface;
+
+use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ILS\Driver\DriverInterface;
 use Zend\Log\LoggerAwareInterface;
 
 /**
@@ -372,7 +373,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             && $this->checkCapability('cancelHolds', [$params ?: []])
         ) {
             $response = ['function' => "cancelHolds"];
-        } else if (isset($this->config->cancel_holds_enabled)
+        } elseif (isset($this->config->cancel_holds_enabled)
             && $this->config->cancel_holds_enabled == true
             && $this->checkCapability('getCancelHoldLink', [$params ?: []])
         ) {
@@ -407,7 +408,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             && $this->checkCapability('renewMyItems', [$params ?: []])
         ) {
             $response = ['function' => "renewMyItems"];
-        } else if (isset($this->config->renewals_enabled)
+        } elseif (isset($this->config->renewals_enabled)
             && $this->config->renewals_enabled == true
             && $this->checkCapability('renewMyItemsLink', [$params ?: []])
         ) {
@@ -607,6 +608,29 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         if ($this->checkCapability('changePassword', [$params ?: []])) {
             return ['function' => 'changePassword'];
+        }
+        return false;
+    }
+
+    /**
+     * Check Historic Loans
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports historic
+     * loans.
+     *
+     * @param array $functionConfig Function configuration
+     * @param array $params         Patron data
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodgetMyTransactionHistory($functionConfig, $params)
+    {
+        if ($this->checkCapability('getMyTransactionHistory', [$params ?: []])) {
+            return $functionConfig;
         }
         return false;
     }

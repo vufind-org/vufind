@@ -28,29 +28,29 @@
  */
 namespace VuFind\Search\Factory;
 
+use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\FilterFieldConversionListener;
 use VuFind\Search\Solr\HideFacetValueListener;
-use VuFind\Search\Solr\InjectHighlightingListener;
+use VuFind\Search\Solr\HierarchicalFacetListener;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
+use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFind\Search\Solr\InjectSpellingListener;
 use VuFind\Search\Solr\MultiIndexListener;
 use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
 use VuFind\Search\Solr\V4\ErrorListener;
-use VuFind\Search\Solr\DeduplicationListener;
-use VuFind\Search\Solr\HierarchicalFacetListener;
 
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\Solr\Connector;
+use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Solr\QueryBuilder;
 use VuFindSearch\Backend\Solr\SimilarBuilder;
-use VuFindSearch\Backend\Solr\HandlerMap;
-use VuFindSearch\Backend\Solr\Connector;
-use VuFindSearch\Backend\Solr\Backend;
 
 use Zend\Config\Config;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Abstract factory for SOLR backends.
@@ -417,13 +417,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     }
 
     /**
-    * Get a hide facet value listener for the backend
-    *
-    * @param BackendInterface $backend Search backend
-    * @param Config           $facet   Configuration of facets
-    *
-    * @return mixed null|HideFacetValueListener
-    */
+     * Get a hide facet value listener for the backend
+     *
+     * @param BackendInterface $backend Search backend
+     * @param Config           $facet   Configuration of facets
+     *
+     * @return mixed null|HideFacetValueListener
+     */
     protected function getHideFacetValueListener(
         BackendInterface $backend,
         Config $facet

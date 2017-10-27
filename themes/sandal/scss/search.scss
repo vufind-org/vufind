@@ -205,7 +205,13 @@
   .nav-tabs {
     position: absolute;
     bottom: 0;
+    margin-top: .5rem;
     border: 0;
+    white-space: nowrap;
+  }
+  .nav-tabs > li {
+    float: none;
+    display: inline-block;
   }
   .nav-tabs a,
   .nav-tabs a:hover {

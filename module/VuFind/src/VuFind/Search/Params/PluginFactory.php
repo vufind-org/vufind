@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\Search\Params;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -67,6 +68,6 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
         $class = $this->getClassName($name, $requestedName);
         $configLoader = $serviceLocator->getServiceLocator()->get('VuFind\Config');
         // Clone the options instance in case caller modifies it:
-        return new $class(clone($options), $configLoader, ...$extraParams);
+        return new $class(clone $options, $configLoader, ...$extraParams);
     }
 }

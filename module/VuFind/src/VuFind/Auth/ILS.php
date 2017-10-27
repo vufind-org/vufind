@@ -28,8 +28,8 @@
  */
 namespace VuFind\Auth;
 
-use VuFind\Exception\Auth as AuthException,
-    VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * ILS authentication module.

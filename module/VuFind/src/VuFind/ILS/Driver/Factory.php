@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

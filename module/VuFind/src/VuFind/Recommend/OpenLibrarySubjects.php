@@ -27,7 +27,9 @@
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Connection\OpenLibrary, VuFind\Solr\Utils as SolrUtils;
+
+use VuFind\Connection\OpenLibrary;
+use VuFind\Solr\Utils as SolrUtils;
 
 /**
  * OpenLibrarySubjects Recommendations Module
@@ -202,7 +204,7 @@ class OpenLibrarySubjects implements RecommendInterface,
         $to = $request->get($field . 'to');
         if (!is_null($from) && !is_null($to)) {
             $range = ['from' => $from, 'to' => $to];
-        } else if (is_object($params)) {
+        } elseif (is_object($params)) {
             $currentFilters = $params->getFilters();
             if (isset($currentFilters[$field][0])) {
                 $range = SolrUtils::parseRange($currentFilters[$field][0]);

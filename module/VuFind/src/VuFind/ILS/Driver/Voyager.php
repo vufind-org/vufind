@@ -29,11 +29,15 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use File_MARC, Yajra\Pdo\Oci8, PDO, PDOException,
-    VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException,
-    VuFind\I18n\Translator\TranslatorAwareInterface,
-    Zend\Validator\EmailAddress as EmailAddressValidator;
+
+use File_MARC;
+use PDO;
+use PDOException;
+use VuFind\Exception\Date as DateException;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use Yajra\Pdo\Oci8;
+use Zend\Validator\EmailAddress as EmailAddressValidator;
 
 /**
  * Voyager ILS Driver
@@ -1056,7 +1060,7 @@ EOT;
                         = $this->pickStatus($availability['otherStatuses']);
                 }
 
-                 // Convert Voyager Format to display format
+                // Convert Voyager Format to display format
                 $dueDate = false;
                 if (!empty($row['DUEDATE'])) {
                     $dueDate = $this->dateFormat->convertToDisplayDate(
@@ -1429,7 +1433,7 @@ EOT;
             if (is_numeric($dueTimeStamp)) {
                 if ($now > $dueTimeStamp) {
                     $dueStatus = "overdue";
-                } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
+                } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
                     $dueStatus = "due";
                 }
             }
@@ -1745,7 +1749,6 @@ EOT;
         $returnList = [];
 
         if (!empty($holdList)) {
-
             $sortHoldList = [];
             // Get a unique List of Bib Ids
             foreach ($holdList as $holdItem) {
@@ -2019,7 +2022,7 @@ EOT;
                 $addr1 = utf8_encode($row['ADDRESS_LINE1']);
                 if ($validator->isValid($addr1)) {
                     $patron['email'] = $addr1;
-                } else if (!isset($patron['address1'])) {
+                } elseif (!isset($patron['address1'])) {
                     if (!empty($addr1)) {
                         $patron['address1'] = $addr1;
                     }
@@ -2037,7 +2040,7 @@ EOT;
                     }
                 }
             }
-            return (empty($patron) ? null : $patron);
+            return empty($patron) ? null : $patron;
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }

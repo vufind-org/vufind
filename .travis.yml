@@ -17,6 +17,7 @@ before_script:
 cache:
   directories:
     - downloads
+    - .php_cs_cache
     - $HOME/.composer/cache/files
 
 script:
