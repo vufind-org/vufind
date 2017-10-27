@@ -101,14 +101,4 @@ class Params extends \VuFind\Search\Solr\Params
     {
         return $this->collectionField;
     }
-
-    /**
-     * Get collection id
-     *
-     * @return string
-     */
-    public function getCollectionId()
-    {
-        return $this->collectionID;
-    }
 }
