@@ -28,9 +28,6 @@
  */
 namespace VuFind\RecordDriver;
 
-use VuFind\View\Helper\Root\RecordLink;
-use VuFindCode\ISBN;
-
 /**
  * Default model for Solr records -- used when a more specific model based on
  * the recordtype field cannot be found.
