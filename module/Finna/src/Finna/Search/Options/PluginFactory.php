@@ -69,7 +69,7 @@ class PluginFactory extends \VuFind\Search\Options\PluginFactory
             $this->defaultNamespace = 'Finna\Search';
             $class = $this->getClassName($name, $requestedName);
             return new $class(
-               $serviceLocator->getServiceLocator()->get('VuFind\Config')
+                $serviceLocator->getServiceLocator()->get('VuFind\Config')
             );
         }
 

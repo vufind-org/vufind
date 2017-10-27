@@ -1326,12 +1326,15 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 foreach ($sendMethods as $method) {
                     $methodType = isset($method->sendMethod->value)
                         ? $this->mapCode($method->sendMethod->value) : 'none';
-                    $userCached['messagingServices'][$serviceType]['sendMethods'][$methodType]['active']
+                    $userCached['messagingServices'][$serviceType]['sendMethods']
+                        [$methodType]['active']
                             = isset($method->sendMethod->isActive)
                             && $method->sendMethod->isActive === 'yes';
                 }
 
-                foreach ($userCached['messagingServices'][$serviceType]['sendMethods'] as $key => &$data) {
+                foreach ($userCached['messagingServices'][$serviceType]
+                    ['sendMethods'] as $key => &$data
+                ) {
                     $methodLabel
                         = $this->translate("messaging_settings_method_$key");
 
@@ -2190,9 +2193,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $key = 'branch_id';
             $sortOrder = $this->holdingsBranchOrder;
             $locationA
-                    = $a['location'] . ' ' . $a['branch'] . ' ' . $a['department'];
+                = $a['location'] . ' ' . $a['branch'] . ' ' . $a['department'];
             $locationB
-                    = $b['location'] . ' ' . $b['branch'] . ' ' . $b['department'];
+                = $b['location'] . ' ' . $b['branch'] . ' ' . $b['department'];
         }
 
         $orderA = isset($sortOrder[$a[$key]]) ? $sortOrder[$a[$key]] : null;

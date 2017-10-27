@@ -1726,9 +1726,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         static $cachedRecords = [];
         if (!isset($cachedRecords[$id])) {
-            $cachedRecords[$id] = $this->makeRequest(
-                 ['v1', 'biblios', $id]
-             );
+            $cachedRecords[$id] = $this->makeRequest(['v1', 'biblios', $id]);
         }
         return $cachedRecords[$id];
     }
