@@ -30,6 +30,9 @@ namespace VuFind\RecordDriver;
 /**
  * Hierarchy support for record drivers.
  *
+ * Assumption: Hierarchy fields found in $this->fields.
+ * Assumption: Config object found in $this->mainConfig.
+ *
  * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
