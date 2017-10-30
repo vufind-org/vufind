@@ -1,7 +1,7 @@
 <?php
 /**
  * Functions to add advanced MARC-driven functionality to a record driver already
- * powered by the standard index spec. Depends upon MarcAwareTrait.
+ * powered by the standard index spec. Depends upon MarcReaderTrait.
  *
  * PHP version 5
  *
@@ -34,7 +34,7 @@ use VuFind\XSLT\Processor as XSLTProcessor;
 
 /**
  * Functions to add advanced MARC-driven functionality to a record driver already
- * powered by the standard index spec. Depends upon MarcAwareTrait.
+ * powered by the standard index spec. Depends upon MarcReaderTrait.
  *
  * @category VuFind
  * @package  RecordDrivers

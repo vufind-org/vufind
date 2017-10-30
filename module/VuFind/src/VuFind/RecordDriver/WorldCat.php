@@ -38,7 +38,7 @@ namespace VuFind\RecordDriver;
  */
 class WorldCat extends DefaultRecord
 {
-    use MarcAwareTrait, MarcAdvancedTrait, MarcBasicTrait {
+    use MarcReaderTrait, MarcAdvancedTrait, MarcBasicTrait {
         MarcBasicTrait::getNewerTitles insteadof MarcAdvancedTrait;
         MarcBasicTrait::getPreviousTitles insteadof MarcAdvancedTrait;
     }

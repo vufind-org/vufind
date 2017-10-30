@@ -42,6 +42,6 @@ namespace VuFind\RecordDriver;
 class SolrMarc extends SolrDefault
 {
     use IlsAwareTrait;
-    use MarcAwareTrait;
+    use MarcReaderTrait;
     use MarcAdvancedTrait;
 }
