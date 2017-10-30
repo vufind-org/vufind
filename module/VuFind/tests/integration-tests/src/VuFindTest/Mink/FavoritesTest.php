@@ -145,7 +145,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals($this->findCss($page, '#save_list option[selected]')->getHtml(), 'Test List');
         $this->findCss($page, '#add_mytags')->setValue('test1 test2 "test 3"');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->snooze(3);
+        $this->snooze();
         $this->findCss($page, '.modal .alert.alert-success');
         $this->findCss($page, '.modal-body .btn.btn-default')->click();
         // Check list page
@@ -205,7 +205,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             'Login Test List'
         );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->snooze(3);
+        $this->snooze();
         $this->findCss($page, '.modal .alert.alert-success');
     }
 
@@ -229,7 +229,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->findCss($page, '#save_list');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->snooze(3);
+        $this->snooze();
         $this->findCss($page, '.modal .alert.alert-success');
     }
 
@@ -458,7 +458,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal #email_from')->setValue('asdf@vufind.org');
         $this->findCss($page, '.modal #email_message')->setValue('message');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->snooze(3);
+        $this->snooze();
         // Check for confirmation message
         $this->assertEquals(
             'Your item(s) were emailed',
@@ -546,7 +546,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $button->click();
         $this->snooze();
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->snooze(3);
+        $this->snooze();
         // Check for confirmation message
         $this->assertEquals(
             'Your favorite(s) were deleted.',
