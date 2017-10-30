@@ -249,7 +249,7 @@ $config = [
             'VuFind\Session\Settings' => 'VuFind\Session\Settings',
         ],
         'initializers' => [
-            'VuFind\ServiceManager\Initializer::initInstance',
+            'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
             'mvctranslator' => 'VuFind\Translator',
@@ -259,7 +259,7 @@ $config = [
     'translator' => [],
     'view_helpers' => [
         'initializers' => [
-            'VuFind\ServiceManager\Initializer::initZendPlugin',
+            'VuFind\ServiceManager\ZendPluginInitializer',
         ],
     ],
     'view_manager' => [
