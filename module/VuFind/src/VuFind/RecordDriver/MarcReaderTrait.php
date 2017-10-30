@@ -31,6 +31,8 @@ namespace VuFind\RecordDriver;
 /**
  * Functions for reading MARC records.
  *
+ * Assumption: raw MARC data can be found in $this->fields['fullrecord'].
+ *
  * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
