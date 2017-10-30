@@ -104,23 +104,6 @@ class Memcache extends AbstractBase
 
         // Perform Memcache-specific cleanup:
         return $this->getConnection()->delete("vufind_sessions/{$sess_id}");
-
-        return true;
-    }
-
-    /**
-     * A function that is called internally when session data is to be saved.
-     *
-     * @param string $sess_id The current session ID
-     * @param string $data    The session data to write
-     *
-     * @return bool
-     */
-    protected function saveSession($sess_id, $data)
-    {
-        return $this->getConnection()->set(
-            "vufind_sessions/{$sess_id}", $data, 0, $this->lifetime
-        );
     }
 
     /**
