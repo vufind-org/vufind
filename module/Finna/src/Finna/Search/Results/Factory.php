@@ -26,11 +26,8 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Search\Results;
-use Finna\Search\Factory\UrlQueryHelperFactory,
-    Finna\Search\UrlQueryHelper,
-    Finna\Search\Results\PluginFactory,
-    Zend\Console\Console,
-    Zend\ServiceManager\ServiceManager;
+
+use Zend\ServiceManager\ServiceManager;
 
 /**
  * Search Results Object Factory Class

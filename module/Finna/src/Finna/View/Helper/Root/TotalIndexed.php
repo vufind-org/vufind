@@ -84,5 +84,4 @@ class TotalIndexed extends \Zend\View\Helper\AbstractHelper
         }
         return $totalIndexed;
     }
-
 }

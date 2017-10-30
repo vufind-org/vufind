@@ -76,7 +76,7 @@
                 $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
                 echo '<a href="' . $this->recordLink()->getUrl($resource)
                   . '" class="title">' . $title . '</a>';
-              } else if (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
+              } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
                 // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
                 echo $this->escapeHtml($ilsDetails['title']);
               } else {
@@ -136,7 +136,7 @@
             <br />
 
             <? if (isset($this->cancelResults['items'])): ?>
-              <? foreach ($this->cancelResults['items'] as $itemId=>$cancelResult): ?>
+              <? foreach ($this->cancelResults['items'] as $itemId => $cancelResult): ?>
                 <? if ($itemId == $ilsDetails['item_id'] && $cancelResult['success'] == false): ?>
                   <div class="alert alert-danger"><?=$this->transEsc($cancelResult['status']) ?><? if ($cancelResult['sysMessage']) echo ' : ' . $this->transEsc($cancelResult['sysMessage']); ?></div>
                 <? endif; ?>
@@ -160,7 +160,7 @@
             <?=$thumbnail ?>
           <? endif ?>
         </div>
-        <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="'.$this->escapeHtmlAttr($resource->getCoinsOpenUrl()).'"></span>':''?>
+        <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>':''?>
       </div>
     <? endforeach; ?>
     <? if ($this->cancelForm): ?></form><? endif; ?>

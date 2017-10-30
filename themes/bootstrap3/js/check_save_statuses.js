@@ -3,23 +3,27 @@
 
 function displaySaveStatus(itemLists, $item) {
   if (itemLists.length > 0) {
+    // If we got lists back, display them!
     var html = '<ul>' + itemLists.map(function convertToLi(l) {
       return '<li><a href="' + l.list_url + '">' + htmlEncode(l.list_title) + '</a></li>';
     }).join('') + '</ul>';
-    $item.find('.savedLists')
-      .removeClass('ajax-pending').addClass('loaded')
-      .find('.js-load').replaceWith(html);
+    $item.find('.savedLists').addClass('loaded');
+    $item.find('.js-load').replaceWith(html);
+  } else {
+    // If we got nothing back, remove the pending status:
+    $item.find('.js-load').remove();
   }
+  // No matter what, clear the flag that we have a pending save:
+  $item.removeClass('js-save-pending');
 }
 
 function saveStatusFail(response, textStatus) {
-  $('.ajax-pending').empty();
   if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') {
-    $('.ajax-pending .savedLists').addClass('hidden');
+    $('.js-save-pending .savedLists').addClass('hidden');
     return;
   }
   // display the error message on each of the ajax status place holder
-  $('.ajax-pending .savedLists').addClass('alert-danger').append(response.responseJSON.data);
+  $('.js-save-pending .savedLists').addClass('alert-danger').append(response.responseJSON.data);
 }
 
 var saveStatusObjs = [];
@@ -62,7 +66,6 @@ function runSaveAjaxForQueue() {
         }
       }
     }
-    saveStatusObjs = [];
     saveStatusRunning = false;
   })
   .fail(function checkItemStatusFail(response, textStatus) {
@@ -71,13 +74,17 @@ function runSaveAjaxForQueue() {
   });
 }
 function saveQueueAjax(obj, el) {
+  if (el.hasClass('js-save-pending')) {
+    return;
+  }
   clearTimeout(saveStatusTimer);
   saveStatusObjs.push(obj);
   saveStatusEls[obj.source + '|' + obj.id] = el;
   saveStatusTimer = setTimeout(runSaveAjaxForQueue, saveStatusDelay);
+  el.addClass('js-save-pending');
   el.find('.savedLists')
-    .append('<span class="js-load">' + VuFind.translate('loading') + '...</span>')
-    .addClass('ajax-pending').removeClass('loaded hidden');
+    .removeClass('loaded hidden')
+    .append('<span class="js-load">' + VuFind.translate('loading') + '...</span>');
   el.find('.savedLists ul').remove();
 }
 

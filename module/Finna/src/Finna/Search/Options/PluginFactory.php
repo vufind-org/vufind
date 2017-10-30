@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Search\Options;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -64,11 +65,11 @@ class PluginFactory extends \VuFind\Search\Options\PluginFactory
             return new \Finna\Search\Favorites\Options(
                 $serviceLocator->getServiceLocator()->get('VuFind\Config')
             );
-        } else if ($name == 'solr' || $name == 'combined') {
+        } elseif ($name == 'solr' || $name == 'combined') {
             $this->defaultNamespace = 'Finna\Search';
             $class = $this->getClassName($name, $requestedName);
             return new $class(
-               $serviceLocator->getServiceLocator()->get('VuFind\Config')
+                $serviceLocator->getServiceLocator()->get('VuFind\Config')
             );
         }
 

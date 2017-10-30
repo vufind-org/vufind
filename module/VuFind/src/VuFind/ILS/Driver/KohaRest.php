@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use VuFind\Exception\Date as DateException;
 use VuFind\Exception\ILS as ILSException;
 
@@ -462,7 +463,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if (is_numeric($dueTimeStamp)) {
                 if ($now > $dueTimeStamp) {
                     $dueStatus = 'overdue';
-                } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
+                } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
                     $dueStatus = 'due';
                 }
             }
@@ -547,6 +548,112 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
         }
         return $finalResult;
+    }
+
+    /**
+     * Get Patron Transaction History
+     *
+     * This is responsible for retrieving all historical transactions
+     * (i.e. checked out items)
+     * by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
+     *
+     * @throws DateException
+     * @throws ILSException
+     * @return array        Array of the patron's transactions on success.
+     */
+    public function getMyTransactionHistory($patron, $params)
+    {
+        $sort = explode(
+            ' ', !empty($params['sort']) ? $params['sort'] : 'checkout desc', 2
+        );
+        if ($sort[0] == 'checkout') {
+            $sortKey = 'issuedate';
+        } elseif ($sort[0] == 'return') {
+            $sortKey = 'returndate';
+        } else {
+            $sortKey = 'date_due';
+        }
+        $direction = (isset($sort[1]) && 'desc' === $sort[1]) ? 'desc' : 'asc';
+
+        $pageSize = isset($params['limit']) ? $params['limit'] : 50;
+        $queryParams = [
+            'borrowernumber' => $patron['id'],
+            'sort' => $sortKey,
+            'order' => $direction,
+            'offset' => isset($params['page'])
+                ? ($params['page'] - 1) * $pageSize : 0,
+            'limit' => $pageSize
+        ];
+
+        $transactions = $this->makeRequest(
+            ['v1', 'checkouts', 'history'],
+            $queryParams,
+            'GET',
+            $patron
+        );
+
+        $result = [
+            'count' => $transactions['total'],
+            'transactions' => []
+        ];
+
+        foreach ($transactions['records'] as $entry) {
+            try {
+                $item = $this->getItem($entry['itemnumber']);
+            } catch (\Exception $e) {
+                $item = [];
+            }
+            $volume = isset($item['enumchron'])
+                ? $item['enumchron'] : '';
+            $title = '';
+            if (!empty($item['biblionumber'])) {
+                $bib = $this->getBibRecord($item['biblionumber']);
+                if (!empty($bib['title'])) {
+                    $title = $bib['title'];
+                }
+                if (!empty($bib['title_remainder'])) {
+                    $title .= ' ' . $bib['title_remainder'];
+                    $title = trim($title);
+                }
+            }
+
+            $dueStatus = false;
+            $now = time();
+            $dueTimeStamp = strtotime($entry['date_due']);
+            if (is_numeric($dueTimeStamp)) {
+                if ($now > $dueTimeStamp) {
+                    $dueStatus = 'overdue';
+                } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
+                    $dueStatus = 'due';
+                }
+            }
+
+            $transaction = [
+                'id' => isset($item['biblionumber']) ? $item['biblionumber'] : '',
+                'checkout_id' => $entry['issue_id'],
+                'item_id' => $entry['itemnumber'],
+                'title' => $title,
+                'volume' => $volume,
+                'checkoutdate' => $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d\TH:i:sP', $entry['issuedate']
+                ),
+                'duedate' => $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d\TH:i:sP', $entry['date_due']
+                ),
+                'dueStatus' => $dueStatus,
+                'returndate' => $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d\TH:i:sP', $entry['returndate']
+                ),
+                'renew' => $entry['renewals']
+            ];
+
+            $result['transactions'][] = $transaction;
+        }
+
+        return $result;
     }
 
     /**
@@ -1028,6 +1135,23 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getConfig($function, $params = null)
     {
+        if ('getMyTransactionHistory' === $function) {
+            if (empty($this->config['TransactionHistory']['enabled'])) {
+                return false;
+            }
+            return [
+                'max_results' => 100,
+                'sort' => [
+                    'checkout desc' => 'sort_checkout_date_desc',
+                    'checkout asc' => 'sort_checkout_date_asc',
+                    'return desc' => 'sort_return_date_desc',
+                    'return asc' => 'sort_return_date_asc',
+                    'due desc' => 'sort_due_date_desc',
+                    'due asc' => 'sort_due_date_asc'
+                ],
+                'default_sort' => 'checkout desc'
+            ];
+        }
         return isset($this->config[$function])
             ? $this->config[$function] : false;
     }
@@ -1602,9 +1726,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         static $cachedRecords = [];
         if (!isset($cachedRecords[$id])) {
-             $cachedRecords[$id] = $this->makeRequest(
-                 ['v1', 'biblios', $id]
-             );
+            $cachedRecords[$id] = $this->makeRequest(['v1', 'biblios', $id]);
         }
         return $cachedRecords[$id];
     }

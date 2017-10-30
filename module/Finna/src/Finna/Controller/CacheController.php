@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace Finna\Controller;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -42,14 +43,14 @@ class CacheController extends \VuFind\Controller\AbstractBase
     /**
      * Finna cache table
      *
-     * @param \Finna\Db\Table\FinnaCache
+     * @var \Finna\Db\Table\FinnaCache
      */
     protected $finnaCache;
 
     /**
      * Theme info
      *
-     * @param \VuFindTheme\ThemeInfo
+     * @var \VuFindTheme\ThemeInfo
      */
     protected $themeInfo;
 

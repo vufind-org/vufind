@@ -45,6 +45,7 @@ class Options extends \VuFind\Search\Solr\Options
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
+        $this->facetsIni = 'Collection';
         parent::__construct($configLoader);
 
         // Load sort preferences (or defaults if none in .ini file):

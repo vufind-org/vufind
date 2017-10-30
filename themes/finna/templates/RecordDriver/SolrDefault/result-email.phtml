@@ -14,7 +14,7 @@
 
   // NOTE: use $info['baseUrl'] instead of serverUrl view helper when this template is
   // rendered by scheduled alerts console action.
-  $url = isset($info['baseUrl']) ? ($info['baseUrl'].$url) : $this->serverUrl($url);
+  $url = isset($info['baseUrl']) ? ($info['baseUrl'] . $url) : $this->serverUrl($url);
 ?>
 
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>
@@ -38,10 +38,10 @@
 <?= PHP_EOL . $this->translate("in_collection_label") . ' ' . $collText; ?>
 <? endforeach; ?>
 <? elseif (!empty($containerTitle)) : ?>
-<?= PHP_EOL  . $this->translate('component_is_part_of') . ": $containerTitle" . !empty($containerReference) ? " $containerReference" : '' ?>
+<?= PHP_EOL . $this->translate('component_is_part_of') . ": $containerTitle" . !empty($containerReference) ? " $containerReference" : '' ?>
 <? endif; ?>
 <? if (!empty($format)) : ?>
-<?= PHP_EOL  . $this->translate($format) ?>
+<?= PHP_EOL . $this->translate($format) ?>
 <? endif; ?>
 
 <?= $this->translate('View Full Record') . ": $url"; ?>

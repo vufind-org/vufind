@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace Finna\Controller;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**

@@ -26,10 +26,6 @@
  * @link     https://github.com/dmj/vf2-proxy
  */
 namespace FinnaApi;
-use Zend\EventManager\StaticEventManager,
-    Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent,
-    Zend\Console\Console;
 
 /**
  * Module for storing local overrides for FinnaApi.

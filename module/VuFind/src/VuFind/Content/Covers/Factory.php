@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Content\Covers;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

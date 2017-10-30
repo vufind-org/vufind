@@ -77,7 +77,8 @@ class PluginManager extends \VuFind\Autocomplete\PluginManager
         return parent::getSuggestions($request, $typeParam, $queryParam);
     }
 
-// @codingStandardsIgnoreStart
+    // @codingStandardsIgnoreStart
+
     /**
      * Retrieve a service from the manager by name
      *
@@ -94,7 +95,7 @@ class PluginManager extends \VuFind\Autocomplete\PluginManager
      * @throws Exception\ServiceNotFoundException
      * @throws Exception\ServiceNotCreatedException
      * @throws Exception\RuntimeException
-// @codingStandardsIgnoreEnd
+     * // @codingStandardsIgnoreEnd
      */
     public function get($name, $options = [], $usePeeringServiceManagers = true)
     {

@@ -108,7 +108,7 @@
               }
               echo '<h3><a href="' . $this->recordLink()->getUrl($resource) .
                 '" class="record-title">' . $title . '</a></h3>';
-            } else if (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
+            } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
               // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
               echo '<h3 class="record-title">' . $this->escapeHtml($ilsDetails['title']) . '</h3>';
             } else {

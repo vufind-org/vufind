@@ -66,7 +66,7 @@ class EIT extends SolrDefault
     public function setRawData($data)
     {
         // Easy way to recursively convert a SimpleXML Object to an array
-        $data = json_decode(json_encode((array) $data), 1);
+        $data = json_decode(json_encode((array)$data), 1);
         if (isset($data['fields'])) {
             $this->fields = $data['fields'];
         } else {
@@ -150,7 +150,7 @@ class EIT extends SolrDefault
             $this->controlInfo['jinfo']['issn'] : false;
     }
 
-        /**
+    /**
      * Get the date coverage for a record which spans a period of time (i.e. a
      * journal).  Use getPublicationDates for publication dates of particular
      * monographic items.
@@ -203,7 +203,6 @@ class EIT extends SolrDefault
             return isset($this->controlInfo['artinfo']['aug']['au'])
                 ? [$this->controlInfo['artinfo']['aug']['au']] : [];
         }
-
     }
 
     /**
@@ -217,7 +216,7 @@ class EIT extends SolrDefault
             return [
                 $this->controlInfo['pubinfo']['dt']['@attributes']['year']
             ];
-        } else if (isset($this->controlInfo['pubinfo']['dt'])) {
+        } elseif (isset($this->controlInfo['pubinfo']['dt'])) {
             return [$this->controlInfo['pubinfo']['dt']];
         } else {
             return [];
@@ -246,7 +245,7 @@ class EIT extends SolrDefault
             ? $this->controlInfo['artinfo']['tig']['atl'] : '';
     }
 
-        /**
+    /**
      * Get an array of summary strings for the record.
      *
      * @return array
@@ -269,7 +268,7 @@ class EIT extends SolrDefault
         return [];
     }
 
-        /**
+    /**
      * Get the full title of the record.
      *
      * @return string
@@ -280,7 +279,7 @@ class EIT extends SolrDefault
             ? $this->controlInfo['artinfo']['tig']['atl'] : '';
     }
 
-        /**
+    /**
      * Return an array of associative URL arrays with one or more of the following
      * keys:
      *
@@ -327,7 +326,7 @@ class EIT extends SolrDefault
         return $this->fields['fields']['header']['@attributes']['uiTerm'];
     }
 
-        /**
+    /**
      * Get the title of the item that contains this record (i.e. MARC 773s of a
      * journal).
      *
@@ -397,13 +396,13 @@ class EIT extends SolrDefault
         $pagecount = $this->getContainerPageCount();
         $endpage = $startpage + $pagecount;
         if ($endpage != 0) {
-                return $endpage;
+            return $endpage;
         } else {
             return null;
         }
     }
 
-        /**
+    /**
      * Get a sortable title for the record (i.e. no leading articles).
      *
      * @return string
@@ -426,9 +425,9 @@ class EIT extends SolrDefault
         $formats = $this->getFormats();
         if (in_array('Book', $formats)) {
             return 'Book';
-        } else if (in_array('Article', $formats)) {
+        } elseif (in_array('Article', $formats)) {
             return 'Article';
-        } else if (in_array('Journal', $formats)) {
+        } elseif (in_array('Journal', $formats)) {
             return 'Journal';
         }
         // Defaulting to "Article" because many EBSCO databases have things like

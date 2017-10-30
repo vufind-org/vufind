@@ -14,7 +14,7 @@
 
 <div class="page-content">
   <div class="browse list-group<? if (!empty($this->categoryList)): ?> hidden-xs<? endif ?>" id="list1">
-    <? foreach ($this->browseOptions as $item=>$currentOption): ?>
+    <? foreach ($this->browseOptions as $item => $currentOption): ?>
       <a href="<?=$this->url('browse-' . strtolower($currentOption['action'])); ?>" class="list-group-item<? if($currentOption['action'] == $this->currentAction): ?> active<? endif; ?>">
         <?=$this->transEsc($currentOption['description']) ?>
         <i class="fa fa-arrow-right<? if($currentOption['action'] == $this->currentAction): ?> fa-arrow-down<? endif; ?>"></i>
@@ -24,7 +24,7 @@
 
   <? if (!empty($this->categoryList)): ?>
     <div class="browse list-group<? if (!empty($this->secondaryList) || !empty($this->resultList)): ?> hidden-xs<? endif ?>" id="list2">
-      <? foreach($this->categoryList as $findby=>$category): ?>
+      <? foreach($this->categoryList as $findby => $category): ?>
         <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&amp;query_field=<?=$this->browse()->getSolrField($findby, $this->currentAction) ?>" class="list-group-item clearfix<? if ($this->findby == $findby): ?> active<? endif; ?>">
           <? if(is_string($category)): ?>
             <?=$this->transEsc($category)?>
@@ -48,21 +48,21 @@
           $url .= '&amp;facet_prefix=' . urlencode($secondary['displayText']);
         }
         if ($this->secondaryParams) {
-          foreach($this->secondaryParams as $var=>$val) {
-            $url .= '&amp;' . $var .'=' . urlencode($val);
+          foreach($this->secondaryParams as $var => $val) {
+            $url .= '&amp;' . $var . '=' . urlencode($val);
           }
         }
         $viewRecord = !empty($this->categoryList) && $this->currentAction != 'Tag' && $this->findby != 'alphabetical';
       ?>
       <? if ($this->findby != 'alphabetical'):?> <div class="widen"><? endif; ?>
-      <a href="<?=$url ?>" class="list-group-item clearfix<? if ($this->query == $secondary['value'].'' || $this->query == $secondary['value'].'*'): ?> active<? endif; ?>">
+      <a href="<?=$url ?>" class="list-group-item clearfix<? if ($this->query == $secondary['value'] . '' || $this->query == $secondary['value'] . '*'): ?> active<? endif; ?>">
         <?=$this->escapeHtml($secondary['displayText']) ?>
         <? if ($this->findby != 'alphabetical' && isset($secondary['count'])): ?>
           <span> (<?=number_format($secondary['count']) ?>)</span>
         <? endif; ?>
       </a>
       <? if($viewRecord): ?>
-        <a class="list-group-item view-record pull-right" href="<?=$SEARCH_BASE ?>?lookfor=<? if ($this->filter): ?>&amp;filter[]=<?=urlencode($this->filter) ?>%3A<?=str_replace('+AND+','&filter[]=', urlencode($secondary['value'])) ?><? endif; ?>&amp;filter[]=<?=$this->browse()->getSolrField($this->currentAction) ?>%3A[* TO *]<? if($this->dewey_flag):?>&amp;sort=dewey-sort<?endif;?>"><?=$this->transEsc('View Records') ?></a>
+        <a class="list-group-item view-record pull-right" href="<?=$SEARCH_BASE ?>?lookfor=<? if ($this->filter): ?>&amp;filter[]=<?=urlencode($this->filter) ?>%3A<?=str_replace('+AND+', '&filter[]=', urlencode($secondary['value'])) ?><? endif; ?>&amp;filter[]=<?=$this->browse()->getSolrField($this->currentAction) ?>%3A[* TO *]<? if($this->dewey_flag):?>&amp;sort=dewey-sort<?endif;?>"><?=$this->transEsc('View Records') ?></a>
       <? endif; ?>
        <? if ($this->findby != 'alphabetical'):?> </div><? endif; ?>
     <? endforeach; ?>
@@ -72,7 +72,7 @@
   <? if (!empty($this->resultList)): ?>
     <div class="browse list-group" id="list4">
     <? foreach($this->resultList as $result): ?>
-        <a class="list-group-item clearfix" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['value']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>">
+        <a class="list-group-item clearfix" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['value']) ?><? if ($this->searchParams): foreach($this->searchParams as $var => $val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>">
           <?=$this->escapeHtml($result['displayText'])?>
           <span> (<?=number_format($result['count']) ?>)</span>
         </a>

@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Search\Favorites;
+
 use VuFind\Db\Table\Resource as ResourceTable;
 use VuFind\Db\Table\UserList as ListTable;
 use VuFind\Db\Table\UserResource as UserResourceTable;

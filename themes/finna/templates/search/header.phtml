@@ -20,7 +20,7 @@
     $searchType = isset($this->params) ? $this->params->getsearchType() : $searchType;
     $searchId = isset($this->results) ? $this->results->getSearchId() : $searchId;
 ?>
-<div class="<?=$searchType != 'advanced' ? 'hidden-xs' : '' ;?>">
+<div class="<?=$searchType != 'advanced' ? 'hidden-xs' : '';?>">
   <h1 class="search-result-header">
   <? if ($this->recordsFound || isset($onRecordPage)): ?>
     <? if (isset($this->overrideSearchHeading)): ?>
@@ -40,7 +40,7 @@
   </h1>
   <? if ($this->recordsFound): ?>
     <span class="hidden-print">
-    <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this) ; ?>
+    <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
     </span>
   <? endif; ?>
 </div>

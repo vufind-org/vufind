@@ -41,14 +41,14 @@ case 'Video':
 case 'Other':
     if ($subformat == 'Software') {
         $endnoteFormat = 'Computer Program';
-    } else if ($subformat == 'ConferenceProceeding') {
+    } elseif ($subformat == 'ConferenceProceeding') {
         $endnoteFormat = 'Conference Proceedings';
     }
     break;
 case 'Journal':
     if ($subformat == 'eArticle' || $subformat == 'eSerial' || $subformat == 'eJournal') {
         $endnoteFormat = 'Electronic Article';
-    } else if ($subformat == 'Newspaper') {
+    } elseif ($subformat == 'Newspaper') {
         $endnoteFormat = 'Newspaper Article';
     } else {
         $endnoteFormat = 'Journal Article';

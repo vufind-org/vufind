@@ -2,8 +2,9 @@
 <?
   $this->headScript()->appendFile('facets.js');
 
-  $results = $this->recommend->getResults();
-  $options = $this->searchOptions($this->searchClassId);
+  // Save results/options to $this so they are available to sub-templates:
+  $this->results = $results = $this->recommend->getResults();
+  $this->options = $options = $results->getOptions();
 
   $this->headScript()->appendFile('vendor/bootstrap-datepicker.min.js');
   $datePickerLang = 'en';

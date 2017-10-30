@@ -28,6 +28,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Controller;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Session\SessionManager;
 
@@ -223,102 +224,14 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
-     * Send list of checkout history to view.
+     * Purge historic loans action.
      *
      * @return mixed
      */
-    public function checkoutHistoryAction()
-    {
-        // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
-            return $patron;
-        }
-
-        if ($view = $this->createViewIfUnsupported('getMyTransactionHistory')) {
-            return $view;
-        }
-
-        $view = $this->createViewModel();
-
-        // Connect to the ILS:
-        $catalog = $this->getILS();
-
-        // Display account blocks, if any:
-        $this->addAccountBlocksToFlashMessenger($catalog, $patron);
-
-        // Get page and page size:
-        $page = $this->params()->fromQuery('page', 1);
-        $config = $this->getConfig();
-        $limit = isset($config->Catalog->checkout_history_page_size)
-            ? $config->Catalog->checkout_history_page_size : 50;
-
-        // Handle sorting
-        $currentSort = $this->getRequest()->getQuery('sort', 'checkout desc');
-        $view->sortList = [
-            'checkout desc' => [
-                'desc' => 'sort_checkout_date_desc',
-                'url' => '?sort=checkout%20desc',
-                'selected' => $currentSort == 'checkout desc'
-            ],
-            'checkout asc' => [
-                'desc' => 'sort_checkout_date_asc',
-                'url' => '?sort=checkout%20asc',
-                'selected' => $currentSort == 'checkout asc'
-            ],
-            'return desc' => [
-                'desc' => 'sort_return_date_desc',
-                'url' => '?sort=return%20desc',
-                'selected' => $currentSort == 'return desc'
-            ],
-            'return asc' => [
-                'desc' => 'sort_return_date_asc',
-                'url' => '?sort=return%20asc',
-                'selected' => $currentSort == 'return asc'
-            ],
-            'duedate desc' => [
-                'desc' => 'sort_duedate_desc',
-                'url' => '?sort=duedate%20desc',
-                'selected' => $currentSort == 'duedate desc'
-            ],
-            'duedate asc' => [
-                'desc' => 'sort_duedate_asc',
-                'url' => '?sort=duedate%20asc',
-                'selected' => $currentSort == 'duedate asc'
-            ]
-        ];
-        // Get checkout history details:
-        $params = [
-            'start' => ($page - 1) * $limit,
-            'limit' => $limit,
-            'sort' => $currentSort
-        ];
-        $result = $catalog->getMyTransactionHistory($patron, $params);
-
-        $adapter = new \Zend\Paginator\Adapter\NullFill($result['count']);
-        $paginator = new \Zend\Paginator\Paginator($adapter);
-        $paginator->setItemCountPerPage($limit);
-        $paginator->setCurrentPageNumber($page);
-
-        $transactions = $hiddenTransactions = [];
-        foreach ($result['transactions'] as $current) {
-            $transactions[] = $this->getDriverForILSRecord($current);
-        }
-
-        $view->transactions = $transactions;
-        $view->paginator = $paginator;
-        $view->count = $result['count'];
-        return $view;
-    }
-
-    /**
-     * Purge checkout history action.
-     *
-     * @return mixed
-     */
-    public function purgeCheckoutHistoryAction()
+    public function purgeHistoricLoansAction()
     {
         if ($this->formWasSubmitted('cancel', false)) {
-            return $this->redirect()->toRoute('myresearch-checkouthistory');
+            return $this->redirect()->toRoute('myresearch-historicloans');
         }
 
         // Stop now if the user does not have valid catalog credentials available:
@@ -351,7 +264,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $this->flashMessenger()->addMessage(
                 $result['status'], $result['success'] ? 'error' : 'info'
             );
-            return $this->redirect()->toRoute('myresearch-checkouthistory');
+            return $this->redirect()->toRoute('myresearch-historicloans');
         }
 
         $view = $this->createViewModel();
@@ -1046,7 +959,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     throw new \Exception('Invalid parameters.');
                 }
                 $search->setSchedule(0);
-            } else if ($type == 'reminder') {
+            } elseif ($type == 'reminder') {
                 $user = $this->getTable('User')->select(['id' => $id])->current();
                 if (!$user) {
                     throw new \Exception('Invalid parameters.');
@@ -1324,11 +1237,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             }
         }
         // Update checkout history state
-        if (isset($values->checkout_history)
+        if (isset($values->loan_history)
             && $catalog->checkFunction('updateTransactionHistoryState', $patron)
         ) {
             $result = $catalog->updateTransactionHistoryState(
-                $patron, $values->checkout_history
+                $patron, $values->loan_history
             );
             if (!$result['success']) {
                 $this->flashMessenger()->addErrorMessage($result['status']);

@@ -212,8 +212,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             foreach ($resourceSet->resourceRepresentation as $representation) {
                 $attributes = $representation->attributes();
                 $size = '';
-                switch ($attributes->type)
-                {
+                switch ($attributes->type) {
                 case 'image_thumb':
                 case 'thumb':
                     $size = 'small';
@@ -373,7 +372,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 // Use displayMaterialTech (default)
                 $materials[] = (string)$node->eventMaterialsTech
                     ->displayMaterialsTech;
-            } else if (isset($node->eventMaterialsTech->materialsTech)) {
+            } elseif (isset($node->eventMaterialsTech->materialsTech)) {
                 // display label not defined, build from materialsTech
                 $materials = [];
                 foreach ($node->xpath('eventMaterialsTech/materialsTech')
@@ -386,7 +385,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                             if (isset($attributes->label)) {
                                 // Musketti
                                 $label = $attributes->label;
-                            } else if (isset($materialsTech->extentMaterialsTech)) {
+                            } elseif (isset($materialsTech->extentMaterialsTech)) {
                                 // Siiri
                                 $label = $materialsTech->extentMaterialsTech;
                             }
@@ -510,7 +509,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                         $results[] = (string)$classificationNode->term;
                     }
                 }
-            } else if ($term == 'arkeologinen kohde') {
+            } elseif ($term == 'arkeologinen kohde') {
                 foreach ($node->classificationWrap->classification->term
                     as $classificationNode
                 ) {
@@ -599,7 +598,6 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 $results[] = (string)$node . ' (' . $label . ')';
             } else {
                 $results[] = (string)$node;
-
             }
         }
         return $results;
@@ -933,14 +931,13 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             $this->simpleXML = simplexml_load_string($this->fields['fullrecord']);
         }
         return $this->simpleXML;
-
     }
 
     /**
-    * Get the photographer information if availabe
-    *
-    * @return string $result Photographer's name and / or time when picture taken.
-    */
+     * Get the photographer information if availabe
+     *
+     * @return string $result Photographer's name and / or time when picture taken.
+     */
     public function getPhotoInfo()
     {
         $photographer = '';
@@ -997,7 +994,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             $checkTitle = str_replace([',', ';'], ' ', (string)$subject) != $title;
             foreach ($subject as $attributes) {
                 $label = $attributes->attributes()->label;
-                if (($label == 'aihe' || $label == null)  && $checkTitle) {
+                if (($label == 'aihe' || $label == null) && $checkTitle) {
                     $results[] = (string)$subject;
                 }
             }

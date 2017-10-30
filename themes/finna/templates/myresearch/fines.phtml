@@ -108,12 +108,12 @@
             <td<? if ($hideFineCreationDate): ?> class="hidden"<? endif; ?>>
               <?=isset($record['createdate']) ? $this->escapeHtml($record['createdate']) : ''?>
             </td>
-            <td<? if ($hideAmount): ?> class="hidden"<? endif; ?>><?=isset($record['amount']) ? $this->safeMoneyFormat($record['amount']/100.00) : ''?></td>
+            <td<? if ($hideAmount): ?> class="hidden"<? endif; ?>><?=isset($record['amount']) ? $this->safeMoneyFormat($record['amount'] / 100.00) : ''?></td>
             <td class="balance">
               <? if ($showNonPayable): ?>
               <span class="online-payment-nonpayable">
               <? endif; ?>
-              <?=isset($record['balance']) ? $this->safeMoneyFormat($record['balance']/100.00) : ''?>
+              <?=isset($record['balance']) ? $this->safeMoneyFormat($record['balance'] / 100.00) : ''?>
               <? if ($showNonPayable): ?>
               </span>
               <? endif; ?>
@@ -125,21 +125,21 @@
             <? $totalDue += $record['balance']; ?>
           <? endforeach; ?>
           <tr>
-            <td colspan="7" class="total-balance"><?=$this->transEsc('Total Balance Due')?> (<?=count($this->fines);?>): <span class="amount"><?=$this->safeMoneyFormat($totalDue/100.00) ?></span></td>
+            <td colspan="7" class="total-balance"><?=$this->transEsc('Total Balance Due')?> (<?=count($this->fines);?>): <span class="amount"><?=$this->safeMoneyFormat($totalDue / 100.00) ?></span></td>
           </tr>
         </table>
       </div>
       <div>
         <? if ($this->onlinePayment): ?>
           <div class="text-right online-payment-data">
-            <p><?=$this->transEsc('online_payment_payable_online'); ?> (<?=$payableOnlineCnt ?>): <span class="amount"><?=$this->safeMoneyFormat($payableOnline/100.00);?></span></p>
+            <p><?=$this->transEsc('online_payment_payable_online'); ?> (<?=$payableOnlineCnt ?>): <span class="amount"><?=$this->safeMoneyFormat($payableOnline / 100.00);?></span></p>
             <? if (!empty($transactionFee)): ?>
-            <p><?=$this->transEsc('online_payment_transaction_fee'); ?>: <span class="amount"><?=$this->safeMoneyFormat($transactionFee/100.00);?></span></p>
+            <p><?=$this->transEsc('online_payment_transaction_fee'); ?>: <span class="amount"><?=$this->safeMoneyFormat($transactionFee / 100.00);?></span></p>
             <? endif; ?>
             <? if ($this->onlinePaymentEnabled): ?>
               <?=$this->onlinePayment($paymentHandler, $transactionId, $payableTotal);?>
             <? elseif (!empty($this->nonPayableReason)): ?>
-              <p><?=$this->transEsc($this->nonPayableReason); ?><?=$this->nonPayableReason == 'online_payment_minimum_fee' ?  (': <span class="amount">' . $this->safeMoneyFormat($this->minimumFee/100.00)) . '</span>' : '';?>
+              <p><?=$this->transEsc($this->nonPayableReason); ?><?=$this->nonPayableReason == 'online_payment_minimum_fee' ?  (': <span class="amount">' . $this->safeMoneyFormat($this->minimumFee / 100.00)) . '</span>' : '';?>
             <? endif; ?>
           </div>
           <? if ($template = $this->content()->findTemplateForLng("content/Additions/online-payment")): ?>

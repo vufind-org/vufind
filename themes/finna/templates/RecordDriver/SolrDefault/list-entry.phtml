@@ -153,8 +153,8 @@
         <? if (count($this->lists) > 0 && !$list): ?>
         <div class="saved-lists">
           <strong><?=$this->transEsc('Saved in')?>:</strong>
-          <? $i=0;foreach($this->lists as $current): ?>
-            <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><? if($i++ < count($this->lists)-1): ?>,<? endif; ?>
+          <? $i = 0;foreach($this->lists as $current): ?>
+            <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><? if($i++ < count($this->lists) - 1): ?>,<? endif; ?>
           <? endforeach; ?>
           <br/>
         </div>
@@ -173,7 +173,7 @@
                 : $this->url('userList', ['id' => $list_id]);
             $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
 
-            $dLabel = 'delete-label-' . preg_replace('[\W]','-',$id);
+            $dLabel = 'delete-label-' . preg_replace('[\W]', '-', $id);
             ?>
           <div class="dropdown">
             <i class="fa fa-remove"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrlGet ?>">
@@ -184,7 +184,7 @@
               <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>
-            <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
+            <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
         </div>
       </div>
       <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>

@@ -93,7 +93,7 @@ class HoldingsSettings extends AbstractHelper
     {
         return empty($this->config->Item_Status->show_details_after_location_group)
             ? false
-            : (boolean)$this->config->Item_Status->show_details_after_location_group;
+            : (bool)$this->config->Item_Status->show_details_after_location_group;
     }
 
     /**
@@ -106,7 +106,7 @@ class HoldingsSettings extends AbstractHelper
     {
         return empty($this->config->Item_Status->show_link_to_record_page)
             ? false
-            : (boolean)$this->config->Item_Status->show_link_to_record_page;
+            : (bool)$this->config->Item_Status->show_link_to_record_page;
     }
 
     /**
@@ -119,7 +119,7 @@ class HoldingsSettings extends AbstractHelper
     {
         return empty($this->config->Item_Status->show_title_hold)
             ? false
-            : (boolean)$this->config->Item_Status->show_title_hold;
+            : (bool)$this->config->Item_Status->show_title_hold;
     }
 
     /**
@@ -132,7 +132,7 @@ class HoldingsSettings extends AbstractHelper
     {
         return empty($this->config->Item_Status->show_holdings_summary)
             ? false
-            : (boolean)$this->config->Item_Status->show_holdings_summary;
+            : (bool)$this->config->Item_Status->show_holdings_summary;
     }
 
     /**
@@ -146,7 +146,7 @@ class HoldingsSettings extends AbstractHelper
     {
         return empty($this->config->Item_Status->override_sort_order)
             ? false
-            : (boolean)$this->config->Item_Status->override_sort_order;
+            : (bool)$this->config->Item_Status->override_sort_order;
     }
 
     /**

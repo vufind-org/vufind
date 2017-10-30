@@ -28,8 +28,8 @@
  */
 namespace VuFindSearch\Backend\Pazpar2\Response;
 
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 /**
  * Simple factory for record collection.
@@ -71,7 +71,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             $recordFactory = function ($i) {
                 return new Record($i);
             };
-        } else if (!is_callable($recordFactory)) {
+        } elseif (!is_callable($recordFactory)) {
             throw new InvalidArgumentException('Record factory must be callable.');
         }
         $this->recordFactory = $recordFactory;
@@ -97,5 +97,4 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         }
         return $collection;
     }
-
 }

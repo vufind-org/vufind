@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Db\Row;
+
 use VuFind\Crypt\HMAC;
 
 /**

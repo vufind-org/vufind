@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace FinnaApi\Controller;
+
 use FinnaApi\Formatter\RecordFormatter;
 use VuFindApi\Controller\SearchApiController;
 use VuFindApi\Formatter\FacetFormatter;

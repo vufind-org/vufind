@@ -46,7 +46,7 @@
   $setGroupCount = 0;
   $setQueries = [];
   if (isset($searchDetails) && is_object($searchDetails)) {
-    foreach ($searchDetails->getQueries() as $group=>$searchGroup) {
+    foreach ($searchDetails->getQueries() as $group => $searchGroup) {
       $setSearchGroups[$group] = $searchGroup->isNegated() ? 'NOT' : $searchGroup->getOperator();
       if ($setGroupCount < $group) {
         $setGroupCount = $group;
@@ -79,8 +79,8 @@
         <div id="groupJoin" class="form-inline pull-right flip">
           <label for="groupJoinOptions"><?=$this->transEsc("search_match")?>:</label>
           <select id="groupJoinOptions" name="join" class="form-control">
-            <option value="AND"<? if($searchDetails && $searchDetails->getOperator()=='ALL'):?> selected<?endif?>><?= $this->transEsc('group_AND') ?></option>
-            <option value="OR"<? if($searchDetails && $searchDetails->getOperator()=='OR'):?> selected<?endif?>><?= $this->transEsc('group_OR') ?></option>
+            <option value="AND"<? if($searchDetails && $searchDetails->getOperator() == 'ALL'):?> selected<?endif?>><?= $this->transEsc('group_AND') ?></option>
+            <option value="OR"<? if($searchDetails && $searchDetails->getOperator() == 'OR'):?> selected<?endif?>><?= $this->transEsc('group_OR') ?></option>
           </select>
         </div>
       </div>
@@ -93,19 +93,19 @@
         <? if(!empty($this->formOverride)): ?>
           <?=$this->formOverride ?>
         <? else: ?>
-          <? for($group=0 ; $group<3 || $group<=$setGroupCount ; $group++): ?>
+          <? for($group = 0; $group < 3 || $group <= $setGroupCount; $group++): ?>
             <? if($group == 0): ?>
               <div id="new_group_template">
             <? endif; ?>
             <div id="group<?=$group ?>" class="adv-group">
               <div class="adv-group-terms">
                 <label class="adv-group-label"><?=$this->transEsc("adv_search_label")?>:</label>
-                <? for($search=0 ; $search<3 || (isset($setQueries[$group]) && $search<count($setQueries[$group])) ; $search++): ?>
+                <? for($search = 0; $search < 3 || (isset($setQueries[$group]) && $search < count($setQueries[$group])); $search++): ?>
                   <? if($group == 0 && $search == 0): ?>
                     <div id="new_search_template">
                   <? endif; ?>
-                  <div id="search<?=$group.'_'.$search ?>" class="adv-search">
-                    <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" class="adv-term-input form-control" type="text"<?if(isset($setQueries[$group][$search])):?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?endif;?>>
+                  <div id="search<?=$group . '_' . $search ?>" class="adv-search">
+                    <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group . '_' . $search ?>" class="adv-term-input form-control" type="text"<?if(isset($setQueries[$group][$search])):?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?endif;?>>
                     <select class="adv-term-type form-control" name="type<?=$group ?>[]">
                       <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                         <option value="<?=$this->escapeHtml($searchVal)?>"<?if(isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()):?> selected<?endif;?>><?=$this->transEsc($searchDesc)?></option>

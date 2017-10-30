@@ -30,7 +30,7 @@
         $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
         $min = $current['ticks'][0];
         $max = end($current['ticks']);
-        $low  = !empty($current['values'][0]) ? $current['values'][0] : $min;
+        $low = !empty($current['values'][0]) ? $current['values'][0] : $min;
         $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
         $min = intval($min);
         $max = intval($max);

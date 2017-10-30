@@ -1,7 +1,7 @@
 <?php
-return array(
+return [
     'extends' => 'root',
-    'css' => array(
+    'css' => [
         //'vendor/bootstrap.min.css',
         //'vendor/bootstrap-accessibility.css',
         //'vendor/font-awesome.min.css',
@@ -9,8 +9,8 @@ return array(
         'compiled.css',
         'print.css:print',
         'flex-fallback.css::lt IE 10', // flex polyfill
-    ),
-    'js' => array(
+    ],
+    'js' => [
         'vendor/base64.js:lt IE 10', // btoa polyfill
         'vendor/jquery.min.js',
         'vendor/bootstrap.min.js',
@@ -20,21 +20,21 @@ return array(
         'lib/autocomplete.js',
         'common.js',
         'lightbox.js',
-    ),
-    'less' => array(
+    ],
+    'less' => [
         'active' => false,
         'compiled.less'
-    ),
+    ],
     'favicon' => 'vufind-favicon.ico',
-    'helpers' => array(
-        'factories' => array(
+    'helpers' => [
+        'factories' => [
             'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Factory::getFlashmessages',
             'layoutclass' => 'VuFind\View\Helper\Bootstrap3\Factory::getLayoutClass',
             'recaptcha' => 'VuFind\View\Helper\Bootstrap3\Factory::getRecaptcha',
-        ),
-        'invokables' => array(
+        ],
+        'invokables' => [
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
             'search' => 'VuFind\View\Helper\Bootstrap3\Search'
-        )
-    )
-);
+        ]
+    ]
+];

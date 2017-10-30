@@ -6,9 +6,10 @@
     }
     $capabilityParams = [];
     $user = $this->auth()->isLoggedIn();
+    $patron = $user ? $this->auth()->getILSPatron() : false;
+    $capabilityParams = $patron ? ['patron' => $patron] : [];
     if ($user) {
-        $capabilityParams = $user->toArray();
-        $this->layout()->finnaMainHeader .= '<a class="btn btn-primary pull-right" href="' . $this->url('myresearch-logout') . '" title="'.$this->transEsc('Log Out') . '"><i class="fa fa-sign-out"></i> ' . $this->transEsc('Log Out') . '</a>';
+        $this->layout()->finnaMainHeader .= '<a class="btn btn-primary pull-right" href="' . $this->url('myresearch-logout') . '" title="' . $this->transEsc('Log Out') . '"><i class="fa fa-sign-out"></i> ' . $this->transEsc('Log Out') . '</a>';
         $this->layout()->finnaMainHeader .= $this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card']);
     }
     $this->layout()->finnaMainHeader;
@@ -31,9 +32,9 @@
       </a>
     </li>
     <? if ($this->ils()->checkCapability('getMyTransactionHistory', $capabilityParams)): ?>
-      <li class="menu-loan-history">
-        <a href="<?=$this->url('myresearch-checkouthistory')?>" class="list-group-item<?=$this->active == 'checkouthistory' ? ' active' : ''?>">
-          <?=$this->transEsc('Checkout History')?>
+      <li class="menu-historic-loans">
+        <a href="<?=$this->url('myresearch-historicloans')?>" class="list-group-item<?=$this->active == 'historicloans' ? ' active' : ''?>">
+          <?=$this->transEsc('Loan History')?>
         </a
       ></li>
     <? endif; ?>
@@ -91,7 +92,7 @@
         switch ($this->active) {
         case 'profile': echo $this->transEsc('Profile'); break;
         case 'checkedout': echo $this->transEsc('Checked Out Items'); break;
-        case 'checkouthistory': echo $this->transEsc('Checkout History'); break;
+        case 'historicloans': echo $this->transEsc('Loan History'); break;
         case 'holds': echo $this->transEsc('Holds and Recalls'); break;
         case 'storageRetrievalRequests': echo $this->transEsc('Storage Retrieval Requests'); break;
         case 'ILLRequests': echo $this->transEsc('Interlibrary Loan Requests'); break;

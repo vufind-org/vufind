@@ -61,5 +61,4 @@ class Voyager extends \VuFind\ILS\Driver\Voyager
 
         return $functionConfig;
     }
-
 }

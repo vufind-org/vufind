@@ -34,7 +34,7 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
         <? if ($openUrlActive): ?>
           <?=$openUrl->renderTemplate()?><br />
         <? endif; ?>
-        <? if (!is_array($urls)) $urls = array(); foreach ($urls as $current): ?>
+        <? if (!is_array($urls)) $urls = []; foreach ($urls as $current): ?>
           <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
           <br/>
         <? endforeach; ?>
@@ -42,6 +42,6 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     </div>
   </div>
 
-  <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
+  <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
 </div>
 

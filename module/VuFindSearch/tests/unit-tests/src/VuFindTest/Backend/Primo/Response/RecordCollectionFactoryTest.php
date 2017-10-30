@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\Primo\Response;
 
-use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
 use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
 
 /**
  * Unit tests for Primo record collection factory.

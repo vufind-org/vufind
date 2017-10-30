@@ -174,7 +174,7 @@ class ScheduledAlerts extends AbstractService
             if (!$this->localDir = getenv('VUFIND_LOCAL_DIR')) {
                 $this->msg('Switching to VuFind configuration');
                 $this->switchInstitution($this->baseDir);
-            } else if (!$this->scheduleBaseUrl) {
+            } elseif (!$this->scheduleBaseUrl) {
                 $this->processAlerts();
                 exit(0);
             } else {
@@ -340,7 +340,7 @@ class ScheduledAlerts extends AbstractService
                     );
                     continue;
                 }
-            } else if ($schedule == 2) {
+            } elseif ($schedule == 2) {
                 $diff = $todayTime->diff($lastTime);
                 if ($diff->days < 6) {
                     $this->msg(
@@ -350,7 +350,6 @@ class ScheduledAlerts extends AbstractService
                     );
                     continue;
                 }
-
             } else {
                 $this->err(
                     'Search ' . $s->id . ': unknown schedule: ' . $s->schedule

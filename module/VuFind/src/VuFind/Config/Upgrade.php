@@ -26,8 +26,9 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Config;
-use VuFind\Config\Writer as ConfigWriter,
-    VuFind\Exception\FileAccess as FileAccessException;
+
+use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Exception\FileAccess as FileAccessException;
 
 /**
  * Class to upgrade previous VuFind configurations to the current version
@@ -476,13 +477,13 @@ class Upgrade
         $from = (float)$this->from;
         if ($from >= 2.4) {
             $default = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX:RIS';
-        } else if ($from >= 2.0) {
+        } elseif ($from >= 2.0) {
             $default = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX';
-        } else if ($from >= 1.4) {
+        } elseif ($from >= 1.4) {
             $default = 'MARC:MARCXML:EndNote:RefWorks:BibTeX';
-        } else if ($from >= 1.3) {
+        } elseif ($from >= 1.3) {
             $default = 'MARC:EndNote:RefWorks:BibTeX';
-        } else if ($from >= 1.2) {
+        } elseif ($from >= 1.2) {
             $default = 'MARC:EndNote:BibTeX';
         } else {
             $default = 'MARC:EndNote';
@@ -1022,7 +1023,7 @@ class Upgrade
             $cfg = & $this->newConfigs['Summon.ini']['Advanced_Facet_Settings'];
             if (!isset($cfg['special_facets']) || empty($cfg['special_facets'])) {
                 $cfg['special_facets'] = 'checkboxes:Summon';
-            } else if (false === strpos('checkboxes', $cfg['special_facets'])) {
+            } elseif (false === strpos('checkboxes', $cfg['special_facets'])) {
                 $cfg['special_facets'] .= ',checkboxes:Summon';
             }
         }
@@ -1315,9 +1316,9 @@ class Upgrade
             ? $this->newConfigs['config.ini']['Catalog']['driver'] : '';
         if (empty($driver)) {
             $this->addWarning("WARNING: Could not find ILS driver setting.");
-        } else if ('Sample' == $driver) {
+        } elseif ('Sample' == $driver) {
             // No configuration file for Sample driver
-        } else if (!file_exists($this->oldDir . '/' . $driver . '.ini')) {
+        } elseif (!file_exists($this->oldDir . '/' . $driver . '.ini')) {
             $this->addWarning(
                 "WARNING: Could not find {$driver}.ini file; "
                 . "check your ILS driver configuration."
@@ -1430,7 +1431,7 @@ class Upgrade
             // string. Note that we treat blank lines as comments.
             if (substr($trimmed, 0, 1) == ';' || empty($trimmed)) {
                 $comments .= $line;
-            } else if (substr($trimmed, 0, 1) == '['
+            } elseif (substr($trimmed, 0, 1) == '['
                 && ($closeBracket = strpos($trimmed, ']')) > 1
             ) {
                 // Is the current line the start of a section?  If so, create the
@@ -1449,7 +1450,7 @@ class Upgrade
                         'settings' => []];
                     $comments = '';
                 }
-            } else if (($equals = strpos($trimmed, '=')) !== false) {
+            } elseif (($equals = strpos($trimmed, '=')) !== false) {
                 // Is the current line a setting?  If so, add to the return value:
                 $set = trim(substr($trimmed, 0, $equals));
                 $set = trim(str_replace('[]', '', $set));

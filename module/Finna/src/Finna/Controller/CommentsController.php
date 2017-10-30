@@ -27,6 +27,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Controller;
+
 use Zend\Session\Container as SessionContainer;
 
 /**

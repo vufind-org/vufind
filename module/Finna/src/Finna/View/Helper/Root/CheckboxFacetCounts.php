@@ -95,7 +95,7 @@ class CheckboxFacetCounts extends \Zend\View\Helper\AbstractHelper
             // when deduplication is enabled.
             // If we don't have a facet value for online_boolean it means we need to
             // do an additional lookup for online_str_mv.
-            $results = clone($results);
+            $results = clone $results;
             $params = $results->getParams();
             $options = $results->getOptions();
 
@@ -126,5 +126,4 @@ class CheckboxFacetCounts extends \Zend\View\Helper\AbstractHelper
 
         return $ret;
     }
-
 }

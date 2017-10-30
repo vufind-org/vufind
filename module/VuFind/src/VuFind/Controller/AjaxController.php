@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFind\Controller;
+
 use VuFind\Exception\Auth as AuthException;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -287,10 +288,10 @@ class AjaxController extends AbstractBase
             } else {
                 return $this->translate($transPrefix . $list[0], [], $list[0]);
             }
-        } else if (count($list) == 0) {
+        } elseif (count($list) == 0) {
             // Empty list?  Return a blank string:
             return '';
-        } else if ($mode == 'all') {
+        } elseif ($mode == 'all') {
             // Translate values if necessary:
             if ($transPrefix) {
                 $transList = [];
@@ -566,8 +567,8 @@ class AjaxController extends AbstractBase
             $checked[$selector] = true;
 
             $data = $user->getSavedData($id, null, $source);
+            $result[$selector] = [];
             if ($data && count($data) > 0) {
-                $result[$selector] = [];
                 // if this item was saved, add it to the list of saved items.
                 foreach ($data as $list) {
                     $result[$selector][] = [
@@ -610,7 +611,7 @@ class AjaxController extends AbstractBase
             }
             $response->setContent(json_encode($output));
             return $response;
-        } else if ($this->outputMode == 'plaintext') {
+        } elseif ($this->outputMode == 'plaintext') {
             $headers->addHeaderLine('Content-type', 'text/plain');
             $response->setContent($data ? $status . " $data" : $status);
             return $response;

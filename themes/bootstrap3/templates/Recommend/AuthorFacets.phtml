@@ -11,7 +11,7 @@
           <div class="author-list">
         <? endif; ?>
         <a href="<?=$this->url('author-home') . '?author=' . urlencode($author['value'])?>"><?=$author['value'] ?><? /* count disabled -- uncomment to add: echo ' - ' . $author['count']; */ ?></a>
-        <? if ($i+1 < count($similarAuthors['list'])): ?>
+        <? if ($i + 1 < count($similarAuthors['list'])): ?>
           <br/>
         <? endif; ?>
       <? endforeach; ?>

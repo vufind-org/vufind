@@ -69,7 +69,7 @@
 
 <? if ($filtersActive): ?>
   <?
-    $resultsClone = clone($results);
+    $resultsClone = clone $results;
     $resultsClone->getParams()->removeAllFilters();
     $removeFiltersUrl = $this->url('combined-results') . $resultsClone->getUrlQuery()->setPage(1);
   ?>

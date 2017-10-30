@@ -26,8 +26,6 @@
  * @link     https://github.com/dmj/vf2-proxy
  */
 namespace FinnaSearch;
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
 
 /**
  * Module for storing local overrides for VuFindSearch.

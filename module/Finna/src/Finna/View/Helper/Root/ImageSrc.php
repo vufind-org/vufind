@@ -60,7 +60,5 @@ class ImageSrc extends ThemeSrc
         }
 
         return '';
-
     }
-
 }

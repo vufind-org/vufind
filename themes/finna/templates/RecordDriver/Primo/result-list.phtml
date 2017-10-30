@@ -17,7 +17,7 @@
             $summTitle = $this->driver->getTitle();
             if (!empty($summHighlightedTitle)) {
               echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-            } else if (!empty($summTitle)) {
+            } elseif (!empty($summTitle)) {
               echo $this->escapeHtml($this->truncate($summTitle, 180));
             } else {
               echo $this->transEsc('Title not available');
@@ -52,7 +52,7 @@
             <? if (!empty($journalTitle)): ?>
               <?=!empty($summAuthors) ? '' : ' '?>
               <?=$this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', $journalTitle) . '">' . $journalTitle . '</a>';?>
-              <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } else if (!empty($summDate)) { echo($this->escapeHtml($summDate[0])); } ?>
+              <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } elseif (!empty($summDate)) { echo $this->escapeHtml($summDate[0]); } ?>
             <? elseif (!empty($summDate)): ?>
               <?=!empty($summAuthors) ? '' : ' '?>
               <?=$this->escapeHtml($summDate[0])?>

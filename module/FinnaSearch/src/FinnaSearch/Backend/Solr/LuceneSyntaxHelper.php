@@ -27,6 +27,7 @@
  * @link     http://vufind.org
  */
 namespace FinnaSearch\Backend\Solr;
+
 use VuFindCode\ISBN;
 use VuFindSearch\Backend\Exception\BackendException;
 
@@ -182,5 +183,4 @@ class LuceneSyntaxHelper extends \VuFindSearch\Backend\Solr\LuceneSyntaxHelper
 
         return $result;
     }
-
 }

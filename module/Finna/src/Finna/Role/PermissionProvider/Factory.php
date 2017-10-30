@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Role\PermissionProvider;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

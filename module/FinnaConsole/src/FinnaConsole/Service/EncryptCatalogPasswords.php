@@ -28,7 +28,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace FinnaConsole\Service;
-use Zend\Db\Sql\Select;
 
 /**
  * Console service for anonymizing expired user accounts.

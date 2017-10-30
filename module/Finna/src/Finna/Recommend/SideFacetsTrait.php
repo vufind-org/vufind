@@ -27,6 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace Finna\Recommend;
+
 use VuFind\Solr\Utils as SolrUtils;
 
 /**

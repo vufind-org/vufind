@@ -33,14 +33,14 @@ case 'Video':
 case 'Other':
     if ($subformat == 'Software') {
         $refworksFormat = 'Computer Program';
-    } else if ($subformat == 'ConferenceProceeding') {
+    } elseif ($subformat == 'ConferenceProceeding') {
         $refworksFormat = 'Conference Proceedings';
     }
     break;
 case 'Journal':
     if ($subformat == 'eArticle' || $subformat == 'eSerial' || $subformat == 'eJournal') {
         $refworksFormat = 'Journal, Electronic';
-    } else if ($subformat == 'Newspaper') {
+    } elseif ($subformat == 'Newspaper') {
         $refworksFormat = 'Newspaper Article';
     } else {
         $refworksFormat = 'Journal Article';

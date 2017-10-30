@@ -27,8 +27,9 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace Finna\Controller;
-use Zend\Console\Console,
-    Zend\Session\Container as SessionContainer;
+
+use Zend\Console\Console;
+use Zend\Session\Container as SessionContainer;
 
 /**
  * Online payment controller trait.
@@ -207,7 +208,7 @@ trait OnlinePaymentControllerTrait
             }
             $finesUrl = $this->getServerUrl('myresearch-fines');
             $ajaxUrl = $this->getServerUrl('home') . 'AJAX';
-            list($driver,) = explode('.', $patron['cat_username'], 2);
+            list($driver, ) = explode('.', $patron['cat_username'], 2);
 
             $user = $this->getUser();
             if (!$user) {
@@ -234,7 +235,7 @@ trait OnlinePaymentControllerTrait
                 header("Location: " . $this->getServerUrl('myresearch-fines'));
             }
             exit();
-        } else if ($payment) {
+        } elseif ($payment) {
             // Payment response received.
 
             // AJAX/onlinePaymentNotify was called before the user returned to Finna.
@@ -267,7 +268,7 @@ trait OnlinePaymentControllerTrait
                     'online_payment_fines_changed', 'error'
                 );
                 unset($session->payment_fines_changed);
-            } else if (!empty($session->paymentOk)) {
+            } elseif (!empty($session->paymentOk)) {
                 $this->flashMessenger()->addMessage(
                     'online_payment_successful', 'success'
                 );

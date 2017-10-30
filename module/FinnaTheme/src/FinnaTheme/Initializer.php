@@ -26,8 +26,9 @@
  * @link     http://vufind.org   Main Site
  */
 namespace FinnaTheme;
-use Zend\Console\Console,
-    Zend\Stdlib\RequestInterface as Request;
+
+use Zend\Console\Console;
+use Zend\Stdlib\RequestInterface as Request;
 
 /**
  * VuFind Theme Initializer

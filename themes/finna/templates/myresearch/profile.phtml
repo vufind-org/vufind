@@ -18,7 +18,7 @@
     $updatePhone = $this->ils()->checkFunction('updatePhone', compact($user));
     $updateSmsNumber = $this->ils()->checkFunction('updateSmsNumber', compact($user));
     $updateEmail = $this->ils()->checkFunction('updateEmail', compact($user));
-    $updateCheckoutHistory = $this->ils()->checkFunction('updateTransactionHistoryState', compact($user));
+    $updateLoanHistory = $this->ils()->checkFunction('updateTransactionHistoryState', compact($user));
 
     $updateAddressLink = '';
     if ($updateAddress) {
@@ -201,24 +201,28 @@
           <div class="my-profile-col profile-title"><?=$this->transEsc('Hold Identifier') ?>:</div>
           <div class="profile-text-value"><?=$this->escapeHtml($this->profile['hold_identifier']) ?></div>
         <? endif; ?>
-        <? if (isset($this->profile['checkout_history']) || $updateCheckoutHistory): ?>
+        <? if (isset($this->profile['loan_history']) || $updateLoanHistory): ?>
           <div class="my-profile-col profile-title">
-            <label for="checkout-history"><?=$this->transEsc('checkout_history_retention') ?>:</label>
+            <label for="loan-history"><?=$this->transEsc('loan_history_retention') ?>:</label>
           </div>
-          <? if ($updateCheckoutHistory): ?>
-            <div class="my-profile-col">
-              <select id="checkout-history" name="checkout_history" class="form-control">
-                <? foreach ($updateCheckoutHistory['options'] as $key => $value): ?>
-                  <option value="<?=$this->escapeHtmlAttr($key)?>"<?= $this->profile['checkout_history'] == $key ? ' selected="selected"' : '' ?>><?=$this->transEsc($value)?></option>
+          <? if ($updateLoanHistory): ?>
+            <div class="my-profile-col profile-text-value">
+              <select id="loan-history" name="loan_history" class="form-control">
+                <? foreach ($updateLoanHistory['options'] as $key => $value): ?>
+                  <option value="<?=$this->escapeHtmlAttr($key)?>"<?= $this->profile['loan_history'] == $key ? ' selected="selected"' : '' ?>><?=$this->transEsc($value)?></option>
                 <? endforeach; ?>
               </select>
             </div>
-            <div class="my-profile-col">
-              <i class="fa fa-info-big"></i> <?=$this->translate('checkout_history_description_html')?>
-            </div>
+            <? $descriptionText = $this->translate(isset($updateLoanHistory['description'][$this->layout()->userLang]) ? $updateLoanHistory['description'][$this->layout()->userLang] : 'loan_history_description_html'); ?>
+            <? if ($descriptionText): ?>
+              <div class="my-profile-col">
+                <i class="fa fa-info-big"></i> <?=$descriptionText?>
+              </div>
+            <? endif; ?>
           <? else: ?>
-            <div class="profile-text-value"><?=$this->transEsc($this->profile['checkout_history'] ? 'checkout_history_active' : 'checkout_history_inactive') ?></div>
+            <div class="profile-text-value"><?=$this->transEsc($this->profile['loan_history'] ? 'loan_history_active' : 'loan_history_inactive') ?></div>
           <? endif; ?>
+          <div class="clearfix"></div>
         <? endif; ?>
         <? if (!empty($this->profile['group'])): ?>
           <div class="my-profile-col profile-title"><?=$this->transEsc('Group') ?>:</div>
@@ -246,7 +250,7 @@
             <div class="profile-text-value"><?=$this->escapeHtml($guaranteeFullName) ?></div>
           <? endforeach; ?>
         <? endif; ?>
-        <? if ($updatePhone || $updateEmail || $updateCheckoutHistory): ?>
+        <? if ($updatePhone || $updateEmail || $updateLoanHistory): ?>
           <div>
             <input id="save-library-profile" name="saveLibraryProfile" type="submit" value="<?=$this->transEsc("save_my_profile") ?>" class="btn btn-primary" />
           </div>

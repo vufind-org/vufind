@@ -26,9 +26,9 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Feed;
-use Zend\Config\Config,
-    Zend\Feed\Reader\Reader,
-    Zend\Http\Request as HttpRequest;
+
+use Zend\Config\Config;
+use Zend\Feed\Reader\Reader;
 
 /**
  * Feed service
@@ -131,7 +131,7 @@ class Feed implements \Zend\Log\LoggerAwareInterface
         $url = $result->url;
         if (isset($url[$language])) {
             $url = trim($url[$language]);
-        } else if (isset($url['*'])) {
+        } elseif (isset($url['*'])) {
             $url = trim($url['*']);
         } else {
             $this->logError("Missing feed URL (id $id)");
@@ -276,7 +276,7 @@ class Feed implements \Zend\Log\LoggerAwareInterface
                     $this->logError("Error importing feed from url $url");
                     $this->logError("   " . $e->getMessage());
                 }
-            } else if (substr($url, 0, 1) === '/') {
+            } elseif (substr($url, 0, 1) === '/') {
                 // Relative URL
                 $url = substr($viewUrl, 0, -1) . $url;
                 try {
@@ -344,21 +344,21 @@ class Feed implements \Zend\Log\LoggerAwareInterface
                                 $value = ['url' => $value];
                             }
                         }
-                    } else if ($setting == 'date') {
+                    } elseif ($setting == 'date') {
                         if (isset($value['date'])) {
                             $value = new \DateTime(($value['date']));
                             if ($dateFormat) {
                                 $value = $value->format($dateFormat);
                             }
                         }
-                    } else if ($setting == 'contentDate') {
+                    } elseif ($setting == 'contentDate') {
                         if (isset($value['date'])) {
                             $value = new \DateTime(($value['date']));
                             if ($contentDateFormat) {
                                 $value = $value->format($contentDateFormat);
                             }
                         }
-                    } else if ($setting == 'link' && $showFullContentOnSite) {
+                    } elseif ($setting == 'link' && $showFullContentOnSite) {
                         if (!$itemId = $item->getId()) {
                             $itemId = $cnt;
                         }
@@ -367,7 +367,7 @@ class Feed implements \Zend\Log\LoggerAwareInterface
                             ['page' => $id, 'element' => urlencode($itemId)]
                         );
                         $value = $link;
-                    } else if ($setting == 'id') {
+                    } elseif ($setting == 'id') {
                         if (!$value) {
                             $value = $cnt;
                         }

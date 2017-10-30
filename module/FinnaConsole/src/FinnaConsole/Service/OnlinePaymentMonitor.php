@@ -27,9 +27,9 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace FinnaConsole\Service;
-use Finna\Db\Table\Transaction,
-    Finna\Db\Row\User,
-    Zend\Db\Sql\Select;
+
+use Finna\Db\Row\User;
+use Finna\Db\Table\Transaction;
 
 /**
  * Console service for processing unregistered online payments.
@@ -447,7 +447,7 @@ class OnlinePaymentMonitor extends AbstractService
      */
     protected function usage()
     {
-// @codingStandardsIgnoreStart
+        // @codingStandardsIgnoreStart
         return <<<EOT
 Usage:
   php index.php util online_payment_monitor <expire_hours> <from_email>
@@ -463,6 +463,6 @@ Usage:
                           considered failed (seconds, default 120)
 
 EOT;
-// @codingStandardsIgnoreEnd
+        // @codingStandardsIgnoreEnd
     }
 }

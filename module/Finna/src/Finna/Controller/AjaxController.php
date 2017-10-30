@@ -27,10 +27,10 @@
  */
 namespace Finna\Controller;
 
-use VuFind\RecordDriver\Missing;
-use VuFindSearch\Query\Query as Query;
-use VuFind\Search\RecommendListener;
 use Finna\Search\Solr\Params;
+use VuFind\RecordDriver\Missing;
+use VuFind\Search\RecommendListener;
+use VuFindSearch\Query\Query as Query;
 
 /**
  * This controller handles Finna AJAX functionality
@@ -309,7 +309,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
             $patron = $this->getILSAuthenticator()->storedCatalogLogin();
 
             if ($patron) {
-
                 $result = $catalog->checkFunction('changeRequestStatus');
                 if (!$result) {
                     return $this->output(

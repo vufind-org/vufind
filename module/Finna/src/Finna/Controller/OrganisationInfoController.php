@@ -38,7 +38,7 @@ namespace Finna\Controller;
  */
 class OrganisationInfoController extends \VuFind\Controller\AbstractBase
 {
-        /**
+    /**
      * Default action if none provided
      *
      * @return Zend\View\Model\ViewModel

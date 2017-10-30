@@ -63,6 +63,5 @@ class OpenUrl extends \VuFind\View\Helper\Root\OpenUrl
         return $this->context->__invoke($this->getView())->renderInContext(
             'Helpers/openurl-moreoptions.phtml', $params
         );
-
     }
 }

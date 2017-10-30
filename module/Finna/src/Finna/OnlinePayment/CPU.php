@@ -340,7 +340,7 @@ class CPU extends BaseHandler
                'transactionId' => $orderNum,
                'amount' => $data->amount
             ];
-        } else if ($status === self::STATUS_CANCELLED) {
+        } elseif ($status === self::STATUS_CANCELLED) {
             $this->setTransactionCancelled($orderNum);
             return 'online_payment_canceled';
         } else {
@@ -370,7 +370,6 @@ class CPU extends BaseHandler
         $module->setHttpService($this->http);
         $module->setLogger($this->logger);
         return $module;
-
     }
 
     /**

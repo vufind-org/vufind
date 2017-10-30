@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace FinnaTheme\Minify;
+
 use Finna\Db\Table\FinnaCache;
 
 /**

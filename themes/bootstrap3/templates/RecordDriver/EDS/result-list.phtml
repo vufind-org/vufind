@@ -63,7 +63,7 @@
           <? foreach ($customLinks as $customLink): ?>
           <? $url = isset($customLink['Url']) ? $customLink['Url'] : '';
               $mot = isset($customLink['MouseOverText'])? $customLink['MouseOverText'] : '';
-              $icon = isset ($customLink['Icon']) ? $customLink['Icon'] : '';
+              $icon = isset($customLink['Icon']) ? $customLink['Icon'] : '';
               $name = isset($customLink['Text']) ? $customLink['Text'] : '';
           ?>
           <span>
@@ -83,7 +83,7 @@
       <? endif; ?>
 
       <? if ($this->driver->hasPdfAvailable()): ?>
-        <a href="<?= $this->recordLink()->getUrl($this->driver).'/PDF'; ?>" class="icon pdf fulltext" target="_blank">
+        <a href="<?= $this->recordLink()->getUrl($this->driver) . '/PDF'; ?>" class="icon pdf fulltext" target="_blank">
           <?=$this->transEsc('PDF Full Text')?>
         </a>
       <? endif; ?>
@@ -93,7 +93,7 @@
       <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
         <?
           // Add JS Variables for QrCode
-          $this->jsTranslations()->addStrings(array('qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show'));
+          $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
         ?>
         <span class="hidden-xs">
           <i class="fa fa-fw fa-qrcode" aria-hidden="true"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>

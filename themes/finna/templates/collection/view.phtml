@@ -11,7 +11,7 @@
   $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
   // Set main header
   if (empty($lastSearch)) {
-    $this->layout()->finnaMainHeader = '<div><h1 class="content-header">'.$this->transEsc('Collection').'</h1></div>';
+    $this->layout()->finnaMainHeader = '<div><h1 class="content-header">' . $this->transEsc('Collection') . '</h1></div>';
   }
   // Add RDF header link if applicable:
   if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
@@ -21,10 +21,9 @@
   // Set flag for special cases relating to full-width hierarchy tree tab:
   $tree = (strtolower($this->activeTab) == 'hierarchytree');
 
-
   // Set page title.
   $dataSource = $this->driver->tryMethod('getDataSource');
-  $headText = $this->driver->getBreadcrumb() . ' | ' . $this->translate('Collection') . (isset($dataSource) ? ' | ' . $this->transEsc('default::source_'. $dataSource, null, $dataSource) : '');
+  $headText = $this->driver->getBreadcrumb() . ' | ' . $this->translate('Collection') . (isset($dataSource) ? ' | ' . $this->transEsc('default::source_' . $dataSource, null, $dataSource) : '');
   $this->headTitle($headText);
 
   if (!empty($lastSearch)) {
@@ -41,7 +40,7 @@
     <div class="record-back hidden-print">
     <?
       $html = '<span class="btn btn-primary"><i class="fa fa-arrow-left"></i> <i class="fa fa-search"></i></span>';
-      $html .= '<span class="back-to-search-text hidden-xs">'.$this->transEsc('Back to search results').'</span>';
+      $html .= '<span class="back-to-search-text hidden-xs">' . $this->transEsc('Back to search results') . '</span>';
       $previousSearch = $this->searchMemory()->getLastSearchLink($html);
       if ($previousSearch !== ''):
     ?>
@@ -145,7 +144,7 @@
       </div>
     </div>
 
-    <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenURL()).'"></span>':''?>
+    <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>
   </div>
 
   <? if (isset($activeTabObj) && is_callable([$activeTabObj, 'getSideRecommendations'])): ?>

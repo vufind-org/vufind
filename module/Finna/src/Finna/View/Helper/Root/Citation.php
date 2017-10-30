@@ -114,6 +114,6 @@ class Citation extends \VuFind\View\Helper\Root\Citation
                 $i++;
             }
         }
-        return (empty($authorStr) ? false : $authorStr);
+        return empty($authorStr) ? false : $authorStr;
     }
 }

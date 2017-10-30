@@ -193,7 +193,7 @@ class Comments extends \VuFind\Db\Table\Comments
             $select->join(
                 ['cr' => 'finna_comments_record'], 'comments.id = cr.comment_id', []
             );
-            $select->where->equalTo('cr.record_id',  $id);
+            $select->where->equalTo('cr.record_id', $id);
             $select->where->equalTo('comments.finna_visible', 1);
             if ($userId !== false) {
                 $select->where->equalTo('u.id', $userId);

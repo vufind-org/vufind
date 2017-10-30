@@ -387,7 +387,7 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#j1_2 a')->click();
         $this->snooze();
         $filter = $this->findCss($page, '.active-filters .facet');
-        $this->assertEquals('hierarchy: 1/level1a/level2a/', $filter->getText());
+        $this->assertEquals('Clear Filter hierarchy: 1/level1a/level2a/', $filter->getText());
         $this->findCss($page, '#j1_2 .fa-check');
     }
 

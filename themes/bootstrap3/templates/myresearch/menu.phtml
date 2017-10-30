@@ -1,3 +1,8 @@
+<?
+  $user = $this->auth()->isLoggedIn();
+  $patron = $user ? $this->auth()->getILSPatron() : false;
+  $capabilityParams = $patron ? ['patron' => $patron] : [];
+?>
 <h4><?=$this->transEsc('Your Account')?></h4>
 <div class="myresearch-menu">
   <? if ($this->userlist()->getMode() !== 'disabled'): ?>
@@ -6,37 +11,42 @@
     </a>
   <? endif; ?>
   <? if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
-    <? if ($this->ils()->checkCapability('getMyTransactions')): ?>
+    <? if ($this->ils()->checkCapability('getMyTransactions', $capabilityParams)): ?>
       <a href="<?=$this->url('myresearch-checkedout')?>"<?=$this->active == 'checkedout' ? ' class="active"' : ''?>>
         <i class="fa fa-fw fa-book" aria-hidden="true"></i> <?=$this->transEsc('Checked Out Items')?>
       </a>
     <? endif; ?>
-    <? if ($this->ils()->checkCapability('getMyHolds')): ?>
+    <? if ($this->ils()->checkFunction('getMyTransactionHistory', $capabilityParams)): ?>
+      <a href="<?=$this->url('myresearch-historicloans')?>"<?=$this->active == 'historicloans' ? ' class="active"' : ''?>">
+        <i class="fa fa-fw fa-history" aria-hidden="true"></i> <?=$this->transEsc('Loan History')?>
+      </a>
+    <? endif; ?>
+    <? if ($this->ils()->checkCapability('getMyHolds', $capabilityParams)): ?>
       <a href="<?=$this->url('myresearch-holds')?>"<?=$this->active == 'holds' ? ' class="active"' : ''?>>
         <i class="fa fa-fw fa-flag" aria-hidden="true"></i> <?=$this->transEsc('Holds and Recalls')?>
       </a>
     <? endif; ?>
-    <? if ($this->ils()->checkFunction('StorageRetrievalRequests')): ?>
+    <? if ($this->ils()->checkFunction('StorageRetrievalRequests', $capabilityParams)): ?>
       <a href="<?=$this->url('myresearch-storageretrievalrequests')?>"<?=$this->active == 'storageRetrievalRequests' ? ' class="active"' : ''?>>
         <i class="fa fa-fw fa-archive" aria-hidden="true"></i> <?=$this->transEsc('Storage Retrieval Requests')?>
       </a>
     <? endif; ?>
-    <? if ($this->ils()->checkFunction('ILLRequests')): ?>
+    <? if ($this->ils()->checkFunction('ILLRequests', $capabilityParams)): ?>
     <a href="<?=$this->url('myresearch-illrequests')?>"<?=$this->active == 'ILLRequests' ? ' class="active"' : ''?>>
       <i class="fa fa-fw fa-exchange" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?>
     </a>
     <? endif; ?>
-    <? if ($this->ils()->checkCapability('getMyFines')): ?>
+    <? if ($this->ils()->checkCapability('getMyFines', $capabilityParams)): ?>
       <a href="<?=$this->url('myresearch-fines')?>"<?=$this->active == 'fines' ? ' class="active"' : ''?>>
         <i class="fa fa-fw fa-usd" aria-hidden="true"></i> <?=$this->transEsc('Fines')?>
       </a>
     <? endif; ?>
-    <? if ($this->ils()->checkCapability('getMyProfile')): ?>
+    <? if ($this->ils()->checkCapability('getMyProfile', $capabilityParams)): ?>
       <a href="<?=$this->url('myresearch-profile')?>"<?=$this->active == 'profile' ? ' class="active"' : ''?>>
         <i class="fa fa-fw fa-user" aria-hidden="true"></i> <?=$this->transEsc('Profile')?>
       </a>
     <? endif; ?>
-    <? $user = $this->auth()->isLoggedIn(); if ($user && $user->libraryCardsEnabled()): ?>
+    <? if ($user && $user->libraryCardsEnabled()): ?>
       <a href="<?=$this->url('librarycards-home')?>"<?=$this->active == 'librarycards' ? ' class="active"' : ''?>>
         <i class="fa fa-fw fa-barcode" aria-hidden="true"></i> <?=$this->transEsc('Library Cards')?>
       </a>
@@ -47,13 +57,13 @@
       <i class="fa fa-fw fa-search" aria-hidden="true"></i> <?=$this->transEsc('history_saved_searches')?>
     </a>
   <? endif; ?>
-  <? if ($user = $this->auth()->isLoggedIn()): ?>
+  <? if ($user): ?>
     <a href="<?=$this->url('myresearch-logout')?>">
       <i class="fa fa-fw fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?>
     </a>
   <? endif; ?>
 </div>
-<? if ($this->auth()->isLoggedIn() && $this->auth()->getManager()->supportsPasswordChange()): ?>
+<? if ($user && $this->auth()->getManager()->supportsPasswordChange()): ?>
   <h4><?=$this->transEsc('Preferences')?></h4>
   <div class="myresearch-menu">
     <a href="<?=$this->url('myresearch-changepassword') ?>"<?=$this->active == 'newpassword' ? ' class="active"' : ''?>>
@@ -61,7 +71,7 @@
     </a>
   </div>
 <? endif; ?>
-<? if ($this->userlist()->getMode() !== 'disabled' && $user = $this->auth()->isLoggedIn()): ?>
+<? if ($user && $this->userlist()->getMode() !== 'disabled'): ?>
   <h4><?=$this->transEsc('Your Lists')?></h4>
   <div class="myresearch-menu">
     <a href="<?=$this->url('myresearch-favorites')?>"<?=$this->active == 'favorites' ? ' class="active"' : ''?>>
@@ -74,7 +84,7 @@
         <span class="badge"><?=$list->cnt ?></span>
       </a>
     <? endforeach; ?>
-    <a href="<?=$this->url('editList', ['id'=>'NEW'])?>">
+    <a href="<?=$this->url('editList', ['id' => 'NEW'])?>">
       <i class="fa fa-fw fa-plus" aria-hidden="true"></i> <?=$this->transEsc('Create a List') ?>
     </a>
   </div>

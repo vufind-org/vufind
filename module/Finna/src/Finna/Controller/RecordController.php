@@ -26,7 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Controller;
-use VuFind\Search\Memory, Zend\Mail as Mail;
+
+use Zend\Mail as Mail;
 
 /**
  * Record Controller

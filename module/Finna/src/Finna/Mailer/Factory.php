@@ -28,10 +28,10 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace Finna\Mailer;
-use Zend\Mail\Transport\Smtp, Zend\Mail\Transport\SmtpOptions;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
- /**
+/**
  * Factory for instantiating Mailer objects
  *
  * @category VuFind

@@ -53,13 +53,20 @@ method = driver
 [changeRequestStatus]
 method = driver
 
-; Changing of checkout history state is enabled if method parameter is set. Only
+[TransactionHistory]
+; By default the loan history is disabled. Uncomment the following line to enable it.
+enabled = true
+
+; Changing of loan history state is enabled if method parameter is set. Only
 ; valid value is 'driver'.
 [updateTransactionHistoryState]
 method = driver
-options[0] = checkout_history_forever
-options[1] = checkout_history_default
-options[2] = checkout_history_never
+;description[fi] = ""
+;description[sv] = ""
+;description[en-gb] = ""
+options[0] = loan_history_forever
+options[1] = loan_history_default
+options[2] = loan_history_never
 
 ; Changing of messaging settings is enabled if method parameter is set. Only valid
 ; value for Koha is 'driver'.

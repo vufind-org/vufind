@@ -27,7 +27,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\OrganisationInfo;
-use Zend\Config\Config;
 
 /**
  * Service for querying Kirjastohakemisto database.
@@ -273,7 +272,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
                 $response['weekNum'] = $weekNum;
             }
             return $response;
-        } else if ($action == 'details') {
+        } elseif ($action == 'details') {
             $allServices = !empty($params['allServices']);
             $fullDetails = !empty($params['fullDetails']);
             $response = $this->detailsAction(
@@ -452,7 +451,6 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
                         }
                     }
                 }
-
             }
         }
         if (!empty($finna)) {

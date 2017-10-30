@@ -28,8 +28,9 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Config;
-use VuFind\Config\Locator;
+
 use Symfony\Component\Yaml\Yaml;
+use VuFind\Config\Locator;
 
 /**
  * VuFind SearchSpecs Configuration Reader

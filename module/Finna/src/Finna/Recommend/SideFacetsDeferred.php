@@ -26,9 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace Finna\Recommend;
-use VuFind\I18n\Translator\TranslatorAwareInterface,
-    VuFind\I18n\Translator\TranslatorAwareTrait,
-    VuFind\Recommend\RecommendInterface;
 
 /**
  * SideFacetsDeferred Recommendations Module
@@ -72,5 +69,4 @@ class SideFacetsDeferred extends SideFacets
     public function init($params, $request)
     {
     }
-
 }

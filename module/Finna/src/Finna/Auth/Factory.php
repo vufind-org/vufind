@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/
  */
 namespace Finna\Auth;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

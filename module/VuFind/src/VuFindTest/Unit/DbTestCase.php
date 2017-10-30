@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Unit;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

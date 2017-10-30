@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\LibGuides\Response;
 
-use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
 use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
 
 /**
  * Unit tests for LibGuides record collection factory.

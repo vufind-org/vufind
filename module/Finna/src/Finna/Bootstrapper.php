@@ -27,7 +27,9 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna;
-use Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
+
+use Zend\Console\Console;
+use Zend\Mvc\MvcEvent;
 
 /**
  * VuFind Bootstrapper

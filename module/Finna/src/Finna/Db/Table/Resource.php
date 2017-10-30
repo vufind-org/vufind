@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace Finna\Db\Table;
+
 use Zend\Db\Sql\Expression;
 
 /**

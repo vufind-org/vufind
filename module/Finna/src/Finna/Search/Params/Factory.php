@@ -28,6 +28,7 @@
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace Finna\Search\Params;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

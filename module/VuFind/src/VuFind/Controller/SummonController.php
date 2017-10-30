@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
 use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -59,8 +60,8 @@ class SummonController extends AbstractSearch
     protected function resultScrollerActive()
     {
         $config = $this->serviceLocator->get('VuFind\Config')->get('Summon');
-        return (isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation);
+        return isset($config->Record->next_prev_navigation)
+            && $config->Record->next_prev_navigation;
     }
 
     /**

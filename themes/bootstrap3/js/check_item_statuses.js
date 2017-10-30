@@ -12,7 +12,7 @@ function linkCallnumbers(callnumber, callnumber_handler) {
   return callnumber;
 }
 function displayItemStatus(result, $item) {
-  $item.removeClass('.ajax-pending');
+  $item.removeClass('js-item-pending');
   $item.find('.status').empty().append(result.availability_message);
   $item.find('.ajax-availability').removeClass('ajax-availability hidden');
   if (typeof(result.full_status) != 'undefined'
@@ -66,12 +66,11 @@ function displayItemStatus(result, $item) {
   }
 }
 function itemStatusFail(response, textStatus) {
-  $('.ajax-pending').empty();
   if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') {
     return;
   }
   // display the error message on each of the ajax status place holder
-  $('.ajax-pending').addClass('text-danger').append(response.responseJSON.data);
+  $('.js-item-pending').addClass('text-danger').append(response.responseJSON.data);
 }
 
 var itemStatusIds = [];
@@ -107,12 +106,15 @@ function runItemAjaxForQueue() {
 }
 
 function itemQueueAjax(id, el) {
+  if (el.hasClass('js-item-pending')) {
+    return;
+  }
   clearTimeout(itemStatusTimer);
   itemStatusIds.push(id);
   itemStatusEls[id] = el;
   itemStatusTimer = setTimeout(runItemAjaxForQueue, itemStatusDelay);
-  el.addClass('ajax-pending').removeClass('hidden')
-    .find('.status').removeClass('hidden');
+  el.addClass('js-item-pending').removeClass('hidden');
+  el.find('.status').removeClass('hidden');
 }
 
 function checkItemStatus(el) {

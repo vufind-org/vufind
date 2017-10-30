@@ -27,7 +27,9 @@
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
 namespace VuFind\Cover;
-use VuFindCode\ISBN, VuFind\Content\Covers\PluginManager as ApiManager;
+
+use VuFind\Content\Covers\PluginManager as ApiManager;
+use VuFindCode\ISBN;
 
 /**
  * Book Cover Generator
@@ -301,7 +303,7 @@ class Loader extends \VuFind\ImageLoader
         // are able to display an ISBN or content-type-based image.
         if (!in_array($this->size, $this->validSizes)) {
             $this->loadUnavailable();
-        } else if (!$this->fetchFromAPI()
+        } elseif (!$this->fetchFromAPI()
             && !$this->fetchFromContentType()
         ) {
             if ($generator = $this->getCoverGenerator()) {
@@ -333,13 +335,13 @@ class Loader extends \VuFind\ImageLoader
                 return $this->getCachePath($this->size, $ids['isbn']->get10());
             }
             return $file;
-        } else if (isset($ids['issn'])) {
+        } elseif (isset($ids['issn'])) {
             return $this->getCachePath($this->size, $ids['issn']);
-        } else if (isset($ids['oclc'])) {
+        } elseif (isset($ids['oclc'])) {
             return $this->getCachePath($this->size, 'OCLC' . $ids['oclc']);
-        } else if (isset($ids['upc'])) {
+        } elseif (isset($ids['upc'])) {
             return $this->getCachePath($this->size, 'UPC' . $ids['upc']);
-        } else if (isset($ids['recordid']) && isset($ids['source'])) {
+        } elseif (isset($ids['recordid']) && isset($ids['source'])) {
             return $this->getCachePath(
                 $this->size,
                 'ID' . md5($ids['source'] . '|' . $ids['recordid'])
@@ -397,7 +399,7 @@ class Loader extends \VuFind\ImageLoader
             $this->contentType = 'image/jpeg';
             $this->image = file_get_contents($this->localFile);
             return true;
-        } else if (isset($this->config->Content->coverimages)) {
+        } elseif (isset($this->config->Content->coverimages)) {
             $providers = explode(',', $this->config->Content->coverimages);
             foreach ($providers as $provider) {
                 $provider = explode(':', trim($provider));
@@ -561,7 +563,7 @@ class Loader extends \VuFind\ImageLoader
                 ? trim(strtolower($this->config->Content->coverimagesCache)) : true;
             if ($conf === true || $conf === 1 || $conf === '1' || $conf === 'true') {
                 $cache = true;
-            } else if ($conf === false || $conf === 0 || $conf === '0'
+            } elseif ($conf === false || $conf === 0 || $conf === '0'
                 || $conf === 'false'
             ) {
                 $cache = false;

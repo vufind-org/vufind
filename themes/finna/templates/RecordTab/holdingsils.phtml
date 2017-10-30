@@ -69,7 +69,7 @@
 ?>
 
 <?=($offlineMode == "ils-offline") ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message']) : ''?>
-<? if ($holdsAllowed && !$disableTitleHold && (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver') ): ?>
+<? if ($holdsAllowed && !$disableTitleHold && (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver')): ?>
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline' && $ilsLoginAvailable): ?>
     <? if (!$user): ?>
       <div class="pull-right">
@@ -187,9 +187,9 @@
     }
     if ($available) {
       $holdingSummary = '<span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> ' . $this->translate('status_items_available_html', ['%%count%%' => $available]) . '</span>';
-    } else if ($firstDueStr) {
+    } elseif ($firstDueStr) {
       $holdingSummary = '<span class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> ' . $this->transEsc('closest_due_date', ['%%date%%' => $firstDueStr]) . '</span>';
-    } else if ($statuses) {
+    } elseif ($statuses) {
       $holdingSummary = '<span class="text-danger"> ' . $this->escapeHtml(implode(' ', array_flip($statuses))) . '</span>';
     } else {
       $holdingSummary = '<span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> ' . $this->transEsc('Available') . '</span>';

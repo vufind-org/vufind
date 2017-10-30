@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Db\Table;
+
 use Zend\Console\Console;
 use Zend\ServiceManager\ServiceManager;
 

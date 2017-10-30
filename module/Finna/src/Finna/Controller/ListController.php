@@ -27,9 +27,9 @@
  */
 namespace Finna\Controller;
 
-use VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Stdlib\Parameters;
+use VuFind\Exception\ListPermission as ListPermissionException;
+use VuFind\Exception\RecordMissing as RecordMissingException;
+use Zend\Stdlib\Parameters;
 
 /**
  * Controller for the user account area.
@@ -58,7 +58,6 @@ class ListController extends \Finna\Controller\MyResearchController
             if (!$list->isPublic()) {
                 return $this->createNoAccessView();
             }
-
         } catch (RecordMissingException $e) {
             return $this->notFoundAction();
         }
@@ -152,5 +151,4 @@ class ListController extends \Finna\Controller\MyResearchController
         $view->email = $config->Site->email;
         return $view;
     }
-
 }

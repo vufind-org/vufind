@@ -27,10 +27,10 @@
  */
 namespace VuFindSearch\Backend\SRU;
 
-use VuFindSearch\Backend\Exception\HttpErrorException;
+use VuFind\XSLT\Processor as XSLTProcessor;
 use VuFindSearch\Backend\Exception\BackendException;
 
-use VuFind\XSLT\Processor as XSLTProcessor;
+use VuFindSearch\Backend\Exception\HttpErrorException;
 
 /**
  * SRU Search Interface

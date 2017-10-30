@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:link_resolver_drivers Wiki
  */
 namespace Finna\Resolver\Driver;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

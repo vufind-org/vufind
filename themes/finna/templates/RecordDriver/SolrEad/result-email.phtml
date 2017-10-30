@@ -7,7 +7,7 @@
 
   // NOTE: use $info['baseUrl'] instead of serverUrl view helper when this template is
   // rendered by scheduled alerts console action.
-  $url = isset($info['baseUrl']) ? ($info['baseUrl'].$url) : $this->serverUrl($url);
+  $url = isset($info['baseUrl']) ? ($info['baseUrl'] . $url) : $this->serverUrl($url);
 ?>
 
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>

@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace Finna\Controller\Plugin;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

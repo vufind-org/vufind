@@ -97,7 +97,7 @@ class SystemMessages extends \Zend\View\Helper\AbstractHelper
 
         if (!empty($this->localConfig->Site->systemMessages)) {
             $localMessages = $getMessageFn(
-               $this->localConfig->Site->systemMessages->toArray(), $language
+                $this->localConfig->Site->systemMessages->toArray(), $language
             );
 
             $messages = array_filter(array_merge($messages, $localMessages));

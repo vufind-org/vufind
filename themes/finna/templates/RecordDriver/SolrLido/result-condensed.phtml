@@ -19,7 +19,7 @@
         $summTitle = $this->driver->getTitle();
         if (!empty($summHighlightedTitle)) {
           echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-        } else if (!empty($summTitle)) {
+        } elseif (!empty($summTitle)) {
           echo $this->escapeHtml($this->truncate($summTitle, 180));
         } else {
           echo $this->transEsc('Title not available');
@@ -100,7 +100,7 @@
         <? endif; ?>
 
           <? $openUrl = $this->driver->getOpenURL(); ?>
-          <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
+          <?=$openUrl?'<span class="Z3988" title="' . $this->escapeHtmlAttr($openUrl) . '"></span>':''?>
 
         <? /* Saved lists */ ?>
         <div class="savedLists">
@@ -108,7 +108,7 @@
         </div>
       </div>
     </div>
-    <? if ($thumbnail ): ?>
+    <? if ($thumbnail): ?>
     <div class="media-right condensed-image resultThumb <?= $thumbnailAlignment == 'right' ? '' : 'hidden-sm hidden-md hidden-lg'?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />

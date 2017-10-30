@@ -46,5 +46,4 @@ class Results extends \VuFind\Search\Combined\Results
      * @var string
      */
     protected $backendId = 'Combined';
-
 }

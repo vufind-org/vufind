@@ -28,6 +28,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace Finna\Db\Row;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**

@@ -32,11 +32,11 @@
  */
 namespace FinnaSearch\Backend\Solr;
 
+use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
 
-use VuFindSearch\ParamBag;
+use VuFindSearch\Query\QueryGroup;
 
 /**
  * SOLR QueryBuilder.
@@ -121,5 +121,4 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder
         }
         return $searchString;
     }
-
 }

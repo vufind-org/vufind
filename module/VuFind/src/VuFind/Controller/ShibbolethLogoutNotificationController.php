@@ -109,7 +109,6 @@ class ShibbolethLogoutNotificationController extends AbstractBase
         $sessionManager = $this->serviceLocator->get('VuFind\SessionManager');
         $handler = $sessionManager->getSaveHandler();
         $handler->destroy($row['session_id']);
-        return;
     }
 
     /**
