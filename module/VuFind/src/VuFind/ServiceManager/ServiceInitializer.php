@@ -27,7 +27,7 @@
  */
 namespace VuFind\ServiceManager;
 
-use Zend\ServiceManager\ServiceManager;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * VuFind Service Initializer
@@ -38,16 +38,16 @@ use Zend\ServiceManager\ServiceManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Initializer
+class ServiceInitializer implements \Zend\ServiceManager\InitializerInterface
 {
     /**
      * Check if the record cache is enabled within a service manager.
      *
-     * @param ServiceManager $sm Service manager
+     * @param ServiceLocatorInterface $sm Service manager
      *
      * @return bool
      */
-    protected static function isCacheEnabled(ServiceManager $sm)
+    protected function isCacheEnabled(ServiceLocatorInterface $sm)
     {
         // Use static cache to save time on repeated lookups:
         static $enabled = null;
@@ -72,12 +72,12 @@ class Initializer
     /**
      * Given an instance and a Service Manager, initialize the instance.
      *
-     * @param object         $instance Instance to initialize
-     * @param ServiceManager $sm       Service manager
+     * @param object                  $instance Instance to initialize
+     * @param ServiceLocatorInterface $sm       Service manager
      *
      * @return object
      */
-    public static function initInstance($instance, ServiceManager $sm)
+    public function initialize($instance, ServiceLocatorInterface $sm)
     {
         if ($instance instanceof \VuFind\Db\Table\DbTableAwareInterface) {
             $instance->setDbTableManager($sm->get('VuFind\DbTablePluginManager'));
@@ -93,45 +93,9 @@ class Initializer
         }
         // Only inject cache if configuration enabled (to save resources):
         if ($instance instanceof \VuFind\Record\Cache\RecordCacheAwareInterface
-            && static::isCacheEnabled($sm)
+            && $this->isCacheEnabled($sm)
         ) {
             $instance->setRecordCache($sm->get('VuFind\RecordCache'));
-        }
-        return $instance;
-    }
-
-    /**
-     * Given a Zend Framework Plugin Manager, initialize the instance.
-     *
-     * @param object                                     $instance Instance to
-     * initialize
-     * @param \Zend\ServiceManager\AbstractPluginManager $manager  Plugin manager
-     *
-     * @return object
-     */
-    public static function initZendPlugin($instance,
-        \Zend\ServiceManager\AbstractPluginManager $manager
-    ) {
-        $sm = $manager->getServiceLocator();
-        if (null !== $sm) {
-            static::initInstance($instance, $sm);
-        }
-        return $instance;
-    }
-
-    /**
-     * Given an instance and a Plugin Manager, initialize the instance.
-     *
-     * @param object                $instance Instance to initialize
-     * @param AbstractPluginManager $manager  Plugin manager
-     *
-     * @return object
-     */
-    public static function initPlugin($instance, AbstractPluginManager $manager)
-    {
-        static::initZendPlugin($instance, $manager);
-        if (method_exists($instance, 'setPluginManager')) {
-            $instance->setPluginManager($manager);
         }
         return $instance;
     }
