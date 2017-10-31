@@ -81,7 +81,7 @@ class PrimoBackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $configReader = $this->serviceLocator->get('VuFind\Config');
         $this->primoConfig = $configReader->get('Primo');
         if ($this->serviceLocator->has('VuFind\Logger')) {

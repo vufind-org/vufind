@@ -112,16 +112,15 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      */
     protected function setupSearchService()
     {
-        $smConfig = new \Zend\ServiceManager\Config(
-            [
-                'factories' => [
-                    'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
-                    'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
-                ]
+        $config = [
+            'factories' => [
+                'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
+                'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
             ]
+        ];
+        $registry = new \VuFind\Search\BackendRegistry(
+            $this->serviceManager, $config
         );
-        $registry = $this->serviceManager->createScopedServiceManager();
-        $smConfig->configureServiceManager($registry);
         $bm = new \VuFind\Search\BackendManager($registry);
         $this->serviceManager->setService('VuFind\Search\BackendManager', $bm);
         $ss = new \VuFindSearch\Service();
