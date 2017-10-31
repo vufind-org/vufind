@@ -53,13 +53,6 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $serviceLocator = new \VuFind\Auth\PluginManager(
-            new \Zend\ServiceManager\Config(
-                [
-                    'abstract_factories' => ['VuFind\Auth\PluginFactory'],
-                ]
-            )
-        );
         $obj = clone $this->getAuthManager()->get('MultiAuth');
         $obj->setConfig($config);
         return $obj;
