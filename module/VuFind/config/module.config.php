@@ -247,7 +247,6 @@ $config = [
     'controller_plugins' => [
         'factories' => [
             'favorites' => 'VuFind\Controller\Plugin\Factory::getFavorites',
-            'flashmessenger' => 'VuFind\Controller\Plugin\Factory::getFlashMessenger',
             'followup' => 'VuFind\Controller\Plugin\Factory::getFollowup',
             'holds' => 'VuFind\Controller\Plugin\Factory::getHolds',
             'newItems' => 'VuFind\Controller\Plugin\Factory::getNewItems',
@@ -257,11 +256,16 @@ $config = [
             'reserves' => 'VuFind\Controller\Plugin\Factory::getReserves',
             'resultScroller' => 'VuFind\Controller\Plugin\Factory::getResultScroller',
             'storageRetrievalRequests' => 'VuFind\Controller\Plugin\Factory::getStorageRetrievalRequests',
+            'Zend\Mvc\Plugin\FlashMessenger\FlashMessenger' =>
+                'VuFind\Controller\Plugin\Factory::getFlashMessenger',
         ],
         'invokables' => [
             'db-upgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
-        ]
+        ],
+        'aliases' => [
+            'flashMessenger' => 'Zend\Mvc\Plugin\FlashMessenger\FlashMessenger',
+        ],
     ],
     'service_manager' => [
         'allow_override' => true,
