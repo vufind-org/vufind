@@ -23,7 +23,7 @@
     background-color: @gray-lighter;
     border-radius: @border-radius-base;
   }
-  :checked ~ label::before {
+  input:checked ~ label::before {
     color: #fff;
     background-color: @brand-primary;
   }
@@ -95,6 +95,7 @@
     color: @search-row-selected-color;
     text-decoration: underline;
   }
+  .fa { color: @search-row-selected-color; }
   .format,
   .label {
     color: @brand-primary;
@@ -148,7 +149,7 @@
     border-top-left-radius: @border-radius-base;
     border-bottom-left-radius: @border-radius-base;
   }
-  :checked ~ .checkbox-icon::before {
+  input:checked ~ .checkbox-icon::before {
     color: @search-row-selected-color;
     background-color: @search-row-selected-bg;
   }
