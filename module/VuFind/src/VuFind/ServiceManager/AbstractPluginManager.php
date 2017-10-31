@@ -57,7 +57,7 @@ abstract class AbstractPluginManager extends Base
     ) {
         parent::__construct($configOrContainerInstance, $v3config);
         $this->addInitializer(
-            'VuFind\ServiceManager\ZendPluginInitializer', false
+            'VuFind\ServiceManager\ServiceInitializer', false
         );
     }
 
