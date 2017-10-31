@@ -84,7 +84,7 @@ class CoverController extends AbstractBase
                 $cacheDir
             );
             $initializer = new \VuFind\ServiceManager\ServiceInitializer();
-            $initializer->initialize($this->loader, $this->serviceLocator);
+            $initializer($this->serviceLocator, $this->loader);
         }
         return $this->loader;
     }

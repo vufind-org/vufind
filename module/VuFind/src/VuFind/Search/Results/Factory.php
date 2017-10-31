@@ -58,7 +58,7 @@ class Factory
             [$tm->get('Resource'), $tm->get('UserList')]
         );
         $init = new \ZfcRbac\Initializer\AuthorizationServiceInitializer();
-        $init->initialize($obj, $sm);
+        $init($sm, $obj);
         return $obj;
     }
 

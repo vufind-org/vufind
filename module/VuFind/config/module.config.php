@@ -351,7 +351,7 @@ $config = [
     'translator' => [],
     'view_helpers' => [
         'initializers' => [
-            'VuFind\ServiceManager\ZendPluginInitializer',
+            'VuFind\ServiceManager\ServiceInitializer',
         ],
     ],
     'view_manager' => [

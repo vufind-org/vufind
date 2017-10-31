@@ -27,7 +27,8 @@
  */
 namespace VuFind\ServiceManager;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Initializer\InitializerInterface;
 
 /**
  * VuFind Service Initializer
@@ -38,16 +39,16 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ServiceInitializer implements \Zend\ServiceManager\InitializerInterface
+class ServiceInitializer implements InitializerInterface
 {
     /**
      * Check if the record cache is enabled within a service manager.
      *
-     * @param ServiceLocatorInterface $sm Service manager
+     * @param ContainerInterface $sm Service manager
      *
      * @return bool
      */
-    protected function isCacheEnabled(ServiceLocatorInterface $sm)
+    protected function isCacheEnabled(ContainerInterface $sm)
     {
         // Use static cache to save time on repeated lookups:
         static $enabled = null;
@@ -72,12 +73,12 @@ class ServiceInitializer implements \Zend\ServiceManager\InitializerInterface
     /**
      * Given an instance and a Service Manager, initialize the instance.
      *
-     * @param object                  $instance Instance to initialize
-     * @param ServiceLocatorInterface $sm       Service manager
+     * @param ContainerInterface $sm       Service manager
+     * @param object             $instance Instance to initialize
      *
      * @return object
      */
-    public function initialize($instance, ServiceLocatorInterface $sm)
+    public function __invoke(ContainerInterface $sm, $instance)
     {
         if ($instance instanceof \VuFind\Db\Table\DbTableAwareInterface) {
             $instance->setDbTableManager($sm->get('VuFind\DbTablePluginManager'));
