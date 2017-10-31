@@ -29,7 +29,7 @@ namespace VuFind;
 
 use Zend\Console\Console;
 use Zend\Mvc\MvcEvent;
-use Zend\Mvc\Router\Http\RouteMatch;
+use Zend\Router\Http\RouteMatch;
 
 /**
  * VuFind Bootstrapper

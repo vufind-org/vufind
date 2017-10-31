@@ -5,7 +5,7 @@ $config = [
     'router' => [
         'routes' => [
             'default' => [
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'type'    => 'Zend\Router\Http\Segment',
                 'options' => [
                     'route'    => '/[:controller[/[:action]]]',
                     'constraints' => [
@@ -19,7 +19,7 @@ $config = [
                 ],
             ],
             'content-page' => [
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'type'    => 'Zend\Router\Http\Segment',
                 'options' => [
                     'route'    => '/Content/[:page]',
                     'constraints' => [
@@ -32,7 +32,7 @@ $config = [
                 ],
             ],
             'legacy-alphabrowse-results' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'options' => [
                     'route'    => '/AlphaBrowse/Results',
                     'defaults' => [
@@ -42,7 +42,7 @@ $config = [
                 ]
             ],
             'legacy-bookcover' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'options' => [
                     'route'    => '/bookcover.php',
                     'defaults' => [
@@ -52,7 +52,7 @@ $config = [
                 ]
             ],
             'legacy-summonrecord' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'options' => [
                     'route'    => '/Summon/Record',
                     'defaults' => [
@@ -62,7 +62,7 @@ $config = [
                 ]
             ],
             'legacy-worldcatrecord' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'options' => [
                     'route'    => '/WorldCat/Record',
                     'defaults' => [
@@ -72,7 +72,7 @@ $config = [
                 ]
             ],
             'soap-shibboleth-logout-notification-handler' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'options' => [
                     'route' => '/soap/shiblogout',
                     'defaults' => [
@@ -987,7 +987,7 @@ $routeGenerator->addStaticRoutes($config, $staticRoutes);
 
 // Add the home route last
 $config['router']['routes']['home'] = [
-    'type' => 'Zend\Mvc\Router\Http\Literal',
+    'type' => 'Zend\Router\Http\Literal',
     'options' => [
         'route'    => '/',
         'defaults' => [
