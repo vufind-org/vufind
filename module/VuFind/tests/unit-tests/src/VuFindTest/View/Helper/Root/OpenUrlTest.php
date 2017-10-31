@@ -298,7 +298,7 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
             $mockContext = $this->getMockContext();
         }
         $mockPm = $this->getMockBuilder('VuFind\Resolver\Driver\PluginManager')
-            ->getMock();
+            ->disableOriginalConstructor()->getMock();
         $openUrl = new OpenUrl($mockContext, $rules, $mockPm, new Config($config));
         $openUrl->setView($this->getPhpRenderer());
         return $openUrl;
