@@ -53,8 +53,8 @@ class Factory
     {
         $factory = new PluginFactory();
         $tm = $sm->getServiceLocator()->get('VuFind\DbTablePluginManager');
-        $obj = $factory->createServiceWithName(
-            $sm, 'favorites', 'Favorites',
+        $obj = $factory(
+            $sm, 'Favorites',
             [$tm->get('Resource'), $tm->get('UserList')]
         );
         $init = new \ZfcRbac\Initializer\AuthorizationServiceInitializer();
@@ -72,7 +72,7 @@ class Factory
     public static function getSolr(ServiceManager $sm)
     {
         $factory = new PluginFactory();
-        $solr = $factory->createServiceWithName($sm, 'solr', 'Solr');
+        $solr = $factory($sm, 'Solr');
         $config = $sm->getServiceLocator()
             ->get('VuFind\Config')->get('config');
         $spellConfig = isset($config->Spelling)
@@ -94,8 +94,6 @@ class Factory
     {
         $factory = new PluginFactory();
         $tm = $sm->getServiceLocator()->get('VuFind\DbTablePluginManager');
-        return $factory->createServiceWithName(
-            $sm, 'tags', 'Tags', [$tm->get('Tags')]
-        );
+        return $factory($sm, 'Tags', [$tm->get('Tags')]);
     }
 }
