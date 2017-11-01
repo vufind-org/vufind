@@ -304,6 +304,7 @@ $config = [
                     'choiceauth' => 'VuFind\Auth\Factory::getChoiceAuth',
                     'facebook' => 'VuFind\Auth\Factory::getFacebook',
                     'ils' => 'VuFind\Auth\Factory::getILS',
+                    'multiauth' => 'VuFind\Auth\Factory::getMultiAuth',
                     'multiils' => 'VuFind\Auth\Factory::getMultiILS',
                     'shibboleth' => 'VuFind\Auth\Factory::getShibboleth'
                 ],
@@ -311,7 +312,6 @@ $config = [
                     'cas' => 'VuFind\Auth\CAS',
                     'database' => 'VuFind\Auth\Database',
                     'ldap' => 'VuFind\Auth\LDAP',
-                    'multiauth' => 'VuFind\Auth\MultiAuth',
                     'sip2' => 'VuFind\Auth\SIP2',
                 ],
                 'aliases' => [
