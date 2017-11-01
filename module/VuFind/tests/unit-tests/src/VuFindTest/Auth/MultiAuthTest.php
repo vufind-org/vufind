@@ -53,7 +53,9 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = clone $this->getAuthManager()->get('MultiAuth');
+        $manager = $this->getAuthManager();
+        $obj = clone $manager->get('MultiAuth');
+        $obj->setPluginManager($manager);
         $obj->setConfig($config);
         return $obj;
     }
