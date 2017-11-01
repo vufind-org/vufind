@@ -86,7 +86,7 @@ class SummonBackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $configReader = $this->serviceLocator->get('VuFind\Config');
         $this->config = $configReader->get('config');
         $this->summonConfig = $configReader->get('Summon');

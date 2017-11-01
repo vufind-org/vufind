@@ -77,7 +77,7 @@ class BrowZineBackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $configReader = $this->serviceLocator->get('VuFind\Config');
         $this->browzineConfig = $configReader->get('BrowZine');
         if ($this->serviceLocator->has('VuFind\Logger')) {
