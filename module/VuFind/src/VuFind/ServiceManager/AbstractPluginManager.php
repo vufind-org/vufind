@@ -72,7 +72,7 @@ abstract class AbstractPluginManager extends Base
      * @throws ServiceManagerRuntimeException if invalid
      * @return void
      */
-    public function validatePlugin($plugin)
+    public function validate($plugin)
     {
         $expectedInterface = $this->getExpectedInterface();
         if (!($plugin instanceof $expectedInterface)) {

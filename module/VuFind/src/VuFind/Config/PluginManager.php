@@ -53,7 +53,7 @@ class PluginManager extends Base
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function validatePlugin($plugin)
+    public function validate($plugin)
     {
         // Assume everything is okay.
     }
