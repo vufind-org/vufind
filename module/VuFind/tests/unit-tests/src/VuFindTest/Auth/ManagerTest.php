@@ -548,7 +548,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockPluginManager()
     {
-        $pm = new PluginManager();
+        $pm = new PluginManager($this->getServiceManager());
         $mockChoice = $this->getMockBuilder('VuFind\Auth\ChoiceAuth')
             ->disableOriginalConstructor()
             ->getMock();

@@ -252,7 +252,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
     protected function getDatabase($table)
     {
         $tableManager = $this->getMockBuilder('VuFind\Db\Table\PluginManager')
-            ->setMethods(['get'])->getMock();
+            ->disableOriginalConstructor()->setMethods(['get'])->getMock();
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('User'))
             ->will($this->returnValue($table));
