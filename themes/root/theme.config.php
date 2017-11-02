@@ -37,6 +37,7 @@ return [
             'searchoptions' => 'VuFind\View\Helper\Root\Factory::getSearchOptions',
             'searchparams' => 'VuFind\View\Helper\Root\Factory::getSearchParams',
             'searchtabs' => 'VuFind\View\Helper\Root\Factory::getSearchTabs',
+            'summaries' => 'VuFind\View\Helper\Root\Factory::getSummaries',
             'syndeticsplus' => 'VuFind\View\Helper\Root\Factory::getSyndeticsPlus',
             'systememail' => 'VuFind\View\Helper\Root\Factory::getSystemEmail',
             'userlist' => 'VuFind\View\Helper\Root\Factory::getUserList',
