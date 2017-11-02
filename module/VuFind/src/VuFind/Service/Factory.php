@@ -948,7 +948,7 @@ class Factory
             return $translator;
         }
         $pm->setService(
-            'extendedini',
+            'ExtendedIni',
             new \VuFind\I18n\Translator\Loader\ExtendedIni(
                 $pathStack, $fallbackLocales
             )

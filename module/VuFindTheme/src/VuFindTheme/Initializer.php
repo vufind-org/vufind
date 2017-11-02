@@ -415,7 +415,7 @@ class Initializer
                 $translator = $this->serviceManager->get('VuFind\Translator');
 
                 $pm = $translator->getPluginManager();
-                $pm->get('extendedini')->addToPathStack($pathStack);
+                $pm->get('ExtendedIni')->addToPathStack($pathStack);
             } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
                 // This exception likely indicates that translation is disabled,
                 // so we can't proceed.
