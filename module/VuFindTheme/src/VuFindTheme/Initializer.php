@@ -269,7 +269,7 @@ class Initializer
     protected function sendThemeOptionsToView()
     {
         // Get access to the view model:
-        $viewModel = $this->serviceManager->get('viewmanager')->getViewModel();
+        $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
 
         // Send down the view options:
         $viewModel->setVariable('themeOptions', $this->getThemeOptions());
