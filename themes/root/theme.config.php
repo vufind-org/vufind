@@ -44,7 +44,7 @@ return [
             'usertags' => 'VuFind\View\Helper\Root\Factory::getUserTags',
         ],
         'invokables' => [
-            'addellipsis' => 'VuFind\View\Helper\Root\AddEllipsis',
+            'addEllipsis' => 'VuFind\View\Helper\Root\AddEllipsis',
             'browse' => 'VuFind\View\Helper\Root\Browse',
             'context' => 'VuFind\View\Helper\Root\Context',
             'currentPath' => 'VuFind\View\Helper\Root\CurrentPath',
