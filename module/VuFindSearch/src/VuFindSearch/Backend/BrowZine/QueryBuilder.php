@@ -56,7 +56,8 @@ class QueryBuilder
     public function build(AbstractQuery $query)
     {
         // Send back results
-        $params = new ParamBag(['query' => $this->abstractQueryToArray($query)]);
+        $q = $this->abstractQueryToArray($query);
+        $params = new ParamBag(['query' => empty($q) ? '*' : $q]);
         return $params;
     }
 
