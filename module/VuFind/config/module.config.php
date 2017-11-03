@@ -105,7 +105,7 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'ajax' => 'VuFind\Controller\Factory::getAjaxController',
+            'AJAX' => 'VuFind\Controller\Factory::getAjaxController',
             'alphabrowse' => 'VuFind\Controller\Factory::getAlphabrowseController',
             'author' => 'VuFind\Controller\Factory::getAuthorController',
             'authority' => 'VuFind\Controller\Factory::getAuthorityController',
@@ -118,7 +118,7 @@ $config = [
             'combined' => 'VuFind\Controller\Factory::getCombinedController',
             'confirm' => 'VuFind\Controller\Factory::getConfirmController',
             'content' => 'VuFind\Controller\Factory::getContentController',
-            'cover' => 'VuFind\Controller\Factory::getCoverController',
+            'Cover' => 'VuFind\Controller\Factory::getCoverController',
             'eds' => 'VuFind\Controller\Factory::getEdsController',
             'edsrecord' => 'VuFind\Controller\Factory::getEdsrecordController',
             'eit' => 'VuFind\Controller\Factory::getEITController',
