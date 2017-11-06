@@ -416,7 +416,7 @@ class Initializer
 
                 $pm = $translator->getPluginManager();
                 $pm->get('ExtendedIni')->addToPathStack($pathStack);
-            } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
+            } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
                 // This exception likely indicates that translation is disabled,
                 // so we can't proceed.
                 return;
