@@ -52,7 +52,7 @@ class Factory
     public static function getFavorites(ServiceManager $sm)
     {
         $factory = new PluginFactory();
-        $tm = $sm->getServiceLocator()->get('VuFind\DbTablePluginManager');
+        $tm = $sm->get('VuFind\DbTablePluginManager');
         $obj = $factory(
             $sm, 'Favorites',
             [$tm->get('Resource'), $tm->get('UserList')]
@@ -73,8 +73,7 @@ class Factory
     {
         $factory = new PluginFactory();
         $solr = $factory($sm, 'Solr');
-        $config = $sm->getServiceLocator()
-            ->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config')->get('config');
         $spellConfig = isset($config->Spelling)
             ? $config->Spelling : null;
         $solr->setSpellingProcessor(
@@ -93,7 +92,7 @@ class Factory
     public static function getTags(ServiceManager $sm)
     {
         $factory = new PluginFactory();
-        $tm = $sm->getServiceLocator()->get('VuFind\DbTablePluginManager');
+        $tm = $sm->get('VuFind\DbTablePluginManager');
         return $factory($sm, 'Tags', [$tm->get('Tags')]);
     }
 }

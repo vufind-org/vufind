@@ -28,15 +28,15 @@
  */
 namespace VuFind\Search\Factory;
 
+use Interop\Container\ContainerInterface;
+
 use SerialsSolutions\Summon\Zend2 as Connector;
-use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Summon\Backend;
 use VuFindSearch\Backend\Summon\QueryBuilder;
 use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for Summon backends.
@@ -59,7 +59,7 @@ class SummonBackendFactory implements FactoryInterface
     /**
      * Superior service manager.
      *
-     * @var ServiceLocatorInterface
+     * @var ContainerInterface
      */
     protected $serviceLocator;
 
@@ -78,15 +78,19 @@ class SummonBackendFactory implements FactoryInterface
     protected $summonConfig;
 
     /**
-     * Create the backend.
+     * Create service
      *
-     * @param ServiceLocatorInterface $serviceLocator Superior service manager
+     * @param ContainerInterface $sm      Service manager
+     * @param string             $name    Requested service name (unused)
+     * @param array              $options Extra options (unused)
      *
-     * @return BackendInterface
+     * @return Backend
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $this->serviceLocator = $serviceLocator->getServiceLocator();
+        $this->serviceLocator = $sm;
         $configReader = $this->serviceLocator->get('VuFind\Config');
         $this->config = $configReader->get('config');
         $this->summonConfig = $configReader->get('Summon');

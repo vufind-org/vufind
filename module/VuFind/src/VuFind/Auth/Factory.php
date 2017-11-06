@@ -52,10 +52,10 @@ class Factory
     public static function getChoiceAuth(ServiceManager $sm)
     {
         $container = new \Zend\Session\Container(
-            'ChoiceAuth', $sm->getServiceLocator()->get('VuFind\SessionManager')
+            'ChoiceAuth', $sm->get('VuFind\SessionManager')
         );
         $auth = new ChoiceAuth($container);
-        $auth->setPluginManager($sm);
+        $auth->setPluginManager($sm->get('VuFind\AuthPluginManager'));
         return $auth;
     }
 
@@ -69,7 +69,7 @@ class Factory
     public static function getFacebook(ServiceManager $sm)
     {
         $container = new \Zend\Session\Container(
-            'Facebook', $sm->getServiceLocator()->get('VuFind\SessionManager')
+            'Facebook', $sm->get('VuFind\SessionManager')
         );
         return new Facebook($container);
     }
@@ -84,8 +84,8 @@ class Factory
     public static function getILS(ServiceManager $sm)
     {
         return new ILS(
-            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
-            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+            $sm->get('VuFind\ILSConnection'),
+            $sm->get('VuFind\ILSAuthenticator')
         );
     }
 
@@ -166,7 +166,7 @@ class Factory
     public static function getMultiAuth(ServiceManager $sm)
     {
         $auth = new MultiAuth();
-        $auth->setPluginManager($sm);
+        $auth->setPluginManager($sm->get('VuFind\AuthPluginManager'));
         return $auth;
     }
 
@@ -180,8 +180,8 @@ class Factory
     public static function getMultiILS(ServiceManager $sm)
     {
         return new MultiILS(
-            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
-            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+            $sm->get('VuFind\ILSConnection'),
+            $sm->get('VuFind\ILSAuthenticator')
         );
     }
 
@@ -195,7 +195,7 @@ class Factory
     public static function getShibboleth(ServiceManager $sm)
     {
         return new Shibboleth(
-            $sm->getServiceLocator()->get('VuFind\SessionManager')
+            $sm->get('VuFind\SessionManager')
         );
     }
 }

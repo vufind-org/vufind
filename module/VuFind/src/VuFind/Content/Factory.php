@@ -51,9 +51,8 @@ class Factory
      */
     public static function getAuthorNotes(ServiceManager $sm)
     {
-        $loader = $sm->getServiceLocator()
-            ->get('VuFind\ContentAuthorNotesPluginManager');
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $loader = $sm->get('VuFind\ContentAuthorNotesPluginManager');
+        $config = $sm->get('VuFind\Config')->get('config');
         $providers = isset($config->Content->authorNotes)
             ? $config->Content->authorNotes : '';
         return new Loader($loader, $providers);
@@ -68,9 +67,8 @@ class Factory
      */
     public static function getExcerpts(ServiceManager $sm)
     {
-        $loader = $sm->getServiceLocator()
-            ->get('VuFind\ContentExcerptsPluginManager');
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $loader = $sm->get('VuFind\ContentExcerptsPluginManager');
+        $config = $sm->get('VuFind\Config')->get('config');
         $providers = isset($config->Content->excerpts)
             ? $config->Content->excerpts : '';
         return new Loader($loader, $providers);
@@ -85,9 +83,8 @@ class Factory
      */
     public static function getReviews(ServiceManager $sm)
     {
-        $loader = $sm->getServiceLocator()
-            ->get('VuFind\ContentReviewsPluginManager');
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $loader = $sm->get('VuFind\ContentReviewsPluginManager');
+        $config = $sm->get('VuFind\Config')->get('config');
         $providers = isset($config->Content->reviews)
             ? $config->Content->reviews : '';
         return new Loader($loader, $providers);
@@ -102,9 +99,8 @@ class Factory
      */
     public static function getSummaries(ServiceManager $sm)
     {
-        $loader = $sm->getServiceLocator()
-            ->get('VuFind\ContentSummariesPluginManager');
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $loader = $sm->get('VuFind\ContentSummariesPluginManager');
+        $config = $sm->get('VuFind\Config')->get('config');
         $providers = isset($config->Content->summaries)
             ? $config->Content->summaries : '';
         return new Loader($loader, $providers);
@@ -119,9 +115,8 @@ class Factory
      */
     public static function getTOC(ServiceManager $sm)
     {
-        $loader = $sm->getServiceLocator()
-            ->get('VuFind\ContentTOCPluginManager');
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $loader = $sm->get('VuFind\ContentTOCPluginManager');
+        $config = $sm->get('VuFind\Config')->get('config');
         $providers = isset($config->Content->toc)
             ? $config->Content->toc : '';
         return new Loader($loader, $providers);

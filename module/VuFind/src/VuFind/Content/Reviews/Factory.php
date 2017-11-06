@@ -52,7 +52,7 @@ class Factory
      */
     public static function getAbstractSyndetics(ServiceManager $sm, $plus)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config')->get('config');
         return new Syndetics(
             isset($config->Syndetics->use_ssl) && $config->Syndetics->use_ssl,
             $plus,
@@ -69,12 +69,12 @@ class Factory
      */
     public static function getAmazon(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config')->get('config');
         $associate = isset($config->Content->amazonassociate)
             ? $config->Content->amazonassociate : null;
         $secret = isset($config->Content->amazonsecret)
             ? $config->Content->amazonsecret : null;
-        $label = $sm->getServiceLocator()->get('VuFind\Translator')->translate(
+        $label = $sm->get('VuFind\Translator')->translate(
             'Supplied by Amazon'
         );
         return new Amazon($associate, $secret, $label);
@@ -89,12 +89,12 @@ class Factory
      */
     public static function getAmazonEditorial(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config')->get('config');
         $associate = isset($config->Content->amazonassociate)
             ? $config->Content->amazonassociate : null;
         $secret = isset($config->Content->amazonsecret)
             ? $config->Content->amazonsecret : null;
-        $label = $sm->getServiceLocator()->get('VuFind\Translator')->translate(
+        $label = $sm->get('VuFind\Translator')->translate(
             'Supplied by Amazon'
         );
         return new AmazonEditorial($associate, $secret, $label);
@@ -109,7 +109,7 @@ class Factory
      */
     public static function getBooksite(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config')->get('config');
         $url = isset($config->Booksite->url)
             ? $config->Booksite->url : 'https://api.booksite.com';
         if (!isset($config->Booksite->key)) {

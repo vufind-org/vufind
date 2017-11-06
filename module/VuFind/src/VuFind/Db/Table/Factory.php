@@ -53,7 +53,7 @@ class Factory
     public static function getRowPrototype(ServiceManager $sm, $name)
     {
         if ($name) {
-            $rowManager = $sm->getServiceLocator()->get('VuFind\DbRowPluginManager');
+            $rowManager = $sm->get('VuFind\DbRowPluginManager');
             return $rowManager->has($name) ? $rowManager->get($name) : null;
         }
         return null;
@@ -80,10 +80,11 @@ class Factory
         if (!class_exists($class)) {
             throw new \Exception('Cannot construct ' . $class);
         }
-        $adapter = $sm->getServiceLocator()->get('VuFind\DbAdapter');
-        $config = $sm->getServiceLocator()->get('config');
+        $adapter = $sm->get('VuFind\DbAdapter');
+        $config = $sm->get('config');
+        $tm = $sm->get('VuFind\DbTablePluginManager');
         return new $class(
-            $adapter, $sm, $config, static::getRowPrototype($sm, $rowName), ...$args
+            $adapter, $tm, $config, static::getRowPrototype($sm, $rowName), ...$args
         );
     }
 
@@ -114,8 +115,8 @@ class Factory
      */
     public static function getResource(ServiceManager $sm)
     {
-        $converter = $sm->getServiceLocator()->get('VuFind\DateConverter');
-        $loader = $sm->getServiceLocator()->get('VuFind\RecordLoader');
+        $converter = $sm->get('VuFind\DateConverter');
+        $loader = $sm->get('VuFind\RecordLoader');
         return static::getGenericTable(
             'Resource', $sm, 'resource', [$converter, $loader]
         );
@@ -130,7 +131,7 @@ class Factory
      */
     public static function getResourceTags(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config')->get('config');
         $caseSensitive = isset($config->Social->case_sensitive_tags)
             && $config->Social->case_sensitive_tags;
         return static::getGenericTable(
@@ -147,7 +148,7 @@ class Factory
      */
     public static function getTags(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config')->get('config');
         $caseSensitive = isset($config->Social->case_sensitive_tags)
             && $config->Social->case_sensitive_tags;
         return static::getGenericTable('Tags', $sm, 'tags', [$caseSensitive]);
@@ -162,12 +163,12 @@ class Factory
      */
     public static function getUser(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config')->get('config');
         $privacy = isset($config->Authentication->privacy)
             && $config->Authentication->privacy;
         $session = null;
         if ($privacy) {
-            $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            $sessionManager = $sm->get('VuFind\SessionManager');
             $session = new \Zend\Session\Container('Account', $sessionManager);
         }
         return static::getGenericTable('User', $sm, 'user', [$config, $session]);
@@ -182,7 +183,7 @@ class Factory
      */
     public static function getUserList(ServiceManager $sm)
     {
-        $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+        $sessionManager = $sm->get('VuFind\SessionManager');
         $session = new \Zend\Session\Container('List', $sessionManager);
         return static::getGenericTable('UserList', $sm, 'userlist', [$session]);
     }

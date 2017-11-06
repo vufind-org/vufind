@@ -52,8 +52,8 @@ class Factory
     public static function getAleph(ServiceManager $sm)
     {
         return new Aleph(
-            $sm->getServiceLocator()->get('VuFind\DateConverter'),
-            $sm->getServiceLocator()->get('VuFind\CacheManager')
+            $sm->get('VuFind\DateConverter'),
+            $sm->get('VuFind\CacheManager')
         );
     }
 
@@ -67,11 +67,11 @@ class Factory
     public static function getDAIA(ServiceManager $sm)
     {
         $daia = new DAIA(
-            $sm->getServiceLocator()->get('VuFind\DateConverter')
+            $sm->get('VuFind\DateConverter')
         );
 
         $daia->setCacheStorage(
-            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+            $sm->get('VuFind\CacheManager')->getCache('object')
         );
 
         return $daia;
@@ -87,7 +87,7 @@ class Factory
     public static function getLBS4(ServiceManager $sm)
     {
         return new LBS4(
-            $sm->getServiceLocator()->get('VuFind\DateConverter')
+            $sm->get('VuFind\DateConverter')
         );
     }
 
@@ -101,12 +101,12 @@ class Factory
     public static function getDemo(ServiceManager $sm)
     {
         $sessionFactory = function () use ($sm) {
-            $manager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            $manager = $sm->get('VuFind\SessionManager');
             return new \Zend\Session\Container('DemoDriver', $manager);
         };
         return new Demo(
-            $sm->getServiceLocator()->get('VuFind\DateConverter'),
-            $sm->getServiceLocator()->get('VuFind\Search'), $sessionFactory
+            $sm->get('VuFind\DateConverter'),
+            $sm->get('VuFind\Search'), $sessionFactory
         );
     }
 
@@ -119,7 +119,7 @@ class Factory
      */
     public static function getHorizon(ServiceManager $sm)
     {
-        return new Horizon($sm->getServiceLocator()->get('VuFind\DateConverter'));
+        return new Horizon($sm->get('VuFind\DateConverter'));
     }
 
     /**
@@ -132,7 +132,7 @@ class Factory
     public static function getHorizonXMLAPI(ServiceManager $sm)
     {
         return new HorizonXMLAPI(
-            $sm->getServiceLocator()->get('VuFind\DateConverter')
+            $sm->get('VuFind\DateConverter')
         );
     }
 
@@ -146,8 +146,8 @@ class Factory
     public static function getMultiBackend(ServiceManager $sm)
     {
         return new MultiBackend(
-            $sm->getServiceLocator()->get('VuFind\Config'),
-            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator'),
+            $sm->get('VuFind\Config'),
+            $sm->get('VuFind\ILSAuthenticator'),
             $sm
         );
     }
@@ -161,7 +161,7 @@ class Factory
      */
     public static function getNoILS(ServiceManager $sm)
     {
-        return new NoILS($sm->getServiceLocator()->get('VuFind\RecordLoader'));
+        return new NoILS($sm->get('VuFind\RecordLoader'));
     }
 
     /**
@@ -174,12 +174,12 @@ class Factory
     public static function getPAIA(ServiceManager $sm)
     {
         $paia = new PAIA(
-            $sm->getServiceLocator()->get('VuFind\DateConverter'),
-            $sm->getServiceLocator()->get('VuFind\SessionManager')
+            $sm->get('VuFind\DateConverter'),
+            $sm->get('VuFind\SessionManager')
         );
 
         $paia->setCacheStorage(
-            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+            $sm->get('VuFind\CacheManager')->getCache('object')
         );
 
         return $paia;
@@ -194,7 +194,7 @@ class Factory
      */
     public static function getKoha(ServiceManager $sm)
     {
-        return new Koha($sm->getServiceLocator()->get('VuFind\DateConverter'));
+        return new Koha($sm->get('VuFind\DateConverter'));
     }
 
     /**
@@ -206,9 +206,9 @@ class Factory
      */
     public static function getKohaILSDI(ServiceManager $sm)
     {
-        $koha = new KohaILSDI($sm->getServiceLocator()->get('VuFind\DateConverter'));
+        $koha = new KohaILSDI($sm->get('VuFind\DateConverter'));
         $koha->setCacheStorage(
-            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+            $sm->get('VuFind\CacheManager')->getCache('object')
         );
         return $koha;
     }
@@ -223,16 +223,16 @@ class Factory
     public static function getSierraRest(ServiceManager $sm)
     {
         $sessionFactory = function ($namespace) use ($sm) {
-            $manager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            $manager = $sm->get('VuFind\SessionManager');
             return new \Zend\Session\Container("SierraRest_$namespace", $manager);
         };
 
         $driver = new SierraRest(
-            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+            $sm->get('VuFind\DateConverter'),
             $sessionFactory
         );
         $driver->setCacheStorage(
-            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+            $sm->get('VuFind\CacheManager')->getCache('object')
         );
         return $driver;
     }
@@ -247,8 +247,8 @@ class Factory
     public static function getSymphony(ServiceManager $sm)
     {
         return new Symphony(
-            $sm->getServiceLocator()->get('VuFind\RecordLoader'),
-            $sm->getServiceLocator()->get('VuFind\CacheManager')
+            $sm->get('VuFind\RecordLoader'),
+            $sm->get('VuFind\CacheManager')
         );
     }
 
@@ -261,7 +261,7 @@ class Factory
      */
     public static function getUnicorn(ServiceManager $sm)
     {
-        return new Unicorn($sm->getServiceLocator()->get('VuFind\DateConverter'));
+        return new Unicorn($sm->get('VuFind\DateConverter'));
     }
 
     /**
@@ -273,7 +273,7 @@ class Factory
      */
     public static function getVoyager(ServiceManager $sm)
     {
-        return new Voyager($sm->getServiceLocator()->get('VuFind\DateConverter'));
+        return new Voyager($sm->get('VuFind\DateConverter'));
     }
 
     /**
@@ -285,13 +285,13 @@ class Factory
      */
     public static function getVoyagerRestful(ServiceManager $sm)
     {
-        $ils = $sm->getServiceLocator()->get('VuFind\ILSHoldSettings');
+        $ils = $sm->get('VuFind\ILSHoldSettings');
         $vr = new VoyagerRestful(
-            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+            $sm->get('VuFind\DateConverter'),
             $ils->getHoldsMode(), $ils->getTitleHoldsMode()
         );
         $vr->setCacheStorage(
-            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+            $sm->get('VuFind\CacheManager')->getCache('object')
         );
         return $vr;
     }

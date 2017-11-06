@@ -54,7 +54,7 @@ class Factory
     public static function getJSTree(ServiceManager $sm)
     {
         return new JSTree(
-            $sm->getServiceLocator()->get('ControllerPluginManager')->get('Url')
+            $sm->get('ControllerPluginManager')->get('Url')
         );
     }
 }

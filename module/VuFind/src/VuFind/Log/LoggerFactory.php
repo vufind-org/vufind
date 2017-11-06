@@ -27,9 +27,10 @@
  */
 namespace VuFind\Log;
 
+use Interop\Container\ContainerInterface;
 use Zend\Config\Config;
 use Zend\Log\Writer\WriterInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for instantiating Logger
@@ -42,18 +43,18 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  *
  * @codeCoverageIgnore
  */
-class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
+class LoggerFactory implements FactoryInterface
 {
     /**
      * Configure database writers.
      *
-     * @param Logger                  $logger Logger object
-     * @param ServiceLocatorInterface $sm     Service locator
-     * @param string                  $config Configuration
+     * @param Logger             $logger Logger object
+     * @param ContainerInterface $sm     Service locator
+     * @param string             $config Configuration
      *
      * @return void
      */
-    protected function addDbWriters(Logger $logger, ServiceLocatorInterface $sm,
+    protected function addDbWriters(Logger $logger, ContainerInterface $sm,
         $config
     ) {
         $parts = explode(':', $config);
@@ -79,13 +80,13 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
     /**
      * Configure email writers.
      *
-     * @param Logger                  $logger Logger object
-     * @param ServiceLocatorInterface $sm     Service locator
-     * @param Config                  $config Configuration
+     * @param Logger             $logger Logger object
+     * @param ContainerInterface $sm     Service locator
+     * @param Config             $config Configuration
      *
      * @return void
      */
-    protected function addEmailWriters(Logger $logger, ServiceLocatorInterface $sm,
+    protected function addEmailWriters(Logger $logger, ContainerInterface $sm,
         Config $config
     ) {
         // Set up the logger's mailer to behave consistently with VuFind's
@@ -130,13 +131,13 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
     /**
      * Configure Slack writers.
      *
-     * @param Logger                  $logger Logger object
-     * @param ServiceLocatorInterface $sm     Service locator
-     * @param Config                  $config Configuration
+     * @param Logger             $logger Logger object
+     * @param ContainerInterface $sm     Service locator
+     * @param Config             $config Configuration
      *
      * @return void
      */
-    protected function addSlackWriters(Logger $logger, ServiceLocatorInterface $sm,
+    protected function addSlackWriters(Logger $logger, ContainerInterface $sm,
         Config $config
     ) {
         $options = [];
@@ -170,12 +171,12 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
     /**
      * Set configuration
      *
-     * @param ServiceLocatorInterface $sm     Service manager
-     * @param Logger                  $logger Logger to configure
+     * @param ContainerInterface $sm     Service manager
+     * @param Logger             $logger Logger to configure
      *
      * @return void
      */
-    protected function configureLogger(ServiceLocatorInterface $sm, Logger $logger)
+    protected function configureLogger(ContainerInterface $sm, Logger $logger)
     {
         $config = $sm->get('VuFind\Config')->get('config');
 
@@ -324,11 +325,15 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
     /**
      * Create service
      *
-     * @param ServiceLocatorInterface $sm Service manager
+     * @param ContainerInterface $sm      Service manager
+     * @param string             $name    Requested service name (unused)
+     * @param array              $options Extra options (unused)
      *
-     * @return mixed
+     * @return Logger
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function createService(ServiceLocatorInterface $sm)
+    public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $logger = new Logger();
         $this->configureLogger($sm, $logger);
