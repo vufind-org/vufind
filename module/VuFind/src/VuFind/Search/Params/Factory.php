@@ -52,7 +52,7 @@ class Factory
     public static function getSolr(ServiceManager $sm)
     {
         $factory = new PluginFactory();
-        $helper = $sm->getServiceLocator()->get('VuFind\HierarchicalFacetHelper');
+        $helper = $sm->get('VuFind\HierarchicalFacetHelper');
         return $factory($sm, 'Solr', [$helper]);
     }
 }

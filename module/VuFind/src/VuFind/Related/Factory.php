@@ -52,8 +52,8 @@ class Factory
     public static function getEditions(ServiceManager $sm)
     {
         return new Editions(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-            $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
+            $sm->get('VuFind\SearchResultsPluginManager'),
+            $sm->get('VuFind\WorldCatUtils')
         );
     }
 
@@ -66,7 +66,7 @@ class Factory
      */
     public static function getSimilar(ServiceManager $sm)
     {
-        return new Similar($sm->getServiceLocator()->get('VuFind\Search'));
+        return new Similar($sm->get('VuFind\Search'));
     }
 
     /**
@@ -79,8 +79,8 @@ class Factory
     public static function getWorldCatEditions(ServiceManager $sm)
     {
         return new WorldCatEditions(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-            $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
+            $sm->get('VuFind\SearchResultsPluginManager'),
+            $sm->get('VuFind\WorldCatUtils')
         );
     }
 
@@ -93,6 +93,6 @@ class Factory
      */
     public static function getWorldCatSimilar(ServiceManager $sm)
     {
-        return new WorldCatSimilar($sm->getServiceLocator()->get('VuFind\Search'));
+        return new WorldCatSimilar($sm->get('VuFind\Search'));
     }
 }

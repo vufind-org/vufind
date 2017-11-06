@@ -27,10 +27,11 @@
  */
 namespace VuFind\Mailer;
 
+use Interop\Container\ContainerInterface;
 use Zend\Mail\Transport\InMemory;
 use Zend\Mail\Transport\Smtp;
 use Zend\Mail\Transport\SmtpOptions;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for instantiating Mailer objects
@@ -43,7 +44,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  *
  * @codeCoverageIgnore
  */
-class Factory implements \Zend\ServiceManager\FactoryInterface
+class Factory implements FactoryInterface
 {
     /**
      * Build the mail transport object.
@@ -87,11 +88,15 @@ class Factory implements \Zend\ServiceManager\FactoryInterface
     /**
      * Create service
      *
-     * @param ServiceLocatorInterface $sm Service manager
+     * @param ContainerInterface $sm      Service manager
+     * @param string             $name    Requested service name (unused)
+     * @param array              $options Extra options (unused)
      *
-     * @return mixed
+     * @return \VuFind\Mailer\Mailer
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function createService(ServiceLocatorInterface $sm)
+    public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         // Load configurations:
         $config = $sm->get('VuFind\Config')->get('config');

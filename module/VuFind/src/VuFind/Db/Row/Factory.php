@@ -60,7 +60,7 @@ class Factory
         if (!class_exists($class)) {
             throw new \Exception('Cannot construct ' . $class);
         }
-        $adapter = $sm->getServiceLocator()->get('VuFind\DbAdapter');
+        $adapter = $sm->get('VuFind\DbAdapter');
         return new $class($adapter, ...$args);
     }
 
@@ -88,14 +88,14 @@ class Factory
      */
     public static function getUser(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config')->get('config');
         $privacy = isset($config->Authentication->privacy)
             && $config->Authentication->privacy;
         $rowClass = $privacy ? 'PrivateUser' : 'User';
         $prototype = static::getGenericRow($rowClass, $sm);
         $prototype->setConfig($config);
         if ($privacy) {
-            $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            $sessionManager = $sm->get('VuFind\SessionManager');
             $session = new \Zend\Session\Container('Account', $sessionManager);
             $prototype->setSession($session);
         }
@@ -111,7 +111,7 @@ class Factory
      */
     public static function getUserList(ServiceManager $sm)
     {
-        $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+        $sessionManager = $sm->get('VuFind\SessionManager');
         $session = new \Zend\Session\Container('List', $sessionManager);
         return static::getGenericRow('UserList', $sm, [$session]);
     }

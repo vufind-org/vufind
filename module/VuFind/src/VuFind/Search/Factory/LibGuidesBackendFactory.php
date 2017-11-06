@@ -28,14 +28,14 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\BackendInterface;
+use Interop\Container\ContainerInterface;
+
 use VuFindSearch\Backend\LibGuides\Backend;
 use VuFindSearch\Backend\LibGuides\Connector;
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
 use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for LibGuides backends.
@@ -58,7 +58,7 @@ class LibGuidesBackendFactory implements FactoryInterface
     /**
      * Superior service manager.
      *
-     * @var ServiceLocatorInterface
+     * @var ContainerInterface
      */
     protected $serviceLocator;
 
@@ -70,15 +70,19 @@ class LibGuidesBackendFactory implements FactoryInterface
     protected $libGuidesConfig;
 
     /**
-     * Create the backend.
+     * Create service
      *
-     * @param ServiceLocatorInterface $serviceLocator Superior service manager
+     * @param ContainerInterface $sm      Service manager
+     * @param string             $name    Requested service name (unused)
+     * @param array              $options Extra options (unused)
      *
-     * @return BackendInterface
+     * @return Backend
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $this->serviceLocator = $serviceLocator->getServiceLocator();
+        $this->serviceLocator = $sm;
         $configReader = $this->serviceLocator->get('VuFind\Config');
         $this->libGuidesConfig = $configReader->get('LibGuides');
         if ($this->serviceLocator->has('VuFind\Logger')) {

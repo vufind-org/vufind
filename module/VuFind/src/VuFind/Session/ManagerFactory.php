@@ -27,7 +27,8 @@
  */
 namespace VuFind\Session;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\Session\SessionManager;
 
 /**
@@ -41,16 +42,16 @@ use Zend\Session\SessionManager;
  *
  * @codeCoverageIgnore
  */
-class ManagerFactory implements \Zend\ServiceManager\FactoryInterface
+class ManagerFactory implements FactoryInterface
 {
     /**
      * Build the options array.
      *
-     * @param ServiceLocatorInterface $sm Service manager
+     * @param ContainerInterface $sm Service manager
      *
      * @return array
      */
-    protected function getOptions(ServiceLocatorInterface $sm)
+    protected function getOptions(ContainerInterface $sm)
     {
         $cookieManager = $sm->get('VuFind\CookieManager');
         $options = [
@@ -75,11 +76,11 @@ class ManagerFactory implements \Zend\ServiceManager\FactoryInterface
      * Set up the session handler by retrieving all the pieces from the service
      * manager and injecting appropriate dependencies.
      *
-     * @param ServiceLocatorInterface $sm Service manager
+     * @param ContainerInterface $sm Service manager
      *
      * @return array
      */
-    protected function getHandler(ServiceLocatorInterface $sm)
+    protected function getHandler(ContainerInterface $sm)
     {
         // Load and validate session configuration:
         $config = $sm->get('VuFind\Config')->get('config');
@@ -119,11 +120,15 @@ class ManagerFactory implements \Zend\ServiceManager\FactoryInterface
     /**
      * Create service
      *
-     * @param ServiceLocatorInterface $sm Service manager
+     * @param ContainerInterface $sm      Service manager
+     * @param string             $name    Requested service name (unused)
+     * @param array              $options Extra options (unused)
      *
-     * @return mixed
+     * @return SessionManager
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function createService(ServiceLocatorInterface $sm)
+    public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         // Build configuration:
         $sessionConfig = new \Zend\Session\Config\SessionConfig();

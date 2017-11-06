@@ -62,7 +62,7 @@ class GenericFactory
         if (!class_exists($class)) {
             throw new \Exception('Cannot construct ' . $class);
         }
-        return new $class($sm->getServiceLocator());
+        return new $class($sm);
     }
 
     /**

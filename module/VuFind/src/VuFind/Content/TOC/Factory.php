@@ -52,7 +52,7 @@ class Factory
      */
     public static function getAbstractSyndetics(ServiceManager $sm, $plus)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config')->get('config');
         return new Syndetics(
             isset($config->Syndetics->use_ssl) && $config->Syndetics->use_ssl,
             $plus,

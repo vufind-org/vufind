@@ -52,8 +52,8 @@ class Factory extends GenericFactory
     public static function getBrowseController(ServiceManager $sm)
     {
         return new BrowseController(
-            $sm->getServiceLocator(),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+            $sm,
+            $sm->get('VuFind\Config')->get('config')
         );
     }
 
@@ -67,10 +67,10 @@ class Factory extends GenericFactory
     public static function getCartController(ServiceManager $sm)
     {
         return new CartController(
-            $sm->getServiceLocator(),
+            $sm,
             new \Zend\Session\Container(
                 'cart_followup',
-                $sm->getServiceLocator()->get('VuFind\SessionManager')
+                $sm->get('VuFind\SessionManager')
             )
         );
     }
@@ -85,8 +85,8 @@ class Factory extends GenericFactory
     public static function getCollectionController(ServiceManager $sm)
     {
         return new CollectionController(
-            $sm->getServiceLocator(),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+            $sm,
+            $sm->get('VuFind\Config')->get('config')
         );
     }
 
@@ -100,8 +100,8 @@ class Factory extends GenericFactory
     public static function getCollectionsController(ServiceManager $sm)
     {
         return new CollectionsController(
-            $sm->getServiceLocator(),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+            $sm,
+            $sm->get('VuFind\Config')->get('config')
         );
     }
 
@@ -115,8 +115,8 @@ class Factory extends GenericFactory
     public static function getIndexController(ServiceManager $sm)
     {
         return new IndexController(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-            $sm->getServiceLocator()->get('VuFind\AuthManager')
+            $sm->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\AuthManager')
         );
     }
 
@@ -130,8 +130,8 @@ class Factory extends GenericFactory
     public static function getRecordController(ServiceManager $sm)
     {
         return new RecordController(
-            $sm->getServiceLocator(),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+            $sm,
+            $sm->get('VuFind\Config')->get('config')
         );
     }
 
@@ -145,10 +145,10 @@ class Factory extends GenericFactory
     public static function getUpgradeController(ServiceManager $sm)
     {
         return new UpgradeController(
-            $sm->getServiceLocator(),
-            $sm->getServiceLocator()->get('VuFind\CookieManager'),
+            $sm,
+            $sm->get('VuFind\CookieManager'),
             new \Zend\Session\Container(
-                'upgrade', $sm->getServiceLocator()->get('VuFind\SessionManager')
+                'upgrade', $sm->get('VuFind\SessionManager')
             )
         );
     }

@@ -52,7 +52,7 @@ class Factory
     public static function getSolr(ServiceManager $sm)
     {
         return new Solr(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\SearchResultsPluginManager')
         );
     }
 
@@ -66,7 +66,7 @@ class Factory
     public static function getSolrAuth(ServiceManager $sm)
     {
         return new SolrAuth(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\SearchResultsPluginManager')
         );
     }
 
@@ -80,7 +80,7 @@ class Factory
     public static function getSolrCN(ServiceManager $sm)
     {
         return new SolrCN(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\SearchResultsPluginManager')
         );
     }
 
@@ -94,7 +94,7 @@ class Factory
     public static function getSolrReserves(ServiceManager $sm)
     {
         return new SolrReserves(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\SearchResultsPluginManager')
         );
     }
 }

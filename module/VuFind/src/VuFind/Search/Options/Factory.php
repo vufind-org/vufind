@@ -51,13 +51,13 @@ class Factory
      */
     public static function getEDS(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config');
+        $config = $sm->get('VuFind\Config');
         $container = new \Zend\Session\Container(
-            'EBSCO', $sm->getServiceLocator()->get('VuFind\SessionManager')
+            'EBSCO', $sm->get('VuFind\SessionManager')
         );
         // No API info in session? Re-establish connection:
         if (!isset($container->info)) {
-            $backend = $sm->getServiceLocator()->get('VuFind\Search\BackendManager')
+            $backend = $sm->get('VuFind\Search\BackendManager')
                 ->get('EDS');
             $backend->getSessionToken();
         }

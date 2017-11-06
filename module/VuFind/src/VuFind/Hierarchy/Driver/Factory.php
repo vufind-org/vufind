@@ -85,7 +85,7 @@ class Factory
      */
     public static function getHierarchyDefault(ServiceManager $sm)
     {
-        return static::get($sm->getServiceLocator(), 'HierarchyDefault');
+        return static::get($sm, 'HierarchyDefault');
     }
 
     /**
@@ -97,6 +97,6 @@ class Factory
      */
     public static function getHierarchyFlat(ServiceManager $sm)
     {
-        return static::get($sm->getServiceLocator(), 'HierarchyFlat');
+        return static::get($sm, 'HierarchyFlat');
     }
 }
