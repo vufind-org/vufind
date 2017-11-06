@@ -68,13 +68,20 @@ class AbstractBase extends AbstractActionController
     protected $accessDeniedBehavior = null;
 
     /**
+     * Service manager
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
     public function __construct(ServiceLocatorInterface $sm)
     {
-        $this->setServiceLocator($sm);
+        $this->serviceLocator = $sm;
     }
 
     /**
