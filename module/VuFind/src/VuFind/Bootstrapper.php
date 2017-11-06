@@ -343,7 +343,7 @@ class Bootstrapper
                         'ExtendedIni', $domain, $domain, $language
                     );
                 }
-            } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
+            } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
                 if (!extension_loaded('intl')) {
                     throw new \Exception(
                         'Translation broken due to missing PHP intl extension.'

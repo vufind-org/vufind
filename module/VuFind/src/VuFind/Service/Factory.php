@@ -927,7 +927,7 @@ class Factory
      */
     public static function getTranslator(ServiceManager $sm)
     {
-        $factory = new \Zend\Mvc\Service\TranslatorServiceFactory();
+        $factory = new \Zend\Mvc\I18n\TranslatorFactory();
         $translator = $factory->createService($sm);
 
         // Set up the ExtendedIni plugin:
@@ -941,7 +941,7 @@ class Factory
             : [$config->Site->language, 'en'];
         try {
             $pm = $translator->getPluginManager();
-        } catch (\Zend\Mvc\Exception\BadMethodCallException $ex) {
+        } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $ex) {
             // If getPluginManager is missing, this means that the user has
             // disabled translation in module.config.php or PHP's intl extension
             // is missing. We can do no further configuration of the object.
