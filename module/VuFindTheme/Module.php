@@ -89,12 +89,15 @@ class Module
     {
         return [
             'factories' => [
-                'headLink' => 'VuFindTheme\View\Helper\Factory::getHeadLink',
-                'headScript' => 'VuFindTheme\View\Helper\Factory::getHeadScript',
                 'headThemeResources' =>
                     'VuFindTheme\View\Helper\Factory::getHeadThemeResources',
                 'imageLink' => 'VuFindTheme\View\Helper\Factory::getImageLink',
-                'inlineScript' =>
+                // We have to override the Zend helpers using canonical names:
+                'Zend\View\Helper\HeadLink' =>
+                    'VuFindTheme\View\Helper\Factory::getHeadLink',
+                'Zend\View\Helper\HeadScript' =>
+                    'VuFindTheme\View\Helper\Factory::getHeadScript',
+                'Zend\View\Helper\InlineScript' =>
                     'VuFindTheme\View\Helper\Factory::getInlineScript',
             ],
         ];
