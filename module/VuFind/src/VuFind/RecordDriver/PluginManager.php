@@ -52,17 +52,16 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ) {
         // These objects are not meant to be shared -- every time we retrieve one,
         // we are building a brand new object.
-        $this->setShareByDefault(false);
+        $this->sharedByDefault = false;
 
         parent::__construct($configOrContainerInstance, $v3config);
 
         // Add an initializer for setting up hierarchies
-        $initializer = function ($instance, $manager) {
+        $initializer = function ($sm, $instance) {
             $hasHierarchyType = is_callable([$instance, 'getHierarchyType']);
             if ($hasHierarchyType
                 && is_callable([$instance, 'setHierarchyDriverManager'])
             ) {
-                $sm = $manager->getServiceLocator();
                 if ($sm && $sm->has('VuFind\HierarchyDriverPluginManager')) {
                     $instance->setHierarchyDriverManager(
                         $sm->get('VuFind\HierarchyDriverPluginManager')
