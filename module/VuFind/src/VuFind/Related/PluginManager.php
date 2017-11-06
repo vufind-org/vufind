@@ -52,7 +52,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ) {
         // These objects are not meant to be shared -- every time we retrieve one,
         // we are building a brand new object.
-        $this->setShareByDefault(false);
+        $this->sharedByDefault = false;
 
         parent::__construct($configOrContainerInstance, $v3config);
     }
