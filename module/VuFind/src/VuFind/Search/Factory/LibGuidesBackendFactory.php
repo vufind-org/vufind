@@ -78,7 +78,7 @@ class LibGuidesBackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $configReader = $this->serviceLocator->get('VuFind\Config');
         $this->libGuidesConfig = $configReader->get('LibGuides');
         if ($this->serviceLocator->has('VuFind\Logger')) {

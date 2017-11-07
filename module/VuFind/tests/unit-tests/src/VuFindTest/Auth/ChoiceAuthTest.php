@@ -247,7 +247,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockPluginManager()
     {
-        $pm = new PluginManager();
+        $pm = new PluginManager($this->getServiceManager());
         $mockDb = $this->getMockBuilder('VuFind\Auth\Database')
             ->disableOriginalConstructor()
             ->getMock();

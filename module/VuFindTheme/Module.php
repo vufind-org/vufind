@@ -89,12 +89,12 @@ class Module
     {
         return [
             'factories' => [
-                'headlink' => 'VuFindTheme\View\Helper\Factory::getHeadLink',
-                'headscript' => 'VuFindTheme\View\Helper\Factory::getHeadScript',
-                'headthemeresources' =>
+                'headLink' => 'VuFindTheme\View\Helper\Factory::getHeadLink',
+                'headScript' => 'VuFindTheme\View\Helper\Factory::getHeadScript',
+                'headThemeResources' =>
                     'VuFindTheme\View\Helper\Factory::getHeadThemeResources',
-                'imagelink' => 'VuFindTheme\View\Helper\Factory::getImageLink',
-                'inlinescript' =>
+                'imageLink' => 'VuFindTheme\View\Helper\Factory::getImageLink',
+                'inlineScript' =>
                     'VuFindTheme\View\Helper\Factory::getInlineScript',
                 'mobileurl' => 'VuFindTheme\View\Helper\Factory::getMobileUrl',
             ],

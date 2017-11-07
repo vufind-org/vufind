@@ -4,8 +4,8 @@ namespace VuFindApi\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
-            'api' => 'VuFindApi\Controller\Factory::getApiController',
-            'searchapi' => 'VuFindApi\Controller\Factory::getSearchApiController',
+            'Api' => 'VuFindApi\Controller\Factory::getApiController',
+            'SearchApi' => 'VuFindApi\Controller\Factory::getSearchApiController',
         ]
     ],
     'router' => [

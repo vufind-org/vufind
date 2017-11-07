@@ -305,7 +305,7 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $config = isset($config->SearchHistoryLabels)
             ? $config->SearchHistoryLabels->toArray() : [];
-        return new HistoryLabel($config, $sm->get('transesc'));
+        return new HistoryLabel($config, $sm->get('transEsc'));
     }
 
     /**
@@ -329,7 +329,7 @@ class Factory
      */
     public static function getJsTranslations(ServiceManager $sm)
     {
-        return new JsTranslations($sm->get('transesc'));
+        return new JsTranslations($sm->get('transEsc'));
     }
 
     /**

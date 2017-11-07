@@ -29,9 +29,8 @@ return [
     'helpers' => [
         'factories' => [
             'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Factory::getFlashmessages',
-            'layoutclass' => 'VuFind\View\Helper\Bootstrap3\Factory::getLayoutClass',
+            'layoutClass' => 'VuFind\View\Helper\Bootstrap3\Factory::getLayoutClass',
             'recaptcha' => 'VuFind\View\Helper\Bootstrap3\Factory::getRecaptcha',
-            'summaries' => 'VuFind\View\Helper\Root\Factory::getSummaries',
         ],
         'invokables' => [
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',

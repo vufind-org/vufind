@@ -85,7 +85,7 @@ class WorldCatBackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $this->config = $this->serviceLocator->get('VuFind\Config')->get('config');
         $this->wcConfig = $this->serviceLocator
             ->get('VuFind\Config')->get('WorldCat');

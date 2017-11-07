@@ -179,7 +179,7 @@ class Bootstrapper
     {
         $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
-            $viewModel = $serviceManager->get('viewmanager')->getViewModel();
+            $viewModel = $serviceManager->get('ViewManager')->getViewModel();
 
             // Grab the template name from the first child -- we can use this to
             // figure out the current template context.
@@ -352,7 +352,7 @@ class Bootstrapper
                 }
             }
             // Send key values to view:
-            $viewModel = $sm->get('viewmanager')->getViewModel();
+            $viewModel = $sm->get('ViewManager')->getViewModel();
             $viewModel->setVariable('userLang', $language);
             $viewModel->setVariable('allLangs', $config->Languages);
             $rtlLangs = isset($config->LanguageSettings->rtl_langs)
@@ -473,7 +473,7 @@ class Bootstrapper
         // a user-friendly message instead of a fatal error.
         $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
-            $viewModel = $serviceManager->get('viewmanager')->getViewModel();
+            $viewModel = $serviceManager->get('ViewManager')->getViewModel();
             $viewModel->renderingError = true;
         };
         $this->events->attach('render.error', $callback, 10000);

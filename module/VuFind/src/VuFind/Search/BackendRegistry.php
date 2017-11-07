@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BrowZine QueryBuilder.
+ * Registry for search backends.
  *
  * PHP version 5
  *
@@ -24,58 +24,29 @@
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org
+ * @link     https://vufind.org Main Site
  */
-namespace VuFindSearch\Backend\BrowZine;
-
-use VuFindSearch\ParamBag;
-use VuFindSearch\Query\AbstractQuery;
-
-use VuFindSearch\Query\Query;
+namespace VuFind\Search;
 
 /**
- * BrowZine QueryBuilder.
+ * Registry for search backends.
  *
  * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org
+ * @link     https://vufind.org Main Site
  */
-class QueryBuilder
+class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
 {
-    /// Public API
-
     /**
-     * Return BrowZine search parameters based on a user query and params.
+     * Return the name of the base class or interface that plug-ins must conform
+     * to.
      *
-     * @param AbstractQuery $query User query
-     *
-     * @return ParamBag
+     * @return string
      */
-    public function build(AbstractQuery $query)
+    protected function getExpectedInterface()
     {
-        // Send back results
-        $q = $this->abstractQueryToArray($query);
-        $params = new ParamBag(['query' => empty($q) ? '*' : $q]);
-        return $params;
-    }
-
-    /// Internal API
-
-    /**
-     * Convert an AbstractQuery object to a query string.
-     *
-     * @param AbstractQuery $query Query to convert
-     *
-     * @return array
-     */
-    protected function abstractQueryToArray(AbstractQuery $query)
-    {
-        if ($query instanceof Query) {
-            return $query->getString();
-        } else {
-            throw new \Exception('Query groups not supported');
-        }
+        return 'VuFindSearch\Backend\BackendInterface';
     }
 }

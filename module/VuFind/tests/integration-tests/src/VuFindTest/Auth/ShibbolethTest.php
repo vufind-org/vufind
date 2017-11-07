@@ -80,9 +80,8 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
             $config = $this->getAuthConfig();
         }
         $obj = new Shibboleth($this->createMock('Zend\Session\ManagerInterface'));
-        \VuFind\ServiceManager\Initializer::initInstance(
-            $obj, $this->getServiceManager()
-        );
+        $initializer = new \VuFind\ServiceManager\ServiceInitializer();
+        $initializer->initialize($obj, $this->getServiceManager());
         $obj->setConfig($config);
         return $obj;
     }
