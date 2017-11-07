@@ -26,9 +26,12 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Base;
-use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query,
-    VuFindSearch\Query\QueryGroup;
-use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
+
+use VuFind\Search\QueryAdapter;
+use VuFind\Solr\Utils as SolrUtils;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
+use VuFindSearch\Query\Query;
+use VuFindSearch\Query\QueryGroup;
 
 /**
  * Abstract parameters search model.
@@ -227,10 +230,10 @@ class Params
     public function __clone()
     {
         if (is_object($this->options)) {
-            $this->options = clone($this->options);
+            $this->options = clone $this->options;
         }
         if (is_object($this->query)) {
-            $this->query = clone($this->query);
+            $this->query = clone $this->query;
         }
     }
 
@@ -524,10 +527,10 @@ class Params
         if ($view == 'rss') {
             // RSS is a special case that does not require config validation
             $this->setView('rss');
-        } else if (!empty($view) && in_array($view, $validViews)) {
+        } elseif (!empty($view) && in_array($view, $validViews)) {
             // make sure the url parameter is a valid view
             $this->setView($view);
-        } else if (!empty($this->lastView)
+        } elseif (!empty($this->lastView)
             && in_array($this->lastView, $validViews)
         ) {
             // if there is nothing in the URL, see if we had a previous value
@@ -719,7 +722,7 @@ class Params
         $value = count($temp) > 0 ? $temp[0] : '';
 
         // Remove quotes from the value if there are any
-        if (substr($value, 0, 1)  == '"') {
+        if (substr($value, 0, 1) == '"') {
             $value = substr($value, 1);
         }
         if (substr($value, -1, 1) == '"') {
@@ -1069,7 +1072,7 @@ class Params
         if ($firstChar == '-') {
             $operator = 'NOT';
             $field = substr($field, 1);
-        } else if ($firstChar == '~') {
+        } elseif ($firstChar == '~') {
             $operator = 'OR';
             $field = substr($field, 1);
         } else {
@@ -1153,7 +1156,7 @@ class Params
         // Pad to four digits:
         if (strlen($year) == 2) {
             $year = '19' . $year;
-        } else if (strlen($year) == 3) {
+        } elseif (strlen($year) == 3) {
             $year = '0' . $year;
         }
 
@@ -1500,7 +1503,7 @@ class Params
     public function getDisplayQueryWithReplacedTerm($oldTerm, $newTerm)
     {
         // Stash our old data for a minute
-        $oldTerms = clone($this->query);
+        $oldTerms = clone $this->query;
         // Replace the search term
         $this->query->replaceTerm($oldTerm, $newTerm);
         // Get the new query string

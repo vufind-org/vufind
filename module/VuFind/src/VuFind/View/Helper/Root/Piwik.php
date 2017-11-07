@@ -417,6 +417,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      */
     protected function getOpeningTrackingCode()
     {
+        $escape = $this->getView()->plugin('escapejs');
         return <<<EOT
 
 function initVuFindPiwikTracker{$this->timestamp}(){
@@ -424,7 +425,7 @@ function initVuFindPiwikTracker{$this->timestamp}(){
 
     VuFindPiwikTracker.setSiteId({$this->siteId});
     VuFindPiwikTracker.setTrackerUrl('{$this->url}piwik.php');
-    VuFindPiwikTracker.setCustomUrl('{$this->getCustomUrl()}');
+    VuFindPiwikTracker.setCustomUrl('{$escape($this->getCustomUrl())}');
 
 EOT;
     }
@@ -436,7 +437,7 @@ EOT;
      */
     protected function getCustomUrl()
     {
-        $path = $this->request->getUri()->getPath();
+        $path = $this->request->getUri()->toString();
         $routeMatch = $this->router->match($this->request);
         if ($routeMatch
             && $routeMatch->getMatchedRouteName() == 'vufindrecord-ajaxtab'

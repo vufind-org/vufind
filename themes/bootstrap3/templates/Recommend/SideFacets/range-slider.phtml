@@ -28,9 +28,9 @@
   <? $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css'); ?>
   <?
     $min = !empty($this->facet['values'][0]) ? min($this->facet['values'][0], 1400) : 1400;
-    $future = date('Y', time()+31536000); // next year
+    $future = date('Y', time() + 31536000); // next year
     $max = !empty($this->facet['values'][1]) ? max($future, $this->facet['values'][1]) : $future;
-    $low  = !empty($this->facet['values'][0]) ? $this->facet['values'][0] : $min;
+    $low = !empty($this->facet['values'][0]) ? $this->facet['values'][0] : $min;
     $high = !empty($this->facet['values'][1]) ? $this->facet['values'][1] : $max;
     $script = <<<JS
 $(document).ready(function() {

@@ -101,8 +101,8 @@ class BookSite extends \VuFind\Content\AbstractBase
         $i = 0;
         $json = json_decode($response->getBody());
         foreach ($json as $source => $values) {
-            $reviews[$i]['Source' ] = $source;
-            $reviews[$i]['Date'   ] = (string)$values->reviewDate;
+            $reviews[$i]['Source'] = $source;
+            $reviews[$i]['Date'] = (string)$values->reviewDate;
             $reviews[$i]['Content'] = (string)$values->reviewText;
             $i++;
         }

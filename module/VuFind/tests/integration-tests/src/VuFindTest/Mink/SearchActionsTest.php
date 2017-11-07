@@ -82,6 +82,18 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Get filtered search
+     *
+     * @return \Behat\Mink\Element\Element
+     */
+    protected function getFilteredSearch()
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results?filter%5B%5D=building%3A"weird_ids.mrc"');
+        return $session->getPage();
+    }
+
+    /**
      * Test saving and clearing a search.
      *
      * @return void
@@ -297,7 +309,7 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#modal .js-facet-item.active')->click();
         // remove facet
         $this->snooze();
-        $this->assertNull($page->find('css', '.list-group.filters'));
+        $this->assertNull($page->find('css', '.active-filters'));
     }
 
     /**
@@ -329,7 +341,7 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#modal .js-facet-item.active')->click();
         // remove facet
         $this->snooze();
-        $this->assertNull($page->find('css', '.list-group.filters'));
+        $this->assertNull($page->find('css', '.active-filters'));
     }
 
     /**
@@ -375,7 +387,7 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#j1_2 a')->click();
         $this->snooze();
         $filter = $this->findCss($page, '.active-filters .facet');
-        $this->assertEquals('hierarchy: 1/level1a/level2a/', $filter->getText());
+        $this->assertEquals('Clear Filter hierarchy: 1/level1a/level2a/', $filter->getText());
         $this->findCss($page, '#j1_2 .fa-check');
     }
 
@@ -438,6 +450,32 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze(); // wait for animation
         $this->findCss($page, '#side-panel-format .collapsed')->click(); // on
         $this->findCss($page, '#side-panel-building .collapsed')->click(); // on
+    }
+
+    /**
+     * Test retrain current filters checkbox
+     *
+     * @return void
+     */
+    public function testRetainFilters()
+    {
+        $page = $this->getFilteredSearch();
+        $this->findCss($page, '.active-filters'); // Make sure we're filtered
+        // Perform search with retain
+        $this->findCss($page, '#searchForm .btn.btn-primary')->click();
+        $this->snooze();
+        $this->findCss($page, '.active-filters');
+        // Perform search double click retain
+        $this->findCss($page, '.searchFormKeepFilters')->click();
+        $this->findCss($page, '.searchFormKeepFilters')->click();
+        $this->findCss($page, '#searchForm .btn.btn-primary')->click();
+        $this->snooze();
+        $this->findCss($page, '.active-filters');
+        // Perform search without retain
+        $this->findCss($page, '.searchFormKeepFilters')->click();
+        $this->findCss($page, '#searchForm .btn.btn-primary')->click();
+        $items = $page->findAll('css', '.active-filters');
+        $this->assertEquals(0, count($items));
     }
 
     /**

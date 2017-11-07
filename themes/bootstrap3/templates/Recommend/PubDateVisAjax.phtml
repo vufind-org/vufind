@@ -8,7 +8,7 @@
   $this->headScript()->appendFile('vendor/flot/jquery.flot.selection.min.js');
   $this->headScript()->appendFile('pubdate_vis.js'); ?>
 
-  <? foreach ($visFacets as $facetField=>$facetRange): ?>
+  <? foreach ($visFacets as $facetField => $facetRange): ?>
     <div class="authorbox">
       <div id="datevis<?=$this->escapeHtml($facetField)?>xWrapper" class="hidden">
         <strong><?=$this->transEsc($facetRange['label']) ?></strong>

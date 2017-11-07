@@ -26,8 +26,9 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Exception\ILS as ILSException,
-    VuFind\Config\Locator as ConfigLocator;
+
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * XC NCIP Toolkit (v2) ILS Driver
@@ -445,7 +446,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $holdings = $current->xpath('ns1:HoldingsSet');
 
                 foreach ($holdings as $current) {
-
                     $holdCallNo = $current->xpath('ns1:CallNumber');
                     $holdCallNo = (string)$holdCallNo[0];
 
@@ -753,7 +753,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $fines = [];
         $balance = 0;
         foreach ($list as $current) {
-
             $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
 
             $tmp = $current->xpath(
@@ -1495,7 +1494,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     "new_time" => rtrim($splitTime, "Z"),
                     "item_id" => $renewId,
                 ];
-
             } else {
                 $details[$renewId] = [
                     "success" => false,
@@ -1526,7 +1524,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $requestId,
         $type
     ) {
-    
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
             '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
             'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
@@ -1687,7 +1684,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $itemAgencyId,
         $patronAgencyId
     ) {
-    
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
             '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
             'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .

@@ -6,7 +6,7 @@
     <!-- Indicators -->
     <ol class="carousel-indicators">
       <li data-target="#similar-items-carousel" data-slide-to="0" class="active"></li>
-      <? for($i=1;$i<count($similarRecords)/$perPage;$i++): ?>
+      <? for($i = 1;$i < count($similarRecords) / $perPage;$i++): ?>
         <li data-target="#similar-items-carousel" data-slide-to="<?=$i ?>"></li>
       <? endfor; ?>
     </ol>
@@ -14,7 +14,7 @@
     <!-- Wrapper for slides -->
     <div class="carousel-inner">
       <div class="item active">
-        <? foreach ($similarRecords as $index=>$data): ?>
+        <? foreach ($similarRecords as $index => $data): ?>
           <div class="carousel-item">
             <a class="hover-overlay" href="<?=$this->recordLink()->getUrl($data)?>">
               <? $thumb = $this->record($data)->getThumbnail('large'); ?>
@@ -32,7 +32,7 @@
               </div>
             </a>
           </div>
-          <? if(($index+1) % $perPage == 0 && $index < count($similarRecords)-1): ?>
+          <? if(($index + 1) % $perPage == 0 && $index < count($similarRecords) - 1): ?>
       </div>
       <div class="item">
           <? endif; ?>

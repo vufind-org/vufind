@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
+
 use Zend\Console\Console;
 use Zend\Mvc\Application;
 

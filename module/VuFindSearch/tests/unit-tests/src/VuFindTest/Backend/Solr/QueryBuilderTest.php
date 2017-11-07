@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Backend\Solr;
 
+use VuFindSearch\Backend\Solr\QueryBuilder;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
-use VuFindSearch\Backend\Solr\QueryBuilder;
 
 /**
  * Unit tests for SOLR query builder

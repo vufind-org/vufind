@@ -88,7 +88,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // Figure out which handler to use:
         if (!empty($type) && isset($types[$type])) {
             $module = $types[$type];
-        } else if (isset($config->Autocomplete->default_handler)) {
+        } elseif (isset($config->Autocomplete->default_handler)) {
             $module = $config->Autocomplete->default_handler;
         } else {
             $module = false;

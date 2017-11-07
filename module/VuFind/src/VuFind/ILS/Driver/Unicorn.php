@@ -25,7 +25,9 @@
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  */
 namespace VuFind\ILS\Driver;
-use File_MARC, VuFind\Exception\ILS as ILSException;
+
+use File_MARC;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
@@ -1081,7 +1083,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         ) {
             $availability = 0;
             $status = $this->config['UnavailableItemTypes'][$item_type];
-        } else if (isset($this->config['UnavailableLocations'])
+        } elseif (isset($this->config['UnavailableLocations'])
             && isset($this->config['UnavailableLocations'][$currLocCode])
         ) {
             $availability = 0;
@@ -1117,7 +1119,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'format' => $format
             ];
 
-            return $item;
+        return $item;
     }
 
     /**
@@ -1381,7 +1383,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
             $linking = $linking[0];
 
-            if (array_key_exists((int) $linking, $textuals)) {
+            if (array_key_exists((int)$linking, $textuals)) {
                 // Skip coded holdings overridden by textual
                 // holdings
                 continue;
@@ -1395,7 +1397,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $decoded_holding .= ' ' . $subfield->getData();
             }
 
-            $ndx = (int) ($linking
+            $ndx = (int)($linking
                           . sprintf("%0{$link_digits}u", $sequence));
             $holdings[$ndx] = trim($decoded_holding);
         }
@@ -1406,7 +1408,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $textual_holding .= ' ' . $note->getData();
             }
 
-            $ndx = (int) ($linking . sprintf("%0{$link_digits}u", 0));
+            $ndx = (int)($linking . sprintf("%0{$link_digits}u", 0));
             $holdings[$ndx] = trim($textual_holding);
         }
 
