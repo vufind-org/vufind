@@ -27,6 +27,7 @@
  * Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use Zend\View\Helper\AbstractHelper;
 
@@ -276,6 +277,8 @@ class RecordDataFormatter extends AbstractHelper
         $view = $this->getView();
         $escaper = (isset($options['translate']) && $options['translate'])
             ? $view->plugin('transEsc') : $view->plugin('escapeHtml');
+        $transDomain = isset($options['translationTextDomain'])
+            ? $options['translationTextDomain'] : '';
         $separator = isset($options['separator'])
             ? $options['separator'] : '<br />';
         $retVal = '';
@@ -283,7 +286,7 @@ class RecordDataFormatter extends AbstractHelper
         $remaining = count($data);
         foreach ($array as $line) {
             $remaining--;
-            $text = $escaper($line);
+            $text = $escaper($transDomain . $line);
             $retVal .= ($link = $this->getLink($line, $options))
                 ? '<a href="' . $link . '">' . $text . '</a>' : $text;
             if ($remaining > 0) {

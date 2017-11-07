@@ -77,15 +77,15 @@ class Pazpar2 extends SolrDefault
             if (count($data->attributes()) > 0) {
                 $children['_attr_'] = [];
                 foreach ($data->attributes() as $name => $attr) {
-                    $children['_attr_'][$name] = (string) $attr;
+                    $children['_attr_'][$name] = (string)$attr;
                 }
             }
             // If there's no children, we're at data
             if ($data->count() == 0) {
                 if (!isset($children['_attr_'])) {
-                    $children = (string) $data; // Flatten
+                    $children = (string)$data; // Flatten
                 } else {
-                    $children[$key] = (string) $data;
+                    $children[$key] = (string)$data;
                 }
             } else {
                 // If there's children, recurse on this XML
@@ -112,7 +112,7 @@ class Pazpar2 extends SolrDefault
         if (count($xml->attributes()) > 0) {
             $array['_attr_'] = [];
             foreach ($xml->attributes() as $key => $attr) {
-                $array['_attr_'][$key] = (string) $attr;
+                $array['_attr_'][$key] = (string)$attr;
             }
         }
         return $array;
@@ -222,7 +222,7 @@ class Pazpar2 extends SolrDefault
                 function ($url) {
                     return ['url' => $url];
                 },
-                (array) $this->pz2fields['location']['md-electronic-url']
+                (array)$this->pz2fields['location']['md-electronic-url']
             );
         }
         return [];

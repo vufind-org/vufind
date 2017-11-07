@@ -27,8 +27,9 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\ILS\Connection as ILSConnection,
-    VuFind\Exception\ILS as ILSException;
+
+use VuFind\Exception\ILS as ILSException;
+use VuFind\ILS\Connection as ILSConnection;
 
 /**
  * Hold Logic Class
@@ -217,7 +218,7 @@ class Holds
 
             if ($mode == "disabled") {
                 $holdings = $this->standardHoldings($result);
-            } else if ($mode == "driver") {
+            } elseif ($mode == "driver") {
                 $holdings = $this->driverHoldings($result, $config, !empty($blocks));
             } else {
                 $holdings = $this->generateHoldings($result, $mode, $config);
@@ -283,6 +284,7 @@ class Holds
                             $copy['link'] = $this->getRequestDetails(
                                 $copy, $holdConfig['HMACKeys'], 'Hold'
                             );
+                            $copy['linkLightbox'] = true;
                             // If we are unsure whether hold options are available,
                             // set a flag so we can check later via AJAX:
                             $copy['check'] = $copy['addLink'] === 'check';
@@ -339,7 +341,7 @@ class Holds
                             = ($holds_override && isset($copy['holdOverride']))
                             ? $copy['holdOverride'] : $type;
 
-                        switch($currentType) {
+                        switch ($currentType) {
                         case "all":
                             $addlink = true; // always provide link
                             break;
@@ -369,12 +371,16 @@ class Holds
                                     = $this->catalog->getHoldLink(
                                         $copy['id'], $copy
                                     );
+                                $holdings[$location_key][$copy_key]['linkLightbox']
+                                    = false;
                             } else {
                                 /* Build non-opac link */
                                 $holdings[$location_key][$copy_key]['link']
                                     = $this->getRequestDetails(
                                         $copy, $holdConfig['HMACKeys'], 'Hold'
                                     );
+                                $holdings[$location_key][$copy_key]['linkLightbox']
+                                    = true;
                             }
                         }
                     }

@@ -14,6 +14,17 @@ module.exports = function(grunt) {
 
     // Iterate through theme.config.php files collecting parent themes in search path:
     while (config = fs.readFileSync("themes/" + parts[1] + "/theme.config.php", "UTF-8")) {
+      // First identify mixins:
+      var mixinMatches = config.match(/["']mixins["']\s*=>\s*\[([^\]]+)\]/);
+      if (mixinMatches !== null) {
+        var mixinParts = mixinMatches[1].split(',')
+        for (var i = 0; i < mixinParts.length; i++) {
+          parts[1] = mixinParts[i].trim().replace(/['"]/g, '');
+          retVal.push(parts.join('/') + '/');
+        }
+      }
+
+      // Now move up to parent theme:
       var matches = config.match(/["']extends["']\s*=>\s*['"](\w+)['"]/);
 
       // "extends" set to "false" or missing entirely? We've hit the end of the line:
@@ -80,6 +91,13 @@ module.exports = function(grunt) {
             src: ['*.less'],
             ext: '.scss',
             dest: 'themes/bootprint3/scss'
+          },
+          {
+            expand: true,
+            cwd: 'themes/sandal/less',
+            src: ['*.less'],
+            ext: '.scss',
+            dest: 'themes/sandal/scss'
           }
         ],
         options: {
@@ -88,6 +106,13 @@ module.exports = function(grunt) {
               pattern: /(\s+)@include ([^\(]+)\(([^\)]+)\);/gi,
               replacement: function mixinCommas(match, space, $1, $2) {
                 return space + '@include ' + $1 + '(' + $2.replace(/;/g, ',') + ');';
+              },
+              order: 3
+            },
+            { // Remove unquote
+              pattern: /(\s+)unquote\("([^"]+)"\)/gi,
+              replacement: function mixinCommas(match, space, $1) {
+                return space + $1;
               },
               order: 3
             },

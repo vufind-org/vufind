@@ -72,7 +72,7 @@ class Writer
             if (false === $this->content) {
                 throw new \Exception('Could not read ' . $filename);
             }
-        } else if (is_array($content)) {
+        } elseif (is_array($content)) {
             $this->content = $this->buildContent($content, $comments);
         } else {
             $this->content = $content;
@@ -117,9 +117,16 @@ class Writer
                     $settingSet = true;
                 }
                 $currentSection = $matches[1];
-            } else if (strstr($content, '=')) {
+            } elseif (strstr($content, '=')) {
                 $contentParts = explode('=', $content, 2);
                 $key = trim($contentParts[0]);
+                // If the key we are trying to set is already present as an array,
+                // we need to clear out the multiple existing values before writing
+                // in a new one:
+                if ($key == $setting . '[]') {
+                    continue;
+                }
+                // Standard case for match on section + key:
                 if ($currentSection == $section && $key == $setting) {
                     $settingSet = true;
                     if ($value === null) {
@@ -205,9 +212,9 @@ class Writer
     {
         if ($e === true) {
             return 'true';
-        } else if ($e === false) {
+        } elseif ($e === false) {
             return 'false';
-        } else if ($e == "") {
+        } elseif ($e == "") {
             return '';
         } else {
             return '"' . str_replace('"', '\"', $e) . '"';
@@ -231,6 +238,18 @@ class Writer
             $tabStr .= ' ';
         }
 
+        // Special case: if value is an array, we need to adjust the key
+        // accordingly:
+        if (is_array($value)) {
+            $retVal = '';
+            foreach ($value as $current) {
+                $retVal .= $key . '[]' . $tabStr . " = "
+                    . $this->buildContentValue($current);
+            }
+            return $retVal;
+        }
+
+        // Standard case: value is not an array:
         return $key . $tabStr . " = " . $this->buildContentValue($value);
     }
 

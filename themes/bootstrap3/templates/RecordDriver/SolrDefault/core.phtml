@@ -1,7 +1,7 @@
 <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <?
     $QRCode = $this->record($this->driver)->getQRCode("core");
-    $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium', $this->recordLink()->getUrl($this->driver));
+    $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium', $this->record($this->driver)->getThumbnail('large'));
     $cover = $coverDetails['html'];
     $preview = $this->record($this->driver)->getPreviews();
   ?>
@@ -23,7 +23,11 @@
          // from this area of the record view, this can be split into
          // getPreviewData() (should stay here) and
          // getPreviewLink() (can go in your desired tab) ?>
-      <? if ($preview): ?><?=$preview?><? endif; ?>
+      <? if ($preview): ?>
+        <div class="record-previews">
+          <?=$preview?>
+        </div>
+      <? endif; ?>
     </div>
   <? endif; ?>
   <div class="media-body">
@@ -41,7 +45,7 @@
 
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
       <? /* Display the lists that this record is saved to */ ?>
-      <div class="savedLists hidden alert alert-info">
+      <div class="savedLists">
         <strong><?=$this->transEsc("Saved in")?>:</strong>
       </div>
     <? endif; ?>

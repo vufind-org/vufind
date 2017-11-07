@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller;
-use VuFind\Cover\CachingProxy, VuFind\Cover\Loader;
+
+use VuFind\Cover\CachingProxy;
+use VuFind\Cover\Loader;
 
 /**
  * Generates covers for book entries
@@ -81,9 +83,8 @@ class CoverController extends AbstractBase
                 $this->serviceLocator->get('VuFind\Http')->createClient(),
                 $cacheDir
             );
-            \VuFind\ServiceManager\Initializer::initInstance(
-                $this->loader, $this->serviceLocator
-            );
+            $initializer = new \VuFind\ServiceManager\ServiceInitializer();
+            $initializer->initialize($this->loader, $this->serviceLocator);
         }
         return $this->loader;
     }

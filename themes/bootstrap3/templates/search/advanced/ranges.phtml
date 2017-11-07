@@ -23,15 +23,14 @@
           $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
           $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
           $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
-          $future = date('Y', time()+31536000);
+          $future = date('Y', time() + 31536000);
           $max = !empty($current['values'][1]) ? max($future, $current['values'][1]) : $future;
-          $low  = !empty($current['values'][0]) ? $current['values'][0] : $min;
+          $low = !empty($current['values'][0]) ? $current['values'][0] : $min;
           $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
           $min = intval($min);
           $max = intval($max);
           $low = intval($low);
           $high = intval($high);
-          $reversed = $this->layout()->rtl ? 'true' : 'false';
           $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
           $script = <<<JS
 $(document).ready(function() {
@@ -46,8 +45,7 @@ $(document).ready(function() {
        'max':{$max},
        'handle':"square",
        'tooltip':"hide",
-       'value':[{$low},{$high}],
-       'reversed': {$reversed}
+       'value':[{$low},{$high}]
     })
     .on('change', fillTexts)
     .data('slider');

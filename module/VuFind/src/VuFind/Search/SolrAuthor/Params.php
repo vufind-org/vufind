@@ -56,7 +56,7 @@ class Params extends \VuFind\Search\Solr\Params
 
         // Force the search to be a phrase:
         $lookfor = '"' . str_replace('"', '\"', $lookfor) . '"';
-        
+
         // Set the search (handler is always Author for this module):
         $this->setBasicSearch($lookfor, 'Author');
         return true;

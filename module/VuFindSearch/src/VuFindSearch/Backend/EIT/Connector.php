@@ -28,8 +28,8 @@
  */
 namespace VuFindSearch\Backend\EIT;
 
-use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\Exception\HttpErrorException;
+use VuFindSearch\ParamBag;
 
 use Zend\Http\Request;
 
@@ -124,7 +124,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         return [
             'docs' => $finalDocs,
             'offset' => $offset,
-            'total' => (integer)$xml->Hits
+            'total' => (int)$xml->Hits
         ];
     }
 
@@ -189,7 +189,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         return $body;
     }
 
-        /**
+    /**
      * Retrieve a specific record.
      *
      * @param string   $id     Record ID to retrieve
@@ -215,7 +215,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         return [
             'docs' => $finalDocs,
             'offset' => 0,
-            'total' => (integer)$xml->Hits
+            'total' => (int)$xml->Hits
         ];
     }
 }

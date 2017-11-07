@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Backend\LibGuides;
 
+use PHPUnit_Framework_TestCase;
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for LibGuides query builder

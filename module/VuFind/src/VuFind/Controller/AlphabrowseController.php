@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -29,6 +29,7 @@
 namespace VuFind\Controller;
 
 use VuFindSearch\ParamBag;
+
 /**
  * AlphabrowseController Class
  *
@@ -86,12 +87,12 @@ class AlphabrowseController extends AbstractBase
         // Load remaining config parameters
         $rows_before = isset($config->AlphaBrowse->rows_before)
             && is_numeric($config->AlphaBrowse->rows_before)
-            ? (int) $config->AlphaBrowse->rows_before : 0;
+            ? (int)$config->AlphaBrowse->rows_before : 0;
         $highlighting = isset($config->AlphaBrowse->highlighting)
             ? $config->AlphaBrowse->highlighting : false;
         $limit  = isset($config->AlphaBrowse->page_size)
             && is_numeric($config->AlphaBrowse->page_size)
-            ? (int) $config->AlphaBrowse->page_size : 20;
+            ? (int)$config->AlphaBrowse->page_size : 20;
 
         // Connect to Solr:
         $db = $this->serviceLocator->get('VuFind\Search\BackendManager')

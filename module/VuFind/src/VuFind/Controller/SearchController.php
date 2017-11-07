@@ -73,6 +73,17 @@ class SearchController extends AbstractSearch
     }
 
     /**
+     * Show facet list for Solr-driven collections.
+     *
+     * @return mixed
+     */
+    public function collectionfacetlistAction()
+    {
+        $this->searchClassId = 'SolrCollection';
+        return $this->facetListAction();
+    }
+
+    /**
      * Email action - Allows the email form to appear.
      *
      * @return mixed
@@ -160,7 +171,7 @@ class SearchController extends AbstractSearch
         ) {
             $illYes['selected'] = true;
             $savedSearch->getParams()->removeFilter('illustrated:Illustrated');
-        } else if ($savedSearch
+        } elseif ($savedSearch
             && $savedSearch->getParams()->hasFilter('illustrated:"Not Illustrated"')
         ) {
             $illNo['selected'] = true;
@@ -236,43 +247,18 @@ class SearchController extends AbstractSearch
         if ($this->params()->fromQuery('require_login', 'no') !== 'no' && !$user) {
             return $this->forceLogin();
         }
+        $userId = is_object($user) ? $user->id : null;
 
-        // Retrieve search history
-        $search = $this->getTable('Search');
-        $searchHistory = $search->getSearches(
-            $this->serviceLocator->get('VuFind\SessionManager')->getId(),
-            is_object($user) ? $user->id : null
-        );
+        $searchHistoryHelper = $this->serviceLocator->get('VuFind\Search\History');
 
-        // Build arrays of history entries
-        $saved = $unsaved = [];
+        if ($this->params()->fromQuery('purge')) {
+            $searchHistoryHelper->purgeSearchHistory($userId);
 
-        // Loop through the history
-        foreach ($searchHistory as $current) {
-            $minSO = $current->getSearchObject();
-
-            // Saved searches
-            if ($current->saved == 1) {
-                $saved[] = $minSO->deminify($this->getResultsManager());
-            } else {
-                // All the others...
-
-                // If this was a purge request we don't need this
-                if ($this->params()->fromQuery('purge') == 'true') {
-                    $current->delete();
-
-                    // We don't want to remember the last search after a purge:
-                    $this->getSearchMemory()->forgetSearch();
-                } else {
-                    // Otherwise add to the list
-                    $unsaved[] = $minSO->deminify($this->getResultsManager());
-                }
-            }
+            // We don't want to remember the last search after a purge:
+            $this->getSearchMemory()->forgetSearch();
         }
-
-        return $this->createViewModel(
-            ['saved' => $saved, 'unsaved' => $unsaved]
-        );
+        $lastSearches = $searchHistoryHelper->getSearchHistory($userId);
+        return $this->createViewModel($lastSearches);
     }
 
     /**
@@ -578,9 +564,10 @@ class SearchController extends AbstractSearch
         // Check if we have facet results cached, and build them if we don't.
         $cache = $this->serviceLocator->get('VuFind\CacheManager')
             ->getCache('object');
+        $language = $this->serviceLocator->get('VuFind\Translator')->getLocale();
         $hiddenFilters = $this->getActiveHiddenFilters();
         $hiddenFiltersHash = md5(json_encode($hiddenFilters));
-        $cacheName .= "List-$hiddenFiltersHash";
+        $cacheName .= "List-$hiddenFiltersHash-$language";
         if (!($list = $cache->getItem($cacheName))) {
             // Use advanced facet settings to get summary facets on the front page;
             // we may want to make this more flexible later.  Also keep in mind that
@@ -697,8 +684,8 @@ class SearchController extends AbstractSearch
     protected function resultScrollerActive()
     {
         $config = $this->serviceLocator->get('VuFind\Config')->get('config');
-        return (isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation);
+        return isset($config->Record->next_prev_navigation)
+            && $config->Record->next_prev_navigation;
     }
 
     /**
@@ -726,5 +713,4 @@ class SearchController extends AbstractSearch
             ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
             : [];
     }
-
 }

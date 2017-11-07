@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Base;
+
 use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFindSearch\Service as SearchService;
@@ -167,7 +168,7 @@ abstract class Results
     public function __clone()
     {
         if (is_object($this->params)) {
-            $this->params = clone($this->params);
+            $this->params = clone $this->params;
         }
         $this->helpers = [];
     }

@@ -1,7 +1,7 @@
 /*global ol */
 /*exported loadMapTab */
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
-function loadMapTab(mapData, popupTitle) {
+function loadMapTab(mapData, popupTitle, mapGraticule) {
   var init = true;
   var pTitle = popupTitle + '<button class="close">&times;</button>';
   var srcProj = 'EPSG:4326';
@@ -132,6 +132,19 @@ function loadMapTab(mapData, popupTitle) {
       map.getView().fit(extent, map.getSize());
     }
 
+    // Create the graticule component
+    if (mapGraticule) {
+      var graticule = new ol.Graticule({
+        // the style to use for the lines, optional.
+        strokeStyle: new ol.style.Stroke({
+          color: 'rgba(255,120,0,0.9)',
+          width: 2,
+          lineDash: [0.5, 4]
+        }),
+        showLabels: true
+      });
+      graticule.setMap(map);
+    }
   // Turn on popup tool tips if labels or coordinates are enabled.
     if (label_on === true) {
       var element = document.getElementById('popup');

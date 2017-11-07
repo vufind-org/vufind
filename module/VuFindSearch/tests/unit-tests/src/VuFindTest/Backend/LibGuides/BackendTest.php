@@ -28,15 +28,15 @@
  */
 namespace VuFindTest\Backend\LibGuides;
 
+use InvalidArgumentException;
 use VuFindSearch\Backend\LibGuides\Backend;
 use VuFindSearch\Backend\LibGuides\Connector;
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
 use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use InvalidArgumentException;
+use Zend\Http\Client\Adapter\Test as TestAdapter;
+use Zend\Http\Client as HttpClient;
 
 /**
  * Unit tests for LibGuides backend.
@@ -253,7 +253,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     /**
      * Build a real record collection factory
      *
-     * @return \VuFindSearch\Backend\LibGuides\Response\XML\RecordCollectionFactory
+     * @return RecordCollectionFactory
      */
     protected function getRCFactory()
     {
@@ -262,6 +262,6 @@ class BackendTest extends \VuFindTest\Unit\TestCase
             $driver->setRawData($data);
             return $driver;
         };
-        return new \VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory($callback);
+        return new RecordCollectionFactory($callback);
     }
 }

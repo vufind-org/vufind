@@ -39,4 +39,5 @@
   <? $this->sideFacetExtraControls = ob_get_contents(); ?>
   <? ob_end_clean(); ?>
 <? endif; ?>
+<? $this->baseUriExtra = $this->recommend->getResults()->getParams()->getCollectionId(); ?>
 <?=$this->render('Recommend/SideFacets.phtml')?>

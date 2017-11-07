@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest;
+
 use VuFindTheme\LessCompiler;
 
 /**
@@ -58,9 +59,9 @@ class LessCompilerTest extends Unit\TestCase
         $temp = sys_get_temp_dir();
         $testDest = $temp . '/vufind_less_comp_test/';
         // Create directory structure, recursively
-        mkdir($testDest . 'themes/child/less',  0777, true);
-        mkdir($testDest . 'themes/empty',  0777, true);
-        mkdir($testDest . 'themes/parent/css',  0777, true);
+        mkdir($testDest . 'themes/child/less', 0777, true);
+        mkdir($testDest . 'themes/empty', 0777, true);
+        mkdir($testDest . 'themes/parent/css', 0777, true);
         mkdir($testDest . 'themes/parent/less/relative', 0777, true);
         file_put_contents(
             $testDest . 'themes/empty/theme.config.php',

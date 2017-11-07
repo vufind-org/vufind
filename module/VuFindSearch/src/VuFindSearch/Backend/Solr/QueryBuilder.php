@@ -30,11 +30,11 @@
  */
 namespace VuFindSearch\Backend\Solr;
 
+use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
 
-use VuFindSearch\ParamBag;
+use VuFindSearch\Query\QueryGroup;
 
 /**
  * SOLR QueryBuilder.
@@ -133,7 +133,7 @@ class QueryBuilder implements QueryBuilderInterface
             $finalQuery = $this->reduceQueryGroup($query);
         } else {
             // Clone the query to avoid modifying the original user-visible query
-            $finalQuery = clone($query);
+            $finalQuery = clone $query;
             $finalQuery->setString($this->getNormalizedQueryString($query));
         }
         $string = $finalQuery->getString() ?: '*:*';
@@ -153,7 +153,7 @@ class QueryBuilder implements QueryBuilderInterface
                         $params->set('hl.q', $oldString);
                     }
                 }
-            } else if ($handler->hasDismax()) {
+            } elseif ($handler->hasDismax()) {
                 $params->set('qf', implode(' ', $handler->getDismaxFields()));
                 $params->set('qt', $handler->getDismaxHandler());
                 foreach ($handler->getDismaxParams() as $param) {
@@ -351,7 +351,7 @@ class QueryBuilder implements QueryBuilderInterface
         }
         if ($advanced && $handler) {
             return $handler->createAdvancedQueryString($string);
-        } else if ($handler) {
+        } elseif ($handler) {
             return $handler->createSimpleQueryString($string);
         } else {
             return $string;

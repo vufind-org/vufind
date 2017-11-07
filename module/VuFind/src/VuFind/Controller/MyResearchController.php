@@ -27,14 +27,14 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Auth as AuthException,
-    VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Exception\ILS as ILSException,
-    VuFind\Exception\Mail as MailException,
-    VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\RecommendListener, Zend\Stdlib\Parameters,
-    Zend\View\Model\ViewModel;
+use VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\ListPermission as ListPermissionException;
+use VuFind\Exception\Mail as MailException;
+use VuFind\Search\RecommendListener;
+use Zend\Stdlib\Parameters;
+use Zend\View\Model\ViewModel;
 
 /**
  * Controller for the user account area.
@@ -358,7 +358,7 @@ class MyResearchController extends AbstractBase
         if (($id = $this->params()->fromQuery('save', false)) !== false) {
             $this->setSavedFlagSecurely($id, true, $user->id);
             $this->flashMessenger()->addMessage('search_save_success', 'success');
-        } else if (($id = $this->params()->fromQuery('delete', false)) !== false) {
+        } elseif (($id = $this->params()->fromQuery('delete', false)) !== false) {
             $this->setSavedFlagSecurely($id, false, $user->id);
             $this->flashMessenger()->addMessage('search_unsave_success', 'success');
         } else {
@@ -466,6 +466,12 @@ class MyResearchController extends AbstractBase
      */
     public function favoritesAction()
     {
+        // Check permission:
+        $response = $this->permission()->check('feature.Favorites', false);
+        if (is_object($response)) {
+            return $response;
+        }
+
         // Favorites is the same as MyList, but without the list ID parameter.
         return $this->forwardTo('MyResearch', 'MyList');
     }
@@ -813,7 +819,7 @@ class MyResearchController extends AbstractBase
 
             return $this->redirect()->toRoute('userList', ['id' => $finalId]);
         } catch (\Exception $e) {
-            switch(get_class($e)) {
+            switch (get_class($e)) {
             case 'VuFind\Exception\ListPermission':
             case 'VuFind\Exception\MissingField':
                 $this->flashMessenger()->addMessage($e->getMessage(), 'error');
@@ -896,7 +902,7 @@ class MyResearchController extends AbstractBase
                 // Success Message
                 $this->flashMessenger()->addMessage('fav_list_delete', 'success');
             } catch (\Exception $e) {
-                switch(get_class($e)) {
+                switch (get_class($e)) {
                 case 'VuFind\Exception\LoginRequired':
                 case 'VuFind\Exception\ListPermission':
                     $user = $this->getUser();
@@ -1194,10 +1200,139 @@ class MyResearchController extends AbstractBase
             }
         }
 
+        $displayItemBarcode
+            = !empty($config->Catalog->display_checked_out_item_barcode);
+
         return $this->createViewModel(
             compact(
                 'transactions', 'renewForm', 'renewResult', 'paginator',
-                'hiddenTransactions'
+                'hiddenTransactions', 'displayItemBarcode'
+            )
+        );
+    }
+
+    /**
+     * Send list of historic loans to view
+     *
+     * @return mixed
+     */
+    public function historicloansAction()
+    {
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        // Connect to the ILS:
+        $catalog = $this->getILS();
+
+        // Check function config
+        $functionConfig = $catalog->checkFunction(
+            'getMyTransactionHistory', $patron
+        );
+        if (false === $functionConfig) {
+            $this->flashMessenger()->addErrorMessage('ils_action_unavailable');
+            return $this->createViewModel();
+        }
+
+        // Get page and page size:
+        $page = (int)$this->params()->fromQuery('page', 1);
+        $config = $this->getConfig();
+        $limit = isset($config->Catalog->historic_loan_page_size)
+            ? $config->Catalog->historic_loan_page_size : 50;
+        $ilsPaging = true;
+        if (isset($functionConfig['max_results'])) {
+            $limit = min([$functionConfig['max_results'], $limit]);
+        } elseif (isset($functionConfig['page_size'])) {
+            if (!in_array($limit, $functionConfig['page_size'])) {
+                $limit = isset($functionConfig['default_page_size'])
+                    ? $functionConfig['default_page_size']
+                    : $functionConfig['page_size'][0];
+            }
+        } else {
+            $ilsPaging = false;
+        }
+
+        // Get sort settings
+        $sort = false;
+        if (!empty($functionConfig['sort'])) {
+            $sort = $this->params()->fromQuery('sort');
+            if (!isset($functionConfig['sort'][$sort])) {
+                if (isset($functionConfig['default_sort'])) {
+                    $sort = $functionConfig['default_sort'];
+                } else {
+                    reset($functionConfig['sort']);
+                    $sort = key($functionConfig['sort']);
+                }
+            }
+        }
+
+        // Configure call params
+        $params = [
+            'sort' => $sort
+        ];
+        if ($ilsPaging) {
+            $params['page'] = $page;
+            $params['limit'] = $limit;
+        }
+
+        // Get checked out item details:
+        $result = $catalog->getMyTransactionHistory($patron, $params);
+
+        if (isset($result['success']) && !$result['success']) {
+            $this->flashMessenger()->addErrorMessage($result['status']);
+            return $this->createViewModel();
+        }
+
+        // Build paginator if needed:
+        if ($ilsPaging && $limit < $result['count']) {
+            $adapter = new \Zend\Paginator\Adapter\NullFill($result['count']);
+            $paginator = new \Zend\Paginator\Paginator($adapter);
+            $paginator->setItemCountPerPage($limit);
+            $paginator->setCurrentPageNumber($page);
+            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
+        } elseif ($limit > 0 && $limit < $result['count']) {
+            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter(
+                $result['transactions']
+            );
+            $paginator = new \Zend\Paginator\Paginator($adapter);
+            $paginator->setItemCountPerPage($limit);
+            $paginator->setCurrentPageNumber($page);
+            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
+        } else {
+            $paginator = false;
+            $pageStart = 0;
+            $pageEnd = $result['count'];
+        }
+
+        $transactions = $hiddenTransactions = [];
+        foreach ($result['transactions'] as $i => $current) {
+            // Build record driver (only for the current visible page):
+            if ($ilsPaging || ($i >= $pageStart && $i <= $pageEnd)) {
+                $transactions[] = $this->getDriverForILSRecord($current);
+            } else {
+                $hiddenTransactions[] = $current;
+            }
+        }
+
+        // Handle view params for sorting
+        $sortList = [];
+        if (!empty($functionConfig['sort'])) {
+            foreach ($functionConfig['sort'] as $key => $value) {
+                $sortList[$key] = [
+                    'desc' => $value,
+                    'url' => '?sort=' . urlencode($key),
+                    'selected' => $sort == $key
+                ];
+            }
+        }
+
+        return $this->createViewModel(
+            compact(
+                'transactions', 'paginator', 'params',
+                'hiddenTransactions', 'sortList', 'functionConfig'
             )
         );
     }

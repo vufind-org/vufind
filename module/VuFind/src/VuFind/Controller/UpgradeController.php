@@ -28,13 +28,15 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
-use ArrayObject, VuFind\Config\Locator as ConfigLocator,
-    VuFind\Cookie\Container as CookieContainer,
-    VuFind\Cookie\CookieManager,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Mvc\MvcEvent,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\Session\Container;
+
+use ArrayObject;
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Cookie\Container as CookieContainer;
+use VuFind\Cookie\CookieManager;
+use VuFind\Exception\RecordMissing as RecordMissingException;
+use Zend\Mvc\MvcEvent;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Session\Container;
 
 /**
  * Class controls VuFind upgrading.
@@ -394,6 +396,24 @@ class UpgradeController extends AbstractBase
                 ->updateModifiedColumns($modifiedCols, $this->logsql);
         }
 
+        // Check for missing constraints.
+        $missingConstraints = $this->dbUpgrade()->getMissingConstraints($mT);
+        if (!empty($missingConstraints)) {
+            // Only manipulate DB if we're not in logging mode:
+            if (!$this->logsql) {
+                if (!$this->hasDatabaseRootCredentials()) {
+                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                }
+                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                $this->session->warnings->append(
+                    "Added constraint(s) to table(s): "
+                    . implode(', ', array_keys($missingConstraints))
+                );
+            }
+            $sql .= $this->dbUpgrade()
+                ->createMissingConstraints($missingConstraints, $this->logsql);
+        }
+
         // Check for encoding problems.
         $encProblems = $this->dbUpgrade()->getEncodingProblems();
         if (!empty($encProblems)) {
@@ -586,7 +606,7 @@ class UpgradeController extends AbstractBase
         if ($action == 'Change') {
             $this->session->dbChangeEncoding = true;
             return $this->forwardTo('Upgrade', 'FixDatabase');
-        } else if ($action == 'Keep') {
+        } elseif ($action == 'Keep') {
             $this->session->dbChangeEncoding = false;
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
@@ -717,7 +737,7 @@ class UpgradeController extends AbstractBase
             if (!is_dir($dir)) {
                 $this->flashMessenger()
                     ->addMessage($dir . ' does not exist.', 'error');
-            } else if (!file_exists($dir . '/build.xml')) {
+            } elseif (!file_exists($dir . '/build.xml')) {
                 $this->flashMessenger()->addMessage(
                     'Could not find build.xml in source directory;'
                     . ' upgrade does not support VuFind versions prior to 1.1.',
@@ -761,7 +781,7 @@ class UpgradeController extends AbstractBase
             if (floor($version) < 2) {
                 $this->flashMessenger()
                     ->addMessage('Illegal version number.', 'error');
-            } else if ($version >= $this->cookie->newVersion) {
+            } elseif ($version >= $this->cookie->newVersion) {
                 $this->flashMessenger()->addMessage(
                     "Source version must be less than {$this->cookie->newVersion}.",
                     'error'

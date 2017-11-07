@@ -112,16 +112,15 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      */
     protected function setupSearchService()
     {
-        $smConfig = new \Zend\ServiceManager\Config(
-            [
-                'factories' => [
-                    'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
-                    'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
-                ]
+        $config = [
+            'factories' => [
+                'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
+                'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
             ]
+        ];
+        $registry = new \VuFind\Search\BackendRegistry(
+            $this->serviceManager, $config
         );
-        $registry = $this->serviceManager->createScopedServiceManager();
-        $smConfig->configureServiceManager($registry);
         $bm = new \VuFind\Search\BackendManager($registry);
         $this->serviceManager->setService('VuFind\Search\BackendManager', $bm);
         $ss = new \VuFindSearch\Service();
@@ -142,48 +141,41 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         if (!$this->serviceManager) {
             $this->serviceManager = new \Zend\ServiceManager\ServiceManager();
             $optionsFactory = new \VuFind\Search\Options\PluginManager(
-                new \Zend\ServiceManager\Config(
-                    [
-                        'abstract_factories' =>
-                            ['VuFind\Search\Options\PluginFactory'],
-                    ]
-                )
+                $this->serviceManager,
+                [
+                    'abstract_factories' =>
+                        ['VuFind\Search\Options\PluginFactory'],
+                ]
             );
-            $optionsFactory->setServiceLocator($this->serviceManager);
             $this->serviceManager->setService(
                 'VuFind\SearchOptionsPluginManager', $optionsFactory
             );
             $paramsFactory = new \VuFind\Search\Params\PluginManager(
-                new \Zend\ServiceManager\Config(
-                    [
-                        'abstract_factories' =>
-                            ['VuFind\Search\Params\PluginFactory'],
-                    ]
-                )
+                $this->serviceManager,
+                [
+                    'abstract_factories' =>
+                        ['VuFind\Search\Params\PluginFactory'],
+                ]
             );
-            $paramsFactory->setServiceLocator($this->serviceManager);
             $this->serviceManager->setService(
                 'VuFind\SearchParamsPluginManager', $paramsFactory
             );
             $resultsFactory = new \VuFind\Search\Results\PluginManager(
-                new \Zend\ServiceManager\Config(
-                    [
-                        'abstract_factories' =>
-                            ['VuFind\Search\Results\PluginFactory'],
-                    ]
-                )
+                $this->serviceManager,
+                [
+                    'abstract_factories' =>
+                        ['VuFind\Search\Results\PluginFactory'],
+                ]
             );
-            $resultsFactory->setServiceLocator($this->serviceManager);
             $this->serviceManager->setService(
                 'VuFind\SearchResultsPluginManager', $resultsFactory
             );
             $recordDriverFactory = new \VuFind\RecordDriver\PluginManager(
-                new \Zend\ServiceManager\Config(
-                    [
-                        'abstract_factories' =>
-                            ['VuFind\RecordDriver\PluginFactory']
-                    ]
-                )
+                $this->serviceManager,
+                [
+                    'abstract_factories' =>
+                        ['VuFind\RecordDriver\PluginFactory']
+                ]
             );
             $this->serviceManager->setService(
                 'VuFind\RecordDriverPluginManager', $recordDriverFactory
@@ -198,11 +190,10 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 'VuFind\Http', new \VuFindHttp\HttpService()
             );
             $this->setupSearchService();
-            $cfg = new \Zend\ServiceManager\Config(
-                ['abstract_factories' => ['VuFind\Config\PluginFactory']]
-            );
+            $cfg = ['abstract_factories' => ['VuFind\Config\PluginFactory']];
             $this->serviceManager->setService(
-                'VuFind\Config', new \VuFind\Config\PluginManager($cfg)
+                'VuFind\Config',
+                new \VuFind\Config\PluginManager($this->serviceManager, $cfg)
             );
             $this->serviceManager->setService(
                 'SharedEventManager', new \Zend\EventManager\SharedEventManager()
@@ -232,13 +223,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $sm = $this->getServiceManager();
         if (!$sm->has('VuFind\AuthPluginManager')) {
             $authManager = new \VuFind\Auth\PluginManager(
-                new \Zend\ServiceManager\Config(
-                    [
-                        'abstract_factories' => ['VuFind\Auth\PluginFactory'],
-                    ]
-                )
+                $sm, ['abstract_factories' => ['VuFind\Auth\PluginFactory']]
             );
-            $authManager->setServiceLocator($sm);
             $sm->setService('VuFind\AuthPluginManager', $authManager);
         }
         return $sm->get('VuFind\AuthPluginManager');

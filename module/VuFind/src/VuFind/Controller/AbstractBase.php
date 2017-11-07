@@ -28,14 +28,12 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Exception\ILS as ILSException,
-    Zend\Mvc\Controller\AbstractActionController,
-    Zend\Mvc\MvcEvent,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\View\Model\ViewModel,
-    ZfcRbac\Service\AuthorizationServiceAwareInterface,
-    ZfcRbac\Service\AuthorizationServiceAwareTrait;
+use VuFind\Exception\ILS as ILSException;
+use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Mvc\MvcEvent;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\View\Model\ViewModel;
+use ZfcRbac\Service\AuthorizationServiceAwareInterface;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -60,11 +58,14 @@ class AbstractBase extends AbstractActionController
     protected $accessPermission = false;
 
     /**
-     * Behavior when access is denied. Valid values are 'promptLogin' and 'exception'
+     * Behavior when access is denied (used unless overridden through
+     * permissionBehavior.ini). Valid values are 'promptLogin' and 'exception'.
+     * Leave at null to use the defaultDeniedControllerBehavior set in
+     * permissionBehavior.ini (normally 'promptLogin' unless changed).
      *
      * @var string
      */
-    protected $accessDeniedBehavior = 'promptLogin';
+    protected $accessDeniedBehavior = null;
 
     /**
      * Constructor
@@ -85,17 +86,15 @@ class AbstractBase extends AbstractActionController
      */
     public function validateAccessPermission(MvcEvent $e)
     {
-        // Make sure the current user has permission to access the module:
-        if ($this->accessPermission
-            && !$this->getAuthorizationService()->isGranted($this->accessPermission)
-        ) {
-            if ($this->accessDeniedBehavior == 'promptLogin') {
-                if (!$this->getUser()) {
-                    $e->setResponse($this->forceLogin(null, [], false));
-                    return;
-                }
+        // If there is an access permission set for this controller, pass it
+        // through the permission helper, and if the helper returns a custom
+        // response, use that instead of the normal behavior.
+        if ($this->accessPermission) {
+            $response = $this->permission()
+                ->check($this->accessPermission, $this->accessDeniedBehavior);
+            if (is_object($response)) {
+                $e->setResponse($response);
             }
-            throw new ForbiddenException('Access denied.');
         }
     }
 
@@ -107,6 +106,7 @@ class AbstractBase extends AbstractActionController
     protected function attachDefaultListeners()
     {
         parent::attachDefaultListeners();
+
         // Attach preDispatch event if we need to check permissions.
         if ($this->accessPermission) {
             $events = $this->getEventManager();
@@ -181,7 +181,7 @@ class AbstractBase extends AbstractActionController
             ) {
                 $view->userEmailInFrom = true;
                 $view->from = $user->email;
-            } else if (isset($config->Mail->default_from)
+            } elseif (isset($config->Mail->default_from)
                 && $config->Mail->default_from
             ) {
                 $view->from = $config->Mail->default_from;
@@ -266,10 +266,10 @@ class AbstractBase extends AbstractActionController
      *
      * @return mixed
      */
-    protected function forceLogin($msg = null, $extras = [], $forward = true)
+    public function forceLogin($msg = null, $extras = [], $forward = true)
     {
         // Set default message if necessary.
-        if (is_null($msg)) {
+        if (null === $msg) {
             $msg = 'You must be logged in first';
         }
 

@@ -6,47 +6,55 @@
 ?>
 <? if (isset($topFacetSet)): ?>
   <? foreach($topFacetSet as $title => $cluster): ?>
-    <? $moreClass = ' NarrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
+    <? $moreClass = ' NarrowGroupHidden_' . $this->escapeHtml($title) . ' hidden'; ?>
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <div class="top-facets">
-      <strong><?=$this->transEsc('top_facet_label', ['%%label%%' => $cluster['label']]) ?></strong><br />
-      <? $limit = $topFacetSettings['rows'] * $topFacetSettings['cols']; ?>
-      <? foreach($cluster['list'] as $index => $thisFacet): ?>
-        <span class="facet <?=$index > $limit ? $moreClass : '' ?>">
-          <? if ($thisFacet['isApplied']):
-            if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
-              $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($thisFacet['value'], '');
-            } else {
-              $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']);
-            } ?>
-            <a href="<?=$removeLink ?>" class="applied">
-              <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check" aria-hidden="true"></i><!--
-         --></a>
-          <? else: ?>
-            <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">
-              <?=$this->escapeHtml($thisFacet['displayText'])?><!--
-         --></a>
-            <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?>
-              <? if ($allowExclude): ?>
-                <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><i class="fa fa-times" aria-hidden="true"></i></a>
-              <? endif; ?>
+      <!--Toggle for mobile collapse -->
+      <? $topLabel = $this->transEsc('top_facet_label', ['%%label%%' => $this->translate($cluster['label'])]); ?>
+      <a class="top-title js-toggle visible-xs" data-toggle="collapse" data-target="#top_<?=$this->escapeHtml($title) ?>"><i class="fa fa-caret-right"></i> <?=$topLabel ?></a>
+      <!--Regular title for non-mobile -->
+      <strong class="top-title hidden-xs"><?=$topLabel ?></strong>
+      <div class="collapse in" id="top_<?=$this->escapeHtml($title) ?>">
+        <? $limit = $topFacetSettings['rows'] * $topFacetSettings['cols']; ?>
+        <? foreach($cluster['list'] as $index => $thisFacet): ?>
+          <span class="facet <?=$index > $limit ? $moreClass : '' ?>">
+            <? if ($thisFacet['isApplied']):
+              if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
+                $removeLink = $this->currentPath() . $results->getUrlQuery()->replaceTerm($thisFacet['value'], '');
+              } else {
+                $removeLink = $this->currentPath() . $results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']);
+              } ?>
+              <a href="<?=$removeLink ?>" class="applied">
+                <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check" aria-hidden="true"></i><!--
+           --></a>
+            <? else: ?>
+              <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">
+                <?=$this->escapeHtml($thisFacet['displayText'])?><!--
+           --></a>
+              <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?>
+                <? if ($allowExclude): ?>
+                  <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><i class="fa fa-times" aria-hidden="true"></i></a>
+                <? endif; ?>
+              </span>
+            <? endif; ?>
+          </span>
+          <? /* More link */ ?>
+          <? if ($index == $limit): ?>
+            <span id="more-NarrowGroupHidden_<?=$this->escapeHtml($title)?>" class="narrow-toggle">
+              <a href="#" onclick="moreFacets('NarrowGroupHidden_<?=$this->escapeHtml($title)?>'); return false;">
+                <?=$this->transEsc('more') ?> ...
+              </a>
             </span>
           <? endif; ?>
-        </span>
-        <? /* More link */ ?>
-        <? if ($index == $limit): ?>
-          <span id="more-NarrowGroupHidden_<?=$this->escapeHtml($title)?>" class="narrow-toggle">
-            <a href="#" onclick="moreFacets('NarrowGroupHidden_<?=$this->escapeHtml($title)?>'); return false;">
-              <?=$this->transEsc('more') ?> ...
-            </a>
-          </span>
+        <? endforeach; ?>
+        <? if (count($cluster['list']) > $limit): ?>
+          <a class="narrow-toggle <?=$moreClass ?>" href="#" onclick="lessFacets('NarrowGroupHidden_<?=$title ?>'); return false;">
+            <?=$this->transEsc('less') ?> ...
+          </a>
         <? endif; ?>
-      <? endforeach; ?>
-      <? if (count($cluster['list']) > $limit): ?>
-        <a class="narrow-toggle <?=$moreClass ?>" href="#" onclick="lessFacets('NarrowGroupHidden_<?=$title ?>'); return false;">
-          <?=$this->transEsc('less') ?> ...
-        </a>
-      <? endif; ?>
+      </div>
     </div>
   <? endforeach; ?>
 <? endif; ?>
+
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, 'collapseTopFacets()', 'SET')?>

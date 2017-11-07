@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Bootstrap3;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -74,7 +75,7 @@ class Factory
         // The right-to-left setting is injected into the layout by the Bootstrapper;
         // pull it back out here to avoid duplicate effort, then use it to apply
         // the mirror setting appropriately.
-        $layout = $sm->getServiceLocator()->get('viewmanager')->getViewModel();
+        $layout = $sm->getServiceLocator()->get('ViewManager')->getViewModel();
         if ($layout->rtl && $mirror) {
             $sidebarOnLeft = !$sidebarOnLeft;
         }

@@ -2,7 +2,7 @@
 <div class="media">
   <?
     $QRCode = $this->record($this->driver)->getQRCode("core");
-    $coverDetails = $this->record($this->driver)->getCoverDetails('collection-info', 'medium', $this->recordLink()->getUrl($this->driver));
+    $coverDetails = $this->record($this->driver)->getCoverDetails('collection-info', 'medium', $this->record($this->driver)->getThumbnail('large'));
     $cover = $coverDetails['html'];
     $preview = $this->record($this->driver)->getPreviews();
   ?>
@@ -33,7 +33,7 @@
     <? endif; ?>
 
     <? /* Display the lists that this record is saved to */ ?>
-    <div class="savedLists hidden alert alert-info" id="savedLists">
+    <div class="savedLists" id="savedLists">
       <strong><?=$this->transEsc("Saved in")?>:</strong>
     </div>
 
