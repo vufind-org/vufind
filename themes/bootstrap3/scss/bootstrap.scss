@@ -250,8 +250,10 @@ footer {
   padding: 10px 15px;
   &:hover,
   &:focus { background-color: $nav-link-hover-bg; }
-
-  .badge { float: right; }
+}
+.myresearch-menu a:hover {
+  background-color: $gray-lighter;
+  outline: dotted 1px #000;
 }
 .myresearch-menu a.active {
   background-color: $brand-primary;
@@ -262,6 +264,51 @@ footer {
     color: $gray-darker;
   }
 }
+.myresearch-menu a > .badge { float: right; }
+.myresearch-menu .status {
+  float: right;
+  display: block;
+}
+.myresearch-menu .status {
+  .ok,
+  &.ok { color: $state-success-text; }
+  .warn,
+  &.warn { color: $state-warning-text; }
+  .overdue,
+  &.overdue { color: $state-danger-text; }
+  .badge.ok { background-color: $state-success-bg; }
+  .badge.warn { background-color: $state-warning-bg; }
+  .badge.overdue { background-color: $state-danger-bg; }
+}
+.myresearch-menu .checkedout-status .badge { border-radius: 0; }
+.myresearch-menu .active .status .badge {
+  color: #fff;
+  background-color: transparent;
+  border: 1px solid #fff;
+}
+.myresearch-menu .checkedout-status .badge:first-child {
+  padding-left: 1rem;
+  border-top-left-radius: $badge-border-radius;
+  border-bottom-left-radius: $badge-border-radius;
+}
+.myresearch-menu .checkedout-status .badge:last-child {
+  padding-right: 1rem;
+  border-top-right-radius: $badge-border-radius;
+  border-bottom-right-radius: $badge-border-radius;
+}
+
+.logoutOptions.with-dropdown a { padding-right: .5rem; }
+#login-dropdown a {
+  margin-right: .5rem;
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+#login-dropdown .dropdown-menu { width: 250px; }
+#login-dropdown .dropdown-menu h4 { display: none; }
+#login-dropdown .dropdown-menu .myresearch-menu { display: none; }
+#login-dropdown .dropdown-menu .account-menu { display: block; }
+
+/* --- PubDateVis --- */
 .list-edit-container { @include clearfix(); }
 
 /* ------ PubDateVis ------ */
