@@ -50,9 +50,10 @@ trait MinifyTrait
     /**
      * Constructor
      *
-     * @param FinnaCache $finnaCache FinnaCache table
+     * @param FinnaCache $finnaCache FinnaCache table (must handle null too since
+     * the minifier creates new static instances without parameters)
      */
-    public function __construct(FinnaCache $finnaCache)
+    public function __construct(FinnaCache $finnaCache = null)
     {
         parent::__construct();
         $this->finnaCache = $finnaCache;
