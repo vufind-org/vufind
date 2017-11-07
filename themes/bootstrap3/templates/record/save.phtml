@@ -14,8 +14,8 @@
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
   <? if (!empty($this->containingLists)): ?>
     <p><?=$this->transEsc('This item is already part of the following list/lists') ?>:
-    <? foreach ($this->containingLists as $i=>$list): ?>
-      <a href="<?=$this->url('userList', ['id' => $list['id']]) ?>" data-lightbox-ignore><?=$this->escapeHtml($list['title'])?></a><? if($i<count($this->containingLists)-1): ?>, <? endif; ?>
+    <? foreach ($this->containingLists as $i => $list): ?>
+      <a href="<?=$this->url('userList', ['id' => $list['id']]) ?>" data-lightbox-ignore><?=$this->escapeHtml($list['title'])?></a><? if($i < count($this->containingLists) - 1): ?>, <? endif; ?>
     <? endforeach; ?>
     </p><hr/>
   <? endif; ?>
@@ -32,7 +32,7 @@
       <select class="form-control" id="save_list" name="list">
       <? if ($this->nonContainingLists): ?>
         <? foreach ($this->nonContainingLists as $list): ?>
-          <option value="<?=$list['id'] ?>"<? if ($list['id']==$this->userList()->lastUsed()): ?> selected="selected"<? endif; ?>><?=$this->escapeHtml($list['title'])?></option>
+          <option value="<?=$list['id'] ?>"<? if ($list['id'] == $this->userList()->lastUsed()): ?> selected="selected"<? endif; ?>><?=$this->escapeHtml($list['title'])?></option>
         <? endforeach; ?>
       <? else: ?>
         <option value=""><?=$this->transEsc('My Favorites') ?></option>

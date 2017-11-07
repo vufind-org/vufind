@@ -26,11 +26,12 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\VuFind\Exception;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
 use Zend\Log\LoggerAwareInterface;
-use VuFind\Exception\VuFind\Exception;
 
 /**
  * III Sierra REST API driver
@@ -505,7 +506,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'limit' => 10000,
                 'offset' => 0,
                 'fields' => 'item,dueDate,numberOfRenewals,outDate,recallDate'
-                    . ',callNumber'
+                    . ',callNumber,barcode'
             ],
             'GET',
             $patron
@@ -519,6 +520,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'id' => '',
                 'checkout_id' => $this->extractId($entry['id']),
                 'item_id' => $this->extractId($entry['item']),
+                'barcode' => $entry['barcode'],
                 'duedate' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['dueDate']
                 ),
@@ -613,6 +615,85 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             }
         }
         return $finalResult;
+    }
+
+    /**
+     * Get Patron Transaction History
+     *
+     * This is responsible for retrieving all historic transactions (i.e. checked
+     * out items) by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
+     *
+     * @throws DateException
+     * @throws ILSException
+     * @return array        Array of the patron's historic transactions on success.
+     */
+    public function getMyTransactionHistory($patron, $params)
+    {
+        $pageSize = isset($params['limit']) ? $params['limit'] : 50;
+        $offset = isset($params['page']) ? ($params['page'] - 1) * $pageSize : 0;
+        $sortOrder = isset($params['sort']) && 'checkout asc' === $params['sort']
+            ? 'asc' : 'desc';
+        $result = $this->makeRequest(
+            ['v3', 'patrons', $patron['id'], 'checkouts', 'history'],
+            [
+                'limit' => $pageSize,
+                'offset' => $offset,
+                'sortField' => 'outDate',
+                'sortOrder' => $sortOrder,
+                'fields' => 'item,outDate'
+            ],
+            'GET',
+            $patron
+        );
+        if (isset($result['code'])) {
+            return [
+                'success' => false,
+                'status' => 146 === $result['code']
+                    ? 'ils_transaction_history_disabled'
+                    : 'ils_connection_failed'
+            ];
+        }
+        $transactions = [];
+        foreach ($result['entries'] as $entry) {
+            $transaction = [
+                'id' => '',
+                'item_id' => $this->extractId($entry['item']),
+                'checkoutDate' => $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d', $entry['outDate']
+                )
+            ];
+            // Fetch item information
+            $item = $this->makeRequest(
+                ['v3', 'items', $transaction['item_id']],
+                ['fields' => 'bibIds,varFields'],
+                'GET',
+                $patron
+            );
+            $transaction['volume'] = $this->extractVolume($item);
+            if (!empty($item['bibIds'])) {
+                $transaction['id'] = $item['bibIds'][0];
+
+                // Fetch bib information
+                $bib = $this->getBibRecord(
+                    $transaction['id'], 'title,publishYear', $patron
+                );
+                if (!empty($bib['title'])) {
+                    $transaction['title'] = $bib['title'];
+                }
+                if (!empty($bib['publishYear'])) {
+                    $transaction['publication_year'] = $bib['publishYear'];
+                }
+            }
+            $transactions[] = $transaction;
+        }
+
+        return [
+            'count' => isset($result['total']) ? $result['total'] : 0,
+            'transactions' => $transactions
+        ];
     }
 
     /**
@@ -1077,6 +1158,19 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     public function getConfig($function, $params = null)
     {
+        if ('getMyTransactionHistory' === $function) {
+            if (empty($this->config['TransactionHistory']['enabled'])) {
+                return false;
+            }
+            return [
+                'max_results' => 100,
+                'sort' => [
+                    'checkout desc' => 'sort_checkout_date_desc',
+                    'checkout asc' => 'sort_checkout_date_asc'
+                ],
+                'default_sort' => 'checkout desc'
+            ];
+        }
         return isset($this->config[$function])
             ? $this->config[$function] : false;
     }
@@ -1095,9 +1189,13 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     public function supportsMethod($method, $params)
     {
-        // Special case: change password is only available if properly configured.
+        // Changing password is only available if properly configured.
         if ($method == 'changePassword') {
             return isset($this->config['changePassword']);
+        }
+        // Loan history is only available if properly configured
+        if ($method == 'getMyTransactionHistory') {
+            return !empty($this->config['TransactionHistory']['enabled']);
         }
         return is_callable([$this, $method]);
     }

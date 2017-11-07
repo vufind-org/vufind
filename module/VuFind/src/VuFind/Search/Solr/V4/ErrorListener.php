@@ -28,11 +28,11 @@
  */
 namespace VuFind\Search\Solr\V4;
 
-use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFind\Search\Solr\AbstractErrorListener;
+use VuFindSearch\Backend\Exception\HttpErrorException;
 
-use Zend\Http\Response;
 use Zend\EventManager\EventInterface;
+use Zend\Http\Response;
 
 /**
  * SOLR 3.x error listener.
@@ -129,5 +129,4 @@ class ErrorListener extends AbstractErrorListener
         }
         return self::TYPE_OTHER;
     }
-
 }

@@ -31,12 +31,12 @@ namespace VuFind\Search\Factory;
 use SerialsSolutions\Summon\Zend2 as Connector;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
-use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
-use VuFindSearch\Backend\Summon\QueryBuilder;
 use VuFindSearch\Backend\Summon\Backend;
+use VuFindSearch\Backend\Summon\QueryBuilder;
+use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for Summon backends.
@@ -86,7 +86,7 @@ class SummonBackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $configReader = $this->serviceLocator->get('VuFind\Config');
         $this->config = $configReader->get('config');
         $this->summonConfig = $configReader->get('Summon');

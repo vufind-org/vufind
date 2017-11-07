@@ -20,7 +20,7 @@
     <label class="control-label"><?=$this->transEsc('Title')?>:</label>
     <? if(count($this->records) > 1): ?>
       <button type="button" class="btn btn-default hidden" data-toggle="collapse" data-target="#itemhide">
-        <?=count($this->records).' '.$this->transEsc('items') ?>
+        <?=count($this->records) . ' ' . $this->transEsc('items') ?>
       </button>
       <div id="itemhide" class="collapse in">
         <ul>
@@ -39,7 +39,7 @@
     <select id="save_list" name="list" class="form-control">
       <? if (count($this->lists) > 0): ?>
         <? foreach ($this->lists as $list): ?>
-          <option value="<?=$list['id'] ?>"<? if ($list['id']==$this->userList()->lastUsed()): ?> selected="selected"<? endif; ?>><?=$this->escapeHtml($list['title'])?></option>
+          <option value="<?=$list['id'] ?>"<? if ($list['id'] == $this->userList()->lastUsed()): ?> selected="selected"<? endif; ?>><?=$this->escapeHtml($list['title'])?></option>
         <? endforeach; ?>
       <? else: ?>
         <option value=""><?=$this->transEsc('My Favorites') ?></option>

@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
 namespace VuFind\Cover;
-use Zend\Http\Client, Zend\Http\Response;
+
+use Zend\Http\Client;
+use Zend\Http\Response;
 
 /**
  * Caching Proxy for Cover Images

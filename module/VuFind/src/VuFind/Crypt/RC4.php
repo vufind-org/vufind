@@ -94,7 +94,7 @@ class RC4
      * @param string $ct  cipher text to be decrypted
      *
      * @return string
-    */
+     */
     public static function decrypt($key, $ct)
     {
         return static::encrypt($key, $ct);

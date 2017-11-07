@@ -26,7 +26,10 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\ILS as ILSException;
+
+use PDO;
+use PDOException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * ILS Driver for NewGenLib
@@ -503,8 +506,7 @@ class NewGenLib extends AbstractBase
         try {
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
 

@@ -3,7 +3,7 @@
 
   // Save results/options to $this so they are available to sub-templates:
   $this->results = $results = $this->recommend->getResults();
-  $this->options = $options = $this->searchOptions($this->searchClassId);
+  $this->options = $options = $results->getOptions();
 ?>
 <? if ($results->getResultTotal() > 0): ?>
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
@@ -41,9 +41,9 @@
 <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <? foreach ($sideFacetSet as $title => $cluster): ?>
     <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
-      <div class="title<? if(in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
+      <button class="title<? if(in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
         <?=$this->transEsc($cluster['label'])?>
-      </div>
+      </button>
       <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<? if(!in_array($title, $collapsedFacets)): ?> in<? endif ?>">
         <? if (isset($rangeFacets[$title])): ?>
           <?=$this->context($this)->renderInContext('Recommend/SideFacets/range-slider.phtml', ['title' => $title, 'facet' => $rangeFacets[$title]]); ?>

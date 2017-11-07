@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Backend\EIT;
 
+use InvalidArgumentException;
 use VuFindSearch\Backend\EIT\Backend;
 use VuFindSearch\Backend\EIT\QueryBuilder;
 use VuFindSearch\Query\Query;
-use InvalidArgumentException;
 
 /**
  * Unit tests for EIT backend.

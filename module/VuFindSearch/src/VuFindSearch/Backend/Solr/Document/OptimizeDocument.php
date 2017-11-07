@@ -104,5 +104,4 @@ class OptimizeDocument extends AbstractDocument
         $writer->endDocument();
         return $writer->flush();
     }
-
 }

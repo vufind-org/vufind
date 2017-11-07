@@ -28,10 +28,10 @@
  */
 namespace VuFindSearch\Backend\BrowZine;
 
-use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\Query;
-
 use VuFindSearch\ParamBag;
+use VuFindSearch\Query\AbstractQuery;
+
+use VuFindSearch\Query\Query;
 
 /**
  * BrowZine QueryBuilder.
@@ -56,7 +56,8 @@ class QueryBuilder
     public function build(AbstractQuery $query)
     {
         // Send back results
-        $params = new ParamBag(['query' => $this->abstractQueryToArray($query)]);
+        $q = $this->abstractQueryToArray($query);
+        $params = new ParamBag(['query' => empty($q) ? '*' : $q]);
         return $params;
     }
 

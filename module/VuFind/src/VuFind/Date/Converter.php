@@ -27,7 +27,10 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Date;
-use DateTime, DateTimeZone, VuFind\Exception\Date as DateException;
+
+use DateTime;
+use DateTimeZone;
+use VuFind\Exception\Date as DateException;
 
 /**
  * Date/time conversion functionality.
@@ -155,7 +158,7 @@ class Converter
             foreach ($details['errors'] as $error) {
                 $errors .= $error . " ";
             }
-        } else if (is_array($details['warnings'])) {
+        } elseif (is_array($details['warnings'])) {
             foreach ($details['warnings'] as $warning) {
                 $errors .= $warning . " ";
             }

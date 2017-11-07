@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\Summon;
 
-use VuFindSearch\Backend\Summon\QueryBuilder;
 use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\Summon\QueryBuilder;
 
 /**
  * Unit tests for Summon query builder

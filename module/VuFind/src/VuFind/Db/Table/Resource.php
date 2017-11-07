@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
+
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Record\Loader;

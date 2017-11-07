@@ -26,8 +26,8 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\RecordDriver;
-use VuFind\Exception\LoginRequired as LoginRequiredException,
-    VuFind\XSLT\Import\VuFind as ArticleStripper;
+
+use VuFind\XSLT\Import\VuFind as ArticleStripper;
 
 /**
  * Abstract base record model.

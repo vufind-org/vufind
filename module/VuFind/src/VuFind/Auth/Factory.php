@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Auth;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -53,7 +54,9 @@ class Factory
         $container = new \Zend\Session\Container(
             'ChoiceAuth', $sm->getServiceLocator()->get('VuFind\SessionManager')
         );
-        return new ChoiceAuth($container);
+        $auth = new ChoiceAuth($container);
+        $auth->setPluginManager($sm);
+        return $auth;
     }
 
     /**
@@ -151,6 +154,20 @@ class Factory
         $manager = new Manager($config, $userTable, $sessionManager, $pm, $cookies);
         $manager->checkForExpiredCredentials();
         return $manager;
+    }
+
+    /**
+     * Construct the MultiAuth plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return MultiAuth
+     */
+    public static function getMultiAuth(ServiceManager $sm)
+    {
+        $auth = new MultiAuth();
+        $auth->setPluginManager($sm);
+        return $auth;
     }
 
     /**

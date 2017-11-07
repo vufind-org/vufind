@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
+
 use Behat\Mink\Element\Element;
 
 /**
@@ -140,6 +141,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#list_title')->setValue('Test List');
         $this->findCss($page, '#list_desc')->setValue('Just. THE BEST.');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->assertEquals($this->findCss($page, '#save_list option[selected]')->getHtml(), 'Test List');
         $this->findCss($page, '#add_mytags')->setValue('test1 test2 "test 3"');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
@@ -184,6 +186,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // Make Two Lists
         // - One for the next test
         $this->findCss($page, '#make-list')->click();
+        $this->snooze();
         $this->findCss($page, '#list_title')->setValue('Future List');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
@@ -193,8 +196,10 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         );
         // - One for now
         $this->findCss($page, '#make-list')->click();
+        $this->snooze();
         $this->findCss($page, '#list_title')->setValue('Login Test List');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->assertEquals(
             $this->findCss($page, '#save_list option[selected]')->getHtml(),
             'Login Test List'

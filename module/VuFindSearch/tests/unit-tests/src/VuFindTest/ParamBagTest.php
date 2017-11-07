@@ -28,9 +28,9 @@
  */
 namespace VuFindTest;
 
-use VuFindSearch\ParamBag;
-
 use PHPUnit_Framework_TestCase as TestCase;
+
+use VuFindSearch\ParamBag;
 
 /**
  * Unit tests for ParamBag.

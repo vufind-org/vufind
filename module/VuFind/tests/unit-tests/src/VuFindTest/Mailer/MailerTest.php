@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Mailer;
+
 use VuFind\Mailer\Mailer;
 use Zend\Mail\Address;
 use Zend\Mail\AddressList;
@@ -291,6 +292,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
 
 class MockEmailRenderer extends \Zend\View\Renderer\PhpRenderer
 {
-    public function partial($template, $driver) {
+    public function partial($template, $driver)
+    {
     }
 }

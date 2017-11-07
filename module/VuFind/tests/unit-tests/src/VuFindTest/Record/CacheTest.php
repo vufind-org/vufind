@@ -29,6 +29,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Record;
+
 use VuFind\Record\Cache;
 use VuFindTest\Unit\TestCase as TestCase;
 
