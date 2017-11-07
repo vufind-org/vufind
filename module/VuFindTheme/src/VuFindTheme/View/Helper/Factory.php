@@ -144,18 +144,4 @@ class Factory
             Factory::getPipelineConfig($sm)
         );
     }
-
-    /**
-     * Construct the MobileUrl helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return MobileUrl
-     */
-    public static function getMobileUrl(ServiceManager $sm)
-    {
-        return new MobileUrl(
-            $sm->getServiceLocator()->get('VuFindTheme\Mobile')
-        );
-    }
 }

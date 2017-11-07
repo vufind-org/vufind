@@ -96,7 +96,6 @@ class Module
                 'imageLink' => 'VuFindTheme\View\Helper\Factory::getImageLink',
                 'inlineScript' =>
                     'VuFindTheme\View\Helper\Factory::getInlineScript',
-                'mobileurl' => 'VuFindTheme\View\Helper\Factory::getMobileUrl',
             ],
         ];
     }
