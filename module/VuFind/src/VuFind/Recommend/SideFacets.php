@@ -26,8 +26,9 @@
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Solr\Utils as SolrUtils;
+
 use VuFind\Search\Solr\HierarchicalFacetHelper;
+use VuFind\Solr\Utils as SolrUtils;
 
 /**
  * SideFacets Recommendations Module

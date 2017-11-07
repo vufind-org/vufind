@@ -28,8 +28,8 @@
  */
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 /**
  * Simple JSON-based factory for record collection.
@@ -102,5 +102,4 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         }
         return $collection;
     }
-
 }

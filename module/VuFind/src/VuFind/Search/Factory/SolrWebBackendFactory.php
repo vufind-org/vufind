@@ -27,8 +27,9 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Factory;
-use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
+
 use VuFindSearch\Backend\Solr\Connector;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 
 /**
  * Factory for the website SOLR backend.

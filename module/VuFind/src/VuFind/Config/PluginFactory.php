@@ -26,9 +26,11 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Config;
-use Zend\Config\Config, Zend\Config\Reader\Ini as IniReader,
-    Zend\ServiceManager\AbstractFactoryInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+
+use Zend\Config\Config;
+use Zend\Config\Reader\Ini as IniReader;
+use Zend\ServiceManager\AbstractFactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * VuFind Config Plugin Factory

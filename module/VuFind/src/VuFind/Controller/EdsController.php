@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
 use VuFind\Solr\Utils as SolrUtils;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -59,8 +60,8 @@ class EdsController extends AbstractSearch
     protected function resultScrollerActive()
     {
         $config = $this->serviceLocator->get('VuFind\Config')->get('EDS');
-        return (isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation);
+        return isset($config->Record->next_prev_navigation)
+            && $config->Record->next_prev_navigation;
     }
 
     /**
@@ -287,7 +288,6 @@ class EdsController extends AbstractSearch
             // Explicitly execute search within controller -- this allows us to
             // catch exceptions more reliably:
             $results->performAndProcessSearch();
-
         } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
             if ($e->hasTag('VuFind\Search\ParserError')) {
                 // If it's a parse error or the user specified an invalid field, we

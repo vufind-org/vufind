@@ -4,7 +4,7 @@ $formats = isset($this->overrideFormats) ? $this->overrideFormats : $this->drive
 if (is_array($formats)) {
     foreach ($formats as $format) {
         switch (strtolower($format)) {
-            case "book";
+            case "book":
                 $format = "BOOK";
                 break;
             case "journal":
@@ -84,7 +84,7 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
     }
     for ($i = 0; $i < $total; $i++) {
         if (isset($pubPlaces[$i])) {
-            echo "PP  - " . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': '). "\n";
+            echo "PP  - " . rtrim(str_replace(['[', ']'], '', $pubPlaces[$i]), ': ') . "\n";
         }
         if (isset($pubNames[$i])) {
             echo "PB  - " . rtrim($pubNames[$i], ", ") . "\n";

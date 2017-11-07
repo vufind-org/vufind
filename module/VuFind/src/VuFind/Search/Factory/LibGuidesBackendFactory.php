@@ -28,14 +28,14 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\LibGuides\Connector;
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
-use VuFindSearch\Backend\LibGuides\QueryBuilder;
 use VuFindSearch\Backend\LibGuides\Backend;
+use VuFindSearch\Backend\LibGuides\Connector;
+use VuFindSearch\Backend\LibGuides\QueryBuilder;
+use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for LibGuides backends.
@@ -78,7 +78,7 @@ class LibGuidesBackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $configReader = $this->serviceLocator->get('VuFind\Config');
         $this->libGuidesConfig = $configReader->get('LibGuides');
         if ($this->serviceLocator->has('VuFind\Logger')) {

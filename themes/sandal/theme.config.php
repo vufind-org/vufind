@@ -1,7 +1,7 @@
 <?php
-return array(
+return [
     'extends' => 'bootstrap3',
     'js' => [
         'sandal.js'
     ]
-);
+];

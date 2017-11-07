@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
-use VuFind\Auth\MultiAuth, Zend\Config\Config;
+
+use VuFind\Auth\MultiAuth;
+use Zend\Config\Config;
 
 /**
  * LDAP authentication test class.
@@ -51,14 +53,9 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $serviceLocator = new \VuFind\Auth\PluginManager(
-            new \Zend\ServiceManager\Config(
-                [
-                    'abstract_factories' => ['VuFind\Auth\PluginFactory'],
-                ]
-            )
-        );
-        $obj = clone($this->getAuthManager()->get('MultiAuth'));
+        $manager = $this->getAuthManager();
+        $obj = clone $manager->get('MultiAuth');
+        $obj->setPluginManager($manager);
         $obj->setConfig($config);
         return $obj;
     }

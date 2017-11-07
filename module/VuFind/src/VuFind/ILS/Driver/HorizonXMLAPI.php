@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -109,11 +110,11 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             'level' => 'item'
         ];
 
-         $holding = parent::processHoldingRow($id, $row, $patron);
-         $holding += [
+        $holding = parent::processHoldingRow($id, $row, $patron);
+        $holding += [
             'addLink' => $this->checkRequestIsValid($id, $itemData, $patron)
          ];
-         return $holding;
+        return $holding;
     }
 
     /**
@@ -230,7 +231,6 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             } catch (\Exception $e) {
                 throw new ILSException($e->getMessage());
             }
-
         } elseif (isset($this->wsPickUpLocations)) {
             foreach ($this->wsPickUpLocations as $code => $library) {
                 $pickresponse[] = [
@@ -296,7 +296,6 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             } catch (\Exception $e) {
                 throw new ILSException($e->getMessage());
             }
-
         } elseif (isset($this->wsDefaultPickUpLocation)) {
             return $this->wsDefaultPickUpLocation;
         }
@@ -627,7 +626,6 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
 
         // No Indication of Success or Failure
         if ($response !== false && !$response->error->message) {
-
             $keys = [];
             // Get a list of bib keys from waiting items
             $currentHolds = $response->holdsdata->waiting->waitingitem;
@@ -773,10 +771,8 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         $response['ids'] = $renewIDs;
         $i = 0;
         foreach ($origData->itemout as $item) {
-
             $ikey = (string)$item->ikey;
             if (in_array($ikey, $renewIDs)) {
-
                 $response['details'][$ikey]['item_id'] = $ikey;
                 $origRenewals = (string)$item->numrenewals;
                 $currentRenewals = (string)$renewData->itemout[$i]->numrenewals;
@@ -792,13 +788,11 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                 }
 
                 if ($currentRenewals > $origRenewals) {
-
                     $response['details'][$ikey] = [
                         'item_id' => $ikey,
                         'new_date' =>  $currentDueDate,
                         'success' => true
                     ];
-
                 } else {
                     $response['details'][$ikey] = [
                     'item_id' => $ikey,

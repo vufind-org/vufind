@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Search\TestHarness;
+
 use VuFind\Record\Loader;
 use VuFindSearch\Service as SearchService;
 use VuFindTest\RecordDriver\TestHarness as RecordDriver;

@@ -212,7 +212,7 @@ class ThemeInfo
 
         while (!empty($currentTheme)) {
             $currentThemeSet = array_merge(
-                (array) $currentTheme,
+                (array)$currentTheme,
                 isset($allThemeInfo[$currentTheme]['mixins'])
                     ? $allThemeInfo[$currentTheme]['mixins'] : []
             );
