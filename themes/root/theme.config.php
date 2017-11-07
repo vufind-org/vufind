@@ -49,7 +49,6 @@ return [
             'context' => 'VuFind\View\Helper\Root\Context',
             'currentPath' => 'VuFind\View\Helper\Root\CurrentPath',
             'highlight' => 'VuFind\View\Helper\Root\Highlight',
-            'jqueryvalidation' => 'VuFind\View\Helper\Root\JqueryValidation',
             'localizedNumber' => 'VuFind\View\Helper\Root\LocalizedNumber',
             'printms' => 'VuFind\View\Helper\Root\Printms',
             'recommend' => 'VuFind\View\Helper\Root\Recommend',
