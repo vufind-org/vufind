@@ -447,6 +447,20 @@ class Factory
     }
 
     /**
+     * Construct the ResultFeed helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ResultFeed
+     */
+    public static function getResultFeed(ServiceManager $sm)
+    {
+        $helper = new ResultFeed();
+        $helper->registerExtensions($sm);
+        return $helper;
+    }
+
+    /**
      * Construct the SafeMoneyFormat helper.
      *
      * @param ServiceManager $sm Service manager.
