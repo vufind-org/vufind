@@ -95,3 +95,7 @@ method = driver
 ; is 'driver'.
 [changeRequestStatus]
 method = driver
+
+[TransactionHistory]
+; By default the loan history is disabled. Uncomment the following line to enable it.
+enabled = true
