@@ -26,12 +26,10 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Row;
-use Zend\Db\Sql\Expression,
-    Zend\Db\Sql\Predicate\Predicate,
-    Zend\Db\Sql\Sql,
-    Zend\Crypt\Symmetric\Mcrypt,
-    Zend\Crypt\Password\Bcrypt,
-    Zend\Crypt\BlockCipher as BlockCipher;
+
+use Zend\Crypt\BlockCipher as BlockCipher;
+use Zend\Crypt\Symmetric\Openssl;
+use Zend\Db\Sql\Expression;
 
 /**
  * Row Definition for user
@@ -210,7 +208,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         $algo = isset($this->config->Authentication->ils_encryption_algo)
             ? $this->config->Authentication->ils_encryption_algo
             : 'blowfish';
-        $cipher = new BlockCipher(new Mcrypt(['algorithm' => $algo]));
+        $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
     }
@@ -642,7 +640,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $hash = md5($this->username . $this->password . $this->pass_hash . rand());
         // Make totally sure the timestamp is exactly 10 characters:
-        $time = str_pad(substr((string) time(), 0, 10), 10, '0', STR_PAD_LEFT);
+        $time = str_pad(substr((string)time(), 0, 10), 10, '0', STR_PAD_LEFT);
         $this->verify_hash = $hash . $time;
         return $this->save();
     }

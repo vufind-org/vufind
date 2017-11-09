@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\RecordTab;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -180,9 +181,7 @@ class Factory
         $mapType = isset($config->Content->recordMap)
             ? $config->Content->recordMap : null;
         $options = [];
-        $optionFields = [
-            'displayCoords', 'mapLabels', 'googleMapApiKey'
-        ];
+        $optionFields = ['displayCoords', 'mapLabels', 'graticule'];
         foreach ($optionFields as $field) {
             if (isset($config->Content->$field)) {
                 $options[$field] = $config->Content->$field;
@@ -250,6 +249,26 @@ class Factory
             $loader = null;
         }
         return new Reviews($loader, static::getHideSetting($config, 'reviews'));
+    }
+
+    /**
+     * Factory for TOC tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return TablesOfContents
+     */
+    public static function getTOC(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        // Only instantiate the loader if the feature is enabled:
+        if (isset($config->Content->toc)) {
+            $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
+                ->get('toc');
+        } else {
+            $loader = null;
+        }
+        return new TOC($loader, static::getHideSetting($config, 'toc'));
     }
 
     /**

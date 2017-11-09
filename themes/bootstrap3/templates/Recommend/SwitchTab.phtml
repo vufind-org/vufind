@@ -1,12 +1,12 @@
 <?
-  $searchTabs = is_object($this->params)
-    ? $this->searchtabs()->getTabConfigForParams($this->params) : [];
+  $tabConfig = is_object($this->params)
+    ? $this->searchTabs()->getTabConfigForParams($this->params) : [];
 ?>
-<? if (count($searchTabs) > 0): ?>
+<? if (count($tabConfig) > 0): ?>
   <div class="alert alert-info">
-    <?=$this->transEsc('nohit_change_tab', ['%%activeTab%%' => $this->translate($this->recommend->getActiveTab($searchTabs)['label'])])?>
+    <?=$this->transEsc('nohit_change_tab', ['%%activeTab%%' => $this->translate($this->recommend->getActiveTab($tabConfig)['label'])])?>
     <ul>
-    <? $inactiveTabs = $this->recommend->getInactiveTabs($searchTabs); ?>
+    <? $inactiveTabs = $this->recommend->getInactiveTabs($tabConfig); ?>
     <? foreach ($inactiveTabs as $tab): ?>
       <li>
         <? if (!$tab['selected']): ?><a href="<?=$this->escapeHtmlAttr($tab['url'])?>"><? endif; ?>

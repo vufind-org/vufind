@@ -4,12 +4,22 @@ namespace VuFindConsole\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
-            'generate' => 'VuFindConsole\Controller\Factory::getGenerateController',
-            'harvest' => 'VuFindConsole\Controller\Factory::getHarvestController',
-            'import' => 'VuFindConsole\Controller\Factory::getImportController',
-            'language' => 'VuFindConsole\Controller\Factory::getLanguageController',
-            'redirect' => 'VuFindConsole\Controller\Factory::getRedirectController',
-            'util' => 'VuFindConsole\Controller\Factory::getUtilController',
+            'VuFindConsole\Controller\CompileController' => 'VuFindConsole\Controller\Factory::getCompileController',
+            'VuFindConsole\Controller\GenerateController' => 'VuFindConsole\Controller\Factory::getGenerateController',
+            'VuFindConsole\Controller\HarvestController' => 'VuFindConsole\Controller\Factory::getHarvestController',
+            'VuFindConsole\Controller\ImportController' => 'VuFindConsole\Controller\Factory::getImportController',
+            'VuFindConsole\Controller\LanguageController' => 'VuFindConsole\Controller\Factory::getLanguageController',
+            'VuFindConsole\Controller\RedirectController' => 'VuFindConsole\Controller\Factory::getRedirectController',
+            'VuFindConsole\Controller\UtilController' => 'VuFindConsole\Controller\Factory::getUtilController',
+        ],
+        'aliases' => [
+            'compile' => 'VuFindConsole\Controller\CompileController',
+            'generate' => 'VuFindConsole\Controller\GenerateController',
+            'harvest' => 'VuFindConsole\Controller\HarvestController',
+            'import' => 'VuFindConsole\Controller\ImportController',
+            'language' => 'VuFindConsole\Controller\LanguageController',
+            'redirect' => 'VuFindConsole\Controller\RedirectController',
+            'util' => 'VuFindConsole\Controller\UtilController',
         ],
     ],
     'console' => [
@@ -35,11 +45,14 @@ $config = [
 ];
 
 $routes = [
+    'compile/theme' => 'compile theme [--force] [<source>] [<target>]',
     'generate/dynamicroute' => 'generate dynamicroute [<name>] [<newController>] [<newAction>] [<module>]',
     'generate/extendservice' => 'generate extendservice [<source>] [<target>]',
     'generate/nontabrecordaction' => 'generate nontabrecordaction [<newAction>] [<module>]',
     'generate/recordroute' => 'generate recordroute [<base>] [<newController>] [<module>]',
     'generate/staticroute' => 'generate staticroute [<name>] [<module>]',
+    'generate/theme' => 'generate theme [<themename>]',
+    'generate/thememixin' => 'generate thememixin [<name>]',
     // harvest/harvest_oai is too complex to represent here; we need to rely on default-route
     'harvest/merge-marc' => 'harvest merge-marc [<dir>]',
     'import/import-xsl' => 'import import-xsl [--test-only] [--index=] [<xml>] [<properties>]',
@@ -59,7 +72,7 @@ $routes = [
     'util/index_reserves' => 'util index_reserves [--help|-h] [-d=s] [-t=s] [-f=s]',
     'util/optimize' => 'util optimize [<core>]',
     'util/sitemap' => 'util sitemap',
-    'util/suppressed' => 'util suppressed [--help|-h] [--authorities]',
+    'util/suppressed' => 'util suppressed [--help|-h] [--authorities] [--outfile=s]',
     'util/switch_db_hash' => 'util switch_db_hash [<newhash>] [<newkey>]',
 ];
 

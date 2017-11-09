@@ -132,7 +132,6 @@
    <dynamicField name="*_txtP_mv" type="textProper" indexed="true" stored="true" multiValued="true"/>
  </fields>
  <uniqueKey>id</uniqueKey>
- <defaultSearchField>fulltext</defaultSearchField>
  <!-- CopyFields for Spelling -->
  <copyField source="title"    dest="spellingShingle"/>
  <!-- Copy title information to special field for sorting -->
@@ -151,6 +150,4 @@
  <copyField source="subject" dest="keywords_unstemmed" />
  <copyField source="linktype" dest="keywords_unstemmed" />
  <copyField source="title" dest="title_unstemmed"/>
- <!-- Default Boolean Operator -->
- <solrQueryParser defaultOperator="AND"/>
 </schema>

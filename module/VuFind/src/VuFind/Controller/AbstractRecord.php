@@ -26,9 +26,10 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Exception\Mail as MailException,
-    VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+
+use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Exception\Mail as MailException;
+use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 
 /**
  * VuFind Record Controller
@@ -324,6 +325,12 @@ class AbstractRecord extends AbstractBase
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
             throw new ForbiddenException('Lists disabled');
+        }
+
+        // Check permission:
+        $response = $this->permission()->check('feature.Favorites', false);
+        if (is_object($response)) {
+            return $response;
         }
 
         // Process form submission:
@@ -710,7 +717,7 @@ class AbstractRecord extends AbstractBase
             && !$this->getUser()
         ) {
             return $this->forceLogin(null);
-        } else if ($this->params()->fromQuery('catalogLogin', 'false') == 'true'
+        } elseif ($this->params()->fromQuery('catalogLogin', 'false') == 'true'
             && !is_array($patron = $this->catalogLogin())
         ) {
             return $patron;
@@ -725,7 +732,7 @@ class AbstractRecord extends AbstractBase
         $view->backgroundTabs = $this->getBackgroundTabs();
         $view->loadInitialTabWithAjax
             = isset($config->Site->loadInitialTabWithAjax)
-            ? (bool) $config->Site->loadInitialTabWithAjax : false;
+            ? (bool)$config->Site->loadInitialTabWithAjax : false;
 
         // Set up next/previous record links (if appropriate)
         if ($this->resultScrollerActive()) {

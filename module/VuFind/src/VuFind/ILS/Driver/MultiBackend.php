@@ -215,9 +215,11 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
         if ($driver) {
-            // Don't pass on patron information belonging to another source
+            // If the patron belongs to another source, just pass on an empty array
+            // to indicate that the patron has logged in but is not available for the
+            // current catalog.
             if ($patron && $this->getSource($patron['cat_username']) !== $source) {
-                $patron = null;
+                $patron = [];
             }
             $holdings = $driver->getHolding(
                 $this->getLocalId($id),
@@ -454,6 +456,30 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
     }
 
     /**
+     * Get Patron Transaction History
+     *
+     * This is responsible for retrieving all historic transactions
+     * (i.e. checked out items) by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Retrieval params
+     *
+     * @return array        Array of the patron's transactions
+     */
+    public function getMyTransactionHistory($patron, $params)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $transactions = $driver->getMyTransactionHistory(
+                $this->stripIdPrefixes($patron, $source), $params
+            );
+            return $this->addIdPrefixes($transactions, $source);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
      * Get Renew Details
      *
      * In order to renew an item, the ILS requires information on the item and
@@ -582,7 +608,9 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
@@ -613,7 +641,9 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
@@ -958,7 +988,9 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {
@@ -1415,7 +1447,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
             $this->error("No configuration found for source '$source'");
             return null;
         }
-        $driverInst = clone($this->driverManager->get($driver));
+        $driverInst = clone $this->driverManager->get($driver);
         $driverInst->setConfig($config);
         $driverInst->init();
         return $driverInst;
@@ -1485,17 +1517,17 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
     }
 
     /**
-    * Change global ID's to local ID's in the given array
-    *
-    * @param mixed  $data         The data to be modified, normally
-    * array or array of arrays
-    * @param string $source       Source code
-    * @param array  $modifyFields Fields to be modified in the array
-    * @param array  $ignoreFields Fields to be ignored during recursive processing
-    *
-    * @return mixed     Modified array or empty/null if that input was
-    *                   empty/null
-    */
+     * Change global ID's to local ID's in the given array
+     *
+     * @param mixed  $data         The data to be modified, normally
+     * array or array of arrays
+     * @param string $source       Source code
+     * @param array  $modifyFields Fields to be modified in the array
+     * @param array  $ignoreFields Fields to be ignored during recursive processing
+     *
+     * @return mixed     Modified array or empty/null if that input was
+     *                   empty/null
+     */
     protected function stripIdPrefixes($data, $source,
         $modifyFields = ['id', 'cat_username'], $ignoreFields = []
     ) {

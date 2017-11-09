@@ -30,8 +30,11 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException;
+
+use PDO;
+use PDOException;
+use VuFind\Exception\Date as DateException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Voyager Restful ILS Driver
@@ -477,11 +480,11 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      *
      * @param array  $data   Item Data
      * @param string $id     The BIB record id
-     * @param mixed  $patron Patron Data or boolean false
+     * @param array  $patron Patron Data
      *
      * @return array Keyed data
      */
-    protected function processHoldingData($data, $id, $patron = false)
+    protected function processHoldingData($data, $id, $patron = null)
     {
         $holding = parent::processHoldingData($data, $id, $patron);
 
@@ -551,7 +554,8 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
             $ILLRequest = '';
             $addILLRequestLink = false;
-            if ($patron && $isILLRequestAllowed) {
+            // Check only that a patron has logged in
+            if (null !== $patron && $isILLRequestAllowed) {
                 $ILLRequest = 'auto';
                 $addILLRequestLink = 'check';
             }
@@ -1252,6 +1256,7 @@ EOT;
      *
      * @return array              An array of renewal information keyed by item ID
      */
+
     /**
      * Renew My Items
      *
@@ -1425,7 +1430,6 @@ EOT;
         $itemId = false
     ) {
         if (!empty($bibId) && !empty($patronId) && !empty($request)) {
-
             $hierarchy = [];
 
             // Build Hierarchy
@@ -1993,7 +1997,7 @@ EOT;
             return $this->holdError('hold_invalid_request_group');
         }
 
-            // Optional check that the bib has items
+        // Optional check that the bib has items
         if ($this->checkItemsExist) {
             $exist = $this->itemsExist(
                 $bibId,
@@ -2078,7 +2082,7 @@ EOT;
         foreach ($details as $cancelDetails) {
             list($itemId, $cancelCode) = explode('|', $cancelDetails);
 
-             // Create Rest API Cancel Key
+            // Create Rest API Cancel Key
             $cancelID = $this->ws_dbKey . '|' . $cancelCode;
 
             // Build Hierarchy
@@ -2110,7 +2114,6 @@ EOT;
                         ? 'hold_cancel_success' : 'hold_cancel_fail',
                     'sysMessage' => ($reply == 'ok') ? false : $reply,
                 ];
-
             } else {
                 $response[$itemId] = [
                     'success' => false, 'status' => 'hold_cancel_fail'
@@ -2228,7 +2231,7 @@ EOT;
                     if ($dueTimeStamp !== false && is_numeric($dueTimeStamp)) {
                         if ($now > $dueTimeStamp) {
                             $dueStatus = 'overdue';
-                        } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
+                        } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
                             $dueStatus = 'due';
                         }
                     }
@@ -2575,7 +2578,7 @@ EOT;
         foreach ($details as $cancelDetails) {
             list($dbKey, $itemId, $cancelCode) = explode('|', $cancelDetails);
 
-             // Create Rest API Cancel Key
+            // Create Rest API Cancel Key
             $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . '|' . $cancelCode;
 
             // Build Hierarchy
@@ -2607,7 +2610,6 @@ EOT;
                         : 'storage_retrieval_request_cancel_fail',
                     'sysMessage' => ($reply == 'ok') ? false : $reply,
                 ];
-
             } else {
                 $response[$itemId] = [
                     'success' => false,
@@ -3174,7 +3176,7 @@ EOT;
         foreach ($details as $cancelDetails) {
             list($dbKey, $itemId, $type, $cancelCode) = explode('|', $cancelDetails);
 
-             // Create Rest API Cancel Key
+            // Create Rest API Cancel Key
             $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . '|' . $cancelCode;
 
             // Build Hierarchy
@@ -3212,7 +3214,6 @@ EOT;
                         ? 'ill_request_cancel_success' : 'ill_request_cancel_fail',
                     'sysMessage' => ($reply == 'ok') ? false : $reply,
                 ];
-
             } else {
                 $response[$itemId] = [
                     'success' => false,

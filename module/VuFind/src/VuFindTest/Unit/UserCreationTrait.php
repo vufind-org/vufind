@@ -28,6 +28,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Unit;
+
 use Behat\Mink\Element\Element;
 
 /**
@@ -126,7 +127,11 @@ trait UserCreationTrait
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         if (null !== $username) {
             $usernameField = $this->findCss($page, $prefix . '[name="username"]');
-            $usernameField->setValue($username);
+            // Workaround for Chromedriver bug; sometimes setting the username
+            // doesn't work on the first try.
+            while ($usernameField->getValue() !== $username) {
+                $usernameField->setValue($username);
+            }
         }
         if (null !== $password) {
             $passwordField = $this->findCss($page, $prefix . '[name="password"]');

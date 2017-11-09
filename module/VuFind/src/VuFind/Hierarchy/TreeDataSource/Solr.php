@@ -26,10 +26,11 @@
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\TreeDataSource;
+
 use VuFind\Hierarchy\TreeDataFormatter\PluginManager as FormatterManager;
-use VuFindSearch\Query\Query;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Query\Query;
 
 /**
  * Hierarchy Tree Data Source (Solr)
@@ -111,11 +112,12 @@ class Solr extends AbstractBase
      * Search Solr.
      *
      * @param string $q    Search query
-     * @param int    $rows Max rows to retrieve (default = int max)
+     * @param int    $rows Max rows to retrieve (default = int max / 2 since Solr
+     * may choke with higher values)
      *
      * @return array
      */
-    protected function searchSolr($q, $rows = 2147483647)
+    protected function searchSolr($q, $rows = 1073741823)
     {
         $params = new ParamBag(
             [

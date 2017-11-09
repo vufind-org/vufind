@@ -29,11 +29,15 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use File_MARC, Yajra\Pdo\Oci8, PDO, PDOException,
-    VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException,
-    VuFind\I18n\Translator\TranslatorAwareInterface,
-    Zend\Validator\EmailAddress as EmailAddressValidator;
+
+use File_MARC;
+use PDO;
+use PDOException;
+use VuFind\Exception\Date as DateException;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use Yajra\Pdo\Oci8;
+use Zend\Validator\EmailAddress as EmailAddressValidator;
 
 /**
  * Voyager ILS Driver
@@ -91,6 +95,13 @@ class Voyager extends AbstractBase
     protected $useHoldingsSortGroups;
 
     /**
+     * Loan interval types for which to display the due time (empty = all)
+     *
+     * @var array
+     */
+    protected $displayDueTimeIntervals;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -141,6 +152,12 @@ class Voyager extends AbstractBase
         $this->useHoldingsSortGroups
             = isset($this->config['Holdings']['use_sort_groups'])
             ? $this->config['Holdings']['use_sort_groups'] : true;
+
+        $this->displayDueTimeIntervals
+            = isset($this->config['Loans']['display_due_time_only_for_intervals'])
+            ? explode(
+                ':', $this->config['Loans']['display_due_time_only_for_intervals']
+            ) : [];
     }
 
     /**
@@ -172,7 +189,7 @@ class Voyager extends AbstractBase
                    ')';
             try {
                 $this->lazyDb = new Oci8(
-                    "oci:dbname=$tns;charset=US_ASCII",
+                    "oci:dbname=$tns;charset=US7ASCII",
                     $this->config['Catalog']['user'],
                     $this->config['Catalog']['password']
                 );
@@ -349,7 +366,7 @@ class Voyager extends AbstractBase
     {
         // Expressions
         $sqlExpressions = [
-            "BIB_ITEM.BIB_ID", "ITEM.ITEM_ID",
+            "BIB_ITEM.BIB_ID", "ITEM.ITEM_ID",  "MFHD_MASTER.MFHD_ID",
             "ITEM.ON_RESERVE", "ITEM_STATUS_DESC as status",
             "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
                 "LOCATION.LOCATION_NAME) as location",
@@ -406,7 +423,7 @@ class Voyager extends AbstractBase
         // Expressions
         $sqlExpressions = [
             "BIB_MFHD.BIB_ID",
-            "1 as ITEM_ID", "'N' as ON_RESERVE",
+            "null as ITEM_ID", "MFHD_MASTER.MFHD_ID", "'N' as ON_RESERVE",
             "'No information available' as status",
             "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
                 "LOCATION.LOCATION_NAME) as location",
@@ -458,8 +475,10 @@ class Voyager extends AbstractBase
         $data = [];
 
         foreach ($sqlRows as $row) {
-            if (!isset($data[$row['ITEM_ID']])) {
-                $data[$row['ITEM_ID']] = [
+            $rowId = null !== $row['ITEM_ID']
+                ? $row['ITEM_ID'] : 'MFHD' . $row['MFHD_ID'];
+            if (!isset($data[$rowId])) {
+                $data[$rowId] = [
                     'id' => $row['BIB_ID'],
                     'status' => $row['STATUS'],
                     'status_array' => [$row['STATUS']],
@@ -475,10 +494,10 @@ class Voyager extends AbstractBase
                 ];
             } else {
                 $statusFound = in_array(
-                    $row['STATUS'], $data[$row['ITEM_ID']]['status_array']
+                    $row['STATUS'], $data[$rowId]['status_array']
                 );
                 if (!$statusFound) {
-                    $data[$row['ITEM_ID']]['status_array'][] = $row['STATUS'];
+                    $data[$rowId]['status_array'][] = $row['STATUS'];
                 }
             }
         }
@@ -693,7 +712,7 @@ EOT;
                 "LOCATION.LOCATION_NAME) as location",
             "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
             "BIB_MFHD.BIB_ID", "MFHD_MASTER.MFHD_ID",
-            "null as duedate", "0 AS TEMP_LOCATION",
+            "null as duedate", "null as RETURNDATE", "0 AS TEMP_LOCATION",
             "0 as PERM_LOCATION",
             "0 as ITEM_SEQUENCE_NUMBER",
             $this->getItemSortSequenceSQL('LOCATION.LOCATION_ID')
@@ -754,7 +773,8 @@ EOT;
 
             // Concat wrapped rows (MARC data more than 300 bytes gets split
             // into multiple rows)
-            $rowId = isset($row['ITEM_ID']) ? $row['ITEM_ID'] : $row['MFHD_ID'];
+            $rowId = isset($row['ITEM_ID'])
+                ? $row['ITEM_ID'] : 'MFHD' . $row['MFHD_ID'];
             if (isset($data[$rowId][$number])) {
                 // We don't want to concatenate the same MARC information to
                 // itself over and over due to a record with multiple status
@@ -1016,7 +1036,7 @@ EOT;
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function processHoldingData($data, $id, $patron = false)
+    protected function processHoldingData($data, $id, $patron = null)
     {
         $holding = [];
 
@@ -1040,7 +1060,7 @@ EOT;
                         = $this->pickStatus($availability['otherStatuses']);
                 }
 
-                 // Convert Voyager Format to display format
+                // Convert Voyager Format to display format
                 $dueDate = false;
                 if (!empty($row['DUEDATE'])) {
                     $dueDate = $this->dateFormat->convertToDisplayDate(
@@ -1301,13 +1321,15 @@ EOT;
             "MAX(CIRC_TRANSACTIONS.ITEM_ID) as ITEM_ID",
             "MAX(MFHD_ITEM.ITEM_ENUM) AS ITEM_ENUM",
             "MAX(MFHD_ITEM.YEAR) AS YEAR",
+            "MAX(ITEM_BARCODE.ITEM_BARCODE) AS ITEM_BARCODE",
             "MAX(BIB_TEXT.TITLE_BRIEF) AS TITLE_BRIEF",
             "MAX(BIB_TEXT.TITLE) AS TITLE",
             "LISTAGG(ITEM_STATUS_DESC, CHR(9)) "
             . "WITHIN GROUP (ORDER BY ITEM_STATUS_DESC) as status",
             "MAX(CIRC_TRANSACTIONS.RENEWAL_COUNT) AS RENEWAL_COUNT",
             "MAX(CIRC_POLICY_MATRIX.RENEWAL_COUNT) as RENEWAL_LIMIT",
-            "MAX(LOCATION.LOCATION_DISPLAY_NAME) as BORROWING_LOCATION"
+            "MAX(LOCATION.LOCATION_DISPLAY_NAME) as BORROWING_LOCATION",
+            "MAX(CIRC_POLICY_MATRIX.LOAN_INTERVAL) as LOAN_INTERVAL"
         ];
 
         // From
@@ -1317,6 +1339,7 @@ EOT;
             $this->dbName . ".ITEM",
             $this->dbName . ".ITEM_STATUS",
             $this->dbName . ".ITEM_STATUS_TYPE",
+            $this->dbName . ".ITEM_BARCODE",
             $this->dbName . ".MFHD_ITEM",
             $this->dbName . ".BIB_TEXT",
             $this->dbName . ".CIRC_POLICY_MATRIX",
@@ -1335,6 +1358,9 @@ EOT;
             "BIB_ITEM.ITEM_ID = ITEM.ITEM_ID",
             "ITEM.ITEM_ID = ITEM_STATUS.ITEM_ID",
             "ITEM_STATUS.ITEM_STATUS = ITEM_STATUS_TYPE.ITEM_STATUS_TYPE",
+            "ITEM.ITEM_ID = ITEM_BARCODE.ITEM_ID(+)",
+            "ITEM_BARCODE.BARCODE_STATUS IN (SELECT BARCODE_STATUS_TYPE FROM " .
+            "$this->dbName.ITEM_BARCODE_STATUS WHERE BARCODE_STATUS_DESC = 'Active')"
         ];
 
         // Order
@@ -1407,7 +1433,7 @@ EOT;
             if (is_numeric($dueTimeStamp)) {
                 if ($now > $dueTimeStamp) {
                     $dueStatus = "overdue";
-                } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
+                } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
                     $dueStatus = "due";
                 }
             }
@@ -1416,8 +1442,8 @@ EOT;
         $transaction = [
             'id' => $sqlRow['BIB_ID'],
             'item_id' => $sqlRow['ITEM_ID'],
+            'barcode' => utf8_encode($sqlRow['ITEM_BARCODE']),
             'duedate' => $dueDate,
-            'dueTime' => $dueTime,
             'dueStatus' => $dueStatus,
             'volume' => str_replace("v.", "", utf8_encode($sqlRow['ITEM_ENUM'])),
             'publication_year' => $sqlRow['YEAR'],
@@ -1428,9 +1454,13 @@ EOT;
             'message' =>
                 $this->pickTransactionStatus(explode(chr(9), $sqlRow['STATUS'])),
         ];
-        if (isset($this->config['Loans']['display_borrowing_location'])
-            && $this->config['Loans']['display_borrowing_location']
+        // Display due time only if loan interval is not in days if configured
+        if (empty($this->displayDueTimeIntervals)
+            || in_array($sqlRow['LOAN_INTERVAL'], $this->displayDueTimeIntervals)
         ) {
+            $transaction['dueTime'] = $dueTime;
+        }
+        if (!empty($this->config['Loans']['display_borrowing_location'])) {
             $transaction['borrowingLocation']
                 = utf8_encode($sqlRow['BORROWING_LOCATION']);
         }
@@ -1719,7 +1749,6 @@ EOT;
         $returnList = [];
 
         if (!empty($holdList)) {
-
             $sortHoldList = [];
             // Get a unique List of Bib Ids
             foreach ($holdList as $holdItem) {
@@ -1951,16 +1980,24 @@ EOT;
                "PATRON.HISTORICAL_CHARGES, PATRON_ADDRESS.ADDRESS_LINE1, " .
                "PATRON_ADDRESS.ADDRESS_LINE2, PATRON_ADDRESS.ZIP_POSTAL, " .
                "PATRON_ADDRESS.CITY, PATRON_ADDRESS.COUNTRY, " .
-               "PATRON_PHONE.PHONE_NUMBER, PATRON_GROUP.PATRON_GROUP_NAME " .
+               "PATRON_PHONE.PHONE_NUMBER, PHONE_TYPE.PHONE_DESC, " .
+               "PATRON_GROUP.PATRON_GROUP_NAME " .
                "FROM $this->dbName.PATRON, $this->dbName.PATRON_ADDRESS, " .
-               "$this->dbName.PATRON_PHONE, $this->dbName.PATRON_BARCODE, " .
-               "$this->dbName.PATRON_GROUP " .
+               "$this->dbName.PATRON_PHONE, $this->dbName.PHONE_TYPE, " .
+               "$this->dbName.PATRON_BARCODE, $this->dbName.PATRON_GROUP " .
                "WHERE PATRON.PATRON_ID = PATRON_ADDRESS.PATRON_ID (+) " .
                "AND PATRON_ADDRESS.ADDRESS_ID = PATRON_PHONE.ADDRESS_ID (+) " .
                "AND PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID (+) " .
                "AND PATRON_BARCODE.PATRON_GROUP_ID = " .
                "PATRON_GROUP.PATRON_GROUP_ID (+) " .
+               "AND PATRON_PHONE.PHONE_TYPE = PHONE_TYPE.PHONE_TYPE (+) " .
                "AND PATRON.PATRON_ID = :id";
+        $primaryPhoneType = isset($this->config['Profile']['primary_phone'])
+            ? $this->config['Profile']['primary_phone']
+            : 'Primary';
+        $mobilePhoneType = isset($this->config['Profile']['mobile_phone'])
+            ? $this->config['Profile']['mobile_phone']
+            : 'Mobile';
         try {
             $sqlStmt = $this->executeSQL($sql, [':id' => $patron['id']]);
             $patron = [];
@@ -1972,7 +2009,11 @@ EOT;
                     $patron['lastname'] = utf8_encode($row['LAST_NAME']);
                 }
                 if (!empty($row['PHONE_NUMBER'])) {
-                    $patron['phone'] = utf8_encode($row['PHONE_NUMBER']);
+                    if ($primaryPhoneType === $row['PHONE_DESC']) {
+                        $patron['phone'] = utf8_encode($row['PHONE_NUMBER']);
+                    } elseif ($mobilePhoneType === $row['PHONE_DESC']) {
+                        $patron['mobile_phone'] = utf8_encode($row['PHONE_NUMBER']);
+                    }
                 }
                 if (!empty($row['PATRON_GROUP_NAME'])) {
                     $patron['group'] = utf8_encode($row['PATRON_GROUP_NAME']);
@@ -1981,7 +2022,7 @@ EOT;
                 $addr1 = utf8_encode($row['ADDRESS_LINE1']);
                 if ($validator->isValid($addr1)) {
                     $patron['email'] = $addr1;
-                } else if (!isset($patron['address1'])) {
+                } elseif (!isset($patron['address1'])) {
                     if (!empty($addr1)) {
                         $patron['address1'] = $addr1;
                     }
@@ -1999,7 +2040,7 @@ EOT;
                     }
                 }
             }
-            return (empty($patron) ? null : $patron);
+            return empty($patron) ? null : $patron;
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }

@@ -26,14 +26,17 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
-use File_MARC, File_MARCXML, VuFind\Sitemap\Generator as Sitemap;
+
+use File_MARC;
+use File_MARCXML;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Sitemap\Generator as Sitemap;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 use Zend\Console\Console;
-use Zend\Crypt\Symmetric\Mcrypt,
-    Zend\Crypt\BlockCipher as BlockCipher;
+use Zend\Crypt\BlockCipher as BlockCipher;
+use Zend\Crypt\Symmetric\Openssl;
 
 /**
  * This controller handles various command-line tools
@@ -539,6 +542,10 @@ class UtilController extends AbstractBase
                 . ' Delete authority records instead of bibliographic records'
             );
             Console::writeLine('--help or -h => Show this message');
+            Console::writeLine(
+                '--outfile=[/path/to/file] => Write the ID list to the specified'
+                . ' file instead of updating Solr (optional)'
+            );
             return $this->getFailureResponse();
         }
 
@@ -560,16 +567,24 @@ class UtilController extends AbstractBase
         if (!is_array($result)) {
             Console::writeLine("Could not obtain suppressed record list from ILS.");
             return $this->getFailureResponse();
-        } else if (empty($result)) {
+        } elseif (empty($result)) {
             Console::writeLine("No suppressed records to delete.");
             return $this->getSuccessResponse();
         }
 
-        // Get Suppressed Records and Delete from index
-        $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
-        $solr->deleteRecords($backend, $result);
-        $solr->commit($backend);
-        $solr->optimize($backend);
+        // If 'outfile' set, write the list
+        if ($file = $request->getParam('outfile')) {
+            if (!file_put_contents($file, implode("\n", $result))) {
+                Console::writeLine("Problem writing to $file");
+                return $this->getFailureResponse();
+            }
+        } else {
+            // Default behavior: Get Suppressed Records and Delete from index
+            $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
+            $solr->deleteRecords($backend, $result);
+            $solr->commit($backend);
+            $solr->optimize($backend);
+        }
         return $this->getSuccessResponse();
     }
 
@@ -785,13 +800,13 @@ class UtilController extends AbstractBase
             return $this->getSuccessResponse();
         }
 
-        // Initialize Mcrypt first, so we can catch any illegal algorithms before
+        // Initialize Openssl first, so we can catch any illegal algorithms before
         // making any changes:
         try {
             if ($oldhash != 'none') {
-                $oldCrypt = new Mcrypt(['algorithm' => $oldhash]);
+                $oldCrypt = new Openssl(['algorithm' => $oldhash]);
             }
-            $newCrypt = new Mcrypt(['algorithm' => $newhash]);
+            $newCrypt = new Openssl(['algorithm' => $newhash]);
         } catch (\Exception $e) {
             Console::writeLine($e->getMessage());
             return $this->getFailureResponse();

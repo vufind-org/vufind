@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Backend\Primo;
 
+use InvalidArgumentException;
 use VuFindSearch\Backend\Primo\Backend;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use InvalidArgumentException;
 
 /**
  * Unit tests for Primo backend.

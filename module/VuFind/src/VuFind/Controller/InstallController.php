@@ -26,10 +26,11 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Config\Locator as ConfigLocator,
-    VuFind\Config\Writer as ConfigWriter,
-    Zend\Mvc\MvcEvent,
-    Zend\Crypt\Password\Bcrypt;
+
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\Writer as ConfigWriter;
+use Zend\Crypt\Password\Bcrypt;
+use Zend\Mvc\MvcEvent;
 
 /**
  * Class controls VuFind auto-configuration.
@@ -237,7 +238,7 @@ class InstallController extends AbstractBase
     {
         $requiredFunctionsExist
             = function_exists('mb_substr') && is_callable('imagecreatefromstring')
-              && function_exists('mcrypt_module_open')
+              && function_exists('openssl_encrypt')
               && class_exists('XSLTProcessor');
 
         return [
@@ -288,10 +289,10 @@ class InstallController extends AbstractBase
             $problems++;
         }
 
-        // Is the mcrypt library missing?
-        if (!function_exists('mcrypt_module_open')) {
+        // Is the openssl library missing?
+        if (!function_exists('openssl_encrypt')) {
             $msg
-                = "Your PHP installation appears to be missing the mcrypt plug-in."
+                = "Your PHP installation appears to be missing the openssl plug-in."
                 . " For better security support, it is recommended that you add"
                 . " this. For details on how to do this, see "
                 . "https://vufind.org/wiki/installation "
@@ -334,16 +335,16 @@ class InstallController extends AbstractBase
         if (!preg_match('/^\w*$/', $view->dbname)) {
             $this->flashMessenger()
                 ->addMessage('Database name must be alphanumeric.', 'error');
-        } else if (!preg_match('/^\w*$/', $view->dbuser)) {
+        } elseif (!preg_match('/^\w*$/', $view->dbuser)) {
             $this->flashMessenger()
                 ->addMessage('Database user must be alphanumeric.', 'error');
-        } else if ($skip || $this->formWasSubmitted('submit')) {
+        } elseif ($skip || $this->formWasSubmitted('submit')) {
             $newpass = $this->params()->fromPost('dbpass');
             $newpassConf = $this->params()->fromPost('dbpassconfirm');
             if ((empty($newpass) || empty($newpassConf))) {
                 $this->flashMessenger()
                     ->addMessage('Password fields must not be blank.', 'error');
-            } else if ($newpass != $newpassConf) {
+            } elseif ($newpass != $newpassConf) {
                 $this->flashMessenger()
                     ->addMessage('Password fields must match.', 'error');
             } else {

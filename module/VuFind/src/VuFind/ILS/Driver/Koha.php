@@ -27,7 +27,10 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\ILS as ILSException;
+
+use PDO;
+use PDOException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * VuFind Driver for Koha (version: 3.02)
@@ -61,6 +64,23 @@ class Koha extends AbstractBase
      * @var array
      */
     protected $locCodes;
+
+    /**
+     * Date converter object
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter = null;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
 
     /**
      * Initialize the driver.
@@ -97,6 +117,38 @@ class Koha extends AbstractBase
         // Location codes are defined in 'Koha.ini' file according to current
         // version (3.02)
         $this->locCodes = $this->config['Location_Codes'];
+
+        // If we are using SAML/Shibboleth for authentication for both ourselves
+        // and Koha then we can't validate the patrons passwords against Koha as
+        // they won't have one. (Double negative logic used so that if the config
+        // option isn't present in Koha.ini then ILS passwords will be validated)
+        $this->validatePasswords
+            = empty($this->config['Catalog']['dontValidatePasswords']);
+
+        // Set our default terms for block types
+        $this->blockTerms = [
+            'SUSPENSION' => 'Account Suspended',
+            'OVERDUES' => 'Account Blocked (Overdue Items)',
+            'MANUAL' => 'Account Blocked',
+            'DISCHARGE' => 'Account Blocked for Discharge',
+        ];
+
+        // Now override the default with any defined in the `Koha.ini` config file
+        foreach (['SUSPENSION','OVERDUES','MANUAL','DISCHARGE'] as $blockType) {
+            if (!empty($this->config['Blocks'][$blockType])) {
+                $this->blockTerms[$blockType] = $this->config['Blocks'][$blockType];
+            }
+        }
+
+        // Allow the users to set if an account block's comments should be included
+        // by setting the block type to true or false () in the `Koha.ini` config
+        // file (defaults to false if not present)
+        $this->showBlockComments = [];
+
+        foreach (['SUSPENSION','OVERDUES','MANUAL','DISCHARGE'] as $blockType) {
+            $this->showBlockComments[$blockType]
+                = !empty($this->config['Show_Block_Comments'][$blockType]);
+        }
     }
 
     /**
@@ -144,7 +196,7 @@ class Koha extends AbstractBase
                     if ($rowIssue) {
                         $available = false;
                         $status = 'Checked out';
-                        $duedate = $rowIssue['DUEDATE'];
+                        $duedate = $this->displayDateTime($rowIssue['DUEDATE']);
                     } else {
                         $available = true;
                         $status = 'Available';
@@ -198,8 +250,7 @@ class Koha extends AbstractBase
                 ];
             }
             return $holding;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -257,16 +308,15 @@ class Koha extends AbstractBase
             foreach ($sqlStmt->fetchAll() as $row) {
                 $fineLst[] = [
                     'amount' => (null == $row['AMOUNT']) ? 0 : $row['AMOUNT'],
-                    'checkout' => $row['CHECKOUT'],
+                    'checkout' => $this->displayDate($row['CHECKOUT']),
                     'fine' => (null == $row['FINE']) ? 'Unknown' : $row['FINE'],
                     'balance' => (null == $row['BALANCE']) ? 0 : $row['BALANCE'],
-                    'duedate' => $row['DUEDATE'],
+                    'duedate' => $this->displayDate($row['DUEDATE']),
                     'id' => $row['BIBNO']
                 ];
             }
             return $fineLst;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -301,13 +351,12 @@ class Koha extends AbstractBase
                 $holdLst[] = [
                     'id' => $row['BIBNO'],
                     'location' => $row['BRNAME'],
-                    'expire' => $row['EXDATE'],
-                    'create' => $row['RSVDATE']
+                    'expire' => $this->displayDate($row['EXDATE']),
+                    'create' => $this->displayDate($row['RSVDATE'])
                 ];
             }
             return $holdLst;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -348,8 +397,7 @@ class Koha extends AbstractBase
                 return $profile;
             }
             return null;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -381,15 +429,140 @@ class Koha extends AbstractBase
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
                 $transactionLst[] = [
-                    'duedate' => $row['DUEDATE'],
+                    'duedate' => $this->displayDateTime($row['DUEDATE']),
                     'id' => $row['BIBNO'],
                     'barcode' => $row['BARCODE'],
                     'renew' => $row['RENEWALS']
                 ];
             }
             return $transactionLst;
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
         }
-        catch (PDOException $e) {
+    }
+
+    /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin
+     *
+     * @throws ILSException
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getAccountBlocks($patron)
+    {
+        $blocks = [];
+
+        try {
+            $id = $patron['id'];
+            $sql = "select type as TYPE, comment as COMMENT " .
+                "from borrower_debarments " .
+                "where (expiration is null or expiration >= NOW()) " .
+                "and borrowernumber = :id";
+            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->execute([':id' => $id]);
+
+            foreach ($sqlStmt->fetchAll() as $row) {
+                $block = empty($this->blockTerms[$row['TYPE']])
+                    ? [$row['TYPE']]
+                    : [$this->blockTerms[$row['TYPE']]];
+
+                if (!empty($this->showBlockComments[$row['TYPE']])
+                    && !empty($row['COMMENT'])
+                ) {
+                    $block[] = $row['COMMENT'];
+                }
+
+                $blocks[] = implode(' - ', $block);
+            }
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+        return count($blocks) ? $blocks : false;
+    }
+
+    /**
+     * Get Patron Loan History
+     *
+     * This is responsible for retrieving all historic loans (i.e. items previously
+     * checked out and then returned), for a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
+     *
+     * @throws \VuFind\Exception\Date
+     * @throws ILSException
+     * @return array        Array of the patron's transactions on success.
+     */
+    public function getMyTransactionHistory($patron, $params)
+    {
+        $id = 0;
+        $historicLoans = [];
+        $row = $sql = $sqlStmt = '';
+        try {
+            if (!$this->db) {
+                $this->initDb();
+            }
+            $id = $patron['id'];
+
+            // Get total count first
+            $sql = "select count(*) as cnt from old_issues " .
+                "where old_issues.borrowernumber = :id";
+            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->execute([':id' => $id]);
+            $totalCount = $sqlStmt->fetch()['cnt'];
+
+            // Get rows
+            $limit = isset($params['limit']) ? (int)$params['limit'] : 50;
+            $start = isset($params['page'])
+                ? ((int)$params['page'] - 1) * $limit : 0;
+            if (isset($params['sort'])) {
+                $parts = explode(' ', $params['sort'], 2);
+                switch ($parts[0]) {
+                case 'return':
+                    $sort = 'RETURNED';
+                    break;
+                case 'due':
+                    $sort = 'DUEDATE';
+                    break;
+                default:
+                    $sort = 'ISSUEDATE';
+                    break;
+                }
+                $sort .= isset($parts[1]) && 'asc' === $parts[1] ? ' asc' : ' desc';
+            } else {
+                $sort = 'ISSUEDATE desc';
+            }
+            $sql = "select old_issues.issuedate as ISSUEDATE, " .
+                "old_issues.date_due as DUEDATE, items.biblionumber as " .
+                "BIBNO, items.barcode BARCODE, old_issues.returndate as RETURNED, " .
+                "biblio.title as TITLE " .
+                "from old_issues join items " .
+                "on old_issues.itemnumber = items.itemnumber " .
+                "join biblio on items.biblionumber = biblio.biblionumber " .
+                "where old_issues.borrowernumber = :id " .
+                "order by $sort limit $start,$limit";
+            $sqlStmt = $this->db->prepare($sql);
+
+            $sqlStmt->execute([':id' => $id]);
+            foreach ($sqlStmt->fetchAll() as $row) {
+                $historicLoans[] = [
+                    'title' => $row['TITLE'],
+                    'checkoutDate' => $this->displayDateTime($row['ISSUEDATE']),
+                    'dueDate' => $this->displayDateTime($row['DUEDATE']),
+                    'id' => $row['BIBNO'],
+                    'barcode' => $row['BARCODE'],
+                    'returnDate' => $this->displayDateTime($row['RETURNED']),
+                ];
+            }
+            return [
+                'count' => $totalCount,
+                'transactions' => $historicLoans
+            ];
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
     }
@@ -493,8 +666,7 @@ class Koha extends AbstractBase
             } else {
                 return null;
             }
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
 
@@ -510,11 +682,19 @@ class Koha extends AbstractBase
 
         $sql = "select borrowernumber as ID, firstname as FNAME, " .
             "surname as LNAME, email as EMAIL from borrowers " .
-            "where userid = :username and password = :db_pwd";
-        
+            "where userid = :username";
+
+        $parameters = [':username' => $username];
+
+        if ($this->validatePasswords) {
+            $sql .= " and password = :db_pwd";
+            $parameters[':db_pwd'] = $db_pwd;
+        }
+
         try {
             $sqlStmt = $this->db->prepare($sql);
-            $sqlStmt->execute([':username' => $username, ':db_pwd' => $db_pwd]);
+            $sqlStmt->execute($parameters);
+
             $row = $sqlStmt->fetch();
             if ($row) {
                 // NOTE: Here, 'cat_password' => $password is used, password is
@@ -535,9 +715,85 @@ class Koha extends AbstractBase
                 return $patron;
             }
             return null;
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
+    }
+
+    /**
+     * Convert a database date to a displayable date.
+     *
+     * @param string $date Date to convert
+     *
+     * @return string
+     */
+    public function displayDate($date)
+    {
+        if (empty($date)) {
+            return "";
+        } elseif (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
+            // YYYY-MM-DD HH:MM:SS
+            return $this->dateConverter->convertToDisplayDate('Y-m-d H:i:s', $date);
+        } elseif (preg_match("/^\d{4}-\d{2}-\d{2}$/", $date) === 1) { // YYYY-MM-DD
+            return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
+        } else {
+            error_log("Unexpected date format: $date");
+            return $date;
+        }
+    }
+
+    /**
+     * Convert a database datetime to a displayable date and time.
+     *
+     * @param string $date Datetime to convert
+     *
+     * @return string
+     */
+    public function displayDateTime($date)
+    {
+        if (empty($date)) {
+            return "";
+        } elseif (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
+            // YYYY-MM-DD HH:MM:SS
+            return
+                $this->dateConverter->convertToDisplayDateAndTime(
+                    'Y-m-d H:i:s', $date
+                );
+        } else {
+            error_log("Unexpected date format: $date");
+            return $date;
+        }
+    }
+
+    /**
+     * Public Function which retrieves renew, hold and cancel settings from the
+     * driver ini file.
+     *
+     * @param string $function The name of the feature to be checked
+     *
+     * @return array An array with key-value pairs.
+     */
+    public function getConfig($function)
+    {
+        if ('getMyTransactionHistory' === $function) {
+            if (empty($this->config['TransactionHistory']['enabled'])) {
+                return false;
+            }
+            return [
+                'max_results' => 100,
+                'sort' => [
+                    'checkout desc' => 'sort_checkout_date_desc',
+                    'checkout asc' => 'sort_checkout_date_asc',
+                    'return desc' => 'sort_return_date_desc',
+                    'return asc' => 'sort_return_date_asc',
+                    'due desc' => 'sort_due_date_desc',
+                    'due asc' => 'sort_due_date_asc'
+                ],
+                'default_sort' => 'checkout desc'
+            ];
+        }
+        return isset($this->config[$function])
+            ? $this->config[$function]
+            : false;
     }
 }

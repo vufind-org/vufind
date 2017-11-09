@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFind\Controller;
+
 use VuFind\Exception\Auth as AuthException;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -287,10 +288,10 @@ class AjaxController extends AbstractBase
             } else {
                 return $this->translate($transPrefix . $list[0], [], $list[0]);
             }
-        } else if (count($list) == 0) {
+        } elseif (count($list) == 0) {
             // Empty list?  Return a blank string:
             return '';
-        } else if ($mode == 'all') {
+        } elseif ($mode == 'all') {
             // Translate values if necessary:
             if ($transPrefix) {
                 $transList = [];
@@ -566,8 +567,8 @@ class AjaxController extends AbstractBase
             $checked[$selector] = true;
 
             $data = $user->getSavedData($id, null, $source);
+            $result[$selector] = [];
             if ($data && count($data) > 0) {
-                $result[$selector] = [];
                 // if this item was saved, add it to the list of saved items.
                 foreach ($data as $list) {
                     $result[$selector][] = [
@@ -610,7 +611,7 @@ class AjaxController extends AbstractBase
             }
             $response->setContent(json_encode($output));
             return $response;
-        } else if ($this->outputMode == 'plaintext') {
+        } elseif ($this->outputMode == 'plaintext') {
             $headers->addHeaderLine('Content-type', 'text/plain');
             $response->setContent($data ? $status . " $data" : $status);
             return $response;
@@ -816,71 +817,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Get map data on search results and output in JSON
-     *
-     * @param array $fields Solr fields to retrieve data from
-     *
-     * @author Chris Hallberg <crhallberg@gmail.com>
-     * @author Lutz Biedinger <lutz.biedinger@gmail.com>
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function getMapDataAjax($fields = ['long_lat'])
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        $results = $this->getResultsManager()->get('Solr');
-        $params = $results->getParams();
-        $params->initFromRequest($this->getRequest()->getQuery());
-
-        $facets = $results->getFullFieldFacets($fields, false);
-
-        $markers = [];
-        $i = 0;
-        $list = isset($facets['long_lat']['data']['list'])
-            ? $facets['long_lat']['data']['list'] : [];
-        foreach ($list as $location) {
-            $longLat = explode(',', $location['value']);
-            $markers[$i] = [
-                'title' => (string)$location['count'], //needs to be a string
-                'location_facet' =>
-                    $location['value'], //needed to load in the location
-                'lon' => $longLat[0],
-                'lat' => $longLat[1]
-            ];
-            $i++;
-        }
-        return $this->output($markers, self::STATUS_OK);
-    }
-
-    /**
-     * Get entry information on entries tied to a specific map location
-     *
-     * @author Chris Hallberg <crhallberg@gmail.com>
-     * @author Lutz Biedinger <lutz.biedinger@gmail.com>
-     *
-     * @return mixed
-     */
-    public function resultgooglemapinfoAction()
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        // Set layout to render content only:
-        $this->layout()->setTemplate('layout/lightbox');
-
-        $results = $this->getResultsManager()->get('Solr');
-        $params = $results->getParams();
-        $params->initFromRequest($this->getRequest()->getQuery());
-
-        return $this->createViewModel(
-            [
-                'results' => $results,
-                'recordSet' => $results->getResults(),
-                'recordCount' => $results->getResultTotal(),
-                'completeListUrl' => $results->getUrlQuery()->getParams()
-            ]
-        );
-    }
-
-    /**
      * AJAX for timeline feature (PubDateVisAjax)
      *
      * @param array $fields Solr fields to retrieve data from
@@ -1028,20 +964,36 @@ class AjaxController extends AbstractBase
                 switch ($requestType) {
                 case 'ILLRequest':
                     $results = $catalog->checkILLRequestIsValid($id, $data, $patron);
-                    $msg = $results
-                        ? 'ill_request_place_text' : 'ill_request_error_blocked';
+                    if (is_array($results)) {
+                        $msg = $results['status'];
+                        $results = $results['valid'];
+                    } else {
+                        $msg = $results
+                            ? 'ill_request_place_text' : 'ill_request_error_blocked';
+                    }
                     break;
                 case 'StorageRetrievalRequest':
                     $results = $catalog->checkStorageRetrievalRequestIsValid(
                         $id, $data, $patron
                     );
-                    $msg = $results ? 'storage_retrieval_request_place_text'
-                        : 'storage_retrieval_request_error_blocked';
+                    if (is_array($results)) {
+                        $msg = $results['status'];
+                        $results = $results['valid'];
+                    } else {
+                        $msg = $results ? 'storage_retrieval_request_place_text'
+                            : 'storage_retrieval_request_error_blocked';
+                    }
                     break;
                 default:
                     $results = $catalog->checkRequestIsValid($id, $data, $patron);
-                    $msg = $results ? 'request_place_text' : 'hold_error_blocked';
-                    break;
+                    if (is_array($results)) {
+                        $msg = $results['status'];
+                        $results = $results['valid'];
+                    } else {
+                        $msg = $results ? 'request_place_text'
+                            : 'hold_error_blocked';
+                        break;
+                    }
                 }
                 return $this->output(
                     ['status' => $results, 'msg' => $this->translate($msg)],

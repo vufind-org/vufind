@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Integration\View\Helper\Root;
+
 use VuFind\View\Helper\Root\ResultFeed;
 
 /**
@@ -87,6 +88,21 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
     }
 
     /**
+     * Mock out the translator.
+     *
+     * @return \Zend\I18n\Translator\TranslatorInterface
+     */
+    protected function getMockTranslator()
+    {
+        $mock = $this->getMockBuilder('Zend\I18n\Translator\TranslatorInterface')
+            ->getMock();
+        $mock->expects($this->at(1))->method('translate')
+            ->with($this->equalTo('showing_results_of_html'), $this->equalTo('default'))
+            ->will($this->returnValue('Showing <strong>%%start%% - %%end%%</strong> results of <strong>%%total%%</strong>'));
+        return $mock;
+    }
+
+    /**
      * Test feed generation
      *
      * @return void
@@ -107,6 +123,8 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $results->getParams()->initFromRequest($request);
 
         $helper = new ResultFeed();
+        $helper->registerExtensions($this->getServiceManager());
+        $helper->setTranslator($this->getMockTranslator());
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
         $feed = $helper->__invoke($results, '/test/path');
         $this->assertTrue(is_object($feed));
@@ -121,7 +139,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         // Now re-parse it and check for some expected values:
         $parsedFeed = \Zend\Feed\Reader\Reader::importString($rss);
         $this->assertEquals(
-            'Showing 1-2 of 2', $parsedFeed->getDescription()
+            'Showing 1 - 2 results of 2', $parsedFeed->getDescription()
         );
         $items = [];
         $i = 0;

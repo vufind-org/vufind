@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindTheme\View\Helper;
+
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -203,6 +204,6 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      */
     protected function getMinifier()
     {
-        return new \MatthiasMullie\Minify\CSS();
+        return new \VuFindTheme\Minify\CSS();
     }
 }

@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/ Wiki
  */
 namespace VuFind\XSLT;
-use DOMDocument, XSLTProcessor;
+
+use DOMDocument;
+use XSLTProcessor;
 
 /**
  * VuFind XSLT wrapper

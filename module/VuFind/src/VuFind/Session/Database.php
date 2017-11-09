@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 namespace VuFind\Session;
+
 use VuFind\Exception\SessionExpired as SessionExpiredException;
 
 /**
@@ -55,7 +56,7 @@ class Database extends AbstractBase
                 ->readSession($sess_id, $this->lifetime);
         } catch (SessionExpiredException $e) {
             $this->destroy($sess_id);
-            return;
+            return '';
         }
     }
 

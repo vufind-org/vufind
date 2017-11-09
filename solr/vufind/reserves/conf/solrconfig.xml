@@ -32,7 +32,10 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>5.5.0</luceneMatchVersion>
+  <luceneMatchVersion>6.4.2</luceneMatchVersion>
+
+  <!-- Use the classic schema style by default for VuFind -->
+  <schemaFactory class="ClassicIndexSchemaFactory"/>
 
   <!-- Used to specify an alternate directory to hold all index data
        other than the default ./data under the Solr home.
@@ -356,6 +359,8 @@
     -->
     <lst name="defaults">
       <str name="echoParams">explicit</str>
+      <str name="q.op">AND</str>
+      <str name="df">course</str>
     </lst>
   </requestHandler>
   
@@ -369,21 +374,25 @@
   -->
   <requestHandler name="dismax" class="solr.SearchHandler">
     <lst name="defaults">
-     <str name="defType">dismax</str>
-     <str name="echoParams">explicit</str>
+      <str name="defType">dismax</str>
+      <str name="echoParams">explicit</str>
+      <str name="q.op">AND</str>
+      <str name="df">course</str>
     </lst>
   </requestHandler>
   
   <requestHandler name="edismax" class="solr.SearchHandler">
     <lst name="defaults">
-     <str name="defType">edismax</str>
-     <str name="echoParams">explicit</str>
-     <str name="lowercaseOperators">false</str>
+      <str name="defType">edismax</str>
+      <str name="echoParams">explicit</str>
+      <str name="lowercaseOperators">false</str>
+      <str name="q.op">AND</str>
+      <str name="df">course</str>
     </lst>
   </requestHandler>
   
   <!-- Search component for extracting terms (useful for sitemap generation) -->
-  <searchComponent name="term" class="org.apache.solr.handler.component.TermsComponent">
+  <searchComponent name="terms" class="solr.TermsComponent">
   </searchComponent>
 
   <!--
@@ -404,9 +413,9 @@
    -->
   
   <!-- Request handler to extract terms (useful for sitemap generation) -->
-  <requestHandler name="/term" class="org.apache.solr.handler.component.SearchHandler">
+  <requestHandler name="/terms" class="solr.SearchHandler" startup="lazy">
     <arr name="components">
-      <str>term</str>
+      <str>terms</str>
     </arr>
   </requestHandler>
   

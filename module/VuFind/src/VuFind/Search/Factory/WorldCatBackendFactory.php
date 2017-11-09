@@ -29,13 +29,13 @@
 namespace VuFind\Search\Factory;
 
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
-use VuFindSearch\Backend\WorldCat\QueryBuilder;
-use VuFindSearch\Backend\WorldCat\Connector;
 use VuFindSearch\Backend\WorldCat\Backend;
+use VuFindSearch\Backend\WorldCat\Connector;
+use VuFindSearch\Backend\WorldCat\QueryBuilder;
+use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for WorldCat backends.
@@ -70,6 +70,13 @@ class WorldCatBackendFactory implements FactoryInterface
     protected $config;
 
     /**
+     * WorldCat configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $wcConfig;
+
+    /**
      * Create the backend.
      *
      * @param ServiceLocatorInterface $serviceLocator Superior service manager
@@ -78,8 +85,10 @@ class WorldCatBackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $this->config = $this->serviceLocator->get('VuFind\Config')->get('config');
+        $this->wcConfig = $this->serviceLocator
+            ->get('VuFind\Config')->get('WorldCat');
         if ($this->serviceLocator->has('VuFind\Logger')) {
             $this->logger = $this->serviceLocator->get('VuFind\Logger');
         }
@@ -112,8 +121,11 @@ class WorldCatBackendFactory implements FactoryInterface
     {
         $wsKey = isset($this->config->WorldCat->apiKey)
             ? $this->config->WorldCat->apiKey : null;
+        $connectorOptions = isset($this->wcConfig->Connector)
+            ? $this->wcConfig->Connector->toArray() : [];
         $connector = new Connector(
-            $wsKey, $this->serviceLocator->get('VuFind\Http')->createClient()
+            $wsKey, $this->serviceLocator->get('VuFind\Http')->createClient(),
+            $connectorOptions
         );
         $connector->setLogger($this->logger);
         return $connector;

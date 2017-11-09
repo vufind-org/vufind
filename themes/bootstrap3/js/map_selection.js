@@ -191,12 +191,15 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
         }
       }
     });
+    // close popup if zoom in / out occurs
+    map.getView().on('change:resolution', function closePopupsOnZoom() {
+      $(element).popover('destroy');
+    });
   };
   function addInteraction() {
     draw = new ol.interaction.Draw ({
       source: searchboxSource,
-      type: 'LineString',
-      maxPoints: 2,
+      type: 'Box',
       geometryFunction: function rectangleFunction(coords, geometryParam) {
         var geometry = geometryParam ? geometryParam : new ol.geom.Polygon(null);
         var start = coords[0];
@@ -205,7 +208,8 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
           [start, [start[0], end[1]], end, [end[0], start[1]], start]
         ]);
         return geometry;
-      }
+      },
+      freehand: true
     });
 
     draw.on('drawend', function drawSearchBox(evt) {
