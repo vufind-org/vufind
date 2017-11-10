@@ -146,6 +146,13 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     protected $showBlockComments;
 
     /**
+     * Should we show permanent location (or current)
+     *
+     * @var boolean
+     */
+    protected $showPermanentLocation;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -198,6 +205,9 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         // The Authorised Values Category use for locations should default to 'LOC'
         $this->locationAuthorisedValuesCategory
             = $this->config['Catalog']['locationAuthorisedValuesCategory'] ?? 'LOC';
+
+        $this->showPermanentLocation
+            = $this->config['Catalog']['showPermanentLocation'] ?? false;
 
         $this->debug("Config Summary:");
         $this->debug("DB Host: " . $this->host);
@@ -807,9 +817,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $available = true;
         $duedate = $status = '';
         $loc = '';
+        $locationField = $this->showPermanentLocation
+            ? 'permanent_location' : 'location';
 
         $sql = "select i.itemnumber as ITEMNO, i.location,
-            COALESCE(av.lib_opac,av.lib,av.authorised_value,i.location) AS LOCATION,
+            COALESCE(av.lib_opac,av.lib,av.authorised_value,i.$locationField)
+                AS LOCATION,
             i.holdingbranch as HLDBRNCH, i.homebranch as HOMEBRANCH,
             i.reserves as RESERVES, i.itemcallnumber as CALLNO, i.barcode as BARCODE,
             i.copynumber as COPYNO, i.notforloan as NOTFORLOAN,
@@ -822,7 +835,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             left outer join
                 (SELECT itemnumber, frombranch, tobranch from branchtransfers
                 where datearrived IS NULL) as t USING (itemnumber)
-            left join authorised_values as av on i.location = av.authorised_value
+            left join authorised_values as av
+                on i.$locationField = av.authorised_value
             where i.biblionumber = :id AND av.category = :av_category
             order by i.itemnumber DESC";
         $sqlReserves = "select count(*) as RESERVESCOUNT from reserves "
@@ -871,31 +885,38 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $sqlStmtWaitingReserve->execute([':item_id' => $inum]);
             $waitingReserveRow = $sqlStmtWaitingReserve->fetch();
             $waitingReserve = $waitingReserveRow["WAITING"];
-            $sql = "select date_due as DUEDATE from issues where itemnumber = :inum";
-            switch ($rowItem['NOTFORLOAN']) {
-            case 0:
-                // If the item is available for loan, then check its current
-                // status
-                $issueSqlStmt = $this->db->prepare($sql);
-                $issueSqlStmt->execute([':inum' => $inum]);
-                $rowIssue = $issueSqlStmt->fetch();
-                if ($rowIssue) {
-                    $available = false;
-                    $status = 'Checked out';
-                    $duedate = $rowIssue['DUEDATE'];
-                } else {
-                    $available = true;
-                    $status = 'Available';
-                    // No due date for an available item
-                    $duedate = '';
-                }
-                break;
-            case 1: // The item is not available for loan
-            default:
+            if ($rowItem['LOCATION'] == 'PROC') {
                 $available = false;
-                $status = 'Not for loan';
+                $status = 'In processing';
                 $duedate = '';
-                break;
+            } else {
+                $sql = "select date_due as DUEDATE from issues
+                    where itemnumber = :inum";
+                switch ($rowItem['NOTFORLOAN']) {
+                case 0:
+                    // If the item is available for loan, then check its current
+                    // status
+                    $issueSqlStmt = $this->db->prepare($sql);
+                    $issueSqlStmt->execute([':inum' => $inum]);
+                    $rowIssue = $issueSqlStmt->fetch();
+                    if ($rowIssue) {
+                        $available = false;
+                        $status = 'Checked out';
+                        $duedate = $rowIssue['DUEDATE'];
+                    } else {
+                        $available = true;
+                        $status = 'Available';
+                        // No due date for an available item
+                        $duedate = '';
+                    }
+                    break;
+                case 1: // The item is not available for loan
+                default:
+                    $available = false;
+                    $status = 'Not for loan';
+                    $duedate = '';
+                    break;
+                }
             }
             /*
              * If the Item is in any of locations defined by
