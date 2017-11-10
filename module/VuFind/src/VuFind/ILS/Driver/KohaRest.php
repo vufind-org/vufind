@@ -1791,7 +1791,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getItemLocationName($item)
     {
-        $branchId = $item['holdingbranch'];
+        $branchId = null !== $item['holdingbranch'] ? $item['holdingbranch']
+            : $item['homebranch'];
         $name = $this->translate("location_$branchId");
         if ($name === "location_$branchId") {
             $branches = $this->getCachedData('branches');
