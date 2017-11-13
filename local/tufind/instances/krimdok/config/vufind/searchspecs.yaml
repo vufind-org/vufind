@@ -583,3 +583,14 @@ oclc_num:
   QueryFields:
     oclc_num:
       - [oclc_num, ~]
+
+Fulltext:
+  DismaxFields:
+    - fulltext_unstemmed^10
+    - fulltext
+  QueryFields:
+    fulltext_unstemmed:
+      - [or, 10]
+    fulltext:
+      - [or, ~]
+
