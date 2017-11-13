@@ -98,52 +98,41 @@
               <? if($group == 0): ?>
                 <div id="new_group_template">
               <? endif; ?>
-              <div id="group<?=$group ?>" class="group row">
-                <a href="#" class="group-close hidden" title="<?=$this->transEsc("del_search")?>">&times;</a>
-                <div class="col-sm-9">
-                  <div class="row">
-                    <div class="col-sm-3">
-                      <label class="help-block"><?=$this->transEsc("adv_search_label")?>:</label>
-                    </div>
-                    <div class="col-sm-9">
-                      <? for($search=0 ; $search<3 || (isset($setQueries[$group]) && $search<count($setQueries[$group])) ; $search++): ?>
-                        <? if($group == 0 && $search == 0): ?>
-                          <div id="new_search_template">
-                        <? endif; ?>
-                        <div id="search<?=$group.'_'.$search ?>" class="search">
-                          <div class="row">
-                            <div class="col-sm-7 left">
-                              <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" class="form-control" type="text"<?if(isset($setQueries[$group][$search])):?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?endif;?>>
-                            </div>
-                            <div class="col-sm-4 middle">
-                              <select class="type form-control" name="type<?=$group ?>[]">
-                                <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                                  <option value="<?=$this->escapeHtml($searchVal)?>"<?if(isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()):?> selected<?endif;?>><?=$this->transEsc($searchDesc)?></option>
-                                <? endforeach; ?>
-                              </select>
-                            </div>
-                            <div class="col-sm-1 close hidden">
-                              <a class="help-block" href="#">&times;</a>
-                            </div>
-                          </div>
-                        </div>
-                        <? if($group == 0 && $search == 0): ?>
-                            </div>
-                          <i class="fa fa-plus-circle search_place_holder hidden" aria-hidden="true"></i> <a href="#" class="add_search_link hidden"><?=$this->transEsc("add_search")?></a>
-                        <? endif; ?>
-                      <? endfor; ?>
-                    </div>
+              <div id="group<?=$group ?>" class="adv-group">
+              <div class="adv-group-terms">
+                <label class="adv-group-label"><?=$this->transEsc("adv_search_label")?>:</label>
+                <? for($search=0 ; $search<3 || (isset($setQueries[$group]) && $search<count($setQueries[$group])) ; $search++): ?>
+                  <? if($group == 0 && $search == 0): ?>
+                    <div id="new_search_template">
+                  <? endif; ?>
+                  <div id="search<?=$group.'_'.$search ?>" class="adv-search">
+                    <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" class="adv-term-input form-control" type="text"<?if(isset($setQueries[$group][$search])):?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?endif;?>>
+                    <select class="adv-term-type form-control" name="type<?=$group ?>[]">
+                      <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+                        <option value="<?=$this->escapeHtml($searchVal)?>"<?if(isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()):?> selected<?endif;?>><?=$this->transEsc($searchDesc)?></option>
+                      <? endforeach; ?>
+                    </select>
+                    <a href="#" class="adv-term-remove hidden">&times;</a>
                   </div>
-                </div>
-                <div class="col-sm-3 match">
-                  <label class="search_bool"><?=$this->transEsc("search_match")?>:&nbsp;</label>
-                  <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control">
-                    <option value="AND"<? if(isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_AND")?></option>
-                    <option value="OR"<? if(isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_OR")?></option>
-                    <option value="NOT"<? if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_NOT")?></option>
-                  </select>
-                </div>
+                  <? if($group == 0 && $search == 0): ?>
+                      </div>
+                    <span class="float-left">
+                      <i class="fa fa-plus-circle search_place_holder hidden" aria-hidden="true"></i>
+                      <a href="#" class="add_search_link hidden"><?=$this->transEsc("add_search")?></a>
+                    </span>
+                  <? endif; ?>
+                <? endfor; ?>
               </div>
+              <div class="adv-group-match">
+                <label class="search_bool"><?=$this->transEsc("search_match")?>:&nbsp;</label>
+                <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control">
+                  <option value="AND"<? if(isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_AND")?></option>
+                  <option value="OR"<? if(isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_OR")?></option>
+                  <option value="NOT"<? if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_NOT")?></option>
+                </select>
+              </div>
+              <a href="#" class="adv-group-close hidden"><i class="fa fa-close"></i> <?=$this->transEsc("del_search")?></a>
+            </div>
               <? if($group == 0): ?>
                 </div>
               <? endif; ?>
