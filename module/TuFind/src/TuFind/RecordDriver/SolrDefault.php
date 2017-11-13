@@ -322,11 +322,11 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocato
     }
 
     public function isSuperiorWork() {
-        (isset($this->fields['is_superior_work'])) ? $this->fields['is_superior_work'] : false;
+        return (isset($this->fields['is_superior_work'])) ? $this->fields['is_superior_work'] : false;
     }
 
     public function isSubscribable() {
-        (isset($this->fields['is_subscribable'])) ? $this->fields['is_subscribable'] : false;
+        return (isset($this->fields['is_subscribable'])) ? $this->fields['is_subscribable'] : false;
     }
 
     public function stripTrailingDates($text) {
