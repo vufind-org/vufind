@@ -48,7 +48,15 @@ trait MarcBasicTrait
      */
     public function getISBNs()
     {
-        return $this->getFieldArray('020');
+        $isbn = array_merge(
+            $this->getFieldArray('020', ['a', 'z', '9'], false), 
+            $this->getFieldArray('773', ['z'])
+        );
+        foreach ($isbn as $key => $num) {
+            $isbn[$key] = str_replace("-", "", $num);
+        }
+        $isbn = array_unique($isbn);
+        return $isbn;
     }
 
     /**
@@ -58,7 +66,14 @@ trait MarcBasicTrait
      */
     public function getISSNs()
     {
-        return $this->getFieldArray('022');
+        $issn = array_merge(
+            $this->getFieldArray('022', ['a']), $this->getFieldArray('440', ['x']),
+            $this->getFieldArray('490', ['x']), $this->getFieldArray('730', ['x']),
+            $this->getFieldArray('773', ['x']), $this->getFieldArray('776', ['x']),
+            $this->getFieldArray('780', ['x']), $this->getFieldArray('785', ['x'])
+        );
+        $issn = array_unique($issn);
+        return $issn;
     }
 
     /**
@@ -121,7 +136,8 @@ trait MarcBasicTrait
      */
     public function getPrimaryAuthors()
     {
-        return [$this->getFirstFieldValue('100', ['a'])];
+        $primary = $this->getFirstFieldValue('100', ['a', 'b', 'c', 'd']);
+        return empty($primary) ? [] : [$primary];
     }
 
     /**
@@ -139,7 +155,15 @@ trait MarcBasicTrait
                 $retVal[] = substr($content, 35, 3);
             }
         }
-        return $retVal;
+        $fields = $this->getMarcRecord()->getFields('041');
+        foreach ($fields as $field) {
+            if (strcmp($field->getIndicator(2), '7') !== 0) {
+                foreach ($field->getSubFields('a') as $sf) {
+                    $retVal[] = $sf->getData();
+                }
+            }
+        }
+        return array_unique($retVal);
     }
 
     /**
@@ -201,6 +225,18 @@ trait MarcBasicTrait
     }
 
     /**
+     * Get the date coverage for a record which spans a period of time (i.e. a
+     * journal).  Use getPublicationDates for publication dates of particular
+     * monographic items.
+     *
+     * @return array
+     */
+    public function getDateSpan()
+    {
+        return $this->getFieldArray('362', ['a']);
+    }
+
+    /**
      * Get the publication dates of the record.  See also getDateSpan().
      *
      * @return array
@@ -208,6 +244,21 @@ trait MarcBasicTrait
     public function getPublicationDates()
     {
         return $this->getPublicationInfo('c');
+    }
+
+    /**
+     * Get an array of all corporate authors (complementing getPrimaryAuthor()).
+     *
+     * @return array
+     */
+    public function getCorporateAuthors()
+    {
+        return array_merge(
+            $this->getFieldArray('110', ['a', 'b']),
+            $this->getFieldArray('111', ['a', 'b']),
+            $this->getFieldArray('710', ['a', 'b']),
+            $this->getFieldArray('711', ['a', 'b'])
+        );
     }
 
     /**
@@ -238,5 +289,35 @@ trait MarcBasicTrait
     public function getPreviousTitles()
     {
         return $this->getFieldArray('780', ['a', 's', 't']);
+    }
+
+    /**
+     * Get the edition of the current record.
+     *
+     * @return string
+     */
+    public function getEdition()
+    {
+        return $this->getFirstFieldValue('250', ['a']);
+    }
+
+    /**
+     * Get a raw, unnormalized LCCN. (See DefaultRecord::getLCCN for normalization).
+     *
+     * @return string
+     */
+    protected function getRawLCCN()
+    {
+        return $this->getFirstFieldValue('010', ['a']);
+    }
+
+    /**
+     * Get an array of physical descriptions of the item.
+     *
+     * @return array
+     */
+    public function getPhysicalDescriptions()
+    {
+        return $this->getFieldArray('300', ['a', 'b', 'c', 'e', 'f', 'g'], true);
     }
 }
