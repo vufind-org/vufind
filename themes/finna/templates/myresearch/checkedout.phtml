@@ -134,6 +134,10 @@
               <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
               <br />
             <? endif; ?>
+            <? if ($this->displayItemBarcode && !empty($ilsDetails['barcode'])): ?>
+              <strong><?=$this->transEsc('Barcode')?>:</strong> <?=$this->escapeHtml($ilsDetails['barcode'])?>
+              <br />
+            <? endif; ?>
             </div>
           </div>
           <div class="status-column">
