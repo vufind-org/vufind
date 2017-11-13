@@ -1359,8 +1359,10 @@ EOT;
             "ITEM.ITEM_ID = ITEM_STATUS.ITEM_ID",
             "ITEM_STATUS.ITEM_STATUS = ITEM_STATUS_TYPE.ITEM_STATUS_TYPE",
             "ITEM.ITEM_ID = ITEM_BARCODE.ITEM_ID(+)",
+            "(ITEM_BARCODE.BARCODE_STATUS IS NULL OR " .
             "ITEM_BARCODE.BARCODE_STATUS IN (SELECT BARCODE_STATUS_TYPE FROM " .
-            "$this->dbName.ITEM_BARCODE_STATUS WHERE BARCODE_STATUS_DESC = 'Active')"
+            "$this->dbName.ITEM_BARCODE_STATUS " .
+            " WHERE BARCODE_STATUS_DESC = 'Active'))"
         ];
 
         // Order
