@@ -831,7 +831,7 @@ $config = [
                  ],
                 'defaultTab' => null,
             ],
-            'VuFind\RecordDriver\SolrDefault' => [
+            'VuFind\RecordDriver\DefaultRecord' => [
                 'tabs' => [
                     'Holdings' => 'HoldingsILS', 'Description' => 'Description',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
