@@ -49,7 +49,7 @@ trait MarcBasicTrait
     public function getISBNs()
     {
         $isbn = array_merge(
-            $this->getFieldArray('020', ['a', 'z', '9'], false), 
+            $this->getFieldArray('020', ['a', 'z', '9'], false),
             $this->getFieldArray('773', ['z'])
         );
         foreach ($isbn as $key => $num) {
