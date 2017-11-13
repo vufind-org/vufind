@@ -585,17 +585,25 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
+     * Get a raw, unnormalized LCCN. (See getLCCN for normalization).
+     *
+     * @return string
+     */
+    protected function getRawLCCN()
+    {
+        // Get LCCN from Index
+        return isset($this->fields['lccn']) ? $this->fields['lccn'] : '';
+    }
+
+    /**
      * Get a LCCN, normalised according to info:lccn
      *
      * @return string
      */
     public function getLCCN()
     {
-        // Get LCCN from Index
-        $raw = isset($this->fields['lccn']) ? $this->fields['lccn'] : '';
-
         // Remove all blanks.
-        $raw = preg_replace('{[ \t]+}', '', $raw);
+        $raw = preg_replace('{[ \t]+}', '', $this->getRawLCCN());
 
         // If there is a forward slash (/) in the string, remove it, and remove all
         // characters to the right of the forward slash.
