@@ -270,56 +270,6 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get the item's publication information
-     *
-     * @param string $subfield The subfield to retrieve ('a' = location, 'c' = date)
-     *
-     * @return array
-     */
-    protected function getPublicationInfo($subfield = 'a')
-    {
-        // Get string separator for publication information:
-        $separator = isset($this->mainConfig->Record->marcPublicationInfoSeparator)
-            ? $this->mainConfig->Record->marcPublicationInfoSeparator : ' ';
-
-        // First check old-style 260 field:
-        $results = $this->getFieldArray('260', [$subfield], true, $separator);
-
-        // Now track down relevant RDA-style 264 fields; we only care about
-        // copyright and publication places (and ignore copyright places if
-        // publication places are present).  This behavior is designed to be
-        // consistent with default SolrMarc handling of names/dates.
-        $pubResults = $copyResults = [];
-
-        $fields = $this->getMarcRecord()->getFields('264');
-        if (is_array($fields)) {
-            foreach ($fields as $currentField) {
-                $currentVal = $this
-                    ->getSubfieldArray($currentField, [$subfield], true, $separator);
-                if (!empty($currentVal)) {
-                    switch ($currentField->getIndicator('2')) {
-                    case '1':
-                        $pubResults = array_merge($pubResults, $currentVal);
-                        break;
-                    case '4':
-                        $copyResults = array_merge($copyResults, $currentVal);
-                        break;
-                    }
-                }
-            }
-        }
-        $replace260 = isset($this->mainConfig->Record->replaceMarc260)
-            ? $this->mainConfig->Record->replaceMarc260 : false;
-        if (count($pubResults) > 0) {
-            return $replace260 ? $pubResults : array_merge($results, $pubResults);
-        } elseif (count($copyResults) > 0) {
-            return $replace260 ? $copyResults : array_merge($results, $copyResults);
-        }
-
-        return $results;
-    }
-
-    /**
      * Get the item's places of publication.
      *
      * @return array
