@@ -442,6 +442,7 @@ $config = [
                     'facets' => 'VuFind\ChannelProvider\Factory::getFacets',
                     'listitems' => 'VuFind\ChannelProvider\Factory::getListItems',
                     'random' => 'VuFind\ChannelProvider\Factory::getRandom',
+                    'recentlyreturned' => 'VuFind\ChannelProvider\Factory::getRecentlyReturned',
                     'similaritems' => 'VuFind\ChannelProvider\Factory::getSimilarItems',
                 ]
             ],
