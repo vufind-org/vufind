@@ -1,8 +1,8 @@
 <?php
 
-namespace KrimDok\RecordDriver;
+namespace TueFind\RecordDriver;
 
-class Factory extends \TueFind\RecordDriver\Factory
+class Factory extends \VuFind\RecordDriver\Factory
 {
     /**
      * Factory for SolrDefault record driver.
@@ -44,5 +44,7 @@ class Factory extends \TueFind\RecordDriver\Factory
         $driver->attachSearchService($sm->getServiceLocator()->get('VuFind\Search'));
         return $driver;
     }
+
+
 }
 

@@ -4,7 +4,7 @@ namespace IxTheo\Controller;
 
 use Zend\ServiceManager\ServiceManager;
 
-class Factory extends \TuFind\Controller\Factory
+class Factory extends \TueFind\Controller\Factory
 {
     public static function getBrowseController(ServiceManager $sm)
     {

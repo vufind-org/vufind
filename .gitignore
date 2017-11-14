@@ -15,11 +15,11 @@ public/swagger-ui
 .vagrant
 
 
-# CUSTOM TUFIND IGNORES START HERE
+# CUSTOM TUEFIND IGNORES START HERE
 nbproject
 
 # active instance flag
-tufind.instance
+tuefind.instance
 
 # Schema files & links
 schema_local_types.xml

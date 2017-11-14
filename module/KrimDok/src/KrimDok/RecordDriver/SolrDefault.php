@@ -2,7 +2,7 @@
 
 namespace KrimDok\RecordDriver;
 
-class SolrDefault extends \TuFind\RecordDriver\SolrMarc {
+class SolrDefault extends \TueFind\RecordDriver\SolrMarc {
 
     public function getGenres()
     {
