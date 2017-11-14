@@ -2,7 +2,7 @@
 
 namespace IxTheo\RecordDriver;
 
-class SolrMarc extends \IxTheo\RecordDriver\SolrDefault
+class SolrMarc extends SolrDefault
 {
     public function canUseTAD($userId)
     {

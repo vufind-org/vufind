@@ -1,6 +1,6 @@
 <?php
 return [
-    'extends' => 'tufind',
+    'extends' => 'tuefind',
     'css' => [
         'compiled.css',
         'feedback.css',

@@ -1,4 +1,4 @@
 <?php
 return array(
-    'extends' => 'tufind',
+    'extends' => 'tuefind',
 );

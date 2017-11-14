@@ -259,7 +259,7 @@
  <copyField source="callnumber-raw" dest="callnumber-search"/>
 
 
-  <!-- TuFind custom settings, field types and fields -->
+  <!-- TueFind custom settings, field types and fields -->
   <!-- Default Boolean Operator -->
   <solrQueryParser defaultOperator="AND"/>
   <defaultSearchField>allfields</defaultSearchField>

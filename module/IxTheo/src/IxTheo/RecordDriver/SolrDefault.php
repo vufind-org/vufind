@@ -2,7 +2,7 @@
 
 namespace IxTheo\RecordDriver;
 
-class SolrDefault extends \TuFind\RecordDriver\SolrMarc
+class SolrDefault extends \TueFind\RecordDriver\SolrMarc
 {
     /**
      * Get a highlighted corporation string, if available.
