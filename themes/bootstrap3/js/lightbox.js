@@ -219,7 +219,8 @@ VuFind.register('lightbox', function Lightbox() {
    */
   _constrainLink = function constrainLink(event) {
     if (typeof $(this).data('lightboxIgnore') != 'undefined'
-      || typeof this.attributes.href === 'undefined' || this.attributes.href.value.charAt(0) === '#'
+      || typeof this.attributes.href === 'undefined' || this.href.charAt(0) === '#'
+      || this.href.match(/^[a-zA-Z]+\:[^\/]/) // ignore resource identifiers (mailto:, tel:, etc.)
     ) {
       return true;
     }
