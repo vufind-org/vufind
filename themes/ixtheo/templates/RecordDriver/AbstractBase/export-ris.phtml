@@ -47,7 +47,7 @@ if (!empty($issue)) {
 
 $pages = $this->driver->tryMethod('getPages');
 if (!empty($pages)) {
-    $split_pages = split('-', $pages);
+    $split_pages = explode('-', $pages);
     if (!empty($split_pages[0]))
         echo 'SP  - ' . trim($split_pages[0]) . "\r\n";
     if (!empty($split_pages[1]))
