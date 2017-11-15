@@ -184,6 +184,13 @@
           <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
         </span>
       <? endif; ?>
+
+      <? $bible_ranges_string = $this->driver->getBibleRangesString();
+        if (!empty($bible_ranges_string)) {
+          echo '<div>' . $this->transEsc($bible_ranges_string) . '</div>';
+        }
+      ?>
+
       <?=$this->record($this->driver)->getPreviews()?>
       <?$label = str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?>
       <? /* Remove separator needed for long title view */ ?>
