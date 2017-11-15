@@ -55,7 +55,7 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
             'select' => [
                 'fallback' => true,
                 'defaults' => ['fl' => '*,score', 'lang' => $current_lang],
-                'appends'  => ['fq' => []],
+                'appends'  => ['fq' => [], 'defType' => 'multiLanguageQueryParser'],
             ],
             'term' => [
                 'functions' => ['terms'],
