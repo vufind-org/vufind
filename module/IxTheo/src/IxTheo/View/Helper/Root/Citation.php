@@ -208,4 +208,95 @@ class Citation extends \VuFind\View\Helper\Root\Citation
             return ['', '', $finalDate];
         }
     }
+
+
+    protected function getMLANumberAndDate($volNumSeparator = '.', $useYearBrackets = false, $volPrefix = ', vol.')
+    {
+        $vol = $this->driver->tryMethod('getVolume');
+        $num = $this->driver->tryMethod('getIssue');
+        $date = $this->details['pubDate'];
+        if (strlen($date) > 4) {
+            try {
+                $year = $this->dateConverter->convertFromDisplayDate('Y', $date);
+                $month = $this->dateConverter->convertFromDisplayDate('M', $date)
+                    . '.';
+                $day = $this->dateConverter->convertFromDisplayDate('j', $date);
+            } catch (DateException $e) {
+                // If conversion fails, use raw date as year -- not ideal,
+                // but probably better than nothing:
+                $year = $date;
+                $month = $day = '';
+            }
+        } else {
+            $year = $date;
+            $month = $day = '';
+        }
+
+        // We need to supply additional date information if no vol/num:
+        if (!empty($vol) || !empty($num)) {
+            // If volume and number are both non-empty, separate them with a
+            // period; otherwise just use the one that is set.
+            $volNum = (!empty($vol) && !empty($num))
+                ? $vol . $volNumSeparator . $num : $vol . $num;
+            return $volPrefix . $volNum . ($useYearBrackets ?  ' (' . $year . ')' : ', ' . $year);
+        } else {
+            // Right now, we'll assume if day == 1, this is a monthly publication;
+            // that's probably going to result in some bad citations, but it's the
+            // best we can do without writing extra record driver methods.
+            return (($day > 1) ? $day . ' ' : '')
+                . (empty($month) ? '' : $month . ' ')
+                . $year;
+        }
+    }
+
+
+    public function getCitationMLA($etAlThreshold = 4, $volNumSeparator = '.', $useYearBrackets = false,
+                                   $yearPageSeparator = ', ', $volPrefix = ', vol. ', $usePagePrefix = true)
+    {
+        $mla = [
+            'title' => $this->getMLATitle(),
+            'authors' => $this->getMLAAuthors($etAlThreshold)
+        ];
+        $mla['periodAfterTitle'] = !$this->isPunctuated($mla['title']);
+
+        // Behave differently for books vs. journals:
+        $partial = $this->getView()->plugin('partial');
+        if (empty($this->details['journal'])) {
+            $mla['publisher'] = $this->getPublisher();
+            $mla['year'] = $this->getYear();
+            $mla['edition'] = $this->getEdition();
+            return $partial('Citation/mla.phtml', $mla);
+        } else {
+            // Add other journal-specific details:
+            $mla['pageRange'] = $this->getPageRange();
+            $mla['journal'] =  $this->capitalizeTitle($this->details['journal']);
+            $mla['numberAndDate'] = $this->getMLANumberAndDate($volNumSeparator, $useYearBrackets, $volPrefix);
+            if ($doi = $this->driver->tryMethod('getCleanDOI'))
+               $mla['doi'] = $doi;
+
+            $urls =  $this->driver->tryMethod('getUrls');
+            if (!empty($urls)) {
+                // Choose first available URL
+                $url = $urls[0]['url'];
+                if (!empty($url))
+                    $mla['url'] = $url;
+            }
+
+            $formatter = new \IntlDateFormatter($this->driver->getServiceLocator()->get('VuFind\Translator')->getLocale(),
+                             \IntlDateFormatter::SHORT, \IntlDateFormatter::NONE);
+            if ($formatter === null)
+                 throw new InvalidConfigException(intl_get_error_message());
+            $mla['localizedDate'] = $formatter->format(new \DateTime());
+            $mla['yearPageSeparator'] = $yearPageSeparator;
+            $mla['usePagePrefix'] = $usePagePrefix;
+
+            return $partial('Citation/mla-article.phtml', $mla);
+        }
+    }
+
+
+    public function getCitationChicago()
+    {
+        return $this->getCitationMLA(9, ', no. ', true, ': ', ' ', false);
+    }
 }
