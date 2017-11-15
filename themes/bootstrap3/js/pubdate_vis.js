@@ -79,7 +79,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
         val.max = parseInt(val.data[val.data.length - 1][0], 10) + 5;
       }
 
-      if (zooming) {
+      if (zooming && hasFilter) {
         //check the first and last elements of the data array against min and max value (+padding)
         //if the element exists leave it, otherwise create a new marker with a minus one value
         if (val.data[val.data.length - 1][0] !== parseInt(val.max, 10) + 5) {
