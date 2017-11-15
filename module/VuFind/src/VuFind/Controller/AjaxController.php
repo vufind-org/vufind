@@ -566,8 +566,8 @@ class AjaxController extends AbstractBase
             $checked[$selector] = true;
 
             $data = $user->getSavedData($id, null, $source);
+            $result[$selector] = [];
             if ($data && count($data) > 0) {
-                $result[$selector] = [];
                 // if this item was saved, add it to the list of saved items.
                 foreach ($data as $list) {
                     $result[$selector][] = [

@@ -177,7 +177,7 @@
           $dLabel = 'delete-label-' . preg_replace('[\W]','-',$id);
         ?>
         <div class="dropdown">
-          <i class="fa fa-fw fa-trash-o" aria-hidden="true"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrlGet ?>">
+          <i class="fa fa-fw fa-trash-o" aria-hidden="true"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" href="<?=$deleteUrlGet ?>">
             <?=$this->transEsc('Delete') ?>
           </a>
           <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">

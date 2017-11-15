@@ -107,11 +107,13 @@ class Backend extends AbstractBackend
                 $e
             );
         }
+        $results = isset($response['data']) && is_array($response['data'])
+            ? $response['data'] : [];
         $collection = $this->createRecordCollection(
             [
                 'offset' => $offset,
-                'recordCount' => count($response['data']),
-                'data' => array_slice($response['data'], $offset, $limit)
+                'recordCount' => count($results),
+                'data' => array_slice($results, $offset, $limit)
             ]
         );
         $this->injectSourceIdentifier($collection);
