@@ -28,6 +28,11 @@ $config = [
                     'subscription' => 'IxTheo\Db\Table\Factory::getSubscription',
                 ],
             ],
+            'recommend' => [
+                'invokables' => [
+                    'bibleranges' => 'IxTheo\Recommend\BibleRanges',
+                ],
+            ],
             'recorddriver' => [
                 'factories' => [
                     'solrdefault' => 'IxTheo\RecordDriver\Factory::getSolrDefault',
