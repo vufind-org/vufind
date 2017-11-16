@@ -45,7 +45,7 @@ public class GeoTools
 {
     private static final Pattern COORDINATES_PATTERN = Pattern.compile("^([eEwWnNsS])(\\d{3})(\\d{2})(\\d{2})");
     private static final Pattern HDMSHDD_PATTERN = Pattern.compile("^([eEwWnNsS])(\\d+(\\.\\d+)?)");
-    private static final Pattern PMDD_PATTERN = Pattern.compile("^([+-])(\\d+(\\.\\d+)?)");
+    private static final Pattern PMDD_PATTERN = Pattern.compile("^([-+]?\\d+(\\.\\d+)?)");
 
     // Initialize logging category
     static Logger logger = Logger.getLogger(GeoTools.class.getName());
@@ -208,11 +208,7 @@ public class GeoTools
             }
             return coordinate;
         } else if (PMDmatcher.matches()) {
-            String hemisphere = PMDmatcher.group(1);
-            coordinate = Double.parseDouble(PMDmatcher.group(2));
-            if (hemisphere.equals("-")) {
-                coordinate *= -1;
-            }
+            coordinate = Double.parseDouble(PMDmatcher.group(1));
             return coordinate;
         } else {
             logger.error("Decimal Degree Coordinate Conversion Error:  Poorly formed coordinate: [" + coordinateStr + "] ... Returning null value ... ");
