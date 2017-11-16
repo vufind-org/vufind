@@ -432,8 +432,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     protected function selectAllItemsInList(Element $page)
     {
-        $selectAll = $this->findCss($page, '[name=bulkActionForm] .checkbox-select-all');
-        $selectAll->check();
+        $selectAll = $this->findCss($page, '[for="myresearchCheckAll"]');
+        $selectAll->click();
     }
 
     /**
