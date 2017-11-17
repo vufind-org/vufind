@@ -308,6 +308,8 @@ class Results extends \VuFind\Search\Base\Results
         // Manipulate facet settings temporarily:
         $params->resetFacetConfig();
         $params->setFacetLimit($limit);
+        // Clear field-specific limits, as they can interfere with retrieval:
+        $params->setFacetLimitByField([]);
         if (null !== $page && $limit != -1) {
             $offset = ($page - 1) * $limit;
             $params->setFacetOffset($offset);

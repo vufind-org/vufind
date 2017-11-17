@@ -5,12 +5,12 @@
   $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
   <div id="result<?=$i++ ?>" class="row result clearfix <?=$i%2==1?' panel-gray ':' panel-body '?>">
     <div class="col-xs-1 hidden-print">
-      <label>
         <? if ($showCheckboxes): ?>
           <?=$this->record($current)->getCheckbox()?>
         <? endif; ?>
-        <?=$recordNumber?>
-      </label>
+        <div class="record-number">
+          <?=$recordNumber?>
+        </div>
     </div>
     <?=$this->record($current)->getSearchResult('list')?>
   </div>

@@ -252,6 +252,18 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
+     * Set Facet Limit by Field
+     *
+     * @param array $new Associative array of $field name => $limit
+     *
+     * @return void
+     */
+    public function setFacetLimitByField(array $new)
+    {
+        $this->facetLimitByField = $new;
+    }
+
+    /**
      * Set Facet Offset
      *
      * @param int $o the new offset value

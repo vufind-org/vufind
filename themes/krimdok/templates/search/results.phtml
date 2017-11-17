@@ -79,7 +79,7 @@
       <? if (isset($this->overrideEmptyMessage)): ?>
         <?=$this->overrideEmptyMessage?>
       <? else: ?>
-        <? $this->layout()->srmessage = $this->transEsc('nohit_prefix') . ' - ' . $this->escapeHtml($lookfor) . ' - ' . $this->transEsc('nohit_suffix'); ?>
+        <? $this->layout()->srmessage = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]); ?>
         <?=$this->layout()->srmessage ?>
       <? endif; ?>
     </p>

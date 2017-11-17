@@ -9,46 +9,61 @@
     <field name="bible_ranges" type="string" indexed="true" stored="true" />
     <field name="corporation" type="textProper" indexed="true" stored="true" multiValued="true"/>
     <field name="era_facet_de" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="era_facet_el" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="era_facet_en" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="era_facet_es" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="era_facet_fr" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="era_facet_hans" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="era_facet_hant" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="era_facet_it" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="era_facet_pt" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="era_facet_ru" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="genre_facet_de" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="genre_facet_el" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="genre_facet_en" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="genre_facet_es" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="genre_facet_fr" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="genre_facet_hans" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="genre_facet_hant" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="genre_facet_it" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="genre_facet_pt" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="genre_facet_ru" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_de" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="geographic_facet_el" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_en" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_es" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_fr" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_hans" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_hant" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_it" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="geographic_facet_pt" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="geographic_facet_ru" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="is_biblical_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_open_access" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="is_potentially_pda" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_probably_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_subscribable" type="boolean" indexed="false" stored="true" multiValued="false"/>
+    <field name="issue_sort" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="ixtheo_notation" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="ixtheo_notation_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="key_word_chain_bag" type="text" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chain_bag_de" type="text" indexed="true" stored="true" multiValued="true" />
+    <field name="key_word_chain_bag_el" type="text" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chain_bag_en" type="text" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chain_bag_es" type="text" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chain_bag_fr" type="text" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chain_bag_hans" type="text" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chain_bag_hant" type="text" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chain_bag_it" type="text" indexed="true" stored="true" multiValued="true" />
+    <field name="key_word_chain_bag_pt" type="text" indexed="true" stored="true" multiValued="true" />
+    <field name="key_word_chain_bag_ru" type="text" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chains" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chains_sorted" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chains_de" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chains_sorted_de" type="string" indexed="true" stored="true" multiValued="true" />
+    <field name="key_word_chains_el" type="string" indexed="true" stored="true" multiValued="true" />
+    <field name="key_word_chains_sorted_el" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chains_en" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chains_sorted_en" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chains_es" type="string" indexed="true" stored="true" multiValued="true" />
@@ -61,6 +76,10 @@
     <field name="key_word_chains_sorted_hant" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chains_it" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chains_sorted_it" type="string" indexed="true" stored="true" multiValued="true" />
+    <field name="key_word_chains_pt" type="string" indexed="true" stored="true" multiValued="true" />
+    <field name="key_word_chains_sorted_pt" type="string" indexed="true" stored="true" multiValued="true" />
+    <field name="key_word_chains_ru" type="string" indexed="true" stored="true" multiValued="true" />
+    <field name="key_word_chains_sorted_ru" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="last_modification_time" type="date" indexed="true" stored="true" multiValued="false"/>
     <field name="mediatype" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="other_titles" type="text" indexed="true" stored="true" multiValued="true"/>
@@ -77,41 +96,55 @@
     <field name="topic_all" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_synonyms" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_de" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_el" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_en" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_es" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_fr" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_hans" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_hant" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_it" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_pt" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_ru" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_facet_de" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_facet_el" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_facet_en" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_facet_es" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_facet_fr" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_facet_hans" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_facet_hant" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_facet_it" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_facet_pt" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_facet_ru" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_standardized" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_standardized_de" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_standardized_el" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_standardized_en" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_standardized_es" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_standardized_fr" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_standardized_hans" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_standardized_hant" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_standardized_it" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_standardized_pt" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_standardized_ru" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_non_standardized" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_non_standardized_de" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_non_standardized_el" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_non_standardized_en" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_non_standardized_es" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_non_standardized_fr" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_non_standardized_hans" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_non_standardized_hant" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_non_standardized_it" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_non_standardized_pt" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_non_standardized_ru" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="types_and_persistent_identifiers" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="zdb_number" type="string" indexed="true" stored="true" multiValued="false"/>
 
     <copyField source="ixtheo_notation" dest="ixtheo_notation_facet"/>
     <copyField source="key_word_chain_bag_de" dest="topic_all"/>
     <copyField source="key_word_chain_bag_de" dest="topic_de"/>
+    <copyField source="key_word_chain_bag_el" dest="topic_all"/>
+    <copyField source="key_word_chain_bag_el" dest="topic_el"/>
     <copyField source="key_word_chain_bag_en" dest="topic_all"/>
     <copyField source="key_word_chain_bag_en" dest="topic_en"/>
     <copyField source="key_word_chain_bag_es" dest="topic_all"/>
@@ -124,12 +157,20 @@
     <copyField source="key_word_chain_bag_hant" dest="topic_hant"/>
     <copyField source="key_word_chain_bag_it" dest="topic_all"/>
     <copyField source="key_word_chain_bag_it" dest="topic_it"/>
+    <copyField source="key_word_chain_bag_pt" dest="topic_all"/>
+    <copyField source="key_word_chain_bag_pt" dest="topic_pt"/>
+    <copyField source="key_word_chain_bag_ru" dest="topic_all"/>
+    <copyField source="key_word_chain_bag_ru" dest="topic_ru"/>
     <copyField source="publisher" dest="publisher_facet"/>
     <copyField source="record_selector" dest="rs"/>
     <copyField source="topic_de" dest="key_word_chain_bag_de"/>
     <copyField source="topic_de" dest="key_word_chains_de"/>
     <copyField source="topic_de" dest="key_word_chains_sorted_de"/>
     <copyField source="topic_de" dest="topic_all"/>
+    <copyField source="topic_el" dest="key_word_chain_bag_el"/>
+    <copyField source="topic_el" dest="key_word_chains_el"/>
+    <copyField source="topic_el" dest="key_word_chains_sorted_el"/>
+    <copyField source="topic_el" dest="topic_all"/>
     <copyField source="topic_en" dest="key_word_chain_bag_en"/>
     <copyField source="topic_en" dest="key_word_chains_en"/>
     <copyField source="topic_en" dest="key_word_chains_sorted_en"/>
@@ -154,5 +195,13 @@
     <copyField source="topic_it" dest="key_word_chains_it"/>
     <copyField source="topic_it" dest="key_word_chains_sorted_it"/>
     <copyField source="topic_it" dest="topic_all"/>
+    <copyField source="topic_pt" dest="key_word_chain_bag_pt"/>
+    <copyField source="topic_pt" dest="key_word_chains_pt"/>
+    <copyField source="topic_pt" dest="key_word_chains_sorted_pt"/>
+    <copyField source="topic_pt" dest="topic_all"/>
+    <copyField source="topic_ru" dest="key_word_chain_bag_ru"/>
+    <copyField source="topic_ru" dest="key_word_chains_ru"/>
+    <copyField source="topic_ru" dest="key_word_chains_sorted_ru"/>
+    <copyField source="topic_ru" dest="topic_all"/>
     <copyField source="topic_synonyms" dest="topic_all"/>
 </fields>
