@@ -208,7 +208,7 @@ public class GeoTools
             }
             return coordinate;
         } else if (PMDmatcher.matches()) {
-	    coordinate = Double.parseDouble(PMDmatcher.group(1));
+            coordinate = Double.parseDouble(PMDmatcher.group(1));
             return coordinate;
         } else {
             logger.error("Decimal Degree Coordinate Conversion Error:  Poorly formed coordinate: [" + coordinateStr + "] ... Returning null value ... ");
