@@ -70,6 +70,7 @@ function build_browse
     if [[ ! -z $filter ]]; then
         out_dir="$index_dir/$filter"
         mkdir -p "$out_dir"
+        chown solr:solr $out_dir
     else
         out_dir="$index_dir"
     fi
