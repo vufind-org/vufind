@@ -78,6 +78,13 @@ class QueryBuilder implements QueryBuilderInterface
     protected $createHighlightingQuery = false;
 
     /**
+     * Default field list to highlight.
+     *
+     * @var string
+     */
+    protected $defaultHighlightingFieldList = '';
+
+    /**
      * Should we create the spellcheck.q parameter when appropriate?
      *
      * @var bool
@@ -165,6 +172,17 @@ class QueryBuilder implements QueryBuilderInterface
             } else {
                 $string = $handler->createSimpleQueryString($string);
             }
+            // If we're concerned with highlighting, filter the highlighting fields
+            // to only those being searched:
+            if ($this->createHighlightingQuery) {
+                $params->add('hl.fl', implode(',', $handler->getAllFields()));
+            }
+        }
+        // If we didn't assign hl.fl above, use the default value:
+        if (!empty($this->defaultHighlightingFieldList)
+            && !$params->hasParam('hl.fl')
+        ) {
+            $params->add('hl.fl', $this->defaultHighlightingFieldList);
         }
         $params->set('q', $string);
 
@@ -178,11 +196,25 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @param bool $enable Should highlighting query generation be enabled?
      *
-     * @return void
+     * @return QueryBuilder
      */
     public function setCreateHighlightingQuery($enable)
     {
         $this->createHighlightingQuery = $enable;
+        return $this;
+    }
+
+    /**
+     * Set default highlighting field list, if any.
+     *
+     * @param string $list Default highlighting field list
+     *
+     * @return QueryBuilder
+     */
+    public function setDefaultHighlightingFieldList($list)
+    {
+        $this->defaultHighlightingFieldList = $list;
+        return $this;
     }
 
     /**
