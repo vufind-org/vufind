@@ -68,6 +68,11 @@
         <? endif; ?>
       </div>
     </div>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/myresearch-favorites")): ?>
+      <div class="myresearch-favorites">
+        <?=$this->render($template)?>
+      </div>
+    <? endif; ?>
   <div>
     <? if ($recordTotal > 0): ?>
     <div class="search-controls">
