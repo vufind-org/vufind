@@ -91,12 +91,14 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
                 echo "PB " . rtrim($pubName, ", ") . "\n";
             }
         }
-        $date = trim($pubDates[$i], '[]. ');
-        if (strlen($date) > 4) {
-            $date = $this->dateTime()->extractYear($date);
-        }
-        if ($date) {
-            echo "YR $date\n";
+        if (isset($pubDates[$i])) {
+            $date = trim($pubDates[$i], '[]. ');
+            if (strlen($date) > 4) {
+                $date = $this->dateTime()->extractYear($date);
+            }
+            if ($date) {
+                echo "YR $date\n";
+            }
         }
     }
 }
