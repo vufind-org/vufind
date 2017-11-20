@@ -81,17 +81,20 @@ function build_browse
 
     mv "${browse}_browse.db" "$out_dir/${browse}_browse.db-updated"
     touch "$out_dir/${browse}_browse.db-ready"
+    chown solr:solr "$out_dir/${browse}_browse.db-updated"
+    chown solr:solr "$out_dir/${browse}_browse.db-ready"
 }
-build_browse "hierarchy" "hierarchy_browse"
+
+build_browse "hierarchy" "hierarchy_browse" 1
 build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr"
-build_browse "topic" "topic_browse"
-build_browse "author" "author_browse"
+build_browse "topic" "topic_browse" 1
+build_browse "author" "author_browse" 1
 build_browse "lcc" "callnumber-raw" 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer"
 build_browse "dewey" "dewey-raw" 1 "-Dbrowse.normalizer=org.vufind.util.DeweyCallNormalizer"
 
-build_browse "hierarchy" "hierarchy_browse" "" "" "is_religious_studies"
+build_browse "hierarchy" "hierarchy_browse" 1 "" "is_religious_studies"
 build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr" "is_religious_studies"
-build_browse "topic" "topic_browse" "" "" "is_religious_studies"
-build_browse "author" "author_browse" "" "" "is_religious_studies"
+build_browse "topic" "topic_browse" 1 "" "is_religious_studies"
+build_browse "author" "author_browse" 1 "" "is_religious_studies"
 build_browse "lcc" "callnumber-raw" 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer" "is_religious_studies"
 build_browse "dewey" "dewey-raw" 1 "-Dbrowse.normalizer=org.vufind.util.DeweyCallNormalizer" "is_religious_studies"
