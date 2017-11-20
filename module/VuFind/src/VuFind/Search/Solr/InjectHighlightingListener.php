@@ -118,8 +118,7 @@ class InjectHighlightingListener
 
                     // Turn on hl.q generation in query builder:
                     $this->backend->getQueryBuilder()
-                        ->setCreateHighlightingQuery(true)
-                        ->setDefaultHighlightingFieldList($this->fieldList);
+                        ->setFieldsToHighlight($this->fieldList);
                 }
             }
         }
