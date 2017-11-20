@@ -71,7 +71,9 @@ class QueryBuilder implements QueryBuilderInterface
     protected $exactSpecs = [];
 
     /**
-     * Solr fields to highlight.
+     * Solr fields to highlight. Also serves as a flag for whether to perform
+     * highlight-specific behavior; if the field list is empty, highlighting is
+     * skipped.
      *
      * @var string
      */
@@ -169,7 +171,7 @@ class QueryBuilder implements QueryBuilderInterface
                 $string = $handler->createSimpleQueryString($string);
             }
         }
-        // If we didn't assign hl.fl above, use the default value:
+        // Set an appropriate highlight field list when applicable:
         if ($highlight) {
             $filter = $handler ? $handler->getAllFields() : [];
             $params->add('hl.fl', $this->getFieldsToHighlight($filter));
@@ -218,7 +220,9 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Set list of fields to highlight, if any (or '*' for all).
+     * Set list of fields to highlight, if any (or '*' for all). Set to an
+     * empty string (the default) to completely disable highlighting-related
+     * functionality.
      *
      * @param string $list Highlighting field list
      *
