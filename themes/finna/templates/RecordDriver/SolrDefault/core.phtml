@@ -120,12 +120,12 @@
     <? endif; ?>
     <div class="record-authors">
      <? $containerTitle = $this->driver->getContainerTitle(); ?>
-     <? if ($containerTitle): ?>
+     <? $hostRecords = $this->driver->tryMethod('getHostRecords'); ?>
+     <? if ($containerTitle || $hostRecords): ?>
        <div class="recordContainerReference">
          <?
            $containerSource = $this->driver->getSourceIdentifier();
            $containerID = $this->driver->getContainerRecordID();
-           $hostRecords = $this->driver->tryMethod('getHostRecords');
          ?>
          <div class="truncate-field">
            <?=$this->transEsc('Published in')?>
