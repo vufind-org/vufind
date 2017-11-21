@@ -1,12 +1,7 @@
 <?php
 namespace IxTheo\Mailer;
 
-//use Zend\ServiceManager\ServiceLocatorAwareInterface;
-//use Zend\ServiceManager\ServiceLocatorAwareTrait;
-
 class Mailer extends \VuFind\Mailer\Mailer {
-
-//    use ServiceLocatorAwareTrait;
 
     protected $sm;
 
@@ -16,7 +11,6 @@ class Mailer extends \VuFind\Mailer\Mailer {
         $this->sm = $sm;
 
     }
-
 
     /**
      * Send an email message, append custom footer to body
