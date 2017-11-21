@@ -161,8 +161,8 @@ class AdapterFactory
             $username = $credentials;
             $password = null;
         }
-        $username = !is_null($overrideUser) ? $overrideUser : $username;
-        $password = !is_null($overridePass) ? $overridePass : $password;
+        $username = null !== $overrideUser ? $overrideUser : $username;
+        $password = null !== $overridePass ? $overridePass : $password;
 
         // Set up default options:
         $options = [

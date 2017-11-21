@@ -106,7 +106,7 @@ class PluginFactory implements AbstractFactoryInterface
 
         // Now we'll pull all the children down one at a time and override settings
         // as appropriate:
-        while (!is_null($child = array_pop($configs))) {
+        while (null !== ($child = array_pop($configs))) {
             $overrideSections = isset($child->Parent_Config->override_full_sections)
                 ? explode(
                     ',', str_replace(

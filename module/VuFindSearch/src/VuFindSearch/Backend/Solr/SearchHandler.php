@@ -456,7 +456,7 @@ class SearchHandler
                     ')';
                 // ...and add a weight if we have one
                 $weight = $sw[1];
-                if (!is_null($weight) && $weight && $weight > 0) {
+                if (null !== $weight && $weight && $weight > 0) {
                     $sstring .= '^' . $weight;
                 }
                 // push it onto the stack of clauses
@@ -470,7 +470,7 @@ class SearchHandler
                     // Add the weight if we have one. Yes, I know, it's redundant
                     // code.
                     $weight = $spec[1];
-                    if (!is_null($weight) && $weight && $weight > 0) {
+                    if (null !== $weight && $weight && $weight > 0) {
                         $sstring .= '^' . $weight;
                     }
                     // ..and push it on the stack of clauses

@@ -272,7 +272,7 @@ class DAIA extends AbstractBase implements
             // extract the DAIA document for the current id from the
             // HTTPRequest's result
             $doc = $this->extractDaiaDoc($id, $rawResult);
-            if (!is_null($doc)) {
+            if (null !== $doc) {
                 // parse the extracted DAIA document and return the status info
                 $data = $this->parseDaiaDoc($id, $doc);
                 // cache the status information
@@ -335,7 +335,7 @@ class DAIA extends AbstractBase implements
                         // it is assumed that each DAIA document has a unique URI,
                         // so get the document with the corresponding id
                         $doc = $this->extractDaiaDoc($id, $rawResult);
-                        if (!is_null($doc)) {
+                        if (null !== $doc) {
                             // a document with the corresponding id exists, which
                             // means we got status information for that record
                             $data = $this->parseDaiaDoc($id, $doc);
@@ -355,7 +355,7 @@ class DAIA extends AbstractBase implements
                         // extract the DAIA document for the current id from the
                         // HTTPRequest's result
                         $doc = $this->extractDaiaDoc($id, $rawResult);
-                        if (!is_null($doc)) {
+                        if (null !== $doc) {
                             // parse the extracted DAIA document and save the status
                             // info
                             $data = $this->parseDaiaDoc($id, $doc);

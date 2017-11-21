@@ -20,6 +20,7 @@ $rules = [
     'function_declaration' => true,
     'function_typehint_space' => true,
     'indentation_type' => true,
+    'is_null' => true,
     'line_ending' => true,
     'linebreak_after_opening_tag' => true,
     'lowercase_cast' => true,

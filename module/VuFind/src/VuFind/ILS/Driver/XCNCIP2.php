@@ -348,7 +348,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $agencyList = [];
 
-        if (is_null($agency)) {
+        if (null === $agency) {
             $keys = array_keys($this->agency);
             $agencyList[] = $keys[0];
         }
@@ -504,7 +504,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $agencyList = [];
         $idList = [];
-        if (! is_null($ids)) {
+        if (null !== $ids) {
             foreach ($ids as $_id) {
                 // Need to parse out the 035$a format, e.g., "(Agency) 123"
                 if (preg_match('/\(([^\)]+)\)\s*([0-9]+)/', $_id, $matches)) {
@@ -1750,7 +1750,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'xsd/ncip_v2_0.xsd">' .
                 '<ns1:LookupUser>';
 
-        if (!is_null($patron_agency_id)) {
+        if (null !== $patron_agency_id) {
             $ret .=
                    '<ns1:InitiationHeader>' .
                         '<ns1:FromAgencyId>' .
