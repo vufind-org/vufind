@@ -1,0 +1,336 @@
+.record {
+  .media-left,
+  .media-right {
+    width: 25%;
+    @media(max-width: @screen-sm) {
+      display: block;
+      width: 100%;
+    }
+    .recordcover-container {
+      position: relative;
+    }
+  }
+  @media(min-width: @screen-sm){
+    .media-left { padding-right: 20px; }
+    .media-right { padding-left: 20px; }
+  }
+
+  & .nav>li a {
+    color: @action-link-color;
+    font-size: 1em;
+    font-weight: 600;
+
+    & :hover {
+      color: darken(@action-link-color,10%);
+    }
+
+    & i {
+      color: tint(@action-link-color, 22%);
+      padding-left: 3px;
+      padding-right: 3px;    
+    }
+  }
+
+  .local-available-online-record {
+    a {
+      font-size: 15px;
+    }
+    .btn.btn-primary {
+      border-radius: 0;
+      padding: 0px;
+      height: 48px;
+      width: 48px;
+      font-size: 20px;
+      margin-right: 10px;
+      float: left;
+    }
+  }
+  .video-link-container {
+    margin-bottom: 10px;
+  }
+  a.videourl {
+    background: @brand-primary;
+    border: 1px solid @brand-primary;
+    line-height: 48px;
+    display: table;
+    width: 100%;
+    border-radius: 4px;
+    i {
+      vertical-align: middle;
+      margin-bottom: 2px;
+    }
+    .video-icon {
+      height: 48px;
+      width: 48px;
+      float: left;
+      color: @btn-default-color;
+      text-align: center;
+    }
+    .video-desc {
+      display: table-cell;
+      vertical-align: middle;
+      text-transform: uppercase;
+      font-weight: bold;
+      color: @btn-default-color;
+      width: 100%;
+    }
+  }
+  .record-title {
+    margin: 0;
+    margin-bottom: 3px;
+    font-size: @record-title-font-size;
+    @media (max-width: @screen-sm) {
+      margin-bottom: 20px;
+    }
+  }
+}
+
+.no-image-layout {
+  .record-image-container {
+    display: none;
+  }
+  .image-details-container {
+    display: none;
+  }
+  .media-left,
+  .media-right {
+    .organisation-menu {
+      display: none;
+    }
+  }
+}
+
+.large-image-layout.record {
+  .media-left,
+  .media-right {
+    @media (min-width: @screen-sm) {
+      width: 50%;
+    }
+    .record-image-container {
+      text-align: center;
+      .image-popup-trigger {
+        img {
+          max-height: 600px;
+          width: auto;
+        }
+      }
+      .open-link {
+        margin-top: 10px;
+        i, b {
+          color: tint(@action-link-color, 22%);
+          margin-right: 0;
+          font-style: normal;
+        }
+      }
+    }
+  }
+  .video-link-container {
+    width: 50%;
+    float: left;
+    padding-right: 10px;
+  }
+  .smaller-image-sidebar {
+    display: none;
+  }
+  .sidebar .organisation-menu {
+    display: none
+  }
+  @media(max-width: @screen-md-max){
+    .mainbody.record-tabs {
+      width: 100%;
+    }
+  }
+}
+
+.record-view-header {
+  background: @finna-record-header-background;
+}
+
+.recordcovers {
+  &.list {
+    position: absolute;
+    left: auto;
+    padding: 0;
+    width: auto;
+    z-index: 3;
+    min-height: 20px;
+    text-align: center;
+    top: 0;
+    & a {
+      background: @body-bg;
+      text-decoration: none;
+      .opacity(.5);
+      font-size: 1em;
+      display: inline-block;
+      width: auto;
+      padding: 1px 5px;
+      margin: 0 4px 4px 0;
+      text-align: center;
+      transition: .2s linear;
+      &:hover {
+        .opacity(1);
+      }
+    }
+  }
+
+  &.record a {
+    margin: 0 5px 5px 0;
+    background-position: 50% 50%;
+    background-size: cover;
+    display: inline-block;
+    height: 42px;
+    margin: 0 5px 5px 0;
+    overflow: hidden;
+    width: 42px;
+    &.truncate-change {
+      opacity: 0;
+    }
+  }
+}
+
+.record-uniform-titles {
+  font-size: 1.05em;
+  margin: 0 0 3px;
+}
+.record-authors, .record-title-alt-script {
+  .date-and-year();
+}
+.record-details {
+  & th {
+    width: 30%;
+  }
+  .subheading{
+    text-transform: uppercase;
+    margin-top: 10px;
+  }
+}
+.record-alt-titles {
+  color: @gray-light;
+}
+.summary {
+  color: @gray-light;
+  font-size: 1.05em;
+  margin-bottom: 10px;
+}
+.show-details-button, .hide-details-button {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  padding-left: 0;
+  background: @body-bg;
+  color: @link-color;
+  width: 100%;
+  text-transform: uppercase;
+  font-size: .9em;
+  &:hover {
+    color: @link-color;
+  }
+}
+
+.show-details
+.record-details {
+  margin: 10px 0px;
+}
+.physical-details {
+  color: @gray-light;
+}
+.access-rights {
+  color: @gray-light;
+  margin-top: 5px;
+  padding-top: 5px;
+}
+.dataTables_wrapper {
+  width: 100%;
+}
+.part-authors-padded {
+  padding-left: 10px;
+}
+.rating-symbol-background {
+  margin-right: 1px;
+  color: @gray-light;
+}
+.record .rating-average {
+  margin-top: 10px;
+  .count {
+    display: inline-block;
+    color: @gray-light;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  & .stars {
+    display: inline-block;
+    &:hover, & .rating-symbol-background:hover {
+      cursor: pointer;
+    }
+  }
+  @media(max-width:@screen-sm-max) {
+    font-size: .8em;
+    & .stars {
+      margin-right: -1px;
+    }
+  }
+}
+.rating-holder {
+  margin-bottom: 5px;
+  .info {
+    line-height: 2em;
+    @media(max-width:@screen-sm-max) {
+      line-height: 2.4em;
+    }
+  }
+  .rating-symbol {
+    margin-right: 3px;
+    font-size: 1.4em;
+    @media(max-width:@screen-sm-max) {
+      font-size: 1.8em;
+    }
+  }
+}
+
+@media(max-width:@screen-xs-max) {
+  .cover-wrapper {
+    text-align: center;
+  }
+  .template-name-view .record .record-title {
+    margin-top: 10px;
+  }
+}
+
+.open-link, .save-record-link, .record-link {
+  text-align: left;
+  margin-top: 5px;
+  color: @action-link-color;
+  font-size: 1em;
+  font-weight: 600;
+  text-transform: uppercase;
+  a, a span {
+    color: @action-link-color;
+    &:hover {
+      text-decoration: none;
+      color: @link-color;
+    }
+  }
+  .image-dimensions {
+    color: @gray-mid-light;
+    font-size: .8em;
+  }
+}
+
+.record .recordcover-holder .more-link {
+  width: 100%;
+}
+
+@media(max-width: @screen-md-max) {
+  .large-image-sidebar {
+    width: 100%;
+  }
+}
+
+#similar-records{
+  .details {
+    font-size: 0.9em;
+    line-height: 25px;
+    margin-top: -5px;
+  }
+}

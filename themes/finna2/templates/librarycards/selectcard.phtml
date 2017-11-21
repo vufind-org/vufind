@@ -1,0 +1,83 @@
+<!-- START of: finna - librarycards/selectcard.phtml -->
+<? if ($this->user): ?>
+  <? $cards = $this->user->getLibraryCards(); if ($cards->count() > 1): ?>
+    <? $targetCount = $this->ils()->checkCapability('getLoginDrivers') ? count($this->ils()->getLoginDrivers()) : 1; ?>
+    <? if (isset($loginMenu) && $loginMenu): ?>
+      <li role="menuitem" class="logoutOptions card-selection">
+        <h5><?=$this->transEsc(isset($this->label) ? $this->label : 'Kirjastokortti') ?></h5>
+        <? foreach ($cards as $card): ?>
+          <?
+            $target = '';
+            $username = $card->cat_username;
+            if (strstr($username, '.')) {
+              list($target, $username) = explode('.', $username, 2);
+            }
+            $display = $this->transEsc($card->card_name ? $card->card_name : $username);
+            if ($display == "$target.$username") {
+              $display = $username;
+            }
+            if ($target && $targetCount > 1) {
+              $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
+            }
+          ?>
+          <? $selectedCard = (!isset($this->displaySelected) || $this->displaySelected) && (strcasecmp($card->cat_username, $this->user->cat_username) === 0); ?>
+          <a href="<?=$this->url('librarycards-selectcard')?>?cardID=<?=$this->escapeHtmlAttr($card->id)?>"><?=$selectedCard ? '<i class="fa fa-check"></i><span class="sr-only">(' . $this->transEsc("selected") . ')</span> ' : '' ?><?=$display ?></a>
+        <? endforeach; ?>
+      </li>
+    <? else: ?>
+      <div class="select-card-wrapper">
+        <span class="select-card-label"><?=$this->transEsc(isset($this->label) ? $this->label :'') ?></span>
+        <div class="dropdown select-card">
+          <?
+            $display = null;
+            if (!isset($this->displaySelected) || $this->displaySelected) {
+              foreach ($cards as $card) {
+                if (strcasecmp($card->cat_username, $this->user->cat_username) !== 0) {
+                    continue;
+                }
+                $target = '';
+                $username = $card->cat_username;
+                if (strstr($username, '.')) {
+                  list($target, $username) = explode('.', $username, 2);
+                }
+                $display = $this->transEsc($card->card_name ? $card->card_name : $username);
+                if ($display == "$target.$username") {
+                  $display = $username;
+                }
+                if ($target && $targetCount > 1) {
+                  $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
+                }
+              }
+            }
+            if (null === $display) {
+              $display = $this->transEsc('Select');
+            }
+          ?>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span><?=$display ?></span> <i class="fa fa-arrow-down"></i></a>
+          <ul class="dropdown-menu library_card" role="menu">
+          <? foreach ($cards as $card): ?>
+            <?
+              $target = '';
+              $username = $card->cat_username;
+              if (strstr($username, '.')) {
+                list($target, $username) = explode('.', $username, 2);
+              }
+              $display = $this->transEsc($card->card_name ? $card->card_name : $username);
+              if ($display == "$target.$username") {
+                $display = $username;
+              }
+              if ($target && $targetCount > 1) {
+                $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
+              }
+            ?>
+            <li role="menuitem">
+              <a href="<?=$this->url('librarycards-selectcard')?>?cardID=<?=$this->escapeHtmlAttr($card->id);?>"><?=$display ?></a>
+            </li>
+        <? endforeach; ?>
+        </ul>
+      </div>
+    </div>
+    <? endif; ?>
+  <? endif; ?>
+<? endif; ?>
+<!-- END of: finna - librarycards/selectcard.phtml -->

@@ -1,0 +1,23 @@
+<div class="terms-of-service terms-of-service-text">
+  <?=$this->flashmessages()?>
+  <div class="terms-of-service-info-box">
+    <div class="terms-of-service-logo"><img src="<?=$this->imageLink('finna-logo-icon.png')?>"></div>
+    <div><p>You are logging on to Finna or to a service built on the Finna platform, such as an online library. Finna is an entity designed to provide search services for Finnish libraries, archives, and museums.</p></div>
+  </div>
+
+  <p class="terms-of-service-title">We respect your privacy in Finna!</p>
+
+  <p>We only collect the personal information necessary to use Finna, like your name, email address, username, library barcode, PIN code, and the libraries you use. To find out more about the personal information we collect and how it is treated, including how your information is shared and how long it is stored, please go to our <a href="<?=$this->url('content-page', ['page' => 'privacy'])?>" target="_blank" data-lightbox-ignore>Privacy page</a>.</p>
+
+  <p>If you log into Finna using an already existing username or library card, the necessary information will be automatically transferred from the library's system to Finna. You may also save and change your personal information in Finna. To provide you with our service, your information is collected and managed by the National Library of Finland and the CSC – IT Center for Science (the service providers) and the <a href="https://finna.fi/Content/organisations" target="_blank" data-lightbox-ignore>organizations</a> that share their collections in Finna.</p>
+
+  <p>After accepting our privacy policy you can reject it and permanently remove your information from Finna by deleting your account.</p>
+
+  <div class="terms-of-service-info-box terms-of-service-footnote">
+    <p>You may need to accept Finna's privacy policy again if you log on to Finna from a different device or browser, have deleted your browsing history, or log on to a Finna website you haven't used before.</p>
+  </div>
+</div>
+<div class="terms-of-service terms-of-service-controls"
+  <p><label><input type="checkbox" name="acceptTerms" value="1" checked="checked" required> I accept the storage and management of my personal information in Finna.</label></p>
+  <input type="submit" class="btn btn-primary submit" name="submit" value="Accept">
+</div>

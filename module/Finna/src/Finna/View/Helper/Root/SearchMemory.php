@@ -99,4 +99,14 @@ class SearchMemory extends \VuFind\View\Helper\Root\SearchMemory
         $params->initFromRequest($request);
         return $params;
     }
+
+    /**
+     * Retrieve the scroll data
+     *
+     * @return \VuFind\Search\Base\Params
+     */
+    public function getLastScrollData()
+    {
+        return  $this->memory->retrieveScrollData();
+    }
 }

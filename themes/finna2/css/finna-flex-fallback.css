@@ -1,0 +1,58 @@
+/* Broken up due to IE selector length limits */
+@media (min-width: 768px) {
+  /* Search */
+  .author-facets .author-list,
+  .result .media,
+  .result .record-checkbox,
+  .result .record-number,
+  .result.grid {
+    display: table-cell;
+    min-width: 20px;
+    vertical-align: top;
+  }
+  input.search-query {
+    min-width: 50%;
+  }
+  /* Layout */
+  .combined-search-container .combined-column,
+  .date-fields .date-from,
+  .date-fields .date-top,
+  .footer-container .footer-column,
+  .home-facet-container .home-facet,
+  .home-facet-container .home-facet-list,
+  .solr-facet-container .solr-adv-facet,
+  .map-control-bar .flex-item {
+    display: table-cell;
+    min-width: 20px;
+    vertical-align: top;
+    padding: 10px;
+  }
+  .finna-news-item, .finna-campaign-item {
+    float: left;
+    margin-right: 15px;
+  }
+  .grid-result .grid-body,
+  .grid-result .grid-checkbox {
+    display: block;
+  }
+}
+@media (min-width: 992px) {
+  .navbar-header, .collapse.navbar-collapse, .navbar-nav {
+    display: table-cell !important;
+    min-width: 20px;
+  }
+  .finna-navbar {
+    display: table;
+  }
+}
+.searchbox-flex {
+  display: table;
+}
+.searchbox-flex .record-back,
+.searchbox-flex .search,
+.searchbox-flex .search-tooltip,
+.searchbox-flex .pager {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+}

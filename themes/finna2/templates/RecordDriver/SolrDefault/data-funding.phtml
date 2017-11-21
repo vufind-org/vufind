@@ -1,0 +1,17 @@
+<? //Don't add START and END comments ?>
+<? if(!empty($data)): ?>
+<div class="truncate-field">
+  <? foreach ($data as $index => $item): ?>
+    <?
+      $additional = [];
+      if (!empty($item['type'])) {
+        $additional[] = $this->escapeHtml($item['type']);
+      }
+      if (!empty($item['amount'])) {
+        $additional[] = $this->escapeHtml($item['amount']);
+      }
+    ?>
+    <?=$index > 0 ? '<br/>' : '' ?><?=$this->escapeHtml($item['name']) ?><? if (!empty($additional)): ?>, <?=implode(' ', $additional) ?><? endif; ?>
+  <? endforeach; ?>
+</div>
+<? endif; ?>

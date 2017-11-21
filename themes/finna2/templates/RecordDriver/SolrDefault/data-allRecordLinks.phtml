@@ -1,0 +1,18 @@
+<? //Don't add START and END comments ?>
+<? if (!empty($data)): ?>
+  <? $prevRecordLinkTitle = null; ?>
+  <? foreach ($data as $recordLink): ?>
+    <? if ($recordLink['title'] !== $prevRecordLinkTitle): ?>
+      <?
+        if ($prevRecordLinkTitle) {
+          echo '</td></tr>';
+        }
+        echo '<tr class="recordLinks"><th>' . $this->transEsc($recordLink['title']) . ':</th><td>';
+        $prevRecordLinkTitle = $recordLink['title'];
+      ?>
+    <? endif; ?>
+    <?='<a href="' . $this->recordLink()->related($recordLink['link']) . '">' . $this->escapeHtml($recordLink['value']) . '</a><br />'; ?>
+  <? endforeach; ?>
+  <? echo '</td>'; ?>
+<?='</tr>' ?>
+<? endif; ?>

@@ -1,0 +1,65 @@
+.terms-of-service {
+    margin-top: 20px;
+    font-size: 15px;
+
+    & label {
+        font-weight: initial;
+    }
+}
+
+.terms-of-service-text {
+    // Hacks to make the dialog fit the screen since scrolling a modal is erratic
+    // with Safari on iOS
+    @media only screen and (-webkit-min-device-pixel-ratio: 1) {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid @modal-content-border-color;
+        padding: 0.1em;
+        @media (min-device-width: 768px) {
+            max-height: 460px;
+        }
+    }
+    @media only screen and (-webkit-min-device-pixel-ratio: 2) {
+        max-height: 150px;
+        overflow-y: auto;
+        border: 1px solid @modal-content-border-color;
+        padding: 0.1em;
+        @media (min-device-width: 375px) {
+            max-height: 240px;
+        }
+    }
+    @media only screen and (-webkit-min-device-pixel-ratio: 3) {
+        max-height: 360px;
+        overflow-y: auto;
+        border: 1px solid @modal-content-border-color;
+        padding: 0.1em;
+    }
+}
+
+.terms-of-service-title {
+   font-size: 18px;
+}
+
+.terms-of-service-info-box {
+   background-color: @state-info-bg;
+   padding-left: 8px;
+   padding-right: 20px;
+   padding-top: 10px;
+   padding-bottom: 10px;
+   margin-bottom: 20px;
+   min-height: 100px;
+}
+
+.terms-of-service-logo {
+   width: 77px;
+   height: 78px;
+   margin-bottom: 20px;
+   margin-right: 10px;
+   float: left;
+}
+
+.terms-of-service-footnote {
+   font-size: 14px;
+   padding-bottom: 5px;
+   min-height: 60px;
+}

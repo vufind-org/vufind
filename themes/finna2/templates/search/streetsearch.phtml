@@ -1,0 +1,16 @@
+<!-- START of: finna - search/streetsearch.phtml -->
+<?
+    $this->headTitle($this->translate('street_search'));
+    $this->content()->setHeading = false;
+    $this->layout()->finnaMainHeader = false;
+
+    $this->layout()->searchbox = $this->streetSearch();
+?>
+
+<div class="page-content">
+ <ul id="street-search-output"></ul>
+ <p>
+   <?=$this->translate('street_search_info_html')?>
+ </p>
+</div>
+<!-- END of: finna - search/streetsearch.phtml -->

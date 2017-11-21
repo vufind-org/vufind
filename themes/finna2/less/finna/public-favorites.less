@@ -1,0 +1,60 @@
+/* Public favorites list styles. */
+
+.template-dir-list {
+    .public-list-desc {
+        padding-left: 5px;
+        @media (min-width: @screen-sm) {
+            width: 70%;
+            float: left;
+        }
+    }
+
+    h1.public-list-header {
+        margin: 10px 15px;
+        font-size: 1.6em;
+    }
+
+    .public-list-view {
+        margin-top: 20px;
+    }
+
+    .public-list-row {
+        margin: 19px 0;
+    }
+
+    .public-list-info {
+        text-align: right;
+        float: right;
+        color: @gray-light;
+    }
+
+    .public-list-username {
+    }
+
+    .notes {
+        margin-top: 10px;
+        .heading {
+            font-weight: bold;
+        }
+        p.note-heading {
+            margin: 0;
+        }
+        p.note-rows {
+            margin-top: 3px;
+        }
+    }
+
+    .grid {
+        .notes {
+            p.note-heading {
+                margin: 0 4px;
+            }
+            p.note-rows {
+                margin: 0 4px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+}

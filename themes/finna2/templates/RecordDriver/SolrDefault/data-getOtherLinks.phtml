@@ -1,0 +1,19 @@
+<? //Don't add START and END comments ?>
+<? if(!empty($data)): ?>
+    <? $prevOtherLinkHeading = ''; ?>
+    <? foreach ($data as $result): ?>
+        <? if (!empty($result['isn'])): ?>
+         <? $otherLinkTitle = !empty($result['title']) ? $result['title'] : $result['isn']; ?>
+          <a title="<?=$this->escapeHtmlAttr($otherLinkTitle) ?>" href="<?=$this->record($this->driver)->getLink('isn', $result['isn']) ?>">
+            <?=$this->escapeHtml($otherLinkTitle); ?>
+          </a>
+        <? elseif (!empty($result['title'])): ?>
+          <a title="<?=$this->escapeHtmlAttr($result['title']) ?>" href="<?=$this->record($this->driver)->getLink('title', $result['title']) ?>">
+            <?=$this->escapeHtml($result['title']); ?>
+          </a>
+        <? endif; ?>
+        <? if (!empty($result['author'])): ?>
+          (<?=$this->escapeHtml($result['author']); ?>)
+        <? endif; ?>
+    <? endforeach; ?>
+<? endif; ?>

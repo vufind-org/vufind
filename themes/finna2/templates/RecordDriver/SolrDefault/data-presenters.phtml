@@ -1,0 +1,16 @@
+<? //Don't add START and END comments ?>
+<? if (!empty($data['presenters']) || !empty($data['details'])): ?>
+<div class="truncate-field">
+    <? if (!empty($data['presenters'])): ?>
+      <? foreach($data['presenters'] as $index => $author): ?>
+        <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><? endif; ?><? if (!empty($author['role'])): ?><span class="author-role">, <?=mb_strtolower($this->transEsc('CreatorRoles::' . $author['role']), 'UTF-8') ?></span><? endif; ?>
+      <? endforeach; ?>
+    <br/>
+    <? endif; ?>
+    <? if (!empty($data['details'])): ?>
+      <? foreach($data['details'] as $index => $detail): ?>
+        <?=($index > 0 || !empty($data['presenters']) ? '' : '')?><?=$this->escapeHtml($detail)?>
+      <? endforeach; ?>
+    <? endif; ?>
+</div>
+<? endif; ?>

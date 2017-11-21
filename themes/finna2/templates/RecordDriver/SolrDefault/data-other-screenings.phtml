@@ -1,0 +1,11 @@
+<? //Don't add START and END comments ?>
+<? if (!empty($data)): ?>
+  <? foreach ($data as $fields => $keys): ?>
+    <? if (!empty($keys['name'])): ?>
+      <?=$this->escapeHtml($keys['name'])?><? if (!empty($keys['region'])): ?>, <?=$this->escapeHtml($keys['region'])?><? endif; ?>
+      <? if (!empty($keys['date'])): ?>
+        <?=$this->escapeHtml($keys['date'])?>
+      <? endif; ?><br/>
+    <? endif; ?>
+  <? endforeach; ?>
+<? endif; ?>

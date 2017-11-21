@@ -1,0 +1,41 @@
+#modal.location-service {
+    & .modal-body {
+        & .link {
+            float: right;
+        }
+        & iframe {
+            width: 100%;
+            height: 700px;
+            @media (max-width: @screen-xs-max) {
+                height: 500px;
+            }
+            & .container {
+                max-width: initial !important;
+            }
+        }
+    }
+}
+#modal.location-service-qrcode {
+    & .modal-dialog {
+        width: 340px;
+        @media (max-width: @screen-xs-max) {
+            width: 300px;
+        }
+    }
+}
+i.fa-qrcode {
+    cursor: pointer;
+    margin-left: 12px;
+}
+
+.holdings-container-heading {
+    i.fa-qrcode {
+        font-size: 1.5em;
+    }
+    i.fa-map-marker {
+        font-size: 1.3em;
+    }
+}
+.template-name-results .location-link-text {
+    display: inline;
+}

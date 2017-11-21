@@ -1,0 +1,13 @@
+<!-- START of: finna - content/metalib.phtml -->
+<?
+  $this->headTitle($this->translate('MetaLib Unavailable'));
+  $this->content()->setHeading($this->translate('MetaLib Unavailable'));
+  $response = $this->getHelperPluginManager()->getServiceLocator()->get('Response');
+  $response->setStatuscode('404');
+?>
+<div class="page-content">
+ <p>Nelli-portaali on poistettu käytöstä.</p>
+ <p>Nelli Portal is no longer available.</p>
+ <p>Nelli-portalen är inte längre tillgänglig.</p>
+</div>
+<!-- END of: finna - content/metalib.phtml -->

@@ -60,4 +60,16 @@ trait FinnaOptions
         }
         return $defaultLimit;
     }
+
+    /**
+     * Get view option list type setting
+     *
+     * @return bool
+     */
+    public function getViewOptionListType()
+    {
+        $searchSettings = $this->configLoader->get($this->searchIni);
+        $viewOptionsIcons = $searchSettings->General->view_options_icons;
+        return $viewOptionsIcons ? true : false;
+    }
 }

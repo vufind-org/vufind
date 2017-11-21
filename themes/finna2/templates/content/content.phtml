@@ -1,0 +1,15 @@
+<!-- START of: finna - content/content.phtml -->
+<div>
+  <div>
+      <?= $this->context($this)->renderInContext('content/' . $page . '.phtml', []); ?>
+  </div>
+  <?
+    $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
+        'content/header.phtml',
+        [
+          'heading' => $this->content()->getHeading(),
+        ]
+    );
+  ?>
+</div>
+<!-- END of: finna - content/content.phtml -->

@@ -65,4 +65,26 @@ class Memory extends \VuFind\Search\Memory
     {
         return isset($this->session->searchData) ? $this->session->searchData : null;
     }
+
+    /**
+     * Remember record scroll data
+     *
+     * @param object $scrollData Record scroll data.
+     *
+     * @return void
+     */
+    public function rememberScrollData($scrollData)
+    {
+        $this->session->scrollData = $scrollData;
+    }
+
+    /**
+     * Retrieve scroll data
+     *
+     * @return object
+     */
+    public function retrieveScrollData()
+    {
+        return isset($this->session->scrollData) ? $this->session->scrollData : null;
+    }
 }

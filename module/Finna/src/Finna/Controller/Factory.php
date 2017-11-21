@@ -117,6 +117,22 @@ class Factory extends \VuFind\Controller\Factory
     }
 
     /**
+     * Construct the CollectionController.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return CollectionController
+     */
+    public static function getCollectionController(ServiceManager $sm)
+    {
+        $serviceLocator = $sm->getServiceLocator();
+        return new CollectionController(
+            $serviceLocator,
+            $serviceLocator->get('VuFind\Config')->get('config')
+        );
+    }
+
+    /**
      * Construct the CartController.
      *
      * @param ServiceManager $sm Service manager.

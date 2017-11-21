@@ -1,0 +1,82 @@
+<?
+  $this->headScript()->appendFile("finna-organisation-info.js");
+  $this->headScript()->appendFile("finna-organisation-info-widget.js");
+?>
+<div class="organisation-info<?=$this->showDetails ? ' with-details' : ''?>" data-parent="<?=$this->escapeHtmlAttr($this->id)?>" data-target="<?=$this->escapeHtmlAttr($this->target)?>" data-init="<?=$this->target == 'widget' ? '1' : '0'?>"<?=!empty($this->buildings) ? (' data-buildings="' . implode(',', $this->buildings) . '"') : ''?>>
+<? if ($this->target == 'widget'): ?>
+  <div>
+    <h2><?=$this->transEsc('organisation_info_title');?></h2>
+  </div>
+  <div>
+    <div class="loader"><i class="fa fa-spin fa-spinner"></i></div>
+  </div>
+  <div class="content hide">
+    <div class="<?=$this->showDetails ? 'info-col ' : ''?>info">
+      <div class="organisation-dropdown-holder">
+        <div class="organisation dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><input type="hidden"><span></span><i class="fa fa-arrow-down"></i></a>
+            <ul class="dropdown-menu" role="menu">
+            </ul>
+        </div>
+      </div>
+      <span class="is-open open info-element"><?=$this->translate('organisation_info_is_open')?></span>
+      <span class="is-open closed info-element"><?=$this->translate('organisation_info_is_closed')?></span>
+<? endif ?>
+      <div class="info schedules">
+        <div class="week-navi-holder">
+          <i class="fa fa-arrow-left prev-week week-navi" data-dir="-1"></i>
+          <span class="week-text"><?=$this->translate('organisation_info_schedule_week')?> <span class="num"></span></span>
+          <i class="fa fa-arrow-right next-week week-navi" data-dir="+1"></i>
+        </div>
+        <div class="loader"><i class="fa fa-spin fa-spinner"></i></div>
+
+        <div class="content">
+          <div class="opening-times-week">
+            <div class="day-container template hide"></div>
+
+            <div class="time-row template hide">
+              <div class="cell date"></div>
+              <div class="cell description">
+                <span class="name"></span><span class="name-staff"><?=$this->translate('organisation_info_schedule_staff')?></span><span class="info"></span><span class="selfservice-only hide"><?=$this->translate('organisation_info_only_selfservice')?></span>
+              </div>
+              <div class="cell time-container">
+                <div class="cell time-template">
+                  <span class="period"><span class="opens"></span> - <span class="closes"></span></span>
+                  <span class="closed-today hide"><?=$this->translate('organisation_info_is_closed')?></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="no-schedules info-element"><?=$this->translate('organisation_info_no_schedule')?></div>
+        <div class="mobile-schedule-link-template hide"><a href="#" target="_blank"></a></div>
+        <div class="mobile-schedules info-element"></div>
+      </div>
+      <div class="schedules-info info-element"></div>
+<? if ($this->target == 'widget' && $this->showDetails): ?>
+    </div>
+    <div class="details details-col">
+      <a href="#" data-href="<?=$this->escapeHtmlAttr($this->url('organisationinfo-home'))?>" class="facility details"><img src="<?=$this->imageLink('noCover2.gif')?>" alt="" class="facility-image"></a>
+      <div class="contact-links">
+        <a href="#" class="email info-element"><span class="btn btn-open-widget"><i class="fa fa-at"></i><span class="sr-only"><?=$this->transEsc('organisation_info_email') ?></span></span></a>
+        <span class="btn btn-open-widget phone info-element" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title=""><i class="fa fa-phone-square"></i><span class="sr-only"><?=$this->transEsc('organisation_phone_numbers') ?></span></span>
+        <a href="#" target="_blank" class="route info-element"><span class="btn"><i class="fa fa-bus"></i><span class="sr-only"><?=$this->transEsc('organisation_info_route') ?></span></span></a>
+        <a href="#" target="_blank" class="facebook info-element"><span class="btn"><i class="fa fa-facebook-square"></i><span class="sr-only"><?=$this->transEsc('organisation_info_facebook') ?></span></span></a>
+      </div>
+      <div class="map info-element"><a href="#" target="_blank"><i class="fa fa-map-marker"></i> <span class="map-address"></span></a></div>
+      <div class="details-link info-element"><a href="#" data-href="<?=$this->escapeHtmlAttr($this->url('organisationinfo-home'))?>" class="details"><i class="fa fa-home"></i> <?=$this->translate('organisation_info_more_info')?></a></div>
+      <div class="services">
+        <span class="btn btn-open-widget btn-round service-wifi info-element" title="<?=$this->translate('organisation_info_service_wifi')?>">
+          <i class="fa fa-wifi"></i>
+          <span class="sr-only"><?=$this->transEsc('organisation_info_service_wifi') ?></span>
+        </span>
+        <span class="btn btn-open-widget btn-round service-print info-element" title="<?=$this->translate('organisation_info_service_print')?>">
+          <i class="fa fa-print"></i>
+          <span class="sr-only"><?=$this->transEsc('organisation_info_service_print') ?></span>
+        </span>
+      </div>
+    </div>
+  </div>
+<? endif ?>
+</div>

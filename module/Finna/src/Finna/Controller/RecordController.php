@@ -255,7 +255,22 @@ class RecordController extends \VuFind\Controller\RecordController
             $response->setStatusCode(205);
             return $response;
         }
-        return parent::showTab($tab, $ajax);
+
+        $view = parent::showTab($tab, $ajax);
+        //$view->scrollData = $this->resultScroller()->getScrollData($driver);
+
+        $this->getSearchMemory()->rememberScrollData($view->scrollData);
+        return $view;
+    }
+
+    /**
+     * Get the search memory
+     *
+     * @return \Finna\Search\Memory
+     */
+    public function getSearchMemory()
+    {
+        return $this->serviceLocator->get('Finna\Search\Memory');
     }
 
     /**

@@ -1,0 +1,35 @@
+<!-- START of: finna - search/searchTabs.phtml -->
+<? if (!empty($searchTabs)): ?>
+<ul class="nav nav-tabs <?=count($searchTabs) > 2 ? ' many-tabs hidden-xs' : '';?>">
+    <? foreach ($searchTabs as $tab): ?>
+        <? if ($tab['selected']) { $this->layout()->currentTabId = $tab['id']; } ?>
+      <li<?=$tab['selected'] ? ' class="active"' : ' class="hidden-print"'?>>
+        <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?><? if (!$this->translationEmpty('tooltip_' . $tab['label'] . '_html') && $this->layout()->templateName != 'advanced'): ?><span class="<?=$this->transEsc('tooltip-' . $tab['label'])?>" data-toggle="tooltip" data-html="true" data-original-title="<?=$this->transEsc('tooltip_' . $tab['label'] . '_html')?>" data-placement="bottom"> <i class="fa fa-info"></i></span><? endif; ?></a>
+      </li>
+    <? endforeach; ?>
+</ul>
+<div class="mobile-main-tabs <?=count($searchTabs) > 2 ? 'visible-xs' : 'hidden';?>">
+  <div class="dropdown visible-xs">
+      <? foreach ($searchTabs as $tab): ?>
+          <? if ($tab['selected']): ?>
+          <div class="dropdown-toggle" data-toggle="dropdown">
+              <?=$this->transEsc($tab['label']); ?>
+              <? if (!$this->translationEmpty('tooltip_' . $tab['label'] . '_html') && $this->layout()->templateName != 'advanced'): ?>
+                <span class="tooltip <?=$this->transEsc('tooltip-' . $tab['label'])?>" data-toggle="tooltip" data-html="true" data-original-title="<?=$this->transEsc('tooltip_' . $tab['label'] . '_html')?>" data-placement="bottom"> <i class="fa fa-info"></i></span>
+              <? endif; ?>
+              <span class="more">Lisää<b class="caret"></b></span>
+          </div>
+          <? endif; ?>
+      <? endforeach; ?>
+    <ul class="dropdown-menu" role="menu">
+        <? foreach ($searchTabs as $tab): ?>
+            <? if ($tab['selected']) { $this->layout()->currentTabId = $tab['id']; } ?>
+          <li role="menuitem" class="<?=$tab['selected'] ? 'active' : ''?>">
+            <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?><? if (!$this->translationEmpty('tooltip_' . $tab['label'] . '_html') && $this->layout()->templateName != 'advanced'): ?><span class="tooltip <?=$this->transEsc('tooltip-' . $tab['label'])?>" data-toggle="tooltip" data-html="true" data-original-title="<?=$this->transEsc('tooltip_' . $tab['label'] . '_html')?>" data-placement="bottom"> <i class="fa fa-info"></i></span><? endif; ?></a>
+          </li>
+        <? endforeach; ?>
+    </ul>
+  </div>
+</div>
+<? endif; ?>
+<!-- END of: finna - search/searchTabs.phtml -->

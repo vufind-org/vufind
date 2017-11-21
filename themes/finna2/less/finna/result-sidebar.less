@@ -1,0 +1,224 @@
+//== Styling Finna sidebar checkbox filters
+#sidebar .checkboxFilter  {
+  padding: 0px;
+  margin: 15px 0px;
+  & .checkbox {
+    padding-left: 32px;
+    @media(min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+      padding-left: 26px;
+    }
+    margin: 8px 0px;
+  }
+  & label {
+    margin-left: 0px;
+    line-height: 1em;
+  }
+  & label:before {
+    margin-right: 5px;
+    margin-left: -22px;
+  }
+  & .badge {
+    margin-top: 3px;
+    @media(min-width: @screen-sm-min) and (max-width: @screen-md-max) {
+      max-width: 56px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-right: 6px;
+    }
+  }
+}
+
+.checkboxFilter label {
+  font-size: 14px;
+  font-weight: normal;
+}
+.checkboxFilter label.checkbox input {
+  border: none;
+  background: transparent;
+  margin-right: 10px;
+  margin-top: 4px;
+}
+.checkboxFilter label.checkbox input:before {
+  content: "\f096";
+  font-family: 'FontAwesome';
+  margin-right: -1px;
+  font-size: 21px;
+  background: @body-bg;
+  margin: -4px;
+  position: absolute;
+  margin-left: -1px;
+}
+
+.sidebar :not(.recordProvidedBy) h4,
+.sidebar > h4 {
+  padding: 15px;
+  background: @sidebar-background;
+  color: @sidebar-header-text-color;
+  font-size: @font-size-h4;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  word-wrap: break-word;
+}
+
+.list-group {
+  margin-bottom: 5px;
+}
+
+.list-group-item,
+button.list-group-item {
+  position: relative;
+  font-size: 1em;
+  vertical-align: middle;
+  border: none;
+  &:first-child {
+    .border-top-radius(0px);
+  }
+  &:last-child {
+    .border-bottom-radius(0px);
+  }
+  // title custom coloring
+  &.title {
+    background: @facet-background;
+    color: @facet-text-color;
+    &:hover,
+    &:focus {
+      background: @facet-background;
+      color: @facet-text-color;
+    }
+  }
+}
+
+.list-group {
+  &.record-organisation {
+    & h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    padding: 3px 15px 10px;
+    margin-bottom: 0px;
+    & a {
+      font-weight: bold;
+    }
+  }
+  &.organisations {
+    padding: 0px;
+    margin-bottom: 10px;
+    background: @list-group-bg;
+    & .record-organisation {
+      background: @body-bg;
+      padding: 5px 10px;
+    }
+    & .other-organisation-links a {
+      padding: 5px 10px;
+      font-weight: bold;
+      display: block;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      }
+    & h5 {
+      margin-top: 0px;
+      margin-bottom: 0px;
+      padding: 10px;
+      font-weight: normal;
+    }
+    & a {
+      line-height: 1em;
+    }
+    .open-link a {
+      line-height: normal;
+      i {
+        color: tint(@action-link-color, 22%);
+        :before {
+          vertical-align: middle;
+        }
+      }
+    }
+    & .more-link, .less-link {
+      padding-left: 10px;
+      font-weight: bold;
+    }
+  }
+}
+
+.sidebar .recordProvidedBy {
+  border-top: none;
+  margin-top: 0px;
+}
+
+.feedback-record {
+  color: @action-link-color;
+  text-transform: uppercase;
+  font-weight: 600;
+  i {
+    color: tint(@action-link-color, 22%);
+  }
+}
+
+.similar-records {
+  .list-group-item {
+    border: @sidebar-border;
+  }
+  .details {
+    color: @gray;
+  }
+  i { 
+    margin-right: 0; 
+    font-style: normal;
+    top: 0.35em;
+    position: relative;
+  }
+}
+
+#side-collapse-first_indexed {
+  & > a {
+    display: inline-block;
+    min-width: 51%;
+  }
+}
+.form-control.date-picker-field {
+  border-bottom-right-radius: 0px;
+  border-top-right-radius: 0px;
+  cursor: pointer;
+}
+
+#first_indexedFilter {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  & label {
+
+    @media (min-width:@screen-sm-min) and (max-width: @screen-sm-max) {
+      display: block;
+    }
+  }
+  & .date-picker-button {
+    margin-left: -12px;
+    padding: 6px 10px;
+    border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
+  }
+}
+
+.sidebar {
+  margin-bottom: 30px;
+  @media (max-width: @screen-xs-max) {
+    clear: both;
+  }
+  .record-type.organisations {
+    padding: 15px;
+    font-size: 1em;
+    border: @sidebar-border;    
+    & > li {
+      font-weight: 600;
+      & a {
+        text-transform: uppercase;
+        color: @action-link-color;
+        & i {
+          color: tint(@action-link-color, 22%);
+        }
+      }
+    }
+  }
+}

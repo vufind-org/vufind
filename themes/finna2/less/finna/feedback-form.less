@@ -1,0 +1,33 @@
+.feedback-form {
+  & .form-group {
+    margin-bottom: 20px;
+    & label {
+      clear: both;
+      display: block;
+    }
+    & textarea, & input {
+      max-width: 100%;
+    }
+  }
+  & .feedback-info p,
+  & .captcha {
+    padding-top: 10px;
+    border-top: 1px solid @gray-lighter;
+  }
+}
+
+form[name=feedbackRecord] .feedback-info {
+  border: none;
+}
+.form-horizontal[name=emailRecord] {
+  & input[type=email] {
+    min-width: 200px;
+    max-width: 100%;
+  }
+}
+
+.feedback-content {
+  @media(min-width: @screen-sm) {
+    width: 50%;
+  }
+}

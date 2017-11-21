@@ -1,0 +1,10 @@
+<? //Don't add START and END comments ?>
+<? if(!empty($data)): ?>
+<div class="truncate-field">
+<? foreach ($data as $program): ?>
+    <div class="program-line">
+      <a class="backlink" title="<?=$this->escapeHtmlAttr($program)?>" href="<?=$this->record($this->driver)->getLink('program', $program)?>"><?=$this->escapeHtml($program) ?></a>
+    </div>
+<? endforeach; ?>
+</div>
+<? endif; ?>

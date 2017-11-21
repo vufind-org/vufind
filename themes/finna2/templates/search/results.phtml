@@ -1,0 +1,260 @@
+<!-- START of: finna - search/results.phtml -->
+<?
+  $browse = isset($browse) ? $browse : false;
+  $this->layout()->browse = $browse;
+  $this->headMeta()->appendName('robots', 'noindex,follow');
+  // Set up page title:
+  $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
+  if (isset($this->overrideTitle)) {
+      $this->headTitle($this->overrideTitle);
+  } else {
+      $this->headTitle((empty($lookfor) ? "{$this->transEsc('history_empty_search')}" : "{$lookfor}") . ' | ' . $this->translate('Search Results'));
+  }
+  $account = $this->auth()->getManager();
+  $searchType = $this->params->getsearchType();
+
+    // Set up search box:
+    $this->layout()->searchbox = $this->context($this)->renderInContext(
+        'search/searchbox.phtml',
+        [
+            'lookfor' => $lookfor,
+            'searchIndex' => $this->params->getSearchHandler(),
+            'searchType' => $this->params->getSearchType(),
+            'searchId' => $this->results->getSearchId(),
+            'searchClassId' => $this->params->getSearchClassId(),
+            'checkboxFilters' => $this->params->getCheckboxFacets(),
+            'filterList' => $this->params->getFilters(),
+            'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
+            'selectedShards' => $this->params->getSelectedShards(),
+            'savedSearches' => $this->layout()->savedTabs,
+            'ignoreHiddenFiltersInRequest' => isset($this->ignoreHiddenFiltersInRequest) ? $this->ignoreHiddenFiltersInRequest : false,
+            'ignoreHiddenFilterMemory' => isset($this->ignoreHiddenFilterMemory) ? $this->ignoreHiddenFilterMemory : false,
+        ]
+    );
+
+  // Set up breadcrumbs:
+  if (isset($this->overrideTitle)) {
+    $this->layout()->breadcrumbs .= '<li class="active">' . $this->escapeHtml($this->overrideTitle) . '</li>';
+  } else {
+    $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc('Search') . ': ' . $this->escapeHtml($lookfor) . '</li>';
+  }
+
+  if (!$browse && $searchType == 'advanced' || $this->fromStreetSearch) {
+    // Set up Finna Main Header:
+    $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
+        'search/header.phtml',
+        [
+          'results' => $this->results,
+          'params' => $this->params,
+          'lookfor' => $lookfor,
+          'overrideSearchHeading' => isset($this->overrideSearchHeading)
+            ? $this->overrideSearchHeading : null,
+          'startRecord' => $this->results->getStartRecord(),
+          'endRecord' => $this->results->getEndRecord(),
+          'recordsFound' => $this->results->getResultTotal() > 0,
+          'searchType' => $searchType
+      ]
+     );
+  }
+
+  if (!$browse && !empty($params->getFilterList(false))){
+      // Clone the params object to prevent its manipulation from affecting main facet functionality
+      $params = clone $this->params;
+      $params->activateAllFacets();
+      $filterList = $params->getFilterList(true);
+      $checkboxFilters = $params->getCheckboxFacets();
+      $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
+      $options = $this->searchOptions($this->searchClassId);
+      $defaultSortApplied = !isset($params) || $lastSort == $options->getDefaultSortByHandler($params->getSearchHandler());
+      // Set up filters
+
+      $this->layout()->finnaFilters = $this->context($this)->renderInContext(
+          'search/filters.phtml',
+          [
+              'filterList' => $filterList,
+              'checkboxFilters' => $checkboxFilters,
+              'hasDefaultsApplied' => $params->hasDefaultsApplied(),
+              'defaultSortApplied' => $defaultSortApplied,
+              'options' => $options,
+              'urlQuery' => $results->getUrlQuery()
+          ]
+      );
+  }
+
+  // Set up Finna Main Tabs:
+  //$this->layout()->finnaMainTabs = '...';
+
+  // Enable cart if appropriate:
+  $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
+  // Checkboxes if appropriate:
+  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive()
+    && ($this->showBulkOptions || !$this->cart()->isActiveInSearch());
+  // Enable bulk options if appropriate:
+  $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
+
+  // Load Javascript dependencies into header:
+  $this->headScript()->appendFile("check_save_statuses.js");
+  $this->headScript()->appendFile("finna-search-tabs-recommendations.js");
+  $this->headScript()->appendFile("finna-item-status.js");
+
+  // Load Javascript only if list view parameter is NOT full:
+  if ($this->params->getOptions()->getListViewOption() != "full") {
+    $this->headScript()->appendFile("record.js");
+    $this->headScript()->appendFile("embedded_record.js");
+  }
+
+  $topRecommendations = $this->results->getRecommendations('top');
+?>
+<? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+    <? foreach ($this->results->getRecommendations('top') as $current): ?>
+        <?=$this->recommend($current)?>
+    <? endforeach; ?>
+<? endif; ?>
+<div class="results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
+  <? if ($recordTotal < 1): ?>
+    <p>
+      <? if (isset($this->overrideEmptyMessage)): ?>
+      <p><?=$this->overrideEmptyMessage?></p>
+      <? elseif ($lookfor == '' && $this->params->getSearchClassId() == 'Primo'): ?>
+        <? $this->layout()->srmessage = $this->transEsc('primo_no_searchword'); ?>
+        <h4 class="no-results"><?=$this->layout()->srmessage ?></h4>
+      <? else: ?>
+        <? $this->layout()->srmessage = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]); ?>
+        <h4 class="no-results"><?=$this->layout()->srmessage ?></h4>
+      <? endif; ?>
+      <? if (isset($this->parseError)): ?>
+        <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
+      <? endif; ?>
+      <? foreach ($this->results->getRecommendations('noresults') as $current): ?>
+        <? if (!in_array($current, $topRecommendations)): ?>
+          <?=$this->recommend($current)?>
+        <? endif; ?>
+      <? endforeach; ?>
+      <? if ($this->fromStreetSearch): ?>
+        <div class="search-controls">
+          <div class="update-location-button">
+            <a class="btn btn-primary" href="<?=$this->url('search-streetsearch')?>?go=1"><i class="fa fa-crosshairs"></i> <span><?=$this->transEsc('street_search_refresh')?></span></a>
+          </div>
+        </div>
+      <? endif; ?>
+    </p>
+  <? endif; ?>
+  <div class="<?=$recordTotal < 1 ? "empty-list" : $this->layoutClass('mainbody')?>">
+    <?=$this->flashmessages()?>
+    <? if ($recordTotal > 0): ?>
+      <div class="search-controls">
+          <? if (!$browse): ?>
+            <div class="control-container text-right hidden-print">
+                <?=$this->render('search/controls/view.phtml')?>
+                <?=$this->render('search/controls/sort.phtml')?>
+                <?=$this->render('search/controls/limit.phtml')?>
+            </div>
+              <? $resultsStr = $this->translate(
+                  $browse ? 'browse_extended_' . ucfirst($browse) . '_html' : 'showing_results_of_html',
+                  [
+                      '%%start%%' => $this->results->getStartRecord(),
+                      '%%end%%' => $this->results->getEndRecord(),
+                      '%%total%%' => $this->localizedNumber($recordTotal)
+                  ]
+              );?>
+            <div class="pagination-container">
+                <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results, 'label' => $resultsStr])?>
+            </div>
+          <? else: ?>
+              <? $resultsStr = ''; ?>
+          <? endif; ?>
+          <? $this->layout()->srmessage = strip_tags($resultsStr); ?>
+          <? if ($this->fromStreetSearch): ?>
+            <div class="text-right hidden-sm hidden-md hidden-lg hidden-print">
+                <?=$this->render('search/street-search-header.phtml');?>
+            </div>
+          <? endif; ?>
+      </div>
+    <? endif; ?>
+    <? if ($this->results->getResultTotal() > 0): ?>
+      <span class="hidden-print">
+        <?=$this->search()->renderSpellingSuggestions($this->transEsc('spell_suggest'), $this->results, $this); ?>
+      </span>
+    <? endif; ?>
+
+    <? /* End Listing Options */ ?>
+    <? if ($recordTotal < 1): ?>
+      <? foreach ($topRecommendations as $current): ?>
+        <?=$this->recommend($current)?>
+      <? endforeach; ?>
+      <? if (!$browse && $this->searchTabsRecommendations()->getConfig($this->params->getSearchClassId())): ?>
+        <div id="search-tabs-recommendations-holder" data-search-id="<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" data-limit="<?=$this->results->getParams()->getLimit() ?>"></div>
+      <? endif; ?>
+    <? else: ?>
+    <div>
+      <?= $this->authorizationNote($searchClassId) ?>
+      <form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+      </form>
+      <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => '', 'formAttr' => 'search-cart-form'])?>
+      <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
+      <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_', 'formAttr' => 'search-cart-form'])?>
+    </div>
+    <? endif; ?>
+  </div>
+  <? /* End Main Listing */ ?>
+
+  <? /* Narrow Search Options */ ?>
+  <div id="sidebar" class="<?=$recordTotal < 1 ? "empty-list" : $this->layoutClass('sidebar')?>">
+    <? $messageAdded = false; ?>
+    <? foreach ($this->results->getRecommendations('side') as $current): ?>
+      <?=$this->recommend($current)?>
+      <? if (!$messageAdded) {
+        if (!isset($this->layout()->srmessage)) {
+          $this->layout()->srmessage = '';
+        }
+        $this->layout()->srmessage .= ' <a href="#sidebar">' . $this->transEsc('Skip to narrowing options') . '</a>';
+        $messageAdded = true;
+      }?>
+    <? endforeach; ?>
+    <? if (($template = $this->content()->findTemplateForLng("content/Additions/search-post-facets")) && ($recordTotal > 0)): ?>
+      <div>
+          <?=$this->render($template)?>
+      </div>
+    <? endif; ?>
+  </div>
+  <? /* End Narrow Search Options */ ?>
+</div>
+<? // Close the container div opened in layout: ?>
+</div>
+<? $pagination = $this->paginationControl($this->results->getPaginator()->setPageRange(5), 'Sliding', 'search/pagination.phtml', ['results' => $this->results]); if (trim($pagination)): ?>
+<div class="container-fluid pagination-background">
+  <div class="container">
+    <div class="<?=$this->layoutClass('mainbody')?> text-center">
+      <?=$pagination ?>
+    </div>
+  </div>
+</div>
+<? endif; ?>
+<? if (!$browse): ?>
+<div class="container-fluid searchtools-background">
+  <div class="container">
+    <div class="searchtools hidden-print">
+      <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell"></i> <?=$this->transEsc('Get RSS Feed')?></a>
+
+      <a href="<?=$this->url('search-email')?>" class="mailSearch" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><i class="fa fa-envelope"></i> <?=$this->transEsc('Email this Search')?></a>
+
+      <? if (is_numeric($this->results->getSearchId()) && (is_object($account) && $account->loginEnabled())): ?>
+        <? if ($this->results->isSavedSearch()): ?>
+          <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-remove"></i> <?=$this->transEsc('save_search_remove')?></a>
+        <? else: ?>
+          <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-plus-square"></i> <?=$this->transEsc('save_search')?></a>
+        <? endif; ?>
+      <? endif; ?>
+    </div>
+  </div>
+</div>
+<? endif; ?>
+<div class="mobile-navigation brand-primary visible-xs hidden-print">
+  <ul>
+    <li class="sidebar-navigation"><i class="fa fa-arrow-up"></i> <?=$this->transEsc('Narrow Search')?> <span class="active-filters hidden"><?=$this->transEsc('Active filters')?>: <span class='active-filter-count'></span></span></li>
+  </ul>
+</div>
+<? // Re-open the container div closed above: ?>
+<div class="container">
+
+<!-- END of: finna - search/results.phtml -->

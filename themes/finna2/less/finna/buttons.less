@@ -1,0 +1,76 @@
+.btn {
+  border-radius: @finna-button-radius;
+  .transition(background .1s ease-in-out);
+  border: 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-weight: 600;
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    cursor: not-allowed;
+    pointer-events: none; // Future-proof disabling of clicks
+    .opacity(.5);
+    .box-shadow(none);
+  }
+  a {
+    color: @btn-default-color;
+  }
+}
+
+//== Styling Finna radiobuttons
+.radiobutton {
+  font-size: 14px;
+  font-weight: normal;
+
+  & :last-child {
+    padding-bottom: 5px;
+  }
+  & input {
+    border: none;
+    background: transparent;
+    margin-right: 10px;
+    margin-top: 4px;
+  }
+  & input:before {
+    content: "\e61b";
+    font-family: 'icomoon';
+    font-size: 18px;
+    margin: -3px 0px 0px -3px;
+    position: absolute;
+    background: @body-bg;
+    border-radius: 50%;
+    color: @gray-light;
+    transition: color .1s linear;
+  }
+  & input:checked:before  {
+    font-family: 'icomoon';
+    content: "\e61a";
+    color: @link-color;
+  }
+}
+
+//== Bulk actions buttons
+
+.bulkActionButtons {
+  & .btn-group {
+    .btn {
+      border: 1px solid @gray-lighter;
+      background: @gray-ultralight;
+      color: @text-color;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      padding-right: 10px;
+      padding-left: 10px;
+      font-size: 0.9em;
+      
+    }
+  } 
+}
+
+//== Alternate buttons
+
+.btn-uppercase {
+  text-transform: uppercase;
+}
+

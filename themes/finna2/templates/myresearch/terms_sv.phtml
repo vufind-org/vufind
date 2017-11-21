@@ -1,0 +1,24 @@
+<div class="terms-of-service terms-of-service-text">
+  <?=$this->flashmessages()?>
+  <div class="terms-of-service-info-box">
+    <div class="terms-of-service-logo"><img src="<?=$this->imageLink('finna-logo-icon.png')?>"></div>
+    <div><p>Du håller på att logga in på Finna eller en tjänst byggd på Finna-plattformen, t.ex. ett webbibliotek. Finna  är en helhet som innefattar söktjänster hos bibliotek, arkiv och museer.</p></div>
+  </div>
+
+
+  <p class="terms-of-service-title">Finna respekterar dina personuppgifter!</p>
+
+  <p>Tjänsten sparar bara sådana personuppgifter som behövs för att genomföra den, som namn, e-postadress, användarnamn, bibliotekskortets nummer, PIN-kod och vilka bibliotek du använder. Närmare information om personuppgifterna som sparas och hur de behandlas, inklusive uppgifternas överlämnande och spartider, finns på sidan <a href="<?=$this->url('content-page', ['page' => 'privacy'])?>" target="_blank" data-lightbox-ignore>Dataskydd</a>.</p>
+
+  <p>Om du loggar in på tjänsten med ditt användarnamn eller bibliotekskort för systemet hos ett bibliotek som du redan använder, överförs de nödvändiga uppgifterna automatiskt från bibliotekets system till Finna-tjänsten. I Finna-tjänsten kan du också själv spara och ändra dina personuppgifter. Personuppgifterna behandlas för tjänsteproduktionen vid Nationalbiblioteket och CSC – IT-centret för vetenskap (tjänsteproducenterna) samt vid <a href="https://finna.fi/Content/organisations" target="_blank" data-lightbox-ignore>organisationerna</a> som tillhandahåller material i Finna.</p>
+
+  <p>Med det här formuläret kan du återta ditt godkännande av dina personuppgifters behandling och radera dina uppgifter från Finna genom att ta bort ditt konto från tjänsten.</p>
+
+  <div class="terms-of-service-info-box terms-of-service-footnote">
+    <p>Du kan bli tvungen att godkänna behandlingen av dina personuppgifter i Finna på nytt, om du loggar in på tjänsten från en annan enhet eller med en annan webbläsare än tidigare, eller har tömt cacheminnet eller loggar in på en Finna-webbplats som du inte använt tidigare.</p>
+  </div>
+</div>
+<div class="terms-of-service terms-of-service-controls"
+  <p><label><input type="checkbox" name="acceptTerms" value="1" checked="checked" required> Jag godkänner att mina personuppgifter sparas och behandlas i Finna-tjänsten.</label></p>
+  <input type="submit" class="btn btn-primary submit" name="submit" value="Godkänn">
+</div>

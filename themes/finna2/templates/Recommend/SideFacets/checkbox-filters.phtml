@@ -1,0 +1,12 @@
+<? foreach ($checkboxFilters as $current): ?>
+  <div class="checkbox <?=($current['selected'] ? 'checked' : '')?> <? if(!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<? endif; ?>">
+    <label class="">
+        <span class="badge cb-facet"><?=$availableRecords?></span>
+        <input type="checkbox" name="filter[]" value="<?=$this->escapeHtmlAttr($current['filter'])?>" <?=($current['selected'] ? 'checked="checked"' : '')?>
+         id="<?=$this->escapeHtmlAttr(str_replace(' ', '', $current['desc']))?>"
+         onclick="document.location.href='<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter']) ?>'"
+        />
+        <?=$this->translate($current['desc']) // Intentionally left unescaped to allow HTML in the description ?>
+    </label>
+  </div>
+<? endforeach; ?>

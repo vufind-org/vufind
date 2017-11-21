@@ -1,0 +1,135 @@
+<!-- START of: finna - myresearch/historicloans.phtml -->
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Loan History'));
+
+    // Set up myresearch menu
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'historicloans']);
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Loan History') . '</li>';
+
+    $user = $this->auth()->isLoggedIn();
+
+    $recordCount = $this->paginator ? $this->paginator->getTotalItemCount() : count($this->transactions);
+?>
+<div>
+  <div class="my-research-content myresearch-grid-list">
+    <? if (!$this->translationEmpty('loan_history_instructions_html')): ?><p class="no-content-message"><?=$this->translate('loan_history_instructions_html')?></p><? endif; ?>
+    <?=$this->flashmessages()?>
+    <div class="useraccount-header">
+    <?=$this->transEsc('Loan History')?> (<?=$recordCount;?>)
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
+    <? if (isset($this->noSupport)): ?>
+      <? if ($user->getLibraryCards()->count() > 1): ?>
+        <div class="support-notice">
+          <p><?=$this->transEsc("no_ils_support_description") ?></p>
+        </div>
+      <? endif; ?>
+    <? else: ?>
+      <? if ($template = $this->content()->findTemplateForLng('content/Additions/historic-loans-pre-list')): ?>
+        <div class="historic-loans-pre-list"><?=$this->render($template)?></div>
+      <? endif; ?>
+      <? if (!empty($this->transactions)): ?>
+        <div class="history-controls toolbar">
+          <div class="text-right hidden-print right-control">
+            <?=$this->render('search/controls/sort.phtml')?>
+          </div>
+          <div class="hidden-print left-control">
+            <a class="btn btn-primary" href="<?=$this->url('myresearch-purgehistoricloans');?>" data-lightbox><?=$this->transEsc('loan_history_purge')?></a>
+          </div>
+          <div class="pagination-container">
+            <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination-simple.phtml') : ''?>
+          </div>
+        </div>
+        <table class="myresearch-table">
+        <? $i = 0; foreach ($this->transactions as $resource): ?>
+          <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
+          <tr class="myresearch-row">
+            <td class="text-left hidden-xs">
+              <div class="cover-image">
+                <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
+                  <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+                <? else: ?>
+                  <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+                <? endif; ?>
+              </div>
+            </td>
+            <td>
+              <?
+                // If this is a non-missing Solr record, we should display a link:
+                if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
+                  // Use ILS title if available since it may contain e.g. issue number
+                  if (!empty($ilsDetails['title'])) {
+                    $title = trim($ilsDetails['title'], '/: ');
+                  } else {
+                    $title = $resource->getTitle();
+                    $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
+                  }
+                  echo '<h3><a href="' . $this->recordLink()->getUrl($resource) .
+                    '" class="record-title">' . $title . '</a></h3>';
+                } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
+                  // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
+                  echo '<h3 class="record-title">' . $this->escapeHtml($ilsDetails['title']) . '</h3>';
+                } else {
+                  // Last resort -- indicate that no title could be found.
+                  echo '<h3 class="record-title">' . $this->transEsc('Title not available') . '</h3>';
+                }
+              ?>
+              <div class="record-authors">
+              <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
+                <?=$this->record($resource)->getFormatList() ?>
+                <br/>
+              <? endif; ?>
+              <? $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
+                <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
+              <? endif; ?>
+
+              <? if (!empty($ilsDetails['volume'])): ?>
+                <strong><?=$this->transEsc('Issue')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
+                <br />
+              <? endif; ?>
+
+              <? if (!empty($ilsDetails['publication_year'])): ?>
+                <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
+                <br />
+              <? endif; ?>
+              </div>
+            </td>
+            <td class="checkedout-status-information">
+              <? if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
+                <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], [], $ilsDetails['institution_name'])?></strong>
+                <br />
+              <? endif; ?>
+
+              <? if (!empty($ilsDetails['borrowingLocation'])): ?>
+                <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['borrowingLocation'], [], $ilsDetails['borrowingLocation'])?>
+                <br />
+              <? endif; ?>
+
+              <? if (!empty($ilsDetails['checkoutdate'])): ?>
+                <strong><?=$this->transEsc('Checkout Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['checkoutdate'])?>
+                <br>
+              <? endif; ?>
+              <? if (!empty($ilsDetails['returndate'])): ?>
+                <strong><?=$this->transEsc('Return Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['returndate'])?>
+                <br>
+              <? endif; ?>
+              <? if (!empty($ilsDetails['duedate'])): ?>
+                <strong><?=$this->transEsc('Due Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><? endif; ?>
+              <? endif; ?>
+            </td>
+          </tr>
+        <? endforeach; ?>
+        </table>
+        <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml') : ''?>
+        <? if ($template = $this->content()->findTemplateForLng("content/Additions/checkout-history-post-list")): ?>
+          <div class="checkout-history-post-list"><?=$this->render($template)?></div>
+        <? endif; ?>
+      <? else: ?>
+        <h4><?=$this->transEsc('You do not have any items in the checkout history')?>.</h4>
+      <? endif; ?>
+    <? endif; ?>
+  </div>
+</div>
+<!-- END of: finna - myresearch/historicloans.phtml -->

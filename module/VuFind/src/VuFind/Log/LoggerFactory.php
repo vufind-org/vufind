@@ -121,6 +121,17 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
         $file = $parts[0];
         $error_types = isset($parts[1]) ? $parts[1] : '';
 
+        // Make sure to use only the last ‘:’ to avoid trouble with Windows’s driver
+        // letter
+        $pos = strrpos($config, ':');
+        if ($pos > 0) {
+            $file = substr($config, 0, $pos);
+            $error_types = substr($config, $pos + 1);
+        } else {
+            $file = $config;
+            $error_types = '';
+        }
+
         // Make Writers
         $filters = explode(',', $error_types);
         $writer = new Writer\Stream($file);

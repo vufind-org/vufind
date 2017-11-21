@@ -1,0 +1,65 @@
+<!-- START of: finna - search/header.phtml -->
+<?
+    // Set default value if necessary:
+    if (!isset($this->searchClassId)) {
+        $this->searchClassId = 'Solr';
+    }
+
+    // Load search actions and settings (if any):
+    $options = $this->searchOptions($this->searchClassId);
+    $handlers = $this->searchbox()->getHandlers(
+        $this->searchClassId,
+        isset($this->searchIndex) ? $this->searchIndex : null
+    );
+    $handlerCount = count($handlers);
+    $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
+    $searchHome = $options->getSearchHomeAction();
+    $advSearch = $options->getAdvancedSearchAction();
+    $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
+    $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
+    $searchType = isset($this->params) ? $this->params->getsearchType() : $searchType;
+    $searchId = isset($this->results) ? $this->results->getSearchId() : $searchId;
+?>
+<div class="<?=$searchType != 'advanced' ? 'hidden-xs' : '';?>">
+  <h1 class="search-result-header">
+  <? if ($this->recordsFound || isset($onRecordPage)): ?>
+    <? if (isset($this->overrideSearchHeading)): ?>
+      <?=$this->overrideSearchHeading?>
+    <? elseif ($searchType == 'basic'): ?>
+      <? if (empty($lookfor)): ?>
+        <?=$this->transEsc('history_empty_search');?>
+      <? else: ?>
+        <?=$this->transEsc('Search')?>: <strong><?=$this->escapeHtml($lookfor); ?></strong>
+      <? endif; ?>
+    <? elseif ($searchType == 'advanced'): ?>
+      <span class="adv_search_terms"><?=$this->transEsc("Your search terms")?>: <strong><?=$this->escapeHtml($this->lookfor)?></strong></span>
+    <? endif; ?>
+    <? else: ?>
+      <?=$this->transEsc('nohit_heading')?>
+  <? endif; ?>
+  </h1>
+  <? if ($this->recordsFound): ?>
+    <span class="hidden-print">
+    <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
+    </span>
+  <? endif; ?>
+</div>
+
+<? if ($searchType == 'advanced'): ?>
+<div>
+  <div id="searchForm" class="hidden-print">
+    <div class="adv_search_links">
+      <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($searchId)?>"><i class="fa fa-pen"></i> <?=$this->transEsc("Edit this Advanced Search")?></a>
+      <a href="<?=$this->url($advSearch)?>"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Start a new Advanced Search")?></a>
+      <a href="<?=$this->url($searchHome)?>"><i class="fa fa-search"></i> <?=$this->transEsc("Start a new Basic Search")?></a>
+    </div>
+  </div>
+</div>
+<? elseif ($this->fromStreetSearch): ?>
+<div>
+  <div id="searchForm" class="hidden-print">
+    <?=$this->render('search/street-search-header.phtml');?>
+  </div>
+</div>
+<? endif; ?>
+<!-- END of: finna - search/header.phtml -->

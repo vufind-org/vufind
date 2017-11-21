@@ -1,0 +1,28 @@
+<? $this->headScript()->appendFile('vendor/jsTree/jstree.min.js'); ?>
+<? if (!in_array($title, $collapsedFacets)): ?>
+    <?
+    $script = <<<JS
+$(document).ready(function() {
+  finna.layout.initHierarchicalFacet($('#facet_{$this->escapeHtml($title)}'), true);
+});
+JS;
+    ?>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+<? else: ?>
+    <?
+    $script = <<<JS
+$('#side-collapse-{$this->escapeHtmlAttr($title)}').on('show.bs.collapse', function() {
+  finna.layout.initHierarchicalFacet($('#facet_{$this->escapeHtml($title)}'), true);
+});
+JS;
+    ?>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+<? endif; ?>
+<div id="facet_<?=$this->escapeHtml($title)?>" class="jstree-facet"
+     data-facet="<?=$this->escapeHtmlAttr($title)?>"
+     data-path=""
+     data-exclude="<?=$allowExclude?>"
+     data-operator="<?=$this->recommend->getFacetOperator($title)?>"
+     data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
+     data-sort="<?=isset($this->sortOptions) ? $this->sortOptions : ''?>">
+</div>

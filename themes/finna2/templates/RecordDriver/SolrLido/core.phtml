@@ -1,0 +1,153 @@
+<!-- START of: finna - RecordDriver/SolrLido/core.phtml -->
+<?
+  $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
+  $img = $this->recordImage($this->record($this->driver));
+  $images = $img->getAllImagesAsCoverLinks(
+      $this->layout()->userLang, $params
+  );
+
+  $urls = $this->record($this->driver)->getLinkDetails();
+  if (!empty($urls)){
+      $videoUrls = [];
+      $otherUrls = [];
+      foreach ($urls as $url){
+          if (!empty($url['videoSources']) || !empty($url['embed']) && $url['embed'] == 'video' || $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe'){
+              array_push($videoUrls, $url);
+          } else {
+              array_push($otherUrls, $url);
+          }
+      }
+  }
+
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  ob_start(); ?>
+  <div class="media-<?=$thumbnailAlignment ?>">
+    <? if (!empty($videoUrls)): ?>
+        <? foreach ($videoUrls as $url): ?>
+            <? $description = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
+            <? $desc = $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe' ? $this->translate('format_Video') : $description; ?>
+        <div class="video-link-container">
+          <a class="videourl fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"
+              <? if (!empty($url['videoSources'])): ?> data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<? endif; ?>
+              <?= $this->recordLink()->getEmbeddedVideo($url['url']) ?>
+              <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
+          >
+            <div class="video-icon"><i class="fa fa-play-circle"></i></div>
+            <div class="video-desc"><?=$this->escapeHtml($desc)?></div>
+          </a>
+        </div>
+        <? endforeach; ?>
+    <? endif; ?>
+
+    <div class="image-information">
+      <div class="cover-wrapper">
+        <? /* Display thumbnail if appropriate: */ ?>
+        <? if ($img): ?>
+          <?=$img->render('record', ['small' => ['w' => 50, 'h' => 50], 'medium' => ['w' => 1200, 'h' => 1200]]) ?>
+        <? endif;?>
+        <? /* Display qrcode if appropriate: */ ?>
+        <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
+        <? if ($QRCode): ?>
+          <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
+        <? endif; ?>
+      </div>
+      <? // if you have a preview tab but want to move or remove the preview link
+         // from this area of the record view, this can be split into
+         // getPreviewData() (should stay here) and
+         // getPreviewLink() (can go in your desired tab) ?>
+      <?=$this->record($this->driver)->getPreviews()?>
+    </div>
+
+    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr'): ?>
+      <div class="organisation-menu">
+          <?=$this->render('record/record-organisation-menu.phtml') ?>
+      </div>
+    <? endif; ?>
+
+    <div class="record-rating text-left">
+      <div class="rating-stars">
+        <div onclick="$('a.usercomments').click();">
+          <?=$this->record($this->driver)->getRating()?>
+        </div>
+      </div>
+    </div>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-toolbar")): ?>
+    <div class="record-post-toolbar">
+      <?=$this->render($template)?>
+    </div>
+    <? endif; ?>
+  </div>
+  <? $thumbnail = ob_get_contents(); ?>
+  <? ob_end_clean(); ?>
+  <? $this->headScript()->appendFile("finna-record.js"); ?>
+  <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+    <h1 property="name" class="record-title visible-xs"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
+    <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+      <?=$thumbnail ?>
+    <? endif; ?>
+      <div class="media-body record-information">
+        <h3 property="name" class="record-title hidden-xs"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
+        <? if ($results = $this->driver->getAlternativeTitles()): ?>
+          <div class="recordAltTitles record-alt-titles">
+            <?=implode('<br>', array_map([$this, 'escapeHtml'], $results))?>
+          </div>
+        <? endif; ?>
+
+        <div class="record-authors">
+          <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
+            <div class="truncate-field">
+              <? foreach($results as $index => $author): ?>
+                <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><? endif; ?><? if (!empty($author['role'])): ?><span class="author-role">, <?=$this->escapeHtml($author['role']) ?></span><? endif; ?>
+              <? endforeach; ?>
+              <? if ($dates = $this->driver->getResultDateRange()): ?>
+                <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
+              <? endif; ?>
+              <? if (($results = $this->driver->getSubjectDates()) && !isset($dates[0])): ?>
+                <?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?>
+              <? endif; ?>
+            </div>
+          <? endif; ?>
+        </div>
+        <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
+        <? if ($summary): ?>
+          <div class="truncate-field wide recordSummary">
+            <p class="summary"><?=preg_replace('/&lt;br\/?&gt;/', '<br>', $this->escapeHtml($summary)); /* Allow <br> tag */ ?></p>
+          </div>
+        <? endif; ?>
+
+        <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+          <? /* Display the lists that this record is saved to */ ?>
+          <div class="savedLists" id="savedLists">
+            <strong><?=$this->transEsc("Saved in")?>:</strong>
+          </div>
+        <? endif; ?>
+
+        <?/* Display Main Details */?>
+        <?
+          $formatter = $this->recordDataFormatter();
+          $coreFields = $formatter->getData(
+              $driver, $formatter->filterLidoFields($formatter->getDefaults('core'))
+          );
+        ?>
+        <? if (!empty($coreFields)): ?>
+          <table class="table table-finna-record record-details">
+            <? foreach ($coreFields as $key => $current): ?>
+             <? $header = $this->transEsc(isset($current['context']['title']) ? $current['context']['title'] : $key); ?>
+             <tr class="<?=$current['context']['class'];?>"><th><?=$header !== '' ? "$header:" : ''?></th><td><?=$current['value']?></td></tr>
+            <? endforeach; ?>
+          </table>
+        <? endif; ?>
+        <?/* End Main Details */?>
+
+        <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-metadata")): ?>
+        <div>
+          <?=$this->render($template)?>
+        </div>
+        <? endif; ?>
+      </div>
+    <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+      <?=$thumbnail ?>
+    <? endif; ?>
+</div>
+<!-- END of: finna - RecordDriver/SolrLido/core.phtml -->

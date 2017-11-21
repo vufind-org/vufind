@@ -1,0 +1,70 @@
+// select card dropdown styles
+& .select-card-wrapper {
+  font-size: 14px;
+  display: inline-block;
+  vertical-align: top;
+  margin-bottom: 1px;
+  margin-top: 6px;
+  margin-left: 5px;
+  .dropdown {
+    display: inline-block;
+    & > a {
+      padding: 7px 7px;
+      background: @brand-primary;
+      color: @body-bg;
+      border-radius: @finna-button-radius;
+      display: inline-block;
+      margin-top: -7px;
+      &:hover, &:focus {
+        text-decoration: none;
+        background: darken(@brand-primary, 10%);
+      }
+    }
+    & i {
+      font-size: 12px;
+      position: absolute;
+      top: 5px;
+      right: 11px;
+    }
+    & span {
+      padding-right: 20px;
+      font-size: 13px;
+      border-radius: 10px;
+    }
+    .dropdown-menu {
+      @media (max-width: @screen-sm) {
+        right: 0;
+        left: auto;
+      }
+    }
+  }
+}
+& .myresearch-profile-header, .useraccount-header {
+  .select-card-wrapper {
+    margin-left: 1em;
+    & .dropdown > a {
+      background: @body-bg;
+      color: @gray;
+      border: 1px solid @gray-lighter;
+    }
+  }
+}
+& .finna-main-header .select-card-wrapper{
+  display: block;
+  margin-top: 1em;
+  @media (max-width: 600px) {
+    text-align: right;
+    margin-left: 0px;
+    & li {
+      text-align: left;
+    }
+    & .select-card-label {
+      margin-top: -7px;
+    }
+  }
+  @media (max-width: 350px) {
+    & .select-card-label {
+      display: none;
+    }
+  }
+}

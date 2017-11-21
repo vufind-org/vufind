@@ -1,0 +1,73 @@
+<!-- START of: finna2 - Recomment/SideFacaet/usage-rights-facet.phtml -->
+<? $usageOptions = []; ?>
+<? foreach($cluster['list'] as $i => $thisFacet): ?>
+<?
+ $usageOptions[$thisFacet['value']] = $thisFacet;
+ ob_start();
+?>
+  <? if ($thisFacet['isApplied']): ?>
+    <a class="list-group-item active<? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']) ?>" title="<?=$this->transEsc('applied_filter') ?>">
+      <? if ($thisFacet['operator'] == 'OR'): ?>
+        <i class="fa fa-check-square-o" aria-hidden="true"></i>
+      <? else: ?>
+        <span class="pull-right"><i class="fa fa-check" aria-hidden="true"></i></span>
+      <? endif; ?>
+      <?=$this->transEsc($thisFacet['value'] . '_facet')?>
+    </a>
+  <? else: ?>
+    <? $addURL = $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator']); ?>
+    <? if ($allowExclude): ?>
+      <div class="list-group-item facet<?=$thisFacet['operator'] ?>">
+    <? else: ?>
+      <a href="<?=$addURL ?>" class="list-group-item facet<?=$thisFacet['operator'] ?>">
+    <? endif; ?>
+    <span class="badge">
+      <?=$this->localizedNumber($thisFacet['count'])?>
+      <? if ($allowExclude): ?>
+        <a href="<?=$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times" aria-hidden="true"></i></a>
+      <? endif; ?>
+    </span>
+    <? if ($allowExclude): ?>
+      <a href="<?=$addURL ?>">
+    <? endif; ?>
+    <? if($thisFacet['operator'] == 'OR'): ?>
+      <i class="fa fa-square-o" aria-hidden="true"></i>
+    <? endif; ?>
+    <?=$this->transEsc($thisFacet['value'] . '_facet')?>
+    <? if ($allowExclude): ?>
+        </a>
+      </div>
+    <? else: ?>
+      </a>
+    <? endif; ?>
+  <? endif; ?>
+  <? $usageOptions[$thisFacet['value']]['html'] = ob_get_contents(); ?>
+  <? ob_end_clean(); ?>
+<? endforeach; ?>
+
+<?= $usageOptions['usage_A'] ? $usageOptions['usage_A']['html'] : ''?>
+<? if($usageOptions['usage_B'] || $usageOptions['usage_D']): ?>
+  <div class="usage-right-group">
+    <span><?=$this->transEsc('usage_title_derivates')?></span>
+    <?= $usageOptions['usage_D'] ? $usageOptions['usage_D']['html'] : '' ?>
+    <?= $usageOptions['usage_B'] ? $usageOptions['usage_B']['html'] : ''; ?>
+  </div>
+<? endif; ?>
+<? if($usageOptions['usage_E'] || $usageOptions['usage_C']): ?>
+  <div class="usage-right-group">
+    <span><?=$this->transEsc('usage_title_no_derivates')?></span>
+    <?= $usageOptions['usage_E'] ? $usageOptions['usage_E']['html'] : ''; ?>
+    <?= $usageOptions['usage_C'] ? $usageOptions['usage_C']['html'] : ''; ?>
+  </div>
+<? endif; ?>
+<?= $usageOptions['usage_F'] ? $usageOptions['usage_F']['html'] : ''?>
+
+<div class="list-group-item usage-rights-info">
+  <i class="fa fa-info-big-2"></i><div class="info"><?=$this->transEsc('usage_rights_info')?></div><a class="more-info" href="<?=$this->url('content-page', ['page' => 'terms'])?>#terms"><?=$this->transEsc('usage_rights_info_more')?></a>
+</div>
+<? if (!$this->translationEmpty('usage_rights_details')): ?>
+<div class="list-group-item usage-rights-info">
+  <i class="fa fa-info-big-2"></i><div class="info"><?=$this->transEsc('usage_rights_details')?></div>
+</div>
+<? endif; ?>
+<!-- END of: finna2 - Recomment/SideFacaet/usage-rights-facet.phtml -->

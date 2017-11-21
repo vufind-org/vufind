@@ -1,0 +1,40 @@
+#finna-survey {
+    display: none;
+    position: fixed;
+    width: 286px;
+    height: 325px;
+
+    bottom: -3000px;
+    right: 0px;
+    z-index: 20000;
+
+    padding: 25px;
+    border-top-left-radius: 10px;
+    transition: all 1.0s ease-in-out;
+    box-shadow: -10px -10px 75px 10px rgba(1,1,1,0.7);
+    background: url('../../finna/images/finna-survey.png') no-repeat 126px 20px;
+    background-color: @infobox-background;
+
+    & h2, h3 {
+        width: 110px;
+    }
+    & .btn-primary {
+        margin-bottom: 10px;
+    }
+    & .icon {
+        color: @brand-primary;
+        left: -15px;
+        top: -24px;
+        position: absolute;
+        font-size: 40px;
+    }
+    & .icon-background {
+        left: -7px;
+        top: -10px;
+        position: absolute;
+        background-color: @body-bg;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+    }
+}

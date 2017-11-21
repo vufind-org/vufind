@@ -1,0 +1,47 @@
+<!-- START of: finna - RecordDriver/SolrDefault/holdings.phtml -->
+<?
+  $dedupData = $this->driver->getDedupData();
+  $deduplicated = count($dedupData) > 1;
+?>
+
+<div class="holding-details<?=$deduplicated ? ' deduplicated' : ''?>">
+  <?
+  /* Display information on duplicate records if available */
+  $recordSource = $this->driver->tryMethod('getDataSource');
+
+  if ($deduplicated): ?>
+    <div class="dedupInformation">
+      <select class="dedup-select form-control" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
+        <? foreach ($dedupData as $source => $current): ?>
+          <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>"<? if ($recordSource === $source): ?> selected="selected"<? endif; ?>><?=$this->transEsc("source_$source", null, $source) ?></option>
+        <? endforeach; ?>
+      </select>
+    </div>
+  <? elseif ($recordSource): ?>
+    <div class="dedupInformation">
+      <strong><?=$this->transEsc("source_$recordSource", null, $recordSource) ?></strong>
+    </div>
+  <? endif; ?>
+
+  <div class="callnumAndLocation ajax-availability<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
+    <div class="availability-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...<br/></div>
+    <? if ($this->driver->supportsAjaxStatus()): ?>
+      <strong class="hideIfDetailed"></strong>
+      <span class="callnumber ajax-availability hidden">
+      </span>
+      <span class="location ajax-availability hidden">
+      </span>
+      <div class="locationDetails clearfix"></div>
+    <? else: ?>
+      <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
+        <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
+      <? endif; ?>
+    <? endif; ?>
+    <? if (!($recordType = $this->driver->tryMethod('getRecordType')) || !in_array($recordType, ['ead', 'forward', 'lido'])): ?>
+      <div class="no-holdings<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
+        <?=$this->transEsc('No Holdings Available')?>
+      </div>
+    <? endif; ?>
+  </div>
+</div>
+<!-- END of: finna - RecordDriver/SolrDefault/holdings.phtml -->

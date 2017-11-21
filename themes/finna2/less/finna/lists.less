@@ -1,0 +1,39 @@
+.list-group {
+  border-radius: 0px;
+}
+
+// Unordered and Ordered lists
+ul,
+ol {
+  padding: 0;
+  & li {
+    list-style-type: none;
+  }
+}
+
+// Content pages list options
+// --------------------------------------------------
+
+//Unstyled list
+.list-plain {
+  font-size: @content-font-size-base;
+  line-height: @content-line-height-base;
+  padding-left: 0;
+  padding-bottom: 0.9em;
+
+  > li {
+    list-style-type: none;
+  }
+}
+
+// Bulleted list
+.list-bullets {
+  font-size: @content-font-size-base;
+  line-height: @content-line-height-base;
+  padding-left: 1.2em;
+  padding-bottom: 0.9em;
+
+  > li {
+    list-style-type: disc;
+  }
+}

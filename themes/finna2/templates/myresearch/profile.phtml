@@ -1,0 +1,283 @@
+<!-- START of: finna - myresearch/profile.phtml -->
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('My Profile'));
+
+    // Set up myresearch menu
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile']);
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
+
+    // Only display home library form if we have multiple pickup locations:
+    $showHomeLibForm = (isset($this->pickup) && count($this->pickup) > 1);
+
+    $user = $this->auth()->isLoggedIn();
+    $cards = $user->getLibraryCards();
+
+    $updateAddress = $this->ils()->checkFunction('updateAddress', compact($user));
+    $updatePhone = $this->ils()->checkFunction('updatePhone', compact($user));
+    $updateSmsNumber = $this->ils()->checkFunction('updateSmsNumber', compact($user));
+    $updateEmail = $this->ils()->checkFunction('updateEmail', compact($user));
+    $updateLoanHistory = $this->ils()->checkFunction('updateTransactionHistoryState', compact($user));
+
+    $updateAddressLink = '';
+    if ($updateAddress) {
+      $linkText = $this->translate(($updatePhone || $updateEmail || $updateSmsNumber) ? 'request_address_change' : 'request_contact_information_change');
+      ob_start();
+?>
+        <? if ($updateAddress['method'] == 'email' || $updateAddress['method'] == 'driver'): ?>
+          <i class="fa fa-pen"></i>
+          <a class="profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->url('myresearch-changeprofileaddress')) ?>" data-lightbox title="<?=$this->escapeHtmlAttr($linkText) ?>"><?=$this->escapeHtml($linkText) ?></a>
+        <? elseif ($updateAddress['method'] == 'url'): ?>
+          <i class="fa fa-external-link"></i>
+          <a class="profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->translation()->getStringFromMixed($updateAddress['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($linkText) ?>"><?=$this->escapeHtml($linkText) ?></a>
+        <? endif; ?>
+<?
+      $updateAddressLink = trim(ob_get_clean());
+    }
+
+    // Additional translations
+    $this->jsTranslations()->addStrings(['new_password_success' => 'new_password_success']);
+
+    $guarantorFullName = '';
+    if (!empty($this->profile['guarantor'])) {
+      $guarantor = $this->profile['guarantor'];
+      $guarantorFullName = trim(
+        (isset($guarantor['firstname']) ? $guarantor['firstname'] : '')
+        . ' '
+        . (isset($guarantor['lastname']) ? $guarantor['lastname'] : '')
+      );
+    }
+?>
+<div class="my-research-content">
+  <div>
+    <? if (!$this->translationEmpty('profile_instructions')): ?><p class="no-content-message"><?=$this->transEsc('profile_instructions')?></p><? endif; ?>
+    <?=$this->flashmessages();?>
+    <?= $this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
+    <?= $this->partial('myresearch/profile-my-information.phtml', ['user' => $user, 'cards' => $cards, 'hideDueDateReminder' => $this->hideDueDateReminder, 'hideProfileEmailAddress' => $this->hideProfileEmailAddress]); ?>
+    <? if (isset($this->profile)): ?>
+    <div class="myresearch-profile-header"><span><?=$this->transEsc('Library Card Settings');?></span><?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
+    <div class="myresearch-profile-list library-profile">
+      <? if (!$this->hideDueDateReminder): ?>
+        <form id="profile_due_date_form" class="inline" method="post">
+          <div class="my-profile-col profile-title">
+              <label for="due-date-reminder"><?=$this->transEsc("due_date_reminder") ?>:</label>
+          </div>
+          <div>
+            <select id="due-date-reminder" name="due_date_reminder" class="jumpMenu form-control">
+              <option value="0" <?= $user->finna_due_date_reminder == 0 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_none") ?></option>
+              <option value="1" <?= $user->finna_due_date_reminder == 1 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_one_day") ?></option>
+              <option value="2" <?= $user->finna_due_date_reminder == 2 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_two_days") ?></option>
+              <option value="3" <?= $user->finna_due_date_reminder == 3 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_three_days") ?></option>
+            </select>
+            <? if ($user->finna_due_date_reminder && empty($user->email)): ?>
+              <span class="alert-danger"><?=$this->transEsc('no_email_address')?></span>
+            <? endif; ?>
+          </div>
+        </form>
+      <? endif; ?>
+
+      <? if ($showHomeLibForm): ?>
+        <form id="profile_form" class="inline" method="post">
+          <div class="my-profile-col profile-title"><label for="home_library"><?=$this->transEsc('preferred_pickup_location')?>:</label></div>
+          <div>
+            <?
+              $selected = (isset($this->profile['home_library']) && $this->profile['home_library'] != "")
+                ? $this->profile['home_library'] : $this->defaultPickupLocation
+            ?>
+            <select id="home_library" name="home_library" class="jumpMenu form-control">
+              <? foreach ($this->pickup as $lib): ?>
+                <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?></option>
+              <? endforeach; ?>
+            </select>
+          </div>
+        </form>
+      <? elseif (!empty($this->pickup)): ?>
+        <div class="my-profile-col profile-title"><?=$this->transEsc('preferred_pickup_location')?>:</div>
+        <div><?=$this->escapeHtml($this->pickup[0]['locationDisplay']); ?></div>
+      <? endif; ?>
+
+      <? if (isset($profile['messagingServices']) && !empty($profile['messagingServices'])): ?>
+        <?= $this->partial('myresearch/profile-messaging.phtml', ['profile' => $profile, 'user' => $user]); ?>
+      <? endif; ?>
+
+      <?
+        $selectedCard = null;
+        foreach ($cards as $card) {
+            if (strcasecmp($card->cat_username, $user->cat_username) === 0) {
+                $selectedCard = $card;
+                break;
+            }
+        }
+      ?>
+      <? if ($selectedCard !== null && $this->ils()->checkFunction('changePassword', $selectedCard->toArray())): ?>
+        <div>
+          <span class="myresearch-profile-middle-header"><?=$this->transEsc('change_password_heading') ?></span>
+        </div>
+        <div>
+          <span class="change-password-link">
+            <a href="<?=$this->url('newLibraryCardPassword') ?>?id=<?=$this->escapeHtmlAttr($selectedCard['id']) ?>" class="btn btn-primary" data-lightbox title="<?=$this->transEsc('change_password_link')?>"><?=$this->transEsc('change_password_link') ?> &raquo;</a>
+          </span>
+        </div>
+      <? endif; ?>
+      <div class="clearfix"></div>
+      <form id="profile_library_form" class="inline" method="post">
+        <div>
+          <span class="myresearch-profile-middle-header"><?=$this->transEsc('Personal details maintained by the library') ?></span>
+          <? if (!$this->translationEmpty('contact_details_instructions')): ?><p class="no-content-message"><?=$this->translate('contact_details_instructions')?></p><? endif; ?>
+        </div>
+        <? if (!empty($this->profile['firstname'])): ?>
+          <div class="my-profile-col profile-title"><?=$this->transEsc('First Name') ?>:</div>
+          <div class="profile-text-value"><?=$this->escapeHtml($this->profile['firstname']) ?></div>
+        <? endif; ?>
+        <? if (!empty($this->profile['lastname'])): ?>
+          <div class="my-profile-col profile-title"><?=$this->transEsc('Last Name') ?>:</div>
+          <div class="profile-text-value"><?=$this->escapeHtml($this->profile['lastname']) ?></div>
+        <? endif; ?>
+        <? if (!empty($this->profile['address1']) || $updateAddress): ?>
+          <? if ($updateAddress): ?>
+            <div class="my-profile-col profile-title profile-long"><?=$this->transEsc('Address') ?> 1:</div>
+            <div class="my-profile-col profile-text-value profile-long"><?=empty($this->profile['address1']) ? '' : $this->escapeHtml($this->profile['address1']) ?></div>
+            <div class="my-profile-col profile-long">
+              <i class="fa fa-info-big"></i> <?=$this->transEsc(($updatePhone || $updateEmail) ? 'request_address_change_title' : 'request_contact_information_change_title') ?>
+              <br/>
+              <?=$updateAddressLink ?>.
+            </div>
+          <? else: ?>
+            <div class="my-profile-col profile-title"><?=$this->transEsc('Address') ?> 1:</div>
+            <div class="profile-text-value"><?=$this->escapeHtml($this->profile['address1']) ?></div>
+          <? endif; ?>
+        <? endif; ?>
+        <? if (!empty($this->profile['address2']) && !$updateAddress): ?>
+          <div class="my-profile-col profile-title"><?=$this->transEsc('Address') ?> 2:</div>
+          <div class="profile-text-value"><?=$this->escapeHtml($this->profile['address2']) ?></div>
+          <div class="clearfix"></div>
+        <? endif; ?>
+        <? if (!empty($this->profile['zip'])): ?>
+          <div class="my-profile-col profile-title"><?=$this->transEsc('Zip') ?>:</div>
+          <div class="profile-text-value"><?=$this->escapeHtml($this->profile['zip']) ?></div>
+        <? endif; ?>
+        <? if (!empty($this->profile['city'])): ?>
+          <div class="my-profile-col profile-title"><?=$this->transEsc('City') ?>:</div>
+          <div class="profile-text-value"><?=$this->escapeHtml($this->profile['city']) ?></div>
+        <? endif; ?>
+        <? if (!empty($this->profile['country'])): ?>
+          <div class="my-profile-col profile-title"><?=$this->transEsc('Country') ?>:</div>
+          <div class="profile-text-value"><?=$this->escapeHtml($this->profile['country']) ?></div>
+        <? endif; ?>
+        <? if (!empty($this->profile['phone']) || $updatePhone): ?>
+          <? if ($updatePhone): ?>
+            <div class="my-profile-col profile-title"><?=$this->transEsc('Phone') ?>:</div>
+            <div>
+              <input class="form-control" type="tel" name="profile_tel" value="<?=empty($this->profile['phone']) ? '' : $this->escapeHtml($this->profile['phone']) ?>" title="<?=$this->transEsc('Phone') ?>" />
+            </div>
+          <? else: ?>
+            <div class="my-profile-col profile-title"><?=$this->transEsc('Phone') ?>:</div>
+            <div class="profile-text-value"><?=$this->escapeHtml($this->profile['phone']) ?></div>
+          <? endif; ?>
+        <? endif; ?>
+        <? if (!empty($this->profile['smsnumber']) || $updateSmsNumber): ?>
+          <? if ($updateSmsNumber): ?>
+            <div class="my-profile-col profile-title"><?=$this->transEsc('SMS Number') ?>:</div>
+            <div>
+              <input class="form-control" type="tel" name="profile_sms_number" value="<?=empty($this->profile['smsnumber']) ? '' : $this->escapeHtml($this->profile['smsnumber']) ?>" title="<?=$this->transEsc('SMS Number') ?>" />
+            </div>
+          <? else: ?>
+            <div class="my-profile-col profile-title"><?=$this->transEsc('SMS Number') ?>:</div>
+            <div class="profile-text-value"><?=$this->escapeHtml($this->profile['smsnumber']) ?></div>
+          <? endif; ?>
+        <? endif; ?>
+        <? if (!empty($this->profile['email']) || $updateEmail): ?>
+          <div class="my-profile-col profile-title"><?=$this->transEsc('Email') ?>:</div>
+          <? if ($updateEmail): ?>
+            <div>
+              <input class="form-control" type="email" name="profile_email" value="<?=empty($this->profile['email']) ? '' : $this->escapeHtml($this->profile['email']) ?>" title="<?=$this->transEsc('Email') ?>" />
+            </div>
+          <? else: ?>
+            <div class="profile-text-value"><?=$this->escapeHtml($this->profile['email']) ?></div>
+          <? endif; ?>
+        <? endif; ?>
+        <? if (!empty($this->profile['hold_identifier'])): ?>
+          <div class="my-profile-col profile-title"><?=$this->transEsc('Hold Identifier') ?>:</div>
+          <div class="profile-text-value"><?=$this->escapeHtml($this->profile['hold_identifier']) ?></div>
+        <? endif; ?>
+        <? if (isset($this->profile['loan_history']) || $updateLoanHistory): ?>
+          <div class="my-profile-col profile-title">
+            <label for="loan-history"><?=$this->transEsc('loan_history_retention') ?>:</label>
+          </div>
+          <? if ($updateLoanHistory): ?>
+            <div class="my-profile-col profile-text-value">
+              <select id="loan-history" name="loan_history" class="form-control">
+                <? foreach ($updateLoanHistory['options'] as $key => $value): ?>
+                  <option value="<?=$this->escapeHtmlAttr($key)?>"<?= $this->profile['loan_history'] == $key ? ' selected="selected"' : '' ?>><?=$this->transEsc($value)?></option>
+                <? endforeach; ?>
+              </select>
+            </div>
+            <? $descriptionText = $this->translate(isset($updateLoanHistory['description'][$this->layout()->userLang]) ? $updateLoanHistory['description'][$this->layout()->userLang] : 'loan_history_description_html'); ?>
+            <? if ($descriptionText): ?>
+              <div class="my-profile-col">
+                <i class="fa fa-info-big"></i> <?=$descriptionText?>
+              </div>
+            <? endif; ?>
+          <? else: ?>
+            <div class="profile-text-value"><?=$this->transEsc($this->profile['loan_history'] ? 'loan_history_active' : 'loan_history_inactive') ?></div>
+          <? endif; ?>
+          <div class="clearfix"></div>
+        <? endif; ?>
+        <? if (!empty($this->profile['group'])): ?>
+          <div class="my-profile-col profile-title"><?=$this->transEsc('Group') ?>:</div>
+          <div class="profile-text-value"><?=$this->escapeHtml($this->profile['group']) ?></div>
+        <? endif; ?>
+        <? if (!empty($this->profile['expiration_date'])): ?>
+          <div class="my-profile-col profile-title"><?=$this->transEsc('Expires') ?>:</div>
+          <div class="profile-text-value"><?=$this->escapeHtml($this->profile['expiration_date']) ?></div>
+        <? endif; ?>
+        <? if ($guarantorFullName): ?>
+          <div class="my-profile-col profile-title"><?=$this->transEsc('Guarantor') ?>:</div>
+          <div class="profile-text-value"><?=$this->escapeHtml($guarantorFullName) ?></div>
+        <? endif; ?>
+        <? if (!empty($this->profile['guarantees'])): ?>
+          <? $i = 0; ?>
+          <? foreach ($this->profile['guarantees'] as $guarantee): ?>
+            <div class="my-profile-col profile-title"><?=++$i == 1 ? $this->transEsc('Guarantees') . ':' : ''?></div>
+            <?
+              $guaranteeFullName = trim(
+                (isset($guarantee['firstname']) ? $guarantee['firstname'] : '')
+                . ' '
+                . (isset($guarantee['lastname']) ? $guarantee['lastname'] : '')
+              );
+            ?>
+            <div class="profile-text-value"><?=$this->escapeHtml($guaranteeFullName) ?></div>
+          <? endforeach; ?>
+        <? endif; ?>
+        <? if ($updatePhone || $updateEmail || $updateLoanHistory): ?>
+          <div>
+            <input id="save-library-profile" name="saveLibraryProfile" type="submit" value="<?=$this->transEsc("save_my_profile") ?>" class="btn btn-primary" />
+          </div>
+        <? endif; ?>
+        <? if ($updateAddress): ?>
+          <div>
+            <?=$updateAddressLink ?>
+          </div>
+        <? endif; ?>
+      </form>
+    </div>
+    <? endif; ?>
+  </div>
+  <div id="account-actions" class="text-right">
+    <span id="import-export-buttons">
+      <a class="btn btn-primary" href="<?=$this->url('myresearch-export') ?>"><i class="fa fa-arrow-down"></i> <?=$this->transEsc('export_favorites') ?></a>
+      <a class="btn btn-primary" href="<?=$this->url('myresearch-import') ?>"  data-lightbox><i class="fa fa-arrow-up"></i> <?=$this->transEsc('import_favorites') ?> </a>
+    </span>
+    <a class="btn btn-primary" href="<?=$this->url('myresearch-deleteaccount') ?>" data-lightbox><i class="fa fa-times"></i> <?=$this->transEsc('delete_account_title') ?></a>
+  </div>
+</div>
+
+<? if (isset($this->parent)): ?>
+<div>
+  <div>
+      <?php echo $this->parent ?>
+  </div>
+</div>
+<? endif; ?>
+<!-- END of: finna - myresearch/profile.phtml -->

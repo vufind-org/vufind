@@ -1,0 +1,8 @@
+<!-- START of: finna - navibar-logo.phtml -->
+<? if (($srcUrl = $this->imageSrc('finna-logo.' . $this->layout()->userLang)) || ($srcUrl = $this->imageSrc('finna-logo'))): ?>
+  <span class="sr-only"><?=$this->transEsc('Home');?></span>
+  <img src="<?=$srcUrl; ?>" alt="Logo" class="navbar-logo" />
+<? else: ?>
+  <span class="sr-only"><?=$this->transEsc('Home');?></span>
+<? endif; ?>
+<!-- END of: finna - navibar-logo.phtml -->

@@ -1,0 +1,13 @@
+<!-- START of: finna - list/header.phtml -->
+<div>
+  <h1 class="public-list-header">
+
+    <? if (isset($this->overrideSearchHeading)): ?>
+      <?=$this->overrideSearchHeading?>
+    <? elseif ($this->params->getsearchType() == 'basic'): ?>
+      <strong><?=$this->escapeHtml($this->lookfor)?></strong>
+    <? endif; ?>
+
+  </h1>
+</div>
+<!-- END of: finna - list/header.phtml -->

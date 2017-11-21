@@ -1,0 +1,54 @@
+<!-- START of: finna - combined/results-ajax.phtml -->
+<?
+    // Make sure OpenURL support is loaded
+    $this->headScript()->appendFile("openurl.js");
+
+    $view = $currentSearch['view'];
+    $results = $view->results;
+    $params = $results->getParams();
+    $lookfor = $params->getDisplayQuery();
+    $handler = $params->getSearchHandler();
+
+    $searchIds = null;
+    if ($ids = $params->getCombinedSearchIds()) {
+      $searchId = '&search[]=';
+      foreach ($ids as $backend => $search) {
+         $searchIds .= ($searchId . urlencode("$backend:$search"));
+      }
+    }
+
+    // Set up Javascript for use below:
+    $searchClassIdEncoded = urlencode($searchClassId);
+    $searchClassIdHtmlEscaped = $this->escapeHtml($searchClassId);
+    $lookforEncoded = urlencode($lookfor);
+    $handlerEncoded = urlencode($handler);
+    $loadJs = <<<JS
+$(document).ready(function() {
+    var holder = $('#combined_$searchClassIdHtmlEscaped');
+    var url = VuFind.path + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded&type=$handlerEncoded$searchIds';
+    holder.load(url, '', function(responseText) {
+        if (responseText.length == 0) {
+            holder.hide();
+        } else {
+            finna.combinedResults.init(holder);
+        }
+    });
+});
+JS;
+?>
+<div>
+  <div class="combined-titles">
+    <h2 class="combined-list-title" style="width:100%"><?=$this->transEsc($currentSearch['label'])?></h2>
+  </div>
+</div>
+<div class="clearfix"></div>
+
+<div>
+  <div class="combined-search-results">
+    <p><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> <?=$this->transEsc("Loading")?>...</p>
+  </div>
+</div>
+
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
+<noscript><?=$this->transEsc('Please enable JavaScript.')?></noscript>
+<!-- END of: finna - combined/results-ajax.phtml -->

@@ -170,7 +170,7 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
      * to the current page url.
      * Note: the returned url does not include possible hash (anchor),
      * which is inserted on the client-side.
-     * /themes/finna/js/finna.js::initAnchorNavigationLinks
+     * /themes/finna2/js/finna.js::initAnchorNavigationLinks
      *
      * @param string $lng Language code
      *

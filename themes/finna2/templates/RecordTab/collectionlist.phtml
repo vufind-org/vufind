@@ -1,0 +1,33 @@
+<!-- START of: finna - RecordTab/collectionlist.phtml -->
+<?
+  // Get search results
+  $results = $this->tab->getResults();
+  $params = $this->tab->getParams();
+  $searchDetails = ['results' => $results, 'params' => $params, 'indexStart' => 1, 'isCollection' => $this->driver->isCollection()];
+?>
+<? if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+  <? foreach ($results->getRecommendations('top') as $current): ?>
+    <?=$this->recommend($current)?>
+  <? endforeach; ?>
+  <div class="search-tools">
+    <div class="hidden-print">
+      <?=$this->render('search/controls/view.phtml', $searchDetails)?>
+      <?=$this->render('search/controls/sort.phtml', $searchDetails)?>
+    </div>
+    <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $results])?>
+  </div>
+
+  <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
+    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
+  </form>
+  <div class="results result-view-<?=$this->escapeHtmlAttr($params->getView()) == 'grid' ? 'grid' : $this->escapeHtmlAttr($params->getView());?>">
+    <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
+  </div>
+    <div class="text-center">
+    <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $results])?>
+    </div>
+
+<? else: ?>
+  <h4><?=$this->transEsc('collection_empty')?></h4><br><br>
+<? endif; ?>
+<!-- END of: finna - RecordTab/collectionlist.phtml -->

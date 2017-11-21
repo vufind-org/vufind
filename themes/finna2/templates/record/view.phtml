@@ -1,0 +1,215 @@
+<!-- START of: finna - record/view.phtml -->
+<?
+  // Set up standard record scripts:
+  $this->headScript()->appendFile("record.js");
+  $this->headScript()->appendFile("check_save_statuses.js");
+  $this->headScript()->appendFile("finna-comments.js");
+  if ($this->record($this->driver)->ratingAllowed()) {
+     $this->headScript()->appendFile('vendor/bootstrap-rating.min.js');
+     $this->headLink()->appendStylesheet('vendor/bootstrap-rating.min.css');
+  }
+  // Activate Syndetics Plus if necessary:
+  if ($this->syndeticsPlus()->isActive()) {
+    echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
+  }
+
+  // Add RDF header link if applicable:
+  if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
+    $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
+  }
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ') .
+    '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> ';
+
+  $this->layout()->title = $this->driver->getShortTitle();
+
+  $this->headMeta()->appendName('format-detection', 'telephone=no');
+
+  // Set page title.
+  $headText = $this->driver->getBreadcrumb();
+  $organisationName = $this->organisationDisplayName($this->driver);
+  if (!empty($organisationName)) {
+     $headText .= " | $organisationName";
+  }
+  $this->headTitle($headText);
+
+  // Add map css if necessary:
+  foreach ($this->tabs as $tab) {
+    if ($tab instanceof \Finna\RecordTab\Map) {
+      $this->headLink()->appendStylesheet('vendor/leaflet.css');
+      break;
+    }
+  }
+  $this->jsTranslations()->addStrings(
+    [
+      'map_zoom_in' => 'map_zoom_in',
+      'map_zoom_out' => 'map_zoom_out'
+  ]);
+  if ($lastUrl = $this->searchMemory()->getLastSearchUrl()) {
+      $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
+      $params->activateAllFacets();
+      $filterList = $params->getFilterList(true);
+
+      if (!empty($params->getFilterList(false))) {
+          $checkboxFilters = $params->getCheckboxFacets();
+          $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
+          $options = $this->searchOptions($this->searchClassId);
+          $defaultSortApplied = !isset($params) || $lastSort == $options->getDefaultSortByHandler($params->getSearchHandler());
+          // Set up filters
+          $this->layout()->finnaFilters = $this->context($this)->renderInContext(
+              'search/filters.phtml',
+              [
+                  'filterList' => $filterList,
+                  'checkboxFilters' => $checkboxFilters,
+                  'hasDefaultsApplied' => $params->hasDefaultsApplied(),
+                  'defaultSortApplied' => $defaultSortApplied,
+                  'options' => $options
+              ]
+          );
+      }
+  }
+  $this->record($this->driver)->getOnlineUrls('results');
+
+  $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
+  $recordImage = $this->recordImage($this->record($this->driver));
+  $images = $recordImage->getAllImagesAsCoverLinks(
+      $this->layout()->userLang, $params
+  );
+  $noImage = empty($images[0]['urls']['medium']) && empty($images[0]['urls']['large']);
+  $largeImageLayout = !$noImage && in_array($this->driver->tryMethod('getRecordType'), ['lido', 'forward', 'ead']);
+?>
+</div>
+<div class="container">
+<div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> record-row <?= $largeImageLayout ? 'large-image-layout' : '' ?>">
+  <div>
+      <?=$this->record($this->driver)->getToolbar()?>
+  </div>
+  <div class="record-main <?= !$largeImageLayout ? 'mainbody left' : ''?>">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
+    <?=$this->flashmessages()?>
+    <?=$this->record($this->driver)->getMetaTags();?>
+    <?=$this->record($this->driver)->getCoreMetadata()?>
+
+    <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>
+  </div>
+
+  <? ob_start(); ?>
+    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr'): ?>
+      <div class="organisation-menu">
+          <?=$this->render('record/record-organisation-menu.phtml') ?>
+      </div>
+    <? endif; ?>
+    <? foreach ($this->related()->getList($this->driver) as $current): ?>
+        <?=$this->related()->render($current)?>
+    <? endforeach; ?>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-recommendations")): ?>
+      <div>
+          <?=$this->render($template)?>
+      </div>
+    <? endif; ?>
+  <? $sidebar = ob_get_contents(); ?>
+  <? ob_end_clean(); ?>
+
+  <div class="sidebar right smaller-image-sidebar hidden-xs hidden-sm">
+    <? if ($sidebar):?>
+        <?=$sidebar ?>
+    <? endif; ?>
+  </div>
+
+  <div class="mainbody left record-tabs visible-lg visible-md">
+    <? if (count($this->tabs) > 0): ?>
+      <a name="tabnav"></a>
+        <? if (count($this->tabs) > 3): ?>
+        <div class="tabs-responsive">
+        <? endif; ?>
+      <ul class="recordTabs nav nav-tabs">
+          <? foreach ($this->tabs as $tab => $obj): ?>
+              <? // add current tab to breadcrumbs if applicable:
+              $desc = $obj->getDescription();
+              $tab_classes = [];
+              if (0 === strcasecmp($this->activeTab, $tab)) {
+                  if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
+                      $tab_classes[] = 'active';
+                  }
+                  $tab_classes[] = 'initiallyActive';
+                  $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
+                  $activeTabObj = $obj;
+              }
+              if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
+              if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+              if (strtolower($tab) == 'details') { $tab_classes[] = 'hidden-xs tab-right'; }
+              ?>
+            <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
+              <a class="<?=strtolower($tab) ?>"
+                 href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?>
+                data-background<? endif ?>>
+                <? if (strtolower($tab) == 'details'): ?><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i><? endif; ?>
+                <? if (strtolower($tab) != 'details'): ?><?=$this->transEsc($desc)?><? endif; ?><? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?></a>
+            </li>
+          <? endforeach; ?>
+      </ul>
+        <? if (count($this->tabs) > 3): ?>
+        </div>
+        <? endif; ?>
+    <? endif; ?>
+
+    <div class="tab-content">
+      <? if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+        <div class="tab-pane active <?=$this->activeTab ?>-tab">
+            <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+        </div>
+      <? endif; ?>
+    </div>
+  </div>
+
+  <div class="clearfix hidden-lg hidden-md"></div>
+  <div class="record-accordions hidden-lg hidden-md">
+      <? if (count($this->tabs) > 0): ?>
+          <? foreach ($this->tabs as $accordion => $obj): ?>
+              <? // add current tab to breadcrumbs if applicable:
+              $desc = $obj->getDescription();
+              $accordion_classes = ['accordion'];
+              if (0 === strcasecmp($this->activeTab, $accordion)) {
+                  $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
+                  $activeTabObj = $obj;
+              }
+              if (!$obj->isVisible()) { $accordion_classes[] = 'hidden'; }
+              if (!$obj->supportsAjax()) { $accordion_classes[] = 'noajax'; }
+              if (strtolower($accordion) == 'details') { $tab_classes[] = 'hidden-xs'; }
+              ?>
+            <div <?=count($accordion_classes) > 0 ? ' class="' . implode(' ', $accordion_classes) . '"' : ''?>>
+              <div class="accordion-toggle">
+                <a id="<?=strtolower($accordion) ?>"
+                   href="<?=$this->recordLink()->getTabUrl($this->driver, $accordion)?>#tabnav"<? if ($obj->supportsAjax() && in_array($accordion, $this->backgroundTabs)):?>
+                   data-background<? endif ?>>
+                    <div class="accordion-title">
+                    <?=$this->transEsc($desc)?><? if (strtolower($accordion) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?>
+                    </div>
+                </a>
+              </div>
+              <div class="accordion-content">
+                  <? if (!isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+                    <div class="tab-pane active <?=$this->activeTab ?>-tab">
+                        <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+                    </div>
+                  <? endif; ?>
+              </div>
+            </div>
+          <? endforeach; ?>
+      <?endif; ?>
+  </div>
+
+  <div class="sidebar left large-image-sidebar <?= $largeImageLayout ? '' : 'visible-xs visible-sm'?>">
+    <? if ($sidebar):?>
+        <?=$sidebar ?>
+    <? endif; ?>
+  </div>
+
+  </div>
+</div>
+<?=$this->partial('RecordDriver/SolrDefault/toolbar_mobile.phtml') ?>
+<div>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET') ?>
+<!-- END of: finna - record/view.phtml -->

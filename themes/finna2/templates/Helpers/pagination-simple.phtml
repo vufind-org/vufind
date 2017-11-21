@@ -1,0 +1,29 @@
+<!-- START of: finna - Helpers/pagination_simple.phtml -->
+<? if ($this->pageCount): ?>
+  <ul class="paginationSimple">
+    <li><? if (isset($this->previous)): ?>
+      <? $newParams = $this->params; $newParams['page'] = $this->previous; ?>
+      <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
+        <span class="sr-only"><?=$this->transEsc('Previous Page')?></span><i class="fa fa-arrow-left"></i>
+      </a>
+    <? endif; ?>
+    </li>
+    <li>
+      <?=$this->label ?: $this->translate(
+        'showing_results_of_html', [
+          '%%start%%' => $this->firstItemNumber,
+          '%%end%%' => $this->lastItemNumber,
+          '%%total%%' => $this->localizedNumber($this->totalItemCount)
+        ]
+      );?>
+    </li>
+    <li<? if (isset($this->next)): ?>>
+      <? $newParams = $this->params; $newParams['page'] = $this->next; ?>
+      <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
+        <span class="sr-only"><?=$this->transEsc('Next Page')?></span><i class="fa fa-arrow-right"></i>
+      </a>
+    <? endif; ?>
+    </li>
+  </ul>
+<? endif; ?>
+<!-- END of: finna - Helpers/pagination_simple.phtml -->

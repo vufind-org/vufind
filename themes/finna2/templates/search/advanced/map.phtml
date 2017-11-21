@@ -1,0 +1,34 @@
+<!-- START of: finna - search/advanced/map.phtml -->
+<?
+  $this->headLink()->appendStylesheet('vendor/leaflet.css');
+  $this->headScript()->appendFile('vendor/leaflet.js');
+  $this->headScript()->appendFile('vendor/leaflet.draw.js');
+  $this->jsTranslations()->addStrings(
+    [
+      'radiusPrefix' => 'Radius',
+      'circleCaption' => 'Select Area',
+      'clearCaption' => 'Clear Selections',
+      'removeCaption' => 'Clear',
+      'map_zoom_in' => 'map_zoom_in',
+      'map_zoom_out' => 'map_zoom_out'
+  ]);
+?>
+<div class="selection-map-canvas"></div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    var options = {
+      items: []
+    };
+    <? if ($saved && ($filters = $saved->getParams()->getGeographicFilters($saved->getParams()->getFilterList()))): ?>
+      <? foreach ($filters as $filter): ?>
+        <? foreach (preg_split('/\s+OR\s+/', $filter) as $item): ?>
+          options.items.push('<?=$this->escapeJs($item) ?>');
+        <? endforeach; ?>
+      <? endforeach; ?>
+    <? endif; ?>
+    finna.advSearch.initMap(options);
+});
+</script>
+
+<!-- END of: finna - search/advanced/map.phtml -->

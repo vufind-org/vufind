@@ -1,0 +1,78 @@
+<!-- START of: finna - record/comments-list.phtml -->
+<?
+  $comments = $this->driver->getComments();
+  $inappropriateComments = [];
+  $user = $this->auth()->isLoggedIn();
+  if ($comments) {
+     if ($user) {
+        $inappropriateComments = $this->driver->tryMethod('getInappropriateComments', [$user->id]);
+     } else {
+        $session = new \Zend\Session\Container('inappropriateComments');
+        if (isset($session->comments)) {
+           $inappropriateComments = $session->comments;
+        }
+     }
+  }
+  $ratings = $this->record($this->driver)->ratingAllowed();
+  $comments = $this->driver->getComments();
+  $allowCommenting = $user && $this->record($this->driver)->commentingAllowed($user);
+  $allowRating = $this->record($this->driver)->ratingAllowed();
+?>
+<? $comments = $this->driver->getComments(); ?>
+<? if (count($comments) == 0): ?>
+  <div class="alert alert-info"><?=$this->transEsc($allowRating ? 'Be the first to leave a rating' : 'Be the first to leave a comment')?></div>
+<? else: ?>
+  <?
+    foreach ($comments as $comment):
+      $reported = $inappropriateComments && in_array($comment->id, $inappropriateComments);
+      $own = $user && $comment->user_id === $user->id;
+  ?>
+
+  <div class="comment-wrapper comment" data-id="<?=$comment->id?>">
+    <div class="name text-right">
+      <? if ($comment->finna_rating !== null): ?>
+      <div class="comment-rating">
+        <?=$this->partial('Helpers/rating-stars.phtml', ['value' => $comment->finna_rating ?: 0, 'disabled' => true])?>
+      </div>
+      <? endif; ?>
+      <div class="comment-info">
+        <small>
+          <strong><?=$this->escapeHtml(trim($this->userPublicName($comment)))?></strong>
+          <?=$this->escapeHtml($comment->created)?>
+          <? if ($own): ?>
+            <a href="#" class="edit"><?=$this->transEsc('Edit')?></a>
+            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="delete text-danger"><?=$this->transEsc('Delete')?></a>
+          <? endif; ?>
+        </small>
+      </div>
+    </div>
+    <div class="comment-text"><?=$this->escapeHtml($comment->comment)?></div>
+    <? if (!$own): ?>
+    <div class="comment-inappropriate<?= $reported ? '-reported' : ''?> text-right">
+      <small>
+        <? if (!$reported): ?>
+          <a title="<?=$this->escapeHtmlAttr($this->translate('Report inappropriate')) ?>" href="<?=$this->url('comments-inappropriate', ['id' => $comment->id]) ?>" data-lightbox><?=$this->translate('Report inappropriate')?></a>
+        <? else: ?>
+          <?=$this->translate('Reported inappropriate'); ?>
+        <? endif; ?>
+      </small>
+    </div>
+    <? endif; ?>
+  </div>
+  <? endforeach; ?>
+<? endif; ?>
+<?=
+  $this->inlineScript(
+    \Zend\View\Helper\HeadScript::SCRIPT,
+    '$(document).ready(function() {
+        finna.comments.initCommentList('
+        . ($allowCommenting ? 'true' : 'false') . ','
+        . ($allowRating ? 'true' : 'false') . ','
+        . count($comments)
+        . ');
+     });',
+    'SET'
+  );
+?>
+<!-- END of: finna - record/comments-list.phtml -->
+

@@ -1,0 +1,16 @@
+<? //Don't add START and END comments ?>
+<?if (!empty($data)): ?>
+<div class="truncate-field">
+  <? foreach ($data as $field): ?>
+  <div class="subjectLine" property="keywords">
+    <? $subject = ''; ?>
+    <? if(count($field) == 1) $field = explode('--', $field); ?>
+    <? $i = 0; foreach ($field as $subfield): ?>
+      <?=($i++ == 0) ? '' : ' &&#8594; '?>
+      <? $subject = trim($subject . ' ' . $subfield); ?>
+      <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>"><?=trim($this->transEsc($subfield))?></a>
+    <? endforeach; ?>
+  </div>
+  <? endforeach; ?>
+</div>
+<? endif; ?>

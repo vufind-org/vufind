@@ -1,0 +1,872 @@
+.library-is-open {
+    color: green;
+}
+.library-is-closed {
+    color: red;
+}
+.social-button {
+    text-align: right;
+    @media (max-width: @screen-xs-max) {
+        text-align: left;
+        margin-bottom: 15px;
+    }
+    &  a {
+        color: #fff;
+        &:hover {
+            color: #fff;
+        }
+        & i {
+            padding: 5px;
+            font-size: 1.5em;
+        }
+        & .fa-facebook {
+            background: #3b5998;
+        }
+        & .fa-twitter {
+            background: #4099FF;
+        }
+        & .fa-pinterest {
+            background: #C92228;
+        }
+    }
+}
+.opening-times-widget {
+    padding-bottom: 20px;
+    & h4 {
+        margin: 0;
+    }
+    & #opening_times_selection {
+        margin-bottom: 5px;
+        max-width: ~"-webkit-calc(100% - 70px)";
+        max-width: ~"-moz-calc(100% - 70px)";
+        max-width: ~"calc(100% - 70px)";
+    }
+    & .opening-times-library-information {
+        & .library-is-open {
+            float: right;
+            margin-top: 8px;
+            margin-right: 3px;
+        }
+        & .library-is-closed {
+            float: right;
+            margin-top: 8px;
+            margin-right: 3px;
+        }
+        & h4 {
+            margin-bottom: 5px;
+            @media (max-width: @screen-sm-max) {
+                max-width: 400px;
+            }
+        }
+        & .opening-times-week {
+            & .day-container {
+                & .time-row {
+                    .description {
+                        width: 45%;
+                    }
+                    .time-container {
+                        width: 34%;
+                    }
+                }
+            }
+        }
+    }
+    & .facility-image  {
+        @media(max-width: @screen-sm-max) {
+            float: left;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            width: 100px;
+        }
+    }
+    & .btn-open-widget {
+        background: @link-color;
+        border-radius: 0px;
+        margin-top: 5px;
+        margin-right: 2px;
+        color: @body-bg;
+        font-size: 1.8em;
+        font-weight: normal;
+        padding: 0px;
+        line-height: 35px;
+        height: 35px;
+        width: 35px;
+        @media(max-width: @screen-sm-max) {
+            clear:right;
+            margin-top: 0px;
+            margin-bottom: 5px;
+        }
+        &:hover {
+            background: darken(@link-color, 10%);
+        }
+        & i[class^='fa-'],[class*='fa-'] {
+            font-family: 'FontAwesome';
+        }
+        &.btn-round {
+            border-radius: 50px;
+            background: @gray-mid-light;
+            &:hover {
+                background: @gray-mid-light;
+            }
+        }
+    }
+    & .address {
+        margin-top: 5px;
+        letter-spacing: .3px;
+        @media(max-width: 336px) {
+            clear: both;
+        }
+    }
+    & .service-options {
+        margin-top: 5px;
+    }
+    & .kirjastohakemisto-link {
+        margin-top: 10px;
+    }
+}
+
+
+/*  Begin of organisation own information page styles */
+@finna-panel-header-background: @gray-light;
+@finna-panel-header-color: @body-bg;
+
+.main.template-dir-organisationinfo {
+    & .office-information-loader {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    & .office-button {
+        margin-left: 7px;
+        margin-top: -1px;
+        margin-bottom: -1px;
+    }
+
+    & .map-control-bar{
+        @media (min-width: @screen-sm) {
+            display: flex;
+            & .flex-item {
+                flex: auto;
+            }
+        }
+    }
+    & .map-control-buttons {
+        margin-top: 5px;
+        @media (min-width: @screen-sm-min) {
+            margin-top: 25px;
+        }
+        @media (max-width: @screen-xs-max) {
+            margin-bottom: 3px;
+        }
+        & span {
+            color: @link-color;
+            &:hover {
+                cursor: pointer;
+            }
+        }
+        & .marker {
+            font-size: 1.5em;
+            margin-left: 8px;
+            margin-right: 3px;
+            @media(max-width: @screen-xs-max) {
+                margin-left: 5px;
+            }
+        }
+        & .expand-map, .contract-map {
+            display: inline-block;
+            font-size: 1.1em;
+            & i {
+                margin-left: 20px;
+                margin-right: 0px;
+            }
+            @media(max-width: @screen-xs-max) {
+                margin-left: -3px;
+                font-size: 1.1em;
+                & i {
+                    margin-right: 2px;
+                }
+            }
+        }
+        & .show-all {
+            font-size: 1.1em;
+            float: left;
+            @media(min-width: @screen-sm-min) {
+                margin-left: 15px;
+
+                margin-top: -8px;
+
+            }
+        }
+    }
+
+    & .fa-map-marker {
+        &.open {
+            color: #339911;
+        }
+        &.closed {
+            color: #c33b00;
+        }
+        &.no-schedule {
+            color: #535353;
+        }
+    }
+
+    & .main-content {
+        margin-top: 25px;
+    }
+    & > .container {
+        padding-bottom: 0px !important;
+    }
+    & .fluid-odd {
+        background: @infobox-background;
+    }
+    & .last-section {
+        padding-bottom: 25px;
+    }
+
+    & .organisation-page-information-wrapper {
+        & p {
+            margin: 0;
+        }
+    }
+    & #consortium-info-section p,
+    & #consortium-usage-rights-section p {
+            margin-bottom: 9.5px;
+        }
+
+    & .organisation-info-page {
+        &.loading {
+            & > div {
+                display: none;
+                &.loader {
+                    display: block;
+                }
+            }
+        }
+        & > .loader {
+            display: none;
+        }
+        & .consortium-info {
+            margin-bottom: 20px;
+            & .consotrium-logo img {
+                width: 100%;
+            }
+            &.no-logo .description {
+                padding-left: 0;
+            }
+            & .organisation-list {
+                margin-top: 10px;
+                & ul {
+                    display: inline;
+                    list-style: none;
+                    & li {
+                        display: inline;
+                        &:after {
+                            content: ", ";
+                        }
+                        &:last-child:after {
+                            content: "";
+                        }
+                    }
+                }
+            }
+            & .homepage {
+                margin-top: 10px;
+            }
+            .consortium-info-row {
+                display: table;
+            }
+        }
+        & .consortium-notification {
+            background-color: @gray-lighter;
+            padding: 10px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .map {
+            & .map-widget {
+                height: 320px;
+                width: 100%;
+                &.expand {
+                    height: 600px;
+                }
+            }
+
+            & .leaflet-container {
+                & .leaflet-top {
+                    & .leaflet-bar {
+                        z-index: initial;
+                    }
+                }
+            }
+
+            .map-bubble {
+                & .name {
+                    min-width: 120px;
+                    max-width: 200px;
+                }
+                & .open {
+                    color: green;
+                    font-weight: bold;
+                }
+                & .closed {
+                    color: red;
+                    font-weight: bold;
+                }
+                & ul {
+                    margin-bottom: 0;
+                }
+                & tr {
+                    line-height: 1.2em;
+                    &.today {
+                        font-weight: bold;
+                    }
+                }
+                & table {
+                    width: 100%;
+                }
+                & .opening-times-week {
+                    margin-top: 5px;
+                    & .time {
+                        float: right;
+                    }
+                }
+            }
+            & .marker {
+                margin-top: -200%;
+                margin-left: -50%;
+                cursor: pointer;
+            }
+
+            #marker-tooltip {
+                position: absolute;
+                color: @gray;
+                background: @body-bg;
+                padding: 5px;
+                border: 1px solid lightgray;
+                opacity: 0.9;
+                z-index: 1000;
+            }
+        }
+
+
+        & .fa-phone-square, .fa-bus, .fa-clock-o, .fa-desktop {
+            font-family: 'FontAwesome';
+        }
+        .mobile-schedules.info-element {
+            font-size: 1.2em;
+        }
+        & .organisation-info {
+            margin-top: 10px;
+        }
+        & .office-quick-information {
+            margin-top: 15px;
+            display: none;
+            & .office-description {
+                margin-top: 10px;
+            }
+            & h2 {
+                margin:0;
+                padding: 0 !important;
+            }
+            & .office-links {
+                margin-right: 10px;
+                display: inline-block;
+            }
+
+        }
+        & .office-search {
+            & h3 {
+                font-size: 21px;
+                padding-top: .8em;
+                padding-bottom: 0em;
+            }
+            & .searchbox-office {
+                margin: 10px 0px;
+                width: 100%;
+                border: 1px solid @gray-lighter;
+                border-radius: 10px;
+
+                & input {
+                    width: ~"-webkit-calc(100% - 40px)";
+                    width: ~"-moz-calc(100% - 40px)";
+                    width: ~"calc(100% - 40px)";
+                    background: none;
+                    border: none;
+                    padding-left: 5px;
+                    height: 30px;
+                    &:focus {
+                        outline: none;
+                    }
+                }
+                & .btn-office-search {
+                    margin-right: -3px;
+                    border-top-left-radius: 0;
+                    border-bottom-left-radius: 0;
+                    margin-top: -2px;
+                    margin-bottom: -1px;
+                    padding: 4px 10px;
+                    & i {
+                        margin-top: 3px;
+                        font-size: 1.2em;
+                    }
+                }
+            }
+            & .office-search-notifications {
+                & .notification {
+                    margin-top: 10px;
+                    color: white;
+                    padding: 15px 20px;
+                    position: absolute;
+                    z-index: 1001;
+                    top: 42px;
+                    left: 15px;
+                    display: none;
+                    background: red;
+                }
+            }
+        }
+
+        & .office-quick-information {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            & h2 {
+                font-size: 20px;
+            }
+            & .office-description {
+                font-size: 1.2em !important;
+                color: @gray-light;
+                margin-bottom: 0;
+            }
+            @media(min-width: @screen-sm) {
+                .office-title {
+                    width: 55%;
+                    float: left;
+                }
+                .open-closed-info {
+                    width: 35%;
+                    float: left;
+                }
+                .social-button {
+                    width: 10%;
+                    float: left;
+                }
+            }
+        }
+
+        & .office-information {
+            display: none;
+            & .finna-panel {
+                clear: both;
+                & p {
+                    margin-bottom: 0 !important;
+                    padding-bottom: 0;
+                    word-break: break-all;
+                }
+                & img {
+                    margin-bottom: 5px;
+                }
+                & .office-description {
+                    font-weight: normal;
+                    font-size: 1em;
+                }
+                &:not(.opening-times-library-information) .panel-collapse {
+                    padding: 0px 6px 0px 10px;
+                    margin-top: 10px;
+                }
+                & .collapse.in {
+                    margin-bottom: 10px;
+                }
+                & h4.panel-title {
+                    padding: 0px;
+                    margin-bottom: 3px;
+                    text-shadow: 1px 1px 3px rgba(1,1,1,0.3);
+                    text-transform: uppercase;
+                    letter-spacing: .3px;
+                    font-size: 1.1em;
+                    @media (max-width: @screen-xs-max) {
+                        max-width: none;
+                    }
+                    & a {
+                        display: block;
+                        padding: 10px;
+                        padding-right: 20px;
+                        background: @finna-panel-header-background;
+                        color: @finna-panel-header-color;
+                        transition: background .15s ease-in-out;
+                        &:hover, &:active {
+                            text-decoration: none;
+                            background: darken(@finna-panel-header-background, 15%);
+                        }
+                        &:after {
+                            font-family: 'icomoon';
+                            content: '\e612';
+                            float: right;
+                            position: absolute;
+                            right: 20px;
+                        }
+                        &.collapsed:after {
+                            content: '\e613';
+                        }
+                    }
+                }
+                & .office-image {
+                    margin-top: 10px;
+                    margin-bottom: 10px;
+                }
+                & .opening-times-week {
+                    @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+                        font-size: 1em;
+                        & td {
+                            padding: 2px 3px;
+                        }
+                    }
+                }
+                & .feed-container {
+                    margin-top: 10px;
+                    margin-bottom: 10px;
+                    & .list-feed.with-image {
+                        & img {
+                            max-width: 30%;
+                        }
+                        & .text, .title {
+                            width: 65%;
+                            line-height: 1.5em;
+                        }
+                        & .text {
+                            max-height: 118px;
+                            overflow: hidden;
+                            margin-bottom: 20px;
+                        }
+                        & .title {
+                            margin-top: -3px;
+                        }
+                    }
+                }
+            }
+            & .opening-times-widget {
+                padding-bottom: 0;
+            }
+            & .email-contact, .address-contact, .phone-numbers {
+                margin-bottom: 12px;
+                & > strong {
+                    text-transform: uppercase;
+                }
+            }
+            & .phone-numbers {
+                & .fa-phone-square {
+                    margin-right: 8px;
+                }
+            }
+            & .service-list li {
+                margin-bottom: 10px;
+                & > strong {
+                    text-transform: uppercase;
+                }
+            }
+            .office-col {
+                @media(min-width: @screen-sm) {
+                    width: 33.3333%;
+                    float: left;
+                    padding: 0px 15px;
+                }
+                position:relative;
+            }
+        }
+        .consortium-navigation {
+            min-height: 45px;
+            & .affix {
+                position: relative;
+            }
+            @media (min-width: @screen-sm-min) {
+                & .affix {
+                    position: fixed;
+                    top: 0;
+                    z-index: 1000;
+                    background: @body-bg;
+                    height: 40px;
+                    width: 100%;
+
+                }
+            }
+
+            & .consortium-navigation-list {
+                clear: both;
+                margin-bottom: 20px;
+                & li {
+                    float: left;
+                    margin-right: 5px;
+                    padding: 7px;
+                    background: @gray-light;
+                    color: @body-bg;
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
+            }
+
+        }
+        & .consortium-info {
+
+            & h1 {
+                margin-top: 0;
+            }
+            & .consortium-logo {
+                float: left;
+                & img {
+                    max-width: 250px;
+                    max-height: 150px;
+                    margin-right: 30px;
+                }
+                @media (max-width: @screen-xs-max) {
+                    margin-bottom: 10px;
+                    margin-right: 0px;
+                    float: none;
+                }
+            }
+            & .description {
+                max-width: 900px;
+            }
+        }
+        & .consortium-usage-rights {
+            & h3 {
+                font-size: 21px;
+                padding-top: .8em;
+                padding-bottom: 0.3em;
+            }
+            & .usage-rights-text {
+                margin-bottom: 10px;
+                & .no-info {
+                    font-weight: bold;
+                    margin-bottom: 5px;
+                }
+            }
+            & .sidebar {
+                margin-bottom: 0px;
+                & h4 {
+                    padding: 12px 15px;
+                }
+                & .list-group {
+                    margin-bottom: 10px;
+                }
+                & .list-group:not(.finna-url) {
+                    margin-bottom: 20px;
+                }
+                & .list-group-item {
+                    background: @body-bg;
+                    margin-bottom: 0px;
+                    padding: 2px 15px;
+                    &:first-child {
+                        padding-top: 15px;
+                    }
+                    &:last-child {
+                        padding-bottom: 15px;
+                    }
+                }
+            }
+            @media (max-width: @screen-xs-max) {
+                & .sidebar {
+                    & h4 {
+                        background: none;
+                        color: @gray;
+                        padding: 0;
+                        font-size: 1.2em;
+                        margin-top: 10px;
+                    }
+                    & .list-group-item {
+                        background: none;
+                        padding: 0px;
+                        margin-right: 10px;
+                        &:first-child {
+                            padding-top: 5px;
+                        }
+                    }
+                }
+            }
+            & .gauge-meter {
+                margin-top: 10px;
+                & #finna-coverage-gauge {
+                    float: left;
+                    @media (min-width: @screen-sm-min) {
+                        margin-left: -20px;
+                    }
+                }
+                & .gauge-value {
+                    margin-top: 20px;
+                    position: absolute;
+                    margin-left: -52px;
+                    font-weight: bold;
+                }
+                & .gauge-label {
+                    margin-top: 20px;
+                    position: absolute;
+                }
+            }
+            & .searchbox-consortium.searchForm {
+                margin-bottom: 15px;
+                margin-top: 15px;
+                @media (max-width: @screen-xs-max) {
+                    margin-bottom: 15px;
+                }
+                & input {
+                    width: ~"-webkit-calc(100% - 40px)";
+                    width: ~"-moz-calc(100% - 40px)";
+                    width: ~"calc(100% - 40px)";
+                    float: left;
+                    border-radius: 10px;
+                    border-color: @gray-lighter;
+                }
+                & button {
+                    margin-left: -10px;
+                    border-top-left-radius: 0px;
+                    border-bottom-left-radius: 0px;
+                }
+            }
+            @media(min-width: @screen-sm) {
+                .gauge-meter {
+                    width: 40%;
+                    float: left;
+                }
+                .searchbox-consortium.searchForm{
+                    width: 60%;
+                    float: left;
+                }
+            }
+        }
+    }
+    .ui-autocomplete {
+        background: @body-bg;
+        border: 1px solid #CACACA;
+        margin-top: 10px;
+        border-radius: 15px;
+        box-shadow: 6px 10px 20px -5px #000;
+        padding: 1px;
+        max-height: 286px;
+        overflow-y: auto;
+        z-index: 2000;
+        position: absolute;
+        &::-webkit-scrollbar {
+            background: transparent;
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: solid @body-bg 4px;
+            border-radius: 20px;
+        }
+        &::-webkit-scrollbar-track {
+            border-top-right-radius: 15px;
+        }
+        &::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        & li {
+            padding: 7px 5px;
+            color: @gray;
+            &:first-child {
+                border-top-left-radius: 15px;
+                border-top-right-radius: 15px;
+            }
+            &:last-child {
+                border-bottom-left-radius: 15px;
+                border-bottom-right-radius: 15px;
+            }
+            &.ui-state-focus {
+                background: @link-color;
+                color: @body-bg;
+            }
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }
+    .ui-helper-hidden-accessible {
+        border: 0;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+    /* end organisation own information page styles */
+}
+.recordProvidedBy .record-organisation {
+    &.organisation-page-link-visible > .organisation-name {
+        display: none;
+    }
+    & > a:first-child {
+        line-height: 1;
+    }
+    & li {
+        line-height: 1.5;
+        &.organisation-page-link {
+            & .organisation-name {
+                font-weight: bold;
+            }
+        }
+    }
+    & img.consortium-logo {
+        display: block;
+        margin-top: 15px;
+        margin-bottom: 10px;
+        max-height: 110px;
+        max-width: 200px;
+    }
+    & img.consortium-logo {
+        margin: -3px 0 12px;
+    }
+    @media screen and (max-width: @screen-xs-max) {
+        & img.consortium-logo {
+            max-height: 70px;
+        }
+    }
+}
+.media-left .recordProvidedBy .record-organisation {
+    & .record-organisation-info .organisation-name {
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+    @media screen and (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
+        & img.consortium-logo {
+            max-height: 95px;
+        }
+    }
+}
+.imagepopup-container .recordProvidedBy .record-organisation {
+    & .record-organisation-info .organisation-name {
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+}
+.sidebar .recordProvidedBy .record-organisation {
+    & img.consortium-logo {
+       margin: 8px 0 12px;
+    }
+    & li.organisation-page-link {
+        padding-top: 5px;
+    }
+}
+
+.organisation-info {
+    @media (min-width: @screen-md) {
+        .info-col {
+            width: 65%;
+            padding-right: 15px
+        }
+        .details-col {
+            width: 35%;
+            padding-left: 15px;
+        }
+        .details-col, .info-col {
+            float: left;
+        }
+    }
+    @media (min-width: @screen-lg) {
+        .info-col { width: 60%; }
+        .details-col { width: 40%; }
+    }
+}

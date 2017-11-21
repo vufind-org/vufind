@@ -367,4 +367,17 @@ trait FinnaParams
         // If we got this far, setting was missing or invalid; load the default
         $this->limit = $defaultLimit;
     }
+
+    /**
+     * Get view options list type setting
+     *
+     * @return bool
+     */
+    public function getViewOptionListType()
+    {
+        $options = $this->getOptions();
+        $viewOptionsIcons = is_callable([$options, 'getViewOptionListType'])
+            ? $options->getViewOptionListType() : false;
+        return $viewOptionsIcons;
+    }
 }

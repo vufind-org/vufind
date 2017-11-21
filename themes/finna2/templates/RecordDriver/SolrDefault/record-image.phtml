@@ -1,0 +1,82 @@
+<!-- START of: finna - RecordDriver/SolrDefault/record-image.phtml -->
+<? $formats = $this->driver->tryMethod('getFormats'); ?>
+<? $largeImageLayout = $this->driver->getSourceIdentifier() == 'Solr' && in_array($this->driver->tryMethod('getRecordType'), ['lido', 'forward']); ?>
+<div class="record-image-container <?= empty($images[0]['urls']['large']) && empty($images[0]['urls']['medium']) ? 'hide-image' : ''?>">
+  <div class="recordcover-holder" data-format="<?=$this->transEsc(end($formats))?>" data-noimage="<?=$this->transEsc('no_image')?>">
+
+    <?= $this->partial('RecordDriver/SolrDefault/record-image-navi.phtml', ['images' => $images, 'type' => $type]) ?>
+
+    <? if (!empty($images[0]['urls']['medium']) || !empty($images[0]['urls']['large'])): ?>
+    <div class="recordcover-container">
+      <a class="image-popup-trigger" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image" title="<?=$this->transEsc('Open Preview')?>">
+        <? if (count($images) <= 1): ?>
+          <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
+        <? endif; ?>
+        <? if (!empty($images[0]['urls']['large']) && $this->layout()->templateDir == 'record' && $largeImageLayout): ?>
+          <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($images[0]['urls']['large']);?>"/>
+        <? else: ?>
+          <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($images[0]['urls']['medium']);?>"/>
+        <? endif; ?>
+        <? if (isset($images[0]['large'])): ?>
+         <i class="fa fa-magnify hidden-print"></i>
+         <? endif; ?>
+      </a>
+    </div>
+    <? else: ?>
+      <a class="image-popup-trigger no-image" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image" title="<?=$this->transEsc('Open Preview')?>">
+        <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
+        <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+      </a>
+    <? endif; ?>
+  </div>
+  <? if ($type != 'list' && $type != 'list grid'): ?>
+    <? $ind = -1; ?>
+    <? foreach ($images as $image): ?>
+      <? ++$ind; ?>
+      <div class="image-details-container<?=$ind > 0 ? ' hidden' : '' ?> text-left" data-img-index="<?=$ind ?>">
+        <div class="image-link">
+            <?
+            $recordImage = $this->recordImage($this->record($this->driver));
+            $originalImage = $recordImage->getMasterImage($ind);
+            $formats = $this->driver->tryMethod('getFormats');
+            $translatedFormat = $this->transEsc(end($formats));
+            $rights = $image['rights'];
+            ?>
+          <? if (isset($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
+          <div class="open-link"><a target="_blank" href="<?=$originalImage ?>" download="<?=$originalImage ?>">
+              <i aria-hidden="true" class="fa fa-download"></i>
+              <span><?=$this->transEsc('Show image in new window') ?></span>
+            </a>
+            <span class="image-dimensions"></span>
+          </div>
+          <? endif ?>
+        </div>
+        <? if (!empty($image['description'])): ?>
+          <div class="image-description">
+            <?=$this->escapeHtml($image['description']) ?>
+          </div>
+        <? endif; ?>
+        <? $rights = $image['rights']; ?>
+        <div class="access-rights">
+          <div class="image-rights">
+            <? $hasLink = isset($rights['link']); ?>
+            <strong><?= $this->transEsc('Image Rights') ?>:</strong> <? if (isset($rights['copyright'])): ?><? if ($hasLink): ?><span class="imagerights"><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a></span><? endif ?><? endif ?>
+          </div>
+          <div class="copyright truncate-field">
+            <? if (isset($rights['description'])): ?>
+              <? foreach ($rights['description'] as $item): ?>
+                <p><?=$this->transEsc($item) ?></p>
+              <? endforeach ?>
+            <? endif ?>
+          </div>
+          <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
+            <p><?= $this->transEsc('Image Rights Default') ?>
+            <p><a href="<?= $this->url('content-page', ['page' => 'terms']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
+          <? endif; ?>
+        </div>
+      </div>
+    <? endforeach; ?>
+  <? endif; ?>
+</div>
+
+<!-- END of: finna - RecordDriver/SolrDefault/record-image.phtml -->

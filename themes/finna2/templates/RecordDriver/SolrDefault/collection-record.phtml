@@ -1,0 +1,93 @@
+<!-- START of: finna - RecordDriver/SolrDefault/collection-record.phtml -->
+<h2><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
+<a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc('View Full ' . ($this->driver->isCollection() ? 'Collection' : 'Record'))?></a>
+
+<table class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
+  <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
+  <? if ($summary): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('Description')?>: </th>
+      <td><?=$this->escapeHtml($summary)?></td>
+    </tr>
+  <? endif; ?>
+
+  <? $results = $this->driver->getNonPresenterAuthors(); ?>
+  <? if ($results): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc(count($authors['main']) > 1 ? 'Main Authors' : 'Main Author')?>: </th>
+    <? if ($results): ?>
+        <span class="recordAuthors">
+        <? foreach($results as $index => $author): ?>
+          <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><? endif; ?><? if (!empty($author['role'])): ?><span class="author-role">, <?=$this->escapeHtml($author['role']) ?></span><? endif; ?>
+        <? endforeach; ?>
+        </span>
+      <? endif; ?>
+      <? if ($containerTitle): ?>
+        <?
+          $containerSource = $this->driver->getSourceIdentifier();
+          $containerID = $this->driver->getContainerRecordID();
+        ?>
+        <span class="recordContainerReference">
+          <?=$this->transEsc('Published in')?> <a href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('title', $containerTitle))?>"><?=$this->escapeHtml($containerTitle)?></a>
+          <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
+        </span>
+      <? endif; ?>
+    </tr>
+  <? endif; ?>
+
+  <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
+  <? if (isset($authors['main']) && !empty($authors['main'])): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc(count($authors['main']) > 1 ? 'Main Authors' : 'Main Author')?>: </th>
+      <td>
+        <? $i = 0; foreach ($authors['main'] as $author => $roles): ?><?=($i++ == 0)?'':'; '?><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><? if (count($roles) > 0): ?> (<? $j = 0; foreach ($roles as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?><? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc(count($authors['corporate']) > 1 ? 'Corporate Author' : 'Corporate Authors')?>: </th>
+      <td>
+        <? $i = 0; foreach ($authors['corporate'] as $corporate => $roles): ?><?=($i++ == 0)?'':'; '?><a href="<?=$this->record($this->driver)->getLink('author', $corporate)?>"><?=$this->escapeHtml($corporate)?></a><? if (count($roles) > 0): ?> (<? $j = 0; foreach ($roles as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?><? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('Language')?>: </th>
+      <td><? foreach ($langs as $lang): ?><?= $this->transEsc($lang)?><br/><? endforeach; ?></td>
+    </tr>
+  <? endif; ?>
+
+  <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('Format')?>: </th>
+      <td><?=$this->record($this->driver)->getFormatList()?></td>
+    </tr>
+  <? endif; ?>
+
+  <? $access = $this->driver->getAccessRestrictions(); if (!empty($access)): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('Access')?>: </th>
+      <td>
+        <? foreach ($access as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $related = $this->driver->getRelationshipNotes(); if (!empty($related)): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('Related Items')?>: </th>
+      <td>
+        <? foreach ($related as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+</table>
+<!-- END of: finna - RecordDriver/SolrDefault/collection-record.phtml -->

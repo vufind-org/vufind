@@ -1,0 +1,17 @@
+<? //Don't add START and END comments ?>
+<? if(!empty($data)): ?>
+<div class="truncate-field">
+  <? if (!empty($data['credited']['presenters'])): ?>
+      <? foreach($data['credited']['presenters'] as $index => $author): ?>
+        <?=($index > 0 ? '<br/> ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['roleName'])): ?><span class="author-rolename">, <?=$this->escapeHtml($author['roleName']) ?></span><? endif; ?>
+      <? endforeach; ?>
+  <? endif; ?>
+  <? if (!empty($data['uncredited']['presenters'])): ?>
+    <div class="subheading"><?=$this->translate("Uncredited")?></div>
+      <? foreach($data['uncredited']['presenters'] as $index => $author): ?>
+          <?=($index > 0 ? '<br/> ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['roleName'])): ?><span class="author-rolename">, <?=$this->escapeHtml($author['roleName']) ?></span><? endif; ?>
+      <? endforeach; ?>
+  <? endif; ?>
+</div>
+<? endif; ?>
+

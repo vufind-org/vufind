@@ -1,0 +1,53 @@
+<!-- START of: finna - myresearch/sortlist.phtml -->
+<?
+  $this->headScript()->appendFile('vendor/jquery-ui-custom.min.js');
+  $this->headScript()->appendFile('finna-mylist.js');
+  $list = $this->results->getListObject();
+  $user = $this->auth()->isLoggedIn();
+
+  // Set up page title:
+  $this->headTitle($this->translate('Sort manually'));
+  $this->layout()->finnaMainHeader = '<div><h3 class="finna-main-header">' . $this->transEsc('Sort manually') . '</h3></div>';
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Sort manually') . '</li>';
+?>
+
+<h2><?=$this->transEsc('Sort manually') ?></h2>
+
+<?=$this->flashmessages()?>
+
+<form method="post" id="sort_form" name="sortForm">
+  <input type="hidden" name="user_id" value="<?=$user->id ?>">
+  <input type="hidden" name="list_id" value="<?=$list->id ?>">
+  <input type="hidden" id="orderedList" name="orderedList" value="">
+
+  <div>
+    <div class="own-favorite-list-button-area">
+      <input id="save_order_btn" name="saveOrdering" type="submit" value="<?=$this->transEsc('Save Order') ?>" class="btn btn-primary">
+      <input id="cancel_order_btn" name="cancelOrdering" type="submit" data-dismiss="modal" value="<?=$this->transEsc('Reset') ?>" class="btn btn-primary" />
+    </div>
+  </div>
+</form>
+<ol id="sortable" class="sortable-favorite-list">
+  <? foreach ($this->results->getResults() as $i => $current): ?>
+    <li id="<?=$this->escapeHtmlAttr($current->getUniqueID()) ?>"><h4><?=$this->escapeHtml($current->getTitle()) ?><i class="fa fa-arrow-down"></i><i class="fa fa-arrow-up"></i></h4><p><?=$this->record($current)->getFormatList() ?></p></li>
+  <? endforeach; ?>
+</ol>
+
+<?
+$script = <<<EOT
+if ($.isReady) {
+  finna.myList.initFavoriteOrderingFunctionality();
+} else {
+  $(document).ready(function(){
+    finna.myList.initFavoriteOrderingFunctionality();
+  });
+}
+EOT;
+
+// Inline the script for lightbox compatibility
+echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+?>
+<!-- END of: finna - myresearch/sortlist.phtml -->
+

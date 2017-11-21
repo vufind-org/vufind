@@ -1,0 +1,27 @@
+<!-- START of: finna - search/bulk-action-buttons.phtml -->
+<? if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
+  <div class="bulkActionButtons hidden-print">
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/> <?=$this->transEsc('select_page')?>
+        &#124; <?=$this->transEsc('with_selected')?>:
+      </label>
+    </div>
+    <div class="btn-group">
+      <? if (isset($this->showBulkOptions) && $this->showBulkOptions): ?>
+        <input id="<?=$this->idPrefix?>ribbon-email" class="btn btn-primary" type="submit" name="email" title="<?=$this->transEsc('bookbag_email_selected')?>" value="<?=$this->transEsc('Email')?>"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/>
+        <? $exportOptions = $this->export()->getBulkOptions(); if (count($exportOptions) > 0): ?>
+          <input id="<?=$this->idPrefix?>ribbon-export" class="btn btn-primary" type="submit" name="export" title="<?=$this->transEsc('bookbag_export_selected')?>" value="<?=$this->transEsc('Export')?>"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/>
+        <? endif; ?>
+        <input id="<?=$this->idPrefix?>ribbon-print" class="btn btn-primary" type="submit" name="print" title="<?=$this->transEsc('bookbag_print_selected')?>" value="<?=$this->transEsc('Print')?>"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/>
+        <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+          <input id="<?=$this->idPrefix?>ribbon-save" class="btn btn-primary" type="submit" name="saveCart" title="<?=$this->transEsc('bookbag_save_selected')?>" value="<?=$this->transEsc('Save')?>"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/>
+        <? endif; ?>
+      <? endif; ?>
+      <? if (isset($this->showCartControls) && $this->showCartControls): ?>
+        <input id="<?=$this->idPrefix?>updateCart" type="submit" class="btn btn-primary" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/>
+      <? endif; ?>
+    </div>
+  </div>
+<? endif; ?>
+<!-- END of: finna - search/bulk-action-buttons.phtml -->

@@ -1,0 +1,123 @@
+<!-- START of: finna - myresearch/menu.phtml -->
+<?
+    $this->layout()->finnaMainHeader = '<h1><i class="fa fa-user"></i> ' . $this->transEsc('Your Account') . '</h1>';
+    if (!$this->translationEmpty('tooltip_myaccount_html')) {
+        $this->layout()->finnaMainHeader .= '<span class="tooltip-myaccount" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="' . $this->transesc("tooltip_myaccount_html") . '"><i class="fa fa-info-big"></i></span>';
+    }
+    $capabilityParams = [];
+    $user = $this->auth()->isLoggedIn();
+    $patron = $user ? $this->auth()->getILSPatron() : false;
+    $capabilityParams = $patron ? ['patron' => $patron] : [];
+    if ($user) {
+        $this->layout()->finnaMainHeader .= '<a class="btn btn-sm btn-primary btn-uppercase pull-right" href="' . $this->url('myresearch-logout') . '" title="' . $this->transEsc('Log Out') . '"><i class="fa fa-sign-out fa-lg"></i> ' . $this->transEsc('Log Out') . '</a>';
+        $this->layout()->finnaMainHeader .= '<div>' . $this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card']) . '</div>';
+    }
+    $this->layout()->finnaMainHeader;
+
+    $showLibraryTabs = $this->ils()->loginAvailable();
+?>
+<? ob_start(); ?>
+<? if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
+  <? if ($this->ils()->checkCapability('getMyProfile')): ?>
+    <li class="menu-profile<?=$this->active == 'profile' ? ' active' : ''?>">
+      <a href="<?=$this->url('myresearch-profile')?>" class="list-group-item">
+        <?=$this->transEsc('Profile')?>
+      </a>
+    </li>
+  <? endif; ?>
+  <? if ($showLibraryTabs): ?>
+    <li class="menu-loans <?=$this->active == 'checkedout' ? ' active' : ''?>">
+      <a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item">
+        <?=$this->transEsc('Checked Out Items')?>
+      </a>
+    </li>
+    <? if ($this->ils()->checkCapability('getMyTransactionHistory', $capabilityParams)): ?>
+      <li class="menu-historic-loans <?=$this->active == 'historicloans' ? ' active' : ''?>">
+        <a href="<?=$this->url('myresearch-historicloans')?>" class="list-group-item">
+          <?=$this->transEsc('Loan History')?>
+        </a
+      ></li>
+    <? endif; ?>
+    <li class="menu-holds <?=$this->active == 'holds' ? ' active' : ''?>">
+      <a href="<?=$this->url('myresearch-holds')?>" class="list-group-item">
+        <?=$this->transEsc('Holds and Recalls')?>
+      </a>
+    </li>
+    <? if ($this->ils()->checkCapability('getMyStorageRetrievalRequests', $capabilityParams)): ?>
+      <li class="menu-storage-retrieval-requests <?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
+        <a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="list-group-item">
+          <?=$this->transEsc('Storage Retrieval Requests')?>
+        </a>
+      </li>
+    <? endif; ?>
+    <? if ($this->ils()->checkCapability('getMyILLRequests', $capabilityParams)): ?>
+      <li class="menu-ill-requests <?=$this->active == 'ILLRequests' ? ' active' : ''?>">
+        <a href="<?=$this->url('myresearch-illrequests')?>" class="list-group-item">
+          <?=$this->transEsc('Interlibrary Loan Requests')?>
+        </a>
+      </li>
+    <? endif; ?>
+    <li class="menu-fines <?=$this->active == 'fines' ? ' active' : ''?>">
+      <a href="<?=$this->url('myresearch-fines')?>" class="list-group-item">
+        <?=$this->transEsc('Fines')?>
+      </a>
+    </li>
+    <? if ($user && $user->libraryCardsEnabled()): ?>
+      <li class="menu-library-cards <?=$this->active == 'librarycards' ? ' active' : ''?>">
+        <a href="<?=$this->url('librarycards-home')?>" class="list-group-item">
+          <?=$this->transEsc('Library Cards')?>
+        </a>
+      </li>
+    <? endif; ?>
+  <? endif; ?>
+<? endif; ?>
+<? if ($this->userlist()->getMode() !== 'disabled'): ?>
+  <li class="menu-favorites <?=$this->active == 'favorites' || substr($this->active, 0, 4) == 'list' ? ' active' : ''?>">
+    <a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item">
+      <?=$this->transEsc('Favorites')?>
+    </a>
+  </li>
+<? endif; ?>
+<li class="menu-history <?=$this->active == 'history' ? ' active' : ''?>">
+  <a href="<?=$this->url('search-history')?>?require_login" class="list-group-item">
+    <?=$this->transEsc('history_saved_searches')?>
+  </a>
+</li>
+<? $menuEntries = ob_get_clean(); ?>
+
+  <div class="mobile-main-tabs visible-xs visible-sm">
+    <div class="dropdown useraccount-nav-mobile">
+      <div class="dropdown-toggle" data-toggle="dropdown">
+      <?
+        switch ($this->active) {
+        case 'profile': echo $this->transEsc('Profile'); break;
+        case 'checkedout': echo $this->transEsc('Checked Out Items'); break;
+        case 'historicloans': echo $this->transEsc('Loan History'); break;
+        case 'holds': echo $this->transEsc('Holds and Recalls'); break;
+        case 'storageRetrievalRequests': echo $this->transEsc('Storage Retrieval Requests'); break;
+        case 'ILLRequests': echo $this->transEsc('Interlibrary Loan Requests'); break;
+        case 'fines': echo $this->transEsc('Fines'); break;
+        case 'librarycards': echo $this->transEsc('Library Cards'); break;
+        case 'favorites': echo $this->transEsc('Favorites'); break;
+        case 'history': echo $this->transEsc('history_saved_searches'); break;
+        default:
+            if (substr($this->active, 0, 4) == 'list') {
+                echo $this->transEsc('Favorites');
+                break;
+            }
+            echo $this->transEsc('Your Account');
+            break;
+        }
+      ?>
+        <span class="more">Lisää<b class="caret"></b></span>
+      </div>
+      <ul class="dropdown-menu">
+        <?=$menuEntries?>
+      </ul>
+    </div>
+  </div>
+  <ul class="list-group useraccount-nav nav nav-tabs hidden-xs hidden-sm">
+    <?=$menuEntries?>
+  </ul>
+
+<!-- END of: finna - myresearch/menu.phtml -->

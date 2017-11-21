@@ -1,0 +1,122 @@
+.home-1 {
+  background: @home-1-background;
+}
+.home-2 {
+  background: @home-2-background;
+}
+.home-3 {
+  background: @home-3-background;
+}
+.home-4 {
+  background: @home-4-background;
+}
+
+@media(min-width: @screen-sm) {
+  .home-column {
+    width: 50%;
+    float: left;
+    padding-right: 15px;
+  }
+}
+
+.introduction h1, .introduction h3 {
+  padding: 0 5px 1px 7px;
+  color: #fff;
+  line-height: 1.4em;
+  font-weight: bold;
+  & .brand-third {
+    color: @brand-third;
+  }
+}
+.introduction h1 {
+  font-size: @introduction-header;
+  line-height: (@introduction-header/2.1);
+  @media(max-width:@screen-xs-max) {
+    font-size: (@introduction-header/1.5);
+  }
+}
+
+.introduction h1, .introduction h3 {
+  text-shadow: 2px 3px 0px black;
+  padding: 0 5px 1px 7px;
+  color: #fff;
+  line-height: 1.4em;
+  font-weight: bold;
+  & .brand-third {
+      color: @brand-third;
+  }
+}
+.introduction h1 {
+  font-size: @introduction-header;
+  line-height: (@introduction-header/2.1);
+  @media(max-width:@screen-xs-max) {
+      font-size: (@introduction-header/1.5);
+  }
+}
+.introduction {
+  position: relative;
+}
+h1.introductionText, h3.introductionText {
+  margin: 0px 50px 5px 0px;
+  em {
+      font-style: normal;
+  }
+}
+h1.introductionText > em {
+  color: @brand-secondary;
+}
+h3.introductionText > em {
+  color: @link-color;
+}
+
+.left-column-content {
+  background: @home-left-column-background;
+  @media (min-width: @screen-sm){
+    width: 60%;
+    float: left;
+    padding-right: 15px;
+  }
+}
+.right-column-content {
+  background: @home-right-column-background;
+  @media (min-width: @screen-sm) {
+    width: 40%;
+    float: left;
+    padding-left: 15px;
+  }
+}
+
+// Popular searches
+.popular-searches {
+  & ul {
+    margin-bottom: 0;
+  }
+  & li {
+    margin-bottom: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  & .position {
+    color: @btn-primary-color;
+    background: @btn-primary-bg;
+    border-radius: 50%;
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    margin-right: 6px;
+    padding: 0;
+    text-align: center;
+    width: 30px;
+  }
+  & a {
+    text-decoration: none;
+  }
+}
+.popular-search-col {
+  width: 100%;
+  @media (min-width: @screen-sm) {
+    width: 50%;
+    float: left
+  }
+}

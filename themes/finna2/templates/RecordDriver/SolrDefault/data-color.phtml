@@ -1,0 +1,5 @@
+<? //Don't add START and END comments ?>
+<? if (!empty($data)):?>
+  <? $colorSystem = $this->driver->getColorSystem(); ?>
+  <?=$this->escapeHtml($data) ?><? if ($colorSystem): ?>, <?=$this->escapeHtml($colorSystem) ?><? endif; ?>
+<? endif; ?>

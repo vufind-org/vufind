@@ -1,0 +1,16 @@
+<? //Don't add START and END comments ?>
+<? if (!empty($data)): ?>
+      <? foreach ($data as $field): ?>
+        <span property="publisher" typeof="Organization">
+          <? $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
+          <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
+          <? endif; ?>
+          <? $pubName = $field->getName(); if (!empty($pubName)): ?>
+          <span property="name"><?=$this->escapeHtml($pubName)?></span>
+          <? endif; ?>
+          <? $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
+          <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
+          <? endif; ?>
+        </span>
+      <? endforeach; ?>
+<? endif; ?>

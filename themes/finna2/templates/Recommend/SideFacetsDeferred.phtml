@@ -1,0 +1,72 @@
+<!-- START of: finna - Recommend/SideFacetsDeferred.phtml -->
+<?
+  $this->headScript()->appendFile('vendor/bootstrap-datepicker.min.js');
+  $datePickerLang = 'en';
+  switch ($this->layout()->userLang) {
+    case 'en-gb':
+        $this->headScript()->appendFile('vendor/bootstrap-datepicker.en-GB.min.js');
+        $datePickerLang = 'en-GB';
+        break;
+    case 'fi':
+        $this->headScript()->appendFile('vendor/bootstrap-datepicker.fi.min.js');
+        $datePickerLang = 'fi';
+        break;
+    case 'sv':
+        $this->headScript()->appendFile('vendor/bootstrap-datepicker.sv.min.js');
+        $datePickerLang = 'sv';
+        break;
+  }
+  $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
+  $this->headScript()->appendFile('facets.js');
+  $this->headScript()->appendFile('vendor/jquery.colorhelpers.min.js');
+  $this->headScript()->appendFile('vendor/jquery.flot.min.js');
+  $this->headScript()->appendFile('vendor/jquery.flot.selection.min.js');
+  $this->headScript()->appendFile('finna-daterange-vis.js');
+?>
+<? $results = $this->recommend->getResults(); ?>
+<? if ($results->getResultTotal() > 0): ?>
+<div class="side-facets-container">
+  <h4><i class="fa fa-arrow-down visible-xs pull-left"></i> <?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?><? if (!isset($this->overrideSideFacetCaption) && !$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_facet_html')?>"><i class="fa fa-info-big"></i></span><? endif; ?></h4>
+<? endif; ?>
+<? $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
+<?
+  foreach ($checkboxFilters as $current) {
+    $availCount = $current['selected'] ? -1 : $this->checkboxFacetCounts($current, $results);
+    $availableRecords = $availCount < 0 ? '' : $this->localizedNumber($availCount);
+  }
+?>
+<? $checkboxesShown = false; ?>
+<? if (count($checkboxFilters) > 0):
+    foreach ($checkboxFilters as $current) {
+        $availCount = $current['selected'] ? -1 : $this->checkboxFacetCounts($current, $results);
+        $availableRecords = $availCount < 0 ? '' : $this->localizedNumber($availCount);
+        if ($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible']) {
+            $checkboxesShown = true;
+            break;
+        }
+    }
+    ?>
+  <? if ($checkboxesShown): ?>
+    <div class="checkboxFilter">
+      <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results, 'availableRecords' => $availableRecords]); ?>
+    </div>
+  <? endif; ?>
+<? endif; ?>
+<? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
+<? $collapsedFacets = $this->recommend->getCollapsedFacets(); ?>
+<? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
+<?=$this->context($this)->renderInContext('Recommend/SideFacets/filter-list.phtml', [
+    'collapsedFacets' => $collapsedFacets,
+    'extraFilters' => $extraFilters,
+    'filterList' => $filterList,
+    'results' => $results,
+    'browse' => !empty($browse),
+    'defaultBrowseHandler' => isset($defaultBrowseHandler) ? $defaultBrowseHandler : ''
+]); ?>
+<?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
+<? if ($results->getResultTotal() > 0): ?>
+  <span class="facet-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...</span>
+  <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
+</div>
+<? endif; ?>
+<!-- END of: finna - Recommend/SideFacetsDeferred.phtml -->

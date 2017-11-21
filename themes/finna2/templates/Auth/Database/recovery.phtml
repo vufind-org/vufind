@@ -1,0 +1,17 @@
+<? if (!$this->translationEmpty('recovery_help_html')): ?>
+  <p><?=$this->translate('recovery_help_html') ?></p>
+<? endif; ?>
+<div class="form-group">
+  <label class="control-label" for="username"><?=$this->transEsc('recovery_by_username') ?>:</label>
+  <input type="text" name="username" id="username" class="form-control"/>
+</div>
+<div class="form-group">
+  <label class="control-label" for="email"><?=$this->transEsc('recovery_by_email') ?>:</label>
+  <input type="email" name="email" id="email" class="form-control"/>
+</div>
+<div class="form-group">
+<?=$this->recaptcha()->html($this->useRecaptcha) ?>
+</div>
+<div class="form-group">
+  <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEsc('Recover Account') ?>"/>
+</div>

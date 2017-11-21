@@ -1,0 +1,4 @@
+/* Body without background image (Quick fix!) */
+body {
+  background-image: none !important;
+}

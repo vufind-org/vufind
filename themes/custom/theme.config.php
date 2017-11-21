@@ -1,6 +1,6 @@
 <?php
 return [
-    'extends' => 'finna',
+    'extends' => 'finna2',
     'css' => [
         'custom.css',
         'settings.css'

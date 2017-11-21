@@ -11,7 +11,7 @@
       </div>
     <? endforeach; ?>
 
-    <label for="searchModes"><?=$this->transEsc('Search Mode')?></label>
+    <label for="searchMode_<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc('Search Mode')?></label>
     <select id="searchMode_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" class="form-control">
       <? foreach ($this->searchModes as $field => $searchMode):
         $value = $searchMode['Value'] ?>

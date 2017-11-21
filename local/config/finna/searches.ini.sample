@@ -17,6 +17,10 @@ empty_search_relevance_override = "last_indexed desc,id asc"
 ; should be one of the options present in the [Views] section below.
 default_view         = list
 
+; This setting controls the view options list type. If this is set true, view options
+; will be shown as icons instead of dropdown list.
+view_options_icons   = true
+
 ; This section controls the result limit options for search results. default_limit
 ; sets the default number of results per page. limit_options is a comma-separated
 ; list of numbers to be presented to the end-user. If only one limit is required,

@@ -1,0 +1,5 @@
+<ul>
+<? foreach ($this->phones as $phone): ?>
+  <li><p><i class="fa fa-phone-square"></i><a href="tel:<?=$this->escapeHtmlAttr($phone['number'])?>"><?=$this->escapeHtml($phone['number'])?></a><?= isset($phone['name']) ? (' / ' . $this->escapeHtml($phone['name'])) : ''?></p></li>
+<? endforeach ?>
+</ul>

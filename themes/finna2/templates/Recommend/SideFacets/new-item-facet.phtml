@@ -1,0 +1,44 @@
+<?
+$newItemValues = [
+    '7DAYS',
+    '1MONTHS',
+    '3MONTHS',
+    '6MONTHS',
+    '1YEAR'
+];
+?>
+<? foreach ($newItemValues as $newItemValue): ?>
+    <? $addURL = $results->getUrlQuery()->replaceFacet($title, "[NOW-$newItemValue/DAY TO *]"); ?>
+    <a href="<?=$addURL ?>" class="list-group-item facetAND"><?=$this->transEsc('new_items_' . strtolower($newItemValue), null, $newItemValue)?></a>
+<? endforeach; ?>
+<div class="list-group-item">
+    <form name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter" class="form-inline">
+        <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./", 'filter' => "/^{$title}:.*/"])?>
+        <label for="<?=$this->escapeHtmlAttr($title)?>from"><?=$this->transEsc('new_items_from')?></label>
+        <input type="text" class="form-control form-inline date-picker-field" autocomplete="off" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" maxlength="10" size="10" value="<?=$this->escapeHtmlAttr($this->dateTime()->convertToDisplayDate('Y-m-d', $newItemsFacets[$title]['date'])) ?>" placeholder="<?=$this->dateTime()->getDisplayDateFormat() ?>">
+        <button class="btn btn-primary btn-default date-picker-button" type="submit" value=""><i class="fa fa-search"></i><span class="sr-only"><?=$this->transEsc('Search');?></span></button>
+    </form>
+    <?
+    $component = $this->escapeHtmlAttr($title) . 'from';
+    $endDate = $this->dateTime()->convertToDisplayDate('U', time());
+    // Load the script inline to support asynchronously loaded sidefacets:
+    $script = <<<EOT
+if ($.isReady) {
+  initDatePicker();
+} else {
+  $(document).ready(initDatePicker);
+}
+function initDatePicker() {
+  $('#$component').datepicker({
+    'language': '$datePickerLang',
+    'format': 'd.m.yyyy',
+    'weekStart': 1,
+    'endDate': '$endDate',
+    'autoclose': true
+  });
+}
+EOT
+    ;
+    echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+    ?>
+</div>

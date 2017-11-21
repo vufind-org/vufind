@@ -1,0 +1,125 @@
+<!-- START of: finna - collection/view.phtml -->
+<?
+  // Set up standard record scripts:
+  $this->headScript()->appendFile("record.js");
+  $this->headScript()->appendFile("check_save_statuses.js");
+  // Activate Syndetics Plus if necessary:
+  if ($this->syndeticsPlus()->isActive()) {
+    $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
+  }
+  // Set up breadcrumbs:
+  $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
+  // Set main header
+  if (empty($lastSearch)) {
+    $this->layout()->finnaMainHeader = '<div><h1 class="content-header">' . $this->transEsc('Collection') . '</h1></div>';
+  }
+  // Add RDF header link if applicable:
+  if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
+      $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
+  }
+
+  // Set flag for special cases relating to full-width hierarchy tree tab:
+  $tree = (strtolower($this->activeTab) == 'hierarchytree');
+
+  // Set page title.
+  $dataSource = $this->driver->tryMethod('getDataSource');
+  $headText = $this->driver->getBreadcrumb() . ' | ' . $this->translate('Collection') . (isset($dataSource) ? ' | ' . $this->transEsc('default::source_' . $dataSource, null, $dataSource) : '');
+  $this->headTitle($headText);
+
+  if ($lastUrl = $this->searchMemory()->getLastSearchUrl()) {
+      $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
+      $params->activateAllFacets();
+      $filterList = $params->getFilterList(true);
+
+      if (!empty($params->getFilterList(false))) {
+          $checkboxFilters = $params->getCheckboxFacets();
+          $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
+          $options = $this->searchOptions($this->searchClassId);
+          $defaultSortApplied = !isset($params) || $lastSort == $options->getDefaultSortByHandler($params->getSearchHandler());
+          // Set up filters
+          $this->layout()->finnaFilters = $this->context($this)->renderInContext(
+              'search/filters.phtml',
+              [
+                  'filterList' => $filterList,
+                  'checkboxFilters' => $checkboxFilters,
+                  'hasDefaultsApplied' => $params->hasDefaultsApplied(),
+                  'defaultSortApplied' => $defaultSortApplied,
+                  'options' => $options
+              ]
+          );
+      }
+  }
+
+  if (!empty($lastSearch)) {
+    $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
+  }
+  $this->layout()->breadcrumbs .= '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> '
+     . '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>';
+?>
+<? if (!empty($lastSearch)) : ?>
+</div>
+<div class="container">
+<? endif; ?>
+<div class="record record-row">
+  <div>
+    <?=$this->record($this->driver)->getToolbar()?>
+  </div>
+  <div class="mainbody left">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+    <?=$this->flashmessages()?>
+    <h2 class="collection-title"><?=$this->driver->getTitle();?></h2>
+    <div class="truncate-field wide">
+      <?=implode('<br><br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
+    </div>
+    <a href="<?=$this->url('record') . urlencode($this->driver->getUniqueID()); ?>"><?=$this->transEsc('Collection Details'); ?></a>
+
+    <? // N.B. The element/class structure here is important for the ajax tabs to work properly ?>
+    <div class="record-tabs">
+      <? if (count($this->tabs) > 0): ?>
+        <a name="tabnav"></a>
+        <ul class="recordTabs nav nav-tabs">
+          <? foreach ($this->tabs as $tab => $obj): ?>
+            <? // add current tab to breadcrumbs if applicable:
+              $desc = $obj->getDescription();
+              $tab_classes = [];
+              if (0 === strcasecmp($this->activeTab, $tab)) {
+                if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
+                  $tab_classes[] = 'active';
+                }
+                $tab_classes[] = 'initiallyActive';
+                $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
+                $activeTabObj = $obj;
+              }
+              if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
+              if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+            ?>
+            <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
+            <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<? endif ?>><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?></a>
+          </li>
+          <? endforeach; ?>
+        </ul>
+      <? endif; ?>
+
+      <div class="tab-content collectionDetails<?=$tree ? 'Tree' : ''?>">
+        <? if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+          <div class="tab-pane active <?=$this->activeTab ?>-tab">
+            <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+          </div>
+        <? endif; ?>
+      </div>
+    </div>
+
+    <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>
+  </div>
+
+  <? if (isset($activeTabObj) && is_callable([$activeTabObj, 'getSideRecommendations'])): ?>
+    <div class="sidebar right">
+      <? foreach ($activeTabObj->getSideRecommendations() as $current): ?>
+        <?=$this->recommend($current)?>
+      <? endforeach; ?>
+    </div>
+  <? endif; ?>
+</div>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET') ?>
+<!-- END of: finna - collection/view.phtml -->

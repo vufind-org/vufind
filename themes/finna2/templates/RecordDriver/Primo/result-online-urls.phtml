@@ -1,0 +1,27 @@
+<!-- START of: finna - RecordDriver/Primo/result-online-urls.phtml -->
+<?
+$openUrl = $this->openUrl($this->driver, 'results');
+$openUrlActive = $openUrl->isActive();
+// Account for replace_other_urls setting
+$urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
+$fulltextAvailable = $this->driver->getFulltextAvailable();
+?>
+<div class="primo-available-online<?= $fulltextAvailable ? ' fulltext-available' : ''?>">
+  <? if ($openUrlActive || !empty($urls)): ?>
+    <div class="heading <?=!empty($urls) ? '' : 'hidden'?>"><strong><?=$this->transEsc('Available Online')?></strong></div>
+    <? if(!$this->driver->isCollection()): ?>
+    <?=$this->partial('RecordDriver/Primo/online-url-list.phtml', ['driver' => $this->driver, 'urls' => $urls])?>
+    <? endif; ?>
+  <? endif; ?>
+
+  <? if ($openUrlActive): ?>
+    <?=$openUrl->renderTemplate()?>
+  <? endif; ?>
+
+  <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
+    <span class="status ajax-availability hidden">
+      <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
+    </span>
+  <? endif; ?>
+</div>
+<!-- END of: finna - RecordDriver/Primo/result-online-urls.phtml -->

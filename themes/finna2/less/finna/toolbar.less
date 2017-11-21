@@ -1,0 +1,25 @@
+// Pills This is the toolbar
+.nav-pills {
+  padding: 0px;
+  margin: 0px;
+  & a:hover {
+    text-decoration: none;
+  }
+  & > li:not(.addthis-share-buttons):not(.whatsapp) {
+    margin: 10px;
+    float: left;
+    // Links rendered as pills
+    & > a {
+      border-radius: @nav-pills-border-radius;
+      padding: 0px;
+    }
+  }
+}
+
+// QRCode in record view
+.nav-pills {
+  img.qrcode {
+    border-radius: 8px;
+    min-width: 150px;
+  }
+}

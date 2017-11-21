@@ -1,0 +1,40 @@
+<!-- START of: finna - record/feedback.phtml -->
+<?
+  $user = $this->auth()->isLoggedIn();
+?>
+<h2><?= $this->transEsc('Send feedback on record'); ?></h2>
+
+<? if (!$this->translationEmpty('record_feedback_instructions')): ?>
+  <p><?=$this->transEsc("record_feedback_instructions"); ?></p>
+<? endif; ?>
+
+<?=$this->flashmessages()?>
+
+  <form class="form feedback-form" method="post" name="feedbackRecord" action="<?= $this->recordLink()->getActionUrl($this->driver, 'Feedback') ?>">
+    <div>
+      <input type="hidden" name="id" value="<?= $this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" />
+      <div class="form-group">
+        <div class="feedback-info">
+          <label for="feedback_from" class="control-label">
+            <?= $this->TransEsc('Send feedback on record'); ?>: <?=$this->escapeHtml($this->organisationDisplayName($this->driver, true)) ?>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="feedback_from" class="control-label">* <?= $this->TransEsc('email_from'); ?>:</label>
+      <div>
+        <input id="feedback_from" type="text" name="from" size="37" class="form-control" required aria-required="true" value="<?=isset($user->email) ? $user->email : '' ?>" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="feedback_message" class="control-label">* <?= $this->TransEsc('feedback_message'); ?>:</label>
+      <div>
+        <textarea id="feedback_message" name="feedback_message" rows="3" cols="35" class="form-control" required aria-required="true"></textarea>
+      </div>
+    </div>
+    <div class="form-group">
+        <input class="btn btn-primary" type="submit" name="submitFeedback" value="<?= $this->TransEsc('Send'); ?>"/>
+    </div>
+  </form>
+<!-- END of: finna - record/feedback.phtml -->

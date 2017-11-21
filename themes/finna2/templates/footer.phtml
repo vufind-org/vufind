@@ -1,0 +1,50 @@
+<!-- START of: finna - footer.phtml -->
+<div class="footer-container">
+  <div class="footer-column">
+    <h5><strong><?=$this->transEsc('About')?></strong></h5>
+    <ul>
+      <li><a href="<?=$this->url('content-page', ['page' => 'about'])?>"><?=$this->transEsc('About Us')?></a></li>
+      <li><a href="<?=$this->url('content-page', ['page' => 'about_finna'])?>"><?=$this->transEsc('What is Finna')?></a></li>
+      <li><a href="<?=$this->url('content-page', ['page' => 'terms'])?>"><?=$this->transEsc('Terms')?></a></li>
+      <li><a href="<?=$this->url('content-page', ['page' => 'privacy'])?>"><?=$this->transEsc('Privacy')?></a></li>
+      <li><a href="<?=$this->url('content-page', ['page' => 'register_details'])?>"><?=$this->transEsc('Register Details')?></a></li>
+    </ul>
+  </div>
+  <div class="footer-column">
+    <h5><strong><?=$this->transEsc('Find More')?></strong></h5>
+    <ul>
+      <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
+      <li><a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
+      <? if ($this->primo()->isAvailable()): ?>
+      <li><a href="<?=$this->url('primo-home')?>"><?=$this->transEsc('Primo Search')?></a></li>
+      <li><a href="<?=$this->url('primo-advanced')?>"><?=$this->transEsc('Advanced Search from Primo')?></a></li>
+      <? endif; ?>
+      <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
+      <? if ($this->browse()->isAvailable('Database')): ?>
+      <li><a href="<?=$this->url('browse-database')?>"><?=$this->transEsc('browse_extended_Database')?></a></li>
+      <? endif; ?>
+      <? if ($this->browse()->isAvailable('Journal')): ?>
+      <li><a href="<?=$this->url('browse-journal')?>"><?=$this->transEsc('browse_extended_Journal')?></a></li>
+      <? endif; ?>
+    </ul>
+  </div>
+  <div class="footer-column">
+    <h5><strong><?=$this->transEsc('Need Help?')?></strong></h5>
+    <ul>
+      <li><a href="<?=$this->url('content-page', ['page' => 'help'])?>" title="<?=$this->transEsc('Search Tips')?>"><?=$this->transEsc('Help')?></a></li>
+      <li><a href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Feedback')?></a></li>
+    </ul>
+  </div>
+</div>
+<hr>
+<div class="footer-container">
+  <div class="footer-column">
+    <a href="<?=$this->url('content-page', ['page' => 'about_finna'])?>"><img src="<?=$this->imageLink('powered-by-finna_' . $this->layout()->userLang . '-black.png')?>" alt="Finna-logo" /></a><br><br>
+  </div>
+  <div class="footer-column">
+    <a href="http://vufind.org/"><img src="<?=$this->imageLink('vufind-logo-black.png')?>" alt="Vufind-logo" /></a>
+  </div>
+  <div class="footer-column">
+  </div>
+</div>
+<!-- END of: finna - footer.phtml -->

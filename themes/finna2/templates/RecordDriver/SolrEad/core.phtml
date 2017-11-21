@@ -1,0 +1,162 @@
+<!-- START of: finna - RecordDriver/SolrEad/core.phtml -->
+<?
+  $urls = $this->record($this->driver)->getLinkDetails();
+  if (!empty($urls)){
+    $videoUrls = [];
+    $otherUrls = [];
+    foreach ($urls as $url){
+      if (!empty($url['videoSources']) || !empty($url['embed']) && $url['embed'] == 'video' || $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe'){
+        array_push($videoUrls, $url);
+      } else {
+        array_push($otherUrls, $url);
+      }
+    }
+  }
+  $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
+  $img = $this->recordImage($this->record($this->driver));
+  $images = $img->getAllImagesAsCoverLinks(
+      $this->layout()->userLang, $params
+  );
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  ob_start(); ?>
+  <div class="media-<?=$thumbnailAlignment ?>">
+
+    <? $urls = $this->record($this->driver)->getLinkDetails(); ?>
+    <? if (!empty($videoUrls)): ?>
+      <div class="local-available-online-record recordURLs">
+        <div class="truncate-field">
+          <? foreach ($videoUrls as $url): ?>
+            <? $desc = $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe' ? $this->translate('format_Video') : $this->translate('link_' . $url['desc'], null, $url['desc']); ?>
+            <div class="video-link-container">
+              <a  class="videourl" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url']))?>" target="_blank"
+                  <? if (!empty($url['videoSources'])): ?> data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<? endif; ?>
+                  <?= $this->recordLink()->getEmbeddedVideo($url['url']) ?>
+                  <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
+              >
+                <div class="video-icon"><i class="fa fa-play-circle"></i></div>
+                <div class="video-desc"><?=$this->escapeHtml($desc)?></div>
+              </a>
+            </div>
+          <? endforeach; ?>
+        </div>
+      </div>
+    <? endif; ?>
+
+    <div class="image-information">
+        <div class="cover-wrapper">
+          <? /* Display thumbnail if appropriate: */ ?>
+          <? if ($img): ?>
+            <?=$img->render('record', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 1200, 'h' => 1200]]) ?>
+          <? endif;?>
+          <? /* Display qrcode if appropriate: */ ?>
+          <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
+          <? if ($QRCode): ?>
+            <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
+          <? endif; ?>
+        </div>
+        <? // if you have a preview tab but want to move or remove the preview link
+           // from this area of the record view, this can be split into
+           // getPreviewData() (should stay here) and
+           // getPreviewLink() (can go in your desired tab) ?>
+        <?=$this->record($this->driver)->getPreviews()?>
+    </div>
+
+    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr'): ?>
+      <div class="organisation-menu">
+          <?=$this->render('record/record-organisation-menu.phtml') ?>
+      </div>
+    <? endif; ?>
+
+    <div class="record-rating">
+      <div class="rating-stars">
+        <div onclick="$('a.usercomments').click();">
+          <?=$this->record($this->driver)->getRating()?>
+        </div>
+      </div>
+    </div>
+
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-toolbar")): ?>
+    <div class="record-post-toolbar">
+      <?=$this->render($template)?>
+    </div>
+    <? endif; ?>
+  </div>
+  <? $thumbnail = ob_get_contents(); ?>
+<? ob_end_clean(); ?>
+<? $this->headScript()->appendFile("finna-record.js"); ?>
+<div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+  <h1 property="name" class="record-title visible-xs"><?=$this->escapeHtml($this->driver->getTitle())?></h1>
+  <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <?=$thumbnail ?>
+  <? endif; ?>
+  <div class="media-body record-information">
+      <h1 property="name" class="record-title hidden-xs"><?=$this->escapeHtml($this->driver->getTitle())?></h1>
+      <? if ($serviceURLs = $this->driver->getServiceURLs()): ?>
+        <div class="recordURLs">
+          <? foreach ($serviceURLs as $current): ?>
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="_blank"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate($this->driver->getDataSource() . '_' . $current['desc'], null, $this->translate($current['desc'])))?></a>
+          <? endforeach; ?>
+        </div>
+      <? endif; ?>
+
+      <? if (!empty($otherUrls)): ?>
+        <div class="local-available-online-record recordURLs">
+          <div class="truncate-field">
+          <? foreach ($otherUrls as $url): ?>
+              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url']))?>" target="_blank"
+                <? if (!empty($url['posterUrl'])): ?> data-poster-url="<?= $this->escapeHtmlAttr($url['posterUrl']) ?>"<? endif; ?>
+              >
+                <i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate('link_' . $url['desc'], null, $url['desc']))?>
+              </a>
+              <br/>
+          <? endforeach; ?>
+          </div>
+        </div>
+      <? endif; ?>
+
+      <? $summ = $this->driver->getSummary(); if (!empty($summ)): ?>
+      <div class="truncate-field wide recordSummary">
+        <p class="summary">
+        <? foreach ($summ as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+        </p>
+      </div>
+      <? endif; ?>
+
+      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+        <? /* Display the lists that this record is saved to */ ?>
+        <div class="savedLists" id="savedLists">
+          <strong><?=$this->transEsc("Saved in")?>:</strong>
+        </div>
+      <? endif; ?>
+
+      <?/* Display Main Details */?>
+      <?
+        $formatter = $this->recordDataFormatter();
+        $coreFields = $formatter->getData(
+            $driver, $formatter->filterEADFields($formatter->getDefaults('core'))
+        );
+      ?>
+      <? if (!empty($coreFields)): ?>
+        <table class="table table-finna-record record-details">
+          <? foreach ($coreFields as $key => $current): ?>
+           <? $header = $this->transEsc(isset($current['context']['title']) ? $current['context']['title'] : $key); ?>
+           <tr class="<?=$current['context']['class'];?>"><th><?=$header !== '' ? "$header:" : ''?></th><td><?=$current['value']?></td></tr>
+          <? endforeach; ?>
+        </table>
+      <? endif; ?>
+      <?/* End Main Details */?>
+
+      <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-metadata")): ?>
+      <div>
+        <?=$this->render($template)?>
+      </div>
+      <? endif; ?>
+    </div>
+  <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+    <?=$thumbnail ?>
+  <? endif; ?>
+</div>
+<!-- END of: finna - RecordDriver/SolrEad/core.phtml -->

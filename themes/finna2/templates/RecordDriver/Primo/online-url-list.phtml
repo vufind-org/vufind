@@ -1,0 +1,16 @@
+<!-- START of: finna - RecordDriver/Primo/online-url-list.phtml -->
+<?
+$fulltextLinkAvailable = false;
+foreach ($this->urls as $url) {
+  if (!$url['citation']) {
+    $fulltextLinkAvailable = true;
+    break;
+  }
+}
+$fulltextAvailable = $this->driver->getFulltextAvailable();
+$format = $this->driver->getFormats(); $format = end($format);
+?>
+<? foreach ($this->urls as $current): ?>
+  <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] && ($fulltextLinkAvailable || !$fulltextAvailable) ? $this->transEsc('Citation') : $this->transEsc('format_PCI_' . strtolower($format), null, $format) ?></a><?=$current['urlShort'] ? ' <span class="host">' . $current['urlShort'] . '</span>' : '' ?>
+<? endforeach; ?>
+<!-- END of: finna - RecordDriver/Primo/online-url-list.phtml -->

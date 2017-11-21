@@ -279,7 +279,7 @@ class AccountExpirationReminders extends AbstractService
             || $userInstitution != $this->currentInstitution
         ) {
             $templateDirs = [
-                "{$this->baseDir}/themes/finna/templates",
+                "{$this->baseDir}/themes/finna2/templates",
             ];
             if (!$viewPath = $this->resolveViewPath($userInstitution)) {
                 $this->err(

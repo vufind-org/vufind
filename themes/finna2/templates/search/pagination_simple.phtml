@@ -1,0 +1,22 @@
+<!-- START of: finna - search/pagination_simple.phtml -->
+<? if ($this->pageCount): ?>
+  <ul class="paginationSimple">
+    <li>
+    <? if (isset($this->previous)): ?>
+      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><span class="sr-only"><?=$this->transEsc('Previous Page')?></span><i class="fa fa-arrow-alt-left"></i></a></li>
+    <? endif; ?>
+    <li>
+      <?=$this->label ?: $this->translate(
+        'showing_results_of_html', [
+          '%%start%%' => $this->results->getStartRecord(),
+          '%%end%%' => $this->results->getEndRecord(),
+          '%%total%%' => $this->localizedNumber($this->results->getResultTotal())
+        ]
+      );?>
+    </li>
+    <? if (isset($this->next)): ?>
+      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><span class="sr-only"><?=$this->transEsc('Next Page')?></span><i class="fa fa-arrow-alt-right"></i></a></li>
+    <? endif; ?>
+  </ul>
+<? endif; ?>
+<!-- END of: finna - search/pagination_simple.phtml -->
