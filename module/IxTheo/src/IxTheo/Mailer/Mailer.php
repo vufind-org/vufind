@@ -1,12 +1,16 @@
 <?php
 namespace IxTheo\Mailer;
 
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorAwareTrait;
+class Mailer extends \VuFind\Mailer\Mailer {
 
-class Mailer extends \VuFind\Mailer\Mailer implements ServiceLocatorAwareInterface {
+    protected $sm;
 
-    use ServiceLocatorAwareTrait;
+    public function __construct(\Zend\Mail\Transport\TransportInterface $transport, \Zend\ServiceManager\ServiceManager $sm)
+    {
+        parent::__construct($transport);
+        $this->sm = $sm;
+
+    }
 
     /**
      * Send an email message, append custom footer to body
@@ -23,7 +27,7 @@ class Mailer extends \VuFind\Mailer\Mailer implements ServiceLocatorAwareInterfa
      */
     public function send($to, $from, $subject, $body, $cc = null)
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $this->sm->get('VuFind\Config')->get('config');
         $email = $config->Site->email;
         $email_from = $config->Site->email_from;
 
@@ -44,6 +48,6 @@ class Mailer extends \VuFind\Mailer\Mailer implements ServiceLocatorAwareInterfa
      * @see VuFind\Controller\AbstractBase->translate
      */
     public function translate($msg, $tokens = [], $default = null) {
-        return $this->getServiceLocator()->get('viewmanager')->getRenderer()->plugin('translate')->__invoke($msg, $tokens, $default);
+        return $this->sm->get('ViewRenderer')->plugin('translate')->__invoke($msg, $tokens, $default);
     }
 }

@@ -92,9 +92,9 @@ $config = [
         ],
     ],
     'controller_plugins' => [
-        'invokables' => [
-            'subscriptions' => 'IxTheo\Controller\Plugin\Subscriptions',
-            'pdasubscriptions' => 'IxTheo\Controller\Plugin\PDASubscriptions',
+        'factories' => [
+            'subscriptions' => 'IxTheo\Controller\Plugin\Factory::getSubscriptions',
+            'pdasubscriptions' => 'IxTheo\Controller\Plugin\Factory::getPDASubscriptions',
         ]
     ],
     'service_manager' => [
