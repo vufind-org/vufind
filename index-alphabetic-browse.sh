@@ -75,6 +75,13 @@ function build_browse
 
     mv "${browse}_browse.db" "$index_dir/${browse}_browse.db-updated"
     touch "$index_dir/${browse}_browse.db-ready"
+
+    # tuefind specific:
+    # set user of out file to solr, so if script is accidentally executed as root
+    # the output files will be owned by solr user.
+    # (else solr service cant import it)
+    chown solr:solr "$index_dir/${browse}_browse.db-updated"
+    chown solr:solr "$index_dir/${browse}_browse.db-ready"
 }
 build_browse "hierarchy" "hierarchy_browse"
 build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr"
