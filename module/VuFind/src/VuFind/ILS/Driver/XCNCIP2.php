@@ -1485,7 +1485,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             if ($dueDate) {
                 $tmp = $dueDate;
                 $newDueDate = (string)$tmp[0];
-                $tmp = split("T", $newDueDate);
+                $tmp = explode('T', $newDueDate);
                 $splitDate = $tmp[0];
                 $splitTime = $tmp[1];
                 $details[$renewId] = [

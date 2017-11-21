@@ -15,6 +15,7 @@ $rules = [
     'concat_space' => ['spacing' => 'one'],
     'elseif' => true,
     'encoding' => true,
+    'ereg_to_preg' => true,
     'full_opening_tag' => true,
     'function_declaration' => true,
     'function_typehint_space' => true,
@@ -72,5 +73,6 @@ if (!is_dir($cacheDir)) {
 
 return PhpCsFixer\Config::create()
     ->setCacheFile($cacheDir . '/.code.cache')
+    ->setRiskyAllowed(true)
     ->setRules($rules)
     ->setFinder($finder);
