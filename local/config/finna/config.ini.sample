@@ -27,7 +27,7 @@ email           = finna-posti@helsinki.fi
 title           = "Finna"
 ; This is the default theme for non-mobile devices (or all devices if mobile_theme
 ; is disabled below)
-theme           = finna
+theme           = finna2
 
 ; Automatic asset minification and concatenation setting. When active, HeadScript
 ; and HeadLink will concatenate and minify all viable files to reduce requests and
