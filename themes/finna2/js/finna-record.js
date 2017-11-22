@@ -158,8 +158,11 @@ finna.record = (function finnaRecord() {
         accordion.addClass('active');
         window.location.hash = tabid;
         var newTab = getNewRecordTab(tabid).addClass('active');
-        if (accordion.find('.accordion-content .tab-pane').length < 1) {
-          accordion.find('.accordion-content').append(newTab);
+        if (accordion.hasClass('noajax')){
+          return true;
+        }
+        if (accordion.find('.accordion-content .tab-pane.' + tabid + '-tab').length < 1) {
+          accordion.find('.accordion-content').html(newTab);
           ajaxLoadTab(newTab, tabid, !$(this).parent().hasClass('initiallyActive'));
         }
         $('html, body').animate({scrollTop: accordion.offset().top - 64}, 150);

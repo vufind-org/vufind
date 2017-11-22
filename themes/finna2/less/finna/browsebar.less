@@ -7,7 +7,7 @@
 .browsebar .nav>li .iconlabel:before,
 .browsebar .nav-dropdown-label.iconlabel:before,
 .browsebar .dropdown-menu a.iconlabel:before{
-  vertical-align: middle;
+  vertical-align: bottom;
   font-size: 1.3em;
   margin-right: 0.5em;   
 }
@@ -73,6 +73,19 @@
     padding: 0;
     padding-left: 1em;
     line-height: normal;
+    &:before {
+      font-family: 'icomoon';
+      content: "\e00d";
+      margin-right: 5px;
+      font-size: 1.3em;
+      vertical-align: bottom;
+    }
+    &:after {
+      font-family: icomoon;
+      content: "\e613";
+      vertical-align: middle;
+      margin-left: 5px;
+    }
     &:hover {
       background-color: darken(@finna-browsebar-background, 5%);
     }
