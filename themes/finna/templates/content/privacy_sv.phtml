@@ -3,7 +3,7 @@
 
 <div class="page-content">
   <h2>Hantering av kunduppgifter i Finna</h2>
-  <p>När användaren loggar in i Finna med sitt bibliotekskort sparas kortets nummer och pinkod, användarens för- och efternamn, e-postadress och hembibliotek i tjänsten. Vid Haka-inloggning sparas användarnamnet och användarens namn och e-postadress automatiskt i Finna. Om ma loggar in med Finna-konto sparas användarnamnet och användarens namn och e-postadress i Finna. Uppgifterna används för följande ändamål:
+  <p>Om man loggar in med Finna-konto sparas användarnamnet och användarens namn och e-postadress i Finna. När användaren loggar in i Finna med sitt bibliotekskort sparas kortets nummer och pinkod, användarens för- och efternamn, e-postadress och hembibliotek i tjänsten. Vid Haka-inloggning sparas användarnamnet och användarens namn och e-postadress automatiskt i Finna. Uppgifterna används för följande ändamål:
   </p>
   <table class="content-table">
     <tr>
@@ -11,16 +11,12 @@
       <td><strong>Ändamål</strong></td>
     </tr>
     <tr>
-      <th>Bibliotekskortets nummer</th>
-      <td>Identifierar användaren</td>
-    </tr>
-    <tr>
       <th>Användarnamnet</th>
       <td>Identifierar användaren</td>
     </tr>
     <tr>
-      <th>Pinkoden</th>
-      <td>Identifierar användaren i olika tjänstegränssnitt</td>
+      <th>E-postaddress</th>
+      <td>Den adress som i första hand används, användaren kan ändra uppgiften i Finna</td>
     </tr>
     <tr>
       <th>Förnamn</th>
@@ -31,8 +27,12 @@
       <td>Identifierar användaren och används för att visa information</td>
     </tr>
     <tr>
-      <th>E-postaddress</th>
-      <td>Den adress som i första hand används, användaren kan ändra uppgiften i Finna</td>
+      <th>Bibliotekskortets nummer</th>
+      <td>Identifierar användaren</td>
+    </tr>
+    <tr>
+      <th>Pinkoden</th>
+      <td>Identifierar användaren i olika tjänstegränssnitt</td>
     </tr>
     <tr>
       <th>Hembibliotek</th>
@@ -43,9 +43,11 @@
   </p>
   <p>Förutom de ovan nämnda uppgifterna kan man också spara information om användarens aktiviteter i Finna. Sådan information är bl.a. språk, aktiverad påminnelse om förfallodag, nyhetsbevakningar, poster som användaren har sparat i egna listor, bibliotekskort som användaren själv lagt till och sociala metadata (kommentarer, recensioner, nyckelord).
   </p>
-  <p>För andra funktioner som hanterar användarnas uppgifter används bibliotekssystemets tjänstegränssnitt, t.ex. för funktioner som gäller reserveringar, lån och avgifter, och uppgifterna sparas inte i Finna, med undantag av de frivilliga påminnelserna om förfallodag. I samband med att en påminnelse om förfallodag skickas till användaren sparas id-numret och förfallodagen för lånet, detta för att varje påminnelse bara ska skickas en gång.
+  <p>För andra funktioner som hanterar användarnas uppgifter (t.ex. för funktioner som gäller reserveringar, lån och avgifter) används bibliotekssystemets tjänstegränssnitt och uppgifterna sparas inte i Finna. Sådana uppgifter (däribland postadressen, telefonnumret, giltighetstiden av användarkonton, låningsförbuder, låner, avgifter, reservationer och beställningar) hämtas realtid bara för användningsläget. Frivilliga påminnelserna om förfallodag är undantager. I samband med att en påminnelse om förfallodag skickas till användaren sparas id-numret och förfallodagen för lånet, detta för att varje påminnelse bara ska skickas en gång.
   </p>
-  <p>Finnakonton som skapas med bibliotekskorts-, Finna- eller Haka-koder är separata, även om de innehåller samma identifikationskod. Det finns en registerbeskrivning för hanteringen av användaruppgifter:
+  <p>Finnakonton som skapas med bibliotekskorts-, Finna- eller Haka-koder är separata, även om de tillhör samma person med samma e-postaddress.
+  </p>
+  <p>Användaruppgifterna behandlas för tjänsteproduktionen vid Nationalbiblioteket och CSC – IT-centret för vetenskap (tjänsteproducenterna) samt vid <a href="organisations">organisationerna</a> som tillhandahåller material i Finna angående de användaruppgifterna av organisationernas egna kunder. Uppgifterna lämnas inte ut. Användaruppgifterna sparas i 12 månader efter den senaste inloggningen.
   </p>
   <p>Det finns en <a href="register_details">registerbeskrivning</a> för hanteringen av användaruppgifter.
   </p>
