@@ -1042,7 +1042,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
 
                         $holding = [
                             'id' => $id,
-                            'barcode' => $id,
                             'item_id' => $reservableId,
                             'holdings_id' => $group,
                             'availability' => $available,
@@ -1443,7 +1442,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'title' => $title,
                 'duedate' => $loan->loanDueDate,
                 'renewable' => (string)$loan->loanStatus->isRenewable == 'yes',
-                'barcode' => $loan->id,
                 'message' => $message,
                 'renewalCount' => max(
                     [0,
@@ -1663,7 +1661,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      */
     public function getRenewDetails($checkoutDetails)
     {
-        return $checkoutDetails['barcode'];
+        return $checkoutDetails['item_id'];
     }
 
     /**
