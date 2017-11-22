@@ -1,0 +1,15 @@
+<? //Don't add START and END comments ?>
+<div class="truncate-field">
+  <? if ($data): ?>
+    <? foreach ($data as $i => $hostRecord): ?>
+      <?=$i > 0 ? '<br/>' : ''?>
+      <? if ($hostRecord['id'] || $hostRecord['title']): ?>
+        <? // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
+        <? $link = $hostRecord['id'] ? $this->escapeHtmlAttr($this->url('record') . urlencode($hostRecord['id'])) : $this->record($this->driver)->getLink('title', $hostRecord['title']); ?>
+        <a href="<?=$link?>"><?=$hostRecord['title']?></a>
+      <? endif; ?>
+      <?=$this->escapeHtml($hostRecord['reference']); ?><? if (!empty($hostRecord['publishingInfo'])): ?>,<? endif; ?>
+      <?=$this->escapeHtml($hostRecord['publishingInfo']); ?>
+    <? endforeach; ?>
+  <? endif; ?>
+</div>
