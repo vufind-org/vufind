@@ -40,6 +40,6 @@ class Factory extends \VuFind\Controller\Factory
     }
 
     public static function getProxyController(ServiceManager $sm) {
-        return new PDAProxyController($sm->getServiceLocator());
+        return new ProxyController($sm->getServiceLocator());
     }
 }
