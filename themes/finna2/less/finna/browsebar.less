@@ -27,9 +27,6 @@
   padding-right: 5px;
   font-size: 1.1em;
   height: 64px;
-  @media(max-width: @screen-sm){
-    height: 40px;
-  }
 }
 .browsebar button .iconlabel {
   color: @finna-browsebar-link-color;
@@ -74,6 +71,8 @@
     background-color: transparent;
     color: @finna-browsebar-link-color;
     padding: 0;
+    padding-left: 1em;
+    line-height: normal;
     &:hover {
       background-color: darken(@finna-browsebar-background, 5%);
     }

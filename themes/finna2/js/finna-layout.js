@@ -810,17 +810,12 @@ finna.layout = (function finnaLayout() {
     priorityNav.init({
       mainNavWrapper: ".nav-wrapper",
       mainNav: ".nav-ul",
-      navDropdownLabel: '<div class="nav-dropdown-label iconlabel other-records">' + VuFind.translate('other_records') + '<span class="caret"></span></div>',
+      navDropdownLabel: VuFind.translate('other_records'),
       navDropdownClassName: "dropdown-menu",
-      navDropdownBreakpointLabel: '<div class="nav-dropdown-label iconlabel other-records">' + VuFind.translate('records') + '<span class="caret"></span></div>',
+      navDropdownBreakpointLabel: VuFind.translate('records'),
       navDropdownToggleClassName: "nav-dropdown-toggle",
       breakPoint: 400
     });
-
-    $(".nav-dropdown-label").click(function priorityNavLabelClicked(e){
-      e.stopPropagation();
-      $(e.target).parent().click();
-    })
   }
 
   function initFiltersToggle () {
