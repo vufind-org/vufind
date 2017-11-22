@@ -9,10 +9,6 @@
      = $this->layout()->savedTabs
      && isset($this->layout()->savedTabs[$searchClassId]);
 
-  // More link should use default limit, not custom limit:
-  $limit = $params->getLimit();
-  $params->setLimit($params->getOptions()->getDefaultLimit());
-
   $url = $results->getUrlQuery();
   $url->setSearchId($searchClassId, null);
   // Use URL from search tab as "moreUrl" since it includes daterange type parameter
@@ -32,7 +28,7 @@
     }
   }
   if (!$moreUrl) {
-    $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $url->setPage(1);
+    $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $url->setPage(1)->setLimit($params->getOptions()->getDefaultLimit());
   }
 ?>
 <div class="combined-titles">
