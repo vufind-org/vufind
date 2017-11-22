@@ -138,6 +138,16 @@ display_item_hold_counts = false
 display_total_hold_count = true
 ; Whether total item count is displayed in results list
 display_total_item_count_in_results = true
+; Whether to use holding records
+use_holding_records = true
+; Fields to include in notes. Default is "852z".
+notes = "506au:845a:852z"
+; Fields to include in summary. Default is "866a".
+summary = "863abiz:866az"
+; Fields to include in supplements. Default is none.
+supplements = "867az"
+; Fields to include in indexes. Default is none.
+indexes = "868az"
 
 [onlinePayment]
 ; Whether online payment is enabled. Default is false.

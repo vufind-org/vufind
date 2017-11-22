@@ -749,6 +749,9 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             if (!empty($item['availability'])) {
                 $availableTotal++;
             }
+            if (strncmp($item['item_id'], 'HLD_', 4) !== 0) {
+                $itemsTotal++;
+            }
             $locations[$item['location']] = true;
             if ($item['requests_placed'] > $requests) {
                 $requests = $item['requests_placed'];
@@ -761,7 +764,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
 
         $result = [
            'available' => $availableTotal,
-           'total' => count($holdings),
+           'total' => $itemsTotal,
            'locations' => count($locations),
            'availability' => null,
            'callnumber' => null,
@@ -791,6 +794,299 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         }
         $result[] = $this->translateLocation($item['location']);
         return implode(', ', $result);
+    }
+
+    /**
+     * Get Item Statuses
+     *
+     * This is responsible for retrieving the status information of a certain
+     * record.
+     *
+     * @param string $id     The record id to retrieve the holdings for
+     * @param array  $patron Patron information, if available
+     *
+     * @return array An associative array with the following keys:
+     * id, availability (boolean), status, location, reserve, callnumber.
+     */
+    protected function getItemStatusesForBiblio($id, $patron = null)
+    {
+        $holdings = null;
+        if (!empty($this->config['Holdings']['use_holding_records'])) {
+            $holdingsResult = $this->makeRequest(
+                ['v1', 'biblios', $id, 'holdings'],
+                [],
+                'GET',
+                $patron
+            );
+            // Turn the holdings into a keyed array
+            if (!empty($holdingsResult['holdings'])) {
+                foreach ($holdingsResult['holdings'] as $holding) {
+                    $holdings[$holding['holdingnumber']] = $holding;
+                }
+            }
+        }
+        $result = $this->makeRequest(
+            ['v1', 'availability', 'biblio', 'search'],
+            ['biblionumber' => $id],
+            'GET',
+            $patron
+        );
+
+        $statuses = [];
+        foreach ($result[0]['item_availabilities'] as $i => $item) {
+            $holding = null;
+            if (!empty($item['holdingnumber'])
+                && isset($holdings[$item['holdingnumber']])
+            ) {
+                $holding = $holdings[$item['holdingnumber']];
+                if ($holding['suppress']) {
+                    continue;
+                }
+            }
+            $avail = $item['availability'];
+            $available = $avail['available'];
+            $statusCodes = $this->getItemStatusCodes($item);
+            $status = $this->pickStatus($statusCodes);
+            if (isset($avail['unavailabilities']['Item::CheckedOut']['date_due'])) {
+                $duedate = $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d\TH:i:sP',
+                    $avail['unavailabilities']['Item::CheckedOut']['date_due']
+                );
+            } else {
+                $duedate = null;
+            }
+
+            $entry = [
+                'id' => $id,
+                'item_id' => $item['itemnumber'],
+                'location' => $this->getItemLocationName($item),
+                'availability' => $available,
+                'status' => $status,
+                'status_array' => $statusCodes,
+                'reserve' => 'N',
+                'callnumber' => $this->getItemCallNumber($item),
+                'duedate' => $duedate,
+                'number' => $item['enumchron'],
+                'barcode' => $item['barcode'],
+                'sort' => $i,
+                'requests_placed' => max(
+                    [$item['hold_queue_length'], $result[0]['hold_queue_length']]
+                )
+            ];
+            if (!empty($item['itemnotes'])) {
+                $entry['item_notes'] = [$item['itemnotes']];
+            }
+
+            if ($patron && $this->itemHoldAllowed($item)) {
+                $entry['is_holdable'] = true;
+                $entry['level'] = 'copy';
+                $entry['addLink'] = 'check';
+            } else {
+                $entry['is_holdable'] = false;
+            }
+
+            if ($holding) {
+                $entry += $this->getHoldingData($holding);
+                $holding['_hasItems'] = true;
+            }
+
+            $statuses[] = $entry;
+        }
+
+        if (!isset($i)) {
+            $i = 0;
+        }
+
+        // Add holdings that don't have items
+        if (!empty($holdings)) {
+            foreach ($holdings as $holding) {
+                if ($holding['suppress'] || !empty($holding['_hasItems'])) {
+                    continue;
+                }
+                $i++;
+
+                $callnumber = $this->translateLocation($holding['location']);
+                if ($holding['callnumber']) {
+                    $callnumber .= ' ' . $holding['callnumber'];
+                }
+                $callnumber = trim($callnumber);
+
+                $entry = [
+                    'id' => $id,
+                    'item_id' => 'HLD_' . $holding['biblionumber'],
+                    'location' => $this->getBranchName($holding['holdingbranch']),
+                    'requests_placed' => 0,
+                    'status' => '',
+                    'use_unknown_message' => true,
+                    'availability' => false,
+                    'duedate' => '',
+                    'barcode' => '',
+                    'callnumber' => $callnumber,
+                    'sort' => $i
+                ];
+                $entry += $this->getHoldingData($holding, true);
+
+                $statuses[] = $entry;
+            }
+        }
+
+        usort($statuses, [$this, 'statusSortFunction']);
+        return $statuses;
+    }
+
+    /**
+     * Return a location for a Koha branch ID
+     *
+     * @param string $branchId Branch ID
+     *
+     * @return string
+     */
+    protected function getBranchName($branchId)
+    {
+        $name = $this->translate("location_$branchId");
+        if ($name === "location_$branchId") {
+            $branches = $this->getCachedData('branches');
+            if (null === $branches) {
+                $result = $this->makeRequest(
+                    ['v1', 'libraries'], false, 'GET'
+                );
+                $branches = [];
+                foreach ($result as $branch) {
+                    $branches[$branch['branchcode']] = $branch['branchname'];
+                }
+                $this->putCachedData('branches', $branches);
+            }
+            $name = isset($branches[$branchId]) ? $branches[$branchId] : $branchId;
+        }
+        return $name;
+    }
+
+    /**
+     * Get holding data from a holding record
+     *
+     * @param array $holding Holding record from Koha
+     *
+     * @return array
+     */
+    protected function getHoldingData(&$holding)
+    {
+        $marcRecord = isset($holding['_marcRecord'])
+            ? $holding['_marcRecord'] : null;
+        if (!isset($holding['_marcRecord'])) {
+            foreach ($holding['holdings_metadatas'] as $metadata) {
+                if ('marcxml' === $metadata['format']
+                    && 'MARC21' === $metadata['marcflavour']
+                ) {
+                    $marc = new \File_MARCXML(
+                        $metadata['metadata'], \File_MARCXML::SOURCE_STRING
+                    );
+                    $holding['_marcRecord'] = $marc->next();
+                    break;
+                }
+            }
+        }
+        if (empty($holding['_marcRecord'])) {
+            return [];
+        }
+
+        $marcDetails = [
+            'holdings_id' => $holding['holdingnumber']
+        ];
+
+        // Get Notes
+        $data = $this->getMFHDData(
+            $holding['_marcRecord'],
+            isset($this->config['Holdings']['notes'])
+            ? $this->config['Holdings']['notes']
+            : '852z'
+        );
+        if ($data) {
+            $marcDetails['notes'] = $data;
+        }
+
+        // Get Summary (may be multiple lines)
+        $data = $this->getMFHDData(
+            $holding['_marcRecord'],
+            isset($this->config['Holdings']['summary'])
+            ? $this->config['Holdings']['summary']
+            : '866a'
+        );
+        if ($data) {
+            $marcDetails['summary'] = $data;
+        }
+
+        // Get Supplements
+        if (isset($this->config['Holdings']['supplements'])) {
+            $data = $this->getMFHDData(
+                $holding['_marcRecord'],
+                $this->config['Holdings']['supplements']
+            );
+            if ($data) {
+                $marcDetails['supplements'] = $data;
+            }
+        }
+
+        // Get Indexes
+        if (isset($this->config['Holdings']['indexes'])) {
+            $data = $this->getMFHDData(
+                $holding['_marcRecord'],
+                $this->config['Holdings']['indexes']
+            );
+            if ($data) {
+                $marcDetails['indexes'] = $data;
+            }
+        }
+
+        return $marcDetails;
+    }
+
+    /**
+     * Get specified fields from an MFHD MARC Record
+     *
+     * @param object       $record     File_MARC object
+     * @param array|string $fieldSpecs Array or colon-separated list of
+     * field/subfield specifications (3 chars for field code and then subfields,
+     * e.g. 866az)
+     *
+     * @return string|string[] Results as a string if single, array if multiple
+     */
+    protected function getMFHDData($record, $fieldSpecs)
+    {
+        if (!is_array($fieldSpecs)) {
+            $fieldSpecs = explode(':', $fieldSpecs);
+        }
+        $results = '';
+        foreach ($fieldSpecs as $fieldSpec) {
+            $fieldCode = substr($fieldSpec, 0, 3);
+            $subfieldCodes = substr($fieldSpec, 3);
+            if ($fields = $record->getFields($fieldCode)) {
+                foreach ($fields as $field) {
+                    if ($subfields = $field->getSubfields()) {
+                        $line = '';
+                        foreach ($subfields as $code => $subfield) {
+                            if (!strstr($subfieldCodes, $code)) {
+                                continue;
+                            }
+                            if ($line) {
+                                $line .= ' ';
+                            }
+                            $line .= $subfield->getData();
+                        }
+                        if ($line) {
+                            if (!$results) {
+                                $results = $line;
+                            } else {
+                                if (!is_array($results)) {
+                                    $results = [$results];
+                                }
+                                $results[] = $line;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $results;
     }
 
     /**
