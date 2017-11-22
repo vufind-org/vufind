@@ -6,10 +6,7 @@
   $recordTotal = $results->getResultTotal();
 
   // More link should use default limit, not custom limit:
-  $limit = $params->getLimit();
-  $params->setLimit($params->getOptions()->getDefaultLimit());
-  $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1);
-  $params->setLimit($limit);
+  $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1)->setLimit($params->getOptions()->getDefaultLimit());
 ?>
 <? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
   <div class="pull-right flip">

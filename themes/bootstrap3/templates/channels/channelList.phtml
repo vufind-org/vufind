@@ -21,7 +21,6 @@
 <? endif; ?>
 
 <? $insideButton = false; ?>
-<? $channelLinkData = []; ?>
 <? foreach ($channels as $channel): ?>
   <?
     $groupId = isset($channel['groupId'])
@@ -36,13 +35,9 @@
       <? $insideButton = false; ?>
     <? endif; ?>
     <div class="channel-title">
-      <h2><?=$this->escapeHtml($channel['title'])?>
-      <? if (!empty($channel['links'])): ?>
-        <? $channelLinkData[$channelID] = json_encode($channel['links']); ?>
-      <? endif; ?>
-      </h2>
+      <h2><?=$this->escapeHtml($channel['title'])?></h2>
     </div>
-    <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>" data-link-json='<?=json_encode($channel['links']) ?>'>
+    <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>" data-link-json='<?=empty($channel['links']) ? '[]' : json_encode($channel['links']) ?>'>
       <!-- Wrapper for slides -->
       <? foreach ($channel['contents'] as $item): ?>
         <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>" class="channel-record slide" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
