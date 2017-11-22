@@ -167,10 +167,13 @@
                       <? $pickupDisplay = $ilsDetails['location']; ?>
                     <? endif; ?>
                   <? endif; ?>
+
+                  <? $requestIsEditable = isset($ilsDetails['is_editable']) ? $ilsDetails['is_editable'] : true; ?>
+
                   <? if (!empty($pickupDisplay)): ?>
                     <div class="pickup-location-container">
                       <strong><?=$this->transEsc('pick_up_location') ?>:</strong>
-                      <? if (isset($ilsDetails['available']) && !$ilsDetails['available'] && $changePickupLocation): ?>
+                      <? if (isset($ilsDetails['available']) && !$ilsDetails['available'] && $changePickupLocation && $requestIsEditable): ?>
                         <div class="changeHolds" data-record-id="<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" data-request-id="<?=$this->escapeHtml($ilsDetails['requestId']) ?>" >
                           <span class="pickup-change-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i></span>
                           <div class="view-button pickup-location">
@@ -223,7 +226,7 @@
                   <? if (isset($ilsDetails['cancel_link'])): ?>
                     <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("hold_cancel") ?></a></p>
                   <? endif; ?>
-                  <? if (isset($ilsDetails['available']) && !$ilsDetails['available'] && $changeRequestStatus): ?>
+                  <? if (isset($ilsDetails['available']) && !$ilsDetails['available'] && $changeRequestStatus && $requestIsEditable): ?>
                     <div class="change-hold-status" data-record-id="<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" data-request-id="<?=$this->escapeHtml($ilsDetails['requestId']) ?>" >
                       <span class="status-change-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i></span>
                       <span class="hold-status-active<?=!empty($ilsDetails['frozen']) ? ' hidden' : '' ?>">
