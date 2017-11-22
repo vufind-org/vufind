@@ -1042,6 +1042,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
 
                         $holding = [
                             'id' => $id,
+                            'barcode' => $id,
                             'item_id' => $reservableId,
                             'holdings_id' => $group,
                             'availability' => $available,
