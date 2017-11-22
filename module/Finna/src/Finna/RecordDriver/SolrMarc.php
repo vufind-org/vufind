@@ -544,6 +544,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
      *   id
      *   title
      *   reference
+     *   Place, publisher, and date of publication
      *
      * @return array
      */
@@ -554,6 +555,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             $id = '';
             $title = '';
             $reference = '';
+            $publishingInfo = '';
             $subfields = $field->getSubfields();
             foreach ($subfields as $subfield) {
                 $subfieldCode = $subfield->getCode();
@@ -572,13 +574,19 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                 case 'g':
                     $reference = $subfield->getData();
                     break;
+                case 'd':
+                    $publishingInfo = $this->stripTrailingPunctuation(
+                        $subfield->getData(), '.-'
+                    );
+                    break;
                 }
             }
 
             $result[] = [
                 'id' => $id,
                 'title' => $title,
-                'reference' => $reference
+                'reference' => $reference,
+                'publishingInfo' => $publishingInfo
             ];
         }
         return $result;

@@ -759,7 +759,12 @@ class RecordDataFormatterFactory
                 'context' => ['class' => 'record-uncontrolled-title']
             ]
         );
-
+        $spec->setTemplateLine(
+            'Published In Issue', 'getHostRecords', 'data-hostInfo.phtml',
+            [
+                'context' => ['class' => 'record-article-host']
+            ]
+        );
         return $spec->getArray();
     }
 
