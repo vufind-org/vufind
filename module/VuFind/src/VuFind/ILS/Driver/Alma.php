@@ -54,6 +54,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     protected $apiKey;
 
+    /**
+	 * Date converter
+	 *
+	 * @var \VuFind\Date\Converter
+	 */
     protected $dateConverter;
 
     /**
@@ -149,7 +154,20 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $itemPath = $bibPath . '/' . urlencode($holdingId) . '/items';
                 if ($currentItems = $this->makeRequest($itemPath)) {
                     foreach ($currentItems->item as $item) {
+                    	$itemId = (string)$item->item_data->pid;
                         $barcode = (string)$item->item_data->barcode;
+						$process_type = (string) $item->item_data->process_type;
+						$requested = ((string)$item->item_data->requested === 'false') ? false : true;
+						
+						// For some data we need to do additional API calls due to the Alma API architecture
+						$duedate = ($requested) ? 'requested' : null;
+						if ($process_type == 'LOAN' && !$requested) {
+							$loanDataPath = '/bibs/' . urlencode($id) . '/holdings/' . urlencode($holdingId) . '/items/' . urlencode($itemId) . '/loans';
+					        $loanData = $this->makeRequest($loanDataPath);
+					        $loan = $loanData->item_loan;
+							$duedate = $this->parseDate((string)$loan->due_date);
+						}
+
                         $results[] = [
                             'id' => $id,
                             'source' => 'Solr',
@@ -160,7 +178,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                                 ->attributes()['desc'],
                             'reserve' => 'N',   // TODO: support reserve status
                             'callnumber' => (string)$item->holding_data->call_number,
-                            'duedate' => null, // TODO: support due dates
+                            'duedate' => $duedate,
                             'returnDate' => false, // TODO: support recent returns
                             'number' => ++$copyCount,
                             'barcode' => empty($barcode) ? 'n/a' : $barcode,
@@ -172,6 +190,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 }
             }
         }
+
+        
         return $results;
     }
 
@@ -663,6 +683,45 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
         return $reserves;
     }
+
+	/**
+	 * Parse a date.
+	 *
+	 * @param string $date
+	 *        	Date to parse
+	 *        	
+	 * @return string
+	 */
+	public function parseDate($date, $withTime = false) {
+		// Remove trailing Z from end of date (e. g. from Alma we get dates like 2012-07-13Z without time, which is wrong)
+		if (strpos($date, 'Z', (strlen($date) - 1))) {
+			$date = preg_replace('/Z{1}$/', '', $date);
+		}
+		
+		if ($date == null || $date == '') {
+			return '';
+		} else if (preg_match("/^[0-9]{8}$/", $date) === 1) { // e. g. 20120725
+			return $this->dateConverter->convertToDisplayDate('Ynd', $date);
+		} else if (preg_match("/^[0-9]+\/[A-Za-z]{3}\/[0-9]{4}$/", $date) === 1) { // e. g. 13/jan/2012
+			return $this->dateConverter->convertToDisplayDate('d/M/Y', $date);
+		} else if (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{4}$/", $date) === 1) { // e. g. 13/7/2012
+			return $this->dateConverter->convertToDisplayDate('d/m/Y', $date);
+		} else if (preg_match("/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{2,4}$/", $date) === 1) { // e. g. 13/07/2012
+			return $this->dateConverter->convertToDisplayDate('d/m/y', $date);
+		} else if (preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $date) === 1) { // e. g. 2012-07-13
+			return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
+		} else if (preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$/", substr($date, 0, 19)) === 1) { // e. g. 2017-07-09T18:00:00
+			if ($withTime) {
+				return $this->dateConverter->convertToDisplayDateAndTime('Y-m-d\TH:i:s', substr($date, 0, 19));
+			} else {
+				return $this->dateConverter->convertToDisplayDate('Y-m-d', substr($date, 0, 10));
+			}
+		} else {
+			throw new \Exception("Invalid date: $date");
+		}
+	}
+		
+	
 
     // @codingStandardsIgnoreStart
 
