@@ -185,7 +185,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             'number' => ++$copyCount,
                             'barcode' => empty($barcode) ? 'n/a' : $barcode,
                         	'item_notes' => $itemNotes,
-                            'item_id' => (string)$item->item_data->pid,
+                            'item_id' => $itemId,
                             'holding_id' => $holdingId,
                             'addLink' => 'check'
                         ];
