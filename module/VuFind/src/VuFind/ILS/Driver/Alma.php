@@ -158,7 +158,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     	$itemId = (string)$item->item_data->pid;
                         $barcode = (string)$item->item_data->barcode;
 						$processType = (string) $item->item_data->process_type;
-						$itemNotes = ($item->item_data->public_note != null && !empty($item->item_data->public_note)) ? [(string)$item->item_data->public_note] : [];
+						$itemNotes = ($item->item_data->public_note != null && !empty($item->item_data->public_note)) ? [(string)$item->item_data->public_note] : null;
 						$requested = ((string)$item->item_data->requested === 'false') ? false : true;
 						
 						// For some data we need to do additional API calls due to the Alma API architecture
