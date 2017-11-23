@@ -154,14 +154,16 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $itemPath = $bibPath . '/' . urlencode($holdingId) . '/items';
                 if ($currentItems = $this->makeRequest($itemPath)) {
                     foreach ($currentItems->item as $item) {
+
                     	$itemId = (string)$item->item_data->pid;
                         $barcode = (string)$item->item_data->barcode;
-						$process_type = (string) $item->item_data->process_type;
+						$processType = (string) $item->item_data->process_type;
+						$itemNotes = ($item->item_data->public_note != null && !empty($item->item_data->public_note)) ? [(string)$item->item_data->public_note] : [];
 						$requested = ((string)$item->item_data->requested === 'false') ? false : true;
 						
 						// For some data we need to do additional API calls due to the Alma API architecture
 						$duedate = ($requested) ? 'requested' : null;
-						if ($process_type == 'LOAN' && !$requested) {
+						if ($processType == 'LOAN' && !$requested) {
 							$loanDataPath = '/bibs/' . urlencode($id) . '/holdings/' . urlencode($holdingId) . '/items/' . urlencode($itemId) . '/loans';
 					        $loanData = $this->makeRequest($loanDataPath);
 					        $loan = $loanData->item_loan;
@@ -182,6 +184,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             'returnDate' => false, // TODO: support recent returns
                             'number' => ++$copyCount,
                             'barcode' => empty($barcode) ? 'n/a' : $barcode,
+                        	'item_notes' => $itemNotes,
                             'item_id' => (string)$item->item_data->pid,
                             'holding_id' => $holdingId,
                             'addLink' => 'check'
@@ -191,7 +194,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             }
         }
 
-        
         return $results;
     }
 
