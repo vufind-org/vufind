@@ -139,9 +139,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
-     * @return array         On success, an associative array with the following
-     * keys: id, availability (boolean), status, location, reserve, callnumber,
-     * duedate, number, barcode.
+     * @return array         On success, an associative array with the following keys:
+     * 						 id, source, availability (boolean), status, location, reserve, callnumber,
+     * 						 duedate, returnDate, number, barcode, item_notes, item_id, holding_id, addLink.
      */
     public function getHolding($id, array $patron = null)
     {
