@@ -64,7 +64,7 @@
 }  
 
 // fix navbar for logoutoptions
-.navbar .logoutOptions {
+.finna-navbar .navbar-nav .logoutOptions {
   a {
     color: @action-link-color;
   }
@@ -260,7 +260,6 @@
     padding-top: @navbar-padding-vertical;
     padding-bottom: @navbar-padding-vertical;
     line-height: @navbar-height;
-    color: @navbar-default-link-color;
     font-size: @navbar-font-size;
     font-weight: @navbar-font-weight;
   }
@@ -352,6 +351,13 @@
   @media (min-width: @grid-float-breakpoint) {
     float: left;
     margin: 0;
+  }
+}
+
+.finna-navbar {
+  .navbar-nav > li > a,
+  .navbar-collapse.in .dropdown-menu a {
+    color: @header-text-color;
   }
 }
 
