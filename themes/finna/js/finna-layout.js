@@ -607,7 +607,7 @@ finna.layout = (function finnaLayout() {
         target = result.closest('.result');
       }
     }
-    if (target) {
+    if (target && target.length) {
       $('html,body').animate({scrollTop: target.offset().top}, 100);
     }
   }

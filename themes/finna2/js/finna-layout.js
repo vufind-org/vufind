@@ -600,7 +600,7 @@ finna.layout = (function finnaLayout() {
     if (identifier === '') {
       // Scroll to search box
       if ($(window).height() < 960 && $(window).scrollTop() === 0) {
-        target = $('.nav.searchbox');
+        target = $('.search-form-container');
       }
     } else {
       // Scroll to record
@@ -609,8 +609,8 @@ finna.layout = (function finnaLayout() {
         target = result.closest('.result');
       }
     }
-    if (target) {
-      $('html,body').animate({scrollTop: target.offset().top}, 100);
+    if (target && target.length) {
+      $('html').animate({scrollTop: target.offset().top}, 100);
     }
   }
 
