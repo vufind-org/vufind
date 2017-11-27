@@ -1501,7 +1501,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $statuses[] = 'On Shelf';
         } elseif (isset($item['availability']['unavailabilities'])) {
             foreach ($item['availability']['unavailabilities'] as $key => $reason) {
-                if (strncmp($key, 'Item::', 6) == 0) {
+                if (isset($this->config['ItemStatusMappings'][$key])) {
+                    $statuses[] = $this->config['ItemStatusMappings'][$key];
+                } elseif (strncmp($key, 'Item::', 6) == 0) {
                     $status = substr($key, 6);
                     switch ($status) {
                     case 'CheckedOut':

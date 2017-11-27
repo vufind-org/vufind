@@ -151,6 +151,11 @@ supplements = "867az"
 ; Fields to include in indexes. Default is none.
 indexes = "868az"
 
+; This section allows modification of the default mapping from item status codes to
+; VuFind item statuses
+[ItemStatusMappings]
+Item::Waiting = "On Hold"
+
 [onlinePayment]
 ; Whether online payment is enabled. Default is false.
 enabled = true
