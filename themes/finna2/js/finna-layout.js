@@ -576,7 +576,7 @@ finna.layout = (function finnaLayout() {
     if (!navigator.userAgent.match(/iemobile/i) && isTouchDevice() && $(window).width() < 1025) {
       $('.search-query').click(function onClickSearchQuery() {
         $('html, body').animate({
-          scrollTop: $(this).offset().top - 5
+          scrollTop: $(this).offset().top - 75
         }, 200);
       });
     }
