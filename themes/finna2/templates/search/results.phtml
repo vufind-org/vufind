@@ -39,21 +39,26 @@
     $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc('Search') . ': ' . $this->escapeHtml($lookfor) . '</li>';
   }
 
-  if (!$browse && $searchType == 'advanced' || $this->fromStreetSearch) {
+  $searchData = [
+      'results' => $this->results,
+      'params' => $this->params,
+      'lookfor' => $lookfor,
+      'overrideSearchHeading' => isset($this->overrideSearchHeading)
+          ? $this->overrideSearchHeading : null,
+      'startRecord' => $this->results->getStartRecord(),
+      'endRecord' => $this->results->getEndRecord(),
+      'recordsFound' => $this->results->getResultTotal() > 0,
+      'searchType' => $searchType
+  ];
+  if ($searchType == 'advanced') {
+    $this->layout()->advSearchHeader = $this->context($this)->renderInContext(
+        'search/header.phtml', $searchData
+    );
+  }
+  elseif (!$browse && $this->fromStreetSearch) {
     // Set up Finna Main Header:
     $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
-        'search/header.phtml',
-        [
-          'results' => $this->results,
-          'params' => $this->params,
-          'lookfor' => $lookfor,
-          'overrideSearchHeading' => isset($this->overrideSearchHeading)
-            ? $this->overrideSearchHeading : null,
-          'startRecord' => $this->results->getStartRecord(),
-          'endRecord' => $this->results->getEndRecord(),
-          'recordsFound' => $this->results->getResultTotal() > 0,
-          'searchType' => $searchType
-      ]
+        'search/header.phtml', $searchData
      );
   }
 

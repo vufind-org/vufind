@@ -227,7 +227,7 @@ JS;
                 ]
             );
 
-            $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
+            $this->layout()->advSearchHeader = $this->context($this)->renderInContext(
                 'search/header.phtml',
                 [
                   'searchType' => $searchType,
@@ -360,6 +360,9 @@ JS;
           <?=$this->layout()->finnaMainHeader?>
         </div>
       </div>
+      <? endif; ?>
+      <? if (!empty($this->layout()->advSearchHeader)): ?>
+        <?=$this->layout()->advSearchHeader; ?>
       <? endif; ?>
       <? if (!empty($this->layout()->finnaFilters)): ?>
         <?=$this->layout()->finnaFilters?>

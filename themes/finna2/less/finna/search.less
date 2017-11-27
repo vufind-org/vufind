@@ -32,8 +32,7 @@
 .template-name-results, .template-name-search {
   @media (max-width: @screen-xs-max) {
     & .finna-main-header {
-      padding: 0px 0px;
-      display: none;
+      padding: 0;
       & .search-result-header {
         font-size: 1.3em;
         margin-top: 15px;
@@ -535,6 +534,13 @@ mark, .highlight {
   position: relative;
 }
 
+.template-dir-search,
+.template-dir-eds,
+.template-dir-primo {
+  .search-filters {
+    margin-bottom: 1.5em;
+  }
+}
 
 .finna-filters {
   color: @filterContent-text-color;
@@ -923,5 +929,33 @@ mark, .highlight {
     @media(max-width:@screen-xs-max) {
       background-size: 350% auto;
     }
+  }
+}
+
+.adv_search_links {
+  & a {
+    white-space: nowrap;
+    margin-right: 15px;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: @text-color;
+    @media (max-width:@screen-xs-max) {
+      display: block;
+      white-space: normal;
+    }
+  }
+}
+
+.adv-search-header {
+  padding: 15px 0;
+  background-color: @gray-ultralight;
+  #searchForm {
+    flex: 1;
+    @media (max-width: @screen-xs) {
+      width: 55%;
+    }
+  }
+  .searchbox-flex .record-back {
+    margin-right: 10px;
   }
 }

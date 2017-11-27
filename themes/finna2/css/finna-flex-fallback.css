@@ -51,7 +51,9 @@
 .searchbox-flex .record-back,
 .searchbox-flex .search,
 .searchbox-flex .search-tooltip,
-.searchbox-flex .pager {
+.searchbox-flex .pager,
+.searchbox-flex #searchForm,
+.searchbox-flex .pager-container {
   display: table-cell;
   text-align: center;
   vertical-align: middle;
