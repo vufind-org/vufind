@@ -280,7 +280,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         $chapter1 = self::GetChapter($code1);
         $chapter2 = self::GetChapter($code2);
         if ($chapter1 == $chapter2) {
-            $codes_as_string .= strval($chapter1) . $separator;
+            $codes_as_string .= strval($chapter1);
             $verse1 = self::GetVerse($code1);
             $verse2 = self::GetVerse($code2);
             if ($verse1 == $verse2)
@@ -288,7 +288,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
 	    else if ($verse1 == 0 && $verse2 == 999)
                 return $codes_as_string;
             else
-                return $codes_as_string . strval($verse1) . "–" . strval($verse2);
+                return $codes_as_string . $separator . strval($verse1) . "–" . strval($verse2);
         }
         return $codes_as_string . strval($chapter1) . "–" . strval($chapter2);
     }
