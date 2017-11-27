@@ -1548,19 +1548,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         }
                         $statuses[] = $onHold ? 'In Transit On Hold' : 'In Transit';
                         break;
-                    default:
-                        $statuses[] = !empty($reason['code'])
-                            ? $reason['code'] : $status;
-                    }
-                } elseif (strncmp($key, 'Hold::', 6) == 0) {
-                    $status = substr($key, 6);
-                    switch ($status) {
                     case 'Held':
                         $statuses[] = 'On Hold';
                         break;
                     case 'Waiting':
                         $statuses[] = 'On Holdshelf';
                         break;
+                    default:
+                        $statuses[] = !empty($reason['code'])
+                            ? $reason['code'] : $status;
                     }
                 }
             }
