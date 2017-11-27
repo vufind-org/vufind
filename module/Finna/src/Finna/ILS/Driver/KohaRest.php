@@ -762,13 +762,15 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         // we need to add a few dummy-fields that VuFind expects to be
         // defined for all elements.
 
+        // Use a stupid location name to make sure this doesn't get mixed with
+        // real items that don't have a proper location.
         $result = [
            'available' => $availableTotal,
            'total' => $itemsTotal,
            'locations' => count($locations),
            'availability' => null,
            'callnumber' => null,
-           'location' => null
+           'location' => '__HOLDINGSSUMMARYLOCATION__'
         ];
         if (!empty($this->config['Holdings']['display_total_hold_count'])) {
             $result['reservations'] = $requests;
