@@ -91,6 +91,7 @@
     <field name="reviews" type="text" indexed="false" stored="true" multiValued="true"/>
     <field name="reviewed_records" type="text" indexed="false" stored="true" multiValued="true"/>
     <field name="rs" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="rvk" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="start_page" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="title_keywords" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_all" type="text" indexed="true" stored="true" multiValued="true"/>
