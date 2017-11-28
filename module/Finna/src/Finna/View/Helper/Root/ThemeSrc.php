@@ -56,17 +56,21 @@ class ThemeSrc extends \Zend\View\Helper\AbstractHelper
     /**
      * Check if file is found in the current theme.
      *
-     * @param string $relPath File relative path
+     * @param string $relPath        File relative path
+     * @param bool   $returnAbsolute Whether to return absolute file system path
      *
      * @return mixed
      */
-    protected function fileFromCurrentTheme($relPath)
+    protected function fileFromCurrentTheme($relPath, $returnAbsolute = false)
     {
         $currentTheme = $this->themeInfo->getTheme();
         $basePath = $this->themeInfo->getBaseDir();
 
         $file = $basePath . '/' . $currentTheme . '/' . $relPath;
         if (file_exists($file)) {
+            if ($returnAbsolute) {
+                return $file;
+            }
             $urlHelper = $this->getView()->plugin('url');
             return $urlHelper('home') . 'themes/' . $currentTheme . '/' . $relPath;
         }

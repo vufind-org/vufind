@@ -41,22 +41,25 @@ class ImageSrc extends ThemeSrc
 {
     /**
      * Return image source address. First check if svg image is found and
-     * if not, then check png image.
+     * if not, check for png image.
      *
-     * @param string $source image filename without extension
+     * @param string $source Image filename without extension
      *
      * @return string
      */
     public function __invoke($source)
     {
-        if ($url = $this->fileFromCurrentTheme('images/' . $source . '.svg')) {
-            return $url;
-        }
-        if ($url = $this->fileFromCurrentTheme('images/' . $source . '.png')) {
-            return $url;
-        }
-        if ($url = $this->fileFromCurrentTheme('images/' . $source)) {
-            return $url;
+        $variations = [
+            'images/' . $source . '.svg',
+            'images/' . $source . '.png',
+            'images/' . $source
+        ];
+        foreach ($variations as $file) {
+            if ($url = $this->fileFromCurrentTheme($file)) {
+                $filepath = $this->fileFromCurrentTheme($file, true);
+                $mtime = filemtime($filepath);
+                return $url . '?_=' . $mtime;
+            }
         }
 
         return '';
