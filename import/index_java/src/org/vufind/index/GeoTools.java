@@ -63,9 +63,9 @@ public class GeoTools
             for (VariableField vf : list034) {
                 HashMap<Character, String> coords = getCoordinateValues(vf);
                 //DEBUG output
-                ControlField recID = (ControlField) record.getVariableField("001");
-                String recNum = recID.getData();
-                logger.info("Record ID: " + recNum.trim() + " ...Coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
+                //ControlField recID = (ControlField) record.getVariableField("001");
+                //String recNum = recID.getData();
+                //logger.info("Record ID: " + recNum.trim() + " ...Coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
 
                 // Check for null coordinates
                 if (validateCoordinateValues(record, coords)) {
@@ -355,7 +355,7 @@ public class GeoTools
    public boolean validateEastWest(Record record, Double east, Double west) {
     if (east < west) {
        // Convert to 360 degree grid
-       if (east < 0) {
+       if (east <= 0) {
            east = 360 + east;
        }
        if (west < 0) {
