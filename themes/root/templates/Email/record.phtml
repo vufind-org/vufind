@@ -3,8 +3,8 @@
 
 ------------------------------------------------------------
   <?=$this->driver->getBreadcrumb()?>
-
-  <?=$this->translate('email_link')?>: <?=$this->serverUrl($this->recordLink()->getUrl($this->driver))?>
+  <?$realm = basename(getenv('VUFIND_LOCAL_DIR'))?>
+  <?=$this->translate('email_link_' . $realm)?>: <?=$this->serverUrl($this->recordLink()->getUrl($this->driver))?>
 
 ------------------------------------------------------------
 <? if (!empty($this->message)): ?><?=$this->translate("Message From Sender")?>:
