@@ -496,7 +496,7 @@ class MyResearchController extends AbstractBase
             : $this->url()->fromRoute('userList', ['id' => $listID]);
 
         // Fail if we have nothing to delete:
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
@@ -603,7 +603,7 @@ class MyResearchController extends AbstractBase
         }
         $this->flashMessenger()->addMessage('edit_list_success', 'success');
 
-        $newUrl = is_null($listID)
+        $newUrl = null === $listID
             ? $this->url()->fromRoute('myresearch-favorites')
             : $this->url()->fromRoute('userList', ['id' => $listID]);
         return $this->redirect()->toUrl($newUrl);

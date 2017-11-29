@@ -107,7 +107,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     public function __invoke($results, $currentPath = null)
     {
         // Determine base URL if not already provided:
-        if (is_null($currentPath)) {
+        if (null === $currentPath) {
             $currentPath = $this->getView()->plugin('currentpath')->__invoke();
         }
         $serverUrl = $this->getView()->plugin('serverurl');
