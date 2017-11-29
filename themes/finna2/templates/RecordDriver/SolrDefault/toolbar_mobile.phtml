@@ -11,6 +11,12 @@
   $mediumThumb = $this->record($this->driver)->getThumbnail('medium');
   $largeThumb = $this->record($this->driver)->getThumbnail('large');
   $summary = $this->driver->getSummary();
+  if (!$summary) {
+    $formats = $this->driver->tryMethod('getFormats');
+    if ($formats) {
+      $summary = [$this->translate(end($formats))];
+    }
+  }
   $author = $this->driver->getDeduplicatedAuthors();
   $publisher = $this->driver->getPublicationDetails();
   $currentSource = $this->driver->tryMethod('getDataSource');
