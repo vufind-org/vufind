@@ -44,7 +44,7 @@
   line-height: 64px;
   float: left;
 }
-@media (max-width: @screen-sm) {
+@media (max-width: @screen-xs-max) {
   .browsebar {
     .dropdown-menu {
       position: absolute;
@@ -125,14 +125,14 @@
     }
   }
   & ~ nav.navbar {
-    @media(min-width: @screen-sm) and (max-width: @screen-md){
+    @media(min-width: @screen-sm) and (max-width: @screen-sm-max){
       width: 65%;
     }
     @media(min-width: @screen-md){
       width: 70%;
     }
   }
-  @media(max-width: @screen-md){
+  @media(max-width: @screen-sm-max){
     width: 35%;
   }
 }
