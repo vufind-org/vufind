@@ -66,6 +66,20 @@ class QueryAdapterTest extends TestCase
     }
 
     /**
+     * Test operator round-trip.
+     *
+     * @return void
+     */
+    public function testOperatorRoundtrip()
+    {
+        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches') . '/';
+        $q = unserialize(file_get_contents($fixturePath . '/operators'));
+        $minified = QueryAdapter::minify($q);
+        $deminified = QueryAdapter::deminify($minified);
+        $this->assertEquals($q, $deminified);
+    }
+
+    /**
      * Test building an advanced query from a request.
      *
      * @return void
