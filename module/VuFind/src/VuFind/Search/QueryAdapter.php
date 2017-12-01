@@ -250,8 +250,8 @@ abstract class QueryAdapter
                 if (null !== ($op = $current->getOperator())) {
                     // Some search forms omit the operator for the first element;
                     // if we have an operator in a subsequent element, we should
-                    // backfill a blank here so that operators deminify in the
-                    // correct positions.
+                    // backfill a blank here for consistency; otherwise, VuFind
+                    // may not construct correct search URLs.
                     if (isset($retVal[0]['f']) && !isset($retVal[0]['o'])) {
                         $retVal[0]['o'] = '';
                     }
