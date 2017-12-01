@@ -78,6 +78,8 @@ class QueryAdapterTest extends TestCase
         $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches') . '/';
         $q = unserialize(file_get_contents($fixturePath . '/operators'));
         $minified = QueryAdapter::minify($q);
+
+        // First, check that count of 'o' values matches count of queries in group:
         $callback = function ($carry, $item) {
             return $carry + (isset($item['o']) ? 1 : 0);
         };
@@ -85,7 +87,11 @@ class QueryAdapterTest extends TestCase
             count($minified[0]['g']),
             array_reduce($minified[0]['g'], $callback, 0)
         );
+
+        // Next, confirm that first operator is set to empty (filler) value:
         $this->assertEquals('', $minified[0]['g'][0]['o']);
+
+        // Finally, make sure that we can round-trip back to the input.
         $this->assertEquals($q, QueryAdapter::deminify($minified));
     }
 
