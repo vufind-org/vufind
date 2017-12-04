@@ -17,6 +17,9 @@
 
     $.fn.autocompleteFinna = function(settings) {
         var options = $.extend( {}, $.fn.autocompleteFinna.options, settings );
+        if (options.minLength < 5) {
+            options.minLength = 5;
+        }
 
         // Use input position from setup or focus event with IE Mobile to avoid
         // trouble with changing offset of the input field when the keyboard is
@@ -157,6 +160,10 @@
                 element.html('<i class="item loading">'+options.loadingString+'</i>');
                 show();
                 align(input, $.fn.autocompleteFinna.element);
+                var ajaxDelay = $.fn.autocompleteFinna.options.ajaxDelay;
+                if (ajaxDelay < 1500) {
+                    ajaxDelay = 1500;
+                }
                 searchTimer = setInterval(
                     function() {
                         if (xhr && (xhr === true || xhr.state() === 'pending')) {
@@ -201,7 +208,7 @@
                         }
                         input.data('selected', -1);
                     },
-                    $.fn.autocompleteFinna.options.ajaxDelay
+                    ajaxDelay
                 );
             } else {
                 hide();
