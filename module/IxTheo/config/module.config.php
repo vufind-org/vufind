@@ -111,9 +111,9 @@ $recordRoutes = [
 ];
 $dynamicRoutes = [];
 $staticRoutes = [
-    'Browse/IxTheo-Classification',
+    'Browse/IxTheo Classification',
     'Browse/Publisher',
-    'Browse/RelBib-Classification',
+    'Browse/RelBib Classification',
     'Keywordchainsearch/Home',
     'Keywordchainsearch/Results',
     'Keywordchainsearch/Search',

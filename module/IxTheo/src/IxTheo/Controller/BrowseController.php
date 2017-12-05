@@ -19,8 +19,8 @@ class BrowseController extends \VuFind\Controller\BrowseController
             'region' => 'By Region',
             'era' => 'By Era',
             'publisher' => 'By Publisher',
-            'ixtheo-classification' => 'By IxTheo-Classification',
-            'relbib-classification' => 'By RelBib-Classification',
+            'ixtheo-classification' => 'By IxTheo Classification',
+            'relbib-classification' => 'By RelBib Classification',
         ];
 
         return $this->performBrowse('Author', $categoryList, true);
@@ -88,7 +88,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
         // Loop through remaining browse options.  All may be individually disabled
         // in config.ini, but if no settings are found, they are assumed to be on.
         $remainingOptions = [
-            'IxTheo-Classification', 'RelBib-Classification', 'Topic', 'Author', 'Publisher'
+            'IxTheo Classification', 'RelBib Classification', 'Topic', 'Author', 'Publisher'
         ];
         foreach ($remainingOptions as $current) {
             $option = strToLower($current);
@@ -146,8 +146,8 @@ class BrowseController extends \VuFind\Controller\BrowseController
             'region' => 'By Region',
             'era' => 'By Era',
             'publisher' => 'By Publisher',
-            'ixtheo-classification' => 'By IxTheo-Classification',
-            'relbib-classification' => 'By RelBib-Classification',
+            'ixtheo-classification' => 'By IxTheo Classification',
+            'relbib-classification' => 'By RelBib Classification',
         ];
 
         return $this->performBrowse('Genre', $categoryList, true);
@@ -177,10 +177,10 @@ class BrowseController extends \VuFind\Controller\BrowseController
             : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
         // Put numbers in the front for Era since years are important:
-        if ($this->getCurrentAction() === 'IxTheo-Classification') {
+        if ($this->getCurrentAction() === 'IxTheo Classification') {
             $chars = 'ABCFHKNRSTVXZ';
             $callback = $ixtheo_notation_callback;
-        } else if ($this->getCurrentAction() === 'RelBib-Classification') {
+        } else if ($this->getCurrentAction() === 'RelBib Classification') {
             $chars = 'ABHKNTVXZ';
             $callback = $ixtheo_notation_callback;
         }  else if ($this->getCurrentAction() == 'Era') {
@@ -273,7 +273,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
             'publisher' => 'By Publisher',
         ];
 
-        return $this->performBrowse('IxTheo-Classification', $categoryList, true);
+        return $this->performBrowse('IxTheo Classification', $categoryList, true);
     }
 
     /**
@@ -290,8 +290,8 @@ class BrowseController extends \VuFind\Controller\BrowseController
             'genre' => 'By Genre',
             'region' => 'By Region',
             'era' => 'By Era',
-            'ixtheo-classification' => 'By IxTheo-Classification',
-            'relbib-classification' => 'By RelBib-Classification',
+            'ixtheo-classification' => 'By IxTheo Classification',
+            'relbib-classification' => 'By RelBib Classification',
         ];
 
         return $this->performBrowse('Publisher', $categoryList, true);
@@ -310,8 +310,8 @@ class BrowseController extends \VuFind\Controller\BrowseController
             'genre' => 'By Genre',
             'era' => 'By Era',
             'publisher' => 'By Publisher',
-            'ixtheo-classification' => 'By IxTheo-Classification',
-            'relbib-classification' => 'By RelBib-Classification'
+            'ixtheo-classification' => 'By IxTheo Classification',
+            'relbib-classification' => 'By RelBib Classification'
         ];
 
         return $this->performBrowse('Region', $categoryList, true);
@@ -323,7 +323,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
             'alphabetical' => 'By Categories',
         ];
 
-        return $this->performBrowse('RelBib-Classification', $categoryList, true);
+        return $this->performBrowse('RelBib Classification', $categoryList, true);
     }
 
     /**
@@ -340,8 +340,8 @@ class BrowseController extends \VuFind\Controller\BrowseController
             'era' => 'By Era',
             'author' => 'By Author',
             'publisher' => 'By Publisher',
-            'ixtheo-classification' => 'By IxTheo-Classification',
-            'relbib-classification' => 'By RelBib-Classification',
+            'ixtheo-classification' => 'By IxTheo Classification',
+            'relbib-classification' => 'By RelBib Classification',
         ];
 
         return $this->performBrowse('Topic', $categoryList, true);

@@ -45,8 +45,8 @@ class Classification extends \Zend\View\Helper\AbstractHelper
      */
     public function isIxTheoClassificationFacet($title)
     {
-        return $title === 'IxTheo-Classification' ||
-               $title === 'RelBib-Classification';
+        return $title === 'IxTheo Classification' ||
+               $title === 'RelBib Classification';
     }
 
 
