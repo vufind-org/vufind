@@ -2,18 +2,4 @@
 <div class="similar-records" data-id="<?=$this->escapeHtmlAttr($this->related->getRecordId()) ?>">
   <i class="fa fa-spinner fa-spin"></i>
 </div>
-<?
-$script = <<<JS
-$(document).ready(function() {
-  $('.sidebar .similar-records').load(
-    path +'/AJAX/SimilarRecords',
-    { id: $('.similar-records').data('id') },
-    function() {
-      $('.similar-records .fa-spinner').addClass('hidden');
-    }
-  );
-});
-JS;
-?>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
 <!-- END of: finna - Related/SimilarDeferred.phtml -->

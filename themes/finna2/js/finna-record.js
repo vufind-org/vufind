@@ -186,6 +186,16 @@ finna.record = (function finnaRecord() {
 
   $(window).on('hashchange', applyRecordAccordionHash);
 
+  $(document).ready(function onReady() {
+    $('.sidebar .similar-records').load(
+        path + '/AJAX/SimilarRecords',
+        {id: $('.similar-records').data('id')},
+        function () {
+          $('.similar-records .fa-spinner').addClass('hidden');
+        }
+    );
+  });
+
   var init = function init() {
     initHideDetails();
     initDescription();
