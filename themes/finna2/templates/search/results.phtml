@@ -65,7 +65,9 @@
   if (!$browse && !empty($params->getFilterList(false))){
       // Clone the params object to prevent its manipulation from affecting main facet functionality
       $params = clone $this->params;
-      $params->activateAllFacets();
+      if ($this->params->getSearchClassId() != 'Primo') {
+        $params->activateAllFacets();
+      }
       $filterList = $params->getFilterList(true);
       $checkboxFilters = $params->getCheckboxFacets();
       $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
