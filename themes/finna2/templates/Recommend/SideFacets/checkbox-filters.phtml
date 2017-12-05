@@ -1,6 +1,14 @@
 <? foreach ($checkboxFilters as $current): ?>
+  <?
+    if (isset($counts) && false === $counts) {
+      $availableRecords = '';
+    } else {
+      $availCount = $current['selected'] ? -1 : $this->checkboxFacetCounts($current, $results);
+      $availableRecords = $availCount < 0 ? '' : $this->localizedNumber($availCount);
+    }
+  ?>
   <div class="checkbox <?=($current['selected'] ? 'checked' : '')?> <? if(!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<? endif; ?>">
-    <label class="">
+    <label>
         <span class="badge cb-facet"><?=$availableRecords?></span>
         <input type="checkbox" name="filter[]" value="<?=$this->escapeHtmlAttr($current['filter'])?>" <?=($current['selected'] ? 'checked="checked"' : '')?>
          id="<?=$this->escapeHtmlAttr(str_replace(' ', '', $current['desc']))?>"
