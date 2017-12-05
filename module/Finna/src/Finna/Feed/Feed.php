@@ -273,8 +273,9 @@ class Feed implements \Zend\Log\LoggerAwareInterface
                 try {
                     $channel = Reader::import($url);
                 } catch (\Exception $e) {
-                    $this->logError("Error importing feed from url $url");
-                    $this->logError("   " . $e->getMessage());
+                    $this->logError(
+                        "Error importing feed from url $url: " . $e->getMessage()
+                    );
                 }
             } elseif (substr($url, 0, 1) === '/') {
                 // Relative URL
@@ -282,20 +283,41 @@ class Feed implements \Zend\Log\LoggerAwareInterface
                 try {
                     $channel = Reader::import($url);
                 } catch (\Exception $e) {
-                    $this->logError("Error importing feed from url $url");
-                    $this->logError("   " . $e->getMessage());
+                    $this->logError(
+                        "Error importing feed from url $url: " . $e->getMessage()
+                    );
                 }
             } else {
                 // Local file
                 if (!is_file($url)) {
                     $this->logError("File $url could not be found");
-                    throw new \Exception('Error reading feed');
                 }
-                $channel = Reader::importFile($url);
+                try {
+                    $channel = Reader::importFile($url);
+                } catch (\Exception $e) {
+                    $this->logError(
+                        "Error importing feed from file $url: " . $e->getMessage()
+                    );
+                }
             }
-            if ($channel) {
-                file_put_contents($localFile, $channel->saveXml());
+
+            if (!$channel) {
+                // Cache also a failed load as an empty feed XML
+                $feedStr = <<<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <atom:link href="" rel="self" type="application/rss+xml"/>
+    <link></link>
+    <title><![CDATA[<!-- Feed could not be loaded -->]]></title>
+    <description></description>
+  </channel>
+</rss>
+EOT;
+                $channel = Reader::importString($feedStr);
             }
+
+            file_put_contents($localFile, $channel->saveXml());
         }
 
         if (!$channel) {
