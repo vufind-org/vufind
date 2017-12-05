@@ -347,8 +347,8 @@ JS;
         <? endif; ?>
       </div>
     </div>
-      <? if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search' && $this->content()->findTemplateForLng('search/home/browsebar')): ?>
-        <?=$this->render('search/home/browsebar.phtml')?>
+      <? if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search' && $template = $this->content()->findTemplateForLng('search/home/browsebar')): ?>
+        <?=$this->render($template)?>
       <? endif; ?>
     </section>
 
