@@ -25,7 +25,7 @@
                         <?
                         // Sort KWC alphabetically
                         $kwc = explode('/', $current['value']);
-                        usort($kwc, 'strnatcasecmp');
+                        usort($kwc, 'strcoll');
                         $kwc_sorted = implode('/', $kwc);
 
                         ?>
