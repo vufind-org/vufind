@@ -124,12 +124,15 @@
   <!-- Finna ESLint -->
   <target name="eslint-finna">
     <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna/js/*.js" escape="false" checkreturn="true" passthru="true" />
+    <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna2/js/*.js" escape="false" checkreturn="true" passthru="true" />
   </target>
   <target name="eslint-finna-fix">
     <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna/js/*.js --fix" escape="false" passthru="true" />
+    <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna2/js/*.js --fix" escape="false" passthru="true" />
   </target>
   <target name="eslint-finna-report">
     <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna/js/*.js --format checkstyle -o ${builddir}/reports/eslint-finna.xml" escape="false" />
+    <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna2/js/*.js --format checkstyle -o ${builddir}/reports/eslint-finna2.xml" escape="false" />
   </target>
 
   <!-- PHP API Documentation -->

@@ -174,7 +174,7 @@ finna.record = (function finnaRecord() {
     var activeTab = $('.record-accordions .accordion.active a').attr('id');
     var $initiallyActiveTab = $('.record-accordions .accordion.initiallyActive a');
     var newTab = typeof window.location.hash !== 'undefined'
-        ? window.location.hash.toLowerCase() : '';
+      ? window.location.hash.toLowerCase() : '';
 
     // Open tab in url hash
     if (newTab.length <= 1 || newTab === '#tabnav') {
@@ -188,11 +188,11 @@ finna.record = (function finnaRecord() {
 
   $(document).ready(function onReady() {
     $('.sidebar .similar-records').load(
-        path + '/AJAX/SimilarRecords',
-        {id: $('.similar-records').data('id')},
-        function () {
-          $('.similar-records .fa-spinner').addClass('hidden');
-        }
+      VuFind.path + '/AJAX/SimilarRecords',
+      {id: $('.similar-records').data('id')},
+      function loadDone() {
+        $('.similar-records .fa-spinner').addClass('hidden');
+      }
     );
   });
 
