@@ -525,6 +525,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 $params->resetFacetConfig();
                 $options = $params->getOptions();
                 $options->disableHighlighting();
+                $options->spellcheckEnabled(false);
             }
         );
         $ids = [$id];
