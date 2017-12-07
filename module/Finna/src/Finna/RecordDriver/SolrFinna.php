@@ -380,7 +380,7 @@ trait SolrFinna
             'local_ids_str_mv:"' . $safeId . '"'
         );
         $params = new \VuFindSearch\ParamBag(
-            ['hl' => 'false', 'spellcheck' => 'false']
+            ['hl' => 'false', 'spellcheck' => 'false', 'sort' => '']
         );
         $records = $this->searchService->search('Solr', $query, 0, 1, $params)
             ->getRecords();
