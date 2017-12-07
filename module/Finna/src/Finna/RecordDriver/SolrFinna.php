@@ -360,6 +360,11 @@ trait SolrFinna
             ];
         }
 
+        // Check if this is a merged record
+        if (empty($this->fields['merged_child_boolean'])) {
+            return [];
+        }
+
         // Find the dedup record
         if (null === $this->searchService) {
             return [];
