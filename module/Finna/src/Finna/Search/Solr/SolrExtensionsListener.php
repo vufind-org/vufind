@@ -149,7 +149,6 @@ class SolrExtensionsListener
         if ($backend === $this->backend) {
             $this->addDataSourceFilter($event);
             if ($event->getParam('context') == 'search') {
-                $this->limitHierarchicalFacets($event);
                 $this->addHiddenComponentPartFilter($event);
                 $this->handleOnlineBoolean($event);
                 $this->addGeoFilterBoost($event);
@@ -395,40 +394,6 @@ class SolrExtensionsListener
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * Since we don't support non-JS hierarchical facets, limit them to one entry
-     * that's needed for checking whether there's something to display.
-     *
-     * @param EventInterface $event Event
-     *
-     * @return void
-     */
-    protected function limitHierarchicalFacets(EventInterface $event)
-    {
-        $params = $event->getParam('params');
-        // Check if facets are requested at all
-        $fields = $params->get('facet.field');
-        if ($fields === null) {
-            return;
-        }
-        $config = $this->serviceLocator->get('VuFind\Config');
-        $facetConfig = $config->get($this->facetConfig);
-        if (empty($facetConfig->SpecialFacets->hierarchical)) {
-            return;
-        }
-        // Check if we're retrieving the complete list or something else than records
-        // (limit=0, e.g. facets for search screen)
-        $limit = $params->get('limit');
-        $facetLimit = $params->get('facet.limit');
-        if ($facetLimit === null || $facetLimit[0] == -1 || $limit === 0) {
-            return;
-        }
-        $hierarchical = $facetConfig->SpecialFacets->hierarchical->toArray();
-        foreach ($hierarchical as $facet) {
-            $params->set("f.$facet.facet.limit", 1);
         }
     }
 }

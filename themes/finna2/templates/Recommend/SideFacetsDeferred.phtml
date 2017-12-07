@@ -25,7 +25,7 @@
 ?>
 <? $results = $this->recommend->getResults(); ?>
 <? if ($results->getResultTotal() > 0): ?>
-<div class="side-facets-container">
+<div class="side-facets-container-ajax">
   <h4><i class="fa fa-arrow-down visible-xs pull-left"></i> <?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?><? if (!isset($this->overrideSideFacetCaption) && !$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_facet_html')?>"><i class="fa fa-info-big"></i></span><? endif; ?></h4>
 <? endif; ?>
 <? $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
@@ -46,7 +46,21 @@
 <? endif; ?>
 <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
 <? $collapsedFacets = $this->recommend->getCollapsedFacets(); ?>
+<? $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions(); ?>
+<? $hierarchicalFacets = $this->recommend->getHierarchicalFacets(); ?>
 <? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
+<? $module = $this->layout()->templateDir; ?>
+<?
+  $plotFrom = null;
+  $daterangeFacetField = null;
+  if (null === $module || in_array($module, ['search', 'primo'])) {
+    $options = $results->getOptions();
+    if (is_callable([$options, 'getDateRangeSearchField'])) {
+        $daterangeFacetField = $options->getDateRangeSearchField();
+    }
+    $dateRangeFilter = $params->getDateRangeFilter();
+  }
+?>
 <?=$this->context($this)->renderInContext('Recommend/SideFacets/filter-list.phtml', [
     'collapsedFacets' => $collapsedFacets,
     'extraFilters' => $extraFilters,
@@ -55,10 +69,33 @@
     'browse' => !empty($browse),
     'defaultBrowseHandler' => isset($defaultBrowseHandler) ? $defaultBrowseHandler : ''
 ]); ?>
-<?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
+<?=isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
+<? $activeFacets = $this->recommend->getActiveFacets();
+$rangeFacets = $this->recommend->getAllRangeFacets(); ?>
+<? if (!empty($activeFacets) && $results->getResultTotal() > 0): ?>
+  <? foreach ($activeFacets as $title => $facetName): ?>
+    <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
+    <? $daterangeFacet = $title == $daterangeFacetField; ?>
+    <div class="list-group facet<?= $daterangeFacet ? ' daterange-facet' : '' ?> facet-group" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
+      <button class="list-group-item title<? if (in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" onclick="return false;"><?=$this->transEsc($facetName)?></button>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<? if(!in_array($title, $collapsedFacets)): ?> in<? endif ?>" data-facet="<?=$this->escapeHtmlAttr($title) ?>">
+        <span class="facet-load-indicator"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...</span>
+        <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
+        <? if (in_array($title, $hierarchicalFacets)): ?>
+          <div id="facet_<?=$this->escapeHtml($title)?>" class="jstree-facet"
+              data-facet="<?=$this->escapeHtmlAttr($title)?>"
+              data-path=""
+              data-exclude="<?=$allowExclude?>"
+              data-operator="<?=$this->recommend->getFacetOperator($title)?>"
+              data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
+              data-sort="<?=isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : ''?>">
+          </div>
+        <? endif; ?>
+      </div>
+    </div>
+  <? endforeach; ?>
+<? endif; ?>
 <? if ($results->getResultTotal() > 0): ?>
-  <span class="facet-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...</span>
-  <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
 </div>
 <? endif; ?>
 <!-- END of: finna - Recommend/SideFacetsDeferred.phtml -->

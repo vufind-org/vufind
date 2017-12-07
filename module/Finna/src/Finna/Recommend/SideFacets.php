@@ -75,4 +75,49 @@ class SideFacets extends \VuFind\Recommend\SideFacets
             $this->newItemsFacets = $config->SpecialFacets->newItems->toArray();
         }
     }
+
+    /**
+     * Called at the end of the Search Params objects' initFromRequest() method.
+     * This method is responsible for setting search parameters needed by the
+     * recommendation module and for reading any existing search parameters that may
+     * be needed.
+     *
+     * @param \VuFind\Search\Base\Params $params  Search parameter object
+     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    public function init($params, $request)
+    {
+        // If facets are listed in $params, enable only them
+        $facets = null !== $request ? $request->get('enabledFacets') : [];
+        if (!empty($facets)) {
+            $this->mainFacets = array_filter(
+                $this->mainFacets,
+                function ($key) use ($facets) {
+                    return in_array($key, $facets);
+                },
+                ARRAY_FILTER_USE_KEY
+            );
+        }
+        return parent::init($params, $request);
+    }
+
+    /**
+     * Remove unlisted facets from main facets
+     *
+     * @param array $facets Facets to keep
+     *
+     * @return void
+     */
+    public function filterMainFacets($facets)
+    {
+        $this->mainFacets = array_filter(
+            $this->mainFacets,
+            function ($value, $key) {
+                return in_array($key, $facets);
+            }
+        );
+    }
 }

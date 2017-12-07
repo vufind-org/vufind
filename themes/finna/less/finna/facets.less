@@ -16,28 +16,31 @@
 }
 
 .list-group.facet {
-        background: @list-group-bg;
-        // style Finna facet headers
-        & .list-group-item.title {
-            font-size:@font-size-h4;
-            margin-bottom: 5px;
-            cursor:pointer;
-            padding-right: 25px;
-            &.collapsed {
-                border-radius: 0px;
-                &:after {
-                    font-family:'icomoon';
-                    content:'\e613';
-                }
-            }
+    background: @list-group-bg;
+    // style Finna facet headers
+    & .list-group-item.title {
+        font-size:@font-size-h4;
+        margin-bottom: 5px;
+        cursor:pointer;
+        padding-right: 25px;
+        &.collapsed {
+            border-radius: 0px;
             &:after {
                 font-family:'icomoon';
-                content:'\e612';
-                float: right;
-                position: absolute;
-                right: 8px;
+                content:'\e613';
             }
         }
+        &:after {
+            font-family:'icomoon';
+            content:'\e612';
+            float: right;
+            position: absolute;
+            right: 8px;
+        }
+        &:focus {
+            outline:0;
+        }
+    }
     & .collapse, .collapsing {
         .list-group-item {
           border-top-left-radius:0px;

@@ -19,37 +19,40 @@
 }
 
 .list-group.facet {
-        // style Finna facet headers
-        & .list-group-item.title {
-            font-size:@font-size-h4;
-            margin-bottom: 1px;
-            cursor:pointer;
-            padding-right: 25px;
-            &.collapsed {
-                border-radius: 0px;
-                &:after {
-                    font-family: icomoon;
-                    font-size: 24px;                                   
-                    content: "\e91a";
-                    color: @action-link-color;
-                }
-            }
+    // style Finna facet headers
+    & .list-group-item.title {
+        font-size:@font-size-h4;
+        margin-bottom: 1px;
+        cursor:pointer;
+        padding-right: 25px;
+        &.collapsed {
+            border-radius: 0px;
             &:after {
-                font-family: icomoon; 
-                font-size: 24px;               
-                content: "\e916";
-                float: right;
-                position: absolute;
-                right: 8px;
-                color: @action-link-color;                
+                font-family: icomoon;
+                font-size: 24px;
+                content: "\e91a";
+                color: @action-link-color;
             }
         }
-    & .collapse, .collapsing {        
+        &:after {
+            font-family: icomoon;
+            font-size: 24px;
+            content: "\e916";
+            float: right;
+            position: absolute;
+            right: 8px;
+            color: @action-link-color;
+        }
+        &:focus {
+            outline:0;
+        }
+    }
+    & .collapse, .collapsing {
         a {
-            background-color: @body-bg;            
+            background-color: @body-bg;
         }
         .list-group-item {
-          background: transparent;            
+          background: transparent;
           border-top-left-radius:0px;
           border-top-right-radius:0px;
         }
@@ -66,7 +69,7 @@
             padding-top: 2px;
         }
     }
-    .usage-right-group a.list-group-item {
+    .usage-right-group .list-group-item {
       padding-right: 0;
     }
 
@@ -109,7 +112,7 @@
         color: @gray;
         width: 100%;
         text-align: left;
-        border: 1px solid  @gray-lighter;       
+        border: 1px solid  @gray-lighter;
         padding: 15px 10px;
     }
     & .list-group-item i.fa.fa-square-o, .list-group-item i.fa.fa-check-square-o {
@@ -121,14 +124,14 @@
     }
 
     & .jstree-node.active, & .list-group-item.active {
-        
+
         background: transparent;
         color: @link-color;
         font-weight: bold;
         & a,
         & .badge,
         & .jstree-icon.jstree-ocl {
-            color: @link-color;            
+            color: @link-color;
         }
         & .badge {
             padding-right: 3px

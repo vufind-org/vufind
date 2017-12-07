@@ -1,3 +1,4 @@
+<? if (!empty($cluster['list'])): ?>
   <? foreach ($cluster['list'] as $i => $thisFacet): ?>
      <?
       if(strlen($thisFacet['displayText']) == 0) {
@@ -66,3 +67,6 @@
     <a class="list-group-item less-narrow-toggle <?=$moreClass ?>" data-lightbox href="<?=$moreUrl ?>" rel="nofollow"><?=$this->transEsc('see all')?>... <i class="fa fa-list"></i></a>
   <? endif; ?>
   <? if ($i >= $facets_before_more): ?><a class="list-group-item less-narrow-toggle <?=$moreClass ?>" href="#" onclick="return lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('less')?>... <i class="fa fa-handle-close"></i></a><? endif; ?>
+<? else: ?>
+  <div class="list-group-item"><?=$this->transEsc('facet_list_empty')?></div>
+<? endif; ?>

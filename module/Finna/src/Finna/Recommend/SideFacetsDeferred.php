@@ -55,10 +55,23 @@ class SideFacetsDeferred extends SideFacets
     }
 
     /**
+     * Get active facets (key => display string)
+     *
+     * @return array
+     */
+    public function getActiveFacets()
+    {
+        return $this->mainFacets;
+    }
+
+    /**
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.
+     *
+     * We'll not do anything here since we want to defer the whole process until the
+     * search is done.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
      * @param \Zend\StdLib\Parameters    $request Parameter object representing user

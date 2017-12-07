@@ -1,4 +1,4 @@
-/*global VuFind, checkSaveStatuses, action, finna, L, initFacetTree, setupFacets, videojs */
+/*global VuFind, checkSaveStatuses, action, finna, L, initFacetTree, setupFacets, videojs, buildFacetNodes */
 finna.layout = (function finnaLayout() {
   var _fixFooterTimeout = null;
 
@@ -490,6 +490,11 @@ finna.layout = (function finnaLayout() {
   }
 
   function initHierarchicalFacet(treeNode, inSidebar) {
+    addJSTreeListener(treeNode);
+    initFacetTree(treeNode, inSidebar);
+  }
+
+  function addJSTreeListener(treeNode) {
     treeNode.bind('ready.jstree', function onReadyJstree() {
       var tree = $(this);
       // if hierarchical facet contains 2 or less top level items, it is opened by default
@@ -508,7 +513,6 @@ finna.layout = (function finnaLayout() {
         tree.jstree('open_node', this, null, false);
       });
     });
-    initFacetTree(treeNode, inSidebar);
   }
 
   function initJumpMenus(_holder) {
@@ -533,6 +537,15 @@ finna.layout = (function finnaLayout() {
   }
 
   function initSideFacets() {
+    // Load new-style ajax facets
+    $('.side-facets-container-ajax')
+      .find('div.collapse[data-facet]:not(.in)')
+      .on('shown.bs.collapse', function expandFacet() {
+        loadAjaxSideFacets();
+      });
+    loadAjaxSideFacets();
+
+    // Handle any old-style ajax facets
     var $container = $('.side-facets-container');
     if ($container.length === 0) {
       return;
@@ -550,6 +563,76 @@ finna.layout = (function finnaLayout() {
       })
       .fail(function onGetSideFacetsFail() {
         $container.find('.facet-load-indicator').addClass('hidden');
+        $container.find('.facet-load-failed').removeClass('hidden');
+      });
+  }
+
+  function loadAjaxSideFacets() {
+    var $container = $('.side-facets-container-ajax');
+    if ($container.length === 0) {
+      return;
+    }
+
+    var facetList = [];
+    var $facets = $container.find('div.collapse.in[data-facet]');
+    $facets.each(function addFacet() {
+      if (!$(this).data('loaded')) {
+        facetList.push($(this).data('facet'));
+      }
+    });
+    if (facetList.length === 0) {
+      return;
+    }
+    var urlParts = window.location.href.split('?');
+    var query = urlParts.length > 1 ? urlParts[1] : '';
+    var request = {
+      method: 'getSideFacets',
+      query: query,
+      enabledFacets: facetList
+    }
+    $.getJSON(VuFind.path + '/AJAX/JSON?' + query, request)
+      .done(function onGetSideFacetsDone(response) {
+        $.each(response.data, function initFacet(facet, facetData) {
+          var $facetContainer = $container.find('div[data-facet="' + facet + '"]');
+          $facetContainer.data('loaded', 'true');
+          if (typeof facetData === 'string') {
+            $facetContainer.html(facetData);
+          } else {
+            // TODO: this block copied from facets.js, refactor
+            var treeNode = $facetContainer.find('.jstree-facet');
+
+            // Enable keyboard navigation also when a screen reader is active
+            treeNode.bind('select_node.jstree', function selectNode(event, data) {
+              window.location = data.node.data.url;
+              event.preventDefault();
+              return false;
+            });
+
+            addJSTreeListener(treeNode);
+
+            var currentPath = treeNode.data('path');
+            var allowExclude = treeNode.data('exclude');
+            var excludeTitle = treeNode.data('exclude-title');
+
+            var results = buildFacetNodes(facetData, currentPath, allowExclude, excludeTitle, true);
+            treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
+              treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
+            });
+            treeNode.jstree({
+              'core': {
+                'data': results
+              }
+            });
+          }
+          $facetContainer.find('.facet-load-indicator').remove();
+        });
+        finna.dateRangeVis.init();
+        initToolTips($('.sidebar'));
+        initMobileNarrowSearch();
+        VuFind.lightbox.bind($('.sidebar'));
+      })
+      .fail(function onGetSideFacetsFail() {
+        $container.find('.facet-load-indicator').remove();
         $container.find('.facet-load-failed').removeClass('hidden');
       });
   }
