@@ -65,6 +65,9 @@
 
 // fix navbar for logoutoptions
 .finna-navbar .navbar-nav .logoutOptions {
+  @media(max-width: @screen-sm){
+    margin: 0;
+  }
   a {
     color: @action-link-color;
   }
@@ -73,7 +76,6 @@
     left: auto;
     & > li {
       line-height: normal;
-      padding: 5px 0px;
       & > a {
         color: @text-color;
         width: 250px;
@@ -108,6 +110,9 @@
     font-weight: 600;
     @media (max-width: @screen-sm) {
       max-width: 80px;
+    }
+    @media (max-width: @screen-xxs) {
+      display: none;
     }
   }
   .description {
@@ -581,7 +586,7 @@
     max-height: ~"calc(100vh - "@navbar-height~")";
   }
   .navbar-header {
-    padding-left: 15px;
+    padding-left: 10px;
   }
 }
 
