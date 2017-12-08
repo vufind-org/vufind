@@ -21,7 +21,6 @@
     <field name="local_recoding_date" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="local_signature" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="local_subject" type="text" indexed="true" stored="true" multiValued="true"/>
-    <field name="media" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="multipart_link" type="string" indexed="true" stored="true" multiValued="true" termVectors="true"/>
     <field name="multipart_part" type="string" indexed="true" stored="true"  multiValued="true"/>
     <field name="multipart_set" type="string" indexed="true" stored="true"/>

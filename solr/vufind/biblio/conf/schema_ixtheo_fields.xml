@@ -81,7 +81,6 @@
     <field name="key_word_chains_ru" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chains_sorted_ru" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="last_modification_time" type="date" indexed="true" stored="true" multiValued="false"/>
-    <field name="mediatype" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="other_titles" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="publisher_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="record_selector" type="string" indexed="true" stored="true" multiValued="true"/>
