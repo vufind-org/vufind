@@ -597,7 +597,9 @@ finna.layout = (function finnaLayout() {
           var $facetContainer = $container.find('div[data-facet="' + facet + '"]');
           $facetContainer.data('loaded', 'true');
           if (typeof facetData === 'number') {
-            $facetContainer.find('.avail-count').text(facetData);
+            $facetContainer.find('.avail-count').text(
+              facetData.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
+            );
           } else if (typeof facetData === 'string') {
             $facetContainer.html(facetData);
           } else {
