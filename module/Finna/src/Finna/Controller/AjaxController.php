@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -1344,12 +1344,46 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 $hierarchicalFacetSortOptions
                     = $recommend->getHierarchicalFacetSortOptions();
             }
+            $checkboxFacets = $results->getParams()->getCheckboxFacets();
             $sideFacetSet = $recommend->getFacetSet();
+            $results = $recommend->getResults();
             $view = $this->getViewRenderer();
             $view->recommend = $recommend;
             $view->params = $results->getParams();
             $view->searchClassId = 'Solr';
             foreach ($request['enabledFacets'] as $facet) {
+                if (strpos($facet, ':')) {
+                    foreach ($checkboxFacets as $checkboxFacet) {
+                        if ($facet !== $checkboxFacet['filter']) {
+                            continue;
+                        }
+                        list($field, $value) = explode(':', $facet, 2);
+                        $checkboxResults = $results->getFacetList(
+                            [$field => $value]
+                        );
+                        if (!isset($checkboxResults[$field]['list'])) {
+                            $response[$facet] = null;
+                            continue 2;
+                        }
+                        $count = 0;
+                        $truncate = substr($value, -1) === '*';
+                        if ($truncate) {
+                            $value = substr($value, 0, -1);
+                        }
+                        foreach ($checkboxResults[$field]['list'] as $item) {
+                            if ($item['value'] == $value
+                                || ($truncate
+                                && preg_match('/^' . $value . '/', $item['value']))
+                                || ($item['value'] == 'true' && $value == '1')
+                                || ($item['value'] == 'false' && $value == '0')
+                            ) {
+                                $count += $item['count'];
+                            }
+                        }
+                        $response[$facet] = $count;
+                        continue 2;
+                    }
+                }
                 if (in_array($facet, $hierarchicalFacets)) {
                     // Return the facet data for hierarchical facets
                     $facetList = $sideFacetSet[$facet]['list'];

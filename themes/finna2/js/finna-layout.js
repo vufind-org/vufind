@@ -576,7 +576,7 @@ finna.layout = (function finnaLayout() {
     }
 
     var facetList = [];
-    var $facets = $container.find('div.collapse.in[data-facet]');
+    var $facets = $container.find('div.collapse.in[data-facet], div.checkbox[data-facet]');
     $facets.each(function addFacet() {
       if (!$(this).data('loaded')) {
         facetList.push($(this).data('facet'));
@@ -598,7 +598,9 @@ finna.layout = (function finnaLayout() {
         $.each(response.data, function initFacet(facet, facetData) {
           var $facetContainer = $container.find('div[data-facet="' + facet + '"]');
           $facetContainer.data('loaded', 'true');
-          if (typeof facetData === 'string') {
+          if (typeof facetData === 'number') {
+            $facetContainer.find('.avail-count').text(facetData);
+          } else if (typeof facetData === 'string') {
             $facetContainer.html(facetData);
           } else {
             // TODO: this block copied from facets.js, refactor

@@ -63,8 +63,6 @@ class SideFacets extends \VuFind\Recommend\SideFacets
 
         // Parse the additional settings:
         $settings = explode(':', $settings);
-        $mainSection = empty($settings[0]) ? 'Results' : $settings[0];
-        $checkboxSection = isset($settings[1]) ? $settings[1] : false;
         $iniName = isset($settings[2]) ? $settings[2] : 'facets';
 
         // Load the desired facet information...
@@ -93,11 +91,18 @@ class SideFacets extends \VuFind\Recommend\SideFacets
         // If facets are listed in $params, enable only them
         $facets = null !== $request ? $request->get('enabledFacets') : [];
         if (!empty($facets)) {
+            $filterFunc = function ($key) use ($facets) {
+                return in_array($key, $facets);
+            };
+
             $this->mainFacets = array_filter(
                 $this->mainFacets,
-                function ($key) use ($facets) {
-                    return in_array($key, $facets);
-                },
+                $filterFunc,
+                ARRAY_FILTER_USE_KEY
+            );
+            $this->checkboxFacets = array_filter(
+                $this->checkboxFacets,
+                $filterFunc,
                 ARRAY_FILTER_USE_KEY
             );
         }
