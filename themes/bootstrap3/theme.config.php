@@ -4,7 +4,7 @@ return [
     'css' => [
         //'vendor/bootstrap.min.css',
         //'vendor/bootstrap-accessibility.css',
-        //'vendor/font-awesome.min.css',
+        //'vendor/fontawesome-all.min.css',
         //'bootstrap-custom.css',
         'compiled.css',
         'print.css:print',
@@ -16,6 +16,7 @@ return [
         'vendor/bootstrap.min.js',
         'vendor/bootstrap-accessibility.min.js',
         'vendor/validator.min.js',
+        // 'vendor/fontawesome-all.min.js', // Font Awesome 5 SVG Framework
         'lib/form-attr-polyfill.js', // input[form] polyfill, cannot load conditionally, since we need all versions of IE
         'lib/autocomplete.js',
         'common.js',
