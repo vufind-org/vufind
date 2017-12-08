@@ -384,16 +384,6 @@ class SolrExtensionsListener
                     }
                 }
             }
-            $facets = $params->get('facet.field');
-            if (null !== $facets) {
-                foreach ($facets as $key => $value) {
-                    if (substr($value, -14) == 'online_boolean') {
-                        unset($facets[$key]);
-                        $params->set('facet.field', $facets);
-                        break;
-                    }
-                }
-            }
         }
     }
 }
