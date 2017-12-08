@@ -16,7 +16,7 @@ return [
         'vendor/bootstrap.min.js',
         'vendor/bootstrap-accessibility.min.js',
         'vendor/validator.min.js',
-        // 'vendor/fontawesome-all.min.js', // Font Awesome 5 SVG Framework
+        // 'vendor/fontawesome-all.min.js', // Font Awesome 5 SVG Framework (breaks icon overwrites in components/icons.less)
         'lib/form-attr-polyfill.js', // input[form] polyfill, cannot load conditionally, since we need all versions of IE
         'lib/autocomplete.js',
         'common.js',
