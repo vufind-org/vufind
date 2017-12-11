@@ -25,7 +25,6 @@
     <field name="multipart_part" type="string" indexed="true" stored="true"  multiValued="true"/>
     <field name="multipart_set" type="string" indexed="true" stored="true"/>
     <field name="pndnum" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="rvk-notation" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="signature" type="signaturestring" indexed="true" stored="true" multiValued="true"/>
     <field name="tue_local_indexed_date" type="date" indexed="true" stored="true"/>
 </fields>
