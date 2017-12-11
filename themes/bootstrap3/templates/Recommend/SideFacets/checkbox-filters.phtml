@@ -3,7 +3,7 @@
     <? if ($current['selected']): ?>
       <span class="sr-only"><?=$this->transEsc('clear_tag_filter') ?></span>
     <? endif; ?>
-    <i class="fa fa-<?=$current['selected'] ? 'check-square-o' : 'square-o' ?>"></i>
+    <i class="<?=$current['selected'] ? 'fa fa-check-square' : 'far fa-square' ?>"></i>
     <?=$this->transEsc($current['desc']) ?>
   </a>
 <? endforeach; ?>

@@ -137,8 +137,8 @@ module.exports = function(grunt) {
               order: 4
             },
             {
-              pattern: '@import "vendor/font-awesome/font-awesome";',
-              replacement: '$fa-font-path: ' + fontAwesomePath + ';\n@import "vendor/font-awesome/font-awesome";',
+              pattern: '@import "vendor/font-awesome/fontawesome";',
+              replacement: '$fa-font-path: ' + fontAwesomePath + ';\n@import "vendor/font-awesome/fontawesome";',
               order: 4
             },
             { // VuFind: Bootprint fixes

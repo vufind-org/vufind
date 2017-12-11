@@ -7,7 +7,7 @@
       <? else: ?>
         <span title="<?=$this->escapeHtmlAttr($this->translate('view_already_selected', ['%%current%%' => $viewDesc])) ?>">
       <? endif; ?>
-      <i class="fa fa-<?=$viewType ?>" alt="<?=$this->escapeHtmlAttr($viewDesc)?>"></i>
+      <i class="fa fa-<?=$viewType == "grid" ? "th" : $viewType ?>" alt="<?=$this->escapeHtmlAttr($viewDesc)?>"></i>
       <?=$viewDesc ?>
       <? if (!$viewData['selected']): ?>
         </a>

@@ -33,12 +33,12 @@
     <? endif; ?>
     <? if ($this->ils()->checkFunction('ILLRequests', $capabilityParams)): ?>
     <a href="<?=$this->url('myresearch-illrequests')?>"<?=$this->active == 'ILLRequests' ? ' class="active"' : ''?>>
-      <i class="fa fa-fw fa-exchange" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?>
+      <i class="fa fa-fw fa-exchange-alt" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?>
     </a>
     <? endif; ?>
     <? if ($this->ils()->checkCapability('getMyFines', $capabilityParams)): ?>
       <a href="<?=$this->url('myresearch-fines')?>"<?=$this->active == 'fines' ? ' class="active"' : ''?>>
-        <i class="fa fa-fw fa-usd" aria-hidden="true"></i> <?=$this->transEsc('Fines')?>
+        <i class="fa fa-fw fa-dollar-sign" aria-hidden="true"></i> <?=$this->transEsc('Fines')?>
       </a>
     <? endif; ?>
     <? if ($this->ils()->checkCapability('getMyProfile', $capabilityParams)): ?>
@@ -59,7 +59,7 @@
   <? endif; ?>
   <? if ($user): ?>
     <a href="<?=$this->url('myresearch-logout')?>">
-      <i class="fa fa-fw fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?>
+      <i class="fa fa-fw fa-sign-out-alt" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?>
     </a>
   <? endif; ?>
 </div>

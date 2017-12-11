@@ -150,7 +150,7 @@
             <? if (!is_array($urls)) { $urls = []; }
               if(!$this->driver->isCollection()):
                 foreach ($urls as $current): ?>
-                  <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
+                  <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link-alt" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
                 <? endforeach; ?>
               <? endif; ?>
             <? endif; ?>
@@ -177,7 +177,7 @@
           $dLabel = 'delete-label-' . preg_replace('[\W]', '-', $id);
         ?>
         <div class="dropdown">
-          <i class="fa fa-fw fa-trash-o" aria-hidden="true"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" href="<?=$deleteUrlGet ?>">
+          <i class="fa fa-fw fa-trash" aria-hidden="true"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" href="<?=$deleteUrlGet ?>">
             <?=$this->transEsc('Delete') ?>
           </a>
           <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">

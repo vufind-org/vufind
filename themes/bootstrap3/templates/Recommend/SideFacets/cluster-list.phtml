@@ -49,7 +49,7 @@
   <? endif; ?>
 
   <? if ($thisFacet['operator'] == 'OR'): ?>
-    <i class="fa <?=$thisFacet['isApplied'] ? 'fa-check-square-o' : 'fa-square-o' ?>" aria-hidden="true"></i>
+    <i class="<?=$thisFacet['isApplied'] ? 'fa fa-check-square' : 'far fa-square' ?>" aria-hidden="true"></i>
   <? endif; ?>
 
   <?=$this->escapeHtml($thisFacet['displayText'])?>
