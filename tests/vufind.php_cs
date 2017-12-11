@@ -1,6 +1,9 @@
 <?php
 
-$finder = PhpCsFixer\Finder::create()->in(__DIR__ . '/../module');
+$finder = PhpCsFixer\Finder::create()
+    ->in(__DIR__ . '/../config')
+    ->in(__DIR__ . '/../module')
+    ->in(__DIR__ . '/../public');
 
 $rules = [
     'align_multiline_comment' => true,
