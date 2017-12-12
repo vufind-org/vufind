@@ -404,28 +404,7 @@ $config = [
         // This section contains service manager configurations for all VuFind
         // pluggable components:
         'plugin_managers' => [
-            'auth' => [
-                'abstract_factories' => ['VuFind\Auth\PluginFactory'],
-                'factories' => [
-                    'choiceauth' => 'VuFind\Auth\Factory::getChoiceAuth',
-                    'facebook' => 'VuFind\Auth\Factory::getFacebook',
-                    'ils' => 'VuFind\Auth\Factory::getILS',
-                    'multiauth' => 'VuFind\Auth\Factory::getMultiAuth',
-                    'multiils' => 'VuFind\Auth\Factory::getMultiILS',
-                    'shibboleth' => 'VuFind\Auth\Factory::getShibboleth'
-                ],
-                'invokables' => [
-                    'cas' => 'VuFind\Auth\CAS',
-                    'database' => 'VuFind\Auth\Database',
-                    'ldap' => 'VuFind\Auth\LDAP',
-                    'sip2' => 'VuFind\Auth\SIP2',
-                ],
-                'aliases' => [
-                    // for legacy 1.x compatibility
-                    'db' => 'Database',
-                    'sip' => 'Sip2',
-                ],
-            ],
+            'auth' => [ /* see VuFind\Auth\PluginManager for defaults */ ],
             'autocomplete' => [ /* see VuFind\Autocomplete\PluginManager for defaults */ ],
             'channelprovider' => [ /* see VuFind\ChannelProvider\PluginManager for defaults */ ],
             'content' => [

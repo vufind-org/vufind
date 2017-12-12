@@ -254,8 +254,8 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
         $mockShib = $this->getMockBuilder('VuFind\Auth\Shibboleth')
             ->disableOriginalConstructor()
             ->getMock();
-        $pm->setService('Database', $mockDb);
-        $pm->setService('Shibboleth', $mockShib);
+        $pm->setService('VuFind\Auth\Database', $mockDb);
+        $pm->setService('VuFind\Auth\Shibboleth', $mockShib);
         return $pm;
     }
 
