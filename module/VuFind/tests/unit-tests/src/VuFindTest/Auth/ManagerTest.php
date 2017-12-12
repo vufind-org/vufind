@@ -562,10 +562,10 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $mockShib = $this->getMockBuilder('VuFind\Auth\Shibboleth')
             ->disableOriginalConstructor()
             ->getMock();
-        $pm->setService('ChoiceAuth', $mockChoice);
-        $pm->setService('Database', $mockDb);
-        $pm->setService('MultiILS', $mockMulti);
-        $pm->setService('Shibboleth', $mockShib);
+        $pm->setService('VuFind\Auth\ChoiceAuth', $mockChoice);
+        $pm->setService('VuFind\Auth\Database', $mockDb);
+        $pm->setService('VuFind\Auth\MultiILS', $mockMulti);
+        $pm->setService('VuFind\Auth\Shibboleth', $mockShib);
         return $pm;
     }
 
