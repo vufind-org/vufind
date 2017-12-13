@@ -1,10 +1,42 @@
-.myresearch-row .checkboxFilter {
-  padding-left: 0;
-  & .checkbox {
+.myresearch-row {
+  padding: 10px;
+  margin: 0;
+  word-wrap: break-word;
+  @media(max-width:@screen-xs-max) {
+    .row();
+  }
+  &:nth-child(odd) {
+    background: @table-bg-accent;
+  }
+  & h3 {
+    margin: 0;
+    font-weight: 400;
+    font-size: 1.2em;
+    margin-bottom: 2px;
+  }
+  & .no-checkbox {
+    font-size: 0.8em;
+    color: @gray-light;
+  }
+  & .alert {
+    padding: 4px;
+    margin-bottom: 3px;
+    margin-top: 3px;
+  }
+  // row for holds information
+  & .holds-status-information, .checkedout-status-information {
+    @media(min-width: @screen-sm-min) {
+      text-align: right;
+    }
+  }
+  & .checkboxFilter {
     padding-left: 0;
-    margin-top: 0;
-    & label {
-      margin-left: 0;
+    & .checkbox {
+      padding-left: 0;
+      margin-top: 0;
+      & label {
+        margin-left: 0;
+      }
     }
   }
 }
@@ -35,4 +67,470 @@
 
 .librarycard-barcode {
   margin-bottom: 0.5em;
+}
+
+.myresearch-table {
+  width: 100%;
+  margin: 15px 0px;
+  th,td {
+    vertical-align: top;
+    padding: 5px;
+    @media(max-width: @screen-sm){
+      text-align: left;
+    }
+    .record-title {
+      text-align: left;
+    }
+  }
+  .sort-button {
+    @media(max-width: @screen-sm){
+      min-width: 100px;
+    }
+  }
+  .recordcover {
+    min-width: 30px;
+  }
+  .renew-button {
+    margin-bottom: 5px;
+  }
+  @media(min-width: @screen-sm){
+    .half-table-column {
+      width: 50%;
+      float: left;
+    }
+    .sort-col,
+    .renew-button-col {
+      width: 50%;
+      float: left;
+    }
+    .sort-col{ text-align: right; }
+    .renew-button-col { text-align: left; }
+    .title-column{
+      width: 60%;
+      float: left;
+    }
+    .status-column{
+      width: 40%;
+      float: left;
+    }
+  }
+  .checkbox-col{
+    width: 10%;
+  }
+  .myresearch-count {
+    float: right;
+    line-height: 40px;
+    font-weight: bold;
+    &.no-buttons {
+      line-height: inherit;
+    }
+  }
+}
+
+.myresearch-notes {
+  margin-top: 10px;
+}
+.myresearch-notes a, .myresearch-notes i {
+  color: @gray-light;
+}
+.row.record-container.myresearch-row:last-child {
+  margin-bottom: 20px;
+  box-shadow: 0px 15px 30px -25px @gray;
+}
+
+.myresearch-grid-list {
+  margin-bottom: 20px;
+  > h2 {
+    margin-top: 0;
+    border-bottom: none;
+    padding: 10px;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+
+  }
+  > h4 {
+    margin-left: 10px;
+  }
+  & .myresearch-row:last-child {
+    box-shadow: none;
+  }
+}
+
+// Custom styles for user account functions
+.template-dir-myresearch, .template-dir-search.template-name-history, .template-dir-librarycards {
+  padding-bottom: 30px;
+  h1 {
+    font-weight: 500;
+  }
+  .my-research-content {
+    width: 100%;
+    padding: 20px;
+    border-radius: @border-radius-base;
+  }
+  h1 {
+    display: inline-block;
+  }
+  & #account-actions {
+    margin-bottom: 20px;
+    & #import-export-buttons {
+      margin-right: 20px;
+    }
+    .btn {
+      margin-bottom: 5px;
+    }
+  }
+  & .pickup-location {
+    margin-top: 3px;
+    margin-bottom: 3px;
+  }
+  & .pickup-locations {
+    overflow-y: auto;
+    max-height: 280px;
+    left: auto;
+    max-width: 280px;
+    overflow-x: hidden;
+    position: absolute;
+    right: 0;
+    @media(max-width: @screen-xs-max) {
+      left: -40px;
+      right: auto;
+    }
+    & a {
+      cursor: pointer;
+    }
+  }
+  & #card_name {
+    width: 205px;
+  }
+
+  & .markdown.edit {
+    & .CodeMirror {
+      height: 300px;
+    }
+    & .markdown-preview {
+      padding: 10px;
+      background: #fafafa;
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid @gray-lighter;
+      & .preview {
+        position: absolute;
+        right: 40px;
+        background-color: @body-bg;
+        padding: 3px 9px;
+      }
+    }
+  }
+  & .markdown .editable {
+    padding: 5px;
+    & > p {
+      margin: 0;
+    }
+  }
+
+  .markdown.edit > .fa-pen {
+    display: none;
+  }
+
+  & .resource-note {
+    margin-left: -5px;
+  }
+
+  & .checkboxFilter label.checkbox {
+    padding-left: 5px;
+    color: @gray-light;
+  }
+  @media(max-width:@screen-md-max) {
+    .paginationSimple {
+      margin-top: 0;
+    }
+  }
+  .paginationSimple {
+    margin-left: 5px;
+  }
+  & .no-padding-table {
+    & th, td {
+      padding: 8px 0;
+      vertical-align: middle;
+    }
+    & th {
+      width: 25%;
+    }
+    & td {
+      width: 75%;
+    }
+  }
+
+  & p.no-content-message {
+    margin-top: 5px;
+  }
+  & .borrowing-block-container {
+    & p.borrowing-block {
+      padding: 0;
+      font-weight: bold;
+      margin-bottom: 0;
+    }
+  }
+  .support-notice {
+    margin: 0;
+    margin-top: 5px;
+    padding: 10px 15px;
+  }
+}
+
+.useraccount-header {
+  font-weight: 600;
+  font-size:@font-size-h2;
+}
+
+#renewals .toolbar {
+  @media (max-width:@screen-xs-max) {
+    margin-left: -15px;
+  }
+  & .checkboxFilter.mylist-select-all {
+    margin-right: 0;
+    margin-top: 3px;
+    float: none;
+    & span {
+      font-size: 11px;
+      top: 4px;
+      left: ~"-webkit-calc(50% + 10px)";
+      left: ~"-moz-calc(50% + 10px)";
+      left: ~"calc(50% + 10px)";
+      position: absolute;
+      width: 70px;
+    }
+  }
+  & .checkboxFilter .checkbox label {
+    font-size: 13px;
+  }
+}
+
+.template-dir-myresearch .toolbar {
+  margin: 0;
+  margin-top: 5px;
+  border-bottom: 1px solid @gray-lighter;
+  padding: 15px 0;
+  .status-text {
+    float: right;
+    line-height: 38px;
+  }
+  &.bottom {
+    padding-top: 15px;
+    border-top: 1px solid @gray-lighter;
+    border-bottom: none;
+  }
+  & .btn-group {
+    margin-top: 3px;
+  }
+}
+
+.online-payment-data {
+  font-size: 1.2em;
+  margin-bottom: 40px;
+  padding-right: 25px;
+  @media (min-width: @screen-sm) {
+    width: 50%;
+    float: right;
+  }
+  & .amount {
+    font-weight: bold;
+  }
+
+  & .online-payment-form {
+    & input {
+      margin-left: 20px;
+      font-weight: bold;
+    }
+  }
+}
+.online-payment-note {
+  margin-bottom: 40px;
+  @media (min-width: @screen-sm) {
+    width: 50%;
+    float: left;
+  }
+}
+
+.useraccount-table {
+  margin-bottom: 40px;
+  border: 1px solid @gray-lighter;
+  border-top: none;
+  box-shadow: 0 15px 30px -35px @gray;
+  &.online-payment {
+    margin-bottom: 15px;
+  }
+  &.library-cards {
+    @media (max-width: @screen-xs-max) {
+      table-layout: fixed;
+    }
+  }
+  & .headers {
+    background: @gray-ultralight;
+    color: @text-color;
+  }
+  & .headers th {
+    background: none;
+    border-top: 1px solid #d1d1d1;
+    &:last-child {
+      border-right: none;
+    }
+  }
+  & td {
+    border-right: 1px solid @body-bg;
+    vertical-align: middle;
+    &:last-child {
+      border-right: none;
+    }
+  }
+  & .user-account-table-title {
+    width: 25%;
+  }
+  & .total-balance {
+    background: none;
+    border-top: 2px solid @gray-lighter;
+    text-align: right;
+    line-height: 2em;
+    font-size: 1.2em;
+    & .amount {
+      font-weight: bold;
+    }
+  }
+  & .balance {
+    text-align: right;
+  }
+  & .online-payment-remark {
+    font-weight: bold;
+  }
+  & tr.payment-data>th {
+    background: @body-bg;
+  }
+  & th {
+    font-size: 1.1em;
+  }
+  & .history-time {
+    width: 20%;
+  }
+  & .history-save {
+    text-align: center;
+    width: 15%;
+    a {
+      color: @action-link-color;
+    }
+  }
+  & .history-results {
+    width: 15%;
+  }
+  & .actions {
+    width: 15%;
+  }
+  & .library-card-actions a {
+    display: block;
+    margin: 4px 0;
+  }
+  & td.history-search-index, td.history-schedule .disable {
+    color: @gray-light;
+    font-size: .9em;
+  }
+}
+
+.useraccount-nav-mobile {
+  .dropdown-menu {
+    left: ~"-webkit-calc(50% - 100px)";
+    left: ~"-moz-calc(50% - 100px)";
+    left: ~"calc(50% - 100px)";
+    width: 200px;
+  }
+}
+.useraccount-nav {
+  display: table;
+  width: 100%;
+  & li {
+    float:left;
+    a {
+      padding: 10px 5px;
+      margin-right: 0px;
+    }
+    @media(max-width: @screen-md-max) {
+      max-width: 160px;
+      font-size: 14px;
+      a {
+        padding: 10px;
+      }
+    }
+    @media(max-width: @screen-sm-max) {
+      max-width: 95px;
+    }
+  }
+}
+
+.useraccount-cancel > li {
+  border-bottom: none;
+  &:not(.disabled) {
+    float: left;
+    width: 45%;
+    padding: 10px;
+    text-align: center;
+    & a {
+      border-radius: @border-radius-base;
+      background: @link-color;
+      color: @body-bg;
+    }
+  }
+}
+
+.main.template-dir-myresearch.template-name-unsubscribe {
+  & .unsubscribe {
+    margin-bottom: 20px;
+  }
+}
+.template-dir-librarycards .dropdown-menu.useraccount-cancel {
+  left: auto;
+  right: 0;
+  top: auto;
+}
+.template-dir-myresearch .toolbar > .btn-group:last-of-type .dropdown-menu.useraccount-cancel {
+  @media (max-width: @screen-xs-max) {
+    left: auto;
+    right: 0;
+  }
+}
+
+.own-favorite-list-button-area {
+  display: block;
+  float: left;
+  height: 36px;
+  width: 100%;
+
+}
+
+.history-controls {
+  @media (min-width: @screen-sm) {
+    display: flex;
+    flex-direction: row-reverse;
+  }
+  .right-control {
+    @media (max-width: @screen-sm) {
+      text-align: right;
+      float: right;
+      width: 65%;
+    }
+  }
+  .left-control {
+    @media (min-width: @screen-sm) {
+      flex-grow: 1;
+      text-align:left;
+    }
+    @media (max-width: @screen-sm) {
+      text-align: left;
+      width: 35%;
+    }
+    margin-bottom: 10px;
+  }
+  .pagination-container {
+    @media (min-width: @screen-sm) {
+      flex-grow: 1;
+      text-align:left;
+    }
+  }
 }

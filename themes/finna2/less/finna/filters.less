@@ -1,0 +1,144 @@
+.search-filters {
+  background: @filterContent-background;
+  border-top: 1px solid @filterContent-border-color;
+  border-bottom: 1px solid @filterContent-border-color;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+.template-dir-search,
+.template-dir-eds,
+.template-dir-primo {
+  .search-filters {
+    margin-bottom: 1.5em;
+  }
+}
+
+.finna-filters {
+  color: @filterContent-text-color;
+  padding: 5px 0 5px 0;
+  & .checkbox label {
+    display: inline-block;
+    padding: 10px 0px;
+  }
+  & .filters-term {
+    font-size: 0.8em
+  }
+  & .filters-title {
+    margin-left: 10px;
+  }
+  & .filter-value {
+    padding: 5px 10px;
+    margin: 5px;
+    font-weight: 600;
+    background: @filters-background-color;
+    color: @filters-text-color;
+    border-radius: @border-radius-large;
+    white-space: nowrap;
+    display: inline-block;
+    & a {
+      color: @filters-icon-color;
+      margin: 4px;
+    }
+  }
+
+  .checkbox {
+    display: inline;
+    padding-left: 0px;
+    padding-right: 20px;
+  }
+  .retain-filters {
+    display: inline-block;
+    float: left;
+    @media (max-width: @screen-xs-max){
+      float: right;
+      .checkbox label {
+        margin: 0;
+        padding: 0;
+      }
+    }
+  }
+  .filters {
+    padding-top: 5px;
+    display: table-cell;
+  }
+}
+
+.finna-filters .title-value-pair {
+  display: inline-block;
+}
+
+@media (max-width: @screen-sm){
+  .filters-title, .filter-value {
+    font-size: 80%;
+  }
+  .filters-toggle, .retain-filters {
+    font-size: 90%;
+  }
+  .finna-filters .retain-filters .checkbox label:before {
+    font-size: 15px;
+  }
+}
+
+.template-name-view .finna-filters {
+  padding: 5px 0 5px 0;
+  & .checkbox label {
+    display: inline-block;
+    padding: 7px;
+    margin: 5px;
+  }
+  & .filters-term {
+    font-size: 0.8em
+  }
+  & .filters-title {
+    margin-left: 10px;
+  }
+  & .filter-value {
+    padding: 5px 10px;
+    margin: 5px;
+    font-weight: 600;
+    background: @gray-ultralight;
+    color: @text-color;
+    border-radius: @border-radius-large;
+    white-space: nowrap;
+    display: inline-block;
+    & a {
+      color: @body-bg;
+      margin: 4px;
+    }
+  }
+
+  .checkbox {
+    display: inline;
+    padding-left: 0px;
+    padding-right: 20px;
+  }
+  .retain-filters {
+    float: left;
+    @media (max-width: @screen-sm){
+      float: right;
+      .checkbox label {
+        margin: 0;
+        padding: 0;
+      }
+    }
+  }
+  .filters {
+    padding-top: 5px;
+  }
+}
+
+
+.filters-toggle-bar {
+  line-height: 40px;
+  .filters-toggle {
+    text-transform: uppercase;
+    float: left;
+    color: @brand-primary;
+    font-weight: bold;
+    i {
+      vertical-align: middle;
+      margin-top: -5px;
+    }
+  }
+}

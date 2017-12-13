@@ -1,0 +1,63 @@
+.floating-feedback-btn {
+  margin-top: 15px;
+  margin-right: 15px;
+  background: @finna-feedback-background;
+  color: @finna-feedback-color;
+  position: absolute;
+  right: 0;
+  top: auto;
+  z-index: 1001;
+  &.fixed {
+    position: fixed;
+    top: 0;
+  }
+  &:hover {
+    background: darken(@finna-feedback-background,5%);
+  }
+  &:before {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    margin: auto;
+    border-width: 0 0 9px 12px;
+    border-style: solid;
+    border-color: transparent @finna-feedback-background;
+  }
+  &:hover:before {
+    border-color: transparent darken(@finna-feedback-background,5%);
+  }
+}
+
+.feedback-form {
+  & .form-group {
+    margin-bottom: 20px;
+    & label {
+      clear: both;
+      display: block;
+    }
+    & textarea, & input {
+      max-width: 100%;
+    }
+  }
+  & .feedback-info p,
+  & .captcha {
+    padding-top: 10px;
+    border-top: 1px solid @gray-lighter;
+  }
+}
+
+form[name=feedbackRecord] .feedback-info {
+  border: none;
+}
+.form-horizontal[name=emailRecord] {
+  & input[type=email] {
+    min-width: 200px;
+    max-width: 100%;
+  }
+}
+
+.feedback-content {
+  @media(min-width: @screen-sm) {
+    width: 50%;
+  }
+}

@@ -1,0 +1,135 @@
+.template-name-profile {
+  .my-research-content {
+    @media (min-width: @screen-md) {
+      width: 75%;
+    }
+  }
+}
+
+.myresearch-profile-list {
+  padding: 0px 6px 20px;
+  & label, & .profile-title {
+    padding-top: 6px;
+  }
+  & .profile-title {
+    clear: left;
+  }
+  .clearfix {
+    padding: 3px 0px;
+  }
+  & #email {
+    width: 100%;
+    margin-bottom: 5px;
+    @media (max-width: @screen-xs-max) {
+      max-width: 320px;
+    }
+  }
+}
+.myresearch-profile-header {
+  font-size: @font-size-h3;
+  font-weight: bold;
+  padding: 7px 10px;
+  background: @gray;
+  background: @action-link-color;
+  color: @body-bg;
+}
+
+.library-profile {
+  margin-bottom: 40px;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+  border: 1px solid @gray-lighter;
+  box-shadow: 10px 15px 30px -25px @gray;
+  & #profile_library_form {
+    & input {
+      min-width: 210px;
+      @media (min-width: @screen-sm-min) {
+        margin-top: -7px;
+      }
+    }
+  }
+  div {
+    padding: 8px;
+    &.profile-title {
+      line-height: 1.5;
+      font-weight: bold;
+      font-size: 1.1em;
+      @media (max-width: @screen-xs-max) {
+        padding-bottom: 0;
+      }
+    }
+    &.profile-text-value {
+      line-height: 1.5;
+      padding-left: 0px;
+      @media (max-width: @screen-xs-max) {
+        padding: 0px 8px 8px;
+      }
+    }
+    &.profile-xs {
+      padding: 0;
+    }
+    &.profile-long {
+      padding-bottom: 0;
+    }
+    &.profile-after-long {
+      padding-top: 16px;
+    }
+    &.library-profile-after-long {
+      padding-top: 0;
+    }
+    &.profile-info {
+      padding-top: 3px;
+    }
+    &.messaging-last {
+      margin-bottom: 20px;
+    }
+  }
+}
+
+.my-research-content .my-profile {
+  background: @gray-ultralight;
+  border-radius: @border-radius-small;
+  margin-bottom: 2em;
+  padding: 5px 10px;
+}
+
+@media (min-width: @screen-sm ){
+  .my-profile-col {
+    width: 33.33%;
+    float: left;
+    padding-right: 15px;
+  }
+  .password-col {
+    width: 66.6%;
+    float: left;
+  }
+}
+
+.myresearch-profile-middle-header {
+  font-size: @font-size-h3;
+  font-weight: bold;
+  display: block;
+  line-height: 1.1em;
+  margin-top: 15px;
+}
+
+#favorites-import-dialog {
+  #filename {
+    margin-right: 5px;
+  }
+  .alert {
+    margin-top: @modal-title-padding;
+  }
+  .form-control {
+    max-width: 200px;
+    float: left;
+  }
+}
+
+.myresearch-notification {
+  padding-left: 0;
+  @media (max-width: @screen-xs-max) {
+    margin-top: 0;
+  }
+}

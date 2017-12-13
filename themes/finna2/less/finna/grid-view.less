@@ -1,0 +1,216 @@
+/* ------ GRID VIEW ------ */
+.search-grid::after {
+  display: table;
+  clear: both;
+  content: '';
+}
+.grid.result {
+  float: left;
+  width: 50%;
+
+  .grid-checkbox {
+    min-width: 0;
+  }
+  .title { font-weight: bold; }
+  .label,
+  .format {
+    display: inline-block;
+    white-space: normal;
+  }
+  .grid-result {
+    width: 100%;
+  }
+}
+.grid-large-break,
+.grid-small-break { clear: both; }
+@media (min-width: 992px) {
+  .grid.result{ width: 25%; }
+  .grid-small-break { display: none; }
+}
+
+.result-view-grid {
+  .grid:not(.recordcovers) {
+    padding: 0px 5px 10px;
+    margin-bottom: 10px;
+    &:focus {
+      outline: none;
+    }
+    & .grid-title {
+      position: relative;
+      padding: 10px 5px 4px;
+      width: 100%;
+      top: ~"-webkit-calc(100% - 22px)";
+      top: ~"-moz-calc(100% - 22px)";
+      top: ~"calc(100% - 22px)";
+      overflow: hidden;
+      max-height: 43px;
+      transition: all .2s ease-in-out;
+      z-index: 10;
+      box-shadow: 0px 20px 24px -15px #000;
+      .opacity(0);
+      background: #fff;
+      transition: opacity .2s linear;
+    }
+    & .dateyeartype p {
+      margin-bottom: 0px;
+    }
+    & .grid-image {
+      overflow: hidden;
+    }
+    &:hover .grid-title {
+      max-height: 200px;
+      .opacity(1);
+      min-height: 50px;
+    }
+    & a.title {
+      font-size: 1.15em;
+      display: inline-block;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 99%;
+    }
+    & a.fulltext {
+      width: 100%;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+      overflow: hidden;
+    }
+    & .save-record-container {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      display: none;
+    }
+    & .save-record {
+      float: none;
+      font-size: inherit;
+    }
+    & .result .status {
+      position: absolute;
+      width: auto;
+      bottom: 30px;
+      left: auto;
+      & .label  {
+        background-color: #00b270;
+        box-shadow: -2px 2px 10px -2px black;
+      }
+    }
+    & img {
+      box-shadow: none;
+    }
+    & .image-popup-trigger:not(.no-image) {
+      max-height: 350px;
+      display: block;
+      overflow: hidden;
+      & img {
+        width: auto;
+      }
+    }
+
+    @media (max-width: @screen-xs-max) {
+      & .recordcover {
+        width: 100%;
+      }
+      & .iconlabel:before {
+        display: block;
+      }
+    }
+    &.no-image {
+      & .recordcover-holder:before {
+        color: @gray-light;
+        content: attr(data-format);
+        position: absolute;
+        top: 50%;
+        font-size: .9em;
+        left:0;
+        width: 100%;
+      }
+      & .recordcover-holder:after {
+        color: #BFBFBF;
+        content: attr(data-noimage);
+        position: absolute;
+        top: 5px;
+        font-size: .65em;
+        right: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      & .recordcover-holder {
+        background: #f5f5f5;
+      }
+      & .iconlabel:before {
+        color: @gray-mid-light;
+        top: 40%;
+      }
+    }
+  }
+  &:not(.touch-device) {
+    & .grid.no-image  {
+      & .grid-title {
+        max-height: 43px;
+        background: none;
+        box-shadow: 0px 0px 0px;
+        opacity: 1;
+        top: ~"-webkit-calc(100% - 65px)";
+        top: ~"-moz-calc(100% - 65px)";
+        top: ~"calc(100% - 65px)";
+        transition: background .1s linear;
+        padding-top: 6px;
+        padding-bottom: 6px;
+        margin-top: -60px;
+        @media(max-width: @screen-sm){
+          margin-top: -100px;
+        }
+      }
+      & .dateyeartype {
+        margin-top: -4px;
+        & p {
+          margin-bottom: 0px;
+        }
+      }
+      &:hover {
+        & .grid-title {
+          background: rgba(255,255,255,0.8);
+          box-shadow: 0px 20px 20px -16px #000;
+          max-height: 200px;
+        }
+      }
+    }
+  }
+}
+.result-view-grid.touch-device {
+  & .grid {
+    margin-bottom: 60px;
+    padding-bottom: 20px;
+    & .grid-title {
+      .opacity(.9);
+      position: relative;
+      transition: max-height .2s ease-in, box-shadow .2s ease-in;
+      max-height: 70px;
+      top: 100%;
+      box-shadow: none;
+      padding: 10px;
+      top: ~"-webkit-calc(100% - 21px)";
+      top: ~"-moz-calc(100% - 21px)";
+      top: ~"calc(100% - 21px)";
+    }
+    & .save-record-container, & .fulltext-links {
+      display: none;
+    }
+    & .dateyeartype {
+      margin-top: -4px;
+      & p {
+        margin-bottom: 0;
+      }
+    }
+    &:hover .grid-title {
+      max-height: 200px;
+      box-shadow: 0px 20px 20px -16px #000;
+    }
+  }
+}
+@media (max-width: 767px) {
+  .grid { min-height: 250px; }
+}

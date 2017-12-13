@@ -32,14 +32,6 @@
   font-size: @introduction-header;
   line-height: (@introduction-header/2.1);
   @media(max-width:@screen-xs-max) {
-    font-size: (@introduction-header/1.5);
-  }
-}
-
-.introduction h1 {
-  font-size: @introduction-header;
-  line-height: (@introduction-header/2.1);
-  @media(max-width:@screen-xs-max) {
       font-size: (@introduction-header/1.5);
   }
 }
@@ -108,5 +100,42 @@ h3.introductionText > em {
   @media (min-width: @screen-sm) {
     width: 50%;
     float: left
+  }
+}
+
+@media(min-width: @screen-md) {
+  .info-col {
+    width: 33.333%;
+    float: left;
+    padding: 0 15px;
+    &:first-child {
+      padding-left: 0;
+    }
+    &:last-child {
+      padding-right: 0;
+    }
+  }
+}
+
+.infobox {
+  margin: 20px 0px;
+  .box-shadow (@infobox-box-shadow);
+  padding: 10px 20px;
+  color: @infobox-text-color;
+  background: @infobox-background;
+  border: @infobox-border;
+  & h2 {
+    font-size: 1.777em;
+    line-height: 1.2em;
+  }
+  & li {
+    list-style-position: inside;
+  }
+  & p,li {
+    font-size: 1.2em;
+  }
+  & i,a {
+    color: @link-color;
+    text-shadow: none;
   }
 }

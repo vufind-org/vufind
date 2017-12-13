@@ -1,0 +1,58 @@
+//== PCI
+.summary {
+  color: @gray-light;
+  font-size: 1.05em;
+  line-height: 1.35em;
+  margin-bottom: 10px;
+}
+.primo-available-online {
+  & p {
+    margin: 0px;
+  }
+  & a {
+    display: inline-block;
+  }
+}
+.primo-available-online {
+  & .host {
+    font-size: 0.9em;
+    color: @gray-light;
+  }
+  & .fulltext-available .more-options {
+    display: none;
+  }
+}
+.primo-available-online-record,
+.local-available-online-record {
+  margin: 0px 0px 10px;
+  padding-bottom: 10px;
+  & .online-source {
+    font-size: 0.9em;
+    color: @gray-light;
+  }
+}
+.primo-available-online-record {
+  & .more-options {
+    display: none;
+    margin: 5px 0px;
+    font-size: 1.08em;
+  }
+
+  & .online-source {
+    color: @gray-light;
+    font-size: .9em;
+  }
+}
+//== PCI FACETS
+#creationdateFilter, #publishDateFilter, #PublicationDateFilter {
+  & input[type="text"] {
+    width: 40%;
+    max-width: 50px;
+    padding: 0px 5px;
+    display: inline-block;
+  }
+  .slider.slider-horizontal {
+    width: 95%;
+    margin: 20px 0px;
+  }
+}

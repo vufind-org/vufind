@@ -107,7 +107,7 @@
 
 .checkbox label{
   display: inline;
-  padding-left: 0px;
+  padding-left: 0;
 }
 
 .add-to-favorite-col {
@@ -116,6 +116,11 @@
     top: 0px;
     right: 0px;
     text-align: right;
+    i {
+      font-size: 16px;
+      text-align: right;
+      margin-bottom: 5px;
+    }
   }
 
   .qrcode {
@@ -143,5 +148,93 @@
   @media (max-width: @grid-float-breakpoint) {
     position: relative;
     top: @navbar-height;
+  }
+}
+
+/* TABLES */
+table.content-table {
+  font-size: @content-font-size-base;
+  margin-top: 0;
+  margin-bottom: 2.9em;
+  line-height: 1.4em;
+}
+
+.content-table th, .content-table td {
+  padding: 0.4em 1.5em 0.4em 0;
+  font-weight: normal;
+  border-bottom: 1px solid @gray-lighter;
+}
+.table.table-finna-record {
+  > thead,
+  > tbody,
+  > tfoot {
+    > tr {
+      > th,
+      > td {
+        padding: @table-finna-record-cell-padding;
+        word-wrap: break-word;
+      }
+    }
+  }
+  table-layout: fixed;
+}
+.table.citation {
+  table-layout: fixed;
+}
+
+table#componentparts {
+  & th {
+    background-color: @list-group-bg;
+    border-right: 2px solid @body-bg;
+    &.sorting_asc,&.sorting_desc,&.sorting {
+      background-position: center left;
+      padding-left: 20px;
+    }
+  }
+  & .even td {
+    background: fade(@nav-tabs-border-color, 5%);
+  }
+  & td a {
+    font-weight: bold;
+  }
+}
+
+.list-group {
+  border-radius: 0px;
+}
+
+// Unordered and Ordered lists
+ul,
+ol {
+  padding: 0;
+  & li {
+    list-style-type: none;
+  }
+}
+
+// Content pages list options
+// --------------------------------------------------
+
+//Unstyled list
+.list-plain {
+  font-size: @content-font-size-base;
+  line-height: @content-line-height-base;
+  padding-left: 0;
+  padding-bottom: 0.9em;
+
+  > li {
+    list-style-type: none;
+  }
+}
+
+// Bulleted list
+.list-bullets {
+  font-size: @content-font-size-base;
+  line-height: @content-line-height-base;
+  padding-left: 1.2em;
+  padding-bottom: 0.9em;
+
+  > li {
+    list-style-type: disc;
   }
 }

@@ -1,0 +1,98 @@
+section.main.template-dir-content.template-name-content .container-fluid.finna-main-header > .container,
+section.main.template-dir-feedcontent.template-name-content .container-fluid.finna-main-header > .container {
+  padding-bottom: 0;
+}
+
+.finna-main-header {
+  background: @finna-main-header-background;
+  padding: 15px 0 15px 0;
+  & .search-result-header, .content-header {
+    font-size: @finna-header-font-size;
+    margin: 0;
+  }
+  & .update-location-button {
+    margin-top: 15px;
+    & i {
+      color: #fff;
+    }
+  }
+}
+.template-name-content .finna-main-header {
+  background: @body-bg;
+}
+
+.main.template-dir-feedcontent.template-name-content,
+.main.template-dir-content.template-name-content {
+  & .finna-main-header {
+    margin-bottom: 25px;
+  }
+}
+
+.template-name-results, .template-name-search {
+  @media (max-width: @screen-xs-max) {
+    & .finna-main-header {
+      padding: 0;
+      & .search-result-header {
+        font-size: 1.3em;
+        margin-top: 15px;
+      }
+      .adv_search_links {
+        margin-bottom: 15px;
+      }
+    }
+  }
+}
+
+.adv-search-header {
+  padding: 15px 0;
+  background-color: @gray-ultralight;
+  #searchForm {
+    flex: 1;
+    @media (max-width: @screen-xs) {
+      width: 55%;
+    }
+  }
+  .searchbox-flex .record-back {
+    margin-right: 10px;
+  }
+}
+.adv-search-header .adv_search_links {
+  & a {
+    white-space: nowrap;
+    margin-right: 15px;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: @text-color;
+    @media (max-width:@screen-xs-max) {
+      display: block;
+      white-space: normal;
+    }
+  }
+}
+
+.template-dir-myresearch, .template-dir-search.template-name-history, .template-dir-librarycards {
+  .finna-main-header {
+    background: @myresearch-header-background;
+    & h1 {
+      font-size: @finna-header-font-size;
+      margin: 0;
+      line-height: 1.5em;
+    }
+    i {
+      color: @brand-primary;
+    }
+    .btn, .dropdown {
+      i {
+        color: #fff;
+      }
+    }
+    & .form-inline {
+      margin-left: 20px;
+    }
+  }
+}
+.template-dir-list.template-name-list {
+  & .finna-main-header {
+    background: @myresearch-header-background;
+  }
+}
