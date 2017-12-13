@@ -32,15 +32,17 @@
     display: block;
     > a {
       transition: background .2s ease-in-out;
-      @media(max-width: @screen-md-max){
-        padding: 0 6px;
-      }
     }
   }
 }
 @media (min-width:@screen-md-min) {
   .nav > li {
     display: inline-block;    
+  }
+}
+@media (max-width: @screen-md-max) {
+  .finna-navbar .nav >li>a {
+    padding: 0 6px;
   }
 }
 

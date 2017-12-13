@@ -50,7 +50,7 @@
                     <?= $this->recordLink()->getEmbeddedVideo($url['url']) ?>
                     <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
                   >
-                    <div class="video-icon"><i class="fa fa-play-circle"></i></div>
+                    <div class="video-icon"><i class="fa fa-lg fa-play-circle"></i></div>
                     <div class="video-desc"><?=$this->transEsc('default::link_' . $desc, null, $desc) ?></div>
                   </a>
                 </div>

@@ -502,7 +502,19 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      */
     public function getNonPresenterSecondaryAuthors()
     {
-        return $this->getNonPresenterAuthors(false);
+        $authors = $this->getNonPresenterAuthors(false);
+        $uncredited = $credited = [];
+        foreach ($authors as $author) {
+            if ($author['uncredited']) {
+                $uncredited[] = $author;
+            } else {
+                $credited[] = $author;
+            }
+        }
+        if (!empty($credited) || !empty($uncredited)) {
+            return ['credited' => $credited, 'uncredited' => $uncredited];
+        }
+        return [];
     }
 
     /**
@@ -871,6 +883,8 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 $roleName = (string)$nameAttrs->{'elokuva-elonayttelija-rooli'};
             } elseif (!empty($nameAttrs->{$uncreditedRole})) {
                 $roleName = (string)$nameAttrs->{$uncreditedRole};
+                $uncredited = true;
+            } elseif (!empty($nameAttrs->{'elokuva-elokreditoimatontekija-nimi'})) {
                 $uncredited = true;
             }
 
