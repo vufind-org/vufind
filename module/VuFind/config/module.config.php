@@ -665,20 +665,7 @@ $config = [
                     'tags' => 'VuFind\Search\Results\Factory::getTags',
                 ],
             ],
-            'session' => [
-                'abstract_factories' => ['VuFind\Session\PluginFactory'],
-                'invokables' => [
-                    'database' => 'VuFind\Session\Database',
-                    'file' => 'VuFind\Session\File',
-                    'memcache' => 'VuFind\Session\Memcache',
-                ],
-                'aliases' => [
-                    // for legacy 1.x compatibility
-                    'filesession' => 'File',
-                    'memcachesession' => 'Memcache',
-                    'mysqlsession' => 'Database',
-                ],
-            ]
+            'session' => [ /* see VuFind\Session\PluginManager for defaults */ ],
         ],
         // This section behaves just like recorddriver_tabs below, but is used for
         // the collection module instead of the standard record view.
