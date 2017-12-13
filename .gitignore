@@ -1,10 +1,10 @@
 # GNU Emacs temporary files
-
 ChangeLog
 \#*
 .\#*
 TAGS
 *~
+
 /downloads
 /solr/vendor
 /vendor
@@ -12,6 +12,7 @@ composer.phar
 import/solrmarc.log
 node_modules
 public/swagger-ui
+/import/marc_local.properties
 .vagrant
 
 
