@@ -1255,9 +1255,9 @@ ttl = 60
 ;umask = 022
 ; Permissions for Zend-created cache directories and files, subject to umask
 ; Default dir_permission seems to be 0700.
-;dir_permission = 0700
+dir_permission = 0770
 ; Default file_permission seems to be 0600.
-;file_permission = 0600
+file_permission = 0660
 
 ; This section controls the "Collections" module -- the special view for records
 ; that represent collections, and the mechanism for browsing these records.
