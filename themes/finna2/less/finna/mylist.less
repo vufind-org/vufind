@@ -62,11 +62,9 @@
 .template-name-mylist .bulk-action-buttons-col {
   padding: 10px;
   padding-bottom: 0px;
-  border-right: none;
-  border-bottom: 1px solid @gray-lighter;
 }
 
-.mylist-bar {
+.mylist-bar:not(.open) {
   margin-top: 20px;
 }
 .mylist-nav {
@@ -88,70 +86,71 @@
       position: absolute;
       top: 10px;
       right: 10px;
+      i {
+        background-color: @action-link-color;
+        font-size: 10px;
+      }
     }
   }
 
   & .add-new-list {
+    border: 1px solid @gray-lighter;
     display: block;
-  }
-  & .add-new-list .name {
-    width: 100%;
-  }
-  & .add-new-list .icon {
-    cursor: pointer;
-    position: absolute;
-    top: 0.7em;
-    right: 0.7em;
+    .name {
+      width: 100%;
+    }
+    i {
+      cursor: pointer;
+      position: absolute;
+      top: 0.7em;
+      right: 0.7em;
+      color: @action-link-color;
+    }
   }
 }
 .bulk-action-buttons-row {
   margin: 0;
-  min-height: 60px; // prevent fixed element bounce effect
+  border-bottom: 1px solid @gray-lighter;
   @media(max-width:@screen-xs-max) {
     .row();
   }
 }
+
 .bulk-action-buttons-col {
   padding: 10px 0;
-  border-right: 10px solid @body-bg;
-  & input.btn {
-    margin-right: 3px;
-  }
-  .btn, span {
-    height: 42px;
-  }
-  & .mylist-functions {
-    & i#add-to-list {
-      position: absolute;
-      top: 8px;
-    }
-    & select#add-to-list {
-      max-width: 140px;
-    }
-    & select, button, span {
-      margin-bottom: 4px;
-    }
-    span{
-      margin-top: -1px;
-    }
-  }
   &.fixed {
-    background-color: @gray-lighter;
+    margin-top: 0;
+    min-height: 50px;
+    top: 0;
+    background-color: @body-bg;
     position: fixed;
-    top: 0px;
-    padding: 10px 0 2px 10px;
+    padding: 10px 0 10px 10px;
     z-index: 11;
-    background: rgba(77,77,77,0.95);
-    box-shadow: 0px 19px 15px -13px grey;
-    & .checkbox span {
-      color: @body-bg;
-    }
+    box-shadow: 0 0 10px 3px @gray-mid-light;
+  }
+}
+.mylist-functions.btn-group {
+  .btn {
+    height: 30px;
+  }
+  select {
+    margin-right: -1px;
+  }
+}
+
+.my-list-functions-label {
+  font-size: @font-size-base;
+  margin-left: 5px;
+  @media(min-width: @screen-sm) {
+    margin-left: 2em;
   }
 }
 
 .checkboxFilter.mylist-select-all {
   float: left;
-  margin-right: 15px;
+  margin-right: 10px;
+  margin-bottom: 3px;
+  line-height: @line-height-computed;
   & .checkbox {
     margin:0;
   }
@@ -167,6 +166,12 @@
     &:hover {
       border: 0;
     }
+  }
+}
+
+.list-description {
+  @media(min-width: @screen-sm) {
+    margin-bottom: 10px;
   }
 }
 .list-description i.fa-pen {
@@ -236,6 +241,7 @@
     padding: 5px 30px 5px 10px;
     margin-top: 5px;
     border-radius: 3px;
+    border: 1px solid @gray-lighter;
     list-style-type: decimal;
     list-style-position: inside;
     &:hover {
@@ -269,6 +275,55 @@
       & .fa.fa-arrow-down, & .fa.fa-arrow-up {
         right: 32px;
       }
+    }
+  }
+}
+
+.mylist-header {
+  @media(max-width: @screen-xs-max) {
+    margin: 0 -15px;
+    padding: 0 5px;
+  }
+  .alert {
+    margin-top: 1em;
+  }
+}
+.mylist-controls-bar {
+  div {
+    display: inline-block;
+  }
+  .mylist-controls {
+    float: right;
+    &::after {
+      content: "";
+      clear: both;
+    }
+    &>.btn {
+      padding: 6px;
+      margin-top: -3px;
+    }
+    .button-label {
+      margin-left: 5px;
+    }
+  }
+  @media(max-width: @screen-xxs) {
+    .sort-button .dropdown>a span{
+      padding-right: 20px;
+      max-width: 72px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      display: inline-block;
+      margin-bottom: -6px;
+    }
+  }
+  @media(max-width: @screen-xs-max) {
+    .pagination-container, .mylist-controls {
+      width: 100%;
+      margin-top: 8px;
+    }
+    .pagination-container .paginationSimple {
+      text-align: left;
     }
   }
 }

@@ -1,6 +1,6 @@
 <!-- START of: finna - myresearch/menu.phtml -->
 <?
-    $this->layout()->finnaMainHeader = '<h1><i class="fa fa-user"></i> ' . $this->transEsc('Your Account') . '</h1>';
+    $this->layout()->finnaMainHeader = '<h1><i class="fa fa-lg fa-user"></i> ' . $this->transEsc('Your Account') . '</h1>';
     if (!$this->translationEmpty('tooltip_myaccount_html')) {
         $this->layout()->finnaMainHeader .= '<span class="tooltip-myaccount" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="' . $this->transesc("tooltip_myaccount_html") . '"><i class="fa fa-info-big"></i></span>';
     }

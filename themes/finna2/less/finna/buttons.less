@@ -58,12 +58,11 @@
       border: 1px solid @gray-lighter;
       background: @gray-ultralight;
       color: @text-color;
-      padding-top: 5px;
-      padding-bottom: 5px;
-      padding-right: 10px;
-      padding-left: 10px;
+      padding: 5px 10px;
       font-size: 0.9em;
-      
+      @media(max-width: @screen-xs-max) {
+        padding: 5px;
+      }
     }
   } 
 }

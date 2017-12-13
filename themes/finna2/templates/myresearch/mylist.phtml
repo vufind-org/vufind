@@ -55,7 +55,7 @@
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>" />
   <? endif; ?>
   <div class="mainbody right">
-    <div class="clearfix hidden-print">
+    <div class="clearfix mylist-header hidden-print">
       <div>
         <?=$this->flashmessages()?>
       </div>
@@ -73,18 +73,18 @@
         <?=$this->render($template)?>
       </div>
     <? endif; ?>
-  <div>
+  <div class="mylist-header">
     <? if ($recordTotal > 0): ?>
-    <div class="search-controls">
-      <div class="text-right hidden-print">
-        <? if (isset($list)): ?>
-          <a class="btn btn-primary" href="<?=$this->url('sortList', ['id' => $list->id]) ?>" data-backdrop=”static” data-lightbox><?=$this->transEsc('Sort manually');?></a>
-        <? endif; ?>
-        <?=$this->render('search/controls/sort.phtml')?>
-        <?=$this->render('search/controls/limit.phtml')?>
-      </div>
+    <div class="mylist-controls-bar">
       <div class="pagination-container">
         <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results])?>
+      </div>
+      <div class="mylist-controls hidden-print">
+          <? if (isset($list)): ?>
+            <a class="btn btn-primary" href="<?=$this->url('sortList', ['id' => $list->id]) ?>" data-backdrop=”static” data-lightbox><?=$this->transEsc('Sort manually');?></a>
+          <? endif; ?>
+          <?=$this->render('search/controls/sort.phtml')?>
+          <?=$this->render('search/controls/limit.phtml')?>
       </div>
     </div>
   </div>
@@ -124,4 +124,9 @@
     </ul>
   </form>
 <? endif; ?>
+<div class="mobile-navigation visible-xs hidden-print">
+  <ul>
+    <li class="sidebar-navigation"><i class="fa fa-arrow-up"></i> <?=$this->transEsc('Your Lists')?></li>
+  </ul>
+</div>
 <!-- END of: finna - myresearch/mylist.phtml -->
