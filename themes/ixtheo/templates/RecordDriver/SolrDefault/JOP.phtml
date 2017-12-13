@@ -1,4 +1,4 @@
-<? $formats = $this->driver->getFormats(); if (!empty($formats) && ( in_array("Article", $formats) || in_array("Journal", $formats))): ?>
+<? $formats = $this->driver->getFormats(); if (!empty($formats) && ( in_array("Article", $formats) || in_array("Journal", $formats)) || in_array("Review", $formats)): ?>
   <?$issn = $this->driver->tryMethod('getCleanISSN')?>
   <?$issn = (substr_count($issn, "-") == 0) ? implode("-", str_split($issn, 4)) : $issn?>
     <?if (!empty($issn)): ?>
