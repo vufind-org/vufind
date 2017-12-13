@@ -6,3 +6,4 @@ vufind/*/index
 vufind/*/spellchecker
 vufind/*/spellShingle
 vufind/*/tlog
+vufind/biblio/conf/solrmarc.xml
