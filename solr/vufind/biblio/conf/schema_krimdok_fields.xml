@@ -21,13 +21,10 @@
     <field name="local_recoding_date" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="local_signature" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="local_subject" type="text" indexed="true" stored="true" multiValued="true"/>
-    <field name="media" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="multipart_link" type="string" indexed="true" stored="true" multiValued="true" termVectors="true"/>
     <field name="multipart_part" type="string" indexed="true" stored="true"  multiValued="true"/>
     <field name="multipart_set" type="string" indexed="true" stored="true"/>
     <field name="pndnum" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="rvk" type="textFacet" indexed="true" stored="true" multiValued="true"/>
-    <field name="rvk-notation" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="signature" type="signaturestring" indexed="true" stored="true" multiValued="true"/>
     <field name="tue_local_indexed_date" type="date" indexed="true" stored="true"/>
 </fields>

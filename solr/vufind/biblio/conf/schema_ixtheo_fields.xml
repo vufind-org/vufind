@@ -81,7 +81,6 @@
     <field name="key_word_chains_ru" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chains_sorted_ru" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="last_modification_time" type="date" indexed="true" stored="true" multiValued="false"/>
-    <field name="mediatype" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="other_titles" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="publisher_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="record_selector" type="string" indexed="true" stored="true" multiValued="true"/>
@@ -91,7 +90,6 @@
     <field name="reviews" type="text" indexed="false" stored="true" multiValued="true"/>
     <field name="reviewed_records" type="text" indexed="false" stored="true" multiValued="true"/>
     <field name="rs" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="rvk" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="start_page" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="title_keywords" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_all" type="text" indexed="true" stored="true" multiValued="true"/>
