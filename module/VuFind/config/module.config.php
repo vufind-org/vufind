@@ -274,6 +274,7 @@ $config = [
             'VuFind\AuthManager' => 'VuFind\Auth\Factory::getManager',
             'VuFind\AuthPluginManager' => 'VuFind\Service\Factory::getAuthPluginManager',
             'VuFind\AutocompletePluginManager' => 'VuFind\Service\Factory::getAutocompletePluginManager',
+            'VuFind\Autocomplete\Suggester' => 'VuFind\Autocomplete\SuggesterFactory',
             'VuFind\CacheManager' => 'VuFind\Service\Factory::getCacheManager',
             'VuFind\Cart' => 'VuFind\Service\Factory::getCart',
             'VuFind\ChannelProviderPluginManager' => 'VuFind\Service\Factory::getChannelProviderPluginManager',

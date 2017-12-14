@@ -922,11 +922,8 @@ class AjaxController extends AbstractBase
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $query = $this->getRequest()->getQuery();
-        $autocompleteManager = $this->serviceLocator
-            ->get('VuFind\AutocompletePluginManager');
-        return $this->output(
-            $autocompleteManager->getSuggestions($query), self::STATUS_OK
-        );
+        $suggester = $this->serviceLocator->get('VuFind\Autocomplete\Suggester');
+        return $this->output($suggester->getSuggestions($query), self::STATUS_OK);
     }
 
     /**
