@@ -426,30 +426,7 @@ $config = [
                     'sip' => 'Sip2',
                 ],
             ],
-            'autocomplete' => [
-                'abstract_factories' => ['VuFind\Autocomplete\PluginFactory'],
-                'factories' => [
-                    'solr' => 'VuFind\Autocomplete\Factory::getSolr',
-                    'solrauth' => 'VuFind\Autocomplete\Factory::getSolrAuth',
-                    'solrcn' => 'VuFind\Autocomplete\Factory::getSolrCN',
-                    'solrreserves' => 'VuFind\Autocomplete\Factory::getSolrReserves',
-                ],
-                'invokables' => [
-                    'none' => 'VuFind\Autocomplete\None',
-                    'oclcidentities' => 'VuFind\Autocomplete\OCLCIdentities',
-                    'tag' => 'VuFind\Autocomplete\Tag',
-                ],
-                'aliases' => [
-                    // for legacy 1.x compatibility
-                    'noautocomplete' => 'None',
-                    'oclcidentitiesautocomplete' => 'OCLCIdentities',
-                    'solrautocomplete' => 'Solr',
-                    'solrauthautocomplete' => 'SolrAuth',
-                    'solrcnautocomplete' => 'SolrCN',
-                    'solrreservesautocomplete' => 'SolrReserves',
-                    'tagautocomplete' => 'Tag',
-                ],
-            ],
+            'autocomplete' => [ /* see VuFind\Autocomplete\PluginManager for defaults */ ],
             'channelprovider' => [
                 'factories' => [
                     'alphabrowse' => 'VuFind\ChannelProvider\Factory::getAlphaBrowse',
