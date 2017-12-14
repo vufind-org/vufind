@@ -39,6 +39,37 @@ namespace VuFind\ChannelProvider;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'alphabrowse' => 'VuFind\ChannelProvider\AlphaBrowse',
+        'facets' => 'VuFind\ChannelProvider\Facets',
+        'listitems' => 'VuFind\ChannelProvider\ListItems',
+        'random' => 'VuFind\ChannelProvider\Random',
+        'similaritems' => 'VuFind\ChannelProvider\SimilarItems',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\ChannelProvider\AlphaBrowse' =>
+            'VuFind\ChannelProvider\Factory::getAlphaBrowse',
+        'VuFind\ChannelProvider\Facets' =>
+            'VuFind\ChannelProvider\Factory::getFacets',
+        'VuFind\ChannelProvider\ListItems' =>
+            'VuFind\ChannelProvider\Factory::getListItems',
+        'VuFind\ChannelProvider\Random' =>
+            'VuFind\ChannelProvider\Factory::getRandom',
+        'VuFind\ChannelProvider\SimilarItems' =>
+            'VuFind\ChannelProvider\Factory::getSimilarItems',
+    ];
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
