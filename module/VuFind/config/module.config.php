@@ -427,15 +427,7 @@ $config = [
                 ],
             ],
             'autocomplete' => [ /* see VuFind\Autocomplete\PluginManager for defaults */ ],
-            'channelprovider' => [
-                'factories' => [
-                    'alphabrowse' => 'VuFind\ChannelProvider\Factory::getAlphaBrowse',
-                    'facets' => 'VuFind\ChannelProvider\Factory::getFacets',
-                    'listitems' => 'VuFind\ChannelProvider\Factory::getListItems',
-                    'random' => 'VuFind\ChannelProvider\Factory::getRandom',
-                    'similaritems' => 'VuFind\ChannelProvider\Factory::getSimilarItems',
-                ]
-            ],
+            'channelprovider' => [ /* see VuFind\ChannelProvider\PluginManager for defaults */ ],
             'content' => [
                 'factories' => [
                     'authornotes' => 'VuFind\Content\Factory::getAuthorNotes',
