@@ -468,24 +468,7 @@ $config = [
                     'guardian' => 'VuFind\Content\Reviews\Guardian',
                 ],
             ],
-            'db_row' => [
-                'factories' => [
-                    'changetracker' => 'VuFind\Db\Row\Factory::getChangeTracker',
-                    'comments' => 'VuFind\Db\Row\Factory::getComments',
-                    'externalsession' => 'VuFind\Db\Row\Factory::getExternalSession',
-                    'oairesumption' => 'VuFind\Db\Row\Factory::getOaiResumption',
-                    'record' => 'VuFind\Db\Row\Factory::getRecord',
-                    'resource' => 'VuFind\Db\Row\Factory::getResource',
-                    'resourcetags' => 'VuFind\Db\Row\Factory::getResourceTags',
-                    'search' => 'VuFind\Db\Row\Factory::getSearch',
-                    'session' => 'VuFind\Db\Row\Factory::getSession',
-                    'tags' => 'VuFind\Db\Row\Factory::getTags',
-                    'user' => 'VuFind\Db\Row\Factory::getUser',
-                    'usercard' => 'VuFind\Db\Row\Factory::getUserCard',
-                    'userlist' => 'VuFind\Db\Row\Factory::getUserList',
-                    'userresource' => 'VuFind\Db\Row\Factory::getUserResource',
-                ],
-            ],
+            'db_row' => [ /* see VuFind\Db\Row\PluginManager for defaults */ ],
             'db_table' => [
                 'abstract_factories' => ['VuFind\Db\Table\PluginFactory'],
                 'factories' => [
