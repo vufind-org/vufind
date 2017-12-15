@@ -87,6 +87,9 @@ finna.advSearch = (function advSearch() {
         drawnItems.addLayer(circle);
       }
     });
+    drawnItems.eachLayer(function disableEditing(layer)   {
+      layer.editing.enable();
+    });
 
     var map = new L.Map(mapCanvas.get(0), {
       layers: [options.tileLayer, drawnItems],
@@ -146,6 +149,7 @@ finna.advSearch = (function advSearch() {
 
     map.on('draw:created', function mapOnCreated(e) {
       var layer = e.layer;
+      layer.editing.enable();
       addRemoveButton(layer, drawnItems);
       drawnItems.addLayer(layer);
     });
