@@ -69,6 +69,13 @@ class Map extends AbstractBase
     protected $graticule = false;
 
     /**
+     * Base map alias
+     *
+     * @var string
+     */
+    protected $basemap = "osm-intl";
+
+    /**
      * Constructor
      *
      * @param string $mapType Map provider (valid options: 'openlayers';
@@ -80,7 +87,7 @@ class Map extends AbstractBase
         switch (trim(strtolower($mapType))) {
         case 'openlayers':
             $this->mapType = trim(strtolower($mapType));
-            $legalOptions = ['displayCoords', 'mapLabels', 'graticule'];
+            $legalOptions = ['displayCoords', 'mapLabels', 'graticule', 'basemap'];
             foreach ($legalOptions as $option) {
                 if (isset($options[$option])) {
                     $this->$option = $options[$option];
@@ -129,6 +136,40 @@ class Map extends AbstractBase
     public function getMapGraticule()
     {
         return $this->graticule;
+    }
+
+    /**
+     * Get the basemap alias setting.
+     *
+     * @return array
+     */
+    public function getBasemap()
+    {
+        $basemap_alias = $this->basemap;
+
+        // Read basemap options file into array
+        $basemap_lookup = [];
+        $file = \VuFind\Config\Locator::getConfigPath('geo_basemaps.txt');
+        if (file_exists($file)) {
+            $fp = fopen($file, 'r');
+            while (($line = fgetcsv($fp, 0, "\t")) !== false) {
+                if (count($line) > 1) {
+                    $basemap_lookup[$line[0]] = [$line[1], $line[2]];
+                }
+            }
+            fclose($fp);
+        }
+        // loop through basemap array to find match with basemap alias
+        $basemap_params =[];
+        if (null != $basemap_alias) {
+            // See if basemap alias matches any of the basemap array options
+            // if no match is found, osm-intl is used.
+            $basemap_options = isset($basemap_lookup[$basemap_alias]) ?
+                $basemap_lookup[$basemap_alias] : $basemap_lookup['osm-intl'];
+            array_push($basemap_params, $basemap_options[0]);
+            array_push($basemap_params, $basemap_options[1]);
+        }
+        return $basemap_params;
     }
 
     /**

@@ -41,6 +41,13 @@ namespace VuFind\Recommend;
 class MapSelection implements \VuFind\Recommend\RecommendInterface
 {
     /**
+     * Base map alias
+     *
+     * @var string
+     */
+    protected $basemap = "osm-intl";
+
+    /**
      * Default coordinates. Order is WENS
      *
      * @var array
@@ -177,6 +184,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             if (isset($entries->height)) {
                 $this->height = $entries->height;
             }
+            if (isset($entries->basemap)) {
+                $this->basemap = $entries->basemap;
+            }
         }
     }
 
@@ -196,6 +206,41 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      */
     public function init($params, $request)
     {
+    }
+
+
+    /**
+     * Get the basemap alias setting.
+     *
+     * @return array
+     */
+    public function getBasemap()
+    {
+        $basemap_alias = $this->basemap;
+
+        // Read basemap options file into array
+        $basemap_lookup = [];
+        $file = \VuFind\Config\Locator::getConfigPath('geo_basemaps.txt');
+        if (file_exists($file)) {
+            $fp = fopen($file, 'r');
+            while (($line = fgetcsv($fp, 0, "\t")) !== false) {
+                if (count($line) > 1) {
+                    $basemap_lookup[$line[0]] = [$line[1], $line[2]];
+                }
+            }
+            fclose($fp);
+        }
+        // loop through basemap array to find match with basemap alias
+        $basemap_params =[];
+        if (null != $basemap_alias) {
+            // See if basemap alias matches any of the basemap array options
+            // if no match is found, osm-intl is used.
+            $basemap_options = isset($basemap_lookup[$basemap_alias]) ?
+                $basemap_lookup[$basemap_alias] : $basemap_lookup['osm-intl'];
+            array_push($basemap_params, $basemap_options[0]);
+            array_push($basemap_params, $basemap_options[1]);
+        }
+        return $basemap_params;
     }
 
     /**

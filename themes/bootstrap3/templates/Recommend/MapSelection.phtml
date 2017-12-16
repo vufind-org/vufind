@@ -5,6 +5,7 @@
   $this->headLink()->appendStylesheet('vendor/ol/ol.css');
 
   $resultsCoords = $this->recommend->getMapResultCoordinates();
+  $basemap = $this->recommend->getBasemap();
   $baseUrl = $this->url('home');
   $geoField = $this->recommend->getGeoField();
   $urlpath = $this->url('search-results');
@@ -19,7 +20,7 @@
   $searchParams = $this->recommend->getSearchParams();
   $params = [json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
     json_encode($baseUrl), json_encode($searchParams), json_encode($showSelection),
-    json_encode($resultsCoords), json_encode($popupTitle)];
+    json_encode($resultsCoords), json_encode($popupTitle), json_encode($basemap)];
   $jsParams = implode(', ', $params);
   $jsLoad = "loadMapSelection(" . $jsParams . ");";
   $addSearchOption = <<<EOF
