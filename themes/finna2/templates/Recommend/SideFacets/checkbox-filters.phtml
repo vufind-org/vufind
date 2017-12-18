@@ -7,7 +7,7 @@
       $availableRecords = $availCount < 0 ? '' : $this->localizedNumber($availCount);
     }
   ?>
-  <div class="checkbox <?=($current['selected'] ? 'checked' : '')?><? if(!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<? endif; ?>" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>"<?=isset($counts) && false === $counts ? '' : ' data-loaded="true"'?>>
+  <div class="checkbox <?=($current['selected'] ? 'checked' : '')?><? if(!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<? endif; ?>" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>"<?=!$current['selected'] && isset($counts) && false === $counts ? '' : ' data-loaded="true"'?>>
     <label>
       <span class="badge cb-facet avail-count"><?=$availableRecords?></span>
       <input type="checkbox" name="filter[]" value="<?=$this->escapeHtmlAttr($current['filter'])?>" <?=($current['selected'] ? 'checked="checked"' : '')?>
