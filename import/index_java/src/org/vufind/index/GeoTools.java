@@ -25,18 +25,30 @@ package org.vufind.index;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
-import org.apache.log4j.Logger;
-import org.marc4j.marc.Record;
-import org.marc4j.marc.VariableField;
-import org.marc4j.marc.ControlField;
-import org.marc4j.marc.DataField;
-import org.marc4j.marc.Subfield;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Set;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.apache.log4j.Logger;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.DataField;
+import org.marc4j.marc.Record;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.VariableField;
+import org.solrmarc.index.SolrIndexer;
+import org.solrmarc.tools.SolrMarcIndexerException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Geographic indexing routines.
@@ -62,10 +74,6 @@ public class GeoTools
         if (list034 != null) {
             for (VariableField vf : list034) {
                 HashMap<Character, String> coords = getCoordinateValues(vf);
-                //DEBUG output
-                //ControlField recID = (ControlField) record.getVariableField("001");
-                //String recNum = recID.getData();
-                //logger.info("Record ID: " + recNum.trim() + " ...Coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
 
                 // Check for null coordinates
                 if (validateCoordinateValues(record, coords)) {
@@ -79,11 +87,10 @@ public class GeoTools
                         // Note - storage in Solr follows the WENS order, but display is WSEN order
                         String result = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { west, east, north, south });
                         geo_coordinates.add(result);
-                    }  else {
-                        logger.error(".......... Not indexing INVALID coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
-                    }
+                    } 
                 } else {
-                    logger.error(".......... Not indexing INVALID coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
+                    String msgError = "Poorly formed coordinate(s).";
+                    logErrorMessage(record, coords, msgError);
                 }
             }
         }
@@ -106,12 +113,105 @@ public class GeoTools
                 if (validateCoordinateValues(record, coords)) {
                     String result = String.format("%s %s %s %s", new Object[] {  coords.get('d'),  coords.get('e'),  coords.get('f'),  coords.get('g') });
                     geo_coordinates.add(result);
-                } else {
-                    logger.error(".......... Not indexing INVALID Display coordinates: [ {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "} ]");
                 }
             }
         }
         return geo_coordinates;
+    }
+
+    /**
+    * Log coordinate indexing errors to external log file.
+    *
+    * @param  Record record
+    * @param  HashMap coords
+    * @param  String error message
+    */
+   public static void logErrorMessage(Record record, HashMap coords, String message) {
+
+        // Initialize error logging variables
+        String msgError = message;
+        ControlField recID = (ControlField) record.getVariableField("001");
+        String recNum = recID.getData().trim();
+        String coordinates = "Coordinates:  {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "}";
+
+        String logPath = getErrorLogPath();
+        String datePrefix = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String logFilename = datePrefix + "_CoordinateErrors.txt";
+        String outPath = logPath + "/" + logFilename;
+
+        // Output Error message
+        logger.error("Record ID: " + recNum + " ... " + msgError);
+        logger.error("..... Not indexing INVALID coordinates .... Check coordinate error log at: " + outPath);
+
+        // Log ID and error message and coordinates in error file
+        try {
+             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outPath, true)));
+             out.println(logFilename + "\t" + recNum + "\t" + msgError + "\t" + coordinates);
+             out.close();
+        } catch (IOException e) {
+             System.out.println("io exception occured");
+             e.printStackTrace();
+        }
+    }
+
+    /**
+    * Get path for coordinate error log file.
+    *
+    * @return String logPath
+    */
+   public static String getErrorLogPath() {
+        String filename = "import.properties";
+        String coordPath = null;
+        String vufindHome = System.getenv("VUFIND_HOME");
+        if (vufindHome == null) {
+            vufindHome = "..";
+        }
+        String logPath = vufindHome + "/import";
+        String vufindLocal = System.getenv("VUFIND_LOCAL_DIR");
+
+        if (vufindLocal != null) {
+            String importPath = vufindLocal + "/import/import.properties";
+            coordPath = getCoordinateLogPath(importPath);
+        } else {
+            String importPath = vufindHome + "/import/import.properties";
+            coordPath = getCoordinateLogPath(importPath);
+        }
+        if (coordPath != null ) {
+          logPath = coordPath;
+        }
+        return logPath;
+     }
+
+    /**
+     * Get coordinate error log path from import.properties file
+     *
+     * @param  String import.properties path
+     * @return String coordPath
+     */
+    public static String getCoordinateLogPath(String importPath) {
+        String coordPath = null;
+        File file;
+        file = new File(importPath);
+        if (file.exists()) {
+          Properties prop = new Properties();
+          InputStream input = null;
+          try {
+            input = new FileInputStream(file);
+            prop.load(input);
+            coordPath = prop.getProperty("coordinate.log.path");
+          } catch (IOException ex) {
+            ex.printStackTrace();
+          } finally {
+            if (input != null) {
+              try {
+                input.close();
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+            }
+          }
+        }
+        return coordPath;
     }
 
     /**
@@ -164,9 +264,8 @@ public class GeoTools
         if (coords.containsKey('d') && coords.containsKey('e') && coords.containsKey('f') && coords.containsKey('g')) {
             return true;
         }
-        ControlField recID = (ControlField) record.getVariableField("001");
-        String recNum = recID.getData();
-        logger.error("Record ID: " + recNum.trim() + " - Coordinate values contain null values.");
+        String msgError = "Coordinate values contain null values.";
+        logErrorMessage(record, coords, msgError);
         return false;
     }
 
@@ -211,8 +310,7 @@ public class GeoTools
             coordinate = Double.parseDouble(PMDmatcher.group(1));
             return coordinate;
         } else {
-            logger.error("Decimal Degree Coordinate Conversion Error:  Poorly formed coordinate: [" + coordinateStr + "] ... Returning null value ... ");
-            return null;
+            return Double.NaN;
         }
     }
 
@@ -235,7 +333,7 @@ public class GeoTools
             }
             return coordinate;
         }
-        return null;
+        return Double.NaN;
     }
 
     /**
@@ -280,9 +378,13 @@ public class GeoTools
     */
    public boolean validateLines(Record record, Double west, Double east, Double north, Double south) {
     if ((!west.equals(east) && north.equals(south)) && (north == 90 || south == -90)) {
-        ControlField recID = (ControlField) record.getVariableField("001");
-        String recNum = recID.getData();
-        logger.error("Record ID: " + recNum.trim() + " - Coordinates form a line at the pole");
+        String msgError = "Coordinates form a line at the pole";
+        HashMap<Character, String> coords = new HashMap();
+        coords.put('d', Double.toString(west));
+        coords.put('e', Double.toString(east));
+        coords.put('f', Double.toString(north));
+        coords.put('g', Double.toString(south));
+        logErrorMessage(record, coords, msgError);
         return false;
     }
     return true;
@@ -296,10 +398,14 @@ public class GeoTools
     * @return boolean
     */
    public boolean validateValues(Record record, Double west, Double east, Double north, Double south) {
-    if (west == null || east == null || north == null || south == null) {
-        ControlField recID = (ControlField) record.getVariableField("001");
-        String recNum = recID.getData();
-        logger.error("Record ID: " + recNum.trim() + " - Decimal Degree coordinates contain null values: [ {" + west + "} {" + east + "} {" + north + "} {" + south + "} ]");
+     if (west.isNaN() || east.isNaN() || north.isNaN() || south.isNaN()) {
+        String msgError = "Decimal Degree coordinates contain invalid values";
+        HashMap<Character, String> coords = new HashMap();
+        coords.put('d', Double.toString(west));
+        coords.put('e', Double.toString(east));
+        coords.put('f', Double.toString(north));
+        coords.put('g', Double.toString(south));
+        logErrorMessage(record, coords, msgError);
         return false;
     }
     return true;
@@ -314,15 +420,23 @@ public class GeoTools
     */
    public boolean validateExtent(Record record, Double west, Double east, Double north, Double south) {
     if (west > 180.0 || west < -180.0 || east > 180.0 || east < -180.0) {
-        ControlField recID = (ControlField) record.getVariableField("001");
-        String recNum = recID.getData();
-        logger.error("Record ID: " + recNum.trim() + " - Coordinates exceed map extent.");
+        String msgError = "Coordinates exceed map extent.";
+        HashMap<Character, String> coords = new HashMap();
+        coords.put('d', Double.toString(west));
+        coords.put('e', Double.toString(east));
+        coords.put('f', Double.toString(north));
+        coords.put('g', Double.toString(south));
+        logErrorMessage(record, coords, msgError);
         return false;
     }
     if (north > 90.0 || north < -90.0 || south > 90.0 || south < -90.0) {
-        ControlField recID = (ControlField) record.getVariableField("001");
-        String recNum = recID.getData();
-        logger.error("Record ID: " + recNum.trim() + " - Coordinates exceed map extent.");
+        String msgError = "Coordinates exceed map extent.";
+        HashMap<Character, String> coords = new HashMap();
+        coords.put('d', Double.toString(west));
+        coords.put('e', Double.toString(east));
+        coords.put('f', Double.toString(north));
+        coords.put('g', Double.toString(south));
+        logErrorMessage(record, coords, msgError);
         return false;
     }
     return true;
@@ -337,9 +451,13 @@ public class GeoTools
     */
    public boolean validateNorthSouth(Record record, Double north, Double south) {
     if (north < south) {
-        ControlField recID = (ControlField) record.getVariableField("001");
-        String recNum = recID.getData();
-        logger.error("Record ID: " + recNum.trim() + " - North < South.");
+        String msgError = "North < South.";
+        HashMap<Character, String> coords = new HashMap();
+        coords.put('d', "not available");
+        coords.put('e', "not available");
+        coords.put('f', Double.toString(north));
+        coords.put('g', Double.toString(south));
+        logErrorMessage(record, coords, msgError);
         return false;
     }
     return true;
@@ -363,9 +481,13 @@ public class GeoTools
        }
        // Check again
        if (east < west) {
-           ControlField recID = (ControlField) record.getVariableField("001");
-           String recNum = recID.getData();
-           logger.error("Record ID: " + recNum.trim() + " - East < West.");
+           String msgError = "East < West.";
+           HashMap<Character, String> coords = new HashMap();
+           coords.put('d', Double.toString(west));
+           coords.put('e', Double.toString(east));
+           coords.put('f', "not available");
+           coords.put('g', "not available");
+           logErrorMessage(record, coords, msgError);
            return false;
        }
     }
@@ -386,17 +508,25 @@ public class GeoTools
 
         //Check for South Pole coordinate distance
         if ((north == -90 || south == -90) && (distNS > 0 && distNS < 0.167)) {
-            ControlField recID = (ControlField) record.getVariableField("001");
-            String recNum = recID.getData();
-            logger.error("Record ID: " + recNum.trim() + " - Coordinates < 0.167 degrees from South Pole. Coordinate Distance: "+distNS);
+            String msgError = "Coordinates < 0.167 degrees from South Pole. Coordinate Distance: "+distNS;
+            HashMap<Character, String> coords = new HashMap();
+            coords.put('d', Double.toString(west));
+            coords.put('e', Double.toString(east));
+            coords.put('f', Double.toString(north));
+            coords.put('g', Double.toString(south));
+            logErrorMessage(record, coords, msgError);
             return false;
         }
 
         //Check for East-West coordinate distance
         if ((west == 0 || east == 0) && (distEW > -2 && distEW <0)) {
-            ControlField recID = (ControlField) record.getVariableField("001");
-            String recNum = recID.getData();
-            logger.error("Record ID: " + recNum.trim() + " - Coordinates within 2 degrees of Prime Meridian. Coordinate Distance: "+distEW);
+            String msgError = "Coordinates within 2 degrees of Prime Meridian. Coordinate Distance: "+distEW;
+            HashMap<Character, String> coords = new HashMap();
+            coords.put('d', Double.toString(west));
+            coords.put('e', Double.toString(east));
+            coords.put('f', Double.toString(north));
+            coords.put('g', Double.toString(south));
+            logErrorMessage(record, coords, msgError);
             return false;
         }
         return true;
