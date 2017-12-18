@@ -87,7 +87,7 @@ finna.advSearch = (function advSearch() {
         drawnItems.addLayer(circle);
       }
     });
-    drawnItems.eachLayer(function disableEditing(layer)   {
+    drawnItems.eachLayer(function disableEditing(layer) {
       layer.editing.enable();
     });
 
