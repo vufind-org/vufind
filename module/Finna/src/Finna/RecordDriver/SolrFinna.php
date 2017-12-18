@@ -375,23 +375,33 @@ trait SolrFinna
             return [];
         }
 
-        $safeId = addcslashes($this->getUniqueID(), '"');
-        $query = new \VuFindSearch\Query\Query(
-            'local_ids_str_mv:"' . $safeId . '"'
-        );
-        $params = new \VuFindSearch\ParamBag(
-            ['hl' => 'false', 'spellcheck' => 'false', 'sort' => '']
-        );
-        $records = $this->searchService->search('Solr', $query, 0, 1, $params)
-            ->getRecords();
+        if (!empty($this->fields['dedup_id_str_mv'])) {
+            $records = $this->searchService->retrieve(
+                DEFAULT_SEARCH_BACKEND, $this->fields['dedup_id_str_mv'][0]
+            )->getRecords();
+        } else {
+            $safeId = addcslashes($this->getUniqueID(), '"');
+            $query = new \VuFindSearch\Query\Query(
+                'local_ids_str_mv:"' . $safeId . '"'
+            );
+            $params = new \VuFindSearch\ParamBag(
+                ['hl' => 'false', 'spellcheck' => 'false', 'sort' => '']
+            );
+            $records = $this->searchService->search(
+                DEFAULT_SEARCH_BACKEND, $query, 0, 1, $params
+            )->getRecords();
+        }
         if (!isset($records[0])) {
             $this->cachedMergeRecordData = [];
             return [];
         }
+        $dedupRecord = $records[0];
 
         $results = [];
-        $results['records'] = $this->createSourceIdArray($records[0]->getLocalIds());
-        if ($onlineURLs = $records[0]->getOnlineURLs(true)) {
+        $results['records'] = $this->createSourceIdArray(
+            $dedupRecord->getLocalIds()
+        );
+        if ($onlineURLs = $dedupRecord->getOnlineURLs(true)) {
             $results['urls'] = $this->mergeURLArray(
                 $onlineURLs,
                 true
