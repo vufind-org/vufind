@@ -25,7 +25,7 @@
       <? if ($active): ?>
         <? $prefix = ($this->facet == 'ixtheo_notation_facet' || $this->facet == 'relbib_notation_facet') ? 'ixtheo-' : '';?>
         <? $items = $this->data?>
-        <? array_walk($items, function(&$item, $key, $prefix) { $item['displayText'] = $this->transEsc($prefix . $item['displayText']);}, $prefix);?>
+        <? array_walk($items, function(&$item, $key, $prefix) { $item['displayText'] = $this->translate($prefix . $item['displayText']);}, $prefix);?>
         <? // Make sure, we sort according to the language in alphabetical sort?>
         <? if ($this->sort == 'index'):?>
            <? array_multisort(array_column($items, 'displayText'), SORT_ASC, $items) ?>
