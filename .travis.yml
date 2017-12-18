@@ -13,6 +13,7 @@ before_script:
   - phpenv rehash
   - composer install
   - npm install -g eslint@"<3.0.0"
+  - npm install -g is-my-json-valid@"<2.17.0"
 
 cache:
   directories:
