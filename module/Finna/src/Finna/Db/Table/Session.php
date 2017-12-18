@@ -104,9 +104,6 @@ class Session extends \VuFind\Db\Table\Session
                     $this->getAdapter()->getDriver()->getConnection()->connect();
                     continue;
                 }
-                error_log(
-                    "$method failed even after retries: " . $e->getMessage()
-                );
                 throw $e;
             }
         }
