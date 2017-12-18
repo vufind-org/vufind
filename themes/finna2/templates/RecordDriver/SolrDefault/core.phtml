@@ -1,12 +1,12 @@
 <!-- START of: finna - RecordDriver/SolrDefault/core.phtml -->
 <?
-
   $openUrl = $this->openUrl($this->driver, 'record');
   $openUrlActive = $openUrl->isActive();
   // Account for replace_other_urls setting
   $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
   $onlineURLs = $this->driver->getOnlineURLs();
   $mergedData = $this->driver->tryMethod('getMergedRecordData');
+  $renderedURLs = [];
 
   if (!empty($urls)){
     $videoUrls = [];
