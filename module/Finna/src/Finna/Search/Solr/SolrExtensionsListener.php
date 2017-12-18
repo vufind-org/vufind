@@ -150,7 +150,7 @@ class SolrExtensionsListener
             $this->addDataSourceFilter($event);
             if ($event->getParam('context') == 'search') {
                 $this->addHiddenComponentPartFilter($event);
-                $this->handleOnlineBoolean($event);
+                $this->handleOnlineFilters($event);
                 $this->addGeoFilterBoost($event);
             }
         }
@@ -348,27 +348,28 @@ class SolrExtensionsListener
     }
 
     /**
-     * Change the online_boolean filter to online_str_mv filter if deduplication is
-     * enabled
+     * Change the online_boolean filter to online_str_mv filter or
+     * free_online_boolean to free_online_str_mv filter if deduplication is enabled.
      *
      * @param EventInterface $event Event
      *
      * @return void
      */
-    protected function handleOnlineBoolean(EventInterface $event)
+    protected function handleOnlineFilters(EventInterface $event)
     {
         $config = $this->serviceLocator->get('VuFind\Config');
         $searchConfig = $config->get($this->searchConfig);
         if (isset($searchConfig->Records->deduplication)
             && $searchConfig->Records->deduplication
-            && isset($searchConfig->Records->sources)
             && !empty($searchConfig->Records->sources)
         ) {
             $params = $event->getParam('params');
             $filters = $params->get('fq');
             if (null !== $filters) {
                 foreach ($filters as $key => $value) {
-                    if ($value == 'online_boolean:"1"') {
+                    if ($value == 'online_boolean:"1"'
+                        || $value == 'free_online_boolean:"1"'
+                    ) {
                         unset($filters[$key]);
                         $sources = explode(',', $searchConfig->Records->sources);
                         $sources = array_map(
@@ -377,9 +378,12 @@ class SolrExtensionsListener
                             },
                             $sources
                         );
-                        $filters[] = 'online_str_mv:(' . implode(' OR ', $sources)
-                            . ')';
+                        $filter = $value == 'online_boolean:"1"'
+                            ? 'online_str_mv' : 'free_online_str_mv';
+                        $filter .= ':(' . implode(' OR ', $sources) . ')';
+                        $filters[] = $filter;
                         $params->set('fq', $filters);
+
                         break;
                     }
                 }
