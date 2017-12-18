@@ -208,7 +208,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     {
     }
 
-
     /**
      * Get the basemap alias setting.
      *
