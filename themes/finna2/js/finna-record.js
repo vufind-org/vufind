@@ -1,4 +1,4 @@
-/*global VuFind, finna, removeHashFromLocation, getNewRecordTab, ajaxLoadTab */
+/*global VuFind, finna, removeHashFromLocation */
 finna.record = (function finnaRecord() {
   function initDescription() {
     var description = $('#description_text');
@@ -148,30 +148,28 @@ finna.record = (function finnaRecord() {
   function initRecordAccordions() {
     $('.record-accordions .accordion-toggle').click(function accordionClicked(e){
       var accordion = $(e.target).closest('.accordion');
-      var tabid = accordion.find('.accordion-toggle a').attr('id');
+      var tabid = accordion.find('.accordion-toggle a').data('tab');
+      var $recordTabs = $('.record-tabs');
       e.preventDefault();
       if (accordion.hasClass('active')){
         $('.record-accordions').find('.accordion.active').removeClass('active');
+        $recordTabs.find('.tab-pane.active').removeClass('active');
         removeHashFromLocation();
       } else {
         $('.record-accordions').find('.accordion.active').removeClass('active');
         accordion.addClass('active');
+        $recordTabs.find('.' + tabid + '-tab').addClass('active');
         window.location.hash = tabid;
-        var newTab = getNewRecordTab(tabid).addClass('active');
-        if (accordion.hasClass('noajax')){
-          return true;
+        accordion.append($('.tab-content'));
+        if ($('.record-accordions').is(':visible')) {
+          $('html, body').animate({scrollTop: accordion.offset().top - 64}, 150);
         }
-        if (accordion.find('.accordion-content .tab-pane.' + tabid + '-tab').length < 1) {
-          accordion.find('.accordion-content').html(newTab);
-          ajaxLoadTab(newTab, tabid, !$(this).parent().hasClass('initiallyActive'));
-        }
-        $('html, body').animate({scrollTop: accordion.offset().top - 64}, 150);
       }
     });
   }
 
   function applyRecordAccordionHash() {
-    var activeTab = $('.record-accordions .accordion.active a').attr('id');
+    var activeTab = $('.record-accordions .accordion.active a').data('tab');
     var $initiallyActiveTab = $('.record-accordions .accordion.initiallyActive a');
     var newTab = typeof window.location.hash !== 'undefined'
       ? window.location.hash.toLowerCase() : '';
@@ -180,7 +178,7 @@ finna.record = (function finnaRecord() {
     if (newTab.length <= 1 || newTab === '#tabnav') {
       $initiallyActiveTab.click();
     } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
-      $('#' + newTab.substr(1)).click();
+      $("a[data-tab='" + newTab.substr(1) + "']").click();
     }
   }
 

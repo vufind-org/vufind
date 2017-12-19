@@ -118,13 +118,13 @@
     <? endif; ?>
   </div>
 
-  <div class="mainbody left record-tabs visible-lg visible-md">
+  <div class="record-tabs record-accordions">
     <? if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>
         <? if (count($this->tabs) > 3): ?>
         <div class="tabs-responsive">
         <? endif; ?>
-      <ul class="recordTabs nav nav-tabs">
+      <ul class="recordTabs nav nav-tabs visible-md visible-lg">
           <? foreach ($this->tabs as $tab => $obj): ?>
               <? // add current tab to breadcrumbs if applicable:
               $desc = $obj->getDescription();
@@ -162,43 +162,34 @@
         </div>
       <? endif; ?>
     </div>
-  </div>
 
-  <div class="clearfix hidden-lg hidden-md"></div>
-  <div class="record-accordions hidden-lg hidden-md">
-      <? if (count($this->tabs) > 0): ?>
-          <? foreach ($this->tabs as $accordion => $obj): ?>
-              <? // add current tab to breadcrumbs if applicable:
-              $desc = $obj->getDescription();
-              $accordion_classes = ['accordion'];
-              if (0 === strcasecmp($this->activeTab, $accordion)) {
-                  $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
-                  $activeTabObj = $obj;
-              }
-              if (!$obj->isVisible()) { $accordion_classes[] = 'hidden'; }
-              if (!$obj->supportsAjax()) { $accordion_classes[] = 'noajax'; }
-              if (strtolower($accordion) == 'details') { $tab_classes[] = 'hidden-xs'; }
-              ?>
+    <div class="clearfix hidden-lg hidden-md"></div>
+    <div class="record-accordions">
+        <? if (count($this->tabs) > 0): ?>
+            <? foreach ($this->tabs as $accordion => $obj): ?>
+                <? // add current tab to breadcrumbs if applicable:
+                $desc = $obj->getDescription();
+                $accordion_classes = ['accordion'];
+                if (0 === strcasecmp($this->activeTab, $accordion)) {
+                    $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
+                    $activeTabObj = $obj;
+                }
+                if (!$obj->isVisible()) { $accordion_classes[] = 'hidden'; }
+                if (!$obj->supportsAjax()) { $accordion_classes[] = 'noajax'; }
+                ?>
             <div <?=count($accordion_classes) > 0 ? ' class="' . implode(' ', $accordion_classes) . '"' : ''?>>
               <div class="accordion-toggle">
-                <a id="<?=strtolower($accordion) ?>"
+                <a data-tab="<?=strtolower($accordion) ?>" class="accordion-title"
                    href="<?=$this->recordLink()->getTabUrl($this->driver, $accordion)?>#tabnav"<? if ($obj->supportsAjax() && in_array($accordion, $this->backgroundTabs)):?>
-                   data-background<? endif ?>>
-                    <div class="accordion-title">
-                    <?=$this->transEsc($desc)?><? if (strtolower($accordion) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?>
-                    </div>
+                  data-background<? endif ?>>
+                  <span class="title"><?=$this->transEsc($desc)?><? if (strtolower($accordion) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?></span>
+                  <i class="icon"></i>
                 </a>
               </div>
-              <div class="accordion-content">
-                  <? if (!isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-                    <div class="tab-pane active <?=$this->activeTab ?>-tab">
-                        <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
-                    </div>
-                  <? endif; ?>
-              </div>
             </div>
-          <? endforeach; ?>
-      <?endif; ?>
+            <? endforeach; ?>
+        <?endif; ?>
+    </div>
   </div>
 
   <div class="sidebar left large-image-sidebar <?= $largeImageLayout ? '' : 'visible-xs visible-sm'?>">
