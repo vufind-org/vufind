@@ -1787,7 +1787,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $profile = [
                 'id'           => $this->getField($idObj->{'id'}),
                 'firstname'    => $this->getField($rsp->{'firstname'}),
-                'lastname'     => $this->getField($rsp->{'lastname'}),
+                'lastname'     => $this->getField($rsp->{'surname'}),
                 'cat_username' => $username,
                 'cat_password' => $password,
                 'email'        => $this->getField($rsp->{'email'}),
