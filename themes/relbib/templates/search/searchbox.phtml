@@ -46,7 +46,7 @@
       <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
       <div class="input-group-btn">
         <? if ($handlerCount > 1): ?>
-          <select class="btn btn-default searchForm_type" name="type" data-native-menu="false" style="padding:4px 5px 5px 5px">
+          <select id="searchForm_type" class="btn btn-default searchForm_type" name="type" data-native-menu="false" style="padding:4px 5px 5px 5px">
             <? foreach ($handlers as $handler): ?>
               <option value="<?=$this->escapeHtmlAttr($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
             <? endforeach; ?>
