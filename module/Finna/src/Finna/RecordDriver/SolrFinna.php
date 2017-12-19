@@ -376,8 +376,16 @@ trait SolrFinna
         }
 
         if (!empty($this->fields['dedup_id_str_mv'])) {
-            $records = $this->searchService->retrieve(
-                DEFAULT_SEARCH_BACKEND, $this->fields['dedup_id_str_mv'][0]
+            // Search instead of retrieve so that it respects the filters
+            $safeId = addcslashes($this->fields['dedup_id_str_mv'][0], '"');
+            $query = new \VuFindSearch\Query\Query(
+                'id:"' . $safeId . '"'
+            );
+            $params = new \VuFindSearch\ParamBag(
+                ['hl' => 'false', 'spellcheck' => 'false', 'sort' => '']
+            );
+            $records = $this->searchService->search(
+                DEFAULT_SEARCH_BACKEND, $query, 0, 1, $params
             )->getRecords();
         } else {
             $safeId = addcslashes($this->getUniqueID(), '"');
