@@ -33,7 +33,7 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
     var menuInput = holder.find('.organisation .dropdown-toggle input');
 
     $.each(list, function handleOrganisationList(ind, obj) {
-      if (id === obj.id) {
+      if (String(id) === String(obj.id)) {
         found = true;
       }
       $('<li role="menuitem"><input type="hidden" value="' + obj.id + '"></input>' + obj.name + '</li>').appendTo(menu);
