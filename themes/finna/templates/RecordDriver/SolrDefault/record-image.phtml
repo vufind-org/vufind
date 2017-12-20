@@ -36,7 +36,13 @@
         <div class="access-rights">
           <div class="image-rights">
             <? $hasLink = isset($rights['link']); ?>
-            <strong><?= $this->transEsc('Image Rights') ?>:</strong> <? if (isset($rights['copyright'])): ?><? if ($hasLink): ?><span class="imagerights"><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a></span><? endif ?><? endif ?>
+            <strong><?= $this->transEsc('Image Rights') ?>:</strong>
+            <? if ((isset($rights['copyright'])) && (!empty($rights['copyright']))): ?><? if ($hasLink): ?><span class="imagerights"><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><? if ($this->transEsc($rights['copyright']) === "Luvanvarainen käyttö / ei tiedossa"): ?><?= $this->transEsc('usage_F') ?><? else: ?><?=$this->transEsc($rights['copyright']) ?><? endif; ?><? if ($hasLink): ?></a></span><? endif; ?>
+            <? else: ?>
+              <? foreach ($this->driver->tryMethod('getUsageRights', [], []) as $usageRights): ?>
+                <?=$this->transEsc($usageRights) ?><br>
+              <? endforeach; ?>
+            <? endif; ?>
           </div>
           <div class="copyright truncate-field">
             <? if (isset($rights['description'])): ?>

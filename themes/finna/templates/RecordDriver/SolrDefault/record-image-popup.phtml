@@ -123,7 +123,13 @@
         <div class="image-rights">
           <div class="rights">
             <? $hasLink = isset($rights['link']); ?>
-            <span><?=$this->transEsc('Image Rights') ?>:</span> <? if (isset($rights['copyright'])): ?><? if ($hasLink): ?><a target="_blank" href="<?=$rights['link'] ?>"><? endif; ?><?=$this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
+            <span><?=$this->transEsc('Image Rights') ?>:</span> 
+            <? if ((isset($rights['copyright'])) && (!empty($rights['copyright']))): ?><? if ($hasLink): ?><a target="_blank" href="<?=$rights['link'] ?>"><? endif; ?><? if ($this->transEsc($rights['copyright']) === "Luvanvarainen käyttö / ei tiedossa"): ?><?= $this->transEsc('usage_F') ?><? else: ?><?=$this->transEsc($rights['copyright']) ?><? endif; ?><? if ($hasLink): ?></a><? endif; ?>
+            <? else: ?>
+              <? foreach ($this->driver->tryMethod('getUsageRights', [], []) as $usageRights): ?>
+                <?=$this->transEsc($usageRights) ?><br>
+              <? endforeach; ?>
+            <? endif; ?>
           </div>
           <div class="more-link copyright-link"><a data-mode="1" href=""><?=$this->transEsc('show_more') ?><i class="fa fa-arrow-down"></i></a></div>
           <div class="copyright">

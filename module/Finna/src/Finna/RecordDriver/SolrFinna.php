@@ -590,6 +590,17 @@ trait SolrFinna
     }
 
     /**
+     * Get usage rights (empty if none).
+     *
+     * @return array
+     */
+    public function getUsageRights()
+    {
+        return isset($this->fields['usage_rights_str_mv'])
+            ? $this->fields['usage_rights_str_mv'] : [];
+    }
+
+    /**
      * Return the first ISBN found in the record.
      *
      * @return mixed
