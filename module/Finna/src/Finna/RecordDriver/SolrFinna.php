@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library 2015.
+ * Copyright (C) The National Library 2015-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -43,6 +43,13 @@ namespace Finna\RecordDriver;
 trait SolrFinna
 {
     use FinnaRecord;
+
+    /**
+     * Search settings
+     *
+     * @var array
+     */
+    protected $searchSettings = [];
 
     /**
      * Return an array of image URLs associated with this record with keys:
@@ -346,6 +353,11 @@ trait SolrFinna
      */
     public function getMergedRecordData()
     {
+        if (empty($this->searchSettings['Records']['deduplication'])) {
+            // Do nothing if deduplication isn't enabled
+            return [];
+        }
+
         // If local_ids_str_mv is set, we already have all
         if (isset($this->fields['local_ids_str_mv'])) {
             return [
@@ -376,16 +388,8 @@ trait SolrFinna
         }
 
         if (!empty($this->fields['dedup_id_str_mv'])) {
-            // Search instead of retrieve so that it respects the filters
-            $safeId = addcslashes($this->fields['dedup_id_str_mv'][0], '"');
-            $query = new \VuFindSearch\Query\Query(
-                'id:"' . $safeId . '"'
-            );
-            $params = new \VuFindSearch\ParamBag(
-                ['hl' => 'false', 'spellcheck' => 'false', 'sort' => '']
-            );
-            $records = $this->searchService->search(
-                DEFAULT_SEARCH_BACKEND, $query, 0, 1, $params
+            $records = $this->searchService->retrieve(
+                DEFAULT_SEARCH_BACKEND, $this->fields['dedup_id_str_mv'][0]
             )->getRecords();
         } else {
             $safeId = addcslashes($this->getUniqueID(), '"');
@@ -793,11 +797,16 @@ trait SolrFinna
     protected function mergeURLArray($urlArray, $sources = true)
     {
         $urls = [];
+        $sourceFilter = $sources
+            && !empty($this->searchSettings['Records']['sources'])
+            ? explode(',', $this->searchSettings['Records']['sources']) : [];
         foreach ($urlArray as $url) {
             $newURL = json_decode($url, true);
             // If there's no dedup data, don't display sources either
             if (!$sources) {
                 $newURL['source'] = '';
+            } elseif ($sourceFilter && !in_array($newURL['source'], $sourceFilter)) {
+                continue;
             }
             // Check for duplicates
             $found = false;

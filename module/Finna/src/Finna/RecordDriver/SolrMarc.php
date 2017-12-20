@@ -86,6 +86,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         parent::__construct($mainConfig, $recordConfig, $searchSettings, $results);
 
         $this->datasourceConfig = $datasourceConfig;
+        $this->searchSettings = $searchSettings;
     }
 
     /**

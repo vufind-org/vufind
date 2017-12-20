@@ -45,6 +45,22 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
     use SolrFinna;
 
     /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $mainConfig     VuFind main configuration (omit for
+     * built-in defaults)
+     * @param \Zend\Config\Config $recordConfig   Record-specific configuration file
+     * (omit to use $mainConfig as $recordConfig)
+     * @param \Zend\Config\Config $searchSettings Search-specific configuration file
+     */
+    public function __construct($mainConfig = null, $recordConfig = null,
+        $searchSettings = null
+    ) {
+        parent::__construct($mainConfig, $recordConfig, $searchSettings);
+        $this->searchSettings = $searchSettings;
+    }
+
+    /**
      * Record metadata
      *
      * @var \SimpleXMLElement

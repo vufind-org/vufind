@@ -73,7 +73,9 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
         $searchSettings = null, $dateConverter = null
     ) {
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
+
         $this->dateConverter = $dateConverter;
+        $this->searchSettings = $searchSettings;
     }
 
     /**
