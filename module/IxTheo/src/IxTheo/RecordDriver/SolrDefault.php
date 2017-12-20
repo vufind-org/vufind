@@ -269,7 +269,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
     }
 
     private static function BibleRangeToDisplayString($bible_range, $language_code) {
-        $separator = (substr($language_code, 0, 2) == "de") ? "." : ":";
+        $separator = (substr($language_code, 0, 2) == "de") ? "," : ":";
         $code1 = (int)substr($bible_range, 0, 8);
         $code2 = (int)substr($bible_range, 9, 8);
         if ($code1 + 999999 == $code2)
