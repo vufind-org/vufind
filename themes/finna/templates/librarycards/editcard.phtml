@@ -16,7 +16,7 @@
 <?=$this->flashmessages()?>
 
 <h2><?=$this->transEsc($pageTitle); ?></h2>
-<form class="edit-card-form" method="post" name="<?=empty($this->card->id) ? 'newCardForm' : 'editCardForm'?>">
+<form class="edit-card-form" method="post" name="<?=empty($this->card->id) ? 'newCardForm' : 'editCardForm'?>" autocomplete="off">
   <input type="hidden" name="id" value="<?=empty($this->card->id) ? 'NEW' : $this->card->id ?>"/>
   <div class="form-group">
     <label class="control-label" for="card_name"><?=$this->transEsc('Library Card Name'); ?>: <? if (!$this->translationEmpty('tooltip_library_card_name_html')): ?><span class="tooltip-library-card-name" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title='<?=$this->transesc("tooltip_library_card_name_html") ?>'><i class="fa fa-info-big"></i> </span><? endif; ?></label>
