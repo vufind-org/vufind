@@ -1,0 +1,61 @@
+@media(max-width: @screen-xs-max) {
+  table.mobile-table {
+    border: 0;
+  }
+  table.mobile-table .headers{
+    display: none;
+  }
+  table.mobile-table caption {
+    font-size: 1.3em;
+  }
+  table.mobile-table thead {
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+  table.mobile-table tr{
+    border: 1px solid @gray-lighter;
+    display: block;
+    margin-bottom: 1.5em;
+    background-color: @body-bg !important;
+  }
+  table.mobile-table tr>td {
+    border: 0;
+    display: block;
+    font-size: 1em;
+    text-align: left;
+    padding: 0;
+    span, img {
+      display: inline-block;
+      padding: 10px;
+      a {
+        font-style: italic;
+      }
+    }
+    img {
+      padding-bottom: 0px;
+    }
+  }
+  table.mobile-table .library-card-actions a {
+    font-style: normal;
+  }
+  table.mobile-table td:before {
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+    text-transform: uppercase;
+    width: 100%;
+    width: ~"-webkit-calc(100% - 1px)";
+    width: ~"-moz-calc(100% - 1px)";
+    width: ~"calc(100% - 1px)";
+    background: @gray-ultralight;
+    padding: 10px;
+    margin-left: 1px;
+  }
+  table.mobile-table td:not(:first-child):before {
+  }
+}
