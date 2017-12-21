@@ -54,6 +54,9 @@
   <? endif; ?>
 
   <? if (in_array("pickUpLibraryLocation", $this->extraFields)): ?>
+    <? if (isset($this->homeLibrary) && $this->homeLibrary !== ""): ?>
+      <input type="hidden" id="homeLibrary" name="homeLibrary" value="<?=$this->escapeHtmlAttr($this->homeLibrary)?>" />
+    <? endif; ?>
     <div class="form-group">
       <label id="pickupLibraryLocationLabel" class="control-label"><i></i>&nbsp;<?=$this->transEsc("ill_request_pick_up_location")?>:<noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript></label>
       <select id="pickupLibraryLocation" name="gatheredDetails[pickUpLibraryLocation]" class="form-control"></select>
@@ -61,7 +64,7 @@
   <? endif; ?>
 
   <? if (in_array("pickUpLocation", $this->extraFields)): ?>
-    <? if (count($this->pickup) > 1): ?>
+    <? if (count($this->pickupLocations) > 1): ?>
       <div class="form-group">
         <?
           if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
@@ -74,7 +77,7 @@
         ?>
         <label class="control-label"><?=$this->transEsc("pick_up_location")?>:</label>
         <select name="gatheredDetails[pickUpLocation]" class="form-control">
-          <? foreach ($this->pickup as $lib): ?>
+          <? foreach ($this->pickupLocations as $lib): ?>
             <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
               <?=$this->escapeHtml($lib['locationDisplay'])?>
             </option>

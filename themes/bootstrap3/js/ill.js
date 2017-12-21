@@ -15,9 +15,12 @@ function setUpILLRequestForm(recordId) {
       url: url
     })
     .done(function illPickupLocationsDone(response) {
+      var homeLibrary = $("#ILLRequestForm #homeLibrary").val();
       $.each(response.data.locations, function illPickupLocationEach() {
         var option = $("<option></option>").attr("value", this.id).text(this.name);
-        if (this.isDefault) {
+        if (homeLibrary != "" && option.attr("value") == homeLibrary) {
+          option.attr("selected", "selected");
+        } else if (this.isDefault) {
           option.attr("selected", "selected");
         }
         $("#ILLRequestForm #pickupLibraryLocation").append(option);
