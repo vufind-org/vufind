@@ -28,7 +28,7 @@
         <? array_walk($items, function(&$item, $key, $prefix) { $item['displayText'] = $this->translate($prefix . $item['displayText']);}, $prefix);?>
         <? // Make sure, we sort according to the language in alphabetical sort?>
         <? if ($this->sort == 'index'):?>
-           <? array_multisort(array_column($items, 'displayText'), SORT_ASC, $items) ?>
+           <? array_multisort(array_column($items, 'displayText'), SORT_ASC, SORT_LOCALE_STRING, $items) ?>
         <?endif;?>
         <? $this->data = $items;?>
         <? if ($this->page > 1): ?>
