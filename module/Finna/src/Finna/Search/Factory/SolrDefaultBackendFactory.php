@@ -136,11 +136,14 @@ class SolrDefaultBackendFactory
         $searchFilters
             = isset($config->Index->search_filters)
             ? $config->Index->search_filters : [];
+        $maxSpellcheckWords = isset($search->General->max_spellcheck_words)
+            ? $search->General->max_spellcheck_words : 5;
         $helper = new LuceneSyntaxHelper(
             $caseSensitiveBooleans,
             $caseSensitiveRanges,
             $unicodeNormalizationForm,
-            $searchFilters
+            $searchFilters,
+            $maxSpellcheckWords
         );
         $builder->setLuceneHelper($helper);
 
