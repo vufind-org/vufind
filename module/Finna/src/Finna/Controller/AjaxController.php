@@ -1317,6 +1317,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
             }
             $options = $params->getOptions();
             $options->disableHighlighting();
+            $options->spellcheckEnabled(false);
         };
 
         $runner = $this->serviceLocator->get('VuFind\SearchRunner');
