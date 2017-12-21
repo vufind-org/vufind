@@ -26,7 +26,7 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
       <? endif; ?>
     <? endif; ?>
     <div class="grid-title text-center">
-      <a class="title" href="<?=$this->recordLink()->getUrl($this->driver)?>">
+      <a class="title" href="<?=$this->recordLink()->getUrl($this->driver)?>" title="<?=$this->escapeHtmlAttr($this->driver->getTitle())?>">
         <?= $this->record($this->driver)->getTitleHtml(50); ?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
       </a>
       <div class="dateyeartype">
