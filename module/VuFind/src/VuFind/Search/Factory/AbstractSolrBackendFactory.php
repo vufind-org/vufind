@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -28,28 +28,29 @@
  */
 namespace VuFind\Search\Factory;
 
+use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\FilterFieldConversionListener;
 use VuFind\Search\Solr\HideFacetValueListener;
-use VuFind\Search\Solr\InjectHighlightingListener;
+use VuFind\Search\Solr\HierarchicalFacetListener;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
+use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFind\Search\Solr\InjectSpellingListener;
 use VuFind\Search\Solr\MultiIndexListener;
 use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
 use VuFind\Search\Solr\V4\ErrorListener;
-use VuFind\Search\Solr\DeduplicationListener;
-use VuFind\Search\Solr\HierarchicalFacetListener;
 
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\Solr\Connector;
+use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Solr\QueryBuilder;
-use VuFindSearch\Backend\Solr\HandlerMap;
-use VuFindSearch\Backend\Solr\Connector;
-use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\Solr\SimilarBuilder;
 
 use Zend\Config\Config;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Abstract factory for SOLR backends.
@@ -134,7 +135,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $this->config         = $this->serviceLocator->get('VuFind\Config');
         if ($this->serviceLocator->has('VuFind\Logger')) {
             $this->logger = $this->serviceLocator->get('VuFind\Logger');
@@ -156,6 +157,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     {
         $backend = new Backend($connector);
         $backend->setQueryBuilder($this->createQueryBuilder());
+        $backend->setSimilarBuilder($this->createSimilarBuilder());
         if ($this->logger) {
             $backend->setLogger($this->logger);
         }
@@ -318,7 +320,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 'defaults' => ['fl' => '*,score'],
                 'appends'  => ['fq' => []],
             ],
-            'term' => [
+            'terms' => [
                 'functions' => ['terms'],
             ],
         ];
@@ -373,6 +375,18 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     }
 
     /**
+     * Create the similar records query builder.
+     *
+     * @return SimilarBuilder
+     */
+    protected function createSimilarBuilder()
+    {
+        return new SimilarBuilder(
+            $this->config->get($this->searchConfig), $this->uniqueKey
+        );
+    }
+
+    /**
      * Load the search specs.
      *
      * @return array
@@ -403,13 +417,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     }
 
     /**
-    * Get a hide facet value listener for the backend
-    *
-    * @param BackendInterface $backend Search backend
-    * @param Config           $facet   Configuration of facets
-    *
-    * @return mixed null|HideFacetValueListener
-    */
+     * Get a hide facet value listener for the backend
+     *
+     * @param BackendInterface $backend Search backend
+     * @param Config           $facet   Configuration of facets
+     *
+     * @return mixed null|HideFacetValueListener
+     */
     protected function getHideFacetValueListener(
         BackendInterface $backend,
         Config $facet

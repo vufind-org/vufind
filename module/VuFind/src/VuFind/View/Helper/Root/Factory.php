@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -91,7 +92,10 @@ class Factory
      */
     public static function getAuth(ServiceManager $sm)
     {
-        return new Auth($sm->getServiceLocator()->get('VuFind\AuthManager'));
+        return new Auth(
+            $sm->getServiceLocator()->get('VuFind\AuthManager'),
+            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+        );
     }
 
     /**
@@ -203,6 +207,21 @@ class Factory
     }
 
     /**
+     * Construct the GeoCoords helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return GeoCoords
+     */
+    public static function getGeoCoords(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
+        $coords = isset($config->MapSelection->default_coordinates)
+            ? $config->MapSelection->default_coordinates : false;
+        return new GeoCoords($coords);
+    }
+
+    /**
      * Construct the GoogleAnalytics helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -220,6 +239,22 @@ class Factory
     }
 
     /**
+     * Construct the Permission helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Permission
+     */
+    public static function getPermission(ServiceManager $sm)
+    {
+        $ld = new Permission(
+            $sm->getServiceLocator()->get('VuFind\Role\PermissionManager'),
+            $sm->getServiceLocator()->get('VuFind\Role\PermissionDeniedManager')
+        );
+        return $ld;
+    }
+
+    /**
      * Construct the Piwik helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -230,11 +265,17 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $url = isset($config->Piwik->url) ? $config->Piwik->url : false;
-        $siteId = isset($config->Piwik->site_id) ? $config->Piwik->site_id : 1;
+        $options = [
+            'siteId' => isset($config->Piwik->site_id) ? $config->Piwik->site_id : 1,
+            'searchPrefix' => isset($config->Piwik->searchPrefix)
+                ? $config->Piwik->searchPrefix : null
+        ];
         $customVars = isset($config->Piwik->custom_variables)
             ? $config->Piwik->custom_variables
             : false;
-        return new Piwik($url, $siteId, $customVars);
+        $request = $sm->getServiceLocator()->get('Request');
+        $router = $sm->getServiceLocator()->get('Router');
+        return new Piwik($url, $options, $customVars, $router, $request);
     }
 
     /**
@@ -264,7 +305,7 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $config = isset($config->SearchHistoryLabels)
             ? $config->SearchHistoryLabels->toArray() : [];
-        return new HistoryLabel($config, $sm->get('transesc'));
+        return new HistoryLabel($config, $sm->get('transEsc'));
     }
 
     /**
@@ -288,7 +329,7 @@ class Factory
      */
     public static function getJsTranslations(ServiceManager $sm)
     {
-        return new JsTranslations($sm->get('transesc'));
+        return new JsTranslations($sm->get('transEsc'));
     }
 
     /**
@@ -322,9 +363,12 @@ class Factory
             ),
             true
         );
+        $resolverPluginManager = $sm->getServiceLocator()
+            ->get('VuFind\ResolverDriverPluginManager');
         return new OpenUrl(
             $sm->get('context'),
             $openUrlRules,
+            $resolverPluginManager,
             isset($config->OpenURL) ? $config->OpenURL : null
         );
     }
@@ -367,9 +411,13 @@ class Factory
      */
     public static function getRecord(ServiceManager $sm)
     {
-        return new Record(
+        $helper = new Record(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
+        $helper->setCoverRouter(
+            $sm->getServiceLocator()->get('VuFind\Cover\Router')
+        );
+        return $helper;
     }
 
     /**
@@ -399,6 +447,20 @@ class Factory
     }
 
     /**
+     * Construct the ResultFeed helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ResultFeed
+     */
+    public static function getResultFeed(ServiceManager $sm)
+    {
+        $helper = new ResultFeed();
+        $helper->registerExtensions($sm);
+        return $helper;
+    }
+
+    /**
      * Construct the SafeMoneyFormat helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -423,9 +485,18 @@ class Factory
     public static function getSearchBox(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config');
+        $mainConfig = $config->get('config');
+        $searchboxConfig = $config->get('searchbox')->toArray();
+        $includeAlphaOptions
+            = isset($searchboxConfig['General']['includeAlphaBrowse'])
+            && $searchboxConfig['General']['includeAlphaBrowse'];
         return new SearchBox(
             $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager'),
-            $config->get('searchbox')->toArray()
+            $searchboxConfig,
+            isset($mainConfig->SearchPlaceholder)
+                ? $mainConfig->SearchPlaceholder->toArray() : [],
+            $includeAlphaOptions && isset($mainConfig->AlphaBrowse_Types)
+                ? $mainConfig->AlphaBrowse_Types->toArray() : []
         );
     }
 
@@ -484,6 +555,20 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
             $sm->get('url'), $sm->getServiceLocator()->get('VuFind\SearchTabsHelper')
         );
+    }
+
+    /**
+     * Construct the Summary helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Summaries
+     */
+    public static function getSummaries(ServiceManager $sm)
+    {
+        $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
+            ->get('summaries');
+        return new ContentLoader($loader);
     }
 
     /**

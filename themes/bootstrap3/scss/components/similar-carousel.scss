@@ -1,0 +1,53 @@
+#similar-items-carousel {
+  .carousel-indicators {
+    bottom: 0px;
+    li {
+      width: 8px;
+      height: 8px;
+      margin: 2px;
+      margin-bottom: 4px;
+      background-color: #fff;
+      border: 1px solid $gray-darker;
+      box-shadow: none;
+      transition-duration: .4s;
+      transition-property: width, height, margin;
+
+      &.active {
+        width: 16px;
+        height: 16px;
+        margin-bottom: 0;
+      }
+    }
+  }
+  .hover-overlay {
+    position: relative;
+    display: block;
+    min-width: 150px;
+    min-height: 200px;
+    margin: auto;
+    text-align: center;
+    img {
+      max-width: 100%;
+      margin: 10px 0;
+    }
+    .content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: .5em .5em 0;
+      color: #fff;
+      background-color: rgba(0,0,0,.5);
+    }
+    &:hover .content {display: block;}
+  }
+  .item {
+    padding: 0 4em;
+    &.prev,
+    &.active,
+    &.next { display: flex; }
+  }
+  .carousel-item { flex-basis: 25%; }
+}

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest;
+
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -99,7 +100,41 @@ class ThemeInfoTest extends Unit\TestCase
     {
         $ti = $this->getThemeInfo();
         $ti->setTheme('child');
-        $this->assertEquals(['child' => ['extends' => 'parent'], 'parent' => ['extends' => false]], $ti->getThemeInfo());
+        $expectedChild = include "{$this->fixturePath}/child/theme.config.php";
+        $expectedParent = include "{$this->fixturePath}/parent/theme.config.php";
+        $this->assertEquals('parent', $expectedChild['extends']);
+        $this->assertEquals(false, $expectedParent['extends']);
+        $this->assertEquals(
+            ['child' => $expectedChild, 'parent' => $expectedParent],
+            $ti->getThemeInfo()
+        );
+    }
+
+    /**
+     * Test theme info with a mixin
+     *
+     * @return void
+     */
+    public function testGetThemeInfoWithMixin()
+    {
+        $ti = $this->getThemeInfo();
+        $ti->setTheme('mixin_user');
+        $expectedChild = include "{$this->fixturePath}/child/theme.config.php";
+        $expectedParent = include "{$this->fixturePath}/parent/theme.config.php";
+        $expectedMixin = include "{$this->fixturePath}/mixin/mixin.config.php";
+        $expectedMixinUser
+            = include "{$this->fixturePath}/mixin_user/theme.config.php";
+        $this->assertEquals('parent', $expectedChild['extends']);
+        $this->assertEquals(false, $expectedParent['extends']);
+        $this->assertEquals(
+            [
+                'mixin' => $expectedMixin,
+                'mixin_user' => $expectedMixinUser,
+                'child' => $expectedChild,
+                'parent' => $expectedParent
+            ],
+            $ti->getThemeInfo()
+        );
     }
 
     /**
@@ -126,6 +161,19 @@ class ThemeInfoTest extends Unit\TestCase
         $this->assertEquals($this->fixturePath . '/parent/parent.txt', $ti->findContainingTheme('parent.txt', true));
         $expected = ['theme' => 'parent', 'path' => $this->fixturePath . '/parent/parent.txt'];
         $this->assertEquals($expected, $ti->findContainingTheme('parent.txt', ThemeInfo::RETURN_ALL_DETAILS));
+    }
+
+    /**
+     * Test findContainingTheme() with a mixin
+     *
+     * @return void
+     */
+    public function testFindContainingThemeWithMixin()
+    {
+        $ti = $this->getThemeInfo();
+        $ti->setTheme('mixin_user');
+        $this->assertEquals('mixin', $ti->findContainingTheme('js/mixin.js'));
+        $this->assertEquals('child', $ti->findContainingTheme('child.txt'));
     }
 
     /**

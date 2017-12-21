@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use Zend\View\Helper\Url;
 
 /**
@@ -90,7 +91,7 @@ class AlphaBrowse extends \Zend\View\Helper\AbstractHelper
     /**
      * Escape a string for inclusion in a Solr query.
      *
-     * @param type $str String to escape
+     * @param string $str String to escape
      *
      * @return string
      */

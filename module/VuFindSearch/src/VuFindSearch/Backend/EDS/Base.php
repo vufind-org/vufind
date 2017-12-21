@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -99,7 +99,7 @@ abstract class EdsApi_REST_Base
     {
         if (is_array($settings)) {
             foreach ($settings as $key => $value) {
-                switch($key) {
+                switch ($key) {
                 case 'debug':
                     $this->debug = $value;
                     break;
@@ -190,7 +190,6 @@ abstract class EdsApi_REST_Base
         $url = $this->edsApiHost . '/retrieve';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs);
-
     }
 
     /**
@@ -239,7 +238,7 @@ abstract class EdsApi_REST_Base
             $authInfo['orgid'] = $org;
         }
         $messageBody = json_encode($authInfo);
-        return $this->call($url, null,  null, 'POST', $messageBody);
+        return $this->call($url, null, null, 'POST', $messageBody);
     }
 
     /**
@@ -332,7 +331,7 @@ abstract class EdsApi_REST_Base
         //process response.
         try {
             $result = json_decode($input, true);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw new EbscoEdsApiException(
                 'An error occurred when processing EDS Api response: '
                 . $e->getMessage()

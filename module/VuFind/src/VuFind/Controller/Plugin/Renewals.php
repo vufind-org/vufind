@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
+
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
@@ -85,7 +86,7 @@ class Renewals extends AbstractPlugin
         $selected = $request->get('renewSelected');
         if (!empty($all)) {
             $ids = $request->get('renewAllIDS');
-        } else if (!empty($selected)) {
+        } elseif (!empty($selected)) {
             $ids = $request->get('selectAll')
                 ? $request->get('selectAllIDS')
                 : $request->get('renewSelectedIDS');
@@ -117,7 +118,7 @@ class Renewals extends AbstractPlugin
                 // System failure:
                 $flashMsg->addMessage('renew_error', 'error');
             }
-        } else if (!empty($all) || !empty($selected)) {
+        } elseif (!empty($all) || !empty($selected)) {
             // Button was clicked but no items were selected:
             $flashMsg->addMessage('renew_empty_selection', 'error');
         }

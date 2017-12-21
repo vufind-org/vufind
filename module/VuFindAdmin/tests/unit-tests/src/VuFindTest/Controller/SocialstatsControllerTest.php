@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -47,14 +47,19 @@ class SocialstatsControllerTest extends \VuFindTest\Unit\TestCase
     public function testHome()
     {
         // Create mocks to simulate database lookups:
-        $c = $this->getMock('VuFindAdmin\Controller\SocialstatsController', ['getTable']);
-        $comments = $this->getMock('VuFind\Db\Table\Comments', ['getStatistics']);
+        $c = $this->getMockBuilder('VuFindAdmin\Controller\SocialstatsController')
+            ->setMethods(['getTable'])->disableOriginalConstructor()->getMock();
+        $comments = $this->getMockBuilder('VuFind\Db\Table\Comments')
+            ->disableOriginalConstructor()->setMethods(['getStatistics'])->getMock();
         $comments->expects($this->once())->method('getStatistics')->will($this->returnValue('comments-data'));
         $c->expects($this->at(0))->method('getTable')->with($this->equalTo('comments'))->will($this->returnValue($comments));
-        $userresource = $this->getMock('VuFind\Db\Table\UserResource', ['getStatistics']);
+        $userresource = $this->getMockBuilder('VuFind\Db\Table\UserResource')
+            ->setMethods(['getStatistics'])->disableOriginalConstructor()->getMock();
         $userresource->expects($this->once())->method('getStatistics')->will($this->returnValue('userresource-data'));
         $c->expects($this->at(1))->method('getTable')->with($this->equalTo('userresource'))->will($this->returnValue($userresource));
-        $resourcetags = $this->getMock('VuFind\Db\Table\ResourceTags', ['getStatistics']);
+        $resourcetags = $this->getMockBuilder('VuFind\Db\Table\ResourceTags')
+            ->disableOriginalConstructor()->setMethods(['getStatistics'])
+            ->getMock();
         $resourcetags->expects($this->once())->method('getStatistics')->will($this->returnValue('resourcetags-data'));
         $c->expects($this->at(2))->method('getTable')->with($this->equalTo('resourcetags'))->will($this->returnValue($resourcetags));
 

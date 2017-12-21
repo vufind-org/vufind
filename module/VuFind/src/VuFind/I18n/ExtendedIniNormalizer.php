@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Translator
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\I18n;
+
 use Zend\I18n\Translator\TextDomain;
 
 /**
@@ -54,7 +55,7 @@ class ExtendedIniNormalizer
             $full = $dir . '/' . $file;
             if ($file != '.' && $file != '..' && is_dir($full)) {
                 $this->normalizeDirectory($full);
-            } else if (substr($file, -4) == '.ini') {
+            } elseif (substr($file, -4) == '.ini') {
                 $this->normalizeFile($full);
             }
         }

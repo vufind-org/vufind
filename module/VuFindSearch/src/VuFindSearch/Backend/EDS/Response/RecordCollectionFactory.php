@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -27,8 +27,8 @@
  */
 namespace VuFindSearch\Backend\EDS\Response;
 
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 /**
  * Factory for record collection.
@@ -100,7 +100,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         ) {
             // Format of the search response
             $records = $response['SearchResult']['Data']['Records'];
-        } else if (isset($response['Records'])) { // Format of the retrieve response
+        } elseif (isset($response['Records'])) { // Format of the retrieve response
             $records = $response['Records'];
         }
 
@@ -109,5 +109,4 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         }
         return $collection;
     }
-
 }

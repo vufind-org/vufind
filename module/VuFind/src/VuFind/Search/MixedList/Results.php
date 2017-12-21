@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_MixedList
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\MixedList;
+
 use VuFind\Search\Base\Results as BaseResults;
 
 /**
@@ -62,8 +63,7 @@ class Results extends BaseResults
     protected function performSearch()
     {
         $recordsToRequest = $this->getParams()->getRecordsToRequest();
-        $this->results = $this->getServiceLocator()->get('VuFind\RecordLoader')
-            ->loadBatch($recordsToRequest);
+        $this->results = $this->recordLoader->loadBatch($recordsToRequest);
         $this->resultTotal = count($this->results);
     }
 }

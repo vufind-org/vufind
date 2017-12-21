@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -28,17 +28,14 @@
  */
 namespace VuFindTest\Search\Solr;
 
-use VuFindSearch\ParamBag;
+use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
 
-use VuFind\Search\Solr\InjectConditionalFilterListener;
+use VuFindSearch\ParamBag;
 use VuFindTest\Unit\TestCase;
 use Zend\EventManager\Event;
-
-use ZfcRbac\Service\AuthorizationServiceAwareInterface,
-    ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
  * Unit tests for Conditional Filter listener.
@@ -95,7 +92,7 @@ class ConditionalFilterListenerTest extends TestCase
     public function testAttach()
     {
         $listener = new InjectConditionalFilterListener(self::$emptySearchConfig);
-        $mock = $this->getMock('Zend\EventManager\SharedEventManagerInterface');
+        $mock = $this->createMock('Zend\EventManager\SharedEventManagerInterface');
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('pre'),

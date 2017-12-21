@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
 namespace VuFind\Cover;
-use Zend\Http\Client, Zend\Http\Response;
+
+use Zend\Http\Client;
+use Zend\Http\Response;
 
 /**
  * Caching Proxy for Cover Images

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -26,7 +26,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
-use VuFind\Auth\Shibboleth, VuFind\Db\Table\User, Zend\Config\Config;
+
+use VuFind\Auth\Shibboleth;
+use VuFind\Db\Table\User;
+use Zend\Config\Config;
 
 /**
  * Shibboleth authentication test class.
@@ -76,7 +79,9 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = clone($this->getAuthManager()->get('Shibboleth'));
+        $obj = new Shibboleth($this->createMock('Zend\Session\ManagerInterface'));
+        $initializer = new \VuFind\ServiceManager\ServiceInitializer();
+        $initializer->initialize($obj, $this->getServiceManager());
         $obj->setConfig($config);
         return $obj;
     }
@@ -224,6 +229,6 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      */
     public static function tearDownAfterClass()
     {
-         static::removeUsers('testuser');
-   }
+        static::removeUsers('testuser');
+    }
 }

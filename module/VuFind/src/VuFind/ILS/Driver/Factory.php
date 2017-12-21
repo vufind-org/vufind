@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -65,7 +66,27 @@ class Factory
      */
     public static function getDAIA(ServiceManager $sm)
     {
-        return new DAIA(
+        $daia = new DAIA(
+            $sm->getServiceLocator()->get('VuFind\DateConverter')
+        );
+
+        $daia->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+
+        return $daia;
+    }
+
+    /**
+     * Factory for LBS4 driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return LBS4
+     */
+    public static function getLBS4(ServiceManager $sm)
+    {
+        return new LBS4(
             $sm->getServiceLocator()->get('VuFind\DateConverter')
         );
     }
@@ -126,7 +147,8 @@ class Factory
     {
         return new MultiBackend(
             $sm->getServiceLocator()->get('VuFind\Config'),
-            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator'),
+            $sm
         );
     }
 
@@ -140,6 +162,94 @@ class Factory
     public static function getNoILS(ServiceManager $sm)
     {
         return new NoILS($sm->getServiceLocator()->get('VuFind\RecordLoader'));
+    }
+
+    /**
+     * Factory for PAIA driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return PAIA
+     */
+    public static function getPAIA(ServiceManager $sm)
+    {
+        $paia = new PAIA(
+            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+            $sm->getServiceLocator()->get('VuFind\SessionManager')
+        );
+
+        $paia->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+
+        return $paia;
+    }
+
+    /**
+     * Factory for Koha driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Koha
+     */
+    public static function getKoha(ServiceManager $sm)
+    {
+        return new Koha($sm->getServiceLocator()->get('VuFind\DateConverter'));
+    }
+
+    /**
+     * Factory for KohaILSDI driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return KohaILSDI
+     */
+    public static function getKohaILSDI(ServiceManager $sm)
+    {
+        $koha = new KohaILSDI($sm->getServiceLocator()->get('VuFind\DateConverter'));
+        $koha->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+        return $koha;
+    }
+
+    /**
+     * Factory for Sierra REST driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SierraRest
+     */
+    public static function getSierraRest(ServiceManager $sm)
+    {
+        $sessionFactory = function ($namespace) use ($sm) {
+            $manager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            return new \Zend\Session\Container("SierraRest_$namespace", $manager);
+        };
+
+        $driver = new SierraRest(
+            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+            $sessionFactory
+        );
+        $driver->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+        return $driver;
+    }
+
+    /**
+     * Factory for Symphony driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Symphony
+     */
+    public static function getSymphony(ServiceManager $sm)
+    {
+        return new Symphony(
+            $sm->getServiceLocator()->get('VuFind\RecordLoader'),
+            $sm->getServiceLocator()->get('VuFind\CacheManager')
+        );
     }
 
     /**

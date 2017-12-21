@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Bootstrap
@@ -26,7 +26,10 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind;
-use Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
+
+use Zend\Console\Console;
+use Zend\Mvc\MvcEvent;
+use Zend\Mvc\Router\Http\RouteMatch;
 
 /**
  * VuFind Bootstrapper
@@ -176,7 +179,7 @@ class Bootstrapper
     {
         $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
-            $viewModel = $serviceManager->get('viewmanager')->getViewModel();
+            $viewModel = $serviceManager->get('ViewManager')->getViewModel();
 
             // Grab the template name from the first child -- we can use this to
             // figure out the current template context.
@@ -201,8 +204,8 @@ class Bootstrapper
     {
         $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
-            $renderer = $serviceManager->get('viewmanager')->getRenderer();
-            $headTitle = $renderer->plugin('headtitle');
+            $helperManager = $serviceManager->get('ViewHelperManager');
+            $headTitle = $helperManager->get('headtitle');
             $headTitle->setDefaultAttachOrder(
                 \Zend\View\Helper\Placeholder\Container\AbstractContainer::SET
             );
@@ -349,7 +352,7 @@ class Bootstrapper
                 }
             }
             // Send key values to view:
-            $viewModel = $sm->get('viewmanager')->getViewModel();
+            $viewModel = $sm->get('ViewManager')->getViewModel();
             $viewModel->setVariable('userLang', $language);
             $viewModel->setVariable('allLangs', $config->Languages);
             $rtlLangs = isset($config->LanguageSettings->rtl_langs)
@@ -391,30 +394,26 @@ class Bootstrapper
     }
 
     /**
-     * Set up custom 404 status based on exception type.
+     * Set up custom HTTP status based on exception information.
      *
      * @return void
      */
-    protected function initExceptionBased404s()
+    protected function initExceptionBasedHttpStatuses()
     {
-        // 404s not needed in console mode:
+        // HTTP statuses not needed in console mode:
         if (Console::isConsole()) {
             return;
         }
 
         $callback = function ($e) {
             $exception = $e->getParam('exception');
-            if (is_object($exception)) {
-                if ($exception instanceof \VuFind\Exception\RecordMissing) {
-                    // TODO: it might be better to solve this problem by using a
-                    // custom RouteNotFoundStrategy.
-                    $response = $e->getResponse();
-                    if (!$response) {
-                        $response = new HttpResponse();
-                        $e->setResponse($response);
-                    }
-                    $response->setStatusCode(404);
+            if ($exception instanceof \VuFind\Exception\HttpStatusInterface) {
+                $response = $e->getResponse();
+                if (!$response) {
+                    $response = new HttpResponse();
+                    $e->setResponse($response);
                 }
+                $response->setStatusCode($exception->getHttpStatus());
             }
         };
         $this->events->attach('dispatch.error', $callback);
@@ -474,7 +473,7 @@ class Bootstrapper
         // a user-friendly message instead of a fatal error.
         $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
-            $viewModel = $serviceManager->get('viewmanager')->getViewModel();
+            $viewModel = $serviceManager->get('ViewManager')->getViewModel();
             $viewModel->renderingError = true;
         };
         $this->events->attach('render.error', $callback, 10000);

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -27,14 +27,14 @@
  */
 namespace VuFindSearch\Backend\Pazpar2;
 
-use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Backend\AbstractBackend;
 
 use VuFindSearch\ParamBag;
 
-use VuFindSearch\Response\RecordCollectionInterface;
+use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
-use VuFindSearch\Backend\AbstractBackend;
+use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
  * Pazpar2 backend.
@@ -123,8 +123,8 @@ class Backend extends AbstractBackend
      * Perform a search and return record collection.
      *
      * @param AbstractQuery $query  Search query
-     * @param integer       $offset Search offset
-     * @param integer       $limit  Search limit
+     * @param int           $offset Search offset
+     * @param int           $limit  Search limit
      * @param ParamBag      $params Search backend parameters
      *
      * @return RecordCollectionInterface
@@ -263,6 +263,6 @@ class Backend extends AbstractBackend
     protected function getSearchProgress()
     {
         $statResponse = $this->connector->stat();
-        return (float) $statResponse->progress;
+        return (float)$statResponse->progress;
     }
 }

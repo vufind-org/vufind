@@ -13,7 +13,7 @@
     $this->headTitle($this->translate('Author Browse'));
 
     // Set up empty search box pointing at Solr module:
-    $this->layout()->searchbox = $this->context($this)->renderInContext('search/searchbox.phtml', array('searchClassId' => 'Solr'));
+    $this->layout()->searchbox = $this->context($this)->renderInContext('search/searchbox.phtml', ['searchClassId' => 'Solr']);
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('author-home') . '">' . $this->transEsc('Author') . '</a></li> '

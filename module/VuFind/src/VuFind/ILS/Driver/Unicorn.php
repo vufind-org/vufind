@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -25,7 +25,9 @@
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  */
 namespace VuFind\ILS\Driver;
-use File_MARC, VuFind\Exception\ILS as ILSException;
+
+use File_MARC;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
@@ -322,7 +324,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $cmp = create_function(
                 '$a,$b',
                 'if ($a["shelving_key"] == $b["shelving_key"]) '
-                .     'return $a["number"] - $b["number"];'
+                . 'return $a["number"] - $b["number"];'
                 . 'return $a["shelving_key"] < $b["shelving_key"] ? 1 : -1;'
             );
             usort($items, $cmp);
@@ -1081,7 +1083,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         ) {
             $availability = 0;
             $status = $this->config['UnavailableItemTypes'][$item_type];
-        } else if (isset($this->config['UnavailableLocations'])
+        } elseif (isset($this->config['UnavailableLocations'])
             && isset($this->config['UnavailableLocations'][$currLocCode])
         ) {
             $availability = 0;
@@ -1117,7 +1119,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'format' => $format
             ];
 
-            return $item;
+        return $item;
     }
 
     /**
@@ -1381,7 +1383,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
             $linking = $linking[0];
 
-            if (array_key_exists((int) $linking, $textuals)) {
+            if (array_key_exists((int)$linking, $textuals)) {
                 // Skip coded holdings overridden by textual
                 // holdings
                 continue;
@@ -1395,7 +1397,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $decoded_holding .= ' ' . $subfield->getData();
             }
 
-            $ndx = (int) ($linking
+            $ndx = (int)($linking
                           . sprintf("%0{$link_digits}u", $sequence));
             $holdings[$ndx] = trim($decoded_holding);
         }
@@ -1406,7 +1408,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $textual_holding .= ' ' . $note->getData();
             }
 
-            $ndx = (int) ($linking . sprintf("%0{$link_digits}u", 0));
+            $ndx = (int)($linking . sprintf("%0{$link_digits}u", 0));
             $holdings[$ndx] = trim($textual_holding);
         }
 

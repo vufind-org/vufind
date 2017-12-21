@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Cache
@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Cache\Storage\Adapter;
 
-use VuFind\Cache\Storage\Adapter\NoCacheAdapter;
-
 use PHPUnit_Framework_TestCase;
+
+use VuFind\Cache\Storage\Adapter\NoCacheAdapter;
 
 /**
  * Unit tests for VuFind NoCacheAdapter.
@@ -52,6 +52,6 @@ class NoCacheAdapterTest extends PHPUnit_Framework_TestCase
     {
         $cache = new NoCacheAdapter();
         $cache->setItem('key', 'value');
-        $this->assertFalse((boolean)$cache->hasItem('key'));
+        $this->assertFalse((bool)$cache->hasItem('key'));
     }
 }

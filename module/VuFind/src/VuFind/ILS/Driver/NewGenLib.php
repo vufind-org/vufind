@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -26,7 +26,10 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\ILS as ILSException;
+
+use PDO;
+use PDOException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * ILS Driver for NewGenLib
@@ -503,8 +506,7 @@ class NewGenLib extends AbstractBase
         try {
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
 

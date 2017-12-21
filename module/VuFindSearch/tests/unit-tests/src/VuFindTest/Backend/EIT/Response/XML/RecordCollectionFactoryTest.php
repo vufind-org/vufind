@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\EIT\Response\XML;
 
-use VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory;
 use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory;
 
 /**
  * Unit tests for EIT record collection factory.
@@ -67,7 +67,6 @@ class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
     {
         $fact = new RecordCollectionFactory(
             function () {
-
             }
         );
         $coll = $fact->factory('garbage');

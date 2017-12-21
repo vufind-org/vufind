@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Theme
@@ -26,9 +26,11 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFindTheme;
-use Zend\Config\Config,
-    Zend\Mvc\MvcEvent,
-    Zend\Stdlib\RequestInterface as Request;
+
+use Zend\Config\Config;
+use Zend\Mvc\MvcEvent;
+use Zend\Mvc\View\Http\InjectTemplateListener as BaseInjectTemplateListener;
+use Zend\Stdlib\RequestInterface as Request;
 
 /**
  * VuFind Theme Initializer
@@ -140,23 +142,23 @@ class Initializer
 
         // Detach the default listener:
         $listeners = $sharedEvents->getListeners(
-            'Zend\Stdlib\DispatchableInterface', MvcEvent::EVENT_DISPATCH
+            ['Zend\Stdlib\DispatchableInterface'], MvcEvent::EVENT_DISPATCH
         );
-        foreach ($listeners as $listener) {
-            $metadata = $listener->getMetadata();
-            $callback = $listener->getCallback();
-            if (is_a($callback[0], 'Zend\Mvc\View\Http\InjectTemplateListener')) {
-                $priority = $metadata['priority'];
-                $sharedEvents->detach(
-                    'Zend\Stdlib\DispatchableInterface', $listener
-                );
-                break;
+        foreach ($listeners as $priority => $priorityGroup) {
+            foreach ($priorityGroup as $callback) {
+                if ($callback[0] instanceof BaseInjectTemplateListener) {
+                    $injectTemplatePriority = $priority;
+                    $sharedEvents->detach(
+                        $callback, 'Zend\Stdlib\DispatchableInterface'
+                    );
+                    break 2;
+                }
             }
         }
 
         // If we didn't successfully detach a listener above, priority will not be
         // set.  This is an unexpected situation, so we should throw an exception.
-        if (!isset($priority)) {
+        if (!isset($injectTemplatePriority)) {
             throw new \Exception('Unable to detach InjectTemplateListener');
         }
 
@@ -164,7 +166,7 @@ class Initializer
         $injectTemplateListener  = new InjectTemplateListener();
         $sharedEvents->attach(
             'Zend\Stdlib\DispatchableInterface', MvcEvent::EVENT_DISPATCH,
-            [$injectTemplateListener, 'injectTemplate'], $priority
+            [$injectTemplateListener, 'injectTemplate'], $injectTemplatePriority
         );
     }
 
@@ -267,7 +269,7 @@ class Initializer
     protected function sendThemeOptionsToView()
     {
         // Get access to the view model:
-        $viewModel = $this->serviceManager->get('viewmanager')->getViewModel();
+        $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
 
         // Send down the view options:
         $viewModel->setVariable('themeOptions', $this->getThemeOptions());
@@ -310,7 +312,7 @@ class Initializer
     protected function setUpThemeViewHelpers($helpers)
     {
         // Grab the helper loader from the view manager:
-        $loader = $this->serviceManager->get('viewmanager')->getHelperManager();
+        $loader = $this->serviceManager->get('ViewHelperManager');
 
         // Register all the helpers:
         $config = new \Zend\ServiceManager\Config($helpers);
@@ -376,7 +378,7 @@ class Initializer
         }
 
         // Inject the path stack generated above into the view resolver:
-        $resolver = $this->serviceManager->get('viewmanager')->getResolver();
+        $resolver = $this->serviceManager->get('ViewResolver');
         if (!is_a($resolver, 'Zend\View\Resolver\AggregateResolver')) {
             throw new \Exception('Unexpected resolver: ' . get_class($resolver));
         }
@@ -413,7 +415,7 @@ class Initializer
                 $translator = $this->serviceManager->get('VuFind\Translator');
 
                 $pm = $translator->getPluginManager();
-                $pm->get('extendedini')->addToPathStack($pathStack);
+                $pm->get('ExtendedIni')->addToPathStack($pathStack);
             } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
                 // This exception likely indicates that translation is disabled,
                 // so we can't proceed.

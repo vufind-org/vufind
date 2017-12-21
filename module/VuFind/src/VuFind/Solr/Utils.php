@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Solr
@@ -102,7 +102,7 @@ class Utils
                     if ($year) {
                         $date = str_replace('1999', $year, $date);
                     }
-                } else if ($year) {
+                } elseif ($year) {
                     // If the best we can do is extract a 4-digit year, that's better
                     // than nothing....
                     $date = $year;

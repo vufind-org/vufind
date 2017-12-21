@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -89,7 +89,7 @@ class HierarchyController extends AbstractBase
         $lookfor = $this->params()->fromQuery('lookfor', '');
         $searchType = $this->params()->fromQuery('type', 'AllFields');
 
-        $results = $this->getServiceLocator()
+        $results = $this->serviceLocator
             ->get('VuFind\SearchResultsPluginManager')->get('Solr');
         $results->getParams()->setBasicSearch($lookfor, $searchType);
         $results->getParams()->addFilter('hierarchy_top_id:' . $hierarchyID);
@@ -120,7 +120,7 @@ class HierarchyController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         // Retrieve the record from the index
         $id = $this->params()->fromQuery('id');
-        $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        $loader = $this->serviceLocator->get('VuFind\RecordLoader');
         try {
             if ($recordDriver = $loader->load($id)) {
                 $results = $recordDriver->getHierarchyDriver()->render(
@@ -153,7 +153,7 @@ class HierarchyController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         // Retrieve the record from the index
         $id = $this->params()->fromQuery('id');
-        $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        $loader = $this->serviceLocator->get('VuFind\RecordLoader');
         try {
             if ($recordDriver = $loader->load($id)) {
                 $results = $recordDriver->getHierarchyDriver()
@@ -183,7 +183,7 @@ class HierarchyController extends AbstractBase
     public function getrecordAction()
     {
         $id = $this->params()->fromQuery('id');
-        $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        $loader = $this->serviceLocator->get('VuFind\RecordLoader');
         try {
             $record = $loader->load($id);
             $result = $this->getViewRenderer()->record($record)

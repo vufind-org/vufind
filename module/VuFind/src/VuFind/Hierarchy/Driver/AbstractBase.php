@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Hierarchy
@@ -26,8 +26,9 @@
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\Driver;
-use VuFind\Hierarchy\TreeDataSource\PluginManager as DataManager,
-    VuFind\Hierarchy\TreeRenderer\PluginManager as RendererManager;
+
+use VuFind\Hierarchy\TreeDataSource\PluginManager as DataManager;
+use VuFind\Hierarchy\TreeRenderer\PluginManager as RendererManager;
 
 /**
  * Hierarchy interface class.
@@ -95,7 +96,7 @@ abstract class AbstractBase
         $this->dataManager = $dataManager;
         $this->rendererManager = $rendererManager;
         if (isset($options['enabled'])) {
-            $this->enabled = (bool) $options['enabled'];
+            $this->enabled = (bool)$options['enabled'];
         }
     }
 

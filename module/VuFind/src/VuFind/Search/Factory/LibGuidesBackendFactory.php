@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -28,14 +28,14 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\LibGuides\Connector;
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
-use VuFindSearch\Backend\LibGuides\QueryBuilder;
 use VuFindSearch\Backend\LibGuides\Backend;
+use VuFindSearch\Backend\LibGuides\Connector;
+use VuFindSearch\Backend\LibGuides\QueryBuilder;
+use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for LibGuides backends.
@@ -78,7 +78,7 @@ class LibGuidesBackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $configReader = $this->serviceLocator->get('VuFind\Config');
         $this->libGuidesConfig = $configReader->get('LibGuides');
         if ($this->serviceLocator->has('VuFind\Logger')) {

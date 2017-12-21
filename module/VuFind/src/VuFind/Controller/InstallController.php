@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -26,10 +26,11 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Config\Locator as ConfigLocator,
-    VuFind\Config\Writer as ConfigWriter,
-    Zend\Mvc\MvcEvent,
-    Zend\Crypt\Password\Bcrypt;
+
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\Writer as ConfigWriter;
+use Zend\Crypt\Password\Bcrypt;
+use Zend\Mvc\MvcEvent;
 
 /**
  * Class controls VuFind auto-configuration.
@@ -165,7 +166,7 @@ class InstallController extends AbstractBase
      */
     protected function checkCache()
     {
-        $cache = $this->getServiceLocator()->get('VuFind\CacheManager');
+        $cache = $this->serviceLocator->get('VuFind\CacheManager');
         return [
             'title' => 'Cache',
             'status' => !$cache->hasDirectoryCreationError(),
@@ -180,7 +181,7 @@ class InstallController extends AbstractBase
      */
     public function fixcacheAction()
     {
-        $cache = $this->getServiceLocator()->get('VuFind\CacheManager');
+        $cache = $this->serviceLocator->get('VuFind\CacheManager');
         $view = $this->createViewModel();
         $view->cacheDir = $cache->getCacheDir();
         if (function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {
@@ -237,7 +238,7 @@ class InstallController extends AbstractBase
     {
         $requiredFunctionsExist
             = function_exists('mb_substr') && is_callable('imagecreatefromstring')
-              && function_exists('mcrypt_module_open')
+              && function_exists('openssl_encrypt')
               && class_exists('XSLTProcessor');
 
         return [
@@ -288,10 +289,10 @@ class InstallController extends AbstractBase
             $problems++;
         }
 
-        // Is the mcrypt library missing?
-        if (!function_exists('mcrypt_module_open')) {
+        // Is the openssl library missing?
+        if (!function_exists('openssl_encrypt')) {
             $msg
-                = "Your PHP installation appears to be missing the mcrypt plug-in."
+                = "Your PHP installation appears to be missing the openssl plug-in."
                 . " For better security support, it is recommended that you add"
                 . " this. For details on how to do this, see "
                 . "https://vufind.org/wiki/installation "
@@ -334,16 +335,16 @@ class InstallController extends AbstractBase
         if (!preg_match('/^\w*$/', $view->dbname)) {
             $this->flashMessenger()
                 ->addMessage('Database name must be alphanumeric.', 'error');
-        } else if (!preg_match('/^\w*$/', $view->dbuser)) {
+        } elseif (!preg_match('/^\w*$/', $view->dbuser)) {
             $this->flashMessenger()
                 ->addMessage('Database user must be alphanumeric.', 'error');
-        } else if ($skip || $this->formWasSubmitted('submit')) {
+        } elseif ($skip || $this->formWasSubmitted('submit')) {
             $newpass = $this->params()->fromPost('dbpass');
             $newpassConf = $this->params()->fromPost('dbpassconfirm');
             if ((empty($newpass) || empty($newpassConf))) {
                 $this->flashMessenger()
                     ->addMessage('Password fields must not be blank.', 'error');
-            } else if ($newpass != $newpassConf) {
+            } elseif ($newpass != $newpassConf) {
                 $this->flashMessenger()
                     ->addMessage('Password fields must match.', 'error');
             } else {
@@ -354,7 +355,7 @@ class InstallController extends AbstractBase
                 try {
                     $dbName = ($view->driver == 'pgsql')
                         ? 'template1' : $view->driver;
-                    $db = $this->getServiceLocator()->get('VuFind\DbAdapterFactory')
+                    $db = $this->serviceLocator->get('VuFind\DbAdapterFactory')
                         ->getAdapterFromConnectionString("{$connection}/{$dbName}");
                 } catch (\Exception $e) {
                     $this->flashMessenger()
@@ -390,7 +391,7 @@ class InstallController extends AbstractBase
                         foreach ($preCommands as $query) {
                             $db->query($query, $db::QUERY_MODE_EXECUTE);
                         }
-                        $dbFactory = $this->getServiceLocator()
+                        $dbFactory = $this->serviceLocator
                             ->get('VuFind\DbAdapterFactory');
                         $db = $dbFactory->getAdapterFromConnectionString(
                             $connection . '/' . $view->dbname
@@ -509,13 +510,7 @@ class InstallController extends AbstractBase
         if (in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
             $status = false;
         } else {
-            try {
-                $catalog = $this->getILS();
-                $catalog->getStatus('1');
-                $status = true;
-            } catch (\Exception $e) {
-                $status = false;
-            }
+            $status = 'ils-offline' !== $this->getILS()->getOfflineMode(true);
         }
         return ['title' => 'ILS', 'status' => $status, 'fix' => 'fixils'];
     }
@@ -588,7 +583,7 @@ class InstallController extends AbstractBase
     protected function testSearchService()
     {
         // Try to retrieve an arbitrary ID -- this will fail if Solr is down:
-        $searchService = $this->getServiceLocator()->get('VuFind\Search');
+        $searchService = $this->serviceLocator->get('VuFind\Search');
         $searchService->retrieve('Solr', '1');
     }
 
@@ -803,7 +798,7 @@ class InstallController extends AbstractBase
     {
         // Try to retrieve an SSL URL; if we're misconfigured, it will fail.
         try {
-            $this->getServiceLocator()->get('VuFind\Http')
+            $this->serviceLocator->get('VuFind\Http')
                 ->get('https://google.com');
             $status = true;
         } catch (\VuFindHttp\Exception\RuntimeException $e) {

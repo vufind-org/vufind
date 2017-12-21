@@ -1,0 +1,117 @@
+/* mixins */
+
+input, textarea {
+  &::-webkit-input-placeholder, // Chrome/Safari/Opera
+  &:-ms-input-placeholder,      // IE
+  &::-ms-input-placeholder,     // Edge
+  &::placeholder {
+    color: #888;
+  }
+}
+
+.sr-only
+{
+  clip: rect(1px, 1px, 1px, 1px);
+  position: absolute;
+  /* reset */
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border:0;
+}
+
+.sr-only:focus {
+  background-color: #fff; //$navbar-default-link-hover-bg;//watch out, transparent by default!
+  border-radius: $navbar-border-radius;
+  clip: auto;
+  color: $navbar-default-link-hover-color;
+  display: block;
+  font-size: $font-size-base;
+  height: $navbar-height;
+  line-height: $line-height-computed;
+  padding: $navbar-padding-vertical $navbar-padding-horizontal;
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  text-decoration: none;
+  text-transform: none;
+  width: auto;
+  z-index: 100000; /* Above WP toolbar */
+}
+
+/* this mixins give output generate duplicate CSS code
+ * alternatively you will to have to rewrite the original mixin in buttons.less
+ */
+@mixin button-variant($color, $background, $border) {
+  &:hover,
+  &:focus,
+  &:active,
+  &.active,
+  .open &.dropdown-toggle {
+    color: $background;
+    background-color: $color;
+    border-color: darken($border, 12%);
+  }
+}
+
+// Navbar
+// -------------------------
+
+$navbar-default-color:             #fff !default;
+$navbar-default-bg:                #132531 !default;
+$navbar-default-border:            darken($navbar-default-bg, 6.5%) !default;
+
+// Navbar links
+$navbar-default-link-color:                #fff !default;
+$navbar-default-link-hover-color:          #132531 !default;
+$navbar-default-link-hover-bg:             #fff !default;
+$navbar-default-link-active-color:         #132531 !default;
+$navbar-default-link-active-bg:            #fff !default;
+$navbar-default-link-disabled-color:       #fff !default;
+$navbar-default-link-disabled-bg:          #068139 !default;
+
+// Navbar brand label
+$navbar-default-brand-color:               $navbar-default-link-color !default;
+$navbar-default-brand-hover-color:         #068139 !default; //contrast 3.15, so min 19px;
+.navbar-brand {
+  font-size: 20px;
+}
+$navbar-default-brand-hover-bg:            transparent !default;
+
+// Navbar toggle
+$navbar-default-toggle-hover-bg:           #ddd !default;
+$navbar-default-toggle-icon-bar-bg:        #888 !default;
+$navbar-default-toggle-border-color:       #ddd !default;
+
+$brand-primary:         #265680 !default;
+$brand-success:         #028302 !default;
+$brand-info:            #1C5F74 !default;
+$brand-warning:         #A56100 !default;
+$brand-danger:          #A41915 !default;
+
+/* buttons */
+$btn-primary-color:              #fff !default;
+$btn-primary-bg:                 $brand-primary !default;
+$btn-primary-border:             #fff !default;
+
+$btn-success-color:              #fff !default;
+$btn-success-bg:                 $brand-success !default;
+$btn-success-border:             #fff !default;
+
+$btn-info-color:              #fff !default;
+$btn-info-bg:                 $brand-info !default;
+$btn-info-border:             #fff !default;
+
+$btn-warning-color:              #fff !default;
+$btn-warning-bg:                 $brand-warning !default;
+$btn-warning-border:             #fff !default;
+
+$btn-danger-color:              #fff !default;
+$btn-danger-bg:                 $brand-danger !default;
+$btn-danger-border:             #fff !default;
+
+
+/* link on white background */
+$link-color:            #12538B;

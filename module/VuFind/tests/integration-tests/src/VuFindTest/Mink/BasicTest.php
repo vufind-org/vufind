@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,6 @@ class BasicTest extends \VuFindTest\Unit\MinkTestCase
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $this->assertHttpStatus(200);
         $page = $session->getPage();
         $this->assertTrue(false !== strstr($page->getContent(), 'VuFind'));
     }
@@ -63,7 +62,7 @@ class BasicTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
-        $this->findCss($page, '.searchForm [name="lookfor"]')
+        $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:testsample1');
         $this->findCss($page, '.btn.btn-primary')->click();
         $this->snooze();
@@ -104,5 +103,25 @@ class BasicTest extends \VuFindTest\Unit\MinkTestCase
             'Search Tips',
             $this->findCss($page, 'footer .help-link')->getHTML()
         );
+    }
+
+    /**
+     * Test lightbox jump links
+     *
+     * @return void
+     */
+    public function testLightboxJumps()
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        // Open Search tips lightbox
+        $this->findCss($page, 'footer .help-link')->click();
+        $this->snooze();
+        // Click a jump link
+        $this->findCss($page, '.modal-body .HelpMenu a')->click();
+        // Make sure we're still in the Search Tips
+        $this->snooze();
+        $this->findCss($page, '.modal-body .HelpMenu');
     }
 }

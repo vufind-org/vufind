@@ -1,10 +1,10 @@
 <div class="list-group">
   <? foreach ($result as $i => $item): ?>
-    <a class="list-group-item" href="<?=$this->url('collection', array('id' => $item['value']))?>">
+    <a class="list-group-item" href="<?=$this->url('collection', ['id' => $item['value']])?>">
       <strong><?=$this->escapeHtml($item['displayText'])?></strong>
       <span class="badge">
         <?=$item['count']?> <?=$this->transEsc('items')?>
-        <i class="fa fa-angle-right"></i>
+        <i class="fa fa-angle-right" title="<?=$this->transEsc('Find More') ?>"></i>
       </span>
     </a>
   <? endforeach; ?>

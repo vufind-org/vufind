@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -73,7 +73,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
-        $this->findCss($page, '.searchForm [name="lookfor"]')->setValue('Dewey');
+        $this->findCss($page, '#searchForm_lookfor')->setValue('Dewey');
         $this->findCss($page, '.btn.btn-primary')->click();
         $this->findCss($page, '.result a.title')->click();
         return $page;
@@ -84,7 +84,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    protected function makeAccount($page, $username) {
+    protected function makeAccount($page, $username)
+    {
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         $this->snooze();
         $this->fillInAccountForm(
@@ -101,11 +102,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddComment()
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
-
         // Go to a record view
         $page = $this->gotoRecord();
         // Click add comment without logging in
@@ -123,7 +119,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Create new account
         $this->makeAccount($page, 'username1');
         // Make sure page updated for login
-        $page = $this->gotoRecord();
+        // $page = $this->gotoRecord();
         $this->findCss($page, '.record-tabs .usercomments')->click();
         $this->assertEquals(// Can Comment?
             'Add your comment',
@@ -131,31 +127,26 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
         // "Add" empty comment
         $this->findCss($page, 'form.comment-form .btn-primary')->click();
-        $this->assertNull($page->find('css', '.comment.row'));
+        $this->assertNull($page->find('css', '.comment'));
         // Add comment
         $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
         $this->findCss($page, 'form.comment-form .btn-primary')->click();
-        $this->findCss($page, '.comment.row');
+        $this->findCss($page, '.comment');
         // Remove comment
-        $this->findCss($page, '.comment.row .delete')->click();
+        $this->findCss($page, '.comment .delete')->click();
         $this->snooze(); // wait for UI update
-        $this->assertNull($page->find('css', '.comment.row'));
+        $this->assertNull($page->find('css', '.comment'));
         // Logout
         $this->findCss($page, '.logoutOptions a.logout')->click();
     }
 
     /**
-     * Test adding comments on records.
+     * Test adding tags on records.
      *
      * @return void
      */
     public function testAddTag()
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
-
         // Go to a record view
         $page = $this->gotoRecord();
         // Click to add tag
@@ -173,7 +164,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.logoutOptions a.logout')->click();
         $this->snooze();
         // Login
-        $page = $this->gotoRecord(); // redirects to search home???
+        // $page = $this->gotoRecord();
         $this->findCss($page, '.tag-record')->click();
         $this->snooze();
         $this->fillInLoginForm($page, 'username2', 'test');
@@ -223,7 +214,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
-        $page = $this->gotoRecord();
+        // $page = $this->gotoRecord();
         // Check selected == 0
         $this->assertNull($page->find('css', '.tagList .tag.selected'));
         $this->findCss($page, '.tagList .tag');
@@ -242,17 +233,50 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Test adding case sensitive tags on records.
+     *
+     * @return void
+     */
+    public function testAddSensitiveTag()
+    {
+        // Set up configs:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Social' => ['case_sensitive_tags' => 'true']
+                ]
+            ]
+        );
+        // Login
+        $page = $this->gotoRecord();
+        $this->findCss($page, '.tag-record')->click();
+        $this->snooze();
+        $this->fillInLoginForm($page, 'username2', 'test');
+        $this->submitLoginForm($page);
+        // Add tags
+        $this->findCss($page, '.modal #addtag_tag')->setValue('one ONE "new tag" ONE "THREE 4"');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+        $success = $this->findCss($page, '.modal-body .alert-success');
+        $this->assertEquals('Tags Saved', $success->getText());
+        $this->findCss($page, '.modal .close')->click();
+        // Count tags
+        $this->snooze();
+        $tags = $page->findAll('css', '.tagList .tag');
+        $this->assertEquals(6, count($tags));
+    }
+
+    /**
      * Test record view email.
      *
      * @return void
      */
     public function testEmail()
     {
-        // Change the theme:
+        // Set up configs:
         $this->changeConfigs(
             [
                 'config' => [
-                    'Site' => ['theme' => 'bootstrap3'],
                     'Mail' => ['testOnly' => 1],
                 ]
             ]
@@ -321,11 +345,10 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testSMS()
     {
-        // Change the theme:
+        // Set up configs:
         $this->changeConfigs(
             [
                 'config' => [
-                    'Site' => ['theme' => 'bootstrap3'],
                     'Mail' => ['testOnly' => 1],
                 ]
             ]

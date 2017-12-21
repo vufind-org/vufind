@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Feed_Plugins
@@ -26,9 +26,10 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Feed\Writer\Extension\OpenSearch;
-use Zend\Stdlib\StringUtils,
-    Zend\Feed\Uri,
-    Zend\Feed\Writer\Extension\ITunes\Feed as ParentFeed;
+
+use Zend\Feed\Uri;
+use Zend\Feed\Writer\Extension\ITunes\Feed as ParentFeed;
+use Zend\Stdlib\StringUtils;
 
 /**
  * Zend\Feed\Feed extension for Open Search
@@ -117,6 +118,7 @@ class Feed extends ParentFeed
         $this->encoding      = $enc;
         return $this;
     }
+
     /**
      * Get feed encoding
      *
@@ -259,5 +261,4 @@ class Feed extends ParentFeed
     {
         return $this->links;
     }
-
 }

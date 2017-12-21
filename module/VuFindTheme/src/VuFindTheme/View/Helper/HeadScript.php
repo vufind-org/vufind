@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindTheme\View\Helper;
+
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -39,6 +40,10 @@ use VuFindTheme\ThemeInfo;
  */
 class HeadScript extends \Zend\View\Helper\HeadScript
 {
+    use ConcatTrait {
+        getMinifiedData as getBaseMinifiedData;
+    }
+
     /**
      * Theme information service
      *
@@ -49,12 +54,24 @@ class HeadScript extends \Zend\View\Helper\HeadScript
     /**
      * Constructor
      *
-     * @param ThemeInfo $themeInfo Theme information service
+     * @param ThemeInfo   $themeInfo Theme information service
+     * @param string|bool $plconfig  Config for current application environment
      */
-    public function __construct(ThemeInfo $themeInfo)
+    public function __construct(ThemeInfo $themeInfo, $plconfig = false)
     {
         parent::__construct();
         $this->themeInfo = $themeInfo;
+        $this->usePipeline = $this->enabledInConfig($plconfig);
+    }
+
+    /**
+     * Folder name and file extension for trait
+     *
+     * @return string
+     */
+    protected function getFileType()
+    {
+        return 'js';
     }
 
     /**
@@ -85,5 +102,79 @@ class HeadScript extends \Zend\View\Helper\HeadScript
         }
 
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
+    }
+
+    /**
+     * Returns true if file should not be included in the compressed concat file
+     * Required by ConcatTrait
+     *
+     * @param stdClass $item Script element object
+     *
+     * @return bool
+     */
+    protected function isExcludedFromConcat($item)
+    {
+        return empty($item->attributes['src'])
+            || isset($item->attributes['conditional'])
+            || strpos($item->attributes['src'], '://');
+    }
+
+    /**
+     * Get the file path from the script object
+     * Required by ConcatTrait
+     *
+     * @param stdClass $item Script element object
+     *
+     * @return string
+     */
+    protected function getResourceFilePath($item)
+    {
+        return $item->attributes['src'];
+    }
+
+    /**
+     * Set the file path of the script object
+     * Required by ConcatTrait
+     *
+     * @param stdClass $item Script element object
+     * @param string   $path New path string
+     *
+     * @return stdClass
+     */
+    protected function setResourceFilePath($item, $path)
+    {
+        $item->attributes['src'] = $path;
+        return $item;
+    }
+
+    /**
+     * Get the minifier that can handle these file types
+     * Required by ConcatTrait
+     *
+     * @return \MatthiasMullie\Minify\JS
+     */
+    protected function getMinifier()
+    {
+        return new \MatthiasMullie\Minify\JS();
+    }
+
+    /**
+     * Get minified data for a file
+     *
+     * @param array  $details    File details
+     * @param string $concatPath Target path for the resulting file (used in minifier
+     * for path mapping)
+     *
+     * @throws \Exception
+     * @return string
+     */
+    protected function getMinifiedData($details, $concatPath)
+    {
+        $data = $this->getBaseMinifiedData($details, $concatPath);
+        // Play it safe by terminating a script with a semicolon
+        if (substr(trim($data), -1, 1) !== ';') {
+            $data .= ';';
+        }
+        return $data;
     }
 }

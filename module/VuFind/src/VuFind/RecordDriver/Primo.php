@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -36,7 +36,7 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class Primo extends SolrDefault
+class Primo extends DefaultRecord
 {
     /**
      * Date converter
@@ -92,14 +92,23 @@ class Primo extends SolrDefault
      * Get an array of all subject headings associated with the record
      * (may be empty).
      *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
      * @return array
      */
-    public function getAllSubjectHeadings()
+    public function getAllSubjectHeadings($extended = false)
     {
         $base = isset($this->fields['subjects'])
             ? $this->fields['subjects'] : [];
-        $callback = function ($str) {
-            return array_map('trim', explode(' -- ', $str));
+        $callback = function ($str) use ($extended) {
+            $s = array_map('trim', explode(' -- ', $str));
+            return $extended
+                ? ['heading' => $s, 'type' => '', 'source' => '']
+                : $s;
         };
         return array_map($callback, $base);
     }

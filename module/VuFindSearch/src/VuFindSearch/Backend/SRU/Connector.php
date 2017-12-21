@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  SRU
@@ -27,10 +27,10 @@
  */
 namespace VuFindSearch\Backend\SRU;
 
-use VuFindSearch\Backend\Exception\HttpErrorException;
+use VuFind\XSLT\Processor as XSLTProcessor;
 use VuFindSearch\Backend\Exception\BackendException;
 
-use VuFind\XSLT\Processor as XSLTProcessor;
+use VuFindSearch\Backend\Exception\HttpErrorException;
 
 /**
  * SRU Search Interface
@@ -128,10 +128,10 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     {
         $options = ['operation' => 'scan',
                          'scanClause' => $clause];
-        if (!is_null($pos)) {
+        if (null !== $pos) {
             $options['responsePosition'] = $pos;
         }
-        if (!is_null($maxTerms)) {
+        if (null !== $maxTerms) {
             $options['maximumTerms'] = $maxTerms;
         }
 
@@ -160,10 +160,10 @@ class Connector implements \Zend\Log\LoggerAwareInterface
                          'query' => $query,
                          'startRecord' => ($start) ? $start : 1,
                          'recordSchema' => $schema];
-        if (!is_null($limit)) {
+        if (null !== $limit) {
             $options['maximumRecords'] = $limit;
         }
-        if (!is_null($sortBy)) {
+        if (null !== $sortBy) {
             $options['sortKeys'] = $sortBy;
         }
 

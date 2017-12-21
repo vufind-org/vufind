@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\Solr;
 
-use VuFindSearch\Backend\Solr\SearchHandler;
 use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\Solr\SearchHandler;
 
 /**
  * Unit tests for SOLR search handler.
@@ -65,6 +65,7 @@ class SearchHandlerTest extends PHPUnit_Framework_TestCase
         $hndl = new SearchHandler($spec);
         $this->assertEquals('(id:("escaped\"quote" OR not OR quoted OR "basic phrase"))', $hndl->createSimpleQueryString('"escaped\"quote" not quoted "basic phrase"'));
     }
+
     /**
      * Test toArray() method.
      *

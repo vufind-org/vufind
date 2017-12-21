@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Date
@@ -27,7 +27,10 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Date;
-use DateTime, DateTimeZone, VuFind\Exception\Date as DateException;
+
+use DateTime;
+use DateTimeZone;
+use VuFind\Exception\Date as DateException;
 
 /**
  * Date/time conversion functionality.
@@ -155,7 +158,7 @@ class Converter
             foreach ($details['errors'] as $error) {
                 $errors .= $error . " ";
             }
-        } else if (is_array($details['warnings'])) {
+        } elseif (is_array($details['warnings'])) {
             foreach ($details['warnings'] as $warning) {
                 $errors .= $warning . " ";
             }

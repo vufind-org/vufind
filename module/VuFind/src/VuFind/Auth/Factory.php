@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Authentication
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Auth;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -53,7 +54,9 @@ class Factory
         $container = new \Zend\Session\Container(
             'ChoiceAuth', $sm->getServiceLocator()->get('VuFind\SessionManager')
         );
-        return new ChoiceAuth($container);
+        $auth = new ChoiceAuth($container);
+        $auth->setPluginManager($sm);
+        return $auth;
     }
 
     /**
@@ -154,6 +157,20 @@ class Factory
     }
 
     /**
+     * Construct the MultiAuth plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return MultiAuth
+     */
+    public static function getMultiAuth(ServiceManager $sm)
+    {
+        $auth = new MultiAuth();
+        $auth->setPluginManager($sm);
+        return $auth;
+    }
+
+    /**
      * Construct the MultiILS plugin.
      *
      * @param ServiceManager $sm Service manager.
@@ -165,6 +182,20 @@ class Factory
         return new MultiILS(
             $sm->getServiceLocator()->get('VuFind\ILSConnection'),
             $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+        );
+    }
+
+    /**
+     * Construct the Shibboleth plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Shibboleth
+     */
+    public static function getShibboleth(ServiceManager $sm)
+    {
+        return new Shibboleth(
+            $sm->getServiceLocator()->get('VuFind\SessionManager')
         );
     }
 }

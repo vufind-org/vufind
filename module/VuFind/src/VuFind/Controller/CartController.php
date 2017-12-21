@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -26,7 +26,11 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
+use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Session\Container;
 
 /**
  * Book Bag / Bulk Action Controller
@@ -49,11 +53,12 @@ class CartController extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Session\Container $container Session container
+     * @param ServiceLocatorInterface $sm        Service manager
+     * @param Container               $container Session container
      */
-    public function __construct(\Zend\Session\Container $container)
+    public function __construct(ServiceLocatorInterface $sm, Container $container)
     {
-        parent::__construct();
+        parent::__construct($sm);
         $this->session = $container;
     }
 
@@ -64,7 +69,7 @@ class CartController extends AbstractBase
      */
     protected function getCart()
     {
-        return $this->getServiceLocator()->get('VuFind\Cart');
+        return $this->serviceLocator->get('VuFind\Cart');
     }
 
     /**
@@ -78,11 +83,11 @@ class CartController extends AbstractBase
     {
         if (strlen($this->params()->fromPost('email', '')) > 0) {
             return 'Email';
-        } else if (strlen($this->params()->fromPost('print', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('print', '')) > 0) {
             return 'PrintCart';
-        } else if (strlen($this->params()->fromPost('saveCart', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('saveCart', '')) > 0) {
             return 'Save';
-        } else if (strlen($this->params()->fromPost('export', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('export', '')) > 0) {
             return 'Export';
         }
         // Check if the user is in the midst of a login process; if not,
@@ -144,20 +149,20 @@ class CartController extends AbstractBase
         $this->followup()->retrieveAndClear('cartAction');
         $this->followup()->retrieveAndClear('cartIds');
 
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
 
         // Add items if necessary:
         if (strlen($this->params()->fromPost('empty', '')) > 0) {
             $this->getCart()->emptyCart();
-        } else if (strlen($this->params()->fromPost('delete', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('delete', '')) > 0) {
             if (empty($ids)) {
                 return $this->redirectToSource('error', 'bulk_noitems_advice');
             } else {
                 $this->getCart()->removeItems($ids);
             }
-        } else if (strlen($this->params()->fromPost('add', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('add', '')) > 0) {
             if (empty($ids)) {
                 return $this->redirectToSource('error', 'bulk_noitems_advice');
             } else {
@@ -198,14 +203,14 @@ class CartController extends AbstractBase
         $controller = 'Cart';   // assume Cart unless overridden below.
         if (strlen($this->params()->fromPost('email', '')) > 0) {
             $action = 'Email';
-        } else if (strlen($this->params()->fromPost('print', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('print', '')) > 0) {
             $action = 'PrintCart';
-        } else if (strlen($this->params()->fromPost('delete', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('delete', '')) > 0) {
             $controller = 'MyResearch';
             $action = 'Delete';
-        } else if (strlen($this->params()->fromPost('add', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('add', '')) > 0) {
             $action = 'Home';
-        } else if (strlen($this->params()->fromPost('export', '')) > 0) {
+        } elseif (strlen($this->params()->fromPost('export', '')) > 0) {
             $action = 'Export';
         } else {
             throw new \Exception('Unrecognized bulk action.');
@@ -221,7 +226,7 @@ class CartController extends AbstractBase
     public function emailAction()
     {
         // Retrieve ID list:
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
 
@@ -262,7 +267,7 @@ class CartController extends AbstractBase
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+                $mailer = $this->serviceLocator->get('VuFind\Mailer');
                 $mailer->setMaxRecipients($view->maxRecipients);
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
                     ? $view->from : null;
@@ -286,7 +291,7 @@ class CartController extends AbstractBase
      */
     public function printcartAction()
     {
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
@@ -307,7 +312,7 @@ class CartController extends AbstractBase
      */
     protected function getExport()
     {
-        return $this->getServiceLocator()->get('VuFind\Export');
+        return $this->serviceLocator->get('VuFind\Export');
     }
 
     /**
@@ -318,7 +323,7 @@ class CartController extends AbstractBase
     public function exportAction()
     {
         // Get the desired ID list:
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
@@ -338,7 +343,10 @@ class CartController extends AbstractBase
             $msg = [
                 'translate' => false, 'html' => true,
                 'msg' => $this->getViewRenderer()->render(
-                    'cart/export-success.phtml', ['url' => $url]
+                    'cart/export-success.phtml', [
+                        'url' => $url,
+                        'exportType' => $export->getBulkExportType($format)
+                    ]
                 )
             ];
             return $this->redirectToSource('success', $msg);
@@ -403,12 +411,12 @@ class CartController extends AbstractBase
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
-            throw new \Exception('Lists disabled');
+            throw new ForbiddenException('Lists disabled');
         }
 
         // Load record information first (no need to prompt for login if we just
         // need to display a "no records" error message):
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids', $this->params()->fromQuery('ids'))
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {

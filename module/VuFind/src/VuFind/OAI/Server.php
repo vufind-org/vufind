@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  OAI_Server
@@ -26,8 +26,10 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\OAI;
-use SimpleXMLElement,
-    VuFind\Exception\RecordMissing as RecordMissingException, VuFind\SimpleXML;
+
+use SimpleXMLElement;
+use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\SimpleXML;
 
 /**
  * OAI Server class
@@ -222,7 +224,7 @@ class Server
         if (!$this->hasParam('verb')) {
             return $this->showError('badVerb', 'Missing Verb Argument');
         } else {
-            switch($this->params['verb']) {
+            switch ($this->params['verb']) {
             case 'GetRecord':
                 return $this->getRecord();
             case 'Identify':
@@ -321,7 +323,7 @@ class Server
 
         // Check for sets:
         $fields = $record->getRawData();
-        if (!is_null($this->setField) && !empty($fields[$this->setField])) {
+        if (null !== $this->setField && !empty($fields[$this->setField])) {
             $sets = $fields[$this->setField];
         } else {
             $sets = [];
@@ -369,9 +371,10 @@ class Server
 
         // Retrieve the record from the index
         if ($record = $this->loadRecord($this->params['identifier'])) {
-            if (!$this->attachNonDeleted(
+            $success = $this->attachNonDeleted(
                 $xml, $record, $this->params['metadataPrefix']
-            )) {
+            );
+            if (!$success) {
                 return $this->showError('cannotDisseminateFormat', 'Unknown Format');
             }
         } else {
@@ -401,7 +404,7 @@ class Server
      */
     protected function hasParam($param)
     {
-        return (isset($this->params[$param]) && !empty($this->params[$param]));
+        return isset($this->params[$param]) && !empty($this->params[$param]);
     }
 
     /**
@@ -596,7 +599,8 @@ class Server
 
         // Get non-deleted records from the Solr index:
         $result = $this->listRecordsGetNonDeleted(
-            $from, $until, $solrOffset, $solrLimit, $params['set']
+            $from, $until, $solrOffset, $solrLimit,
+            isset($params['set']) ? $params['set'] : ''
         );
         $nonDeletedCount = $result->getResultTotal();
         $format = $params['metadataPrefix'];
@@ -611,7 +615,7 @@ class Server
         $listSize = $deletedCount + $nonDeletedCount;
         if ($listSize > $currentCursor) {
             $this->saveResumptionToken($xml, $params, $currentCursor, $listSize);
-        } else if ($solrOffset > 0) {
+        } elseif ($solrOffset > 0) {
             // If we reached the end of the list but there is more than one page, we
             // still need to display an empty <resumptionToken> tag:
             $token = $xml->addChild('resumptionToken');
@@ -731,7 +735,7 @@ class Server
                 // use hidden filter here to allow for complex queries;
                 // plain old addFilter expects simple field:value queries.
                 $params->addHiddenFilter($this->setQueries[$set]);
-            } else if (null !== $this->setField) {
+            } elseif (null !== $this->setField) {
                 $params->addFilter(
                     $this->setField . ':"' . addcslashes($set, '"') . '"'
                 );
@@ -839,7 +843,7 @@ class Server
             } else {
                 return true;
             }
-        } else if (strpos($until, 'T') && strpos($until, 'Z')) {
+        } elseif (strpos($until, 'T') && strpos($until, 'Z')) {
             return true;
         }
 

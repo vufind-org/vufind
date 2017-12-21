@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\ILS\Driver;
+
 use VuFind\ILS\Driver\Symphony;
 
 /**
@@ -46,7 +47,10 @@ class SymphonyTest extends \VuFindTest\Unit\TestCase
      */
     public function __construct()
     {
-        $this->driver = new Symphony();
+        $loader = $this->getMockBuilder('VuFind\Record\Loader')
+            ->disableOriginalConstructor()->getMock();
+
+        $this->driver = new Symphony($loader);
     }
 
     /**
@@ -56,10 +60,6 @@ class SymphonyTest extends \VuFindTest\Unit\TestCase
      */
     public function testBadBaseUrl()
     {
-        if (!version_compare(\PHP_VERSION, '5.3.4', '>=')) {
-            $this->markTestSkipped('Test requires PHP >= 5.3.4 (see VUFIND-660)');
-        }
-
         // Without SOAP functionality, we can't proceed:
         if (!class_exists('SoapClient')) {
             $this->markTestSkipped('SoapClient not installed');

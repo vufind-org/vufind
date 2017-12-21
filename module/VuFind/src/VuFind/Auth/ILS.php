@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Authentication
@@ -28,8 +28,8 @@
  */
 namespace VuFind\Auth;
 
-use VuFind\Exception\Auth as AuthException,
-    VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * ILS authentication module.
@@ -140,7 +140,7 @@ class ILS extends AbstractBase
         try {
             return false !== $this->getCatalog()->checkFunction(
                 'changePassword',
-                ['patron' => $this->getLoggedInPatron()]
+                ['patron' => $this->authenticator->getStoredCatalogCredentials()]
             );
         } catch (ILSException $e) {
             return false;
@@ -155,7 +155,13 @@ class ILS extends AbstractBase
     public function getPasswordPolicy()
     {
         $policy = $this->getCatalog()->getPasswordPolicy($this->getLoggedInPatron());
-        return $policy !== false ? $policy : parent::getPasswordPolicy();
+        if ($policy === false) {
+            return parent::getPasswordPolicy();
+        }
+        if (isset($policy['pattern']) && empty($policy['hint'])) {
+            $policy['hint'] = $this->getCannedPasswordPolicyHint($policy['pattern']);
+        }
+        return $policy;
     }
 
     /**
@@ -196,7 +202,8 @@ class ILS extends AbstractBase
         }
 
         // Update the user and send it back to the caller:
-        $user = $this->getUserTable()->getByUsername($patron['cat_username']);
+        $username = $patron[$this->getUsernameField()];
+        $user = $this->getUserTable()->getByUsername($username);
         $user->saveCredentials($patron['cat_username'], $params['password']);
         return $user;
     }
@@ -213,15 +220,22 @@ class ILS extends AbstractBase
     {
         // Figure out which field of the response to use as an identifier; fail
         // if the expected field is missing or empty:
-        $config = $this->getConfig();
-        $usernameField = isset($config->Authentication->ILS_username_field)
-            ? $config->Authentication->ILS_username_field : 'cat_username';
+        $usernameField = $this->getUsernameField();
         if (!isset($info[$usernameField]) || empty($info[$usernameField])) {
             throw new AuthException('authentication_error_technical');
         }
 
         // Check to see if we already have an account for this user:
-        $user = $this->getUserTable()->getByUsername($info[$usernameField]);
+        $userTable = $this->getUserTable();
+        if (!empty($info['id'])) {
+            $user = $userTable->getByCatalogId($info['id']);
+            if (empty($user)) {
+                $user = $userTable->getByUsername($info[$usernameField]);
+                $user->saveCatalogId($info['id']);
+            }
+        } else {
+            $user = $userTable->getByUsername($info[$usernameField]);
+        }
 
         // No need to store the ILS password in VuFind's main password field:
         $user->password = '';
@@ -267,11 +281,23 @@ class ILS extends AbstractBase
      *
      * @throws AuthException
      *
-     * @return array Patron
+     * @return array|null Patron or null if no credentials exist
      */
     protected function getLoggedInPatron()
     {
         $patron = $this->authenticator->storedCatalogLogin();
         return $patron ? $patron : null;
+    }
+
+    /**
+     * Gets the configured username field.
+     *
+     * @return string
+     */
+    protected function getUsernameField()
+    {
+        $config = $this->getConfig();
+        return isset($config->Authentication->ILS_username_field)
+            ? $config->Authentication->ILS_username_field : 'cat_username';
     }
 }

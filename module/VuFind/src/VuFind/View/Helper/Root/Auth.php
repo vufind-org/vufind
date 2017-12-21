@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use Zend\View\Exception\RuntimeException;
 
 /**
@@ -47,13 +48,23 @@ class Auth extends \Zend\View\Helper\AbstractHelper
     protected $manager;
 
     /**
+     * ILS Authenticator
+     *
+     * @var \VuFind\Auth\ILSAuthenticator
+     */
+    protected $ilsAuthenticator;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Auth\Manager $manager Authentication manager
+     * @param \VuFind\Auth\Manager          $manager          Authentication manager
+     * @param \VuFind\Auth\ILSAuthenticator $ilsAuthenticator ILS Authenticator
      */
-    public function __construct(\VuFind\Auth\Manager $manager)
-    {
+    public function __construct(\VuFind\Auth\Manager $manager,
+        \VuFind\Auth\ILSAuthenticator $ilsAuthenticator
+    ) {
         $this->manager = $manager;
+        $this->ilsAuthenticator = $ilsAuthenticator;
     }
 
     /**
@@ -132,6 +143,16 @@ class Auth extends \Zend\View\Helper\AbstractHelper
     public function getCreateFields($context = [])
     {
         return $this->renderTemplate('create.phtml', $context);
+    }
+
+    /**
+     * Get ILS patron record for the currently logged-in user.
+     *
+     * @return array|bool Patron array if available, false otherwise.
+     */
+    public function getILSPatron()
+    {
+        return $this->ilsAuthenticator->storedCatalogLogin();
     }
 
     /**

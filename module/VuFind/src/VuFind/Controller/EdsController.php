@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -28,6 +28,8 @@
 namespace VuFind\Controller;
 
 use VuFind\Solr\Utils as SolrUtils;
+use Zend\ServiceManager\ServiceLocatorInterface;
+
 /**
  * EDS Controller
  *
@@ -41,11 +43,13 @@ class EdsController extends AbstractSearch
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         $this->searchClassId = 'EDS';
-        parent::__construct();
+        parent::__construct($sm);
     }
 
     /**
@@ -55,9 +59,9 @@ class EdsController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EDS');
-        return (isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation);
+        $config = $this->serviceLocator->get('VuFind\Config')->get('EDS');
+        return isset($config->Record->next_prev_navigation)
+            && $config->Record->next_prev_navigation;
     }
 
     /**
@@ -87,9 +91,7 @@ class EdsController extends AbstractSearch
     public function homeAction()
     {
         $this->setUp();
-        return $this->createViewModel(
-            ['results' => $this->getHomePageFacets()]
-        );
+        return $this->createViewModel();
     }
 
     /**
@@ -106,7 +108,7 @@ class EdsController extends AbstractSearch
      * Return a Search Results object containing advanced facet information.  This
      * data may come from the cache.
      *
-     * @return \VuFind\Search\EDS\Results
+     * @return array
      */
     protected function getAdvancedFacets()
     {
@@ -127,18 +129,6 @@ class EdsController extends AbstractSearch
         }
 
         return $availableLimiters;
-    }
-
-    /**
-     * Return a Search Results object containing homepage facet information.  This
-     * data may come from the cache.
-     *
-     * @return \VuFind\Search\EDS\Results
-     */
-    protected function getHomePageFacets()
-    {
-        // For now, we'll use the same fields as the advanced search screen.
-        return $this->getAdvancedFacets();
     }
 
     /**
@@ -298,7 +288,6 @@ class EdsController extends AbstractSearch
             // Explicitly execute search within controller -- this allows us to
             // catch exceptions more reliably:
             $results->performAndProcessSearch();
-
         } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
             if ($e->hasTag('VuFind\Search\ParserError')) {
                 // If it's a parse error or the user specified an invalid field, we

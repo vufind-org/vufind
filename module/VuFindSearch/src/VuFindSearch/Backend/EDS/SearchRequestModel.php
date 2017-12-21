@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -26,6 +26,7 @@
  * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\EDS;
+
 /**
  * EBSCO EDS API Search Model
  *
@@ -112,7 +113,7 @@ class SearchRequestModel
     /**
      * Whether or not to highlight the search term in the results.
      *
-     * @var boolean
+     * @var bool
      */
     protected $highlight;
 
@@ -171,17 +172,17 @@ class SearchRequestModel
     public function setParameters($parameters = [])
     {
         foreach ($parameters as $key => $values) {
-            switch($key) {
+            switch ($key) {
             case 'filters':
                 $cnt = 1;
                 foreach ($values as $filter) {
                     if (substr($filter, 0, 6) == 'LIMIT|') {
                         $this->addLimiter(substr($filter, 6));
-                    } else if (substr($filter, 0, 7) == 'EXPAND:') {
+                    } elseif (substr($filter, 0, 7) == 'EXPAND:') {
                         $this->addExpander(substr($filter, 7));
-                    } else if (substr($filter, 0, 11) == 'SEARCHMODE:') {
+                    } elseif (substr($filter, 0, 11) == 'SEARCHMODE:') {
                         $this->searchMode = substr($filter, 11, null);
-                    } else if (substr($filter, 0, 15) == 'PublicationDate') {
+                    } elseif (substr($filter, 0, 15) == 'PublicationDate') {
                         $this->addLimiter($this->formatDateLimiter($filter));
                     } else {
                         $this->addFilter("$cnt,$filter");
@@ -271,7 +272,7 @@ class SearchRequestModel
      * @param string $valueToCheck    Value to check the ending characters of
      * @param string $valueToCheckFor Characters to check for
      *
-     * @return boolean
+     * @return bool
      */
     protected static function endsWith($valueToCheck, $valueToCheckFor)
     {
@@ -379,8 +380,8 @@ class SearchRequestModel
     {
         return addcslashes($value, ":,");
     }
-    
-     /**
+
+    /**
      * Escape characters that may be present in the action parameter syntax
      *
      * @param string $value The value to escape

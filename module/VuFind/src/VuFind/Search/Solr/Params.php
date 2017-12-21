@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Solr
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Solr;
+
 use VuFindSearch\ParamBag;
 
 /**
@@ -89,14 +90,25 @@ class Params extends \VuFind\Search\Base\Params
     protected $pivotFacets = null;
 
     /**
+     * Hierarchical Facet Helper
+     *
+     * @var HierarchicalFacetHelper
+     */
+    protected $facetHelper;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
      * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param HierarchicalFacetHelper      $facetHelper  Hierarchical facet helper
      */
-    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
-    {
+    public function __construct($options, \VuFind\Config\PluginManager $configLoader,
+        HierarchicalFacetHelper $facetHelper = null
+    ) {
         parent::__construct($options, $configLoader);
+        $this->facetHelper = $facetHelper;
+
         // Use basic facet limit by default, if set:
         $config = $configLoader->get($options->getFacetsIni());
         if (isset($config->Results_Settings->facet_limit)
@@ -106,6 +118,9 @@ class Params extends \VuFind\Search\Base\Params
         }
         if (isset($config->LegacyFields)) {
             $this->facetAliases = $config->LegacyFields->toArray();
+        }
+        if (isset($config->ExtraFacetLabels)) {
+            $this->extraFacetLabels = $config->ExtraFacetLabels->toArray();
         }
         if (isset($config->Results_Settings->facet_limit_by_field)) {
             foreach ($config->Results_Settings->facet_limit_by_field as $k => $v) {
@@ -143,7 +158,7 @@ class Params extends \VuFind\Search\Base\Params
                 // Special case -- complex filter, that should be taken as-is:
                 if ($field == '#') {
                     $q = $value;
-                } else if (substr($value, -1) == '*'
+                } elseif (substr($value, -1) == '*'
                     || preg_match('/\[[^\]]+\s+TO\s+[^\]]+\]/', $value)
                 ) {
                     // Special case -- allow trailing wildcards and ranges
@@ -238,6 +253,18 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
+     * Set Facet Limit by Field
+     *
+     * @param array $new Associative array of $field name => $limit
+     *
+     * @return void
+     */
+    public function setFacetLimitByField(array $new)
+    {
+        $this->facetLimitByField = $new;
+    }
+
+    /**
      * Set Facet Offset
      *
      * @param int $o the new offset value
@@ -296,7 +323,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function initFacetList($facetList, $facetSettings, $cfgFile = 'facets')
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('facets');
+        $config = $this->configLoader->get('facets');
         if (isset($config->$facetSettings->facet_limit)
             && is_numeric($config->$facetSettings->facet_limit)
         ) {
@@ -423,7 +450,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function getQueryIDLimit()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $this->configLoader->get('config');
         return isset($config->Index->maxBooleanClauses)
             ? $config->Index->maxBooleanClauses : 1024;
     }
@@ -586,17 +613,12 @@ class Params extends \VuFind\Search\Base\Params
         $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();
         $hierarchicalFacetSeparators
             = $this->getOptions()->getHierarchicalFacetSeparators();
-        $facetHelper = null;
-        if (!empty($hierarchicalFacets)) {
-            $facetHelper = $this->getServiceLocator()
-                ->get('VuFind\HierarchicalFacetHelper');
-        }
         // Convert range queries to a language-non-specific format:
         $caseInsensitiveRegex = '/^\(\[(.*) TO (.*)\] OR \[(.*) TO (.*)\]\)$/';
         if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
             // Simple case: [X TO Y]
             $filter['displayText'] = $matches[1] . '-' . $matches[2];
-        } else if (preg_match($caseInsensitiveRegex, $value, $matches)) {
+        } elseif (preg_match($caseInsensitiveRegex, $value, $matches)) {
             // Case insensitive case: [x TO y] OR [X TO Y]; convert
             // only if values in both ranges match up!
             if (strtolower($matches[3]) == strtolower($matches[1])
@@ -604,12 +626,12 @@ class Params extends \VuFind\Search\Base\Params
             ) {
                 $filter['displayText'] = $matches[1] . '-' . $matches[2];
             }
-        } else if (in_array($field, $hierarchicalFacets)) {
+        } elseif ($this->facetHelper && in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely
             $separator = isset($hierarchicalFacetSeparators[$field])
                 ? $hierarchicalFacetSeparators[$field]
                 : '/';
-            $filter['displayText'] = $facetHelper->formatDisplayText(
+            $filter['displayText'] = $this->facetHelper->formatDisplayText(
                 $filter['displayText'], true, $separator
             );
             if ($translate) {

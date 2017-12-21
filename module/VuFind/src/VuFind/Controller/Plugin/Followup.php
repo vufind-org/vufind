@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
+
+use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Zend\Session\Container;
 
 /**
  * Zend action helper to deal with login followup; responsible for remembering URLs
@@ -90,7 +92,6 @@ class Followup extends AbstractPlugin
         }
         return isset($this->session->$key)
             ? $this->session->$key : $default;
-
     }
 
     /**

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -47,6 +47,20 @@ class ErrorController extends AbstractActionController
      */
     public function unavailableAction()
     {
-        // no special action necessary
+        $this->getResponse()->setStatusCode(503);
+        return new \Zend\View\Model\ViewModel();
+    }
+
+    /**
+     * Display permission denied message.
+     *
+     * @return mixed
+     */
+    public function permissionDeniedAction()
+    {
+        $this->getResponse()->setStatusCode(403);
+        return new \Zend\View\Model\ViewModel(
+            ['msg' => $this->params()->fromQuery('msg')]
+        );
     }
 }

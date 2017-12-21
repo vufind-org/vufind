@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Db_Table
@@ -26,6 +26,11 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
+
+use VuFind\Date\Converter as DateConverter;
+use VuFind\Db\Row\RowGateway;
+use VuFind\Record\Loader;
+use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Expression;
 
 /**
@@ -42,19 +47,35 @@ class Resource extends Gateway
     /**
      * Date converter
      *
-     * @var \VuFind\Date\Converter
+     * @var DateConverter
      */
     protected $dateConverter;
 
     /**
+     * Record loader
+     *
+     * @var Loader
+     */
+    protected $recordLoader;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Date\Converter $converter Date converter
+     * @param Adapter       $adapter   Database adapter
+     * @param PluginManager $tm        Table manager
+     * @param array         $cfg       Zend Framework configuration
+     * @param RowGateway    $rowObj    Row prototype object (null for default)
+     * @param DateConverter $converter Date converter
+     * @param Loader        $loader    Record loader
+     * @param string        $table     Name of database table to interface with
      */
-    public function __construct(\VuFind\Date\Converter $converter)
-    {
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj, DateConverter $converter, Loader $loader,
+        $table = 'resource'
+    ) {
         $this->dateConverter = $converter;
-        parent::__construct('resource', 'VuFind\Db\Row\Resource');
+        $this->recordLoader = $loader;
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**
@@ -88,9 +109,8 @@ class Resource extends Gateway
             $result->source = $source;
 
             // Load record if it was not provided:
-            if (is_null($driver)) {
-                $driver = $this->getServiceLocator()->getServiceLocator()
-                    ->get('VuFind\RecordLoader')->load($id, $source);
+            if (null === $driver) {
+                $driver = $this->recordLoader->load($id, $source);
             }
 
             // Load metadata into the database for sorting/failback purposes:
@@ -154,14 +174,14 @@ class Resource extends Gateway
                 $s->where->equalTo('ur.user_id', $user);
 
                 // Adjust for list if necessary:
-                if (!is_null($list)) {
+                if (null !== $list) {
                     $s->where->equalTo('ur.list_id', $list);
                 }
 
                 if ($offset > 0) {
                     $s->offset($offset);
                 }
-                if (!is_null($limit)) {
+                if (null !== $limit) {
                     $s->limit($limit);
                 }
 

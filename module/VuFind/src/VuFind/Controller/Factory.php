@@ -17,29 +17,30 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Controller;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
  * Factory for controllers.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  *
  * @codeCoverageIgnore
  */
-class Factory
+class Factory extends GenericFactory
 {
     /**
      * Construct the BrowseController.
@@ -51,6 +52,7 @@ class Factory
     public static function getBrowseController(ServiceManager $sm)
     {
         return new BrowseController(
+            $sm->getServiceLocator(),
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }
@@ -65,6 +67,7 @@ class Factory
     public static function getCartController(ServiceManager $sm)
     {
         return new CartController(
+            $sm->getServiceLocator(),
             new \Zend\Session\Container(
                 'cart_followup',
                 $sm->getServiceLocator()->get('VuFind\SessionManager')
@@ -82,6 +85,7 @@ class Factory
     public static function getCollectionController(ServiceManager $sm)
     {
         return new CollectionController(
+            $sm->getServiceLocator(),
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }
@@ -96,7 +100,23 @@ class Factory
     public static function getCollectionsController(ServiceManager $sm)
     {
         return new CollectionsController(
+            $sm->getServiceLocator(),
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+        );
+    }
+
+    /**
+     * Construct the IndexController.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return RecordController
+     */
+    public static function getIndexController(ServiceManager $sm)
+    {
+        return new IndexController(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $sm->getServiceLocator()->get('VuFind\AuthManager')
         );
     }
 
@@ -110,6 +130,7 @@ class Factory
     public static function getRecordController(ServiceManager $sm)
     {
         return new RecordController(
+            $sm->getServiceLocator(),
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }
@@ -124,6 +145,7 @@ class Factory
     public static function getUpgradeController(ServiceManager $sm)
     {
         return new UpgradeController(
+            $sm->getServiceLocator(),
             $sm->getServiceLocator()->get('VuFind\CookieManager'),
             new \Zend\Session\Container(
                 'upgrade', $sm->getServiceLocator()->get('VuFind\SessionManager')

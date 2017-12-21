@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -105,7 +106,7 @@ class Innovative extends AbstractBase implements
         } else {
             // Return digits only.
             $id_ = substr($id, 1);
-        };
+        }
         return $id_;
     }
 
@@ -175,7 +176,7 @@ class Innovative extends AbstractBase implements
                 // replace non blocking space encodings with a space.
                 $cols[$i] = str_replace("&nbsp;", " ", $cols[$i]);
                 // remove html comment tags
-                $cols[$i] = ereg_replace("<!--([^(-->)]*)-->", "", $cols[$i]);
+                $cols[$i] = preg_replace("/<!--([^(-->)]*)-->/", "", $cols[$i]);
                 // Remove closing th or td tag, trim whitespace and decode html
                 // entities
                 $cols[$i] = html_entity_decode(
@@ -186,7 +187,7 @@ class Innovative extends AbstractBase implements
                 // names
                 if ($count == 1) {
                     $keys[$i] = $cols[$i];
-                } else if ($count > 1) { // not the first row, has holding info
+                } elseif ($count > 1) { // not the first row, has holding info
                     //look for location column
                     if (stripos($keys[$i], $loc_col_name) > -1) {
                         $ret[$count - 2]['location'] = strip_tags($cols[$i]);

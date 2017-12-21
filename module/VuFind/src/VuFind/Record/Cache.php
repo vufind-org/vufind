@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Record
@@ -28,9 +28,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Record;
-use VuFind\Db\Table\Record as Record,
-    VuFind\RecordDriver\PluginManager as RecordFactory,
-    Zend\Config\Config as Config;
+
+use VuFind\Db\Table\Record as Record;
+use VuFind\RecordDriver\PluginManager as RecordFactory;
+use Zend\Config\Config as Config;
 
 /**
  * Record Cache
@@ -237,7 +238,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      *
      * @param string $source Record source
      *
-     * @return boolean
+     * @return bool
      */
     public function isCachable($source)
     {

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper;
-use VuFindTheme\ResourceContainer, VuFindTheme\View\Helper\HeadThemeResources;
+
+use VuFindTheme\ResourceContainer;
+use VuFindTheme\View\Helper\HeadThemeResources;
 
 /**
  * HeadThemeResources view helper Test Class
@@ -52,6 +54,25 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test configuration parsing.
+     *
+     * @return void
+     */
+    public function testConfigParsing()
+    {
+        $helper = new HeadThemeResources($this->getResourceContainer());
+        $tests = [
+            'foo:bar:baz' => ['foo', 'bar', 'baz'],
+            'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy']
+        ];
+        foreach ($tests as $test => $expected) {
+            $this->assertEquals(
+                $expected, $this->callMethod($helper, 'parseSetting', [$test])
+            );
+        }
+    }
+
+    /**
      * Get a populated resource container for testing.
      *
      * @return ResourceContainer
@@ -71,15 +92,15 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockView()
     {
-        $view = $this->getMock('Zend\View\Renderer\PhpRenderer');
+        $view = $this->createMock('Zend\View\Renderer\PhpRenderer');
         $view->expects($this->at(0))->method('plugin')
-            ->with($this->equalTo('headmeta'))
+            ->with($this->equalTo('headMeta'))
             ->will($this->returnValue($this->getMockHeadMeta()));
         $view->expects($this->at(1))->method('plugin')
-            ->with($this->equalTo('headlink'))
+            ->with($this->equalTo('headLink'))
             ->will($this->returnValue($this->getMockHeadLink()));
         $view->expects($this->at(2))->method('plugin')
-            ->with($this->equalTo('headscript'))
+            ->with($this->equalTo('headScript'))
             ->will($this->returnValue($this->getMockHeadScript()));
         return $view;
     }

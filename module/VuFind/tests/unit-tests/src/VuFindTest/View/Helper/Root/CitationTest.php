@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
+
 use VuFind\View\Helper\Root\Citation;
 
 /**
@@ -40,7 +41,7 @@ use VuFind\View\Helper\Root\Citation;
 class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
     /**
- * Sample citations -- each element of this array contains three elements --
+     * Sample citations -- each element of this array contains three elements --
      * the raw input data and the expected apa/mla output citations.
      *
      * @var array

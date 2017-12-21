@@ -5,16 +5,16 @@
   <?
     $keywordFilter = $this->recommend->getKeywordFilter();
     if (!empty($keywordFilter)) {
-      $this->extraSideFacetFilters = array(
-        'Keyword' => array(
-            array(
+      $this->extraSideFacetFilters = [
+        'Keyword' => [
+            [
               'value' => $keywordFilter,
               'displayText' => $keywordFilter,
               'specialType' => 'keyword',
               'operator' => 'OR'
-            )
-        )
-      );
+            ]
+        ]
+      ];
     }
   ?>
   <? ob_start() ?>
@@ -39,4 +39,5 @@
   <? $this->sideFacetExtraControls = ob_get_contents(); ?>
   <? ob_end_clean(); ?>
 <? endif; ?>
+<? $this->baseUriExtra = $this->recommend->getResults()->getParams()->getCollectionId(); ?>
 <?=$this->render('Recommend/SideFacets.phtml')?>

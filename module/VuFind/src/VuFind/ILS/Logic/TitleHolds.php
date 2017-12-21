@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Logic
@@ -27,8 +27,9 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\ILS\Connection as ILSConnection,
-    VuFind\Exception\ILS as ILSException;
+
+use VuFind\Exception\ILS as ILSException;
+use VuFind\ILS\Connection as ILSConnection;
 
 /**
  * Title Hold Logic Class
@@ -116,17 +117,17 @@ class TitleHolds
         if ($this->catalog) {
             $mode = $this->catalog->getTitleHoldsMode();
             if ($mode == 'disabled') {
-                 return false;
-            } else if ($mode == 'driver') {
+                return false;
+            } elseif ($mode == 'driver') {
                 try {
                     $patron = $this->ilsAuth->storedCatalogLogin();
+                    if (!$patron) {
+                        return false;
+                    }
+                    return $this->driverHold($id, $patron);
                 } catch (ILSException $e) {
                     return false;
                 }
-                if (!$patron) {
-                    return false;
-                }
-                return $this->driverHold($id, $patron);
             } else {
                 try {
                     $patron = $this->ilsAuth->storedCatalogLogin();
@@ -205,14 +206,13 @@ class TitleHolds
         $checkHolds = $this->catalog->checkFunction(
             'Holds', compact('id', 'patron')
         );
-        $data = [
-            'id' => $id,
-            'level' => 'title'
-        ];
 
-        if ($checkHolds != false) {
-            $valid = $this->catalog->checkRequestIsValid($id, $data, $patron);
-            if ($valid) {
+        if (isset($checkHolds['HMACKeys'])) {
+            $data = ['id' => $id, 'level' => 'title'];
+            $result = $this->catalog->checkRequestIsValid($id, $data, $patron);
+            if ((is_array($result) && $result['valid'])
+                || (is_bool($result) && $result)
+            ) {
                 return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
             }
         }
@@ -246,9 +246,8 @@ class TitleHolds
 
         if ($checkHolds != false) {
             if ($type == 'always') {
-                 $addlink = true;
+                $addlink = true;
             } elseif ($type == 'availability') {
-
                 $holdings = $this->getHoldings($id);
                 foreach ($holdings as $holding) {
                     if ($holding['availability']

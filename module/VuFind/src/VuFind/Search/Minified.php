@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -76,7 +76,12 @@ class Minified
     /**
      * ID, start tIme, query Speed, Result total, search TYpe, search CLass id
      */
-    public $id, $i, $s, $r, $ty, $cl;
+    public $id;
+    public $i;
+    public $s;
+    public $r;
+    public $ty;
+    public $cl;
 
     /**
      * Constructor. Building minified object from the
@@ -138,7 +143,7 @@ class Minified
         // search class ID for the object we're about to construct:
         if (!isset($this->cl)) {
             $fixType = true;    // by default, assume we need to fix type
-            switch($this->ty) {
+            switch ($this->ty) {
             case 'Summon':
             case 'SummonAdvanced':
                 $this->cl = 'Summon';

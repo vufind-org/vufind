@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_SolrAuthorFacets
@@ -58,6 +58,18 @@ class Options extends \VuFind\Search\Solr\Options
 
         // No spell check needed in author module:
         $this->spellcheck = false;
+    }
+
+    /**
+     * Return the route name for the facet list action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getFacetListAction()
+    {
+        // Not applicable here; we don't want to inherit the parent class' route.
+        return false;
     }
 
     /**

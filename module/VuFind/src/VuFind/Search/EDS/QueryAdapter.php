@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  EBSCO
@@ -29,8 +29,8 @@
 namespace VuFind\Search\EDS;
 
 use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
+use VuFindSearch\Query\QueryGroup;
 use Zend\StdLib\Parameters;
 
 /**
@@ -76,7 +76,7 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
     protected static function displayAdvanced(AbstractQuery $query, $translate,
         $showName
     ) {
-            $output = '';
+        $output = '';
         //There should only ever be 1 group with EDS queries.
         $all = [];
         foreach ($query->getQueries() as $search) {

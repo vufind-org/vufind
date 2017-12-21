@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Recommendations
@@ -119,7 +119,7 @@ class SwitchType implements RecommendInterface
         // anything!  We should only show recommendations if we know what handler is
         // being used and can determine that it is not the same as the new handler
         // that we want to recommend.
-        $this->active = (!is_null($handler) && $handler != $this->newHandler);
+        $this->active = (null !== $handler && $handler != $this->newHandler);
     }
 
     /**

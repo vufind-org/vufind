@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -27,8 +27,9 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Exception\ILS as ILSException,
-    VuFind\I18n\Translator\TranslatorAwareInterface;
+
+use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * Driver for offline/missing ILS.
@@ -92,6 +93,17 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
+     * Get the ID prefix from the configuration, if set.
+     *
+     * @return string
+     */
+    protected function getIdPrefix()
+    {
+        return isset($this->config['settings']['idPrefix'])
+            ? $this->config['settings']['idPrefix'] : null;
+    }
+
+    /**
      * Get a Solr record.
      *
      * @param string $id ID of record to retrieve
@@ -100,7 +112,9 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      */
     protected function getSolrRecord($id)
     {
-        return $this->recordLoader->load($id);
+        // Add idPrefix condition
+        $idPrefix = $this->getIdPrefix();
+        return $this->recordLoader->load(strlen($idPrefix) ? $idPrefix . $id : $id);
     }
 
     /**
@@ -138,7 +152,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
                     )
                 ]
             ];
-        } else if ($useStatus == "marc") {
+        } elseif ($useStatus == "marc") {
             // Retrieve record from index:
             $recordDriver = $this->getSolrRecord($id);
             return $this->getFormattedMarcDetails($recordDriver, 'MarcStatus');
@@ -246,6 +260,14 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             $result = $recordDriver->tryMethod(
                 'getFormattedMarcDetails', [$field, $marcStatus]
             );
+            // If the details coming back from the record driver include the
+            // ID prefix, strip it off!
+            $idPrefix = $this->getIdPrefix();
+            if (isset($result[0]['id']) && strlen($idPrefix)
+                && $idPrefix === substr($result[0]['id'], 0, strlen($idPrefix))
+            ) {
+                $result[0]['id'] = substr($result[0]['id'], strlen($idPrefix));
+            }
             return empty($result) ? [] : $result;
         }
         return [];
@@ -288,7 +310,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
         return [];
     }
 
-        /**
+    /**
      * Get New Items
      *
      * Retrieve the IDs of items recently added to the catalog.
@@ -357,5 +379,85 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     {
         // Block authentication:
         return null;
+    }
+
+    /**
+     * Get Funds
+     *
+     * Return a list of funds which may be used to limit the getNewItems list.
+     *
+     * @throws ILSException
+     * @return array An associative array with key = fund ID, value = fund name.
+     */
+    public function getFunds()
+    {
+        // Does not work while ILS offline:
+        return [];
+    }
+
+    /**
+     * Get Departments
+     *
+     * Obtain a list of departments for use in limiting the reserves list.
+     *
+     * @throws ILSException
+     * @return array An associative array with key = dept. ID, value = dept. name.
+     */
+    public function getDepartments()
+    {
+        // Does not work while ILS offline:
+        return [];
+    }
+
+    /**
+     * Get Instructors
+     *
+     * Obtain a list of instructors for use in limiting the reserves list.
+     *
+     * @throws ILSException
+     * @return array An associative array with key = ID, value = name.
+     */
+    public function getInstructors()
+    {
+        // Does not work while ILS offline:
+        return [];
+    }
+
+    /**
+     * Get Courses
+     *
+     * Obtain a list of courses for use in limiting the reserves list.
+     *
+     * @throws ILSException
+     * @return array An associative array with key = ID, value = name.
+     */
+    public function getCourses()
+    {
+        // Does not work while ILS offline:
+        return [];
+    }
+
+    /**
+     * Find Reserves
+     *
+     * Obtain information on course reserves.
+     *
+     * This version of findReserves was contributed by Matthew Hooper and includes
+     * support for electronic reserves (though eReserve support is still a work in
+     * progress).
+     *
+     * @param string $course ID from getCourses (empty string to match all)
+     * @param string $inst   ID from getInstructors (empty string to match all)
+     * @param string $dept   ID from getDepartments (empty string to match all)
+     *
+     * @throws ILSException
+     * @return array An array of associative arrays representing reserve items.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function findReserves($course, $inst, $dept)
+    {
+        // Does not work while ILS offline:
+        return [];
     }
 }

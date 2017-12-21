@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Solr;
+
 use VuFind\Solr\Utils;
 
 /**
@@ -89,7 +90,7 @@ class UtilsTest extends \VuFindTest\Unit\TestCase
             '2nd Quarter 2004' => '2004-01-01',
             'Nov 2009 and Dec 2009' => '2009-01-01',
         ];
-        
+
         foreach ($tests as $in => $out) {
             $this->assertEquals(
                 $out === null ? null : $out . 'T00:00:00Z', // append standard time value unless null

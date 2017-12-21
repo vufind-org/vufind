@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -28,12 +28,12 @@
  */
 namespace VuFind\Search\Solr;
 
-use VuFindSearch\Backend\BackendInterface;
+use SplObjectStorage;
 
-use Zend\EventManager\SharedEventManagerInterface;
+use VuFindSearch\Backend\BackendInterface;
 use Zend\EventManager\EventInterface;
 
-use SplObjectStorage;
+use Zend\EventManager\SharedEventManagerInterface;
 
 /**
  * Abstract base class of SOLR error listeners.
@@ -90,7 +90,7 @@ abstract class AbstractErrorListener
      *
      * @param BackendInterface $backend Backend instance
      *
-     * @return boolean
+     * @return bool
      */
     public function listenForBackend(BackendInterface $backend)
     {

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Solr
@@ -38,6 +38,18 @@ namespace VuFind\Search\Solr;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Search\Options\ViewOptionsTrait;
+
+    /**
+     * Available sort options for facets
+     *
+     * @var array
+     */
+    protected $facetSortOptions = [
+        'count' => 'sort_count',
+        'index' => 'sort_alphabetic'
+    ];
+
     /**
      * Hierarchical facets
      *
@@ -92,9 +104,6 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->RSS->sort)) {
             $this->rssSort = $searchSettings->RSS->sort;
         }
-        if (isset($searchSettings->General->default_view)) {
-            $this->defaultView = $searchSettings->General->default_view;
-        }
         if (isset($searchSettings->General->default_handler)) {
             $this->defaultHandler = $searchSettings->General->default_handler;
         }
@@ -132,15 +141,13 @@ class Options extends \VuFind\Search\Base\Options
                 'callnumber-sort' => 'sort_callnumber', 'author' => 'sort_author',
                 'title' => 'sort_title'];
         }
-        // Load view preferences (or defaults if none in .ini file):
-        if (isset($searchSettings->Views)) {
-            foreach ($searchSettings->Views as $key => $value) {
-                $this->viewOptions[$key] = $value;
-            }
-        } elseif (isset($searchSettings->General->default_view)) {
-            $this->viewOptions = [$this->defaultView => $this->defaultView];
-        } else {
-            $this->viewOptions = ['list' => 'List'];
+
+        // Set up views
+        $this->initViewOptions($searchSettings);
+
+        // Load list view for result (controls AJAX embedding vs. linking)
+        if (isset($searchSettings->List->view)) {
+            $this->listviewOption = $searchSettings->List->view;
         }
 
         // Load facet preferences
@@ -182,6 +189,13 @@ class Options extends \VuFind\Search\Base\Options
         $config = $configLoader->get('config');
         if (isset($config->Spelling->enabled)) {
             $this->spellcheck = $config->Spelling->enabled;
+        }
+
+        // Turn on first/last navigation if configured:
+        if (isset($config->Record->first_last_navigation)
+            && $config->Record->first_last_navigation
+        ) {
+            $this->firstlastNavigation = true;
         }
 
         // Turn on highlighting if the user has requested highlighting or snippet
@@ -248,6 +262,17 @@ class Options extends \VuFind\Search\Base\Options
     public function getAdvancedSearchAction()
     {
         return 'search-advanced';
+    }
+
+    /**
+     * Return the route name for the facet list action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getFacetListAction()
+    {
+        return 'search-facetlist';
     }
 
     /**

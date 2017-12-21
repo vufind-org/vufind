@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Cart
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind;
+
 use VuFind\Cookie\CookieManager;
 
 /**
@@ -63,6 +64,13 @@ class Cart
     protected $active;
 
     /**
+     * Is cart configured to toggles in search results?
+     *
+     * @var bool
+     */
+    protected $showTogglesInSearch;
+
+    /**
      * Record loader
      *
      * @var \VuFind\Record\Loader
@@ -83,19 +91,22 @@ class Cart
     /**
      * Constructor
      *
-     * @param \VuFind\Record\Loader $loader        Object for loading records
-     * @param CookieManager         $cookieManager Cookie manager
-     * @param int                   $maxSize       Maximum size of cart contents
-     * @param bool                  $active        Is cart enabled?
+     * @param \VuFind\Record\Loader $loader          Object for loading records
+     * @param CookieManager         $cookieManager   Cookie manager
+     * @param int                   $maxSize         Maximum size of cart contents
+     * @param bool                  $active          Is cart enabled?
+     * @param bool                  $togglesInSearch Is cart configured to toggles
+     * in search results?
      */
     public function __construct(\VuFind\Record\Loader $loader,
         \VuFind\Cookie\CookieManager $cookieManager,
-        $maxSize = 100, $active = true
+        $maxSize = 100, $active = true, $togglesInSearch = true
     ) {
         $this->recordLoader = $loader;
         $this->cookieManager = $cookieManager;
         $this->maxSize = $maxSize;
         $this->active = $active;
+        $this->showTogglesInSearch = $togglesInSearch;
 
         // Initialize contents
         $this->init($this->cookieManager->getCookies());
@@ -205,7 +216,7 @@ class Cart
      */
     public function isFull()
     {
-        return (count($this->items) >= $this->maxSize);
+        return count($this->items) >= $this->maxSize;
     }
 
     /**
@@ -226,6 +237,16 @@ class Cart
     public function isActive()
     {
         return $this->active;
+    }
+
+    /**
+     * Process parameters and return the cart content.
+     *
+     * @return bool
+     */
+    public function isActiveInSearch()
+    {
+        return $this->active && $this->showTogglesInSearch;
     }
 
     /**
@@ -304,6 +325,16 @@ class Cart
     public function getCookieDomain()
     {
         return $this->cookieManager->getDomain();
+    }
+
+    /**
+     * Get cookie path ('/' if unset).
+     *
+     * @return string
+     */
+    public function getCookiePath()
+    {
+        return $this->cookieManager->getPath();
     }
 
     /**

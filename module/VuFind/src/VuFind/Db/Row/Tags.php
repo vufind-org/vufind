@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Db_Row
@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Row;
-use VuFind\Db\Table\Resource as ResourceTable, Zend\Db\Sql\Expression;
+
+use VuFind\Db\Table\Resource as ResourceTable;
+use Zend\Db\Sql\Expression;
 
 /**
  * Row Definition for tags
@@ -93,7 +95,7 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
             if ($offset > 0) {
                 $select->offset($offset);
             }
-            if (!is_null($limit)) {
+            if (null !== $limit) {
                 $select->limit($limit);
             }
         };

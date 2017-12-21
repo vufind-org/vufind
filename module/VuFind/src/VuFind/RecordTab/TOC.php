@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  RecordTabs
@@ -36,7 +36,7 @@ namespace VuFind\RecordTab;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
-class TOC extends AbstractBase
+class TOC extends AbstractContent
 {
     /**
      * Get the on-screen description for this tab.
@@ -56,6 +56,6 @@ class TOC extends AbstractBase
     public function isActive()
     {
         $toc = $this->getRecordDriver()->tryMethod('getTOC');
-        return !empty($toc);
+        return !empty($toc) || parent::isActive();
     }
 }

@@ -32,7 +32,10 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>5.5.0</luceneMatchVersion>
+  <luceneMatchVersion>6.4.2</luceneMatchVersion>
+
+  <!-- Use the classic schema style by default for VuFind -->
+  <schemaFactory class="ClassicIndexSchemaFactory"/>
 
   <!-- Used to specify an alternate directory to hold all index data
        other than the default ./data under the Solr home.
@@ -145,7 +148,7 @@
     </listener>
     -->
     <!-- A postOptimize event is fired only after every optimize command, useful
-         in conjunction with index distribution to only distribute optimized indicies 
+         in conjunction with index distribution to only distribute optimized indices
     <listener event="postOptimize" class="solr.RunExecutableListener">
       <str name="exe">snapshooter</str>
       <str name="dir">solr/bin</str>
@@ -313,7 +316,7 @@
             (and validation against If-Modified-Since requests) will all be
             relative to when the current Searcher was opened.
             You can change it to lastModFrom="dirLastMod" if you want the
-            value to exactly corrispond to when the physical index was last
+            value to exactly correspond to when the physical index was last
             modified.
                
             etagSeed="..." is an option you can change to force the ETag
@@ -356,6 +359,8 @@
     -->
     <lst name="defaults">
       <str name="echoParams">explicit</str>
+      <str name="q.op">AND</str>
+      <str name="df">course</str>
     </lst>
   </requestHandler>
   
@@ -369,28 +374,32 @@
   -->
   <requestHandler name="dismax" class="solr.SearchHandler">
     <lst name="defaults">
-     <str name="defType">dismax</str>
-     <str name="echoParams">explicit</str>
+      <str name="defType">dismax</str>
+      <str name="echoParams">explicit</str>
+      <str name="q.op">AND</str>
+      <str name="df">course</str>
     </lst>
   </requestHandler>
   
   <requestHandler name="edismax" class="solr.SearchHandler">
     <lst name="defaults">
-     <str name="defType">edismax</str>
-     <str name="echoParams">explicit</str>
-     <str name="lowercaseOperators">false</str>
+      <str name="defType">edismax</str>
+      <str name="echoParams">explicit</str>
+      <str name="lowercaseOperators">false</str>
+      <str name="q.op">AND</str>
+      <str name="df">course</str>
     </lst>
   </requestHandler>
   
   <!-- Search component for extracting terms (useful for sitemap generation) -->
-  <searchComponent name="term" class="org.apache.solr.handler.component.TermsComponent">
+  <searchComponent name="terms" class="solr.TermsComponent">
   </searchComponent>
 
   <!--
    
    Search components are registered to SolrCore and used by Search Handlers
    
-   By default, the following components are avaliable:
+   By default, the following components are available:
     
    <searchComponent name="query"     class="org.apache.solr.handler.component.QueryComponent" />
    <searchComponent name="facet"     class="org.apache.solr.handler.component.FacetComponent" />
@@ -404,9 +413,9 @@
    -->
   
   <!-- Request handler to extract terms (useful for sitemap generation) -->
-  <requestHandler name="/term" class="org.apache.solr.handler.component.SearchHandler">
+  <requestHandler name="/terms" class="solr.SearchHandler" startup="lazy">
     <arr name="components">
-      <str>term</str>
+      <str>terms</str>
     </arr>
   </requestHandler>
   

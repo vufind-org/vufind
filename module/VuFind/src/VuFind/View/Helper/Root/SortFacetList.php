@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use Zend\View\Helper\AbstractHelper;
 
 /**
@@ -59,8 +60,8 @@ class SortFacetList extends AbstractHelper
         $results->getParams()->setLimit($results->getOptions()->getDefaultLimit());
         $urlHelper = $this->getView()->plugin('url');
         foreach ($list as $value) {
-            $url = $urlHelper($searchRoute)
-                . $results->getUrlQuery()->addFacet($field, $value['value']);
+            $url = $urlHelper($searchRoute) . $results->getUrlQuery()
+                ->addFacet($field, $value['value'])->getParams();
             $facets[$url] = $value['displayText'];
         }
         natcasesort($facets);

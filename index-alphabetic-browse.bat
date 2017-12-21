@@ -13,21 +13,21 @@ rem ##################################################
 rem # Set SOLR_HOME
 rem ##################################################
 if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
-rem VUFIND_HOME not set -- try to call vufind.bat to 
+rem VUFIND_HOME not set -- try to call env.bat to 
 rem fix the problem before we give up completely
-if exist vufind.bat goto usevufindbat
-rem If vufind.bat doesn't exist, the user hasn't run the installer yet.
-echo ERROR: vufind.bat does not exist -- could not set up environment.
+if exist env.bat goto useenvbat
+rem If env.bat doesn't exist, the user hasn't run the installer yet.
+echo ERROR: env.bat does not exist -- could not set up environment.
 echo Please run install.php to correct this problem.
 goto end
-:usevufindbat
-call vufind > nul
+:useenvbat
+call env > nul
 if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
 echo You need to set the VUFIND_HOME environmental variable before running this script.
 goto end
 :vufindhomefound
 if not "!%SOLR_HOME%!"=="!!" goto solrhomefound
-set SOLR_HOME=%VUFIND_HOME%\solr
+set SOLR_HOME=%VUFIND_HOME%\solr\vufind
 :solrhomefound
 
 rem #####################################################
@@ -41,11 +41,11 @@ set JAVA="%JAVA_HOME%\bin\java"
 :javaset
 
 cd %VUFIND_HOME%\import
-SET CLASSPATH="browse-indexing.jar;%SOLR_HOME%\vufind\jars\*;%SOLR_HOME%\vendor\contrib\analysis-extras\lib\*;%SOLR_HOME%\vendor\server\solr-webapp\webapp\WEB-INF\lib\*"
+SET CLASSPATH="browse-indexing.jar;%SOLR_HOME%\jars\*;%SOLR_HOME%\..\vendor\contrib\analysis-extras\lib\*;%SOLR_HOME%\..\vendor\server\solr-webapp\webapp\WEB-INF\lib\*"
 
-SET bib_index=%SOLR_HOME%\vufind\biblio\index
-SET auth_index=%SOLR_HOME%\vufind\authority\index
-SET index_dir=%SOLR_HOME%\vufind\alphabetical_browse
+SET bib_index=%SOLR_HOME%\biblio\index
+SET auth_index=%SOLR_HOME%\authority\index
+SET index_dir=%SOLR_HOME%\alphabetical_browse
 
 rem #####################################################
 rem If we're being called for the build_browse function, jump there now:

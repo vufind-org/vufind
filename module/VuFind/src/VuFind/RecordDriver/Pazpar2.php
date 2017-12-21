@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -36,7 +36,7 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class Pazpar2 extends SolrDefault
+class Pazpar2 extends DefaultRecord
 {
     /**
      * Pazpar2 fields
@@ -77,15 +77,15 @@ class Pazpar2 extends SolrDefault
             if (count($data->attributes()) > 0) {
                 $children['_attr_'] = [];
                 foreach ($data->attributes() as $name => $attr) {
-                    $children['_attr_'][$name] = (string) $attr;
+                    $children['_attr_'][$name] = (string)$attr;
                 }
             }
             // If there's no children, we're at data
             if ($data->count() == 0) {
                 if (!isset($children['_attr_'])) {
-                    $children = (string) $data; // Flatten
+                    $children = (string)$data; // Flatten
                 } else {
-                    $children[$key] = (string) $data;
+                    $children[$key] = (string)$data;
                 }
             } else {
                 // If there's children, recurse on this XML
@@ -112,7 +112,7 @@ class Pazpar2 extends SolrDefault
         if (count($xml->attributes()) > 0) {
             $array['_attr_'] = [];
             foreach ($xml->attributes() as $key => $attr) {
-                $array['_attr_'][$key] = (string) $attr;
+                $array['_attr_'][$key] = (string)$attr;
             }
         }
         return $array;
@@ -222,7 +222,7 @@ class Pazpar2 extends SolrDefault
                 function ($url) {
                     return ['url' => $url];
                 },
-                (array) $this->pz2fields['location']['md-electronic-url']
+                (array)$this->pz2fields['location']['md-electronic-url']
             );
         }
         return [];

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -86,7 +86,7 @@ class TagsController extends AbstractAdmin
 
         $view = $this->createViewModel();
         $view->setTemplate('admin/tags/manage');
-        $view->type = !is_null($this->params()->fromPost('type', null))
+        $view->type = null !== $this->params()->fromPost('type', null)
             ? $this->params()->fromPost('type')
             : $this->params()->fromQuery('type', null);
         $view->uniqueTags      = $this->getUniqueTags()->toArray();
@@ -147,8 +147,8 @@ class TagsController extends AbstractAdmin
 
         // Delete All
         if ("manage" == $origin
-            || !is_null($this->getRequest()->getPost('deleteFilter'))
-            || !is_null($this->getRequest()->getQuery('deleteFilter'))
+            || null !== $this->getRequest()->getPost('deleteFilter')
+            || null !== $this->getRequest()->getQuery('deleteFilter')
         ) {
             if (false === $confirm) {
                 return $this->confirmTagsDeleteByFilter($tags, $originUrl, $newUrl);
@@ -157,7 +157,7 @@ class TagsController extends AbstractAdmin
         } else {
             // Delete by ID
             // Fail if we have nothing to delete:
-            $ids = is_null($this->getRequest()->getPost('deletePage'))
+            $ids = null === $this->getRequest()->getPost('deletePage')
                 ? $this->params()->fromPost('ids')
                 : $this->params()->fromPost('idsAll');
 
@@ -170,7 +170,6 @@ class TagsController extends AbstractAdmin
                 return $this->confirmTagsDelete($ids, $originUrl, $newUrl);
             }
             $delete = $tags->deleteByIdArray($ids);
-
         }
 
         if (0 == $delete) {

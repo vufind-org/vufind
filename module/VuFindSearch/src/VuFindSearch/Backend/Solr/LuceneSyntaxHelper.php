@@ -6,6 +6,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -18,13 +19,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   David Maus <maus@hab.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -38,6 +40,7 @@ namespace VuFindSearch\Backend\Solr;
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   David Maus <maus@hab.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -268,6 +271,71 @@ class LuceneSyntaxHelper
     }
 
     /**
+     * Extract search terms from a query string for spell checking.
+     *
+     * This will only handle the most often used simple cases.
+     *
+     * @param string $query Query string
+     *
+     * @return string
+     */
+    public function extractSearchTerms($query)
+    {
+        $result = [];
+        $inQuotes = false;
+        $collected = '';
+        $discardParens = 0;
+        // Discard local parameters
+        $query = preg_replace('/\{!.+?\}/', '', $query);
+        // Discard fuzziness and proximity indicators
+        $query = preg_replace('/\~[^\s]*/', '', $query);
+        $query = preg_replace('/\^[^\s]*/', '', $query);
+        $lastCh = '';
+        foreach (str_split($query) as $ch) {
+            // Handle quotes (everything in quotes is considered part of search
+            // terms)
+            if ($ch == '"' && $lastCh != '\\') {
+                $inQuotes = !$inQuotes;
+            }
+            if (!$inQuotes) {
+                // Discard closing parenthesis for previously discarded opening ones
+                // to keep balance
+                if ($ch == ')' && $discardParens > 0) {
+                    --$discardParens;
+                    continue;
+                }
+                // Flush to result array on word break
+                if ($ch == ' ' && $collected !== '') {
+                    $result[] = $collected;
+                    $collected = '';
+                    continue;
+                }
+                // If we encounter ':', discard preceding string as it's a field name
+                if ($ch == ':') {
+                    // Take into account any opening parenthesis we discard here
+                    $discardParens += substr_count($collected, '(');
+                    $collected = '';
+                    continue;
+                }
+            }
+            $collected .= $ch;
+            $lastCh = $ch;
+        }
+        // Flush final collected string
+        if ($collected !== '') {
+            $result[] = $collected;
+        }
+        // Discard any preceding pluses or minuses
+        $result = array_map(
+            function ($s) {
+                return ltrim($s, '+-');
+            },
+            $result
+        );
+        return implode(' ', $result);
+    }
+
+    /**
      * Are there any case-sensitive Boolean operators configured?
      *
      * @return bool
@@ -452,6 +520,7 @@ class LuceneSyntaxHelper
         $input = preg_replace('/(\:[:\s]+|[:\s]+:)' . $lookahead . '/', ' ', $input);
         return trim($input, ':');
     }
+
     /**
      * Prepare input to be used in a SOLR query.
      *
@@ -470,7 +539,7 @@ class LuceneSyntaxHelper
 
         // If the user has entered a lone BOOLEAN operator, convert it to lowercase
         // so it is treated as a word (otherwise it will trigger a fatal error):
-        switch(trim($input)) {
+        switch (trim($input)) {
         case 'OR':
             return 'or';
         case 'AND':
@@ -519,7 +588,7 @@ class LuceneSyntaxHelper
             || $this->caseSensitiveBooleans === "0"
         ) {
             return $this->allBools;
-        } else if ($this->caseSensitiveBooleans === true
+        } elseif ($this->caseSensitiveBooleans === true
             || $this->caseSensitiveBooleans === 1
             || $this->caseSensitiveBooleans === "1"
         ) {

@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -77,12 +77,24 @@ class ParamBag
     }
 
     /**
+     * Return true if the bag contains any value(s) for the specified parameter.
+     *
+     * @param string $name Parameter name
+     *
+     * @return bool
+     */
+    public function hasParam($name)
+    {
+        return isset($this->params[$name]);
+    }
+
+    /**
      * Return true if the bag contains a parameter-value-pair.
      *
      * @param string $name  Parameter name
      * @param string $value Parameter value
      *
-     * @return boolean
+     * @return bool
      */
     public function contains($name, $value)
     {

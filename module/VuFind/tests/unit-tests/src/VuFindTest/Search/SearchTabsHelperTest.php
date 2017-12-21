@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -132,9 +132,9 @@ class SearchTabsHelperTest extends TestCase
     {
         $helper = $this->getSearchTabsHelper();
         $this->assertEquals(
-            $this->tabConfig['default_unfiltered'],  $helper->getTabConfig()
+            $this->tabConfig['default_unfiltered'], $helper->getTabConfig()
         );
-        $this->assertEquals($this->filterConfig,  $helper->getTabFilterConfig());
+        $this->assertEquals($this->filterConfig, $helper->getTabFilterConfig());
     }
 
     /**
@@ -208,13 +208,13 @@ class SearchTabsHelperTest extends TestCase
     protected function getSearchTabsHelper($config = 'default_unfiltered',
         $filters = null
     ) {
-        $mockRequest = $this->getMock('Zend\Http\Request');
+        $mockRequest = $this->createMock('Zend\Http\Request');
         $mockRequest->expects($this->any())
             ->method('getQuery')
             ->with($this->equalTo('hiddenFilters'))
             ->willReturn($filters);
 
-        $configManager = $this->getMock('VuFind\Config\PluginManager');
+        $configManager = $this->createMock('VuFind\Config\PluginManager');
 
         $mockSolrOptions = $this->getMockBuilder('VuFind\Search\Solr\Options')
             ->disableOriginalConstructor()->getMock();
@@ -236,12 +236,12 @@ class SearchTabsHelperTest extends TestCase
                 new \VuFind\Search\Primo\Params($mockPrimoOptions, $configManager)
             );
 
-        $mockResults = $this->getMock('VuFind\Search\Results\PluginManager');
+        $mockResults = $this->createMock('VuFind\Search\Results\PluginManager');
         $mockResults->expects($this->any())
             ->method('get')
             ->will(
                 $this->returnCallback(
-                    function($backend) use ($mockSolr, $mockPrimo) {
+                    function ($backend) use ($mockSolr, $mockPrimo) {
                         switch ($backend) {
                             case 'Solr': return $mockSolr;
                             case 'Primo': return $mockPrimo;

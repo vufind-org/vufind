@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Installer
@@ -43,26 +43,26 @@ $basePath = '/vufind';
 try {
     $opts = new Getopt(
         array(
-        'use-defaults' => 
+        'use-defaults' =>
            'Use VuFind Defaults to Configure (ignores any other arguments passed)',
-        'overridedir=s' => 
+        'overridedir=s' =>
            "Where would you like to store your local settings? [{$baseDir}/local]",
-        'module-name=s' => 
+        'module-name=s' =>
            'What module name would you like to use? Use disabled, to not use',
-        'basepath=s' => 
+        'basepath=s' =>
            'What base path should be used in VuFind\'s URL? [/vufind]',
-        'multisite-w' => 
+        'multisite-w' =>
            'Specify we are going to setup a multisite. Options: directory and host',
-        'hostname=s' => 
+        'hostname=s' =>
             'Specify the hostname for the VuFind Site, When multisite=host',
         'non-interactive' =>
             'Use settings if provided via arguments, otherwise use defaults',
       )
     );
-
     $opts->parse();
 } catch (Exception $e) {
-    echo $e->getUsageMessage();
+    echo is_callable([$e, 'getUsageMessage'])
+        ? $e->getUsageMessage() : $e->getMessage() . "\n";
     exit;
 }
 
@@ -372,7 +372,7 @@ function validateModule($module)
 {
     $regex = '/^[a-zA-Z][0-9a-zA-Z_]*$/';
     $illegalModules = array(
-        'VuDL', 'VuFind', 'VuFindAdmin', 'VuFindConsole', 'VuFindDevTools',
+        'VuFind', 'VuFindAdmin', 'VuFindConsole', 'VuFindDevTools',
         'VuFindLocalTemplate', 'VuFindSearch', 'VuFindTest', 'VuFindTheme',
     );
     if (in_array($module, $illegalModules)) {

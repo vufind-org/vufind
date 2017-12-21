@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 namespace VuFind\Session;
+
 use VuFind\Exception\SessionExpired as SessionExpiredException;
 
 /**
@@ -55,22 +56,8 @@ class Database extends AbstractBase
                 ->readSession($sess_id, $this->lifetime);
         } catch (SessionExpiredException $e) {
             $this->destroy($sess_id);
-            return;
+            return '';
         }
-    }
-
-    /**
-     * Write function that is called when session data is to be saved.
-     *
-     * @param string $sess_id The current session ID
-     * @param string $data    The session data to write
-     *
-     * @return bool
-     */
-    public function write($sess_id, $data)
-    {
-        $this->getTable('Session')->writeSession($sess_id, $data);
-        return true;
     }
 
     /**
@@ -103,6 +90,20 @@ class Database extends AbstractBase
     public function gc($sess_maxlifetime)
     {
         $this->getTable('Session')->garbageCollect($sess_maxlifetime);
+        return true;
+    }
+
+    /**
+     * A function that is called internally when session data is to be saved.
+     *
+     * @param string $sess_id The current session ID
+     * @param string $data    The session data to write
+     *
+     * @return bool
+     */
+    protected function saveSession($sess_id, $data)
+    {
+        $this->getTable('Session')->writeSession($sess_id, $data);
         return true;
     }
 }

@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Query;
 
+use PHPUnit_Framework_TestCase;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for QueryGroup class.
@@ -95,7 +95,7 @@ class QueryGroupTest extends PHPUnit_Framework_TestCase
     public function testClone()
     {
         $q = $this->getSampleQueryGroup();
-        $qClone = clone($q);
+        $qClone = clone $q;
         $q->replaceTerm('query', 'question');
         $qClone->setOperator('AND');
         $this->assertEquals('test question multi word question', $q->getAllTerms());

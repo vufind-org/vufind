@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -69,6 +69,27 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Given a colon-delimited configuration string, break it apart, making sure
+     * that URLs in the first position are not inappropriately split.
+     *
+     * @param string $current Setting to parse
+     *
+     * @return array
+     */
+    protected function parseSetting($current)
+    {
+        $parts = explode(':', $current);
+        // Special case: don't explode URLs:
+        if (($parts[0] === 'http' || $parts[0] === 'https')
+            && '//' === substr($parts[1], 0, 2)
+        ) {
+            $protocol = array_shift($parts);
+            $parts[0] = $protocol . ':' . $parts[0];
+        }
+        return $parts;
+    }
+
+    /**
      * Add meta tags to header.
      *
      * @return void
@@ -76,7 +97,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
     protected function addMetaTags()
     {
         // Set up encoding:
-        $headMeta = $this->getView()->plugin('headmeta');
+        $headMeta = $this->getView()->plugin('headMeta');
         $headMeta()->prependHttpEquiv(
             'Content-Type', 'text/html; charset=' . $this->container->getEncoding()
         );
@@ -96,12 +117,12 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
     protected function addLinks()
     {
         // Convenient shortcut to view helper:
-        $headLink = $this->getView()->plugin('headlink');
+        $headLink = $this->getView()->plugin('headLink');
 
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getCss()) as $current) {
-            $parts = explode(':', $current);
+            $parts = $this->parseSetting($current);
             $headLink()->prependStylesheet(
                 trim($parts[0]),
                 isset($parts[1]) ? trim($parts[1]) : 'all',
@@ -112,9 +133,9 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         // Compile and load LESS (make sure we prepend them in the appropriate order
         // theme resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getLessCss()) as $current) {
-            $parts = explode(':', $current);
-            $headLink()->addLessStylesheet(
-                trim($parts[0]),
+            $parts = $this->parseSetting($current);
+            $headLink()->prependStylesheet(
+                $headLink()->addLessStylesheet(trim($parts[0])),
                 isset($parts[1]) ? trim($parts[1]) : 'all',
                 isset($parts[2]) ? trim($parts[2]) : false
             );
@@ -123,11 +144,13 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         // If we have a favicon, load it now:
         $favicon = $this->container->getFavicon();
         if (!empty($favicon)) {
-            $imageLink = $this->getView()->plugin('imagelink');
-            $headLink([
-                'href' => $imageLink($favicon),
-                'type' => 'image/x-icon', 'rel' => 'shortcut icon'
-            ]);
+            $imageLink = $this->getView()->plugin('imageLink');
+            $headLink(
+                [
+                    'href' => $imageLink($favicon),
+                    'type' => 'image/x-icon', 'rel' => 'shortcut icon'
+                ]
+            );
         }
     }
 
@@ -139,9 +162,9 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
     protected function addScripts()
     {
         // Load Javascript (same ordering considerations as CSS, above):
-        $headScript = $this->getView()->plugin('headscript');
+        $headScript = $this->getView()->plugin('headScript');
         foreach (array_reverse($this->container->getJs()) as $current) {
-            $parts =  explode(':', $current);
+            $parts =  $this->parseSetting($current);
             $headScript()->prependFile(
                 trim($parts[0]),
                 'text/javascript',

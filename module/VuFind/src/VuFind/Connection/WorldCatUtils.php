@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  WorldCat
@@ -26,7 +26,8 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Connection;
-use File_MARCXML, VuFind\XSLT\Processor as XSLTProcessor, Zend\Config\Config;
+
+use Zend\Config\Config;
 
 /**
  * World Cat Utilities
@@ -124,7 +125,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
      *
      * @param string $current Name chunk to examine.
      *
-     * @return boolean        Should we use this as a name?
+     * @return bool           Should we use this as a name?
      */
     protected function isUsefulNameChunk($current)
     {
@@ -166,7 +167,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
                 // Is the first name empty?  If so, save this there.
                 if (empty($first)) {
                     $first = $current;
-                } else if (strlen($current) > 2 || empty($last)) {
+                } elseif (strlen($current) > 2 || empty($last)) {
                     // If this isn't the first name, we always want to save it as the
                     // last name UNLESS it's an initial, in which case we'll only
                     // save it if we don't already have something better!
@@ -179,7 +180,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         // based on whether we found a first name only or both first and last names:
         if (empty($first) && empty($last)) {
             return false;
-        } else if (empty($last)) {
+        } elseif (empty($last)) {
             return "local.PersonalName=\"{$first}\"";
         } else {
             return "local.PersonalName=\"{$last}\" "
@@ -206,7 +207,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
 
         // Collect subjects for current name:
         $retVal = [];
-        if (!is_null($subjects) && count($subjects) > 0) {
+        if (null !== $subjects && count($subjects) > 0) {
             foreach ($subjects as $currentSubject) {
                 if ($currentSubject['tag'] == '650') {
                     $text = (string)$currentSubject;

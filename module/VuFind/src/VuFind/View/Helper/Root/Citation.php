@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use VuFind\Exception\Date as DateException;
 
 /**
@@ -502,12 +503,12 @@ class Citation extends \Zend\View\Helper\AbstractHelper
      *
      * @param string $string String to test.
      *
-     * @return boolean       Does string end in punctuation?
+     * @return bool          Does string end in punctuation?
      */
     protected function isPunctuated($string)
     {
         $punctuation = ['.', '?', '!'];
-        return (in_array(substr($string, -1), $punctuation));
+        return in_array(substr($string, -1), $punctuation);
     }
 
     /**
@@ -637,7 +638,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
                 $i++;
             }
         }
-        return (empty($authorStr) ? false : $authorStr);
+        return empty($authorStr) ? false : $authorStr;
     }
 
     /**
@@ -719,7 +720,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
                 }
             }
         }
-        return (empty($authorStr) ? false : $this->stripPunctuation($authorStr));
+        return empty($authorStr) ? false : $this->stripPunctuation($authorStr);
     }
 
     /**

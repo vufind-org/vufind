@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Cache
@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Cache;
-use Zend\Cache\StorageFactory, Zend\Config\Config;
+
+use Zend\Cache\StorageFactory;
+use Zend\Config\Config;
 
 /**
  * VuFind Cache Manager
@@ -89,9 +91,10 @@ class Manager
         $cacheBase = $this->getCacheDir();
 
         // Set up standard file-based caches:
-        foreach (['config', 'cover', 'language', 'object'] as $cache) {
+        foreach (['config', 'cover', 'language', 'object', 'yaml'] as $cache) {
             $this->createFileCache($cache, $cacheBase . $cache . 's');
         }
+        $this->createFileCache('public', $cacheBase . 'public');
 
         // Set up search specs cache based on config settings:
         $searchCacheType = isset($searchConfig->Cache->type)
@@ -158,7 +161,7 @@ class Manager
 
         if (strlen(LOCAL_CACHE_DIR) > 0) {
             $dir = LOCAL_CACHE_DIR . '/';
-        } else if (strlen(LOCAL_OVERRIDE_DIR) > 0) {
+        } elseif (strlen(LOCAL_OVERRIDE_DIR) > 0) {
             $dir = LOCAL_OVERRIDE_DIR . '/cache/';
         } else {
             $dir = APPLICATION_PATH . '/data/cache/';

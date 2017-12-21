@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
-use VuFind\Auth\SIP2, Zend\Config\Config;
+
+use VuFind\Auth\SIP2;
+use Zend\Config\Config;
 
 /**
  * SIP2 authentication test class.
@@ -51,7 +53,7 @@ class SIP2Test extends \VuFindTest\Unit\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = clone($this->getAuthManager()->get('SIP2'));
+        $obj = clone $this->getAuthManager()->get('SIP2');
         $obj->setConfig($config);
         return $obj;
     }

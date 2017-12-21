@@ -1,0 +1,37 @@
+<?
+  $urls = $this->driver->getURLs();
+  $url = isset($urls[0]) ? $urls[0]['url'] : null;
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $url);
+  $cover = $coverDetails['html'];
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  if ($cover):
+    ob_start(); ?>
+    <div class="browzine media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+      <?=$cover ?>
+    </div>
+    <? $thumbnail = ob_get_contents(); ?>
+  <? ob_end_clean(); ?>
+<? endif; ?>
+<div class="media">
+  <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <?=$thumbnail ?>
+  <? endif ?>
+  <div class="media-body">
+    <div class="resultItemLine1">
+      <? if ($url): ?><a href="<?=$this->escapeHtmlAttr($url)?>" class="title"><? endif; ?>
+        <?=$this->record($this->driver)->getTitleHtml()?>
+      <? if ($url): ?></a><? endif; ?>
+    </div>
+    <? if (($sjr = $this->driver->getSjrValue()) && ($issn = $this->driver->getCleanISSN())): ?>
+      <div class="resultItemLine2">
+        <a class="label label-default" href="http://www.scimagojr.com/journalsearch.php?q=<?=urlencode($issn)?>&amp;tip=iss">
+          SJR: <?=$this->escapeHtml($sjr)?>
+        </a>
+      </div>
+    <? endif; ?>
+  </div>
+  <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+    <?=$thumbnail ?>
+  <? endif ?>
+</div>

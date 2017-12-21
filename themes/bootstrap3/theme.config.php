@@ -1,42 +1,40 @@
 <?php
-return array(
+return [
     'extends' => 'root',
-    'css' => array(
+    'css' => [
         //'vendor/bootstrap.min.css',
         //'vendor/bootstrap-accessibility.css',
+        //'vendor/font-awesome.min.css',
         //'bootstrap-custom.css',
         'compiled.css',
-        'vendor/font-awesome.min.css',
-        'vendor/bootstrap-slider.min.css',
         'print.css:print',
-    ),
-    'js' => array(
+        'flex-fallback.css::lt IE 10', // flex polyfill
+    ],
+    'js' => [
         'vendor/base64.js:lt IE 10', // btoa polyfill
         'vendor/jquery.min.js',
         'vendor/bootstrap.min.js',
         'vendor/bootstrap-accessibility.min.js',
-        //'vendor/bootlint.min.js',
-        'autocomplete.js',
         'vendor/validator.min.js',
-        'vendor/rc4.js',
+        'lib/form-attr-polyfill.js', // input[form] polyfill, cannot load conditionally, since we need all versions of IE
+        'lib/autocomplete.js',
         'common.js',
         'lightbox.js',
-    ),
-    'less' => array(
+    ],
+    'less' => [
         'active' => false,
         'compiled.less'
-    ),
+    ],
     'favicon' => 'vufind-favicon.ico',
-    'helpers' => array(
-        'factories' => array(
+    'helpers' => [
+        'factories' => [
             'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Factory::getFlashmessages',
-            'layoutclass' => 'VuFind\View\Helper\Bootstrap3\Factory::getLayoutClass',
+            'layoutClass' => 'VuFind\View\Helper\Bootstrap3\Factory::getLayoutClass',
             'recaptcha' => 'VuFind\View\Helper\Bootstrap3\Factory::getRecaptcha',
-        ),
-        'invokables' => array(
+        ],
+        'invokables' => [
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
-            'search' => 'VuFind\View\Helper\Bootstrap3\Search',
-            'vudl' => 'VuDL\View\Helper\Bootstrap3\VuDL',
-        )
-    )
-);
+            'search' => 'VuFind\View\Helper\Bootstrap3\Search'
+        ]
+    ]
+];

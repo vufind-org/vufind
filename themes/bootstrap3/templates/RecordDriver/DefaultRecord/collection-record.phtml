@@ -1,0 +1,14 @@
+<h2><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
+<a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc('View Full ' . ($this->driver->isCollection() ? 'Collection' : 'Record'))?></a>
+
+<?
+  $formatter = $this->recordDataFormatter();
+  $fields = $formatter->getData($driver, $formatter->getDefaults('collection-record'));
+?>
+<? if (!empty($fields)): ?>
+  <table class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
+    <? foreach ($fields as $key => $current): ?>
+      <tr><th><?=$this->transEsc($key)?>:</th><td><?=$current['value']?></td></tr>
+    <? endforeach; ?>
+  </table>
+<? endif; ?>

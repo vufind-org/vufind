@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Module
@@ -26,8 +26,9 @@
  * @link     https://vufind.org/wiki/development
  */
 namespace VuFindLocalTemplate;
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
+
+use Zend\ModuleManager\ModuleManager;
+use Zend\Mvc\MvcEvent;
 
 /**
  * Template for ZF2 module for storing local overrides.

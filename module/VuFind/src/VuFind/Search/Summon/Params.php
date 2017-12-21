@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Summon
@@ -26,9 +26,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Summon;
-use SerialsSolutions_Summon_Query as SummonQuery,
-    VuFind\Solr\Utils as SolrUtils,
-    VuFindSearch\ParamBag;
+
+use SerialsSolutions_Summon_Query as SummonQuery;
+use VuFind\Solr\Utils as SolrUtils;
+use VuFindSearch\ParamBag;
 
 /**
  * Summon Search Parameters
@@ -80,6 +81,18 @@ class Params extends \VuFind\Search\Base\Params
         // Field name may have parameters attached -- remove them:
         $parts = explode(',', $newField);
         return parent::addFacet($parts[0], $newAlias, $ored);
+    }
+
+    /**
+     * Reset the current facet configuration.
+     *
+     * @return void
+     */
+    public function resetFacetConfig()
+    {
+        parent::resetFacetConfig();
+        $this->dateFacetSettings = [];
+        $this->fullFacetSettings = [];
     }
 
     /**
@@ -135,11 +148,11 @@ class Params extends \VuFind\Search\Base\Params
         // Special case -- if we have a "holdings only" or "expand query" facet,
         // we want this to always appear, even on the "no results" screen, since
         // setting this facet actually EXPANDS rather than reduces the result set.
-        if (isset($facets['holdingsOnly'])) {
-            $facets['holdingsOnly']['alwaysVisible'] = true;
-        }
-        if (isset($facets['queryExpansion'])) {
-            $facets['queryExpansion']['alwaysVisible'] = true;
+        foreach ($facets as $i => $facet) {
+            list($field) = explode(':', $facet['filter']);
+            if ($field == 'holdingsOnly' || $field == 'queryExpansion') {
+                $facets[$i]['alwaysVisible'] = true;
+            }
         }
 
         // Return modified list:
@@ -176,7 +189,7 @@ class Params extends \VuFind\Search\Base\Params
         $backendParams->set('didYouMean', $options->spellcheckEnabled());
 
         // Get the language setting:
-        $lang = $this->getServiceLocator()->get('VuFind\Translator')->getLocale();
+        $lang = $this->getOptions()->getTranslator()->getLocale();
         $backendParams->set('language', substr($lang, 0, 2));
 
         if ($options->highlightEnabled()) {
@@ -200,7 +213,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function getBackendFacetParameters()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('Summon');
+        $config = $this->configLoader->get('Summon');
         $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
             ? $config->Facet_Settings->facet_limit : 30;
         $fieldSpecificLimits = isset($config->Facet_Settings->facet_limit_by_field)
@@ -248,24 +261,31 @@ class Params extends \VuFind\Search\Base\Params
                         $params->set(
                             'holdings', strtolower(trim($safeValue)) == 'true'
                         );
-                    } else if ($filt['field'] == 'queryExpansion') {
+                    } elseif ($filt['field'] == 'queryExpansion') {
                         // Special case -- "query expansion" is a separate parameter
                         // from other facets.
                         $params->set(
                             'expand', strtolower(trim($safeValue)) == 'true'
                         );
-                    } else if ($filt['field'] == 'excludeNewspapers') {
+                    } elseif ($filt['field'] == 'openAccessFilter') {
+                        // Special case -- "open access filter" is a separate
+                        // parameter from other facets.
+                        $params->set(
+                            'openAccessFilter',
+                            strtolower(trim($safeValue)) == 'true'
+                        );
+                    } elseif ($filt['field'] == 'excludeNewspapers') {
                         // Special case -- support a checkbox for excluding
                         // newspapers:
                         $params
                             ->add('filters', "ContentType,Newspaper Article,true");
-                    } else if ($range = SolrUtils::parseRange($filt['value'])) {
+                    } elseif ($range = SolrUtils::parseRange($filt['value'])) {
                         // Special case -- range query (translate [x TO y] syntax):
                         $from = SummonQuery::escapeParam($range['from']);
                         $to = SummonQuery::escapeParam($range['to']);
                         $params
                             ->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
-                    } else if ($filt['operator'] == 'OR') {
+                    } elseif ($filt['operator'] == 'OR') {
                         // Special case -- OR facets:
                         $orFacets[$filt['field']] = isset($orFacets[$filt['field']])
                             ? $orFacets[$filt['field']] : [];
@@ -311,7 +331,7 @@ class Params extends \VuFind\Search\Base\Params
         if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
             // Simple case: [X TO Y]
             $filter['displayText'] = $matches[1] . '-' . $matches[2];
-        } else if (preg_match($caseInsensitiveRegex, $value, $matches)) {
+        } elseif (preg_match($caseInsensitiveRegex, $value, $matches)) {
             // Case insensitive case: [x TO y] OR [X TO Y]; convert
             // only if values in both ranges match up!
             if (strtolower($matches[3]) == strtolower($matches[1])

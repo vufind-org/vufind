@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -26,6 +26,8 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
+use VuFind\Resolver\Driver\PluginManager;
 
 /**
  * OpenUrl view helper
@@ -60,6 +62,13 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     protected $openUrlRules;
 
     /**
+     * Resolver plugin manager
+     *
+     * @var PluginManager
+     */
+    protected $resolverPluginManager;
+
+    /**
      * Current RecordDriver
      *
      * @var \VuFind\RecordDriver
@@ -76,15 +85,17 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \VuFind\View\Helper\Root\Context $context      Context helper
-     * @param array                            $openUrlRules VuFind OpenURL rules
-     * @param \Zend\Config\Config              $config       VuFind OpenURL config
+     * @param \VuFind\View\Helper\Root\Context $context       Context helper
+     * @param array                            $openUrlRules  VuFind OpenURL rules
+     * @param PluginManager                    $pluginManager Resolver plugin manager
+     * @param \Zend\Config\Config              $config        VuFind OpenURL config
      */
     public function __construct(\VuFind\View\Helper\Root\Context $context,
-        $openUrlRules, $config = null
+        $openUrlRules, PluginManager $pluginManager, $config = null
     ) {
         $this->context = $context;
         $this->openUrlRules = $openUrlRules;
+        $this->resolverPluginManager = $pluginManager;
         $this->config = $config;
     }
 
@@ -192,9 +203,23 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             );
         }
 
+        // instantiate the resolver plugin to get a proper resolver link
+        $resolver = isset($this->config->resolver)
+            ? $this->config->resolver : 'other';
+        $openurl = $this->recordDriver->getOpenUrl();
+        if ($this->resolverPluginManager->has($resolver)) {
+            $resolverObj = new \VuFind\Resolver\Connection(
+                $this->resolverPluginManager->get($resolver)
+            );
+            $resolverUrl = $resolverObj->getResolverUrl($openurl);
+        } else {
+            $resolverUrl = empty($base) ? '' : $base . '?' . $openurl;
+        }
+
         // Build parameters needed to display the control:
         $params = [
-            'openUrl' => $this->recordDriver->getOpenUrl(),
+            'resolverUrl' => $resolverUrl,
+            'openUrl' => $openurl,
             'openUrlBase' => empty($base) ? false : $base,
             'openUrlWindow' => empty($this->config->window_settings)
                 ? false : $this->config->window_settings,
@@ -281,7 +306,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
 
         // If we got this far, use the defaults -- true for results, false for
         // everywhere else.
-        return ($this->area == 'results');
+        return $this->area == 'results';
     }
 
     /**
@@ -291,6 +316,11 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     protected function checkIfRulesApply()
     {
+        // special case if no rules are defined at all assume that any record is
+        // valid for openUrls
+        if (!isset($this->openUrlRules) || count($this->openUrlRules) < 1) {
+            return true;
+        }
         foreach ($this->openUrlRules as $rules) {
             if (!$this->checkExcludedRecordsRules($rules)
                 && $this->checkSupportedRecordsRules($rules)
@@ -396,7 +426,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         }
 
         // Did all the rules match?
-        return ($ruleMatchCounter == count($rules));
+        return $ruleMatchCounter == count($rules);
     }
 
     /**

@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -27,6 +27,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Config;
+
 use VuFind\Auth\Manager as AuthManager;
 use Zend\Config\Config;
 
@@ -132,6 +133,18 @@ class AccountCapabilities
         }
         return isset($this->config->Social->tags)
             && $this->config->Social->tags === 'disabled'
+            ? 'disabled' : 'enabled';
+    }
+
+    /**
+     * Get SMS setting ('enabled' or 'disabled').
+     *
+     * @return string
+     */
+    public function getSmsSetting()
+    {
+        return isset($this->config->Mail->sms)
+            && $this->config->Mail->sms === 'disabled'
             ? 'disabled' : 'enabled';
     }
 

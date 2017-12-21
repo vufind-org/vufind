@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -26,6 +26,8 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
+use VuFind\Cache\KeyGeneratorTrait;
 use Zend\Cache\Storage\StorageInterface;
 
 /**
@@ -41,6 +43,8 @@ use Zend\Cache\Storage\StorageInterface;
  */
 abstract class AbstractBase implements DriverInterface
 {
+    use KeyGeneratorTrait;
+
     /**
      * Cache for storing ILS data temporarily (e.g. patron blocks)
      *
@@ -90,21 +94,6 @@ abstract class AbstractBase implements DriverInterface
     }
 
     /**
-     * Add instance-specific context to a cache key suffix to ensure that
-     * multiple drivers don't accidentally share values in the cache.
-     * This implementation works anywhere but can be overridden with something more
-     * performant.
-     *
-     * @param string $key Cache key suffix
-     *
-     * @return string
-     */
-    protected function formatCacheKey($key)
-    {
-        return get_class($this) . '-' . md5(json_encode($this->config) . "|$key");
-    }
-
-    /**
      * Helper function for fetching cached data.
      * Data is cached for up to $this->cacheLifetime seconds so that it would be
      * faster to process e.g. requests where multiple calls to the backend are made.
@@ -120,7 +109,7 @@ abstract class AbstractBase implements DriverInterface
             return null;
         }
 
-        $fullKey = $this->formatCacheKey($key);
+        $fullKey = $this->getCacheKey($key);
         $item = $this->cache->getItem($fullKey);
         if (null !== $item) {
             // Return value if still valid:
@@ -153,6 +142,22 @@ abstract class AbstractBase implements DriverInterface
             'time' => time(),
             'entry' => $entry
         ];
-        $this->cache->setItem($this->formatCacheKey($key), $item);
+        $this->cache->setItem($this->getCacheKey($key), $item);
+    }
+
+    /**
+     * Helper function for removing cached data.
+     *
+     * @param string $key Cache entry key
+     *
+     * @return void
+     */
+    protected function removeCachedData($key)
+    {
+        // Don't write to cache if we don't have a cache!
+        if (null === $this->cache) {
+            return;
+        }
+        $this->cache->removeItem($this->getCacheKey($key));
     }
 }

@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -28,11 +28,11 @@
  */
 namespace VuFind\Search\Solr\V4;
 
-use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFind\Search\Solr\AbstractErrorListener;
+use VuFindSearch\Backend\Exception\HttpErrorException;
 
-use Zend\Http\Response;
 use Zend\EventManager\EventInterface;
+use Zend\Http\Response;
 
 /**
  * SOLR 3.x error listener.
@@ -129,5 +129,4 @@ class ErrorListener extends AbstractErrorListener
         }
         return self::TYPE_OTHER;
     }
-
 }

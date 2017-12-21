@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Recommendations
@@ -27,7 +27,9 @@
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Connection\OpenLibrary, VuFind\Solr\Utils as SolrUtils;
+
+use VuFind\Connection\OpenLibrary;
+use VuFind\Solr\Utils as SolrUtils;
 
 /**
  * OpenLibrarySubjects Recommendations Module
@@ -200,9 +202,9 @@ class OpenLibrarySubjects implements RecommendInterface,
         // Try to extract range details from request parameters or SearchObject:
         $from = $request->get($field . 'from');
         $to = $request->get($field . 'to');
-        if (!is_null($from) && !is_null($to)) {
+        if (null !== $from && null !== $to) {
             $range = ['from' => $from, 'to' => $to];
-        } else if (is_object($params)) {
+        } elseif (is_object($params)) {
             $currentFilters = $params->getFilters();
             if (isset($currentFilters[$field][0])) {
                 $range = SolrUtils::parseRange($currentFilters[$field][0]);

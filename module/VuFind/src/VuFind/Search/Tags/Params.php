@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Tags
@@ -38,4 +38,34 @@ namespace VuFind\Search\Tags;
  */
 class Params extends \VuFind\Search\Base\Params
 {
+    /**
+     * Is this a fuzzy search?
+     *
+     * @var bool
+     */
+    protected $fuzzy = false;
+
+    /**
+     * Is this a fuzzy search?
+     *
+     * @return bool
+     */
+    public function isFuzzyTagSearch()
+    {
+        return $this->fuzzy;
+    }
+
+    /**
+     * Pull the search parameters
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    public function initFromRequest($request)
+    {
+        parent::initFromRequest($request);
+        $this->fuzzy = ('true' == $request->get('fuzzy', 'false'));
+    }
 }

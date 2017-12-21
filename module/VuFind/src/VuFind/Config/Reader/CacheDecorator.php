@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Config
@@ -28,8 +28,8 @@
  */
 namespace VuFind\Config\Reader;
 
-use Zend\Config\Reader\ReaderInterface;
 use Zend\Cache\Storage\StorageInterface;
+use Zend\Config\Reader\ReaderInterface;
 
 /**
  * This class decorates a configuration file reader with caching support.
@@ -95,7 +95,7 @@ class CacheDecorator implements ReaderInterface
      *
      * @param string $string String
      *
-     * @return array|boolean
+     * @return array|bool
      */
     public function fromString($string)
     {
@@ -121,5 +121,4 @@ class CacheDecorator implements ReaderInterface
     {
         return md5($string);
     }
-
 }

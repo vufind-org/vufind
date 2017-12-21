@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Role;
-use VuFind\Role\DynamicRoleProvider, VuFind\Role\PermissionProvider\PluginManager;
+
+use VuFind\Role\DynamicRoleProvider;
+use VuFind\Role\PermissionProvider\PluginManager;
 
 /**
  * Dynamic Role Provider Test Class
@@ -99,9 +101,9 @@ class DynamicRoleProviderTest extends \VuFindTest\Unit\TestCase
      */
     protected function getFakePluginManager()
     {
-        $pm = new PluginManager();
+        $pm = new PluginManager($this->getServiceManager());
         foreach (['a', 'b', 'c'] as $name) {
-            $pm->setService($name, $this->getMock('VuFind\Role\PermissionProvider\PermissionProviderInterface'));
+            $pm->setService($name, $this->createMock('VuFind\Role\PermissionProvider\PermissionProviderInterface'));
         }
         return $pm;
     }

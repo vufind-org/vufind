@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Content
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Content;
+
 use DOMDocument;
 
 /**
@@ -82,7 +83,7 @@ abstract class AbstractSyndetics extends AbstractBase
      * @return \Zend\Http\Client
      * @throws \Exception
      */
-    protected function getHttpClient($url)
+    protected function getHttpClient($url = null)
     {
         $client = parent::getHttpClient($url);
         $client->setOptions(['timeout' => $this->timeout]);

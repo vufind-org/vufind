@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -31,12 +31,12 @@ namespace VuFind\Search\Factory;
 use SerialsSolutions\Summon\Zend2 as Connector;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
-use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
-use VuFindSearch\Backend\Summon\QueryBuilder;
 use VuFindSearch\Backend\Summon\Backend;
+use VuFindSearch\Backend\Summon\QueryBuilder;
+use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for Summon backends.
@@ -86,7 +86,7 @@ class SummonBackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $configReader = $this->serviceLocator->get('VuFind\Config');
         $this->config = $configReader->get('config');
         $this->summonConfig = $configReader->get('Summon');

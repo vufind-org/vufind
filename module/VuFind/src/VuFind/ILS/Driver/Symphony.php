@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -27,9 +27,13 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use SoapClient, SoapFault, SoapHeader, VuFind\Exception\ILS as ILSException,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+
+use SoapClient;
+use SoapFault;
+use SoapHeader;
+use VuFind\Cache\Manager as CacheManager;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\Record\Loader;
 use Zend\Log\LoggerAwareInterface;
 
 /**
@@ -42,11 +46,9 @@ use Zend\Log\LoggerAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Symphony extends AbstractBase
-    implements ServiceLocatorAwareInterface, LoggerAwareInterface
+class Symphony extends AbstractBase implements LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
-    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
 
     /**
      * Cache for policy information
@@ -61,6 +63,32 @@ class Symphony extends AbstractBase
      * @var array
      */
     protected $policies;
+
+    /**
+     * Cache manager
+     *
+     * @var CacheManager
+     */
+    protected $cacheManager;
+
+    /**
+     * Record loader
+     *
+     * @var Loader
+     */
+    protected $recordLoader;
+
+    /**
+     * Constructor
+     *
+     * @param Loader       $loader       Record loader
+     * @param CacheManager $cacheManager Cache manager (optional)
+     */
+    public function __construct(Loader $loader, CacheManager $cacheManager = null)
+    {
+        $this->recordLoader = $loader;
+        $this->cacheManager = $cacheManager;
+    }
 
     /**
      * Initialize the driver.
@@ -120,13 +148,11 @@ class Symphony extends AbstractBase
         ];
 
         // Initialize cache manager.
-        if (isset($configArray['PolicyCache']['type'])) {
-            $serviceManager = $this->getServiceLocator()->getServiceLocator();
-            if ($serviceManager->has('VuFind\CacheManager')) {
-                $manager = $serviceManager->get('VuFind\CacheManager');
-                $this->policyCache
-                    = $manager->getCache($configArray['PolicyCache']['type']);
-            }
+        if (isset($configArray['PolicyCache']['type'])
+            && $this->cacheManager
+        ) {
+            $this->policyCache = $this->cacheManager
+                ->getCache($configArray['PolicyCache']['type']);
         }
     }
 
@@ -181,7 +207,7 @@ class Symphony extends AbstractBase
         $reset = false
     ) {
         $data = ['clientID' => $this->config['WebServices']['clientID']];
-        if (!is_null($login)) {
+        if (null !== $login) {
             $data['sessionToken']
                 = $this->getSessionToken($login, $password, $reset);
         }
@@ -375,8 +401,7 @@ class Symphony extends AbstractBase
 
         $entryNumber = $this->config['999Holdings']['entry_number'];
 
-        $records = $this->getServiceLocator()->getServiceLocator()
-            ->get('VuFind\RecordLoader')->loadBatch($ids);
+        $records = $this->recordLoader->loadBatch($ids);
         foreach ($records as $record) {
             $results = $record->getFormattedMarcDetails($entryNumber, $marcMap);
             foreach ($results as $result) {
@@ -521,9 +546,9 @@ class Symphony extends AbstractBase
             }
 
             $library = $this->translatePolicyID('LIBR', $libraryID);
-            $copyNumber = 0; // ItemInfo does not include copy numbers,
-                             // so we generate them under the assumption
-                             // that items are being listed in order.
+            // ItemInfo does not include copy numbers, so we generate them under
+            // the assumption that items are being listed in order.
+            $copyNumber = 0;
 
             $itemInfos = is_array($callInfo->ItemInfo)
                 ? $callInfo->ItemInfo
@@ -1030,7 +1055,7 @@ class Symphony extends AbstractBase
         return [];
     }
 
-     /**
+    /**
      * Patron Login
      *
      * This is responsible for authenticating a patron against the catalog.
@@ -1105,7 +1130,6 @@ class Symphony extends AbstractBase
                         break;
                     }
                 }
-
             }
         }
 
@@ -1177,7 +1201,7 @@ class Symphony extends AbstractBase
                 $group = null;
             }
 
-            list($lastname,$firstname)
+            list($lastname, $firstname)
                 = explode(', ', $result->patronInfo->displayName);
 
             $profile = [
@@ -1307,7 +1331,7 @@ class Symphony extends AbstractBase
                 ];
             }
             return $holdList;
-        } catch(SoapFault $e) {
+        } catch (SoapFault $e) {
             return null;
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
@@ -1386,7 +1410,7 @@ class Symphony extends AbstractBase
         return $holdDetails['reqnum'];
     }
 
-     /**
+    /**
      * Cancel Holds
      *
      * Attempts to Cancel a hold on a particular item
@@ -1434,7 +1458,7 @@ class Symphony extends AbstractBase
         return $result;
     }
 
-     /**
+    /**
      * Public Function which retrieves renew, hold and cancel settings from the
      * driver ini file.
      *
@@ -1442,7 +1466,7 @@ class Symphony extends AbstractBase
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-      *
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConfig($function, $params = null)

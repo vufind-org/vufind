@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Base
@@ -26,11 +26,12 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Base;
-use Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
-use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query,
-    VuFindSearch\Query\QueryGroup;
-use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
+
+use VuFind\Search\QueryAdapter;
+use VuFind\Solr\Utils as SolrUtils;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
+use VuFindSearch\Query\Query;
+use VuFindSearch\Query\QueryGroup;
 
 /**
  * Abstract parameters search model.
@@ -43,12 +44,8 @@ use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Params implements ServiceLocatorAwareInterface
+class Params
 {
-    use \Zend\ServiceManager\ServiceLocatorAwareTrait {
-        setServiceLocator as setServiceLocatorThroughTrait;
-    }
-
     /**
      * Internal representation of user query.
      *
@@ -127,6 +124,13 @@ class Params implements ServiceLocatorAwareInterface
     protected $facetConfig = [];
 
     /**
+     * Extra facet labels
+     *
+     * @var array
+     */
+    protected $extraFacetLabels = [];
+
+    /**
      * Checkbox facet configuration
      *
      * @var array
@@ -174,16 +178,23 @@ class Params implements ServiceLocatorAwareInterface
     protected $facetAliases = [];
 
     /**
+     * Config loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configLoader;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
      * @param \VuFind\Config\PluginManager $configLoader Config loader
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __construct($options, \VuFind\Config\PluginManager $configLoader)
     {
         $this->setOptions($options);
+
+        $this->configLoader = $configLoader;
 
         // Make sure we have some sort of query object:
         $this->query = new Query();
@@ -219,10 +230,10 @@ class Params implements ServiceLocatorAwareInterface
     public function __clone()
     {
         if (is_object($this->options)) {
-            $this->options = clone($this->options);
+            $this->options = clone $this->options;
         }
         if (is_object($this->query)) {
-            $this->query = clone($this->query);
+            $this->query = clone $this->query;
         }
     }
 
@@ -367,13 +378,13 @@ class Params implements ServiceLocatorAwareInterface
      * @param \Zend\StdLib\Parameters $request Parameter object representing user
      * request.
      *
-     * @return boolean True if search settings were found, false if not.
+     * @return bool True if search settings were found, false if not.
      */
     protected function initBasicSearch($request)
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (is_null($lookfor = $request->get('lookfor'))) {
+        if (null === ($lookfor = $request->get('lookfor'))) {
             return false;
         }
 
@@ -516,10 +527,10 @@ class Params implements ServiceLocatorAwareInterface
         if ($view == 'rss') {
             // RSS is a special case that does not require config validation
             $this->setView('rss');
-        } else if (!empty($view) && in_array($view, $validViews)) {
+        } elseif (!empty($view) && in_array($view, $validViews)) {
             // make sure the url parameter is a valid view
             $this->setView($view);
-        } else if (!empty($this->lastView)
+        } elseif (!empty($this->lastView)
             && in_array($this->lastView, $validViews)
         ) {
             // if there is nothing in the URL, see if we had a previous value
@@ -657,7 +668,7 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getView()
     {
-        return is_null($this->view)
+        return null === $this->view
             ? $this->getOptions()->getDefaultView() : $this->view;
     }
 
@@ -711,7 +722,7 @@ class Params implements ServiceLocatorAwareInterface
         $value = count($temp) > 0 ? $temp[0] : '';
 
         // Remove quotes from the value if there are any
-        if (substr($value, 0, 1)  == '"') {
+        if (substr($value, 0, 1) == '"') {
             $value = substr($value, 1);
         }
         if (substr($value, -1, 1) == '"') {
@@ -928,12 +939,16 @@ class Params implements ServiceLocatorAwareInterface
     public function getFacetLabel($field, $value = null)
     {
         if (!isset($this->facetConfig[$field])
+            && !isset($this->extraFacetLabels[$field])
             && isset($this->facetAliases[$field])
         ) {
             $field = $this->facetAliases[$field];
         }
-        return isset($this->facetConfig[$field])
-            ? $this->facetConfig[$field] : 'unrecognized_facet_label';
+        if (isset($this->facetConfig[$field])) {
+            return $this->facetConfig[$field];
+        }
+        return isset($this->extraFacetLabels[$field])
+            ? $this->extraFacetLabels[$field] : 'unrecognized_facet_label';
     }
 
     /**
@@ -1057,7 +1072,7 @@ class Params implements ServiceLocatorAwareInterface
         if ($firstChar == '-') {
             $operator = 'NOT';
             $field = substr($field, 1);
-        } else if ($firstChar == '~') {
+        } elseif ($firstChar == '~') {
             $operator = 'OR';
             $field = substr($field, 1);
         } else {
@@ -1141,7 +1156,7 @@ class Params implements ServiceLocatorAwareInterface
         // Pad to four digits:
         if (strlen($year) == 2) {
             $year = '19' . $year;
-        } else if (strlen($year) == 3) {
+        } elseif (strlen($year) == 3) {
             $year = '0' . $year;
         }
 
@@ -1471,7 +1486,7 @@ class Params implements ServiceLocatorAwareInterface
         if (!$this->hasHiddenFilter($newFilter)) {
             // Extract field and value from filter string:
             list($field, $value) = $this->parseFilter($newFilter);
-            if (!empty($field) && !empty($value)) {
+            if (!empty($field) && '' !== $value) {
                 $this->hiddenFilters[$field][] = $value;
             }
         }
@@ -1488,7 +1503,7 @@ class Params implements ServiceLocatorAwareInterface
     public function getDisplayQueryWithReplacedTerm($oldTerm, $newTerm)
     {
         // Stash our old data for a minute
-        $oldTerms = clone($this->query);
+        $oldTerms = clone $this->query;
         // Replace the search term
         $this->query->replaceTerm($oldTerm, $newTerm);
         // Get the new query string
@@ -1643,59 +1658,20 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Sleep magic method -- the service locator can't be serialized, so we need to
-     * exclude it from serialization.  Since we can't obtain a new locator in the
-     * __wakeup() method, it needs to be re-injected from outside.
+     * Translate a string (or string-castable object)
      *
-     * @return array
-     */
-    public function __sleep()
-    {
-        $vars = get_object_vars($this);
-        unset($vars['serviceLocator']);
-        $vars = array_keys($vars);
-        return $vars;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Params
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        // If this isn't the top-level manager, get its parent:
-        if ($serviceLocator instanceof ServiceLocatorAwareInterface) {
-            $serviceLocator = $serviceLocator->getServiceLocator();
-        }
-        return $this->setServiceLocatorThroughTrait($serviceLocator);
-    }
-
-    /**
-     * Get a database table object.
-     *
-     * @param string $table Name of table to retrieve
-     *
-     * @return \VuFind\Db\Table\Gateway
-     */
-    public function getTable($table)
-    {
-        return $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
-            ->get($table);
-    }
-
-    /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
+     * @param string|object|array $target  String to translate or an array of text
+     * domain and string to translate
+     * @param array               $tokens  Tokens to inject into the translated
+     * string
+     * @param string              $default Default value to use if no translation is
+     * found (null for no default).
      *
      * @return string
      */
-    public function translate($msg)
+    public function translate($target, $tokens = [], $default = null)
     {
-        return $this->getOptions()->translate($msg);
+        return $this->getOptions()->translate($target, $tokens, $default);
     }
 
     /**
@@ -1744,7 +1720,7 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function initFacetList($facetList, $facetSettings, $cfgFile = 'facets')
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get($cfgFile);
+        $config = $this->configLoader->get($cfgFile);
         if (!isset($config->$facetList)) {
             return false;
         }
@@ -1784,7 +1760,7 @@ class Params implements ServiceLocatorAwareInterface
     protected function initCheckboxFacets($facetList = 'CheckboxFacets',
         $cfgFile = 'facets'
     ) {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get($cfgFile);
+        $config = $this->configLoader->get($cfgFile);
         if (empty($config->$facetList)) {
             return false;
         }

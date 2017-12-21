@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Cookie
@@ -60,20 +60,30 @@ class CookieManager
     protected $secure;
 
     /**
+     * The name of the session cookie
+     *
+     * @var string
+     */
+    protected $sessionName;
+
+    /**
      * Constructor
      *
-     * @param array  $cookies Cookie array to manipulate (e.g. $_COOKIE)
-     * @param string $path    Cookie base path (default = /)
-     * @param string $domain  Cookie domain
-     * @param bool   $secure  Are cookies secure only? (default = false)
+     * @param array  $cookies     Cookie array to manipulate (e.g. $_COOKIE)
+     * @param string $path        Cookie base path (default = /)
+     * @param string $domain      Cookie domain
+     * @param bool   $secure      Are cookies secure only? (default = false)
+     * @param string $sessionName Session cookie name (if null defaults to PHP
+     * settings)
      */
     public function __construct($cookies, $path = '/', $domain = null,
-        $secure = false
+        $secure = false, $sessionName = null
     ) {
         $this->cookies = $cookies;
         $this->path = $path;
         $this->domain = $domain;
         $this->secure = $secure;
+        $this->sessionName = $sessionName;
     }
 
     /**
@@ -114,6 +124,16 @@ class CookieManager
     public function isSecure()
     {
         return $this->secure;
+    }
+
+    /**
+     * Get the name of the cookie
+     *
+     * @return mixed
+     */
+    public function getSessionName()
+    {
+        return $this->sessionName;
     }
 
     /**

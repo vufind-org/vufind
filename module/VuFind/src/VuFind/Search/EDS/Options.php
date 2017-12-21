@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  EBSCO
@@ -47,42 +47,49 @@ class Options extends \VuFind\Search\Base\Options
 
     /**
      * Default search mode options
+     *
      * @var string
      */
     protected $defaultMode = 'all';
 
     /**
      * The set search mode
+     *
      * @var string
      */
     protected $searchMode;
 
     /**
      * Default expanders to apply
+     *
      * @var array
      */
     protected $defaultExpanders = [];
 
     /**
      * Available expander options
+     *
      * @var unknown
      */
     protected $expanderOptions = [];
 
     /**
      * Available limiter options
+     *
      * @var unknown
-    */
+     */
     protected $limiterOptions = [];
 
     /**
-     * Wheither or not to return available facets with the search response
+     * Whether or not to return available facets with the search response
+     *
      * @var unknown
      */
     protected $includeFacets = 'y';
 
     /**
      * Available Search Options from the API
+     *
      * @var array
      */
     protected $apiInfo;
@@ -214,6 +221,7 @@ class Options extends \VuFind\Search\Base\Options
     {
         return $this->defaultExpanders;
     }
+
     /**
      * Return the route name of the action used for performing advanced searches.
      * Returns false if the feature is not supported.
@@ -372,6 +380,11 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultView = 'list|' . $searchSettings->General->default_view;
         }
 
+        // Load list view for result (controls AJAX embedding vs. linking)
+        if (isset($searchSettings->List->view)) {
+            $this->listviewOption = $searchSettings->List->view;
+        }
+
         if (isset($searchSettings->Advanced_Facet_Settings->special_facets)) {
             $this->specialAdvancedFacets
                 = $searchSettings->Advanced_Facet_Settings->special_facets;
@@ -447,7 +460,7 @@ class Options extends \VuFind\Search\Base\Options
                         'Label' => $mode['Label'], 'Value' => $mode['Mode']
                     ];
                     if (isset($mode['DefaultOn'])
-                        &&  'y' == $mode['DefaultOn']
+                        && 'y' == $mode['DefaultOn']
                     ) {
                         $this->defaultMode = $mode['Mode'];
                     }
@@ -490,9 +503,7 @@ class Options extends \VuFind\Search\Base\Options
                         'DefaultOn' => isset($limiter['DefaultOn'])
                             ? $limiter['DefaultOn'] : 'n',
                     ];
-
                 }
-
             }
         }
     }

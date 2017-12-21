@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Summon
@@ -38,6 +38,8 @@ namespace VuFind\Search\Summon;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Search\Options\ViewOptionsTrait;
+
     /**
      * Maximum number of topic recommendations to show (false for none)
      *
@@ -98,9 +100,6 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Load search preferences:
-        if (isset($searchSettings->General->default_view)) {
-            $this->defaultView = $searchSettings->General->default_view;
-        }
         if (isset($searchSettings->General->retain_filters_by_default)) {
             $this->retainFiltersByDefault
                 = $searchSettings->General->retain_filters_by_default;
@@ -148,15 +147,12 @@ class Options extends \VuFind\Search\Base\Options
                 = $searchSettings->General->empty_search_relevance_override;
         }
 
-        // Load view preferences (or defaults if none in .ini file):
-        if (isset($searchSettings->Views)) {
-            foreach ($searchSettings->Views as $key => $value) {
-                $this->viewOptions[$key] = $value;
-            }
-        } elseif (isset($searchSettings->General->default_view)) {
-            $this->viewOptions = [$this->defaultView => $this->defaultView];
-        } else {
-            $this->viewOptions = ['list' => 'List'];
+        // Set up views
+        $this->initViewOptions($searchSettings);
+
+        // Load list view for result (controls AJAX embedding vs. linking)
+        if (isset($searchSettings->List->view)) {
+            $this->listviewOption = $searchSettings->List->view;
         }
     }
 
@@ -179,6 +175,17 @@ class Options extends \VuFind\Search\Base\Options
     public function getAdvancedSearchAction()
     {
         return 'summon-advanced';
+    }
+
+    /**
+     * Return the route name for the facet list action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getFacetListAction()
+    {
+        return 'summon-facetlist';
     }
 
     /**

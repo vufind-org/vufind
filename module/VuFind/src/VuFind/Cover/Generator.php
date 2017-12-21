@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -138,7 +138,7 @@ class Generator
         }
         $default['authorFont'] = $this->fontPath($default['authorFont']);
         $default['titleFont']  = $this->fontPath($default['titleFont']);
-        $this->settings = (object) $default;
+        $this->settings = (object)$default;
         $this->initImage();
         $this->initColors();
     }
@@ -211,7 +211,7 @@ class Generator
      */
     protected function getColor($color)
     {
-        switch (strtolower($color)){
+        switch (strtolower($color)) {
         case 'black':
             return imagecolorallocate($this->im, 0, 0, 0);
         case 'silver':
@@ -678,20 +678,20 @@ class Generator
         // Generate 5 lines of text, 4 offset in a border color
         if ($scolor) {
             imagettftext(
-                $this->im, $fontSize, 0, $x,   $y + 1, $scolor, $font, $text
+                $this->im, $fontSize, 0, $x, $y + 1, $scolor, $font, $text
             );
             imagettftext(
-                $this->im, $fontSize, 0, $x,   $y - 1, $scolor, $font, $text
+                $this->im, $fontSize, 0, $x, $y - 1, $scolor, $font, $text
             );
             imagettftext(
-                $this->im, $fontSize, 0, $x + 1, $y,   $scolor, $font, $text
+                $this->im, $fontSize, 0, $x + 1, $y, $scolor, $font, $text
             );
             imagettftext(
-                $this->im, $fontSize, 0, $x - 1, $y,   $scolor, $font, $text
+                $this->im, $fontSize, 0, $x - 1, $y, $scolor, $font, $text
             );
         }
         // 1 centered in main color
-        imagettftext($this->im, $fontSize, 0, $x,   $y,   $mcolor, $font, $text);
+        imagettftext($this->im, $fontSize, 0, $x, $y, $mcolor, $font, $text);
     }
 
     /**
@@ -712,9 +712,9 @@ class Generator
 
         $bc = str_split($bc);
         for ($k = 0;$k < 4;$k++) {
-            $x = $k % 2   ? $halfWidth : $halfWidth - $boxWidth;
+            $x = $k % 2 ? $halfWidth : $halfWidth - $boxWidth;
             $y = $k / 2 < 1 ? $halfHeight : $halfHeight - $boxHeight;
-            $u = $k % 2   ? $boxWidth : -$boxWidth;
+            $u = $k % 2 ? $boxWidth : -$boxWidth;
             $v = $k / 2 < 1 ? $boxHeight : -$boxHeight;
             for ($i = 0;$i < 16;$i++) {
                 if ($bc[$i] == "1") {
@@ -754,7 +754,7 @@ class Generator
         $p = (int)($v * (1.0 - $s));
         $q = (int)($v * (1.0 - $s * $f));
         $t = (int)($v * (1.0 - $s * (1.0 - $f)));
-        switch($i) {
+        switch ($i) {
         case 0:
             return imagecolorallocate($this->im, $v, $t, $p);
         case 1:

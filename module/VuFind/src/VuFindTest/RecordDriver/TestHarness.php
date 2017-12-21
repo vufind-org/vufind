@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -51,7 +51,7 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
         if (substr($method, 0, 3) == 'get') {
             $index = substr($method, 3);
             return isset($this->fields[$index]) ? $this->fields[$index] : null;
-        } else if (substr($method, 0, 3) == 'set') {
+        } elseif (substr($method, 0, 3) == 'set') {
             $index = substr($method, 3);
             $this->fields[$index] = $params[0];
         }

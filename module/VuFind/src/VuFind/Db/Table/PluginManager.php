@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Db_Table
@@ -26,7 +26,6 @@
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 namespace VuFind\Db\Table;
-use Zend\ServiceManager\ConfigInterface;
 
 /**
  * Database table plugin manager
@@ -39,24 +38,6 @@ use Zend\ServiceManager\ConfigInterface;
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
-    /**
-     * Constructor
-     *
-     * Make sure table gateways are properly initialized.
-     *
-     * @param ConfigInterface $configuration Configuration settings (optional)
-     */
-    public function __construct(ConfigInterface $configuration = null)
-    {
-        parent::__construct($configuration);
-        $initializer = function ($instance, $manager) {
-            $instance
-                ->setAdapter($manager->getServiceLocator()->get('VuFind\DbAdapter'));
-            $instance->initialize();
-        };
-        $this->addInitializer($initializer, false);
-    }
-
     /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_SolrAuthorFacets
@@ -70,13 +70,13 @@ class Params extends \VuFind\Search\Solr\Params
      * @param \Zend\StdLib\Parameters $request Parameter object representing user
      * request.
      *
-     * @return boolean True if search settings were found, false if not.
+     * @return bool True if search settings were found, false if not.
      */
     protected function initBasicSearch($request)
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (is_null($lookfor = $request->get('lookfor'))) {
+        if (null === ($lookfor = $request->get('lookfor'))) {
             return false;
         }
 

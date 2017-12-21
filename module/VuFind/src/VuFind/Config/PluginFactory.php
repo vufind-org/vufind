@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ServiceManager
@@ -26,9 +26,11 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Config;
-use Zend\Config\Config, Zend\Config\Reader\Ini as IniReader,
-    Zend\ServiceManager\AbstractFactoryInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+
+use Zend\Config\Config;
+use Zend\Config\Reader\Ini as IniReader;
+use Zend\ServiceManager\AbstractFactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * VuFind Config Plugin Factory
@@ -104,7 +106,7 @@ class PluginFactory implements AbstractFactoryInterface
 
         // Now we'll pull all the children down one at a time and override settings
         // as appropriate:
-        while (!is_null($child = array_pop($configs))) {
+        while (null !== ($child = array_pop($configs))) {
             $overrideSections = isset($child->Parent_Config->override_full_sections)
                 ? explode(
                     ',', str_replace(
@@ -113,6 +115,11 @@ class PluginFactory implements AbstractFactoryInterface
                 )
                 : [];
             foreach ($child as $section => $contents) {
+                // Check if arrays in the current config file should be merged with
+                // preceding arrays from config files defined as Parent_Config.
+                $mergeArraySettings
+                    = !empty($child->Parent_Config->merge_array_settings);
+
                 // Omit Parent_Config from the returned configuration; it is only
                 // needed during loading, and its presence will cause problems in
                 // config files that iterate through all of the sections (e.g.
@@ -126,7 +133,21 @@ class PluginFactory implements AbstractFactoryInterface
                     $config->$section = $child->$section;
                 } else {
                     foreach (array_keys($contents->toArray()) as $key) {
-                        $config->$section->$key = $child->$section->$key;
+                        // If a key is defined as key[] in the config file the key
+                        // remains a Zend\Config\Config object. If the current
+                        // section is not configured as an override section we try to
+                        // merge the key[] values instead of overwriting them.
+                        if (is_object($config->$section->$key)
+                            && is_object($child->$section->$key)
+                            && $mergeArraySettings
+                        ) {
+                            $config->$section->$key = array_merge(
+                                $config->$section->$key->toArray(),
+                                $child->$section->$key->toArray()
+                            );
+                        } else {
+                            $config->$section->$key = $child->$section->$key;
+                        }
                     }
                 }
             }

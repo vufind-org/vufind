@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -26,9 +26,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search;
+
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventManager;
+use Zend\EventManager\EventManagerInterface;
 use Zend\Stdlib\Parameters;
 
 /**
@@ -75,10 +76,15 @@ class SearchRunner
      * Constructor
      *
      * @param ResultsManager $resultsManager Results manager
+     * @param EventManager   $events         Event manager (optional)
      */
-    public function __construct(ResultsManager $resultsManager)
-    {
+    public function __construct(ResultsManager $resultsManager,
+        EventManager $events = null
+    ) {
         $this->resultsManager = $resultsManager;
+        if (null !== $events) {
+            $this->setEventManager($events);
+        }
     }
 
     /**

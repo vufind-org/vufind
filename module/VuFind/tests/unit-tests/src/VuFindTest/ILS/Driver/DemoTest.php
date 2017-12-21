@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\ILS\Driver;
+
 use VuFind\ILS\Driver\Demo;
 
 /**
@@ -56,8 +57,10 @@ class DemoTest extends \VuFindTest\Unit\TestCase
         $session = $this->getMockBuilder('Zend\Session\Container')
             ->disableOriginalConstructor()->getMock();
         $this->driver = new Demo(
-            new \VuFind\Date\Converter(), $this->getMock('VuFindSearch\Service'),
-            function () use ($session) { return $session; }
+            new \VuFind\Date\Converter(), $this->createMock('VuFindSearch\Service'),
+            function () use ($session) {
+                return $session;
+            }
         );
         $this->driver->init();
     }

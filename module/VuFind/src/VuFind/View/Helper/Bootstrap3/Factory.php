@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Bootstrap3;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -65,7 +66,7 @@ class Factory
     public static function getLayoutClass(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $left = !isset($config->Site->sidebarOnLeft)
+        $sidebarOnLeft = !isset($config->Site->sidebarOnLeft)
             ? false : $config->Site->sidebarOnLeft;
         $mirror = !isset($config->Site->mirrorSidebarInRTL)
             ? true : $config->Site->mirrorSidebarInRTL;
@@ -74,11 +75,11 @@ class Factory
         // The right-to-left setting is injected into the layout by the Bootstrapper;
         // pull it back out here to avoid duplicate effort, then use it to apply
         // the mirror setting appropriately.
-        $layout = $sm->getServiceLocator()->get('viewmanager')->getViewModel();
-        if ($layout->rtl && !$mirror) {
-            $left = !$left;
+        $layout = $sm->getServiceLocator()->get('ViewManager')->getViewModel();
+        if ($layout->rtl && $mirror) {
+            $sidebarOnLeft = !$sidebarOnLeft;
         }
-        return new LayoutClass($left, $offcanvas);
+        return new LayoutClass($sidebarOnLeft, $offcanvas);
     }
 
     /**

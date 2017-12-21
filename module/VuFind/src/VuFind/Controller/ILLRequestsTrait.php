@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -38,17 +38,6 @@ namespace VuFind\Controller;
  */
 trait ILLRequestsTrait
 {
-    /**
-     * Action for dealing with blocked ILL requests.
-     *
-     * @return mixed
-     */
-    public function blockedILLRequestAction()
-    {
-        $this->flashMessenger()->addMessage('ill_request_error_blocked', 'error');
-        return $this->redirectToRecord('#top');
-    }
-
     /**
      * Action for dealing with ILL requests.
      *
@@ -86,10 +75,15 @@ trait ILLRequestsTrait
         }
 
         // Block invalid requests:
-        if (!$catalog->checkILLRequestIsValid(
+        $validRequest = $catalog->checkILLRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
-        )) {
-            return $this->blockedILLRequestAction();
+        );
+        if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
+            $this->flashMessenger()->addErrorMessage(
+                is_array($validRequest)
+                    ? $validRequest['status'] : 'ill_request_error_blocked'
+            );
+            return $this->redirectToRecord('#top');
         }
 
         // Send various values to the view so we can build the form:
@@ -98,7 +92,7 @@ trait ILLRequestsTrait
             ? explode(":", $checkRequests['extraFields']) : [];
 
         // Process form submissions if necessary:
-        if (!is_null($this->params()->fromPost('placeILLRequest'))) {
+        if (null !== $this->params()->fromPost('placeILLRequest')) {
             // If we made it this far, we're ready to place the hold;
             // if successful, we will redirect and can stop here.
 
@@ -138,7 +132,7 @@ trait ILLRequestsTrait
         // Find and format the default required date:
         $defaultRequired = $this->ILLRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->getServiceLocator()->get('VuFind\DateConverter')
+        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
             ->convertToDisplayDate("U", $defaultRequired);
 
         // Get pickup libraries

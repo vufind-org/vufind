@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -140,7 +140,7 @@ class SearchHandler
                 list($name, $value) = $param;
                 if ($name === 'bq') {
                     $boostQuery[] = $value;
-                } else if ($name === 'bf') {
+                } elseif ($name === 'bf') {
                     // BF parameter may contain multiple space-separated functions
                     // with individual boosts.  We need to parse this into _val_
                     // query components:
@@ -456,7 +456,7 @@ class SearchHandler
                     ')';
                 // ...and add a weight if we have one
                 $weight = $sw[1];
-                if (!is_null($weight) && $weight && $weight > 0) {
+                if (null !== $weight && $weight && $weight > 0) {
                     $sstring .= '^' . $weight;
                 }
                 // push it onto the stack of clauses
@@ -470,7 +470,7 @@ class SearchHandler
                     // Add the weight if we have one. Yes, I know, it's redundant
                     // code.
                     $weight = $spec[1];
-                    if (!is_null($weight) && $weight && $weight > 0) {
+                    if (null !== $weight && $weight && $weight > 0) {
                         $sstring .= '^' . $weight;
                     }
                     // ..and push it on the stack of clauses

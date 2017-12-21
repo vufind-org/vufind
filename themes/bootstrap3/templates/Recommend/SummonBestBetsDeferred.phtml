@@ -4,6 +4,6 @@
     . "\$('#SummonDeferredBestBets').load(url);";
 ?>
 <div id="SummonDeferredBestBets">
-  <p><?=$this->transEsc("Loading")?>... <i class="fa fa-spinner"></i></p>
+  <p><?=$this->transEsc("Loading")?>... <i class="fa fa-spinner" aria-hidden="true"></i></p>
   <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 </div>

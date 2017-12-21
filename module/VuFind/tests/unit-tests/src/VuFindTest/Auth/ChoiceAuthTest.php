@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -26,9 +26,12 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
-use VuFind\Auth\ChoiceAuth, VuFind\Auth\PluginManager,
-    VuFind\Db\Row\User as UserRow, Zend\Config\Config,
-    Zend\Http\PhpEnvironment\Request;
+
+use VuFind\Auth\ChoiceAuth;
+use VuFind\Auth\PluginManager;
+use VuFind\Db\Row\User as UserRow;
+use Zend\Config\Config;
+use Zend\Http\PhpEnvironment\Request;
 
 /**
  * ChoiceAuth test class.
@@ -244,7 +247,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockPluginManager()
     {
-        $pm = new PluginManager();
+        $pm = new PluginManager($this->getServiceManager());
         $mockDb = $this->getMockBuilder('VuFind\Auth\Database')
             ->disableOriginalConstructor()
             ->getMock();

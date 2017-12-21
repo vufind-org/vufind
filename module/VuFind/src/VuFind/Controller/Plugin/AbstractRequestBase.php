@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -26,9 +26,12 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
-use VuFind\Crypt\HMAC, VuFind\ILS\Connection;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container,
-    Zend\Session\SessionManager;
+
+use VuFind\Crypt\HMAC;
+use VuFind\ILS\Connection;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Zend\Session\Container;
+use Zend\Session\SessionManager;
 
 /**
  * Zend action helper base class to perform request-related actions
@@ -123,7 +126,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
      *
      * @param array $linkData An array of keys to check
      *
-     * @return boolean|array
+     * @return bool|array
      */
     public function validateRequest($linkData)
     {
@@ -199,7 +202,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
         }
 
         // If we got this far, something is wrong!
-         return false;
+        return false;
     }
 
     /**
@@ -247,7 +250,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
         }
 
         // If we got this far, something is wrong!
-         return false;
+        return false;
     }
 
     /**

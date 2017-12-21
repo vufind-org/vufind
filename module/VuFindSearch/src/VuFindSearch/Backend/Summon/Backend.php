@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -29,20 +29,20 @@
 namespace VuFindSearch\Backend\Summon;
 
 use SerialsSolutions\Summon\Zend2 as Connector;
-use SerialsSolutions_Summon_Query as SummonQuery;
 use SerialsSolutions_Summon_Exception as SummonException;
+use SerialsSolutions_Summon_Query as SummonQuery;
 
-use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Backend\AbstractBackend;
 
-use VuFindSearch\ParamBag;
+use VuFindSearch\Backend\Exception\BackendException;
 
 use VuFindSearch\Feature\RetrieveBatchInterface;
 
-use VuFindSearch\Response\RecordCollectionInterface;
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
+use VuFindSearch\ParamBag;
+use VuFindSearch\Query\AbstractQuery;
 
-use VuFindSearch\Backend\AbstractBackend;
-use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
+use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
  * Summon backend.
@@ -92,8 +92,8 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      * Perform a search and return record collection.
      *
      * @param AbstractQuery $query  Search query
-     * @param integer       $offset Search offset
-     * @param integer       $limit  Search limit
+     * @param int           $offset Search offset
+     * @param int           $limit  Search limit
      * @param ParamBag      $params Search backend parameters
      *
      * @return RecordCollectionInterface

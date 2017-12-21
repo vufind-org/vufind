@@ -98,6 +98,8 @@
     <fieldType name="date" class="solr.TrieDateField" sortMissingLast="true" omitNorms="true" precisionStep="6"/>
     <fieldType name="random" class="solr.RandomSortField" indexed="true" />
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
+    <!-- add geo field to handle geographic search and display capabilities -->
+    <fieldType name="geo" class="solr.SpatialRecursivePrefixTreeFieldType" distErrPct="0.025" maxDistErr="0.000009" distanceUnits="degrees" />
   </types>
  <fields>
    <!-- Required by Solr 4.x -->
@@ -122,7 +124,7 @@
    <field name="author" type="textProper" indexed="true" stored="true" multiValued="true" termVectors="true"/>
    <field name="author_variant" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
    <field name="author_role" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="author_facet" type="textFacet" indexed="true" stored="false" multiValued="true"/>
+   <field name="author_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
    <field name="author_sort" type="string" indexed="true" stored="true"/>
    <field name="title" type="text" indexed="true" stored="true"/>
    <field name="title_sort" type="string" indexed="true" stored="true"/>
@@ -187,7 +189,10 @@
    <field name="era" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="era_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
    <field name="illustrated" type="string" indexed="true" stored="true" multiValued="false"/>
-   <field name="long_lat" type="textFacet" indexed="true" stored="true" multiValued="false"/>
+   <!-- Used for geographic search and display fields -->
+   <field name="long_lat" type="geo" indexed="true" stored="true" multiValued="true" />
+   <field name="long_lat_display" type="text" indexed="true" stored="true" multiValued="true"/>
+   <field name="long_lat_label" type="string" indexed="false" stored="true" multiValued="true"/>
    <!-- Container fields (i.e. for describing journal containing an article) -->
    <field name="container_title" type="text" indexed="true" stored="true"/>
    <field name="container_volume" type="text" indexed="true" stored="true"/>
@@ -225,9 +230,10 @@
    <dynamicField name="*_txtP_mv" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="*_random" type="random" />
    <dynamicField name="*_boolean" type="boolean" indexed="true" stored="true"/>
+   <dynamicField name="*_geo" type="geo" indexed="true" stored="true" multiValued="false" />
+   <dynamicField name="*_geo_mv" type="geo" indexed="true" stored="true" multiValued="true" />
  </fields>
  <uniqueKey>id</uniqueKey>
- <defaultSearchField>allfields</defaultSearchField>
  <!-- CopyFields for Spelling -->
  <!-- ** Basic, single word spelling -->
  <copyField source="allfields" dest="spelling"/>
@@ -258,6 +264,4 @@
  <!-- CopyFields for call numbers -->
  <copyField source="dewey-raw" dest="dewey-search"/>
  <copyField source="callnumber-raw" dest="callnumber-search"/>
- <!-- Default Boolean Operator -->
- <solrQueryParser defaultOperator="AND"/>
 </schema>

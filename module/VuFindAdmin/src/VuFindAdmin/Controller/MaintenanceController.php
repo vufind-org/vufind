@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -46,7 +46,7 @@ class MaintenanceController extends AbstractAdmin
     public function homeAction()
     {
         $view = $this->createViewModel();
-        $view->caches = $this->getServiceLocator()->get('VuFind\CacheManager')
+        $view->caches = $this->serviceLocator->get('VuFind\CacheManager')
             ->getCacheList();
         $view->setTemplate('admin/maintenance/home');
         return $view;
@@ -59,7 +59,7 @@ class MaintenanceController extends AbstractAdmin
      */
     public function clearcacheAction()
     {
-        $cacheManager = $this->getServiceLocator()->get('VuFind\CacheManager');
+        $cacheManager = $this->serviceLocator->get('VuFind\CacheManager');
         foreach ($this->params()->fromQuery('cache', []) as $cache) {
             $cacheManager->getCache($cache)->flush();
         }

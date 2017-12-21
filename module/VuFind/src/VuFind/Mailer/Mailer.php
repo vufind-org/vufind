@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Mailer
@@ -26,10 +26,12 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Mailer;
-use VuFind\Exception\Mail as MailException,
-    Zend\Mail\AddressList,
-    Zend\Mail\Message,
-    Zend\Mail\Header\ContentType;
+
+use VuFind\Exception\Mail as MailException;
+use Zend\Mail\Address;
+use Zend\Mail\AddressList;
+use Zend\Mail\Header\ContentType;
+use Zend\Mail\Message;
 
 /**
  * VuFind Mailer Class
@@ -131,19 +133,26 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Send an email message.
      *
-     * @param string                    $to      Recipient email address (or
+     * @param string|Address|AddressList $to      Recipient email address (or
      * delimited list)
-     * @param string|\Zend\Mail\Address $from    Sender name and email address
-     * @param string                    $subject Subject line for message
-     * @param string                    $body    Message body
-     * @param string                    $cc      CC recipient (null for none)
+     * @param string|Address             $from    Sender name and email address
+     * @param string                     $subject Subject line for message
+     * @param string                     $body    Message body
+     * @param string                     $cc      CC recipient (null for none)
      *
      * @throws MailException
      * @return void
      */
     public function send($to, $from, $subject, $body, $cc = null)
     {
-        $recipients = $this->stringToAddressList($to);
+        if ($to instanceof AddressList) {
+            $recipients = $to;
+        } elseif ($to instanceof Address) {
+            $recipients = new AddressList();
+            $recipients->add($to);
+        } else {
+            $recipients = $this->stringToAddressList($to);
+        }
 
         // Validate email addresses:
         if ($this->maxRecipients > 0
@@ -160,7 +169,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 throw new MailException('Invalid Recipient Email Address');
             }
         }
-        $fromEmail = ($from instanceof \Zend\Mail\Address)
+        $fromEmail = ($from instanceof Address)
             ? $from->getEmail() : $from;
         if (!$validator->isValid($fromEmail)) {
             throw new MailException('Invalid Sender Email Address');
@@ -259,7 +268,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Set the maximum number of email recipients
      *
-     * @param type $max Maximum
+     * @param int $max Maximum
      *
      * @return void
      */

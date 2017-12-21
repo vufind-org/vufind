@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
-use VuFind\Auth\MultiAuth, Zend\Config\Config;
+
+use VuFind\Auth\MultiAuth;
+use Zend\Config\Config;
 
 /**
  * LDAP authentication test class.
@@ -51,14 +53,9 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $serviceLocator = new \VuFind\Auth\PluginManager(
-            new \Zend\ServiceManager\Config(
-                [
-                    'abstract_factories' => ['VuFind\Auth\PluginFactory'],
-                ]
-            )
-        );
-        $obj = clone($this->getAuthManager()->get('MultiAuth'));
+        $manager = $this->getAuthManager();
+        $obj = clone $manager->get('MultiAuth');
+        $obj->setPluginManager($manager);
         $obj->setConfig($config);
         return $obj;
     }
