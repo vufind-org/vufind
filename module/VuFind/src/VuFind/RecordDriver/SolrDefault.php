@@ -691,7 +691,7 @@ class SolrDefault extends AbstractBase
     public function getInstitutions()
     {
         return isset($this->fields['institution'])
-            ? $this->fields['institution'] : [];
+            ? (array)$this->fields['institution'] : [];
     }
 
     /**
