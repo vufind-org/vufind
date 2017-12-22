@@ -18,8 +18,10 @@ function setUpILLRequestForm(recordId) {
       $.each(response.data.locations, function illPickupLocationEach() {
         var homeLibrary = $("#ILLRequestForm #homeLibrary").val();
         var option = $("<option></option>").attr("value", this.id).text(this.name);
-        if (homeLibrary !== "" && option.val() === homeLibrary) {
-          option.attr("selected", "selected");
+        if (homeLibrary !== "") {
+          if (option.val() === homeLibrary) {
+            option.attr("selected", "selected");
+          }
         } else if (this.isDefault) {
           option.attr("selected", "selected");
         }
