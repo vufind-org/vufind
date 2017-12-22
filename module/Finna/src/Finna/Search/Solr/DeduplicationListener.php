@@ -211,16 +211,25 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
                 }
             );
         }
-        $cookieManager = $this->serviceLocator->get('VuFind\CookieManager');
-        if ($cookieManager) {
-            if (!($preferred = $cookieManager->get('preferredRecordSource'))) {
-                $authManager = $this->serviceLocator->get('VuFind\AuthManager');
-                if ($user = $authManager->isLoggedIn()) {
-                    if ($user->cat_username) {
-                        list($preferred) = explode('.', $user->cat_username, 2);
-                    }
+
+        // Secondary priority to selected library card
+        $authManager = $this->serviceLocator->get('VuFind\AuthManager');
+        if ($user = $authManager->isLoggedIn()) {
+            if ($user->cat_username) {
+                list($preferred) = explode('.', $user->cat_username, 2);
+                // array_search may return 0, but that's fine since it means the
+                // source already has highest priority
+                if ($preferred && $key = array_search($preferred, $recordSources)) {
+                    unset($recordSources[$key]);
+                    array_unshift($recordSources, $preferred);
                 }
             }
+        }
+
+        // Primary priority to cookie
+        $cookieManager = $this->serviceLocator->get('VuFind\CookieManager');
+        if ($cookieManager) {
+            $preferred = $cookieManager->get('preferredRecordSource');
             // array_search may return 0, but that's fine since it means the source
             // already has highest priority
             if ($preferred && $key = array_search($preferred, $recordSources)) {
