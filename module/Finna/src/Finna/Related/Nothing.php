@@ -1,10 +1,10 @@
 <?php
 /**
- * Related Record Module Factory Class
+ * Related Records: "Nothing" for easy configuration override
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,42 +27,26 @@
  */
 namespace Finna\Related;
 
-use Zend\ServiceManager\ServiceManager;
-
 /**
- * Related Record Module Factory Class
+ * Related Records: "Nothing" for easy configuration override
  *
  * @category VuFind
  * @package  Related_Records
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
- *
- * @codeCoverageIgnore
  */
-class Factory
+class Nothing implements \VuFind\Related\RelatedInterface
 {
     /**
-     * Factory for Nothing module.
+     * Establishes base settings for making recommendations.
      *
-     * @param ServiceManager $sm Service manager.
+     * @param string                            $settings Settings from config.ini
+     * @param \VuFind\RecordDriver\AbstractBase $driver   Record driver object
      *
-     * @return Similar
+     * @return void
      */
-    public static function getNothing(ServiceManager $sm)
+    public function init($settings, $driver)
     {
-        return new Nothing();
-    }
-
-    /**
-     * Factory for SimilarDeferred module.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Similar
-     */
-    public static function getSimilarDeferred(ServiceManager $sm)
-    {
-        return new SimilarDeferred();
     }
 }
