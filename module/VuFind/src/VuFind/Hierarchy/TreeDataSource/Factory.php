@@ -60,13 +60,17 @@ class Factory
         $filters = isset($hierarchyFilters->HierarchyTree->filterQueries)
           ? $hierarchyFilters->HierarchyTree->filterQueries->toArray()
           : [];
+        $config = $sm->getServiceLocator()->get('VuFind\Config')
+            ->get('config');
+        $batchSize = isset($config->Index->cursor_batch_size)
+            ? $config->Index->cursor_batch_size : 1000;
         $solr = $sm->getServiceLocator()->get('VuFind\Search\BackendManager')
             ->get('Solr')->getConnector();
         $formatterManager = $sm->getServiceLocator()
             ->get('VuFind\HierarchyTreeDataFormatterPluginManager');
         return new Solr(
             $solr, $formatterManager, rtrim($cacheDir, '/') . '/hierarchy',
-            $filters
+            $filters, $batchSize
         );
     }
 }
