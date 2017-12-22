@@ -44,7 +44,9 @@ import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
+import org.solrmarc.index.indexer.ValueIndexerFactory;
 import org.solrmarc.index.SolrIndexer;
+import org.solrmarc.tools.PropertyUtils;
 import org.solrmarc.tools.SolrMarcIndexerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -58,9 +60,22 @@ public class GeoTools
     private static final Pattern COORDINATES_PATTERN = Pattern.compile("^([eEwWnNsS])(\\d{3})(\\d{2})(\\d{2})");
     private static final Pattern HDMSHDD_PATTERN = Pattern.compile("^([eEwWnNsS])(\\d+(\\.\\d+)?)");
     private static final Pattern PMDD_PATTERN = Pattern.compile("^([-+]?\\d+(\\.\\d+)?)");
+    static String datePrefix = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+    static String vufindLocal = System.getenv("VUFIND_LOCAL_DIR");
+    static String vufindHome = System.getenv("VUFIND_HOME");
+    private static Properties vufindConfigs = null;
 
     // Initialize logging category
     static Logger logger = Logger.getLogger(GeoTools.class.getName());
+
+    public GeoTools()
+    {
+        try {
+            vufindConfigs = PropertyUtils.loadProperties(ValueIndexerFactory.instance().getHomeDirs(), "vufind.properties");
+        } catch (IllegalArgumentException e) {
+            // If the properties load failed, don't worry about it -- we'll use defaults.
+        }
+    }
 
     /**
      * Convert MARC coordinates into long_lat format.
@@ -89,8 +104,9 @@ public class GeoTools
                         geo_coordinates.add(result);
                     } 
                 } else {
-                    String msgError = "Poorly formed coordinate(s).";
-                    logErrorMessage(record, coords, msgError);
+                    ControlField recID = (ControlField) record.getVariableField("001");
+                    String recNum = recID.getData().trim();
+                    logger.error("Record ID: " + recNum + " has poorly formed coordinate values. Not indexing INVALID coordinates.");
                 }
             }
         }
@@ -134,24 +150,30 @@ public class GeoTools
         String recNum = recID.getData().trim();
         String coordinates = "Coordinates:  {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "}";
 
-        String logPath = getErrorLogPath();
-        String datePrefix = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String logPath = getLogPath();
         String logFilename = datePrefix + "_CoordinateErrors.txt";
         String outPath = logPath + "/" + logFilename;
 
         // Output Error message
-        logger.error("Record ID: " + recNum + " ... " + msgError);
-        logger.error("..... Not indexing INVALID coordinates .... Check coordinate error log at: " + outPath);
+        logger.error("Not indexing INVALID coordinates for Record ID: " + recNum);
+        logger.error("... " + msgError);
 
-        // Log ID and error message and coordinates in error file
-        try {
-             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outPath, true)));
-             out.println(logFilename + "\t" + recNum + "\t" + msgError + "\t" + coordinates);
-             out.close();
-        } catch (IOException e) {
-             System.out.println("io exception occured");
-             e.printStackTrace();
+        if (logPath != null) {
+            logger.error("... Check coordinate error log: " + outPath);
+            // Log ID and error message and coordinates in error file
+            try {
+                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outPath, true)));
+                 out.println(logFilename + "\t" + recNum + "\t" + msgError + "\t" + coordinates);
+                 out.close();
+            } catch (IOException e) {
+                 System.out.println("io exception occured");
+                 e.printStackTrace();
+            }
+        } else {
+        // output error that log file cannot be created
+            logger.error("..... No coordinate error log. Check vufind.properties settings...");
         }
+  
     }
 
     /**
@@ -159,59 +181,27 @@ public class GeoTools
     *
     * @return String logPath
     */
-   public static String getErrorLogPath() {
-        String filename = "import.properties";
-        String coordPath = null;
-        String vufindHome = System.getenv("VUFIND_HOME");
-        if (vufindHome == null) {
-            vufindHome = "..";
-        }
-        String logPath = vufindHome + "/import";
-        String vufindLocal = System.getenv("VUFIND_LOCAL_DIR");
+   public static String getLogPath() {
+        // Get coordinate error log path setting
+        String coordLogPath = PropertyUtils.getProperty(vufindConfigs, "coordinate.log.path");
 
-        if (vufindLocal != null) {
-            String importPath = vufindLocal + "/import/import.properties";
-            coordPath = getCoordinateLogPath(importPath);
-        } else {
-            String importPath = vufindHome + "/import/import.properties";
-            coordPath = getCoordinateLogPath(importPath);
-        }
-        if (coordPath != null ) {
-          logPath = coordPath;
-        }
-        return logPath;
-     }
-
-    /**
-     * Get coordinate error log path from import.properties file
-     *
-     * @param  String import.properties path
-     * @return String coordPath
-     */
-    public static String getCoordinateLogPath(String importPath) {
-        String coordPath = null;
-        File file;
-        file = new File(importPath);
-        if (file.exists()) {
-          Properties prop = new Properties();
-          InputStream input = null;
-          try {
-            input = new FileInputStream(file);
-            prop.load(input);
-            coordPath = prop.getProperty("coordinate.log.path");
-          } catch (IOException ex) {
-            ex.printStackTrace();
-          } finally {
-            if (input != null) {
-              try {
-                input.close();
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
+        //If coordinate.log.path doesn't exist or is not set, try some other places
+        if (coordLogPath == null) {
+            if (vufindLocal != null) {
+                File dir = new File(vufindLocal + "/import");
+                if (dir.exists()) {
+                  coordLogPath = vufindLocal + "/import";
+                }
+            } else if (vufindLocal == null && vufindHome != null) {
+                File dir = new File(vufindHome + "/import");
+                if (dir.exists()) {
+                  coordLogPath = vufindHome + "/import";
+                }
+            } else {
+                coordLogPath = null;
             }
-          }
         }
-        return coordPath;
+        return coordLogPath;
     }
 
     /**
@@ -379,11 +369,7 @@ public class GeoTools
    public boolean validateLines(Record record, Double west, Double east, Double north, Double south) {
     if ((!west.equals(east) && north.equals(south)) && (north == 90 || south == -90)) {
         String msgError = "Coordinates form a line at the pole";
-        HashMap<Character, String> coords = new HashMap();
-        coords.put('d', Double.toString(west));
-        coords.put('e', Double.toString(east));
-        coords.put('f', Double.toString(north));
-        coords.put('g', Double.toString(south));
+        HashMap<Character, String> coords = buildCoordinateHashMap(west, east, north, south);
         logErrorMessage(record, coords, msgError);
         return false;
     }
@@ -400,11 +386,7 @@ public class GeoTools
    public boolean validateValues(Record record, Double west, Double east, Double north, Double south) {
      if (west.isNaN() || east.isNaN() || north.isNaN() || south.isNaN()) {
         String msgError = "Decimal Degree coordinates contain invalid values";
-        HashMap<Character, String> coords = new HashMap();
-        coords.put('d', Double.toString(west));
-        coords.put('e', Double.toString(east));
-        coords.put('f', Double.toString(north));
-        coords.put('g', Double.toString(south));
+        HashMap<Character, String> coords = buildCoordinateHashMap(west, east, north, south);
         logErrorMessage(record, coords, msgError);
         return false;
     }
@@ -421,21 +403,13 @@ public class GeoTools
    public boolean validateExtent(Record record, Double west, Double east, Double north, Double south) {
     if (west > 180.0 || west < -180.0 || east > 180.0 || east < -180.0) {
         String msgError = "Coordinates exceed map extent.";
-        HashMap<Character, String> coords = new HashMap();
-        coords.put('d', Double.toString(west));
-        coords.put('e', Double.toString(east));
-        coords.put('f', Double.toString(north));
-        coords.put('g', Double.toString(south));
+        HashMap<Character, String> coords = buildCoordinateHashMap(west, east, north, south);
         logErrorMessage(record, coords, msgError);
         return false;
     }
     if (north > 90.0 || north < -90.0 || south > 90.0 || south < -90.0) {
         String msgError = "Coordinates exceed map extent.";
-        HashMap<Character, String> coords = new HashMap();
-        coords.put('d', Double.toString(west));
-        coords.put('e', Double.toString(east));
-        coords.put('f', Double.toString(north));
-        coords.put('g', Double.toString(south));
+        HashMap<Character, String> coords = buildCoordinateHashMap(west, east, north, south);
         logErrorMessage(record, coords, msgError);
         return false;
     }
@@ -452,11 +426,7 @@ public class GeoTools
    public boolean validateNorthSouth(Record record, Double north, Double south) {
     if (north < south) {
         String msgError = "North < South.";
-        HashMap<Character, String> coords = new HashMap();
-        coords.put('d', "not available");
-        coords.put('e', "not available");
-        coords.put('f', Double.toString(north));
-        coords.put('g', Double.toString(south));
+        HashMap<Character, String> coords = buildCoordinateHashMap(Double.NaN, Double.NaN, north, south);
         logErrorMessage(record, coords, msgError);
         return false;
     }
@@ -482,11 +452,7 @@ public class GeoTools
        // Check again
        if (east < west) {
            String msgError = "East < West.";
-           HashMap<Character, String> coords = new HashMap();
-           coords.put('d', Double.toString(west));
-           coords.put('e', Double.toString(east));
-           coords.put('f', "not available");
-           coords.put('g', "not available");
+           HashMap<Character, String> coords = buildCoordinateHashMap(west, east, Double.NaN, Double.NaN);
            logErrorMessage(record, coords, msgError);
            return false;
        }
@@ -509,11 +475,7 @@ public class GeoTools
         //Check for South Pole coordinate distance
         if ((north == -90 || south == -90) && (distNS > 0 && distNS < 0.167)) {
             String msgError = "Coordinates < 0.167 degrees from South Pole. Coordinate Distance: "+distNS;
-            HashMap<Character, String> coords = new HashMap();
-            coords.put('d', Double.toString(west));
-            coords.put('e', Double.toString(east));
-            coords.put('f', Double.toString(north));
-            coords.put('g', Double.toString(south));
+            HashMap<Character, String> coords = buildCoordinateHashMap(west, east, north, south);
             logErrorMessage(record, coords, msgError);
             return false;
         }
@@ -521,14 +483,25 @@ public class GeoTools
         //Check for East-West coordinate distance
         if ((west == 0 || east == 0) && (distEW > -2 && distEW <0)) {
             String msgError = "Coordinates within 2 degrees of Prime Meridian. Coordinate Distance: "+distEW;
-            HashMap<Character, String> coords = new HashMap();
-            coords.put('d', Double.toString(west));
-            coords.put('e', Double.toString(east));
-            coords.put('f', Double.toString(north));
-            coords.put('g', Double.toString(south));
+            HashMap<Character, String> coords = buildCoordinateHashMap(west, east, north, south);
             logErrorMessage(record, coords, msgError);
             return false;
         }
         return true;
     }
+
+    /**
+    * Build coordinate hash map for logging.
+    *
+    * @param  Double west, east, north, south
+    * @return HashMap coords
+    */
+   public HashMap buildCoordinateHashMap (Double west, Double east, Double north, Double south) {
+        HashMap<Character, String> coords = new HashMap();
+        coords.put('d', Double.toString(west));
+        coords.put('e', Double.toString(east));
+        coords.put('f', Double.toString(north));
+        coords.put('g', Double.toString(south));
+        return coords;
+   }
 }
