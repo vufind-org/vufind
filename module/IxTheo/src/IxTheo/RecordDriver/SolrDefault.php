@@ -4,6 +4,8 @@ namespace IxTheo\RecordDriver;
 
 class SolrDefault extends \TueFind\RecordDriver\SolrMarc
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Get a highlighted corporation string, if available.
      *
@@ -292,11 +294,11 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         }
         return $codes_as_string . strval($chapter1) . "–" . strval($chapter2);
     }
-    
+
     public function getBibleRangesString() {
         if (!isset($this->fields['bible_ranges']))
             return "";
-        $language_code = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        $language_code = $this->getTranslatorLocale();
         $bible_references = "";
         foreach (explode(',', $this->fields['bible_ranges']) as $bible_range) {
             if (!empty($bible_references))
