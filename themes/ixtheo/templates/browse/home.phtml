@@ -76,7 +76,7 @@ function getRelBibTranslationPrefix($subject) {
       <a href="<?=$url ?>" class="list-group-item clearfix<? if ($this->query == $secondary['value'].'' || $this->query == $secondary['value'].'*'): ?> active<? endif; ?>">
         <?$fancy_secondary = isIxTheoNotationSecondList($this) ? ($this->translate("ixtheo-" . $secondary['displayText'])) :
                                (isRelBibNotationSecondList($this) ? $this->translate(getRelBibTranslationPrefix($secondary['displayText']) . "-" . $secondary['displayText']) :
-                               $secondary['displayText']);?>
+                               $this->translate($secondary['displayText']));?>
         <?=$this->escapeHtml($fancy_secondary) ?>
         <? if ($this->findby != 'alphabetical' && isset($secondary['count'])): ?>
           <span class="badge"><?=number_format($secondary['count']) ?></span>
@@ -97,7 +97,7 @@ function getRelBibTranslationPrefix($subject) {
       <a class="list-group-item clearfix" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['value']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&amp;<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>">
         <?$fancy_result = isIxTheoNotationThirdList($this) ? $this->translate("ixtheo-" . $result['displayText']) :
                             (isRelBibNotationThirdList($this) ? $this->translate(getRelBibTranslationPrefix($result['displayText']) . "-" . $result['displayText']) :
-                            $result['displayText']);?>
+                            $this->translate($result['displayText']));?>
         <?=$this->escapeHtml($fancy_result)?>
         <span class="badge"><?=number_format($result['count']) ?></span>
       </a>
