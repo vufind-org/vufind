@@ -181,12 +181,20 @@ class Factory
         $mapType = isset($config->Content->recordMap)
             ? $config->Content->recordMap : null;
         $options = [];
-        $optionFields = ['displayCoords', 'mapLabels', 'graticule', 'basemap'];
+        $optionFields = ['displayCoords', 'mapLabels', 'graticule'];
         foreach ($optionFields as $field) {
             if (isset($config->Content->$field)) {
                 $options[$field] = $config->Content->$field;
             }
         }
+        // add basemap options
+        $basemapConfig = $sm->getServiceLocator()->get(
+            'VuFind\GeoFeatures\BasemapConfig'
+        );
+        $basemapOptions = $basemapConfig->getBasemap($sm, 'MapTab');
+        $options['basemap_url'] = $basemapOptions['basemap_url'];
+        $options['basemap_attribution'] = $basemapOptions['basemap_attribution'];
+
         return new Map($mapType, $options);
     }
 
