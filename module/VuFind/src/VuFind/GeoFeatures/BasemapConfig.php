@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\GeoFeatures;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -37,10 +38,8 @@ use Zend\ServiceManager\ServiceManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-
 class BasemapConfig
 {
-
     /**
      * Basemap tileserver URL
      * Default is the wikimedia osm-intl map
@@ -64,7 +63,6 @@ class BasemapConfig
      * @var string
      */
     protected $requestOrigin;
-
 
     /**
      * Get the basemap configuration settings.
@@ -150,7 +148,7 @@ class BasemapConfig
                 }
             }
         }
-          return $options;
+        return $options;
     }
 
     /**
@@ -192,7 +190,7 @@ class BasemapConfig
                 }
             }
         }
-          return $options;
+        return $options;
     }
 }
 
