@@ -336,7 +336,7 @@ $config = [
             'VuFind\YamlReader' => 'VuFind\Service\Factory::getYamlReader',
         ],
         'invokables' => [
-	    'VuFind\GeoFeatures\BasemapConfig' => 'VuFind\GeoFeatures\BasemapConfig',
+            'VuFind\GeoFeatures\BasemapConfig' => 'VuFind\GeoFeatures\BasemapConfig',
             'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper',
             'VuFind\IpAddressUtils' => 'VuFind\Net\IpAddressUtils',
             'VuFind\Session\Settings' => 'VuFind\Session\Settings',
