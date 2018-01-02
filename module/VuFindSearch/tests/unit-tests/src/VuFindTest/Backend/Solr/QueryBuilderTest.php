@@ -387,7 +387,8 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
         $qb = new QueryBuilder(
             [
                 'test' => [
-                    'DismaxFields' => ['test1', 'test2', 'test3'],
+                    'QueryFields' => ['test1' => []],
+                    'DismaxFields' => ['test2', 'test3^10000'],
                 ]
             ]
         );
