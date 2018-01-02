@@ -346,11 +346,12 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Test generation with highlighting
+     * Test generation with highlighting, using the setCreateHighlightingQuery()
+     * method.
      *
      * @return void
      */
-    public function testHighlighting()
+    public function testSetCreateHighlightingQuery()
     {
         $qb = new QueryBuilder(
             [
@@ -365,46 +366,15 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
 
         // No hl.q if highlighting query disabled:
         $qb->setCreateHighlightingQuery(false);
-        $response = $qb->build($q);
-        $hlQ = $response->get('hl.q');
-        $this->assertEquals(null, $hlQ[0]);
+        $response1 = $qb->build($q);
+        $hlQ1 = $response1->get('hl.q');
+        $this->assertEquals(null, $hlQ1[0]);
 
         // hl.q if highlighting query enabled:
         $qb->setCreateHighlightingQuery(true);
-        $response = $qb->build($q);
-        $hlQ = $response->get('hl.q');
-        $this->assertEquals('*:*', $hlQ[0]);
-    }
-
-    /**
-     * Test generation with spelling, using the setCreateSpellingQuery() method.
-     *
-     * @return void
-     */
-    public function testSetCreateSpellingQuery()
-    {
-        $qb = new QueryBuilder(
-            [
-                'test' => [
-                    'DismaxFields' => ['test1'],
-                    'DismaxParams' => [['bq', 'boost']]
-                ]
-            ]
-        );
-
-        $q = new Query('my friend', 'test');
-
-        // No spellcheck.q if spellcheck query disabled:
-        $qb->setCreateSpellingQuery(false);
-        $response1 = $qb->build($q);
-        $spQ1 = $response1->get('spellcheck.q');
-        $this->assertEquals(null, $spQ1[0]);
-
-        // spellcheck.q if spellcheck query enabled:
-        $qb->setCreateSpellingQuery(true);
         $response2 = $qb->build($q);
-        $spQ2 = $response2->get('spellcheck.q');
-        $this->assertEquals('my friend', $spQ2[0]);
+        $hlQ2 = $response2->get('hl.q');
+        $this->assertEquals('*:*', $hlQ2[0]);
     }
 
     /**
@@ -445,6 +415,37 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
             $hlfl = $response->get('hl.fl');
             $this->assertEquals($output, $hlfl[0]);
         }
+    }
+
+    /**
+     * Test generation with spelling, using the setCreateSpellingQuery() method.
+     *
+     * @return void
+     */
+    public function testSetCreateSpellingQuery()
+    {
+        $qb = new QueryBuilder(
+            [
+                'test' => [
+                    'DismaxFields' => ['test1'],
+                    'DismaxParams' => [['bq', 'boost']]
+                ]
+            ]
+        );
+
+        $q = new Query('my friend', 'test');
+
+        // No spellcheck.q if spellcheck query disabled:
+        $qb->setCreateSpellingQuery(false);
+        $response1 = $qb->build($q);
+        $spQ1 = $response1->get('spellcheck.q');
+        $this->assertEquals(null, $spQ1[0]);
+
+        // spellcheck.q if spellcheck query enabled:
+        $qb->setCreateSpellingQuery(true);
+        $response2 = $qb->build($q);
+        $spQ2 = $response2->get('spellcheck.q');
+        $this->assertEquals('my friend', $spQ2[0]);
     }
 
     /**
