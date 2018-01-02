@@ -203,10 +203,18 @@ footer {
 @media (min-width: 768px) {
   .collection-hierarchytree { display: flex; }
   .collection-hierarchytree .tree-panel,
-  #tree-preview {
+  .collection-hierarchytree #tree-preview {
     flex-basis: 50%;
+    max-height: 75vh;
     padding: 1rem;
+    overflow-y: auto;
   }
+  #modal .collection-hierarchytree { display: block; }
+  #modal .tree-panel {
+    flex-basis: 100%;
+    padding: 0;
+  }
+  #modal #tree-preview { display: none; }
 }
 
 /* ------ Devtools ------ */
