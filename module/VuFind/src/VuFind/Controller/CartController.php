@@ -149,7 +149,7 @@ class CartController extends AbstractBase
         $this->followup()->retrieveAndClear('cartAction');
         $this->followup()->retrieveAndClear('cartIds');
 
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
 
@@ -226,7 +226,7 @@ class CartController extends AbstractBase
     public function emailAction()
     {
         // Retrieve ID list:
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
 
@@ -291,7 +291,7 @@ class CartController extends AbstractBase
      */
     public function printcartAction()
     {
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
@@ -323,7 +323,7 @@ class CartController extends AbstractBase
     public function exportAction()
     {
         // Get the desired ID list:
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
@@ -416,7 +416,7 @@ class CartController extends AbstractBase
 
         // Load record information first (no need to prompt for login if we just
         // need to display a "no records" error message):
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids', $this->params()->fromQuery('ids'))
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {

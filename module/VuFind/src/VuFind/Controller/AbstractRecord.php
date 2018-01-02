@@ -168,7 +168,7 @@ class AbstractRecord extends AbstractBase
         }
         $id = $this->params()->fromQuery('delete');
         $table = $this->getTable('Comments');
-        if (!is_null($id) && $table->deleteIfOwnedByUser($id, $user)) {
+        if (null !== $id && $table->deleteIfOwnedByUser($id, $user)) {
             $this->flashMessenger()->addMessage('delete_comment_success', 'success');
         } else {
             $this->flashMessenger()->addMessage('delete_comment_failure', 'error');

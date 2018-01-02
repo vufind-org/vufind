@@ -1271,16 +1271,16 @@ EOT;
             // For some reason barcode is not unique, so evaluate all resulting
             // rows just to be safe
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $primary = !is_null($row['LOGIN'])
+                $primary = null !== $row['LOGIN']
                     ? mb_strtolower(utf8_encode($row['LOGIN']), 'UTF-8')
                     : null;
-                $fallback = $fallback_login_field && is_null($row['LOGIN'])
+                $fallback = $fallback_login_field && null === $row['LOGIN']
                     ? mb_strtolower(utf8_encode($row['FALLBACK_LOGIN']), 'UTF-8')
                     : null;
 
-                if ((!is_null($primary) && ($primary == $compareLogin
+                if ((null !== $primary && ($primary == $compareLogin
                     || $primary == $this->sanitizePIN($compareLogin)))
-                    || ($fallback_login_field && is_null($primary)
+                    || ($fallback_login_field && null === $primary
                     && $fallback == $compareLogin)
                 ) {
                     return [

@@ -207,7 +207,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         $reset = false
     ) {
         $data = ['clientID' => $this->config['WebServices']['clientID']];
-        if (!is_null($login)) {
+        if (null !== $login) {
             $data['sessionToken']
                 = $this->getSessionToken($login, $password, $reset);
         }
