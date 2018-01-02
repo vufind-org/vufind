@@ -377,11 +377,11 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Test generation with spelling
+     * Test generation with spelling, using the setCreateSpellingQuery() method.
      *
      * @return void
      */
-    public function testSpelling()
+    public function testSetCreateSpellingQuery()
     {
         $qb = new QueryBuilder(
             [
@@ -396,15 +396,55 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
 
         // No spellcheck.q if spellcheck query disabled:
         $qb->setCreateSpellingQuery(false);
-        $response = $qb->build($q);
-        $spQ = $response->get('spellcheck.q');
-        $this->assertEquals(null, $spQ[0]);
+        $response1 = $qb->build($q);
+        $spQ1 = $response1->get('spellcheck.q');
+        $this->assertEquals(null, $spQ1[0]);
 
         // spellcheck.q if spellcheck query enabled:
         $qb->setCreateSpellingQuery(true);
-        $response = $qb->build($q);
-        $spQ = $response->get('spellcheck.q');
-        $this->assertEquals('my friend', $spQ[0]);
+        $response2 = $qb->build($q);
+        $spQ2 = $response2->get('spellcheck.q');
+        $this->assertEquals('my friend', $spQ2[0]);
+    }
+
+    /**
+     * Test generation with highlighting, using the setFieldsToHighlight() method.
+     *
+     * @return void
+     */
+    public function testSetFieldsToHighlight()
+    {
+        $qb = new QueryBuilder(
+            [
+                'test' => [
+                    'DismaxFields' => ['test1', 'test2', 'test3'],
+                ]
+            ]
+        );
+
+        $q = new Query('my friend', 'test');
+
+        // Map of field whitelist to expected hl.fl output.
+        $tests = [
+            // No hl.fl if highlight field list is empty:
+            '' => null,
+            // hl.fl set when whitelist is wildcard:
+            '*' => 'test1,test2,test3',
+            // No hl.fl if whitelist doesn't match handler list:
+            'test4,test5' => null,
+            // hl.fl contains intersection of whitelist and handler list
+            // (testing with a comma-separated whitelist)
+            'test1,test2,test6' => 'test1,test2',
+            // hl.fl contains intersection of whitelist and handler list
+            // (testing with a space-separated whitelist)
+            'test1 test3 test5' => 'test1,test3',
+        ];
+        foreach ($tests as $input => $output) {
+            $qb->setFieldsToHighlight($input);
+            $response = $qb->build($q);
+            $hlfl = $response->get('hl.fl');
+            $this->assertEquals($output, $hlfl[0]);
+        }
     }
 
     /**
