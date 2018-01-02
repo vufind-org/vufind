@@ -144,6 +144,7 @@ $(document).ready(function hierarchyTreeReady() {
   recordID = $("#hierarchyTree").find(".hiddenRecordId")[0].value;
   htmlID = htmlEncodeId(recordID);
   hierarchyContext = $("#hierarchyTree").find(".hiddenContext")[0].value;
+  var inLightbox = $("#hierarchyTree").parents("#modal").length > 0;
 
   $("#hierarchyLoading").removeClass('hide');
 
@@ -154,12 +155,12 @@ $(document).ready(function hierarchyTreeReady() {
       tree.select_node(htmlID);
       tree._open_to(htmlID);
 
-      if (hierarchyContext === "Collection") {
+      if (!inLightbox && hierarchyContext === "Collection") {
         getRecord(recordID);
       }
 
       $("#hierarchyTree").bind('select_node.jstree', function jsTreeSelect(e, resp) {
-        if (hierarchyContext === "Record") {
+        if (inLightbox || hierarchyContext === "Record") {
           window.location.href = resp.node.a_attr.href;
         } else {
           getRecord(resp.node.li_attr.recordid);
