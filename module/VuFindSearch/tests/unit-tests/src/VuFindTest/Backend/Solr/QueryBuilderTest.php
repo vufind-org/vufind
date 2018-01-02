@@ -357,7 +357,7 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
             [
                 'test' => [
                     'DismaxFields' => ['test1'],
-                    'DismaxParams' => [['bq', 'boost']]
+                    'DismaxParams' => [['bq', 'boost']],
                 ]
             ]
         );
@@ -375,6 +375,36 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
         $response2 = $qb->build($q);
         $hlQ2 = $response2->get('hl.q');
         $this->assertEquals('*:*', $hlQ2[0]);
+    }
+
+    /**
+     * Test hl.q edge case: when we are in dismax (not edismax) mode, and a boost
+     * is set, and a query contains advanced syntax, VuFind manipulates the query
+     * to trigger the boost and sets hl.q to prevent the highlighter from matching
+     * the wrong words.
+     *
+     * @return void
+     */
+    public function testHlQ()
+    {
+        $qb = new QueryBuilder(
+            [
+                'test' => [
+                    'DismaxFields' => ['test'],
+                    'DismaxHandler' => 'dismax',
+                    'DismaxParams' => [['bq', 'boost']],
+                ]
+            ]
+        );
+
+        $q = new Query('my friend*', 'test');
+
+        $qb->setFieldsToHighlight('*');
+        $response = $qb->build($q);
+        $hlq = $response->get('hl.q');
+        $q = $response->get('q');
+        $this->assertEquals('(my friend*)', $hlq[0]);
+        $this->assertEquals('((my friend*)) AND (*:* OR boost)', $q[0]);
     }
 
     /**
