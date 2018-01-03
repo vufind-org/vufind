@@ -141,7 +141,7 @@ function buildTreeWithXml(cb) {
 $(document).ready(function hierarchyTreeReady() {
   // "Back to top" link
   $('#hierarchyTree').scroll(function onScrollHierarchyTree() {
-    modalContent = $('#hierarchyTree').scrollTop();
+    var modalContent = $('#hierarchyTree').scrollTop();
     if (modalContent > 1500) {
       $('#modal .back-to-up').removeClass('hidden');
     }

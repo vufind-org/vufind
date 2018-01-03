@@ -351,7 +351,6 @@ finna.layout = (function finnaLayout() {
         scrollTop: $('.recordProvidedBy').offset().top
       }, 500);
     });
-    var modalContent = 0;
     if ($('.floating-feedback-btn').length) {
       var feedbackBtnOffset = $('.floating-feedback-btn').offset().top;
       $(window).scroll(function onScrollWindow(/*event*/) {
