@@ -25,6 +25,7 @@ tuefind.instance
 # Schema files & links
 schema_local_types.xml
 schema_local_fields.xml
+solrconfig.xml
 
 # Solr/SolrMarc plugins
 MultiLanguageDocTransformerFactory.jar
