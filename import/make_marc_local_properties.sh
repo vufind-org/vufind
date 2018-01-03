@@ -1,12 +1,15 @@
 #!/bin/bash
 
-if [[ ( $# != 1 ) || ( $1 != "krimdok" && $1 != "ixtheo" ) ]]; then
-    echo "Usage: $0 (krimdok | ixtheo)"
-    exit 1
+if [ -z "$TUEFIND_FLAVOUR" ]; then
+    if [[ ( $# != 1 ) || ( $1 != "krimdok" && $1 != "ixtheo" ) ]]; then
+        echo "Usage: $0 (krimdok | ixtheo)"
+        exit 1
+    else
+        $TUEFIND_FLAVOUR = $1
+    fi
 fi
 
-if [[ $1 == krimdok ]]; then
-    cat marc_tuefind.properties marc_krimdok.properties > marc_local.properties
-else
-    cat marc_tuefind.properties marc_ixtheo.properties > marc_local.properties
-fi
+DIR="$(dirname $(readlink -f $0))"
+
+cat $DIR/marc_tuefind.properties $DIR/marc_${TUEFIND_FLAVOUR}.properties > $DIR/marc_local.properties
+
