@@ -190,9 +190,10 @@ $(document).ready(function hierarchyTreeReady() {
         var hTree = $('#hierarchyTree');
         var offsetTop = hTree.offset().top;
         var maxHeight = Math.max($(window).height() - 200, 200);
+        var scrollTop = Math.trunc($('.jstree-clicked').offset().top - offsetTop + hTree.scrollTop() - 50);
         hTree.css('max-height', maxHeight + 'px').css('overflow', 'auto');
         hTree.animate({
-          scrollTop: $('.jstree-clicked').offset().top - offsetTop + hTree.scrollTop() - 50
+          scrollTop: scrollTop
         }, 1500);
       }
     })
