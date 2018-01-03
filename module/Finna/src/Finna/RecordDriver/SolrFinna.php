@@ -754,8 +754,13 @@ trait SolrFinna
     protected function createSourceIdArray($ids)
     {
         $results = [];
+        $sourceFilter = !empty($this->searchSettings['Records']['sources'])
+            ? explode(',', $this->searchSettings['Records']['sources']) : [];
         foreach ($ids as $id) {
             list($source) = explode('.', $id);
+            if ($sourceFilter && !in_array($source, $sourceFilter)) {
+                continue;
+            }
             $results[] = [
                 'source' => $source,
                 'id' => $id
