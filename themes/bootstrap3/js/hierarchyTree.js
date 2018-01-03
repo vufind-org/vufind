@@ -1,6 +1,6 @@
 /*global VuFind */
 
-var hierarchyID, recordID, htmlID, hierarchyContext;
+var hierarchyID, recordID, htmlID, hierarchyContext, hierarchySettings;
 
 /* Utility functions */
 function htmlEncodeId(id) {
@@ -101,6 +101,24 @@ function doTreeSearch() {
   }
 }
 
+function scrollToClicked() {
+  // Scroll to the current record
+  var hTree = $('#hierarchyTree');
+  hTree.animate({
+    scrollTop: $('.jstree-clicked').offset().top - hTree.offset().top + hTree.scrollTop() - 50
+  }, 1000);
+}
+
+function hideFullHierarchy() {
+  var $selected = $('.jstree-clicked');
+  // Hide all nodes
+  $('#hierarchyTree li').hide();
+  // Show the nodes on the current path
+  $selected.show().parents().show();
+  // Show the nodes below the current path
+  $selected.find("li").show();
+}
+
 function buildJSONNodes(xml) {
   var jsonNode = [];
   $(xml).children('item').each(function xmlTreeChildren() {
@@ -146,6 +164,24 @@ $(document).ready(function hierarchyTreeReady() {
   hierarchyContext = $("#hierarchyTree").find(".hiddenContext")[0].value;
   var inLightbox = $("#hierarchyTree").parents("#modal").length > 0;
 
+  if (!hierarchySettings.fullHierarchy) {
+    // Set Up Partial Hierarchy View Toggle
+    $('#hierarchyTree').parent().prepend('<a href="#" id="toggleTree" class="closed">' + VuFind.translate("showTree") + '</a>');
+    $('#toggleTree').click(function toggleFullTree(e) {
+      e.preventDefault();
+      $(this).toggleClass("open");
+      if ($(this).hasClass("open")) {
+        $(this).html(VuFind.translate("hideTree"));
+        $('#hierarchyTree li').show();
+      } else {
+        $(this).html(VuFind.translate("showTree"));
+        hideFullHierarchy();
+      }
+      scrollToClicked();
+      $("#hierarchyTree").jstree("toggle_dots");
+    });
+  }
+
   $("#hierarchyLoading").removeClass('hide');
 
   $("#hierarchyTree")
@@ -167,11 +203,13 @@ $(document).ready(function hierarchyTreeReady() {
         }
       });
 
-      // Scroll to the current record
-      var hTree = $('#hierarchyTree');
-      hTree.animate({
-        scrollTop: $('.jstree-clicked').offset().top - hTree.offset().top + hTree.scrollTop() - 50
-      }, 1000);
+      if (!hierarchySettings.fullHierarchy) {
+        // Initial hide of nodes outside current path
+        hideFullHierarchy();
+        $("#hierarchyTree").jstree("toggle_dots");
+      }
+
+      scrollToClicked();
     })
     .jstree({
       plugins: ['search', 'types'],
