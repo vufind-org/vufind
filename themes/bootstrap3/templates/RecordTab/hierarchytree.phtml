@@ -4,6 +4,14 @@
   $hierarchyTreeList = $this->tab->getTreeList();
   $activeTree = $this->tab->getActiveTree();
 
+  $this->inlineScript(
+     \Zend\View\Helper\HeadScript::SCRIPT,
+     "var hierarchySettings = {\n"
+     . "    lightboxMode: " . ($this->layout()->getTemplate() == 'layout/lightbox' ? 'true' : 'false') . ",\n"
+     . "    fullHierarchy: " . ($this->tab->isFullHierarchyVisible() ? 'true' : 'false') . "\n"
+     . "};\n",
+     'SET'
+  );
   $this->jsTranslations()->addStrings(
     ['showTree' => 'hierarchy_show_tree', 'hideTree' => 'hierarchy_hide_tree']
   );
