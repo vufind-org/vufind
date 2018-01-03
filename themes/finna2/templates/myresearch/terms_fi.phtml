@@ -1,24 +1,29 @@
 <div class="terms-of-service terms-of-service-text">
   <?=$this->flashmessages()?>
   <div class="terms-of-service-info-box">
-    <div class="terms-of-service-logo"><img src="<?=$this->imageLink('finna-logo-icon.png')?>"></div>
-    <div><p>Olet kirjautumassa Finnaan tai Finna-alustalle rakennettuun palveluun, kuten verkkokirjastoon. Finna on kokonaisuus, jolla on toteutettu kirjastojen, arkistojen ja museoiden hakupalveluita.</p></div>
+    <div class="terms-of-service-logo">
+      <img src="<?=$this->url('home') ?>themes/finna/images/finna-logo-icon.png">
+    </div>
+    <div>
+      <p>Olet kirjautumassa Finnaan tai Finna-alustalle rakennettuun palveluun, kuten verkkokirjastoon. Finna on kokonaisuus, jolla on toteutettu kirjastojen, arkistojen ja museoiden hakupalveluita.
+      </p>
+    </div>
   </div>
-
-  <p class="terms-of-service-title">Yksityisyyttäsi kunnioitetaan Finnassa!</p>
-
-  <p>Palveluun tallennetaan vain sen toteuttamisen kannalta tarpeellisia henkilötietojasi, kuten nimi, sähköpostiosoite, käyttäjätunnus, kirjastokortin tunnus, PIN-koodi ja käyttämäsi kirjastot. Tarkemmat tiedot tallennettavista henkilötiedoista ja niiden käsittelystä, mukaan lukien tietojen luovuttaminen ja säilytysajat, löytyvät
-    <a href="<?=$this->url('content-page', ['page' => 'privacy'])?>" target="_blank" data-lightbox-ignore>Tietosuoja-sivulta</a>.</p>
-
-  <p>Jos kirjaudut palveluun käyttäen jo olemassa olevaa käyttämäsi kirjaston järjestelmässä olevaa tunnusta tai kirjastokorttia, tarvittavat tiedot siirretään automaattisesti kirjaston järjestelmästä Finna-palveluun. Finna-palvelussa sinun on myös mahdollista itse tallentaa ja muuttaa henkilötietojasi. Henkilötietoja käsitellään palvelun toteuttamiseen Kansalliskirjastossa ja CSC – Tieteen tietotekniikan keskus Oy:ssä (palvelun tuottajat) sekä Finnaan aineistoja tarjoavissa <a href="https://finna.fi/Content/organisations" target="_blank" data-lightbox-ignore>organisaatioissa</a>.</p>
-
-  <p>Voit peruuttaa tällä lomakkeella antamasi hyväksynnän henkilötietojesi käsittelyyn ja poistaa tietosi Finnasta poistamalla tilisi palvelusta.</p>
-
+  <p class="terms-of-service-title">Yksityisyyttäsi kunnioitetaan Finnassa!
+  </p>
+  <p>Palveluun tallennetaan vain sen toteuttamisen kannalta tarpeellisia henkilötietojasi, kuten nimi, sähköpostiosoite, käyttäjätunnus, kirjastokortin tunnus, PIN-koodi ja käyttämäsi kirjastot. Tarkemmat tiedot tallennettavista henkilötiedoista ja niiden käsittelystä, mukaan lukien tietojen luovuttaminen ja säilytysajat, löytyvät <a href="<?=$this->url('content-page', ['page' => 'privacy'])?>" target="_blank" data-lightbox-ignore><?=$this->translate('Privacy') ?>-sivulta</a>.
+  </p>
+  <p>Jos kirjaudut palveluun käyttäen jo olemassa olevaa käyttämäsi kirjaston järjestelmässä olevaa tunnusta tai kirjastokorttia, tarvittavat tiedot siirretään automaattisesti kirjaston järjestelmästä Finna-palveluun. Finna-palvelussa sinun on myös mahdollista itse tallentaa ja muuttaa henkilötietojasi. Henkilötietoja käsitellään palvelun toteuttamiseen Kansalliskirjastossa ja CSC – Tieteen tietotekniikan keskus Oy:ssä (palvelun tuottajat) sekä Finnaan aineistoja tarjoavissa <a href="https://finna.fi/Content/organisations" target="_blank" data-lightbox-ignore>organisaatioissa</a>.
+  </p>
+  <p>Voit peruuttaa tällä lomakkeella antamasi hyväksynnän henkilötietojesi käsittelyyn ja poistaa tietosi Finnasta poistamalla tilisi palvelusta.
+  </p>
   <div class="terms-of-service-info-box terms-of-service-footnote">
-    <p>Voit joutua hyväksymään henkilötietojesi käsittelyn Finnassa uudelleen, mikäli kirjaudut palveluun eri laitteella tai selaimella kuin aiemmin tai olet tyhjentänyt selainhistoriasi tai kirjaudut Finna-sivustoon, jota et ole käyttänyt aikaisemmin.</p>
+    <p>Voit joutua hyväksymään henkilötietojesi käsittelyn Finnassa uudelleen, mikäli kirjaudut palveluun eri laitteella tai selaimella kuin aiemmin tai olet tyhjentänyt selainhistoriasi tai kirjaudut Finna-sivustoon, jota et ole käyttänyt aikaisemmin.
+    </p>
   </div>
 </div>
-<div class="terms-of-service terms-of-service-controls"
-  <p><label><input type="checkbox" name="acceptTerms" value="1" checked="checked" required> Hyväksyn henkilötietojeni tallentamisen ja käsittelyn Finna-palvelussa.</label></p>
+<div class="terms-of-service terms-of-service-controls">
+  <p><label><input type="checkbox" name="acceptTerms" value="1" checked="checked" required> Hyväksyn henkilötietojeni tallentamisen ja käsittelyn Finna-palvelussa.</label>
+  </p>
   <input type="submit" class="btn btn-primary submit" name="submit" value="Hyväksy">
 </div>
