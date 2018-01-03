@@ -14,7 +14,7 @@ if ($img):
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?> list-view">
   <div class="media">
     <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
-    <div class="media-<?=$thumbnailAlignment ?> resultThumb <?=$this->escapeHtmlAttr($coverDetails['size'])?> hidden-xs">
+    <div class="media-<?=$thumbnailAlignment ?> resultThumb <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
         <? if ($thumbnail): ?>
@@ -157,8 +157,8 @@ if ($img):
         <? endif; ?>
       </div>
     </div>
-    <? if ($thumbnail): ?>
-    <div class="media-<?=$thumbnailAlignment ?> resultThumb <?=$this->escapeHtmlAttr($coverDetails['size'])?> <?= $thumbnailAlignment == 'right' ? '' : 'hidden-sm hidden-md hidden-lg'?>">
+    <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+    <div class="media-<?=$thumbnailAlignment ?> resultThumb <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
         <? if ($thumbnail): ?>

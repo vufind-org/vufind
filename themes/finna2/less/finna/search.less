@@ -28,6 +28,11 @@
     position: relative;
   }
 }
+@media (max-width: @screen-xs-max) {
+  .media-left {
+    float: right;
+  }
+}
 
 .resultListLabeling {
   display: none;
@@ -92,7 +97,9 @@ mark, .highlight {
     padding-right: 5px;
   }
 }
-.result .save-record {
+.result .save-record,
+.result .cart-add,
+.result .cart-remove {
   font-size: medium;
   @media(max-width: @screen-xs-max) {
     font-size: 1em;
