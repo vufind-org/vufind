@@ -139,6 +139,20 @@ function buildTreeWithXml(cb) {
 }
 
 $(document).ready(function hierarchyTreeReady() {
+  // "Back to top" link
+  $('#hierarchyTree').scroll(function onScrollHierarchyTree() {
+    modalContent = $('#hierarchyTree').scrollTop();
+    if (modalContent > 1500) {
+      $('#modal .back-to-up').removeClass('hidden');
+    }
+    else {
+      $('#modal .back-to-up').addClass('hidden');
+    }
+  });
+  $('.back-to-up').click(function onClickBackToUp() {
+    $('#hierarchyTree, #modal').animate({scrollTop: 0 }, 200);
+  });
+
   // Code for the search button
   hierarchyID = $("#hierarchyTree").find(".hiddenHierarchyId")[0].value;
   recordID = $("#hierarchyTree").find(".hiddenRecordId")[0].value;
