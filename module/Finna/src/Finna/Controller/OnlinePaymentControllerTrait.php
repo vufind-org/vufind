@@ -220,7 +220,7 @@ trait OnlinePaymentControllerTrait
                 $finesUrl,
                 $ajaxUrl,
                 $user,
-                $patron['cat_username'],
+                $patron,
                 $driver,
                 $payableOnline['amount'],
                 $view->transactionFee,

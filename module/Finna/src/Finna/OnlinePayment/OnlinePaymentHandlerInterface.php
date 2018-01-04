@@ -70,11 +70,9 @@ interface OnlinePaymentHandlerInterface
      * @param string             $finesUrl       Return URL to MyResearch/Fines
      * @param string             $ajaxUrl        Base URL for AJAX-actions
      * @param \Finna\Db\Row\User $user           User
-     * @param string             $patronId       Patron's catalog username
-     * (e.g. barcode)
+     * @param array              $patron         Patron information
      * @param string             $driver         Patron MultiBackend ILS source
-     * @param int                $amount         Amount
-     * (excluding transaction fee)
+     * @param int                $amount         Amount (excluding transaction fee)
      * @param int                $transactionFee Transaction fee
      * @param array              $fines          Fines data
      * @param strin              $currency       Currency
@@ -83,7 +81,7 @@ interface OnlinePaymentHandlerInterface
      * @return false on error, otherwise redirects to payment handler.
      */
     public function startPayment(
-        $finesUrl, $ajaxUrl, $user, $patronId, $driver,
+        $finesUrl, $ajaxUrl, $user, $patron, $driver,
         $amount, $transactionFee, $fines, $currency,
         $statusParam
     );

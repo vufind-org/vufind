@@ -68,7 +68,8 @@ class Paytrail extends BaseHandler
         foreach ($required as $name) {
             if (!isset($params[$name])) {
                 $this->logger->err(
-                    'Paytrail: missing parameter $name in payment response'
+                    "Paytrail: missing parameter $name in payment response: "
+                    . var_export($params, true)
                 );
                 return false;
             }
@@ -85,8 +86,7 @@ class Paytrail extends BaseHandler
      * @param string             $finesUrl       Return URL to MyResearch/Fines
      * @param string             $ajaxUrl        Base URL for AJAX-actions
      * @param \Finna\Db\Row\User $user           User
-     * @param string             $patronId       Patron's catalog username
-     * (e.g. barcode)
+     * @param array              $patron         Patron information
      * @param string             $driver         Patron MultiBackend ILS source
      * @param int                $amount         Amount
      * (excluding transaction fee)
@@ -98,9 +98,10 @@ class Paytrail extends BaseHandler
      * @return false on error, otherwise redirects to payment handler.
      */
     public function startPayment(
-        $finesUrl, $ajaxUrl, $user, $patronId, $driver, $amount, $transactionFee,
+        $finesUrl, $ajaxUrl, $user, $patron, $driver, $amount, $transactionFee,
         $fines, $currency, $statusParam
     ) {
+        $patronId = $patron['cat_username'];
         $orderNumber = $this->generateTransactionId($patronId);
 
         $successUrl
@@ -118,9 +119,85 @@ class Paytrail extends BaseHandler
         $urlset
             = new Paytrail_Module_Rest_Urlset($successUrl, $failUrl, $notifyUrl, '');
 
-        $totAmount = ($amount + $transactionFee) / 100.00;
-        $payment
-            = new Paytrail_Module_Rest_Payment_S1($orderNumber, $urlset, $totAmount);
+        if (!isset($this->config->productCode)
+            && !isset($this->config->transactionFeeProductCode)
+            && !isset($this->config->productCodeMappings)
+        ) {
+            $totAmount = ($amount + $transactionFee) / 100.00;
+            $payment = new Paytrail_Module_Rest_Payment_S1(
+                $orderNumber, $urlset, $totAmount
+            );
+        } else {
+            $contact = new Paytrail_Module_Rest_Contact(
+                $user->firstname, $user->lastname, $user->email,
+                !empty($patron['address1']) ? $patron['address1'] : 'N/A',
+                !empty($patron['zip']) ? $patron['zip'] : 'N/A',
+                !empty($patron['city']) ? $patron['city'] : 'N/A',
+                'FI' //TODO: need mapping from $patron['country']?
+            );
+            $payment = new Paytrail_Module_Rest_Payment_E1(
+                $orderNumber, $urlset, $contact
+            );
+
+            $productCode = !empty($this->config->productCode)
+                ? $this->config->productCode : '';
+            $productCodeMappings = [];
+            if (!empty($this->config->productCodeMappings)) {
+                foreach (explode(':', $this->config->productCodeMappings) as $item) {
+                    $parts = explode('=', $item, 2);
+                    if (count($parts) != 2) {
+                        continue;
+                    }
+                    $productCodeMappings[trim($parts[0])] = trim($parts[1]);
+                }
+            }
+
+            foreach ($fines as $fine) {
+                $fineType = isset($fine['fine']) ? $fine['fine'] : '';
+
+                if (isset($productCodeMappings[$fineType])) {
+                    $code = $productCodeMappings[$fineType];
+                } elseif ($productCode) {
+                    $code = $productCode;
+                } else {
+                    $code = $fineType;
+                }
+                $code = substr($code, 0, 16);
+
+                $fineDesc = '';
+                if (!empty($fineType)) {
+                    $fineDesc
+                        = $this->translator->translate("fine_status_$fineType");
+                    if ("fine_status_$fineType" === $fineDesc) {
+                        $fineDesc = $this->translator->translate("status_$fineType");
+                        if ("status_$fineType" === $fineDesc) {
+                            $fineDesc = $fineType;
+                        }
+                    }
+                }
+                if (!empty($fine['title'])) {
+                    $fineDesc .= ' ('
+                        . substr($fine['title'], 0, 255 - 4 - strlen($fineDesc))
+                    . ')';
+                }
+                $payment->addProduct(
+                    $fineDesc ?: '', $code, 1, $fine['amount'] / 100.00, 0, 0
+                );
+            }
+            if ($transactionFee) {
+                $code = isset($this->config->transactionFeeProductCode)
+                    ? $this->config->transactionFeeProductCode : $productCode;
+                $payment->addProduct(
+                    'Palvelumaksu / Serviceavgift / Transaction fee', $code, 1,
+                    $transactionFee / 100.00, 0, 0,
+                    Paytrail_Module_Rest_Product::TYPE_HANDLING
+                );
+            }
+        }
+
+        if (!empty($this->config->paymentDescription)) {
+            $payment->setDescription($this->config->paymentDescription);
+        }
 
         if (!$module = $this->initPaytrail()) {
             $this->logger->err('Paytrail: error starting payment processing.');
@@ -133,8 +210,7 @@ class Paytrail extends BaseHandler
             $err = 'Paytrail: error starting payment processing: '
                 . $e->getMessage();
             $this->logger->err($err);
-            header("Location: {$finesUrl}");
-            exit();
+            return false;
         }
 
         $success = $this->createTransaction(

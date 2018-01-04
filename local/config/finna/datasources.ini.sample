@@ -19,14 +19,19 @@ institution = Library
 ; Online payment
 onlinePayment['handler'] = ''
 onlinePayment['url'] = ''
+; Paytrail API:
+;onlinePayment['url'] = 'https://payment.paytrail.com'
 onlinePayment['merchantId'] = ''
 onlinePayment['secret'] = ''
 
-; CPU specific
+; The following settings are mandatory for CPU and optional for Paytrail.
+; With Paytrail only a total amount to pay is defined if productCode,
+; transactionFeeProductCode and productCodeMappings are undefined, and empty values
+; can be defined to make the system use default values.
 onlinePayment['paymentDescription'] = 'Finna: verkkomaksuja'
 ; Default product code
-onlinePayment['productCode'] = 'demo_001'
+onlinePayment['productCode'] = ''
 ; Product code for transaction fees
-onlinePayment['transactionFeeProductCode'] = 'demo_002'
-; Product code mappings from the fine types to
+onlinePayment['transactionFeeProductCode'] = 'Transaction'
+; Product code mappings from the fine types to product codes
 onlinePayment['productCodeMappings'] = 'Overdue=demo_003:Long Overdue=demo_004'
