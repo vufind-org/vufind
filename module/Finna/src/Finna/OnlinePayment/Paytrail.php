@@ -195,6 +195,14 @@ class Paytrail extends BaseHandler
             }
         }
 
+        $locale = $this->translator->getLocale();
+        $localeParts = explode('-', $locale);
+        if ('sv' === $localeParts[0]) {
+            $payment->setLocale('sv_SE');
+        } elseif ('en' === $localeParts[0]) {
+            $payment->setLocale('en_US');
+        }
+
         if (!empty($this->config->paymentDescription)) {
             $payment->setDescription($this->config->paymentDescription);
         }
