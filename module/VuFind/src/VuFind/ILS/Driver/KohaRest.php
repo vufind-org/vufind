@@ -96,11 +96,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected $feeTypeMappings = [
         'A' => 'Account',
+        'C' => 'Credit',
         'Copie' => 'Copier Fee',
         'F' => 'Overdue',
+        'FU' => 'Accrued Fine',
         'L' => 'Lost Item Replacement',
         'M' => 'Sundry',
         'N' => 'New Card',
+        'ODUE' => 'Overdue',
         'Res' => 'Hold Fee'
     ];
 
@@ -413,6 +416,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'address2' => $result['address2'],
             'zip' => $result['zipcode'],
             'city' => $result['city'],
+            'country' => $result['country'],
             'expiration_date' => $expirationDate
         ];
     }
