@@ -237,13 +237,41 @@ class AccountExpirationReminders extends AbstractService
             }
         );
 
+        $tableManager = $this->serviceManager->get('VuFind\DbTablePluginManager');
+        $searchTable = $tableManager->get('Search');
+        $resourceTable = $tableManager->get('Resource');
+
         $results = [];
         foreach ($users as $user) {
             $secsSinceLast = time()
                 - strtotime($user->finna_last_expiration_reminder);
-            if ($secsSinceLast >= $frequency * 86400) {
-                $results[] = $user;
+            if ($secsSinceLast < $frequency * 86400) {
+                continue;
             }
+
+            if (!$user->email || trim($user->email) == '') {
+                $this->msg(
+                    "User {$user->username} (id {$user->id})" . ' does not have an'
+                    . 'email address, bypassing expiration reminders'
+                );
+                continue;
+            }
+
+            // Check that the user has some saved content so that no reminder is sent
+            // if there is none.
+            if ($user->finna_due_date_reminder === 0
+                && $user->getTags()->count() === 0
+                && $searchTable->getSearches('', $user->id)->count() === 0
+                && $resourceTable->getFavorites($user->id)->count() === 0
+            ) {
+                $this->msg(
+                    "User {$user->username} (id {$user->id})"
+                    . ' does not have saved data, bypassing expiration reminders'
+                );
+                continue;
+            }
+
+            $results[] = $user;
         }
 
         return $results;
@@ -260,14 +288,6 @@ class AccountExpirationReminders extends AbstractService
      */
     protected function sendAccountExpirationReminder($user, $expirationDays)
     {
-        if (!$user->email || trim($user->email) == '') {
-            $this->msg(
-                "User {$user->username} (id {$user->id})"
-                . ' does not have an email address, bypassing expiration reminders'
-            );
-            return false;
-        }
-
         if (false !== strpos($user->username, ':')) {
             list($userInstitution, $userName) = explode(':', $user->username, 2);
         } else {
