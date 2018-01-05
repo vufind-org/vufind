@@ -4,6 +4,8 @@ namespace IxTheo\RecordDriver;
 
 class SolrDefault extends \TueFind\RecordDriver\SolrMarc
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Get a highlighted corporation string, if available.
      *
@@ -269,7 +271,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
     }
 
     private static function BibleRangeToDisplayString($bible_range, $language_code) {
-        $separator = (substr($language_code, 0, 2) == "de") ? "." : ":";
+        $separator = (substr($language_code, 0, 2) == "de") ? "," : ":";
         $code1 = (int)substr($bible_range, 0, 8);
         $code2 = (int)substr($bible_range, 9, 8);
         if ($code1 + 999999 == $code2)
@@ -285,18 +287,18 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
             $verse2 = self::GetVerse($code2);
             if ($verse1 == $verse2)
                 return $codes_as_string . strval($verse1);
-	    else if ($verse1 == 0 && $verse2 == 999)
+            elseif ($verse1 == 0 && $verse2 == 999)
                 return $codes_as_string;
             else
                 return $codes_as_string . $separator . strval($verse1) . "–" . strval($verse2);
         }
         return $codes_as_string . strval($chapter1) . "–" . strval($chapter2);
     }
-    
+
     public function getBibleRangesString() {
         if (!isset($this->fields['bible_ranges']))
             return "";
-        $language_code = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        $language_code = $this->getTranslatorLocale();
         $bible_references = "";
         foreach (explode(',', $this->fields['bible_ranges']) as $bible_range) {
             if (!empty($bible_references))
