@@ -62,6 +62,7 @@ $config = [
                 'factories' => [
                     'KeywordChainSearch' => 'IxTheo\Search\Results\Factory::getKeywordChainSearch',
                     'pdasubscriptions' => 'IxTheo\Search\Results\Factory::getPDASubscriptions',
+                    'solr' => 'IxTheo\Search\Results\Factory::getSolr',
                     'Subscriptions' => 'IxTheo\Search\Results\Factory::getSubscriptions',
                 ],
             ],
