@@ -80,6 +80,9 @@ retain_filters_by_default = false
 ; Whether to hide merged component parts
 hide_component_parts = true
 
+; Maximum result to display
+result_limit = 100000
+
 [Cache]
 ; This controls whether the parsed searchspecs.yaml file will be stored to
 ; improve search performance; legal options are APC (use APC cache), File (store
