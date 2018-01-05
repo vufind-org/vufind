@@ -14,9 +14,8 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected function initSort($request)
     {
-        $handler = $this->query->getHandler();
-        if (in_array($handler, $this->getOptions()->getForceDefaultSortSearches())) {
-            $this->setSort($this->getOptions()->getDefaultSortByHandler($handler));
+        if ($this->query instanceof \VuFindSearch\Query\Query && in_array($this->query->getHandler(), $this->getOptions()->getForceDefaultSortSearches())) {
+            $this->setSort($this->getOptions()->getDefaultSortByHandler($this->query->getHandler()));
         } else {
             parent::initSort($request);
         }
