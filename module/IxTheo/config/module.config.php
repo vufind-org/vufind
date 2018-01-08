@@ -48,16 +48,21 @@ $config = [
                 'factories' => [
                     'KeywordChainSearch' => 'IxTheo\Search\Options\Factory::getKeywordChainSearch',
                     'PDASubscriptions' => 'IxTheo\Search\Options\Factory::getPDASubscriptions',
+                    'Solr' => 'IxTheo\Search\Options\Factory::getSolr',
                     'Subscriptions' => 'IxTheo\Search\Options\Factory::getSubscriptions',
                 ],
             ],
             'search_params' => [
                 'abstract_factories' => ['IxTheo\Search\Params\PluginFactory'],
+                'factories' => [
+                    'solr' => 'IxTheo\Search\Params\Factory::getSolr',
+                ],
             ],
             'search_results' => [
                 'factories' => [
                     'KeywordChainSearch' => 'IxTheo\Search\Results\Factory::getKeywordChainSearch',
                     'pdasubscriptions' => 'IxTheo\Search\Results\Factory::getPDASubscriptions',
+                    'solr' => 'IxTheo\Search\Results\Factory::getSolr',
                     'Subscriptions' => 'IxTheo\Search\Results\Factory::getSubscriptions',
                 ],
             ],

@@ -168,7 +168,11 @@ class BrowseController extends \VuFind\Controller\BrowseController
         };
 
         $ixtheo_notation_callback = function ($letter) use ($suffix) {
-            return ['value' => $letter . $suffix, 'displayText' => $letter];
+            return ['value' => $letter . $suffix, 'displayText' => $this->translate('ixtheo-' . $letter)];
+        };
+
+        $relbib_notation_callback = function ($letter) use ($suffix) {
+            return ['value' => $letter . $suffix, 'displayText' => $this->translate('relbib-' . $letter)];
         };
 
         // Get base alphabet:
@@ -182,7 +186,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
             $callback = $ixtheo_notation_callback;
         } else if ($this->getCurrentAction() === 'RelBib-Classification') {
             $chars = 'ABHKNTVXZ';
-            $callback = $ixtheo_notation_callback;
+            $callback = $relbib_notation_callback;
         }  else if ($this->getCurrentAction() == 'Era') {
             $chars = '0123456789' . $chars;
         } else {

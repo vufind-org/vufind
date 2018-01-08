@@ -6,11 +6,11 @@ use Zend\ServiceManager\ServiceManager;
 class Factory extends \VuFind\Search\Options\Factory
 {
     /**
-     * Factory for KeywordChainSearch results object.
+     * Factory for KeywordChainSearch options object.
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return Solr
+     * @return \IxTheo\Search\KeywordChainSearch\Options
      */
     public static function getKeywordChainSearch(ServiceManager $sm)
     {
@@ -23,7 +23,7 @@ class Factory extends \VuFind\Search\Options\Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return Solr
+     * @return \IxTheo\Search\PDASubscriptions\Options
      */
     public static function getPDASubscriptions(ServiceManager $sm)
     {
@@ -32,11 +32,23 @@ class Factory extends \VuFind\Search\Options\Factory
     }
 
     /**
-     * Factory for Subscriptions results object.
+     * Factory for Solr options object.
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return Solr
+     * @return \IxTheo\Search\Solr\Options
+     */
+    public static function getSolr(ServiceManager $sm) {
+        $config = $sm->getServiceLocator()->get('VuFind\Config');
+        return new \IxTheo\Search\Solr\Options($config);
+    }
+
+    /**
+     * Factory for Subscriptions options object.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \IxTheo\Search\Subscriptions\Options
      */
     public static function getSubscriptions(ServiceManager $sm)
     {
