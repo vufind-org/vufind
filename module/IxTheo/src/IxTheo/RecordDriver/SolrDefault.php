@@ -286,7 +286,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
             $verse1 = self::GetVerse($code1);
             $verse2 = self::GetVerse($code2);
             if ($verse1 == $verse2)
-                return $codes_as_string . strval($verse1);
+                return $codes_as_string . $separator . strval($verse1);
             elseif ($verse1 == 0 && $verse2 == 999)
                 return $codes_as_string;
             else
