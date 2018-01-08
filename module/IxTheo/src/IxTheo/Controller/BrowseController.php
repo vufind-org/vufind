@@ -168,11 +168,11 @@ class BrowseController extends \VuFind\Controller\BrowseController
         };
 
         $ixtheo_notation_callback = function ($letter) use ($suffix) {
-            return ['value' => $letter . $suffix, 'displayText' => $this->translate('ixtheo-' . $letter)];
+            return ['value' => $letter . $suffix, 'displayText' => $this->translate('ixtheo-' . $letter), 'facet_prefix' => $letter];
         };
 
         $relbib_notation_callback = function ($letter) use ($suffix) {
-            return ['value' => $letter . $suffix, 'displayText' => $this->translate('relbib-' . $letter)];
+            return ['value' => $letter . $suffix, 'displayText' => $this->translate('relbib-' . $letter), 'facet_prefix' => $letter];
         };
 
         // Get base alphabet:
