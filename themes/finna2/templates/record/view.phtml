@@ -169,14 +169,16 @@
             <? foreach ($this->tabs as $accordion => $obj): ?>
                 <? // add current tab to breadcrumbs if applicable:
                 $desc = $obj->getDescription();
-                $accordion_classes = ['accordion'];
+                $accordion_classes = [
+                    'accordion',
+                    'accordion-' . strtolower($accordion)
+                ];
                 if (0 === strcasecmp($this->activeTab, $accordion)) {
                     $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
                     $activeTabObj = $obj;
                 }
                 if (!$obj->isVisible()) { $accordion_classes[] = 'hidden'; }
                 if (!$obj->supportsAjax()) { $accordion_classes[] = 'noajax'; }
-                if (strtolower($accordion) == 'details') { $accordion_classes[] = 'hidden-xs hidden-sm'; }
                 ?>
             <div <?=count($accordion_classes) > 0 ? ' class="' . implode(' ', $accordion_classes) . '"' : ''?>>
               <div class="accordion-toggle">
