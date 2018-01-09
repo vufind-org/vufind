@@ -3,7 +3,7 @@
 namespace IxTheo\Search\Results;
 use Zend\ServiceManager\ServiceManager;
 
-class Factory extends \VuFind\Search\Results\Factory
+class Factory extends \TueFind\Search\Results\Factory
 {
     /**
      * Factory for KeywordChainSearch results object.
