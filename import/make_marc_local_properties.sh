@@ -5,7 +5,7 @@ if [ -z "$TUEFIND_FLAVOUR" ]; then
         echo "Usage: $0 (krimdok | ixtheo)"
         exit 1
     else
-        $TUEFIND_FLAVOUR = $1
+        TUEFIND_FLAVOUR=$1
     fi
 fi
 
