@@ -19,7 +19,7 @@ CREATE TABLE ixtheo_journal_subscriptions (
        max_last_modification_time DATETIME NOT NULL,
        FOREIGN KEY (id) REFERENCES user(id),
        PRIMARY KEY (id,journal_control_number)
-);
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE ixtheo_pda_subscriptions (
        id INT(11) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE ixtheo_pda_subscriptions (
        book_isbn VARCHAR(13) NOT NULL,
        FOREIGN KEY (id) REFERENCES user(id),
        PRIMARY KEY (id, book_ppn)
-);
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE ixtheo_user (
        id INT(11) NOT NULL,
@@ -43,4 +43,4 @@ CREATE TABLE ixtheo_user (
        can_use_tad BOOLEAN DEFAULT FALSE,
        FOREIGN KEY (id) REFERENCES user(id),
        PRIMARY KEY (id)
-);
+) DEFAULT CHARSET=utf8;
