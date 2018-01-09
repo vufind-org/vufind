@@ -4,27 +4,6 @@
 
   $BROWSE_BASE = $this->url('browse-' . strtolower($this->currentAction));
   $SEARCH_BASE = $this->url($this->currentAction == 'Tag' ? 'tag-home' : 'search-results');
-
-function isIxTheoNotationSecondList($self) {
-  return $self->secondaryParams["query_field"] == "ixtheo_notation_facet";
-}
-
-function isRelBibNotationSecondList($self) {
-  return $self->secondaryParams["query_field"] == "relbib_notation_facet";
-}
-
-function isIxTheoNotationThirdList($self) {
-  return $self->currentAction == "IxTheo-Classification";
-}
-
-function isRelBibNotationThirdList($self) {
-  return $self->currentAction == "RelBib-Classification";
-}
-
-function getRelBibTranslationPrefix($subject) {
-    if (strlen($subject) == 1) return 'relbib';
-    else return 'ixtheo';
-}
 ?>
 
 <? if (!isset($this->currentAction)): ?>
@@ -32,7 +11,7 @@ function getRelBibTranslationPrefix($subject) {
 <? endif; ?>
 
 <div class="browse-container">
-  <div class="browse-list <? if (!empty($this->categoryList)): ?> hidden-xs<? endif ?>" id="list1">
+  <div class="browse-list<? if (!empty($this->categoryList) || !empty($this->secondaryList)): ?> hidden-xs<? endif ?>" id="list1">
     <? foreach ($this->browseOptions as $item=>$currentOption): ?>
       <a href="<?=$this->url('browse-' . strtolower($currentOption['action'])); ?>" class="browse-item<? if($currentOption['action'] == $this->currentAction): ?> active<? endif; ?>">
         <?=$this->transEsc($currentOption['description']) ?>
@@ -42,7 +21,7 @@ function getRelBibTranslationPrefix($subject) {
   </div>
 
   <? if (!empty($this->categoryList)): ?>
-    <div class="browse-list <? if (!empty($this->secondaryList) || !empty($this->resultList)): ?> hidden-xs<? endif ?>" id="list2">
+    <div class="browse-list<? if (!empty($this->secondaryList) || !empty($this->resultList)): ?> hidden-xs<? endif ?>" id="list2">
       <? foreach($this->categoryList as $findby=>$category): ?>
         <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&amp;query_field=<?=$this->browse()->getSolrField($findby, $this->currentAction) ?>" class="browse-item<? if (!is_string($category)): ?> with-badge<? endif; ?><? if ($this->findby == $findby): ?> active<? endif; ?>">
           <? if(is_string($category)): ?>
@@ -58,13 +37,18 @@ function getRelBibTranslationPrefix($subject) {
   <? endif; ?>
 
   <? if (!empty($this->secondaryList)): ?>
-    <div class="browse-list <? if (!empty($this->resultList)): ?> hidden-xs<? endif ?>" id="list3">
+    <div class="browse-list<? if (!empty($this->resultList)): ?> hidden-xs<? endif ?>" id="list3">
     <? foreach($this->secondaryList as $secondary): ?>
       <? $url = $BROWSE_BASE . '?findby=' . urlencode($this->findby)
           . '&amp;category=' . urlencode($this->category)
           . '&amp;query=' . urlencode($secondary['value']);
         if ($this->facetPrefix) {
-          $url .= '&amp;facet_prefix=' . urlencode($secondary['displayText']);
+
+          // IxTheo-specific alphabetic browsing
+          // (use different facet_prefix than displayText)
+          (isset($secondary['facet_prefix'])) ? $facet_prefix = $secondary['facet_prefix'] : $facet_prefix = $secondary['displayText'];
+          $url .= '&amp;facet_prefix=' . urlencode($facet_prefix);
+
         }
         if ($this->secondaryParams) {
           foreach($this->secondaryParams as $var=>$val) {
@@ -75,11 +59,8 @@ function getRelBibTranslationPrefix($subject) {
         $hasBadge = $this->findby != 'alphabetical' && isset($secondary['count']);
       ?>
       <a href="<?=$url ?>" class="browse-item<? if ($hasBadge): ?> with-badge<? endif; ?><? if ($this->query == $secondary['value'].'' || $this->query == $secondary['value'].'*'): ?> active<? endif; ?>">
-        <?$fancy_secondary = isIxTheoNotationSecondList($this) ? ($this->translate("ixtheo-" . $secondary['displayText'])) :
-                               (isRelBibNotationSecondList($this) ? $this->translate(getRelBibTranslationPrefix($secondary['displayText']) . "-" . $secondary['displayText']) :
-                               $secondary['displayText']);?>
-        <?=$this->escapeHtml($fancy_secondary) ?>
-        <? if ($this->findby != 'alphabetical' && isset($secondary['count'])): ?>
+        <?=$this->escapeHtml($secondary['displayText']) ?>
+        <? if ($hasBadge): ?>
           <span class="badge"><?=number_format($secondary['count']) ?></span>
         <? else: ?>
           <span class="pull-right flip"><i class="fa fa-angle-right" title="<?=$this->transEsc('more') ?>"></i></span>
@@ -96,17 +77,14 @@ function getRelBibTranslationPrefix($subject) {
     <div class="browse-list" id="list4">
     <? foreach($this->resultList as $result): ?>
       <a class="browse-item with-badge" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['value']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&amp;<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>">
-        <?$fancy_result = isIxTheoNotationThirdList($this) ? $this->translate("ixtheo-" . $result['displayText']) :
-                            (isRelBibNotationThirdList($this) ? $this->translate(getRelBibTranslationPrefix($result['displayText']) . "-" . $result['displayText']) :
-                            $result['displayText']);?>
-        <?=$this->escapeHtml($fancy_result)?>
+        <?=$this->escapeHtml($result['displayText'])?>
         <span class="badge"><?=number_format($result['count']) ?></span>
       </a>
     <? endforeach; ?>
     </div>
   <? elseif (isset($this->query)): ?>
-    <ul class="browse list-group col-sm-3" id="list4">
-      <li class="browse-item"><?=$this->transEsc('nohit_heading') ?></li>
-    </ul>
+    <div class="browse-list" id="list4">
+      <span class="browse-item"><?=$this->transEsc('nohit_heading') ?></li>
+    </div>
   <? endif; ?>
 </div>

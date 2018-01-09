@@ -30,7 +30,13 @@ class Solr extends \VuFind\Autocomplete\Solr
                 }
             }
         }
-        return $results;
+        return (!empty($results)) ? array_diff($results, array("[Unassigned]*")) : $results;
+    }
+
+
+    public function getSuggestions($query) {
+        $results = parent::getSuggestions($query);
+        return (!empty($results)) ? array_diff($results, array("[Unassigned]*")) : $results;
     }
 
     /**

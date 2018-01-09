@@ -1,14 +1,15 @@
 #!/bin/bash
 
-if [[ ( $# != 1 ) || ( $1 != "krimdok" && $1 != "ixtheo" ) ]]; then
-    echo "Usage: $0 (krimdok | ixtheo)"
-    exit 1
+if [ -z "$TUEFIND_FLAVOUR" ]; then
+    if [[ ( $# != 1 ) || ( $1 != "krimdok" && $1 != "ixtheo" ) ]]; then
+        echo "Usage: $0 (krimdok | ixtheo)"
+        exit 1
+    else
+        TUEFIND_FLAVOUR=$1
+    fi
 fi
 
-if [[ $1 == ixtheo ]]; then
-    xmllint --xinclude --format schema_ixtheo_fields.xml > schema_local_fields.xml
-    xmllint --xinclude --format schema_ixtheo_types.xml  > schema_local_types.xml 2> /dev/null
-else
-    xmllint --xinclude --format schema_krimdok_fields.xml > schema_local_fields.xml
-    xmllint --xinclude --format schema_krimdok_types.xml  > schema_local_types.xml 2> /dev/null
-fi
+DIR="$(dirname $(readlink -f $0))"
+xmllint --xinclude --format $DIR/schema_${TUEFIND_FLAVOUR}_fields.xml > $DIR/schema_local_fields.xml
+xmllint --xinclude --format $DIR/schema_${TUEFIND_FLAVOUR}_types.xml  > $DIR/schema_local_types.xml 2> /dev/null
+

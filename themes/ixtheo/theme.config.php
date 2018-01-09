@@ -14,7 +14,6 @@ return [
         ],
         'invokables' => [
             'browse' => 'IxTheo\View\Helper\Root\Browse',
-            'ixTheoClassification' => 'IxTheo\View\Helper\IxTheo\Classification',
         ],
     ],
 ];

@@ -39,7 +39,9 @@
   <? if ($thisFacet['isApplied']): ?>
     <span class="status"><i class="fa fa-check" aria-hidden="true"></i></span>
   <? else: ?>
-    <span class="badge"><?=$this->localizedNumber($thisFacet['count'])?></span>
+    <span class="badge">
+        <?= $this->tuefind()->isUnassigned($thisFacet['displayText']) ? $this->tuefind()->getLocalizedOverallPercentage($this, $thisFacet['count'], $results) . '%' : $this->localizedNumber($thisFacet['count'])?>
+    </span>
   <? endif; ?>
 
   <? if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
@@ -52,8 +54,7 @@
     <i class="fa <?=$thisFacet['isApplied'] ? 'fa-check-square-o' : 'fa-square-o' ?>" aria-hidden="true"></i>
   <? endif; ?>
 
-  <!-- Translate IxTheo Classification if necessary -->
-  <?=$this->ixTheoClassification()->getTranslatedValue($this->cluster['label'], $thisFacet['displayText']);?>
+  <?=$this->escapeHtml($thisFacet['displayText'])?>
 
   <? if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
       </a>
