@@ -905,7 +905,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $status = 'Lost/Missing';
             }
 
-            $duedate_formatted = date_format(new \DateTime($duedate), "m/d/Y");
+            $duedate_formatted = $this->displayDate($duedate);
 
             //Retrieving the full branch name
             if ($rowItem['HLDBRNCH'] == null) {
@@ -1085,9 +1085,11 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $sql = "SELECT al.amount*100 as amount, " .
                    "al.amountoutstanding*100 as balance, al.accounttype as fine, " .
                    "al.date as createdat, items.biblionumber as id, " .
-                   "al.description as title " .
+                   "al.description as title, issues.date_due as duedate, " .
+                   "issues.issuedate as issuedate " .
                    "FROM `accountlines` al " .
                    "LEFT JOIN items USING (itemnumber) " .
+                   "LEFT JOIN issues USING (issue_id) " .
                    "WHERE al.borrowernumber = :id ";
             if (!$this->db) {
                 $this->initDB();
@@ -1159,17 +1161,14 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 }
 
                 $transactionLst[] = [
-                           'amount'     => $row['amount'],
-                           'checkout'   => "N/A",
-                           'title'      => $row['title'],
-                           'fine'       => $fineValue,
-                           'balance'    => $row['balance'],
-                           'createdate' => $row['createdat'],
-                           'duedate' => date_format(
-                               new \DateTime($row['duedate']), "m/d/Y"
-                           ),
-                           'duedate'    => "N/A",
-                           'id'         => isset($row['id']) ? $row['id'] : -1,
+                    'amount'     => $row['amount'],
+                    'checkout'   => $this->displayDateTime( $row['issuedate'] ),
+                    'title'      => $row['title'],
+                    'fine'       => $fineValue,
+                    'balance'    => $row['balance'],
+                    'createdate' => $row['createdat'],
+                    'duedate'    => $this->displayDate( $row['duedate'] ),
+                    'id'         => isset($row['id']) ? $row['id'] : -1,
                 ];
             }
             return $transactionLst;
@@ -1201,6 +1200,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->debug("ID: " . $rsp->{'borrowernumber'});
         $this->debug("Chrgs: " . $rsp->{'charges'});
 
+        $this->debug($rsp->{'fines'});
+
         foreach ($rsp->{'fines'}->{'fine'} as $fine) {
             $fineLst[] = [
                 'amount'     => 100 * $this->getField($fine->{'amount'}),
@@ -1208,7 +1209,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 'checkout'   => "N/A",
                 'fine'       => $this->getField($fine->{'description'}),
                 'balance'    => 100 * $this->getField($fine->{'amountoutstanding'}),
-                'createdate' => $this->getField($fine->{'date'}),
+                'createdate' => $this->displayDate($this->getField($fine->{'date'})),
                 // FIXME: require accountlines.itemnumber -> issues.date_due data.
                 'duedate'    => "N/A",
                 // FIXME: require accountlines.itemnumber -> items.biblionumber data
@@ -1244,10 +1245,11 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $holdLst[] = [
                 'id'       => $this->getField($hold->{'biblionumber'}),
                 'location' => $this->getField($hold->{'branchname'}),
-                // FIXME: require exposure of reserves.expirationdate
-                'expire'   => "N/A",
-                'create'   => date_format(
-                    new \DateTime($this->getField($hold->{'reservedate'})), "m/d/Y"
+                'expire'   => $this->displayDate(
+                    $this->getField($hold->{'expirationdate'})
+                ),
+                'create'   => $this->displayDate(
+                    $this->getField($hold->{'reservedate'})
                 ),
                 'position' => $this->getField($hold->{'priority'}),
                 'title' => $this->getField($hold->{'title'}),
@@ -1522,11 +1524,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
 
             $transactionLst[] = [
-                'duedate'   => date_format(
-                    new \DateTime(
+                'duedate'   => $this->displayDate(
                         $this->getField($loan->{'date_due'})
-                    ),
-                    "m/d/Y"
                 ),
                 'id'        => $this->getField($loan->{'biblionumber'}),
                 'item_id'   => $this->getField($loan->{'itemnumber'}),
@@ -1936,6 +1935,9 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         } elseif (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
             // YYYY-MM-DD HH:MM:SS
             return $this->dateConverter->convertToDisplayDate('Y-m-d H:i:s', $date);
+        } elseif (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d$/", $date) === 1) {
+            // YYYY-MM-DD HH:MM
+            return $this->dateConverter->convertToDisplayDate('Y-m-d H:i', $date);
         } elseif (preg_match("/^\d{4}-\d{2}-\d{2}$/", $date) === 1) { // YYYY-MM-DD
             return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
         } else {
