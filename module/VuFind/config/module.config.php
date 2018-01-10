@@ -440,22 +440,7 @@ $config = [
                     'syndeticsplus' => 'VuFind\Content\TOC\Factory::getSyndeticsPlus',
                 ],
             ],
-            'content_covers' => [
-                'factories' => [
-                    'amazon' => 'VuFind\Content\Covers\Factory::getAmazon',
-                    'booksite' => 'VuFind\Content\Covers\Factory::getBooksite',
-                    'buchhandel' => 'VuFind\Content\Covers\Factory::getBuchhandel',
-                    'contentcafe' => 'VuFind\Content\Covers\Factory::getContentCafe',
-                    'syndetics' => 'VuFind\Content\Covers\Factory::getSyndetics',
-                ],
-                'invokables' => [
-                    'google' => 'VuFind\Content\Covers\Google',
-                    'librarything' => 'VuFind\Content\Covers\LibraryThing',
-                    'localfile' => 'VuFind\Content\Covers\LocalFile',
-                    'openlibrary' => 'VuFind\Content\Covers\OpenLibrary',
-                    'summon' => 'VuFind\Content\Covers\Summon',
-                ],
-            ],
+            'content_covers' => [ /* see VuFind\Content\Covers\PluginManager for defaults */ ],
             'content_reviews' => [
                 'factories' => [
                     'amazon' => 'VuFind\Content\Reviews\Factory::getAmazon',
