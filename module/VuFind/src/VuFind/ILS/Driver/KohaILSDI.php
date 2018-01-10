@@ -1162,12 +1162,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
                 $transactionLst[] = [
                     'amount'     => $row['amount'],
-                    'checkout'   => $this->displayDateTime( $row['issuedate'] ),
+                    'checkout'   => $this->displayDateTime($row['issuedate']),
                     'title'      => $row['title'],
                     'fine'       => $fineValue,
                     'balance'    => $row['balance'],
                     'createdate' => $row['createdat'],
-                    'duedate'    => $this->displayDate( $row['duedate'] ),
+                    'duedate'    => $this->displayDate($row['duedate']),
                     'id'         => isset($row['id']) ? $row['id'] : -1,
                 ];
             }
@@ -1525,7 +1525,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
             $transactionLst[] = [
                 'duedate'   => $this->displayDate(
-                        $this->getField($loan->{'date_due'})
+                    $this->getField($loan->{'date_due'})
                 ),
                 'id'        => $this->getField($loan->{'biblionumber'}),
                 'item_id'   => $this->getField($loan->{'itemnumber'}),
