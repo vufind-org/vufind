@@ -286,8 +286,12 @@ function setupAutocomplete() {
   // Update autocomplete on type change
   $('#searchForm_type').change(function searchTypeChange() {
     for (var i in cacheObj) {
-      for (var j in cacheObj[i]) {
-        delete cacheObj[i][j];
+      if (cacheObj.hasOwnProperty(i)) {
+        for (var j in cacheObj[i]) {
+          if (cacheObj[i].hasOwnProperty(j)) {
+            delete cacheObj[i][j];
+          }
+        }
       }
     }
   });
