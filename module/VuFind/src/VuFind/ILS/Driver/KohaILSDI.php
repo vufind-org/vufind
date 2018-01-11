@@ -1243,9 +1243,11 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $holdLst[] = [
                 'id'       => $this->getField($hold->{'biblionumber'}),
                 'location' => $this->getField($hold->{'branchname'}),
-                'expire'   => $this->displayDate(
-                    $this->getField($hold->{'expirationdate'})
-                ),
+                'expire'   => isset($hold->{'expirationdate'})
+                    ? $this->displayDate(
+                        $this->getField($hold->{'expirationdate'})
+                    )
+                    : "N/A",
                 'create'   => $this->displayDate(
                     $this->getField($hold->{'reservedate'})
                 ),
