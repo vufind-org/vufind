@@ -34,8 +34,10 @@
       font-style: normal;
     }
   }
-  &.accordion-details {
-    display: @accordion-details-display;
+  &.accordion-details{
+    @media(max-width: @screen-sm-max) {
+      display: @accordion-details-display;
+    }
   }
 }
 
