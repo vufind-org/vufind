@@ -1963,6 +1963,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $this->dateConverter->convertToDisplayDateAndTime(
                     'Y-m-d H:i:s', $date
                 );
+        } elseif (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d$/", $date) === 1) {
+            // YYYY-MM-DD HH:MM
+            return
+                $this->dateConverter->convertToDisplayDateAndTime(
+                    'Y-m-d H:i', $date
+                );
         } else {
             error_log("Unexpected date format: $date");
             return $date;
