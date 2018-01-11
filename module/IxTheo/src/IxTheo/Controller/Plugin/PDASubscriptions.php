@@ -111,9 +111,20 @@ class PDASubscriptions extends AbstractPlugin
         $emailMessage = "Benutzer:\r\n" .  implode("\r\n", $userData) . "\r\n\r\n" .
                         "Versandaddresse:\r\n" . $addressForDispatch . "\r\n\r\n" .
                         "Titel:\r\n" . $this->getBookInformation($id) . "\r\n\r\n" .
+                        "Link:\r\n" . $this->getRecordLink($id) . "\r\n\r\n" .
                         "Benutzer Typ:\r\n" . $userType;
         $this->sendEmail($recipientData['email'], $recipientData['name'], $senderData['email'], $senderData['name'], $emailSubject, $emailMessage);
     }
+
+
+    function getRecordLink($id) {
+        $url = $this->getController()->getServerUrl();
+        // Strip our plugin part
+        $url_parts = explode('/', $url);
+        array_pop($url_parts);
+        return implode('/', $url_parts);
+    }
+
 
     function getBookInformation($id) {
         $recordLoader = $this->pm->getServiceLocator()->get('VuFind\RecordLoader');
@@ -180,8 +191,10 @@ class PDASubscriptions extends AbstractPlugin
         $senderData = $this->getPDASenderData($userType);
         $emailSubject = "PDA Abbestellung";
         $recipientData = $this->getPDAInstitutionRecipientData($userType);
+        $recordLink = $this->getRecordLink($id);
         $emailMessage = "Abbestellung: " . $this->getBookInformation($id) . "\r\n\r\n" .
-                         "für: " . $userData[0] . "(" . $userData[1] . ")" . " [Benutzertyp: " . $userType . "]";
+                        "Link: " . $recordLink . "\r\n\r\n" .
+                        "für: " . $userData[0] . "(" . $userData[1] . ")" . " [Benutzertyp: " . $userType . "]";
         $this->sendEmail($recipientData['email'], $recipientData['name'], $senderData['email'], $senderData['name'], $emailSubject, $emailMessage);
     }
 
