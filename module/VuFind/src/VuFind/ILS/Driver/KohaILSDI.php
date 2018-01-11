@@ -1200,8 +1200,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->debug("ID: " . $rsp->{'borrowernumber'});
         $this->debug("Chrgs: " . $rsp->{'charges'});
 
-        $this->debug($rsp->{'fines'});
-
         foreach ($rsp->{'fines'}->{'fine'} as $fine) {
             $fineLst[] = [
                 'amount'     => 100 * $this->getField($fine->{'amount'}),
