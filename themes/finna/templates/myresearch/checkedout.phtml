@@ -10,6 +10,10 @@
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Checked Out Items') . '</li>';
 
     $user = $this->auth()->isLoggedIn();
+
+    $params = [
+        'sort' => $this->currentSort
+    ];
 ?>
 <div class="my-research-content myresearch-grid-list">
   <? if (!$this->translationEmpty('checked_out_instructions_html')): ?><p class="no-content-message"><?=$this->translate('checked_out_instructions_html')?></p><? endif; ?>
@@ -48,6 +52,9 @@
         <th class="text-right" colspan="2">
           <div class="renew-button-col">
             <input type="submit" class="btn btn-primary renew-button" id="renewSelected" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
+            <? if ($this->paginator): ?>
+              <input type="submit" class="btn btn-primary renew-button" id="renewAll" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
+            <? endif; ?>
           </div>
           <div class="sort-col">
             <?=$this->render('search/controls/sort.phtml')?>
@@ -63,6 +70,27 @@
         </th>
       </tr>
     <? endif; ?>
+
+    <? if ($paginator): ?>
+      <div class="pagination-container">
+        <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination-simple.phtml', ['params' => $params]) : ''?>
+      </div>
+    <? endif; ?>
+
+    <? foreach ($hiddenTransactions as $ilsDetails): ?>
+      <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
+        <? $renewDetails = $this->renewResult[$ilsDetails['item_id']]; ?>
+        <? $prefix = isset($ilsDetails['title']) ? $ilsDetails['title'] : $ilsDetails['item_id']; ?>
+        <? if (!isset($renewDetails['success']) || !$renewDetails['success']): ?>
+          <div class="alert alert-danger"><?=$this->escapeHtml($prefix . ': ') . $this->transEsc('renew_fail')?><? if (isset($renewDetails['sysMessage'])): ?>: <?=$this->escapeHtml($renewDetails['sysMessage'])?><? endif; ?></div>
+        <? endif; ?>
+      <? endif; ?>
+      <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
+        <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
+        <input class="pull-left flip" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
+      <? endif; ?>
+    <? endforeach; ?>
+
     <? $i = 0; foreach ($this->transactions as $resource): ?>
       <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
       <tr id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="myresearch-row">
@@ -212,8 +240,11 @@
             </div>
           </div>
         </td>
-        <td class="">
+        <td>
           <input type="submit" class="btn btn-primary" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
+          <? if ($this->paginator): ?>
+            <input type="submit" class="btn btn-primary" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
+          <? endif; ?>
         </td>
         <td class="text-right hidden-xs">
           <span class="myresearch-count"><?=$this->transEsc('total_borrowed_items', ['%%count%%' => count($this->transactions)]);?></span>
@@ -228,6 +259,7 @@
     <? if ($template = $this->content()->findTemplateForLng("content/Additions/checkedout-post-list")): ?>
       <div class="checkedout-post-list"><?=$this->render($template)?></div>
     <? endif; ?>
+    <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['params' => $params]) : ''?>
   <? else: ?>
     <h4><?=$this->transEsc('You do not have any items checked out')?>.</h4>
   <? endif; ?>

@@ -264,8 +264,7 @@ library_cards = true
 
 ; The number of checked out items to display per page; 0 for no limit (may cause
 ; memory problems for users with huge numbers of items). Default = 50.
-; N.B. Values other than 0 are not supported in the finna theme.
-checked_out_page_size = 0
+;checked_out_page_size = 50
 
 ; The number of historic loans to display per page; 0 for no limit (may cause
 ; memory problems for users with a large number of historic loans). Default = 50
