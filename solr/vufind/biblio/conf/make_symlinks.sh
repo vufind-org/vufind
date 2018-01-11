@@ -9,7 +9,7 @@ if [ -z "$TUEFIND_FLAVOUR" ]; then
     fi
 fi
 
-DIR="$(dirname $(readlink -f $0))"
+DIR="$(dirname $(readlink --canonicalize "$0"))"
 
 rm -f $DIR/solrconfig.xml
 ln -s solrconfig_${TUEFIND_FLAVOUR}.xml $DIR/solrconfig.xml

@@ -9,7 +9,7 @@ if [ -z "$TUEFIND_FLAVOUR" ]; then
     fi
 fi
 
-DIR="$(dirname $(readlink -f $0))"
+DIR="$(dirname $(readlink --canonicalize "$0"))"
 
 xmllint --xinclude --format $DIR/schema_${TUEFIND_FLAVOUR}_fields.xml > $DIR/schema_local_fields.xml
 

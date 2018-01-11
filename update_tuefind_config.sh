@@ -8,7 +8,7 @@ if [ -z "$TUEFIND_FLAVOUR" ]; then
     exit 1
 fi
 
-DIR="$(dirname $(readlink -f $0))"
+DIR="$(dirname $(readlink --canonicalize "$0"))"
 
 echo updating solr configuration...
 $DIR/solr/vufind/biblio/conf/make_symlinks.sh

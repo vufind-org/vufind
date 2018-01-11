@@ -8,6 +8,6 @@ if [ -z "$TUEFIND_FLAVOUR" ]; then
 fi
 
 echo "Updating TueFind configuration (git hook post-merge)"
-DIR="$(dirname $(readlink -f $0))"
+DIR="$(dirname $(readlink --canonicalize "$0"))"
 $DIR/../../update_tuefind_config.sh
 
