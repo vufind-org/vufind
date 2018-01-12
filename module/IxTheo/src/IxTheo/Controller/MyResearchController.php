@@ -206,7 +206,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         return $view;
     }
 
-    private function updateProfile($request, $user, $ixTheoUser) {
+    private function updateProfile(\Zend\Http\PhpEnvironment\Request $request,
+                                   \VuFind\Db\Row\User $user,
+                                   \IxTheo\Db\Row\IxTheoUser $ixTheoUser)
+    {
         $params = [
             'firstname' => '', 'lastname' => '', 'email' => '',
             'title' => '', 'institution' => '', 'country' => '',
@@ -215,7 +218,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);
         }
-        $this->getAuthManager()->getAuth()->updateIxTheoUser($params, $user, $ixTheoUser);
+        $this->getAuthManager()->updateIxTheoUser($params, $user, $ixTheoUser);
     }
 
     private function mergePostDataWithUserData($post, $user, $ixTheoUser) {
