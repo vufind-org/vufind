@@ -1,0 +1,128 @@
+<?
+$this->headScript()->appendFile("chart.js");
+?>
+
+<?
+$lines = array();
+$charts = array();
+$addTimer = false;
+$addCounter = false;
+$index = 0;
+
+$handle = fopen("Pipeline3.log", "r");
+if ($handle) {
+    while (($line = fgets($handle)) !== false) {
+        if (strcmp(trim($line), "CCCCCC") == 0) {
+            $addCounter = true;
+        } else if (strcmp(trim($line), "TTTTTT") == 0) {
+            $addCounter = false;
+            $addTimer = true;
+        } else if (strcmp(trim($line), "EEEEEE") == 0) {
+            $addTimer = false;
+            ++$index;
+        } else if ($addCounter) {
+            if (strcmp(substr($line, 0, 8), "Pipeline") == 0) {
+                $part1 = explode(".", $line);
+                $part2 = explode("=", $part1[1]);
+                $chart["Pipeline"][$part2[0]][$index] = $part2[1];
+            } else {
+                $part1 = explode(".", $line);
+                $part2 = explode("=", $part1[1]);
+                $charts[$part2[0]][$part1[0]][$index] = $part2[1];
+            }
+        } else if ($addTimer) {
+            if (empty(trim($line))) {
+                continue;
+            }
+            $part1 = explode(".", $line);
+            $part2 = explode("=", $part1[1]);
+            $charts["Timer: " . $part1[0] . " (in Sekunden)"][$part2[0]][$index] = $part2[1] / 1000;
+        }
+    }
+    fclose($handle);
+}
+
+foreach ($charts as $type => $chart):
+    ?>
+    <h2><?= $type; ?></h2>
+    <canvas id="chart-<?= $type; ?>" height="100"></canvas>
+
+    <script>
+
+        var colors = [
+            "#1abc9c",
+            "#F1C40F",
+            "#D35400",
+            "#2ecc71",
+            "#E67E22",
+            "#8e44AD",
+            "#7F8C8D",
+            "#3498DB",
+            "#E74C3C",
+            "#2980B9",
+            "#F39C12",
+            "#9B59B6",
+            "#95A5A6",
+            "#27AE60",
+            "#34495E",
+            "#2C3E50",
+            "#16A085"
+        ];
+        var i = 0;
+
+        function makeData(title, data) {
+            return {
+                label: title,
+                fill: true,
+                lineTension: 0.1,
+                backgroundColor: colors[i],
+                borderColor: colors[i],
+                borderCapStyle: 'butt',
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: colors[i],
+                pointBackgroundColor: colors[i],
+                pointBorderWidth: 1,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: colors[i],
+                pointHoverBorderColor: colors[i++],
+                pointHoverBorderWidth: 2,
+                pointRadius: 1,
+                pointHitRadius: 10,
+                data: data
+            }
+        }
+
+        var data = {
+            <? $i = 0; foreach ($chart as $title => $data):?>
+            labels: [<?foreach ($data as $element):?><?=++$i?>, <? endforeach; ?>],
+            <? break; endforeach; ?>
+            datasets: [
+                <?foreach ($chart as $title => $data):?>
+                makeData("<?=$title?>", [<?foreach ($data as $element):?><?=$element?>, <? endforeach; ?>]),
+                <? endforeach; ?>
+            ]
+        };
+
+        var ctx = document.getElementById("chart-<?=$type;?>");
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: {
+                scales: {
+                    xAxes: [{
+                        stacked: true
+                    }],
+                    yAxes: [{
+                        stacked: true
+                    }]
+                },
+                animation: {
+                    duration: 0
+                }
+            }
+        });
+    </script>
+
+<? endforeach; ?>

@@ -1,0 +1,55 @@
+<? if (!empty($this->facetList) || !empty($this->checkboxFacets)): ?>
+  <div class="row">
+    <fieldset class="col-sm-12">
+      <legend><?=$this->transEsc('Limit To')?></legend>
+      <? if (!empty($this->checkboxFacets)): ?>
+        <?=$this->render('search/advanced/checkbox-filters.phtml')?>
+      <? endif; ?>
+      <div class="row">
+        <? foreach ($this->facetList as $field => $list): ?>
+          <div class="col-sm-<?=floor(12/count($this->facetList)) ?>">
+            <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
+            <select class="form-control" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
+              <? if (is_array($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>
+                <? foreach ($list['list'] as $value): ?>
+                  <? $display = str_pad('', 4 * $value['level'] * 6, '&nbsp;', STR_PAD_LEFT) . $this->escapeHtml($value['displayText']); ?>
+                  <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$display?></option>
+                <? endforeach; ?>
+              <? else: ?>
+                <?
+                // Sort the current facet list alphabetically; we'll use this data
+                // along with the foreach below to display facet options in the
+                // correct order.
+                $sorted = array();
+                foreach ($list['list'] as $i => $value) {
+                  if (!empty($value['displayText'])) {
+                    $sorted[$i] = $value['displayText'];
+                  }
+                }
+                natcasesort($sorted);
+                ?>
+                <? foreach ($sorted as $i => $display): ?>
+                  <? $value = $list['list'][$i]; ?>
+                  <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($display)?></option>
+                <? endforeach; ?>
+              <? endif; ?>
+            </select>
+          </div>
+        <? endforeach; ?>
+      </div>
+    </fieldset>
+  </div>
+<? endif; ?>
+<div class="row">
+  <? if (isset($this->illustratedLimit)): ?>
+    <fieldset class="col-sm-4">
+      <legend><?=$this->transEsc("Illustrated")?>:</legend>
+      <? foreach ($this->illustratedLimit as $current): ?>
+        <input id="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtmlAttr($current['value'])?>"<?=$current['selected']?' checked="checked"':''?>/>
+        <label for="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>"><?=$this->transEsc($current['text'])?></label><br/>
+      <? endforeach; ?>
+    </fieldset>
+  <? endif; ?>
+  <?=$this->render('search/advanced/limit.phtml')?>
+  <?=$this->render('search/advanced/ranges.phtml')?>
+</div>
