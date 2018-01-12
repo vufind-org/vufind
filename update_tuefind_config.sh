@@ -8,12 +8,14 @@ if [ -z "$TUEFIND_FLAVOUR" ]; then
     exit 1
 fi
 
+DIR="$(dirname $(readlink --canonicalize "$0"))"
+
 echo updating solr configuration...
-./solr/vufind/biblio/conf/make_symlinks.sh
-./solr/vufind/biblio/conf/generate_xml.sh
+$DIR/solr/vufind/biblio/conf/make_symlinks.sh
+$DIR/solr/vufind/biblio/conf/generate_xml.sh
 
 echo updating solrmarc configuration...
-./import/make_marc_local_properties.sh
+$DIR/import/make_marc_local_properties.sh
 
 echo restarting vufind service...
 systemctl restart vufind

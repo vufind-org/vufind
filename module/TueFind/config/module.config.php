@@ -40,6 +40,11 @@ $config = [
                     'solrmarc' => 'TueFind\RecordDriver\Factory::getSolrMarc',
                 ],
             ],
+            'search_results' => [
+                'factories' => [
+                    'solr' => 'TueFind\Search\Results\Factory::getSolr',
+                ],
+            ],
         ],
     ],
 ];

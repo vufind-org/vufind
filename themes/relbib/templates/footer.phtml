@@ -1,29 +1,31 @@
 <hr/>
-<div class="row footer">
-  <div class="col-sm-4">
-    <p><strong><?=$this->transEsc('Search Options')?></strong></p>
-    <ul>
-      <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
-      <li><a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
-    </ul>
+<footer class="hidden-print">
+  <div class="footer-container">
+    <div class="footer-column">
+      <p><strong><?=$this->transEsc('Search Options')?></strong></p>
+      <ul>
+        <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
+        <li><a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
+      </ul>
+    </div>
+    <div class="footer-column">
+      <p><strong><?=$this->transEsc('Find More')?></strong></p>
+      <ul>
+        <li><a href="<?=$this->url('keywordchainsearch-home')?>"><?=$this->transEsc('Browse Keywordchains')?></a></li>
+        <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse by Category')?></a></li>
+        <li><a href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
+        <li><a href="<?=$this->url('search-newitem')?>"><?=$this->transEsc('New Items')?></a></li>
+      </ul>
+    </div>
+    <div class="footer-column">
+      <p><strong><?=$this->transEsc('Need Help?')?></strong></p>
+      <ul>
+<!--    <li><a href="<?=$this->url('help-home')?>?topic=generalhints" data-lightbox class="help-link" title="<?=$this->transEsc('General Search Tips')?>"><?=$this->transEsc('General Search Tips')?></a></li> -->
+        <li><a href="<?=$this->url('help-home')?>?topic=search" data-lightbox class="help-link" title="<?=$this->transEsc('Search Operators')?>"><?=$this->transEsc('Search Operators')?></a></li>
+        <li><a href="<?=$this->url('help-home')?>?topic=browse" data-lightbox class="help-link" title="<?=$this->transEsc('Browse Keywordchains')?>"><?=$this->transEsc('Browse Keywordchains')?></a></li>
+        <li><a href="<?=$this->url('help-home')?>?topic=catbrowse" data-lightbox class="help-link" title="<?=$this->transEsc('Browse by Category')?>"><?=$this->transEsc('Browse by Category')?></a></li>
+        <li><a href="<?=$this->url('help-home')?>?topic=alphabrowse" data-lightbox class="help-link" title="<?=$this->transEsc('Browse Alphabetically')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
+      </ul>
+    </div>
   </div>
-  <div class="col-sm-4">
-    <p><strong><?=$this->transEsc('Find More')?></strong></p>
-    <ul>
-      <li><a href="<?=$this->url('keywordchainsearch-home')?>"><?=$this->transEsc('Browse Keywordchains')?></a></li>
-      <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse by Category')?></a></li>
-      <li><a href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
-      <li><a href="<?=$this->url('search-newitem')?>"><?=$this->transEsc('New Items')?></a></li>
-    </ul>
-  </div>
-  <div class="col-sm-4">
-    <p><strong><?=$this->transEsc('Need Help?')?></strong></p>
-    <ul>
-<!--      <li><a href="<?=$this->url('help-home')?>?topic=generalhints" data-lightbox class="help-link" title="<?=$this->transEsc('General Search Tips')?>"><?=$this->transEsc('General Search Tips')?></a></li> -->
-      <li><a href="<?=$this->url('help-home')?>?topic=search" data-lightbox class="help-link" title="<?=$this->transEsc('Search Operators')?>"><?=$this->transEsc('Search Operators')?></a></li>
-      <li><a href="<?=$this->url('help-home')?>?topic=browse" data-lightbox class="help-link" title="<?=$this->transEsc('Browse Keywordchains')?>"><?=$this->transEsc('Browse Keywordchains')?></a></li>
-      <li><a href="<?=$this->url('help-home')?>?topic=catbrowse" data-lightbox class="help-link" title="<?=$this->transEsc('Browse by Category')?>"><?=$this->transEsc('Browse by Category')?></a></li>
-      <li><a href="<?=$this->url('help-home')?>?topic=alphabrowse" data-lightbox class="help-link" title="<?=$this->transEsc('Browse Alphabetically')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
-    </ul>
-  </div>
-</div>
+</footer>

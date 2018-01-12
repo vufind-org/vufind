@@ -1,16 +1,16 @@
 <?php
 
-namespace IxTheo\Search\Results;
+namespace TueFind\Search\Results;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class PluginFactory extends \TueFind\Search\Results\PluginFactory
+class PluginFactory extends \VuFind\Search\Results\PluginFactory
 {
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->defaultNamespace = 'IxTheo\Search';
+        $this->defaultNamespace = 'TueFind\Search';
         $this->classSuffix = '\Results';
     }
 

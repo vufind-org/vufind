@@ -9,7 +9,7 @@ if [ -z "$TUEFIND_FLAVOUR" ]; then
     fi
 fi
 
-DIR="$(dirname $(readlink -f $0))"
+DIR="$(dirname $(readlink --canonicalize "$0"))"
 
 cat $DIR/marc_tuefind.properties $DIR/marc_${TUEFIND_FLAVOUR}.properties > $DIR/marc_local.properties
 
