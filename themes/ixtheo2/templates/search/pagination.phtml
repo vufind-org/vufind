@@ -1,0 +1,41 @@
+<?php
+/*********************************************
+*
+* pagination.phtml
+*
+* takes care of the pagination.
+*
+*************************************/
+?>
+
+<? if ($this->pageCount): ?>
+<div class="col-12 pt-3">
+    <nav aria-label="pagination">
+        <ul class="pagination">
+            <? if (isset($this->previous)): ?>
+              <? if (!isset($this->options['disableFirst']) || !$this->options['disableFirst']): ?>
+                <li class="page-item"><a class="page-link" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>">[1]</a></li>
+              <? endif; ?>
+              <li><a class="page-link" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
+            <? endif; ?>
+
+            <? if (count($this->pagesInRange) > 1): ?>
+              <? foreach ($this->pagesInRange as $page): ?>
+                <? if ($page != $this->current): ?>
+                  <li class="page-item"><a class="page-link" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>"><?=$page?></a></li>
+                <? else: ?>
+                  <li class="page-item active"><span class="page-link"><?=$page?></span></li>
+                <? endif; ?>
+              <? endforeach; ?>
+            <? endif; ?>
+
+            <? if (isset($this->next)): ?>
+              <li class="page-item"><a class="page-link" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><?=$this->transEsc('Next');?> &raquo;</a></li>
+              <? if (!isset($this->options['disableLast']) || !$this->options['disableLast']): ?>
+                <li class="page-item"><a class="page-link" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>">[<?=$this->pageCount?>]</a></li>
+              <? endif; ?>
+        <? endif; ?>
+      </ul>
+    </nav>
+</div>
+<? endif; ?>
