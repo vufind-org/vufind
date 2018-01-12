@@ -80,7 +80,9 @@ class Database extends \VuFind\Auth\Database
         return $user;
     }
 
-    public function updateIxTheoUser($params, $user, $ixTheoUser) {
+    public function updateIxTheoUser($params, \VuFind\Db\Row\User $user,
+                                     \IxTheo\Db\Row\IxTheoUser $ixTheoUser)
+    {
         $user->firstname = $params['firstname'];
         $user->lastname = $params['lastname'];
         $user->email = $params['email'];
