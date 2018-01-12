@@ -1166,7 +1166,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     'title'      => $row['title'],
                     'fine'       => $fineValue,
                     'balance'    => $row['balance'],
-                    'createdate' => $row['createdat'],
+                    'createdate' => $this->displayDate($row['createdat']),
                     'duedate'    => $this->displayDate($row['duedate']),
                     'id'         => isset($row['id']) ? $row['id'] : -1,
                 ];
@@ -1584,7 +1584,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     = explode(" ", $this->getField($rsp->{'date_due'}));
                 $retVal['details'][$renewItem] = [
                     "success"  => true,
-                    "new_date" => $date,
+                    "new_date" => $this->displayDate($date),
                     "new_time" => $time,
                     "item_id"  => $renewItem,
                 ];
