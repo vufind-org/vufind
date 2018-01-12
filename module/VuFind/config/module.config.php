@@ -514,28 +514,7 @@ $config = [
                 ],
             ],
             'recommend' => [ /* See VuFind\Recommend\PluginManager for defaults */ ],
-            'recorddriver' => [
-                'abstract_factories' => ['VuFind\RecordDriver\PluginFactory'],
-                'factories' => [
-                    'eds' => 'VuFind\RecordDriver\Factory::getEDS',
-                    'eit' => 'VuFind\RecordDriver\Factory::getEIT',
-                    'missing' => 'VuFind\RecordDriver\Factory::getMissing',
-                    'pazpar2' => 'VuFind\RecordDriver\Factory::getPazpar2',
-                    'primo' => 'VuFind\RecordDriver\Factory::getPrimo',
-                    'solrauth' => 'VuFind\RecordDriver\Factory::getSolrAuth',
-                    'solrdefault' => 'VuFind\RecordDriver\Factory::getSolrDefault',
-                    'solrmarc' => 'VuFind\RecordDriver\Factory::getSolrMarc',
-                    'solrmarcremote' => 'VuFind\RecordDriver\Factory::getSolrMarcRemote',
-                    'solrreserves' => 'VuFind\RecordDriver\Factory::getSolrReserves',
-                    'solrweb' => 'VuFind\RecordDriver\Factory::getSolrWeb',
-                    'summon' => 'VuFind\RecordDriver\Factory::getSummon',
-                    'worldcat' => 'VuFind\RecordDriver\Factory::getWorldCat',
-                ],
-                'invokables' => [
-                    'browzine' => 'VuFind\RecordDriver\BrowZine',
-                    'libguides' => 'VuFind\RecordDriver\LibGuides',
-                ],
-            ],
+            'recorddriver' => [ /* See VuFind\RecordDriver\PluginManager for defaults */ ],
             'recordtab' => [
                 'abstract_factories' => ['VuFind\RecordTab\PluginFactory'],
                 'factories' => [
