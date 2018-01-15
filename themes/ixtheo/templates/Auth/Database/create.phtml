@@ -16,7 +16,7 @@ $titles = IxTheo\Auth\Database::$titles;
     }
   }
 ?>
-<div class="form-group">
+<div class="form-group row">
     <label class="col-sm-4 control-label" for="account_email"><?= $this->transEsc('Email Address') ?>:</label>
     <div class="col-md-8">
         <input id="account_email" type="email" name="email" required aria-required="true"
@@ -24,7 +24,7 @@ $titles = IxTheo\Auth\Database::$titles;
                placeholder="<?= $this->transEsc('Email Address') ?>" class="form-control"/>
     </div>
 </div>
-<div class="form-group">
+<div class="form-group row">
     <label class="col-sm-4 control-label" for="account_username"><?= $this->transEsc('Desired Username') ?>:</label>
     <div class="col-md-8">
         <input id="account_username" type="text" name="username" required aria-required="true"
@@ -32,7 +32,7 @@ $titles = IxTheo\Auth\Database::$titles;
                placeholder="<?= $this->transEsc('Desired Username') ?>" class="form-control"/>
     </div>
 </div>
-<div class="form-group">
+<div class="form-group row">
     <label class="col-sm-4 control-label" for="account_password"><?= $this->transEsc('Password') ?>:</label>
     <div class="col-md-4">
       <input id="account_password" type="password" name="password" required aria-required="true" class="form-control"
@@ -50,7 +50,7 @@ $titles = IxTheo\Auth\Database::$titles;
 </div>
 <hr/>
 <?endif;?>
-<div class="form-group">
+<div class="form-group row">
     <label class="col-sm-4 control-label" for="account_title"><?= $this->transEsc('Title') ?>:</label>
     <div class="col-sm-2">
         <select name="appellation" class="form-control">
@@ -71,7 +71,7 @@ $titles = IxTheo\Auth\Database::$titles;
         </select>
     </div>
 </div>
-<div class="form-group">
+<div class="form-group row">
     <label class="col-sm-4 control-label" for="account_title"><?= $this->transEsc('Name') ?>:</label>
     <div class="col-sm-4">
         <input id="account_firstname" type="text" name="firstname"
@@ -85,7 +85,7 @@ $titles = IxTheo\Auth\Database::$titles;
     </div>
 </div>
 <? if ($this->only_additional_information): ?>
-<div class="form-group">
+<div class="form-group row">
     <label class="col-sm-4 control-label" for="account_email"><?= $this->transEsc('Email') ?>:</label>
     <div class="col-md-8">
         <input id="account_email" type="email" name="email" required
@@ -94,7 +94,7 @@ $titles = IxTheo\Auth\Database::$titles;
     </div>
 </div>
 <? endif; ?>
-<div class="form-group">
+<div class="form-group row">
     <label class="col-sm-4 control-label" for="account_institution"><?= $this->transEsc('Institution') ?>:</label>
     <div class="col-md-8">
         <input id="account_institution" type="text" name="institution"
@@ -103,9 +103,8 @@ $titles = IxTheo\Auth\Database::$titles;
     </div>
 </div>
 
-<div class="form-group">
-    <label class="col-sm-4 control-label" for="account_country"><?= $this->transEsc('Country and Language') ?>
-        :</label>
+<div class="form-group row">
+    <label class="col-sm-4 control-label" for="account_country"><?= $this->transEsc('Country and Language') ?>:</label>
     <div class="col-md-4">
         <select id="account_country" name="country" class="form-control">
             <option></option>
