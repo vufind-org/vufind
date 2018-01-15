@@ -68,6 +68,9 @@ public class GeoTools
     // Initialize logging category
     static Logger logger = Logger.getLogger(GeoTools.class.getName());
 
+    /**
+     * Constructor
+     */
     public GeoTools()
     {
         try {
@@ -103,10 +106,6 @@ public class GeoTools
                         String result = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { west, east, north, south });
                         geo_coordinates.add(result);
                     } 
-                } else {
-                    ControlField recID = (ControlField) record.getVariableField("001");
-                    String recNum = recID.getData().trim();
-                    logger.error("Record ID: " + recNum + " has poorly formed coordinate values. Not indexing INVALID coordinates.");
                 }
             }
         }
@@ -136,18 +135,20 @@ public class GeoTools
     }
 
     /**
-    * Log coordinate indexing errors to external log file.
-    *
-    * @param  Record record
-    * @param  HashMap coords
-    * @param  String error message
-    */
-   public static void logErrorMessage(Record record, HashMap coords, String message) {
-
+     * Log coordinate indexing errors to external log file.
+     *
+     * @param  Record record
+     * @param  HashMap coords
+     * @param  String error message
+     */
+    public static void logErrorMessage(Record record, HashMap coords, String message) {
         // Initialize error logging variables
         String msgError = message;
+        String recNum = "Not available";
         ControlField recID = (ControlField) record.getVariableField("001");
-        String recNum = recID.getData().trim();
+        if (recID != null) {
+            recNum = recID.getData().trim();
+        }
         String coordinates = "Coordinates:  {" + coords.get('d') + "} {" + coords.get('e') + "} {" + coords.get('f') + "} {" + coords.get('g') + "}";
 
         String logPath = getLogPath();
@@ -401,13 +402,9 @@ public class GeoTools
     * @return boolean
     */
    public boolean validateExtent(Record record, Double west, Double east, Double north, Double south) {
-    if (west > 180.0 || west < -180.0 || east > 180.0 || east < -180.0) {
-        String msgError = "Coordinates exceed map extent.";
-        HashMap<Character, String> coords = buildCoordinateHashMap(west, east, north, south);
-        logErrorMessage(record, coords, msgError);
-        return false;
-    }
-    if (north > 90.0 || north < -90.0 || south > 90.0 || south < -90.0) {
+    if (west > 180.0 || west < -180.0 || east > 180.0 || east < -180.0
+        || north > 90.0 || north < -90.0 || south > 90.0 || south < -90.0
+    ) {
         String msgError = "Coordinates exceed map extent.";
         HashMap<Character, String> coords = buildCoordinateHashMap(west, east, north, south);
         logErrorMessage(record, coords, msgError);
