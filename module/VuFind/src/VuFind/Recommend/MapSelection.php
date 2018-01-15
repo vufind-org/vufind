@@ -215,10 +215,10 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      */
     public function getBasemap()
     {
-        $basemapParams = [];
-        $basemapParams[0] = $this->basemapOptions['basemap_url'];
-        $basemapParams[1] = $this->basemapOptions['basemap_attribution'];
-        return $basemapParams;
+        return [
+            $this->basemapOptions['basemap_url'],
+            $this->basemapOptions['basemap_attribution']
+        ];
     }
 
     /**

@@ -290,6 +290,7 @@ $config = [
             'VuFind\DbTablePluginManager' => 'VuFind\Service\Factory::getDbTablePluginManager',
             'VuFind\Export' => 'VuFind\Service\Factory::getExport',
             'VuFind\Favorites\FavoritesService' => 'VuFind\Favorites\FavoritesServiceFactory',
+            'VuFind\GeoFeatures\BasemapConfig' => 'VuFind\GeoFeatures\BasemapConfigFactory',
             'VuFind\HierarchyDriverPluginManager' => 'VuFind\Service\Factory::getHierarchyDriverPluginManager',
             'VuFind\HierarchyTreeDataFormatterPluginManager' => 'VuFind\Service\Factory::getHierarchyTreeDataFormatterPluginManager',
             'VuFind\HierarchyTreeDataSourcePluginManager' => 'VuFind\Service\Factory::getHierarchyTreeDataSourcePluginManager',
@@ -336,7 +337,6 @@ $config = [
             'VuFind\YamlReader' => 'VuFind\Service\Factory::getYamlReader',
         ],
         'invokables' => [
-            'VuFind\GeoFeatures\BasemapConfig' => 'VuFind\GeoFeatures\BasemapConfig',
             'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper',
             'VuFind\IpAddressUtils' => 'VuFind\Net\IpAddressUtils',
             'VuFind\Session\Settings' => 'VuFind\Session\Settings',
