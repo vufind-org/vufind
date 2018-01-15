@@ -5,6 +5,10 @@ id = "outi"
 ; URL of the Koha Rest API without the version
 host = "http://koha-server/api"
 
+[FeeTypeMappings]
+FU = "Accrued Fine"
+ODUE = "Overdue"
+
 [Holds]
 ; HMACKeys - A list of hold form element names that will be analyzed for consistency
 ; during hold form processing. Most users should not need to change this setting.
