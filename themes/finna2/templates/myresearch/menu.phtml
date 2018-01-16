@@ -32,7 +32,7 @@
       </a>
     </li>
     <? if ($this->ils()->checkCapability('getMyTransactionHistory', $capabilityParams)): ?>
-      <li class="menu-historic-loans <?=$this->active == 'historicloans' ? ' active' : ''?>">
+      <li class="menu-historic-loans <?=$this->active == 'historicLoans' ? ' active' : ''?>">
         <a href="<?=$this->url('myresearch-historicloans')?>" class="list-group-item">
           <?=$this->transEsc('Loan History')?>
         </a
