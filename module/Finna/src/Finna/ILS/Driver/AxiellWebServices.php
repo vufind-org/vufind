@@ -1518,7 +1518,14 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         $debts =  $this->objectToArray($result->$functionResult->debts->debt);
 
         foreach ($debts as $debt) {
-            $amount = $debt->debtAmount * 100;
+            // Have to use debtAmountFormatted, because debtAmount shows negative
+            // values as positive. Try to extract the numeric part from the formatted
+            // amount.
+            if (preg_match('/([\d\.\,-]+)/', $debt->debtAmountFormatted, $matches)) {
+                $amount = str_replace(',', '.', $matches[1]) * 100;
+            } else {
+                $amount = str_replace(',', '.', $debt->debtAmountFormatted) * 100;
+            }
             $fine = [
                 'debt_id' => $debt->id,
                 'amount' => $amount,
