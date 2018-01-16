@@ -1518,12 +1518,13 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         $debts =  $this->objectToArray($result->$functionResult->debts->debt);
 
         foreach ($debts as $debt) {
+            $amount = $debt->debtAmount * 100;
             $fine = [
                 'debt_id' => $debt->id,
-                'amount' => str_replace(',', '.', $debt->debtAmountFormatted) * 100,
+                'amount' => $amount,
                 'checkout' => '',
                 'fine' => $debt->debtType . ' - ' . $debt->debtNote,
-                'balance' => str_replace(',', '.', $debt->debtAmountFormatted) * 100,
+                'balance' => $amount,
                 'createdate' => $debt->debtDate
             ];
             $finesList[] = $fine;
