@@ -1,0 +1,21 @@
+{
+  "name": "ixTheoTheme",
+  "homepage": "https://github.com/ubtue/ixTheo",
+  "authors": [
+    "Benjamin Schnabel <Benjamin-777@gmx.de>"
+  ],
+  "description": "A theme for vufind, based on bootstrap3.",
+  "main": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap-select": "^1.12.2"
+  }
+}
