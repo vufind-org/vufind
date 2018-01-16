@@ -39,6 +39,28 @@ namespace VuFind\Content\Summaries;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'syndetics' => 'VuFind\Content\Summaries\Syndetics',
+        'syndeticsplus' => 'VuFind\Content\Summaries\SyndeticsPlus',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\Content\Summaries\Syndetics' =>
+            'VuFind\Content\AbstractSyndeticsFactory',
+        'VuFind\Content\Summaries\SyndeticsPlus' =>
+            'VuFind\Content\AbstractSyndeticsFactory',
+    ];
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *

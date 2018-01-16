@@ -39,6 +39,28 @@ namespace VuFind\Content\Excerpts;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'syndetics' => 'VuFind\Content\Excerpts\Syndetics',
+        'syndeticsplus' => 'VuFind\Content\Excerpts\SyndeticsPlus',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\Content\Excerpts\Syndetics' =>
+            'VuFind\Content\AbstractSyndeticsFactory',
+        'VuFind\Content\Excerpts\SyndeticsPlus' =>
+            'VuFind\Content\AbstractSyndeticsFactory',
+    ];
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
