@@ -2,6 +2,7 @@
 <? $this->results = $results = $this->recommend->getResults(); ?>
 <? $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions(); ?>
 <? $hierarchicalFacets = $this->recommend->getHierarchicalFacets(); ?>
+<? $geographicFacets = $this->recommend->getGeographicFacets(); ?>
 <? $newItemsFacets = $this->recommend->getNewItemsFacets(); ?>
 <? $module = $this->layout()->templateDir; ?>
 <? $title = $this->facet; $cluster = $this->cluster; ?>
@@ -90,6 +91,12 @@ $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
   ]; ?>
   <? if (in_array($title, $hierarchicalFacets)): ?>
     <?=$this->context($this)->renderInContext('Recommend/SideFacets/hierarchical-facet.phtml', $contextVars); ?>
+  <? elseif (in_array($title, $geographicFacets)): ?>
+    <div class="geofacet-header">
+      <h5 class="geofacet-title"><?=$this->translate('choose_from_list')?></h5>
+    </div>
+    <?=$this->context($this)->renderInContext('Recommend/SideFacets/cluster-list.phtml', array_merge($contextVars, ['title' => $title, 'cluster' => $cluster])); ?>
+    <?=$this->context($this)->renderInContext('Recommend/SideFacets/geographic-facet.phtml', array_merge($contextVars, ['title' => $title, 'cluster' => $cluster])); ?>
   <? else: ?>
     <?=$this->context($this)->renderInContext('Recommend/SideFacets/cluster-list.phtml', array_merge($contextVars, ['title' => $title, 'cluster' => $cluster])); ?>
   <? endif; ?>

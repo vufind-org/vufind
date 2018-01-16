@@ -1,12 +1,15 @@
+.template-name-streetsearch .search-form-container {
+  padding: 2em 0;
+}
 .street-search-progress .fa-spinner {
   display: block;
   width: auto;
   height: auto;
   float: left;
+  margin-right: 10px;
 }
-
-.street-search-progress .infoBox {
-  margin-left: 50px;
+.street-search-progress{
+  padding: 15px 0;
 }
 
 .street-search-button {
@@ -27,4 +30,118 @@
   background-color: inherit;
   padding: 0px;
   text-decoration: underline;
+}
+
+.street-search-introduction {
+  font-size: @font-size-h2;
+  font-weight: 600;
+  .highlight {
+    color: @brand-primary;
+  }
+  @media(max-width: @screen-xs-max) {
+    font-size: 18px;
+  }
+}
+
+.street-search-feedback a {
+  margin-bottom: 2em;
+  position: relative;
+  &:hover {
+    background: darken(@brand-primary,5%);
+  }
+  &:before {
+    content: "";
+    position: absolute;
+    bottom: -9px;
+    margin: auto;
+    border-width: 0 0 9px 12px;
+    border-style: solid;
+    border-color: transparent @brand-primary;
+  }
+  &:hover:before {
+    border-color: transparent darken(@brand-primary,5%);
+  }
+}
+
+.street-search-header .street-search-introduction {
+  width: 80%;
+  float: left;
+}
+.street-search-feedback {
+  float: right;
+}
+
+.street-info.alert {
+  padding: 0;
+  margin: 0;
+}
+.street-search-action-links {
+  margin-bottom: 1.5em;
+  border-bottom: 1px solid @gray-lighter;
+  a {
+    text-align: center;
+    display: inline-block;
+    padding: 10px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: @brand-primary;
+    i {
+      margin-right: 10px;
+    }
+  }
+}
+
+.template-name-streetsearch .street-search-action-links a {
+  border-left: 1px solid @gray-lighter;
+  border-right: 1px solid @gray-lighter;
+  min-width: 250px;
+  &:last-child {
+    border-left: none;
+  }
+}
+
+.street-search-header .street-search-action-links {
+  margin: 0 -15px;
+  margin-top: 20px;
+  border-top: 1px solid @gray-lighter;
+  a {
+    width: 49%;
+    border-right: 1px solid @gray-lighter;
+    &:last-child {
+      border-right: none;
+    }
+  }
+}
+
+.street-search-info-box {
+  border-left: @finna-infobox-border;
+  background-color: @finna-infobox-bg;
+  color: @finna-infobox-color;
+  max-width: 600px;
+  margin: 20px 0;
+  padding: 15px;
+  font-size: 15px;
+}
+
+.template-name-streetsearch .introduction .introduction-text {
+  background-color: @brand-primary;
+  position: relative;
+  display: inline-block;
+  max-width: 450px;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-radius: 5px 5px 5px 0;
+  h3.introductionText{
+    font-weight: 400;
+    &:before {
+      content: "";
+      position: absolute;
+      bottom: -12px;
+      margin: auto;
+      left: 0;
+      border-width: 0 0 12px 12px;
+      border-style: solid;
+      border-color: transparent @brand-primary;
+    }
+  }
 }

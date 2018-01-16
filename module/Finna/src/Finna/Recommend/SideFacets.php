@@ -51,6 +51,13 @@ class SideFacets extends \VuFind\Recommend\SideFacets
     use SideFacetsTrait;
 
     /**
+     * Geographic facet setting
+     *
+     * @var array
+     */
+    protected $geographicFacets = [];
+
+    /**
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -71,6 +78,10 @@ class SideFacets extends \VuFind\Recommend\SideFacets
         // New items facets
         if (isset($config->SpecialFacets->newItems)) {
             $this->newItemsFacets = $config->SpecialFacets->newItems->toArray();
+        }
+        if (isset($config->SpecialFacets->finna_geographic)) {
+            $this->geographicFacets
+                = $config->SpecialFacets->finna_geographic->toArray();
         }
     }
 
@@ -123,6 +134,20 @@ class SideFacets extends \VuFind\Recommend\SideFacets
             function ($value, $key) {
                 return in_array($key, $facets);
             }
+        );
+    }
+
+    /**
+     * Get an array of geographic facets.
+     *
+     * @return array
+     */
+    public function getGeographicFacets()
+    {
+        return array_map(
+            function ($geo_facet) {
+                return explode(':', $geo_facet)[0];
+            }, $this->geographicFacets
         );
     }
 }

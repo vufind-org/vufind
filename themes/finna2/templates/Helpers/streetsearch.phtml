@@ -8,7 +8,6 @@
         'street_search_geolocation_available' => 'street_search_geolocation_available',
         'street_search_geolocation_position_unavailable' => 'street_search_geolocation_position_unavailable',
         'street_search_geolocation_other_error' => 'street_search_geolocation_other_error',
-        'street_search_geolocation_inactive' => 'street_search_geolocation_inactive',
         'street_search_timeout' => 'street_search_timeout',
         'street_search_no_streetname_found' => 'street_search_no_streetname_found',
         'street_search_reversegeocode_unavailable' => 'street_search_reversegeocode_unavailable',
@@ -18,16 +17,11 @@
       ]
     );
 ?>
-<div class="street-search-button-area">
-  <button class="btn btn-primary street-search-button"><?=$this->transEsc('street_search_button') ?></button>
-  <div class="alert alert-info street-search-progress hidden">
-    <div class="fa fa-spinner fa-spin"></div>
-    <div class="infoBox">
-      <div>
-        <div class="info"></div>
-        <button class="street-search-terminate"><?=$this->transEsc('street_search_abort') ?></button>
-      </div>
+<? if (!$this->translationEmpty('street_search_header_html')): ?>
+  <div class="introduction">
+    <div class="introduction-text">
+      <h3 class="introductionText"><?=$this->translate('street_search_header_html')?></h3>
     </div>
   </div>
-</div>
+<? endif; ?>
 <!-- END of: finna - Helpers/streetsearch.phtml -->

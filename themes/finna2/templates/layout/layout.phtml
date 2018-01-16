@@ -94,7 +94,25 @@
             'number_thousands_separator' => [
                 'number_thousands_separator', null, ','
             ],
-            'sms_success' => 'sms_success'
+            'sms_success' => 'sms_success',
+            'radiusPrefix' => 'Radius',
+            'circleCaption' => 'Select Area',
+            'clearCaption' => 'Clear Selections',
+            'removeCaption' => 'Clear',
+            'map_zoom_in' => 'map_zoom_in',
+            'map_zoom_out' => 'map_zoom_out',
+            'street_search_geolocation_inactive' => 'street_search_geolocation_inactive',
+            'street_search_checking_for_geolocation' => 'street_search_checking_for_geolocation',
+            'street_search_geolocation_available' => 'street_search_geolocation_available',
+            'street_search_geolocation_position_unavailable' => 'street_search_geolocation_position_unavailable',
+            'street_search_geolocation_other_error' => 'street_search_geolocation_other_error',
+            'street_search_geolocation_inactive' => 'street_search_geolocation_inactive',
+            'street_search_timeout' => 'street_search_timeout',
+            'street_search_no_streetname_found' => 'street_search_no_streetname_found',
+            'street_search_reversegeocode_unavailable' => 'street_search_reversegeocode_unavailable',
+            'street_search_searching_for' => 'street_search_searching_for',
+            'street_search_coordinates_found' => 'street_search_coordinates_found',
+            'street_search_coordinates_found_accuracy_bad' => 'street_search_coordinates_found_accuracy_bad'
           ]
         );
         // Add libphonenumber.js strings
@@ -299,6 +317,13 @@ JS;
       <? if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search'): ?>
           <a class="btn btn-primary btn-uppercase floating-feedback-btn hidden-xs" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Feedback')?></a>
       <? endif; ?>
+      <? if (!empty($this->layout()->infoMessage)): ?>
+        <div class="alert alert-info street-info">
+          <div class="container">
+              <?=$this->layout()->infoMessage?>
+          </div>
+        </div>
+      <? endif; ?>
       <div class="search-form-container">
         <div class="container">
           <? if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search'): ?>
@@ -354,18 +379,21 @@ JS;
 
     <? // TODO: get rid of template-dir-* and template-name-* here ?>
     <section role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?><?=$this->browse ? ' browse' : '' ?><?=$currentTabClass?>">
-      <? if (!empty($this->layout()->finnaMainHeader)): ?>
-      <div class="finna-main-header">
-        <div class="container">
-          <?=$this->layout()->finnaMainHeader?>
-        </div>
-      </div>
-      <? endif; ?>
       <? if (!empty($this->layout()->advSearchHeader)): ?>
         <?=$this->layout()->advSearchHeader; ?>
       <? endif; ?>
       <? if (!empty($this->layout()->finnaFilters)): ?>
         <?=$this->layout()->finnaFilters?>
+      <? endif; ?>
+      <? if (!empty($this->layout()->finnaStreetBar)): ?>
+        <?=$this->layout()->finnaStreetBar?>
+      <? endif; ?>
+      <? if (!empty($this->layout()->finnaMainHeader)): ?>
+        <div class="finna-main-header">
+          <div class="container">
+              <?=$this->layout()->finnaMainHeader?>
+          </div>
+        </div>
       <? endif; ?>
       <? if (!empty($this->layout()->finnaMainTabs)): ?>
       <div class="finna-main-tabs">

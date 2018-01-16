@@ -317,3 +317,91 @@ span.badge.cb-facet {
     }
   }
 }
+
+.sidebar {
+  & .list-group-item.facet-info {
+    margin-top: 5px;
+    margin-left: 20px;
+    font-size: 0.9em;
+    & .fa {
+      font-size: 1.1em;
+      float: left;
+      margin: 5px 5px 0 -20px;
+      color: @brand-primary;
+    }
+    & .info {
+      margin-left: 5px;
+      margin-top: -3px;
+    }
+    & .more-info {
+      text-align: right;
+      display: block;
+      margin-top: 3px;
+    }
+  }
+}
+
+.geographic-facet {
+  margin-bottom: 10px;
+  padding: 0 8px;
+  .map-controls {
+    a.map-control, a.user-location-filter {
+      border: 1px solid @gray-lighter;
+      background: @body-bg;
+      color: @text-color;
+      border-radius: 0;
+      width: 50%;
+      float: left;
+      padding: 10px 5px;
+      font-size: 0.9em;
+      & i {
+        color: #fff;
+      }
+      &:last-child {
+        border-left: 0;
+      }
+      @media(max-width: @screen-md-max){
+        white-space: normal;
+      }
+    }
+  }
+  .info-message {
+    margin: 10px 0;
+  }
+}
+.list-group.facet .geofacet-header {
+  margin: 8px;
+  h5, a {
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+  }
+  a {
+    font-size: 0.9em;
+    color: @gray-mid-light;
+    float: right;
+  }
+}
+.list-group.facet .geographic-facet a:hover {
+  text-decoration: none;
+}
+
+.location-search-info .close-info {
+  float: right;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.map-container {
+  position: relative;
+  .location-search-info {
+    bottom: 0;
+    height: auto;
+    width: 100%;
+    z-index: 1050;
+    position: absolute;
+    background: fade(#fff, 80%);
+    text-align: center;
+    padding: 10px;
+  }
+}

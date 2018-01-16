@@ -73,6 +73,8 @@ return [
         'finna.css',
         'vendor/priority-nav-core.css',
         'finna-flex-fallback.css::lt IE 10', // flex polyfill
+        'vendor/leaflet.css',
+        'vendor/leaflet.draw.css'
     ],
     'js' => [
         'vendor/event-stub.js:lt IE 9',
@@ -86,6 +88,7 @@ return [
         'finna-layout.js',
         'finna-openurl.js',
         'finna-common.js',
+        'finna-map-facet.js',
         'vendor/jquery.dataTables.min.js',
         'vendor/dataTables.bootstrap.min.js',
         'vendor/jquery.inview.min.js',
@@ -102,6 +105,8 @@ return [
         'vendor/bootstrap-slider.min.js',
         'vendor/gauge.min.js',
         'vendor/priority-nav.min.js',
+        'vendor/leaflet.js',
+        'vendor/leaflet.draw.js',
     ],
     'less' => [
         'active' => false

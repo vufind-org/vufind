@@ -1,0 +1,21 @@
+<h2><?=$this->translate("select_area_from_map");?></h2>
+<form action="<?=$this->url('search-results')?>" class="map-modal-form" data-lightbox-ignore>
+  <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./"])?>
+  <? $searchFilters = $results->getParams()->getFilterList(true);?>
+  <div class="modal-map" style="height: 500px;"></div>
+  <button class="btn btn-lg btn-primary pull-right" type="submit"><?=$this->transEsc('Find')?></button>
+</form>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    var options = {
+      items: []
+    };
+    <? foreach ($geoFilters as $filter): ?>
+      <? foreach (preg_split('/\s+OR\s+/', $filter) as $item): ?>
+        options.items.push('<?=$this->escapeJs($item) ?>');
+      <? endforeach; ?>
+    <? endforeach; ?>
+    finna.MapFacet.initMapModal(options);
+  });
+</script>

@@ -128,6 +128,19 @@ trait FinnaParams
     }
 
     /**
+     * Check if the given filter is a geographic filter.
+     *
+     * @param array $filter Facet
+     *
+     * @return boolean
+     */
+    public function isGeographicFilter($filter)
+    {
+        return isset($filter[0]['field'])
+            ? strncmp($filter[0]['field'], '{!geofilt', 9) == 0 : false;
+    }
+
+    /**
      * Does the object already contain the specified hidden filter?
      *
      * @param string $filter A filter string from url : "field:value"

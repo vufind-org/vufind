@@ -68,6 +68,16 @@
     'browse' => !empty($browse),
     'defaultBrowseHandler' => isset($defaultBrowseHandler) ? $defaultBrowseHandler : ''
 ]); ?>
+<?
+if ($this->fromStreetSearch) {
+  $geographicFacets = $this->recommend->getGeographicFacets();
+  foreach ($collapsedFacets as $index => $facet){
+    if (in_array($facet, $geographicFacets)) {
+      unset($collapsedFacets[$index]);
+    }
+  }
+}
+?>
 <?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
 <? $sideFacetSet = $this->recommend->getFacetSet(); ?>
 <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>

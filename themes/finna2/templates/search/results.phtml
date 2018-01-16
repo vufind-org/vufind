@@ -83,7 +83,8 @@
               'hasDefaultsApplied' => $params->hasDefaultsApplied(),
               'defaultSortApplied' => $defaultSortApplied,
               'options' => $options,
-              'urlQuery' => $results->getUrlQuery()
+              'urlQuery' => $results->getUrlQuery(),
+              'params' => $params
           ]
       );
   }
@@ -171,11 +172,6 @@
               <? $resultsStr = ''; ?>
           <? endif; ?>
           <? $this->layout()->srmessage = strip_tags($resultsStr); ?>
-          <? if ($this->fromStreetSearch): ?>
-            <div class="text-right hidden-sm hidden-md hidden-lg hidden-print">
-                <?=$this->render('search/street-search-header.phtml');?>
-            </div>
-          <? endif; ?>
       </div>
     <? endif; ?>
     <? if ($this->results->getResultTotal() > 0): ?>

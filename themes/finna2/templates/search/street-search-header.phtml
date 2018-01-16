@@ -1,5 +1,30 @@
 <!-- START of: finna - search/street-search-header.phtml -->
-<div class="update-location-button">
-  <a class="btn btn-primary" href="<?=$this->url('search-streetsearch')?>?go=1"><i class="fa fa-crosshairs"></i> <span><?=$this->transEsc('street_search_refresh')?></span></a>
+<?
+$this->headScript()->appendFile('finna-street-search.js');
+$this->layout()->infoMessage = '<div class="street-search-progress hidden"><div class="fa fa-spinner fa-spin"></div><div class="infoBox"><div class="info"></div><button class="street-search-terminate">' . $this->transEsc('street_search_abort') . '</button></div></div>';
+?>
+<div class="street-search-header">
+  <div class="street-search-info">
+    <div class="street-search-introduction">
+      <?=$this->translate('street_search_introduction_results_html')?>
+    </div>
+    <div class="street-search-feedback">
+      <a class="btn btn-primary btn-uppercase" href="<?=$this->url('feedback-home', [], ['query' => ['comments' => $this->transEsc('street_search_feedback'), 'url' => $this->serverUrl(true)]])?>"><span><?=$this->transEsc('Feedback')?></span></a>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="street-search-action-links visible-xs">
+    <a class="update-location" href="">
+      <i class="fa fa-map-marker"></i><?=$this->translate('use_my_location')?>
+    </a>
+    <a class="select-from-map" href="<?=$this->url('search-mapfacet') . $urlParams?>" data-lightbox>
+      <i class="fa fa-map-o"></i><?=$this->translate('select_area_from_map') ?>
+    </a>
+  </div>
 </div>
+<script type="text/javascript">
+  $(document).ready(function() {
+    finna.StreetSearch.initStreetHeader();
+  });
+</script>
 <!-- END of: finna - search/street-search-header.phtml -->
