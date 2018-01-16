@@ -4,7 +4,7 @@
       <? $newParams = $this->params; $newParams['page'] = 1; ?>
       <li class="pagination-button"><a href="<?=$this->currentPath() . '?' . http_build_query($newParams)?>"><i class="fa fa-first-page"></i><span class="sr-only"><?=$this->transEsc('First')?></span></a></li>
       <? $newParams = $this->params; $newParams['page'] = $this->previous; ?>
-      <li class="pagination-button"><a href="<?=$this->currentPath() . '?' . http_build_query($newParams)?>"><i class="fa fa-arrow-left"></i><span class="sr-only"><?=$this->transEsc('Prev')?></span></a></li>
+      <li class="pagination-button"><a href="<?=$this->currentPath() . '?' . http_build_query($newParams)?>"><i class="fa fa-arrow-alt-left"></i><span class="sr-only"><?=$this->transEsc('Prev')?></span></a></li>
     <? endif; ?>
     <? if (count($this->pagesInRange) > 1): ?>
       <? foreach ($this->pagesInRange as $page): ?>
@@ -18,7 +18,7 @@
     <? endif; ?>
     <? if (isset($this->next)): ?>
       <? $newParams = $this->params; $newParams['page'] = $this->next; ?>
-      <li class="pagination-button"><a href="<?=$this->currentPath() . '?' . http_build_query($newParams)?>"><i class="fa fa-arrow-right"></i><span class="sr-only"><?=$this->transEsc('Next');?></span></a></li>
+      <li class="pagination-button"><a href="<?=$this->currentPath() . '?' . http_build_query($newParams)?>"><i class="fa fa-arrow-alt-right"></i><span class="sr-only"><?=$this->transEsc('Next');?></span></a></li>
       <? $newParams = $this->params; $newParams['page'] = $this->pageCount; ?>
       <li class="pagination-button"><a href="<?=$this->currentPath() . '?' . http_build_query($newParams)?>"><i class="fa fa-last-page"></i><span class="sr-only"><?=$this->transEsc('Last')?></span></a></li>
     <? endif; ?>
