@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for instantiating content loaders
+ * Generic Syndetics content plugin factory.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2009.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,62 +25,52 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Content\AuthorNotes;
+namespace VuFind\Content;
 
-use Zend\ServiceManager\ServiceManager;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for instantiating content loaders
+ * Generic Syndetics content plugin factory.
  *
  * @category VuFind
  * @package  Content
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
- *
- * @codeCoverageIgnore
  */
-class Factory
+class AbstractSyndeticsFactory implements FactoryInterface
 {
     /**
-     * Create either a Syndetics or SyndeticsPlus loader
+     * Create an object
      *
-     * @param ServiceManager $sm   Service manager
-     * @param bool           $plus Instantiate in Syndetics Plus mode?
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return mixed
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    public static function getAbstractSyndetics(ServiceManager $sm, $plus)
-    {
-        $config = $sm->get('VuFind\Config')->get('config');
-        return new Syndetics(
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        $config = $container->get('VuFind\Config')->get('config');
+
+        // Special case: if the class name ends in Plus, we need to strip off
+        // the "Plus" and instead configure the base Syndetics class into "plus"
+        // mode.
+        $plus = substr($requestedName, -4) === 'Plus';
+        $className = $plus
+            ? substr($requestedName, 0, strlen($requestedName) - 4) : $requestedName;
+
+        return new $className(
             isset($config->Syndetics->use_ssl) && $config->Syndetics->use_ssl,
             $plus,
             isset($config->Syndetics->timeout) ? $config->Syndetics->timeout : 10
         );
-    }
-
-    /**
-     * Create Syndetics loader
-     *
-     * @param ServiceManager $sm Service manager
-     *
-     * @return mixed
-     */
-    public static function getSyndetics(ServiceManager $sm)
-    {
-        return static::getAbstractSyndetics($sm, false);
-    }
-
-    /**
-     * Create SyndeticsPlus loader
-     *
-     * @param ServiceManager $sm Service manager
-     *
-     * @return mixed
-     */
-    public static function getSyndeticsPlus(ServiceManager $sm)
-    {
-        return static::getAbstractSyndetics($sm, true);
     }
 }

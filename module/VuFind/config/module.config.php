@@ -407,52 +407,13 @@ $config = [
             'auth' => [ /* see VuFind\Auth\PluginManager for defaults */ ],
             'autocomplete' => [ /* see VuFind\Autocomplete\PluginManager for defaults */ ],
             'channelprovider' => [ /* see VuFind\ChannelProvider\PluginManager for defaults */ ],
-            'content' => [
-                'factories' => [
-                    'authornotes' => 'VuFind\Content\Factory::getAuthorNotes',
-                    'excerpts' => 'VuFind\Content\Factory::getExcerpts',
-                    'reviews' => 'VuFind\Content\Factory::getReviews',
-                    'summaries' => 'VuFind\Content\Factory::getSummaries',
-                    'toc' => 'VuFind\Content\Factory::getTOC',
-                ],
-            ],
-            'content_authornotes' => [
-                'factories' => [
-                    'syndetics' => 'VuFind\Content\AuthorNotes\Factory::getSyndetics',
-                    'syndeticsplus' => 'VuFind\Content\AuthorNotes\Factory::getSyndeticsPlus',
-                ],
-            ],
-            'content_excerpts' => [
-                'factories' => [
-                    'syndetics' => 'VuFind\Content\Excerpts\Factory::getSyndetics',
-                    'syndeticsplus' => 'VuFind\Content\Excerpts\Factory::getSyndeticsPlus',
-                ],
-            ],
-            'content_summaries' => [
-                'factories' => [
-                    'syndetics' => 'VuFind\Content\Summaries\Factory::getSyndetics',
-                    'syndeticsplus' => 'VuFind\Content\Summaries\Factory::getSyndeticsPlus',
-                ],
-            ],
-            'content_toc' => [
-                'factories' => [
-                    'syndetics' => 'VuFind\Content\TOC\Factory::getSyndetics',
-                    'syndeticsplus' => 'VuFind\Content\TOC\Factory::getSyndeticsPlus',
-                ],
-            ],
+            'content' => [ /* see VuFind\Content\PluginManager for defaults */ ],
+            'content_authornotes' => [ /* see VuFind\Content\AuthorNotes\PluginManager for defaults */ ],
             'content_covers' => [ /* see VuFind\Content\Covers\PluginManager for defaults */ ],
-            'content_reviews' => [
-                'factories' => [
-                    'amazon' => 'VuFind\Content\Reviews\Factory::getAmazon',
-                    'amazoneditorial' => 'VuFind\Content\Reviews\Factory::getAmazonEditorial',
-                    'booksite' => 'VuFind\Content\Reviews\Factory::getBooksite',
-                    'syndetics' => 'VuFind\Content\Reviews\Factory::getSyndetics',
-                    'syndeticsplus' => 'VuFind\Content\Reviews\Factory::getSyndeticsPlus',
-                ],
-                'invokables' => [
-                    'guardian' => 'VuFind\Content\Reviews\Guardian',
-                ],
-            ],
+            'content_excerpts' => [ /* see VuFind\Content\Excerpts\PluginManager for defaults */ ],
+            'content_reviews' => [ /* see VuFind\Content\Reviews\PluginManager for defaults */ ],
+            'content_summaries' => [ /* see VuFind\Content\Summaries\PluginManager for defaults */ ],
+            'content_toc' => [ /* see VuFind\Content\TOC\PluginManager for defaults */ ],
             'db_row' => [ /* see VuFind\Db\Row\PluginManager for defaults */ ],
             'db_table' => [ /* see VuFind\Db\Table\PluginManager for defaults */ ],
             'hierarchy_driver' => [

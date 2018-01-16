@@ -39,6 +39,27 @@ namespace VuFind\Content\TOC;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'syndetics' => 'VuFind\Content\TOC\Syndetics',
+        'syndeticsplus' => 'VuFind\Content\TOC\SyndeticsPlus',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\Content\TOC\Syndetics' => 'VuFind\Content\AbstractSyndeticsFactory',
+        'VuFind\Content\TOC\SyndeticsPlus' =>
+            'VuFind\Content\AbstractSyndeticsFactory',
+    ];
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
