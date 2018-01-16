@@ -2,7 +2,7 @@
 /**
  * Horizon ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -27,8 +27,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-
-use VuFind\Exception\ILS as ILSException;
+use PDO, PDOException, VuFind\Exception\ILS as ILSException;
 
 /**
  * Horizon ILS Driver
@@ -80,17 +79,23 @@ class Horizon extends AbstractBase
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
         }
-
+        
         // Connect to database
-        $this->db = mssql_pconnect(
-            $this->config['Catalog']['host'] . ':'
-            . $this->config['Catalog']['port'],
-            $this->config['Catalog']['username'],
-            $this->config['Catalog']['password']
-        );
-
-        // Select the databse
-        mssql_select_db($this->config['Catalog']['database']);
+        try {
+			$this->db = new PDO(
+				'dblib:host='.$this->config['Catalog']['host'].
+				':'.$this->config['Catalog']['port'].
+				';dbname='.$this->config['Catalog']['database'],
+				$this->config['Catalog']['username'],
+				$this->config['Catalog']['password']
+			);
+			
+			// throw an exception instead of false on sql errors
+			$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			
+		} catch (\Exception $e) {
+            throw new ILSException('ILS Configuration problem : '.$e->getMessage());
+        }
     }
 
     /**
@@ -335,8 +340,8 @@ class Horizon extends AbstractBase
 
         try {
             $holding = [];
-            $sqlStmt = mssql_query($sql);
-            while ($row = mssql_fetch_assoc($sqlStmt)) {
+            $sqlStmt = $this->db->query($sql);
+            foreach ($sqlStmt as $row) {
                 $holding[] = $this->processHoldingRow($id, $row, $patron);
             }
             return $holding;
@@ -455,8 +460,8 @@ class Horizon extends AbstractBase
 
         try {
             $status  = [];
-            $sqlStmt = mssql_query($sql);
-            while ($row = mssql_fetch_assoc($sqlStmt)) {
+            $sqlStmt = $this->db->query($sql);
+            foreach ($sqlStmt as $row) {
                 $id            = $row['ID'];
                 $status[$id][] = $this->processStatusRow($id, $row);
             }
@@ -507,10 +512,9 @@ class Horizon extends AbstractBase
 
         try {
             $user = [];
-            $sqlStmt = mssql_query($sql);
-            $row = mssql_fetch_assoc($sqlStmt);
-            if ($row) {
-                list($lastname, $firstname) = explode(', ', $row['FULLNAME']);
+            $sqlStmt = $this->db->query($sql);
+            foreach ($sqlStmt as $row) {
+                list($lastname,$firstname) = explode(', ', $row['FULLNAME']);
                 $user = ['id' => $username,
                               'firstname' => $firstname,
                               'lastname' => $lastname,
@@ -521,9 +525,8 @@ class Horizon extends AbstractBase
                               'college' => null];
 
                 return $user;
-            } else {
-                return null;
             }
+            return null;
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
         }
@@ -672,9 +675,8 @@ class Horizon extends AbstractBase
         $sql      = $this->buildSqlFromArray($sqlArray);
 
         try {
-            $sqlStmt = mssql_query($sql);
-
-            while ($row = mssql_fetch_assoc($sqlStmt)) {
+            $sqlStmt = $this->db->query($sql);
+            foreach ($sqlStmt as $row) {
                 $hold = $this->processHoldsRow($row);
                 if ($hold) {
                     $holdList[] = $hold;
@@ -760,17 +762,18 @@ class Horizon extends AbstractBase
                "        , bu.date";
 
         try {
-            $sqlStmt = mssql_query($sql);
-
-            while ($row = mssql_fetch_assoc($sqlStmt)) {
-                $fineList[] = ['amount'     => $row['AMOUNT'],
-                                     'checkout'   => $row['CHECKOUT'],
-                                    'fine' => $row['FINE'],
-                                     'balance'    => $row['BALANCE'],
-                                     'createdate' => $row['CREATEDATE'],
-                                     'duedate'    => $row['DUEDATE'],
-                                     'id'         => $row['ID'],
-                                     'title'      => $row['TITLE']];
+            $sqlStmt = $this->db->query($sql);
+            foreach ($sqlStmt as $row) {
+                $fineList[] = [
+					'amount'     => $row['AMOUNT'],
+					'checkout'   => $row['CHECKOUT'],
+					'fine' => $row['FINE'],
+					'balance'    => $row['BALANCE'],
+					'createdate' => $row['CREATEDATE'],
+					'duedate'    => $row['DUEDATE'],
+					'id'         => $row['ID'],
+					'title'      => $row['TITLE']
+				];
             }
             return $fineList;
         } catch (\Exception $e) {
@@ -803,22 +806,21 @@ class Horizon extends AbstractBase
             "where borrower_barcode.bbarcode=\"" . addslashes($patron['id']) . "\"";
 
         try {
-            $sqlStmt = mssql_query($sql);
-
-            $row = mssql_fetch_assoc($sqlStmt);
-            if ($row) {
-                list($lastname, $firstname) = explode(', ', $row['FULLNAME']);
-                $profile = ['lastname' => $lastname,
-                                'firstname' => $firstname,
-                                'address1' => $row['ADDRESS1'],
-                                'address2' => $row['ADDRESS2'],
-                                'zip' => $row['ZIP'],
-                                'phone' => $row['PHONE'],
-                                'group' => null];
+            $sqlStmt = $this->db->query($sql);
+            foreach ($sqlStmt as $row) {
+                list($lastname,$firstname) = explode(', ', $row['FULLNAME']);
+                $profile = [
+					'lastname' => $lastname,
+					'firstname' => $firstname,
+					'address1' => $row['ADDRESS1'],
+					'address2' => $row['ADDRESS2'],
+					'zip' => $row['ZIP'],
+					'phone' => $row['PHONE'],
+					'group' => null
+				];
                 return $profile;
-            } else {
-                return null;
             }
+            return null;
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
         }
@@ -948,8 +950,8 @@ class Horizon extends AbstractBase
         $sql       = $this->buildSqlFromArray($sqlArray);
 
         try {
-            $sqlStmt = mssql_query($sql);
-            while ($row = mssql_fetch_assoc($sqlStmt)) {
+            $sqlStmt = $this->db->query($sql);
+            foreach ($sqlStmt as $row) {
                 $transList[] = $this->processTransactionsRow($row);
             }
             return $transList;
@@ -1002,6 +1004,7 @@ class Horizon extends AbstractBase
 
             // Set the Sybase or MSSQL rowcount limit (TODO: account for $page)
             $limitsql = "set rowcount {$limit}";
+            // for Sybase ASE 12.5 : "set rowcount $limit"
 
             // This is the actual query for IDs.
             $newsql = "  select nb.bib# "
@@ -1016,11 +1019,11 @@ class Horizon extends AbstractBase
             $results = [];
 
             // Set the rowcount limit before executing the query for IDs
-            mssql_query($limitsql);
+            $this->db->query($limitsql);
 
             // Actual query for IDs
-            $sqlStmt = mssql_query($newsql);
-            while ($row = mssql_fetch_assoc($sqlStmt)) {
+            $sqlStmt = $this->db->query($newsql);
+            foreach ($sqlStmt as $row) {
                 $results[] = $row['bib#'];
             }
 
@@ -1048,8 +1051,8 @@ class Horizon extends AbstractBase
     {
         $checkHzVersionSQL = "select database_revision from matham";
 
-        $versionResult = mssql_query($checkHzVersionSQL);
-        while ($row = mssql_fetch_assoc($versionResult)) {
+        $versionResult = $this->db->query($checkHzVersionSQL);
+        foreach ($versionResult as $row) {
             $hzVersionFound = $row['database_revision'];
         }
 
@@ -1095,8 +1098,8 @@ class Horizon extends AbstractBase
             "  from bib_control bc" .
             " where bc.staff_only = 1";
         try {
-            $sqlStmt = mssql_query($sql);
-            while ($row = mssql_fetch_assoc($sqlStmt)) {
+            $sqlStmt = $this->db->query($sql);
+            foreach ($sqlStmt as $row) {
                 $list[] = $row['bib#'];
             }
         } catch (\Exception $e) {
