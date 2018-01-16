@@ -9,10 +9,10 @@
         border-bottom: 1px solid @nav-tabs-border-color;
         margin: 1em 0;
         @media(max-width: @screen-sm-max) {
-            margin-left: 0;  
+            margin-left: 0;
         }
         @media(max-width: @screen-xs-max) {
-            padding-top: 10px;   
+            padding-top: 10px;
         }
         @media(max-width: 390px) {
             &.many-tabs > li {
@@ -47,9 +47,9 @@
                     min-height: 62px;
                     & i {
                         display: block;
-                        margin-top: 3px;   
-                        color: @action-link-color; 
-                        font-size: 16px;                        
+                        margin-top: 3px;
+                        color: @action-link-color;
+                        font-size: 16px;
                     }
                 }
                 @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
@@ -64,7 +64,7 @@
                 > a {
                     border-top: 4px solid @action-link-color;
                     border-left: 1px solid @nav-tabs-border-color;
-                    border-right: 1px solid @nav-tabs-border-color;  
+                    border-right: 1px solid @nav-tabs-border-color;
                     border-bottom: 1px solid @body-bg;
                 }
             }
@@ -132,10 +132,10 @@
         display: inline-block;
         margin-bottom: 5px;
         & .searchterms {
-            font-weight: bold;   
+            font-weight: bold;
         }
         @media (max-width: @screen-xs-max) {
-            display: block;   
+            display: block;
         }
     }
 
@@ -280,33 +280,30 @@
     width: 100%;
     .dropdown-toggle {
         line-height: 50px;
-        margin-top: 15px;
+        margin: 15px 0;
         background-color: @brand-primary;
         color: @body-bg;
         padding: 0 15px;
-        font-weight: 700;
         border-radius: 5px;
+        display: flex;
         cursor: pointer;
         .tab-title {
-            float: left;
+            font-size: @font-size-h2;
+            font-weight: 500;
             background: transparent;
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
-            @media(max-width: @screen-xs) {
-                max-width: 295px;
-            }
-            @media(max-width: @screen-xxs) {
-                max-width: 200px;
-            }
+            flex-grow: 1;
+            margin-right: 10px;
         }
         .more {
-            float: right;
-            font-weight: normal;
-            padding: 0 10px;
+            font-size: 85%;
+            padding-left: 10px;
             border-left: 1px solid #fff;
             b {
-                margin-left: 10px;
+                margin-left: 5px;
+                font-size: 20px;
             }
         }
     }

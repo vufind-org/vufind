@@ -88,28 +88,30 @@
   <div class="mobile-main-tabs visible-xs visible-sm">
     <div class="dropdown useraccount-nav-mobile">
       <div class="dropdown-toggle" data-toggle="dropdown">
-      <?
-        switch ($this->active) {
-        case 'profile': echo $this->transEsc('Profile'); break;
-        case 'checkedout': echo $this->transEsc('Checked Out Items'); break;
-        case 'historicloans': echo $this->transEsc('Loan History'); break;
-        case 'holds': echo $this->transEsc('Holds and Recalls'); break;
-        case 'storageRetrievalRequests': echo $this->transEsc('Storage Retrieval Requests'); break;
-        case 'ILLRequests': echo $this->transEsc('Interlibrary Loan Requests'); break;
-        case 'fines': echo $this->transEsc('Fines'); break;
-        case 'librarycards': echo $this->transEsc('Library Cards'); break;
-        case 'favorites': echo $this->transEsc('Favorites'); break;
-        case 'history': echo $this->transEsc('history_saved_searches'); break;
-        default:
-            if (substr($this->active, 0, 4) == 'list') {
-                echo $this->transEsc('Favorites');
+        <div class="tab-title">
+          <?
+            switch ($this->active) {
+            case 'profile': echo $this->transEsc('Profile'); break;
+            case 'checkedout': echo $this->transEsc('Checked Out Items'); break;
+            case 'historicloans': echo $this->transEsc('Loan History'); break;
+            case 'holds': echo $this->transEsc('Holds and Recalls'); break;
+            case 'storageRetrievalRequests': echo $this->transEsc('Storage Retrieval Requests'); break;
+            case 'ILLRequests': echo $this->transEsc('Interlibrary Loan Requests'); break;
+            case 'fines': echo $this->transEsc('Fines'); break;
+            case 'librarycards': echo $this->transEsc('Library Cards'); break;
+            case 'favorites': echo $this->transEsc('Favorites'); break;
+            case 'history': echo $this->transEsc('history_saved_searches'); break;
+            default:
+                if (substr($this->active, 0, 4) == 'list') {
+                    echo $this->transEsc('Favorites');
+                    break;
+                }
+                echo $this->transEsc('Your Account');
                 break;
             }
-            echo $this->transEsc('Your Account');
-            break;
-        }
-      ?>
-        <span class="more"><b class="caret"></b></span>
+          ?>
+        </div>
+        <div class="more"><?=$this->transEsc("More");?><b class="caret"></b></div>
       </div>
       <ul class="dropdown-menu">
         <?=$menuEntries?>
