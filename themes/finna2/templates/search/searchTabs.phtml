@@ -12,12 +12,12 @@
   <div class="dropdown visible-xs">
       <? foreach ($searchTabs as $tab): ?>
           <? if ($tab['selected']): ?>
-          <div class="dropdown-toggle" data-toggle="dropdown">
-              <?=$this->transEsc($tab['label']); ?>
+          <div class="dropdown-toggle clearfix" data-toggle="dropdown">
+            <div class="tab-title"><?=$this->transEsc($tab['label']); ?></div>
               <? if (!$this->translationEmpty('tooltip_' . $tab['label'] . '_html') && $this->layout()->templateName != 'advanced'): ?>
                 <span class="tooltip <?=$this->transEsc('tooltip-' . $tab['label'])?>" data-toggle="tooltip" data-html="true" data-original-title="<?=$this->transEsc('tooltip_' . $tab['label'] . '_html')?>" data-placement="bottom"> <i class="fa fa-info"></i></span>
               <? endif; ?>
-              <span class="more">Lisää<b class="caret"></b></span>
+              <span class="more"><b class="caret"></b></span>
           </div>
           <? endif; ?>
       <? endforeach; ?>

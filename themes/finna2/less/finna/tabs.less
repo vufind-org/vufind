@@ -287,10 +287,23 @@
         font-weight: 700;
         border-radius: 5px;
         cursor: pointer;
+        .tab-title {
+            float: left;
+            background: transparent;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            @media(max-width: @screen-xs) {
+                max-width: 295px;
+            }
+            @media(max-width: @screen-xxs) {
+                max-width: 200px;
+            }
+        }
         .more {
             float: right;
             font-weight: normal;
-            padding-left: 20px;
+            padding: 0 10px;
             border-left: 1px solid #fff;
             b {
                 margin-left: 10px;
