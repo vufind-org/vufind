@@ -20,8 +20,7 @@
   <?=$this->flashmessages()?>
   <?=$this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
   <div class="useraccount-header">
-  <?=$this->transEsc('Your Checked Out Items')?>
-  (<?=count($this->transactions);?>)
+  <?=$this->transEsc('Your Checked Out Items')?> (<?=count($this->transactions) + count($this->hiddenTransactions);?>)
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
   <? if (isset($this->noSupport)): ?>
     <? if ($user->getLibraryCards()->count() > 1): ?>
@@ -49,7 +48,7 @@
             </div>
           </div>
         </th>
-        <th class="text-right" colspan="2">
+        <th colspan="2">
           <div class="renew-button-col">
             <input type="submit" class="btn btn-primary renew-button" id="renewSelected" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
             <? if ($this->paginator): ?>
@@ -228,9 +227,9 @@
       </tr>
     <? endforeach; ?>
     <? if ($this->renewForm): ?>
-      <? if (count($this->transactions) > 10): ?>
+      <? if (count($this->transactions) > 5): ?>
       <tr class="toolbar bottom">
-        <td class="text-center">
+        <td>
           <div class="checkboxFilter mylist-select-all">
             <div class="checkbox">
               <label>
@@ -240,14 +239,16 @@
             </div>
           </div>
         </td>
-        <td>
-          <input type="submit" class="btn btn-primary" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
-          <? if ($this->paginator): ?>
-            <input type="submit" class="btn btn-primary" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
-          <? endif; ?>
-        </td>
-        <td class="text-right hidden-xs">
-          <span class="myresearch-count"><?=$this->transEsc('total_borrowed_items', ['%%count%%' => count($this->transactions)]);?></span>
+        <td colspan="2">
+          <div class="renew-button-col">
+            <input type="submit" class="btn btn-primary renew-button" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
+            <? if ($this->paginator): ?>
+              <input type="submit" class="btn btn-primary renew-button" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
+            <? endif; ?>
+          </div>
+          <div class="sort-col">
+            <span class="myresearch-count"><?=$this->transEsc('total_borrowed_items', ['%%count%%' => count($this->transactions) + count($this->hiddenTransactions)]);?></span>
+          </div>
         </td>
       </tr>
       <? endif;?>
