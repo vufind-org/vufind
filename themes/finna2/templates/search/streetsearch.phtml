@@ -7,7 +7,7 @@ $this->layout()->searchbox = $this->streetSearch();
 
 $this->layout()->infoMessage = '<div class="street-search-progress hidden"><div class="fa fa-spinner fa-spin"></div><div class="infoBox"><div class="info"></div><button class="street-search-terminate">' . $this->transEsc('street_search_abort') . '</button></div></div>';
 
-$this->layout()->finnaStreetBar = '<div class="street-search-action-links"><div class="container"><a href="' . $this->url('search-streetsearch') . '?go=1"><i class="fa fa-map-marker"></i>' .  $this->translate('use_my_location') . '</a><a class="select-from-map" href="' . $this->url('search-mapfacet') . '" data-lightbox><i class="fa fa-map-o"></i>' . $this->translate('select_area_from_map') . '</a></div></div>';
+$this->layout()->finnaStreetBar = '<div class="street-search-action-links"><div class="container"><a href="' . $this->url('search-streetsearch') . '?go=1"><i class="fa fa-map-marker"></i>' . $this->translate('use_my_location') . '</a><a class="select-from-map" href="' . $this->url('search-mapfacet') . '" data-lightbox><i class="fa fa-map-o"></i>' . $this->translate('select_area_from_map') . '</a></div></div>';
 ?>
 <div class="street-search">
   <div>
