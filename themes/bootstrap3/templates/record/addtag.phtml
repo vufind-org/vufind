@@ -8,7 +8,7 @@
       . '<li class="active">' . $this->transEsc('Add Tag') . '</li>';
 ?>
 <h2><?=$this->transEsc('Add Tags') ?></h2>
-<form method="post" name="tagRecord" class="form-add-tag" data-lightbox-onclose="refreshTagList">
+<form method="post" name="tagRecord" class="form-add-tag" data-lightbox-onclose="refreshTagListCallback">
   <input type="hidden" name="submit" value="1" />
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />

@@ -212,6 +212,9 @@ function refreshTagList(_target, _loggedin) {
     });
   }
 }
+function refreshTagListCallback() {
+  refreshTagList(false, true);
+}
 
 function ajaxTagUpdate(_link, tag, _remove) {
   var link = _link || document;
