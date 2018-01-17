@@ -2,7 +2,7 @@ CREATE TABLE ixtheo_notations (
        id INT(11) NOT NULL,
        ixtheo_notation_list VARCHAR(8192) NOT NULL,
        FOREIGN KEY (id) REFERENCES user(id)
-);
+) CHARSET=utf8;
 
 CREATE TABLE ixtheo_id_result_sets (
        id INT(11) NOT NULL,
@@ -12,9 +12,6 @@ CREATE TABLE ixtheo_id_result_sets (
 
 CREATE TABLE ixtheo_journal_subscriptions (
        id INT(11) NOT NULL,
-       journal_title VARCHAR(255) NOT NULL,
-       journal_author VARCHAR(255) NOT NULL,
-       journal_year VARCHAR(32) NOT NULL,
        journal_control_number VARCHAR(255) NOT NULL,
        max_last_modification_time DATETIME NOT NULL,
        FOREIGN KEY (id) REFERENCES user(id),
