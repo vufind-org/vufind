@@ -51,6 +51,7 @@ use Zend\Log\LoggerAwareInterface as LoggerAwareInterface;
 class DAIA extends AbstractBase implements
     HttpServiceAwareInterface, LoggerAwareInterface
 {
+    use CacheTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
