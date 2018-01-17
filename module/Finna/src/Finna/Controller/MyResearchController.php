@@ -1462,4 +1462,30 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         return $userLists;
     }
+
+    /**
+     * Get a record driver object corresponding to an array returned by an ILS
+     * driver's getMyHolds / getMyTransactions method.
+     *
+     * @param array $current Record information
+     *
+     * @return \VuFind\RecordDriver\AbstractBase
+     */
+    protected function getDriverForILSRecord($current)
+    {
+        try {
+            return parent::getDriverForILSRecord($current);
+        } catch (\Exception $e) {
+            $id = isset($current['id']) ? $current['id'] : null;
+            $source = isset($current['source'])
+                ? $current['source'] : DEFAULT_SEARCH_BACKEND;
+            $recordFactory = $this->serviceLocator
+                ->get('VuFind\RecordDriverPluginManager');
+            $record = $recordFactory->get('Missing');
+            $record->setRawData(['id' => $id]);
+            $record->setSourceIdentifier($source);
+            $record->setExtraDetail('ils_details', $current);
+            return $record;
+        }
+    }
 }
