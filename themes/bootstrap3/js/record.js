@@ -188,6 +188,10 @@ function ajaxLoadTab($newTab, tabid, setHash) {
 function refreshTagList(_target, _loggedin) {
   var loggedin = !!_loggedin || userIsLoggedIn;
   var target = _target || document;
+  if (typeof target.target != "undefined") { // handling calls from lightbox close
+    target = document;
+    _loggedin = true;
+  }
   var recordId = $(target).find('.hiddenId').val();
   var recordSource = $(target).find('.hiddenSource').val();
   var $tagList = $(target).find('.tagList');
