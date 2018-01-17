@@ -45,6 +45,7 @@ use Zend\Log\LoggerAwareInterface;
 class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     HttpServiceAwareInterface, LoggerAwareInterface
 {
+    use CacheTrait;
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
