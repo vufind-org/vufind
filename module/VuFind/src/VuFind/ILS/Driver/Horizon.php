@@ -27,7 +27,10 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\ILS as ILSException;
+use PDO, PDOException, 
+    VuFind\Exception\ILS as ILSException, 
+    Zend\Log\LoggerAwareInterface, 
+    VuFind\Log\LoggerAwareTrait;
 
 /**
  * Horizon ILS Driver
@@ -39,8 +42,10 @@ use PDO, PDOException, VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Horizon extends AbstractBase
+class Horizon extends AbstractBase implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+    
     /**
      * Date converter object
      *
@@ -94,6 +99,7 @@ class Horizon extends AbstractBase
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             
         } catch (\Exception $e) {
+            $this->logError($e->getMessage());
             throw new ILSException('ILS Configuration problem : '.$e->getMessage());
         }
     }
@@ -344,8 +350,12 @@ class Horizon extends AbstractBase
             foreach ($sqlStmt as $row) {
                 $holding[] = $this->processHoldingRow($id, $row, $patron);
             }
+            
+            $this->debug(json_encode($holding));
+            
             return $holding;
         } catch (\Exception $e) {
+            $this->logError($e->getMessage());
             throw new ILSException($e->getMessage());
         }
     }
@@ -472,6 +482,7 @@ class Horizon extends AbstractBase
             }
             return $status;
         } catch (\Exception $e) {
+            $this->logError($e->getMessage());
             throw new ILSException($e->getMessage());
         }
     }
@@ -502,22 +513,25 @@ class Horizon extends AbstractBase
      *
      * @throws ILSException
      * @return mixed          Associative array of patron info on successful login,
-     * null on unsuccessful login.
+     * ILSException on unsuccessful login.
      */
     public function patronLogin($username, $password)
     {
         $sql = "select name_reconstructed as FULLNAME, " .
-            "email_address as EMAIL from borrower " .
+            "email_address as EMAIL " . 
+            "from borrower " .
             "left outer join borrower_address on " .
-            "borrower_address.borrower#=borrower.borrower# " .
+                "borrower_address.borrower# = borrower.borrower# " .
             "inner join borrower_barcode on " .
-            "borrower.borrower#=borrower_barcode.borrower# " .
-            "where borrower_barcode.bbarcode=\"" . addslashes($username) .
-            "\" and pin# = \"" . addslashes($password) . "\"";
-
+                "borrower.borrower# = borrower_barcode.borrower# " .
+            "where borrower_barcode.bbarcode = " .
+                "'" . addslashes($username) . "' " . 
+            "and second_id = '" . addslashes($password) . "'";
+        
         try {
             $user = [];
-            $sqlStmt = $this->db->query($sql);
+            
+            $sqlStmt = $this->db->query($sql);            
             foreach ($sqlStmt as $row) {
                 list($lastname,$firstname) = explode(', ', $row['FULLNAME']);
                 $user = [
@@ -530,11 +544,17 @@ class Horizon extends AbstractBase
                     'major' => null,
                     'college' => null
                 ];
-
+                
+                $this->debug(json_encode($user));
+                
                 return $user;
             }
-            return null;
+            
+            throw new ILSException(
+                'Unable to login patron '.$patron['id']
+            );
         } catch (\Exception $e) {
+            $this->logError($e->getMessage());
             throw new ILSException($e->getMessage());
         }
     }
@@ -588,8 +608,7 @@ class Horizon extends AbstractBase
 
         // Where
         $sqlWhere = [
-            "bb.bbarcode=\"" . addslashes($patron['id']) .
-               "\""
+            "bb.bbarcode='" . addslashes($patron['id']) . "'"
         ];
 
         $sqlOrder = [
@@ -689,8 +708,12 @@ class Horizon extends AbstractBase
                     $holdList[] = $hold;
                 }
             }
+            
+            $this->debug(json_encode($holdList));
+            
             return $holdList;
         } catch (\Exception $e) {
+            $this->logError($e->getMessage());
             throw new ILSException($e->getMessage());
         }
     }
@@ -759,7 +782,7 @@ class Horizon extends AbstractBase
                "       on bu4.reference# = bu.reference# " .
                "      and bu4.ord = 0 " .
                "      and bu4.block in ('l', 'LostPro','fine','he') " .
-               "    where bb.bbarcode = \"" . addslashes($patron['id']) . "\" " .
+               "    where bb.bbarcode = '" . addslashes($patron['id']) . "' " .
                "      and bu.ord = 0 " .
                "      and bl.pac_display = 1 " .
                " order by FEEBLOCK desc " .
@@ -770,6 +793,7 @@ class Horizon extends AbstractBase
 
         try {
             $sqlStmt = $this->db->query($sql);
+            $fineList = [];
             foreach ($sqlStmt as $row) {
                 $fineList[] = [
                     'amount'     => $row['AMOUNT'],
@@ -782,8 +806,12 @@ class Horizon extends AbstractBase
                     'title'      => $row['TITLE']
                 ];
             }
+            
+            $this->debug(json_encode($fineList));
+            
             return $fineList;
         } catch (\Exception $e) {
+            $this->logError($e->getMessage());
             throw new ILSException($e->getMessage());
         }
     }
@@ -796,7 +824,8 @@ class Horizon extends AbstractBase
      * @param array $patron The patron array
      *
      * @throws ILSException
-     * @return array        Array of the patron's profile data on success.
+     * @return array        Array of the patron's profile data on success,
+     * throw ILSException if none found
      */
     public function getMyProfile($patron)
     {
@@ -804,14 +833,14 @@ class Horizon extends AbstractBase
             "city_st.descr as ADDRESS2, postal_code as ZIP, phone_no as PHONE " .
             "from borrower " .
             "left outer join borrower_phone on " .
-            "borrower_phone.borrower#=borrower.borrower# " .
+                "borrower_phone.borrower#=borrower.borrower# " .
             "inner join borrower_address on " .
-            "borrower_address.borrower#=borrower.borrower# " .
+                "borrower_address.borrower#=borrower.borrower# " .
             "inner join city_st on city_st.city_st=borrower_address.city_st " .
             "inner join borrower_barcode on " .
-            "borrower_barcode.borrower#=borrower.borrower# " .
-            "where borrower_barcode.bbarcode=\"" . addslashes($patron['id']) . "\"";
-
+            "borrower_barcode.borrower# = borrower.borrower# " .
+            "where borrower_barcode.bbarcode = '" . addslashes($patron['id']) . "'";
+            
         try {
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
@@ -825,10 +854,17 @@ class Horizon extends AbstractBase
                     'phone' => $row['PHONE'],
                     'group' => null
                 ];
+                
+                $this->debug(json_encode($profile));
+                
                 return $profile;
             }
-            return null;
+            
+            throw new ILSException(
+                'Unable to retrieve profile for patron '.$patron['id']
+            );
         } catch (\Exception $e) {
+            $this->logError($e->getMessage());
             throw new ILSException($e->getMessage());
         }
     }
@@ -875,7 +911,7 @@ class Horizon extends AbstractBase
 
         // Where
         $sqlWhere = [
-            "bb.bbarcode=\"" . addslashes($patron['id']) . "\""];
+            "bb.bbarcode='" . addslashes($patron['id']) . "'"];
 
         // Order by
         $sqlOrder = [
@@ -961,8 +997,12 @@ class Horizon extends AbstractBase
             foreach ($sqlStmt as $row) {
                 $transList[] = $this->processTransactionsRow($row);
             }
+            
+            $this->debug(json_encode($transList));
+            
             return $transList;
         } catch (\Exception $e) {
+            $this->logError($e->getMessage());
             throw new ILSException($e->getMessage());
         }
     }
@@ -1029,16 +1069,22 @@ class Horizon extends AbstractBase
             $this->db->query($limitsql);
 
             // Actual query for IDs
-            $sqlStmt = $this->db->query($newsql);
-            foreach ($sqlStmt as $row) {
-                $results[] = $row['bib#'];
-            }
+            try {
+                $sqlStmt = $this->db->query($newsql);
+                foreach ($sqlStmt as $row) {
+                    $results[] = $row['bib#'];
+                }
+                
+                $retVal = ['count' => count($results), 'results' => []];
+                foreach ($results as $result) {
+                    $retVal['results'][] = ['id' => $result];
+                }
 
-            $retVal = ['count' => count($results), 'results' => []];
-            foreach ($results as $result) {
-                $retVal['results'][] = ['id' => $result];
+                return $retVal;
+            } catch (\Exception $e) {
+                $this->logError($e->getMessage());
+                throw new ILSException($e->getMessage());
             }
-            return $retVal;
         } else {
             return ['count' => 0, 'results' => []];
         }
@@ -1058,9 +1104,14 @@ class Horizon extends AbstractBase
     {
         $checkHzVersionSQL = "select database_revision from matham";
 
-        $versionResult = $this->db->query($checkHzVersionSQL);
-        foreach ($versionResult as $row) {
-            $hzVersionFound = $row['database_revision'];
+        try {
+            $versionResult = $this->db->query($checkHzVersionSQL);
+            foreach ($versionResult as $row) {
+                $hzVersionFound = $row['database_revision'];
+            }
+        } catch (\Exception $e) {
+            $this->logError($e->getMessage());
+            throw new ILSException($e->getMessage());
         }
 
         /* The Horizon database version is made up of 4 numbers separated by periods.
@@ -1110,6 +1161,7 @@ class Horizon extends AbstractBase
                 $list[] = $row['bib#'];
             }
         } catch (\Exception $e) {
+            $this->logError($e->getMessage());
             throw new ILSException($e->getMessage());
         }
 
