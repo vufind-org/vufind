@@ -201,7 +201,7 @@
       <? if ($module === 'primo' && !$this->translationEmpty('tooltip_pci_search_html')): ?><span class="tooltip-search-pci pull-right hidden-xs" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_pci_search_html')?>"><i class="fa fa-question-circle-big"></i></span><? endif; ?>
       <? if ($module === 'eds' && !$this->translationEmpty('tooltip_eds_search_html')): ?><span class="tooltip-search-eds pull-right hidden-xs" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_eds_search_html')?>"><i class="fa fa-question-circle-big"></i></span><? endif; ?>
       <? if ($module === 'summon' && !$this->translationEmpty('tooltip_summon_search_html')): ?><span class="tooltip-search-summon pull-right hidden-xs" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_summon_search_html')?>"><i class="fa fa-question-circle-big"></i></span><? endif; ?>
-      <? if ($this->layout()->templateName === 'home' && !$this->translationEmpty('tooltip_image_html')): ?>
+      <? if ($this->layout()->templateDir === 'search' && $this->layout()->templateName === 'home' && !$this->translationEmpty('tooltip_image_html')): ?>
          <div class="tooltip-image">
            <span class="tooltip-image-info" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_image_html')?>"><i class="fa fa-info-circle"></i></span>
         </div>
