@@ -27,9 +27,9 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, 
-    VuFind\Exception\ILS as ILSException, 
-    Zend\Log\LoggerAwareInterface, 
+use PDO, PDOException,
+    VuFind\Exception\ILS as ILSException,
+    Zend\Log\LoggerAwareInterface,
     VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -88,9 +88,9 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         // Connect to database
         try {
             $this->db = new PDO(
-                'dblib:host='.$this->config['Catalog']['host'].
-                ':'.$this->config['Catalog']['port'].
-                ';dbname='.$this->config['Catalog']['database'],
+                'dblib:host=' . $this->config['Catalog']['host'] .
+                ':' . $this->config['Catalog']['port'] .
+                ';dbname=' . $this->config['Catalog']['database'],
                 $this->config['Catalog']['username'],
                 $this->config['Catalog']['password']
             );
@@ -100,7 +100,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException('ILS Configuration problem : '.$e->getMessage());
+            throw new ILSException('ILS Configuration problem : ' . $e->getMessage());
         }
     }
 
@@ -518,20 +518,20 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     public function patronLogin($username, $password)
     {
         $sql = "select name_reconstructed as FULLNAME, " .
-            "email_address as EMAIL " . 
+            "email_address as EMAIL " .
             "from borrower " .
             "left outer join borrower_address on " .
                 "borrower_address.borrower# = borrower.borrower# " .
             "inner join borrower_barcode on " .
                 "borrower.borrower# = borrower_barcode.borrower# " .
             "where borrower_barcode.bbarcode = " .
-                "'" . addslashes($username) . "' " . 
-            "and pin# = '" . addslashes($password) . "'";
+                "'" . addslashes($username) . "' " .
+            "and second_id = '" . addslashes($password) . "'";
         
         try {
             $user = [];
             
-            $sqlStmt = $this->db->query($sql);            
+            $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
                 list($lastname,$firstname) = explode(', ', $row['FULLNAME']);
                 $user = [
@@ -551,7 +551,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
             
             throw new ILSException(
-                'Unable to login patron '.$patron['id']
+                'Unable to login patron ' . $patron['id']
             );
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
@@ -861,7 +861,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
             
             throw new ILSException(
-                'Unable to retrieve profile for patron '.$patron['id']
+                'Unable to retrieve profile for patron ' . $patron['id']
             );
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
