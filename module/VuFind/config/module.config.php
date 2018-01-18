@@ -416,12 +416,7 @@ $config = [
             'content_toc' => [ /* see VuFind\Content\TOC\PluginManager for defaults */ ],
             'db_row' => [ /* see VuFind\Db\Row\PluginManager for defaults */ ],
             'db_table' => [ /* see VuFind\Db\Table\PluginManager for defaults */ ],
-            'hierarchy_driver' => [
-                'factories' => [
-                    'default' => 'VuFind\Hierarchy\Driver\Factory::getHierarchyDefault',
-                    'flat' => 'VuFind\Hierarchy\Driver\Factory::getHierarchyFlat',
-                ],
-            ],
+            'hierarchy_driver' => [ /* see VuFind\Hierarchy\Driver\PluginManager for defaults */ ],
             'hierarchy_treedataformatter' => [
                 'invokables' => [
                     'json' => 'VuFind\Hierarchy\TreeDataFormatter\Json',
