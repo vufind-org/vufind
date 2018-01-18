@@ -49,6 +49,10 @@ div.selection-map-canvas {
 .map-modal-form {
   .map-button.map-button-clear {
     background: @body-bg;
+    &:hover {
+      color: @text-color;
+      background: darken(@body-bg, 4%);
+    }
   }
   button[type=submit]{
     margin-top: 15px;
