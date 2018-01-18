@@ -113,4 +113,24 @@ class Results extends BaseResults
         }
         return $this->list;
     }
+
+    /**
+     * Get Results, sorted on PHP side
+     * (by title, which is not stored in MySQL due to redundancy issues)
+     *
+     * @return array
+     */
+    public function getResultsSorted()
+    {
+        $results = $this->getResults();
+        $results_sorted = [];
+
+        foreach ($results as $i => $result) {
+            $ppn = $result->getRecordId();
+            $title = $result->getTitle();
+            $results_sorted[$title . '#' . $ppn] = $result;
+        }
+        ksort($results_sorted, SORT_LOCALE_STRING);
+        return $results_sorted;
+    }
 }
