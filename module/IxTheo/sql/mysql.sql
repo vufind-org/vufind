@@ -12,9 +12,6 @@ CREATE TABLE ixtheo_id_result_sets (
 
 CREATE TABLE ixtheo_journal_subscriptions (
        id INT(11) NOT NULL,
-       journal_title VARCHAR(255) NOT NULL,
-       journal_author VARCHAR(255) NOT NULL,
-       journal_year VARCHAR(32) NOT NULL,
        journal_control_number VARCHAR(255) NOT NULL,
        max_last_modification_time DATETIME NOT NULL,
        FOREIGN KEY (id) REFERENCES user(id),
