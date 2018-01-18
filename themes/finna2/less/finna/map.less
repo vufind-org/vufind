@@ -43,18 +43,18 @@ div.selection-map-canvas {
   }
 }
 
-.modal-map.leaflet-container {
+.modal-map.leaflet-container,
+.selection-map-canvas.leaflet-container {
   font-family: @font-family-sans-serif;
 }
-.map-modal-form {
-  .map-button.map-button-clear {
-    background: @body-bg;
-    &:hover {
-      color: @text-color;
-      background: darken(@body-bg, 4%);
-    }
+.map-button.map-button-clear {
+  background: @body-bg;
+  color: @text-color;
+  &:hover {
+    color: @text-color;
+    background: darken(@body-bg, 4%);
   }
-  button[type=submit]{
+}
+.map-modal-form button[type=submit]{
     margin-top: 15px;
-  }
 }

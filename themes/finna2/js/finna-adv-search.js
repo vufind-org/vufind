@@ -111,7 +111,7 @@ finna.advSearch = (function advSearch() {
 
     var FinnaMapButton = L.Control.extend({
       options: {
-        position: 'bottomright'
+        position: 'bottomleft'
       },
       createButton: function createButton(cssClass, html, clickHandler/*, style*/) {
         var container = L.DomUtil.create('div', 'map-button ' + cssClass + ' btn btn-primary leaflet-bar leaflet-control leaflet-control-custom');
@@ -141,7 +141,6 @@ finna.advSearch = (function advSearch() {
             $('.map-button-circle').removeClass('active');
           }).enable();
         });
-        $(button).css('top', '-10px');
         return button;
       }
     });
