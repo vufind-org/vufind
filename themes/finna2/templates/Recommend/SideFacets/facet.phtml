@@ -2,7 +2,12 @@
 <? $this->results = $results = $this->recommend->getResults(); ?>
 <? $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions(); ?>
 <? $hierarchicalFacets = $this->recommend->getHierarchicalFacets(); ?>
-<? $geographicFacets = $this->recommend->getGeographicFacets(); ?>
+<? $geographicFacets = []; ?>
+<?
+  if (is_callable([$this->recommend, 'getGeographicFacets'])) {
+    $geographicFacets = $this->recommend->getGeographicFacets();
+  }
+?>
 <? $newItemsFacets = $this->recommend->getNewItemsFacets(); ?>
 <? $module = $this->layout()->templateDir; ?>
 <? $title = $this->facet; $cluster = $this->cluster; ?>
