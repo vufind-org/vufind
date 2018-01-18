@@ -526,7 +526,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                 "borrower.borrower# = borrower_barcode.borrower# " .
             "where borrower_barcode.bbarcode = " .
                 "'" . addslashes($username) . "' " . 
-            "and second_id = '" . addslashes($password) . "'";
+            "and pin# = '" . addslashes($password) . "'";
         
         try {
             $user = [];
