@@ -418,14 +418,7 @@ $config = [
             'db_table' => [ /* see VuFind\Db\Table\PluginManager for defaults */ ],
             'hierarchy_driver' => [ /* see VuFind\Hierarchy\Driver\PluginManager for defaults */ ],
             'hierarchy_treedataformatter' => [ /* see VuFind\Hierarchy\TreeDataFormatter\PluginManager for defaults */ ],
-            'hierarchy_treedatasource' => [
-                'factories' => [
-                    'solr' => 'VuFind\Hierarchy\TreeDataSource\Factory::getSolr',
-                ],
-                'invokables' => [
-                    'xmlfile' => 'VuFind\Hierarchy\TreeDataSource\XMLFile',
-                ],
-            ],
+            'hierarchy_treedatasource' => [ /* see VuFind\Hierarchy\TreeDataSource\PluginManager for defaults */ ],
             'hierarchy_treerenderer' => [
                 'factories' => [
                     'jstree' => 'VuFind\Hierarchy\TreeRenderer\Factory::getJSTree'

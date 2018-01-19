@@ -1,10 +1,10 @@
 <?php
 /**
- * Hierarchy Data Source Factory Class
+ * Solr Hierarchy tree data source plugin factory.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,51 +23,58 @@
  * @package  HierarchyTree_DataSource
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Hierarchy\TreeDataSource;
 
-use Zend\ServiceManager\ServiceManager;
+use Interop\Container\ContainerInterface;
 
 /**
- * Hierarchy Data Source Factory Class
- *
- * This is a factory class to build objects for managing hierarchies.
+ * Solr Hierarchy tree data source plugin factory.
  *
  * @category VuFind
  * @package  HierarchyTree_DataSource
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
- *
- * @codeCoverageIgnore
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class Factory
+class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Factory for Solr driver.
+     * Create an object
      *
-     * @param ServiceManager $sm Service manager.
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return Solr
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    public static function getSolr(ServiceManager $sm)
-    {
-        $cacheDir = $sm->get('VuFind\CacheManager')
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if ($options !== null) {
+            throw new \Exception('Unexpected options sent to factory!');
+        }
+        $cacheDir = $container->get('VuFind\CacheManager')
             ->getCacheDir(false);
-        $hierarchyFilters = $sm->get('VuFind\Config')
+        $hierarchyFilters = $container->get('VuFind\Config')
             ->get('HierarchyDefault');
         $filters = isset($hierarchyFilters->HierarchyTree->filterQueries)
           ? $hierarchyFilters->HierarchyTree->filterQueries->toArray()
           : [];
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $container->get('VuFind\Config')->get('config');
         $batchSize = isset($config->Index->cursor_batch_size)
             ? $config->Index->cursor_batch_size : 1000;
-        $solr = $sm->get('VuFind\Search\BackendManager')
+        $solr = $container->get('VuFind\Search\BackendManager')
             ->get('Solr')->getConnector();
-        $formatterManager = $sm
+        $formatterManager = $container
             ->get('VuFind\HierarchyTreeDataFormatterPluginManager');
-        return new Solr(
+        return new $requestedName(
             $solr, $formatterManager, rtrim($cacheDir, '/') . '/hierarchy',
             $filters, $batchSize
         );
