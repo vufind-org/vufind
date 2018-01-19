@@ -8,12 +8,12 @@ $this->layout()->infoMessage = '<div class="street-search-progress hidden"><div 
     <div class="street-search-introduction">
       <?=$this->translate('street_search_introduction_results_html')?>
     </div>
-    <div class="street-search-feedback">
+    <div class="street-search-feedback text-right">
       <a class="btn btn-primary btn-uppercase" href="<?=$this->url('feedback-home', [], ['query' => ['comments' => $this->transEsc('street_search_feedback'), 'url' => $this->serverUrl(true)]])?>"><span><?=$this->transEsc('Feedback')?></span></a>
     </div>
     <div class="clearfix"></div>
   </div>
-  <div class="street-search-action-links visible-xs">
+  <div class="street-search-action-links hidden-sm hidden-md hidden-lg">
     <a class="update-location" href="">
       <i class="fa fa-map-marker"></i><?=$this->translate('use_my_location')?>
     </a>

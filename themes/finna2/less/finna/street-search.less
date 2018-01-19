@@ -63,12 +63,14 @@
   }
 }
 
-.street-search-header .street-search-introduction {
-  width: 80%;
-  float: left;
-}
-.street-search-feedback {
-  float: right;
+.street-search-header .street-search-info {
+  display: flex;
+  .street-search-introduction {
+    flex: 2;
+  }
+  .street-search-feedback {
+    flex: 1;
+  }
 }
 
 .street-info.alert {
@@ -78,6 +80,7 @@
 .street-search-action-links {
   margin-bottom: 1.5em;
   border-bottom: 1px solid @gray-lighter;
+  display: flex;
   a {
     text-align: center;
     display: inline-block;
@@ -85,6 +88,7 @@
     text-transform: uppercase;
     font-weight: 600;
     color: @brand-primary;
+    margin: auto 0;
     i {
       margin-right: 10px;
     }
@@ -104,11 +108,12 @@
   margin: 0 -15px;
   margin-top: 20px;
   border-top: 1px solid @gray-lighter;
+  display: flex;
   a {
     width: 49%;
-    border-right: 1px solid @gray-lighter;
-    &:last-child {
-      border-right: none;
+    border-left: 1px solid @gray-lighter;
+    &:first-child {
+      border-left: none;
     }
   }
 }
