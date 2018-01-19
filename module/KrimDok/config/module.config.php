@@ -9,7 +9,6 @@ $config = [
             'fidsystematik' => 'KrimDok\Controller\Factory::getFIDSystematikController',
             'help' => 'KrimDok\Controller\Factory::getHelpController',
             'search' => 'KrimDok\Controller\Factory::getSearchController',
-            'static_pages' => 'KrimDok\Controller\Factory::getStaticPagesController',
         ],
     ],
     'controller_plugins' => [
