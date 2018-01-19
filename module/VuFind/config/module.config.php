@@ -419,11 +419,7 @@ $config = [
             'hierarchy_driver' => [ /* see VuFind\Hierarchy\Driver\PluginManager for defaults */ ],
             'hierarchy_treedataformatter' => [ /* see VuFind\Hierarchy\TreeDataFormatter\PluginManager for defaults */ ],
             'hierarchy_treedatasource' => [ /* see VuFind\Hierarchy\TreeDataSource\PluginManager for defaults */ ],
-            'hierarchy_treerenderer' => [
-                'factories' => [
-                    'jstree' => 'VuFind\Hierarchy\TreeRenderer\Factory::getJSTree'
-                ],
-            ],
+            'hierarchy_treerenderer' => [ /* see VuFind\Hierarchy\TreeRenderer\PluginManager for defaults */ ],
             'ils_driver' => [ /* See VuFind\ILS\Driver\PluginManager for defaults */ ],
             'recommend' => [ /* See VuFind\Recommend\PluginManager for defaults */ ],
             'recorddriver' => [ /* See VuFind\RecordDriver\PluginManager for defaults */ ],
