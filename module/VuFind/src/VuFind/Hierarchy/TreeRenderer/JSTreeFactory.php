@@ -1,10 +1,10 @@
 <?php
 /**
- * Hierarchy tree renderer plugin manager
+ * JSTree hierarchy tree renderer plugin factory.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,8 +27,10 @@
  */
 namespace VuFind\Hierarchy\TreeRenderer;
 
+use Interop\Container\ContainerInterface;
+
 /**
- * Hierarchy tree renderer plugin manager
+ * JSTree hierarchy tree renderer plugin factory.
  *
  * @category VuFind
  * @package  HierarchyTree_Renderer
@@ -36,35 +38,30 @@ namespace VuFind\Hierarchy\TreeRenderer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class JSTreeFactory implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Default plugin aliases.
+     * Create an object
      *
-     * @var array
-     */
-    protected $aliases = [
-        'jstree' => 'VuFind\Hierarchy\TreeRenderer\JSTree'
-    ];
-
-    /**
-     * Default plugin factories.
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @var array
-     */
-    protected $factories = [
-        'VuFind\Hierarchy\TreeRenderer\JSTree' =>
-            'VuFind\Hierarchy\TreeRenderer\JSTreeFactory'
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
+     * @return object
      *
-     * @return string
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    protected function getExpectedInterface()
-    {
-        return 'VuFind\Hierarchy\TreeRenderer\AbstractBase';
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if ($options !== null) {
+            throw new \Exception('Unexpected options sent to factory!');
+        }
+        return new $requestedName(
+            $container->get('ControllerPluginManager')->get('Url')
+        );
     }
 }
