@@ -208,6 +208,9 @@ finna.MapFacet = (function finnaStreetMap() {
         var htmlElem = $('<div><i class="fa fa-times"></i>');
         $('<span/>').text(' ' + VuFind.translate('clearCaption')).appendTo(htmlElem);
         return this.createButton('map-button-clear', htmlElem.html(), function mapClearLayersClick() {
+          drawnItems.eachLayer(function disableEditing(layer) {
+            layer.editing.disable();
+          });
           drawnItems.clearLayers();
         });
       }
@@ -288,6 +291,7 @@ finna.MapFacet = (function finnaStreetMap() {
     var button = $('<a/>')
         .html('<i class="fa fa-times" aria-hidden="true"></i>')
         .click(function mapOnRemoveButtonClick(/*e*/) {
+          layer.editing.disable();
           featureGroup.removeLayer(layer);
         });
     $('<span/>').text(VuFind.translate('removeCaption')).appendTo(button);

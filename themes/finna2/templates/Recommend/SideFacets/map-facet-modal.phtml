@@ -2,7 +2,7 @@
 <form action="<?=$this->url('search-results')?>" class="map-modal-form" data-lightbox-ignore>
   <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./"])?>
   <? $searchFilters = $results->getParams()->getFilterList(true);?>
-  <div class="modal-map" style="height: 500px;"></div>
+  <div class="modal-map"></div>
   <button class="btn btn-lg btn-primary pull-right" type="submit"><?=$this->transEsc('Find')?></button>
 </form>
 
