@@ -39,6 +39,32 @@ namespace VuFind\Related;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'channels' => 'VuFind\Related\Channels',
+        'editions' => 'VuFind\Related\Deprecated',
+        'similar' => 'VuFind\Related\Similar',
+        'worldcateditions' => 'VuFind\Related\Deprecated',
+        'worldcatsimilar' => 'VuFind\Related\WorldCatSimilar',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\Related\Channels' => 'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\Related\Deprecated' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\Related\Similar' => 'VuFind\Related\SimilarFactory',
+        'VuFind\Related\WorldCatSimilar' => 'VuFind\Related\SimilarFactory',
+    ];
+
+    /**
      * Constructor
      *
      * Make sure plugins are properly initialized.
@@ -53,7 +79,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // These objects are not meant to be shared -- every time we retrieve one,
         // we are building a brand new object.
         $this->sharedByDefault = false;
-
+        $this->addAbstractFactory('VuFind\Related\PluginFactory');
         parent::__construct($configOrContainerInstance, $v3config);
     }
 
