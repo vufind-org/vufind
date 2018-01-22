@@ -131,6 +131,10 @@ finna.MapFacet = (function finnaStreetMap() {
     });
     modal.find('.modal-dialog').addClass('modal-lg');
 
+    $('#modal').on('shown.bs.modal', function onShownModal() {
+      map.invalidateSize();
+    });
+
     var mapCanvas = $('.modal-map');
     if (mapCanvas.length === 0) {
       return;
