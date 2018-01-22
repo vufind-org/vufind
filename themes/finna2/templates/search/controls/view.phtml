@@ -2,7 +2,8 @@
 <?
   $viewList = $this->params->getViewList();
   if (!isset($isCollection) || !$isCollection){
-      $viewOptionsIcons = $this->params->getViewOptionListType();
+      $viewOptionsIcons = is_callable([$this->params, 'getViewOptionListType'])
+          ? $this->params->getViewOptionListType() : null;
   }
 ?>
 <? if (count($viewList) > 1): ?>
