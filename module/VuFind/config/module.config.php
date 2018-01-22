@@ -496,30 +496,7 @@ $config = [
                     'threesixtylink' => '360link',
                 ],
             ],
-            'search_backend' => [
-                'factories' => [
-                    'BrowZine' => 'VuFind\Search\Factory\BrowZineBackendFactory',
-                    'EDS' => 'VuFind\Search\Factory\EdsBackendFactory',
-                    'EIT' => 'VuFind\Search\Factory\EITBackendFactory',
-                    'LibGuides' => 'VuFind\Search\Factory\LibGuidesBackendFactory',
-                    'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
-                    'Primo' => 'VuFind\Search\Factory\PrimoBackendFactory',
-                    'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
-                    'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
-                    'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
-                    'SolrWeb' => 'VuFind\Search\Factory\SolrWebBackendFactory',
-                    'Summon' => 'VuFind\Search\Factory\SummonBackendFactory',
-                    'WorldCat' => 'VuFind\Search\Factory\WorldCatBackendFactory',
-                ],
-                'aliases' => [
-                    // Allow Solr core names to be used as aliases for services:
-                    'authority' => 'SolrAuth',
-                    'biblio' => 'Solr',
-                    'reserves' => 'SolrReserves',
-                    // Legacy:
-                    'VuFind' => 'Solr',
-                ]
-            ],
+            'search_backend' => [ /* See VuFind\Search\BackendRegistry for defaults */ ],
             'search_options' => [
                 'abstract_factories' => ['VuFind\Search\Options\PluginFactory'],
                 'factories' => [
