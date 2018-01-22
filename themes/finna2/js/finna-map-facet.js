@@ -133,6 +133,9 @@ finna.MapFacet = (function finnaStreetMap() {
 
     $('#modal').on('shown.bs.modal', function onShownModal() {
       map.invalidateSize();
+      var bounds = drawnItems.getBounds();
+      var fitZoom = map.getBoundsZoom(bounds);
+      map.fitBounds(bounds, fitZoom);
     });
 
     var mapCanvas = $('.modal-map');
