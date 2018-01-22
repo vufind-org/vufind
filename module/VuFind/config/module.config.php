@@ -469,18 +469,7 @@ $config = [
                     'ZfcRbac\Initializer\AuthorizationServiceInitializer'
                 ],
             ],
-            'related' => [
-                'abstract_factories' => ['VuFind\Related\PluginFactory'],
-                'factories' => [
-                    'similar' => 'VuFind\Related\Factory::getSimilar',
-                    'worldcatsimilar' => 'VuFind\Related\Factory::getWorldCatSimilar',
-                ],
-                'invokables' => [
-                    'channels' => 'VuFind\Related\Channels',
-                    'editions' => 'VuFind\Related\Deprecated',
-                    'worldcateditions' => 'VuFind\Related\Deprecated',
-                ],
-            ],
+            'related' => [ /* See VuFind\Related\PluginManager for defaults */ ],
             'resolver_driver' => [
                 'abstract_factories' => ['VuFind\Resolver\Driver\PluginFactory'],
                 'factories' => [
