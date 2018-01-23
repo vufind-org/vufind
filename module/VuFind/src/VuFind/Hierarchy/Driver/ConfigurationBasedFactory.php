@@ -42,7 +42,7 @@ use Zend\ServiceManager\ServiceManager;
  *
  * @codeCoverageIgnore
  */
-class Factory
+class ConfigurationBasedFactory
 {
     /**
      * This constructs a hierarchy driver using VuFind's service setup.
@@ -76,7 +76,7 @@ class Factory
         $driverConfig = $configReader->get($config);
 
         // Build object:
-        return new \VuFind\Hierarchy\Driver\ConfigurationBased(
+        return new ConfigurationBased(
             $driverConfig,
             $sm->get('VuFind\HierarchyTreeDataSourcePluginManager'),
             $sm->get('VuFind\HierarchyTreeRendererPluginManager'),

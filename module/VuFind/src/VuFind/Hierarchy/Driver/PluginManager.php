@@ -55,8 +55,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         'VuFind\Hierarchy\Driver\HierarchyDefault' =>
-            'VuFind\Hierarchy\Driver\Factory',
-        'VuFind\Hierarchy\Driver\HierarchyFlat' => 'VuFind\Hierarchy\Driver\Factory',
+            'VuFind\Hierarchy\Driver\ConfigurationBasedFactory',
+        'VuFind\Hierarchy\Driver\HierarchyFlat' =>
+            'VuFind\Hierarchy\Driver\ConfigurationBasedFactory',
     ];
 
     /**
