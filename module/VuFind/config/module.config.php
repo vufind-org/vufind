@@ -486,12 +486,7 @@ $config = [
                 ],
             ],
             'search_backend' => [ /* See VuFind\Search\BackendRegistry for defaults */ ],
-            'search_options' => [
-                'abstract_factories' => ['VuFind\Search\Options\PluginFactory'],
-                'factories' => [
-                    'eds' => 'VuFind\Search\Options\Factory::getEDS',
-                ],
-            ],
+            'search_options' => [ /* See VuFind\Search\Options\PluginManager for defaults */ ],
             'search_params' => [
                 'abstract_factories' => ['VuFind\Search\Params\PluginFactory'],
                 'factories' => [

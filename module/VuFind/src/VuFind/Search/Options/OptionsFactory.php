@@ -1,10 +1,10 @@
 <?php
 /**
- * Search Options Object Factory Class
+ * Generic factory for search options objects.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2014.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,45 +23,43 @@
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Search\Options;
 
-use Zend\ServiceManager\ServiceManager;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Search Options Object Factory Class
+ * Generic factory for search options objects.
  *
  * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
- *
- * @codeCoverageIgnore
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class Factory
+class OptionsFactory implements FactoryInterface
 {
     /**
-     * Factory for Solr results object.
+     * Create an object
      *
-     * @param ServiceManager $sm Service manager.
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return Solr
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    public static function getEDS(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config');
-        $container = new \Zend\Session\Container(
-            'EBSCO', $sm->get('VuFind\SessionManager')
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        return new $requestedName(
+            $container->get('VuFind\Config'), ...($options ?: [])
         );
-        // No API info in session? Re-establish connection:
-        if (!isset($container->info)) {
-            $backend = $sm->get('VuFind\Search\BackendManager')
-                ->get('EDS');
-            $backend->getSessionToken();
-        }
-        $eds = new \VuFind\Search\EDS\Options($config, $container->info);
-        return $eds;
     }
 }
