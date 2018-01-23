@@ -1,1 +1,18 @@
-../../ixtheo/templates/record/subscribe.phtml
+<?= $this->flashmessages() ?>
+<?php if (!empty($this->subscription)) { ?>
+    <?=$this->render($this->infoText);?>
+    <form id="edit-save-form" class="form-horizontal" method="post"
+          action="<?= $this->recordLink()->getActionUrl($this->driver, 'Subscribe') ?>" name="subscribeRecord"
+          data-lightbox-onclose="checkSubscribeStatuses();">
+        <input type="hidden" name="action" value="subscribe"/>
+        <input class="btn btn-primary" type="submit" value="<?= $this->transEsc('Subscribe') ?>"/>
+    </form>
+<?php } else { ?>
+    <p><?=$this->transEsc("Subscription exists for this document");?>.</p>
+    <form id="edit-save-form" class="form-horizontal" method="post"
+          action="<?= $this->recordLink()->getActionUrl($this->driver, 'Subscribe') ?>" name="unsubscribeRecord"
+          data-lightbox-onclose="checkSubscribeStatuses();">
+        <input type="hidden" name="action" value="unsubscribe"/>
+        <input class="btn btn-danger" type="submit" value="<?= $this->transEsc("Unsubscribe");?>"/>
+    </form>
+<?php } ?>

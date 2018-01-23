@@ -1,1 +1,69 @@
-../../ixtheo/templates/keywordchainsearch/result-list.phtml
+<table class="table table-striped">
+    <tbody>
+    <tr>
+        <th class="col-sm-9 col-xs-7"></th>
+        <th class="col-sm-1"></th>
+        <th class="col-sm-2 col-xs-4"></th>
+    </tr>
+    <? if (!empty($this->results)): ?>
+        <? $r = $this->results->getResults() ?>
+        <? if (!empty($r)): ?>
+            <? foreach ($this->results->getResults() as $current): ?>
+                <tr>
+                    <td>
+                        <?$first = true;?>
+                        <? foreach (explode('/', $current['value']) as $term): ?>
+                            <?=$first ? '' : ' / '; $first = false; ?>
+                            <a href="<?= $this->url('keywordchainsearch-results') ?>?lookfor=<?= urlencode('"' . $term . '"') ?>" data-toggle="tooltip" title="<?=$this->transEsc('tooltip_add_remove_with_shift', array(), '')?>">
+                                <span class="kwc_single_term" style="padding:5px;"><?= $this->escapeHtml($term) ?></span></a>
+                        <? endforeach; ?>
+                    </td>
+                    <td>
+                        <span class="badge"><?=$this->escapeHtml($current['count'])?></span>
+                    </td>
+                    <td>
+                        <?
+                        // Sort KWC alphabetically
+                        $kwc = explode('/', $current['value']);
+                        usort($kwc, 'strnatcasecmp');
+                        $kwc_sorted = implode('/', $kwc);
+
+                        ?>
+                        <a href="<?= $this->url('search-results') ?>?lookfor=<?= urlencode('"' . $kwc_sorted . '"') ?>&type=Keywordchains">
+                            <?= $this->transEsc("View Records") ?>
+                        </a>
+                    </td>
+                </tr>
+            <? endforeach; ?>
+        <? endif; ?>
+    <? endif; ?>
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $(".kwc_single_term").bind('click keypress', function (event) {
+            if (event.shiftKey) {
+                event.preventDefault();
+                var oldformval = $("#kwc_input").val();
+                var newformval = "";
+                var newKWC = "\"" + $(this).text() + "\"";
+
+                if (oldformval.indexOf(newKWC) > -1) {
+                    newformval = oldformval.replace(newKWC, "");
+                } else if (oldformval.indexOf($(this).text()) > -1) {
+                    newformval = oldformval.replace($(this).text(), "");
+                } else {
+                    newformval = oldformval + " " + newKWC;
+                }
+                $("#kwc_input").val(newformval.replace("  ", " ").trim());
+            }
+        });
+        $("*").bind('keypress', function (event) {
+            if (event.shiftKey && event.which === 8) {
+                $("#kwc_input").val("");
+            }
+        });
+    });
+</script>
+
+
