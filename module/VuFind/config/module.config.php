@@ -487,20 +487,8 @@ $config = [
             ],
             'search_backend' => [ /* See VuFind\Search\BackendRegistry for defaults */ ],
             'search_options' => [ /* See VuFind\Search\Options\PluginManager for defaults */ ],
-            'search_params' => [
-                'abstract_factories' => ['VuFind\Search\Params\PluginFactory'],
-                'factories' => [
-                    'solr' => 'VuFind\Search\Params\Factory::getSolr',
-                ],
-            ],
-            'search_results' => [
-                'abstract_factories' => ['VuFind\Search\Results\PluginFactory'],
-                'factories' => [
-                    'favorites' => 'VuFind\Search\Results\Factory::getFavorites',
-                    'solr' => 'VuFind\Search\Results\Factory::getSolr',
-                    'tags' => 'VuFind\Search\Results\Factory::getTags',
-                ],
-            ],
+            'search_params' => [ /* See VuFind\Search\Params\PluginManager for defaults */ ],
+            'search_results' => [ /* See VuFind\Search\Results\PluginManager for defaults */ ],
             'session' => [ /* see VuFind\Session\PluginManager for defaults */ ],
         ],
         // This section behaves just like recorddriver_tabs below, but is used for

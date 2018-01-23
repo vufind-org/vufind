@@ -1,10 +1,10 @@
 <?php
 /**
- * Search results plugin factory
+ * Generic factory for search results objects.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,54 +23,49 @@
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Search\Results;
 
 use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Search results plugin factory
+ * Generic factory for search results objects.
  *
  * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
+class ResultsFactory implements FactoryInterface
 {
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->defaultNamespace = 'VuFind\Search';
-        $this->classSuffix = '\Results';
-    }
-
-    /**
-     * Create a service for the specified name.
+     * Create an object
      *
-     * @param ContainerInterface $container     Service container
-     * @param string             $requestedName Name of service
-     * @param array              $extras        Extra options
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
      * @return object
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
-        array $extras = null
+        array $options = null
     ) {
+        // Replace trailing "Results" with "Params" to get the params service:
         $paramsService = preg_replace('/Results$/', 'Params', $requestedName);
         $params = $container->get('VuFind\SearchParamsPluginManager')
             ->get($paramsService);
         $searchService = $container->get('VuFind\Search');
         $recordLoader = $container->get('VuFind\RecordLoader');
-        $class = $this->getClassName($requestedName);
-        return new $class(
-            $params, $searchService, $recordLoader, ...($extras ?: [])
+        return new $requestedName(
+            $params, $searchService, $recordLoader, ...($options ?: [])
         );
     }
 }
