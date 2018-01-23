@@ -23,23 +23,30 @@ div.selection-map-canvas {
   border: none;
   background: transparent;
   color: @action-link-color;
-  margin: 0 !important;
-  &.leaflet-edit-move:before {
-    content: "\f047";
-    font-size: 20px;
-    top: -15px;
-    left: -15px;
-    position: relative;
-    padding: 5px;
-    border-radius: 50%;
-    background: fade(#fff, 80%);
+  width: 40px !important;
+  height: 40px !important;
+  margin-top: -20px !important;
+  margin-left: -20px !important;
+  &.leaflet-edit-move {
+    padding: 2px;
+    &:before {
+      content: "\f047";
+      font-size: 25px;
+      position: relative;
+      padding: 5px;
+      border-radius: 50%;
+      background: fade(#fff, 80%);
+    }
   }
-  &.leaflet-edit-resize:before {
-    content: "\f065";
+  &.leaflet-edit-resize {
     padding: 5px;
-    margin: -3px;
-    border-radius: 50%;
-    background: fade(#fff, 80%);
+    &:before {
+      content: "\f065";
+      font-size: 20px;
+      padding: 5px;
+      border-radius: 50%;
+      background: fade(#fff, 80%);
+    }
   }
 }
 
