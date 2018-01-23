@@ -55,7 +55,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         'VuFind\Hierarchy\TreeDataSource\Solr' =>
-            'VuFind\Hierarchy\TreeDataSource\Factory::getSolr',
+            'VuFind\Hierarchy\TreeDataSource\SolrFactory',
         'VuFind\Hierarchy\TreeDataSource\XMLFile' =>
             'Zend\ServiceManager\Factory\InvokableFactory',
     ];
