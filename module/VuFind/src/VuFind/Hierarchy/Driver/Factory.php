@@ -49,7 +49,7 @@ class Factory
      *
      * @param \Zend\ServiceManager\ServiceManager $sm            Top-level service m.
      * @param string                              $requestedName Service being built
-     * @param array|null                          $class         Name of driver class
+     * @param array|null                          $options       Name of driver class
      *
      * @return object
      *
