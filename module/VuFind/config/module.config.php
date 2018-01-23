@@ -444,31 +444,7 @@ $config = [
             'ils_driver' => [ /* See VuFind\ILS\Driver\PluginManager for defaults */ ],
             'recommend' => [ /* See VuFind\Recommend\PluginManager for defaults */ ],
             'recorddriver' => [ /* See VuFind\RecordDriver\PluginManager for defaults */ ],
-            'recordtab' => [
-                'abstract_factories' => ['VuFind\RecordTab\PluginFactory'],
-                'factories' => [
-                    'collectionhierarchytree' => 'VuFind\RecordTab\Factory::getCollectionHierarchyTree',
-                    'collectionlist' => 'VuFind\RecordTab\Factory::getCollectionList',
-                    'excerpt' => 'VuFind\RecordTab\Factory::getExcerpt',
-                    'hierarchytree' => 'VuFind\RecordTab\Factory::getHierarchyTree',
-                    'holdingsils' => 'VuFind\RecordTab\Factory::getHoldingsILS',
-                    'holdingsworldcat' => 'VuFind\RecordTab\Factory::getHoldingsWorldCat',
-                    'map' => 'VuFind\RecordTab\Factory::getMap',
-                    'preview' => 'VuFind\RecordTab\Factory::getPreview',
-                    'reviews' => 'VuFind\RecordTab\Factory::getReviews',
-                    'similaritemscarousel' => 'VuFind\RecordTab\Factory::getSimilarItemsCarousel',
-                    'toc' => 'VuFind\RecordTab\Factory::getTOC',
-                    'usercomments' => 'VuFind\RecordTab\Factory::getUserComments',
-                ],
-                'invokables' => [
-                    'description' => 'VuFind\RecordTab\Description',
-                    'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
-                    'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
-                ],
-                'initializers' => [
-                    'ZfcRbac\Initializer\AuthorizationServiceInitializer'
-                ],
-            ],
+            'recordtab' => [ /* See VuFind\RecordTab\PluginManager for defaults */ ],
             'related' => [ /* See VuFind\Related\PluginManager for defaults */ ],
             'resolver_driver' => [
                 'abstract_factories' => ['VuFind\Resolver\Driver\PluginFactory'],
@@ -504,12 +480,13 @@ $config = [
         ],
         // This section controls which tabs are used for which record driver classes.
         // Each sub-array is a map from a tab name (as used in a record URL) to a tab
-        // service (found in recordtab_plugin_manager, below).  If a particular record
-        // driver is not defined here, it will inherit configuration from a configured
-        // parent class.  The defaultTab setting may be used to specify the default
-        // active tab; if null, the value from the relevant .ini file will be used.
-        // You can also specify which tabs are loaded in the background when arriving
-        // at a record tabs view with backgroundLoadedTabs as a list of tab indexes.
+        // service (found in recordtab plugin manager settings above). If a
+        // particular record driver is not defined here, it will inherit
+        // configuration from a configured parent class.  The defaultTab setting may
+        // be used to specify the default active tab; if null, the value from the
+        // relevant .ini file will be used. You can also specify which tabs are
+        // loaded in the background when arriving at a record tabs view with
+        // backgroundLoadedTabs as a list of tab indexes.
         'recorddriver_tabs' => [
             'VuFind\RecordDriver\EDS' => [
                 'tabs' => [
