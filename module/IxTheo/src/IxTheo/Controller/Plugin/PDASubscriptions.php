@@ -4,7 +4,9 @@ namespace IxTheo\Controller\Plugin;
 use VuFind\Exception\LoginRequired as LoginRequiredException,
     Zend\Mvc\Controller\Plugin\AbstractPlugin,
     VuFind\Db\Row\User, VuFind\Record\Cache,
-    Zend\Mail\Address;
+    Zend\Mail\Address,
+    Zend\Mail\AddressList;
+
 
 
 /**
@@ -81,14 +83,31 @@ class PDASubscriptions extends AbstractPlugin
               ];
     }
 
+
+    /*
+     * Helper to handle one or several Addresses
+     */
+
+    function constructAddress($emailAddressString, $emailName = "") {
+       $addresses = array_map('trim', explode(',', $emailAddressString));
+       if (count($addresses) > 1) {
+          $addressList = new AddressList;
+          $addressList->addMany($addresses);
+          return $addressList;
+       }
+       return new Address($emailAddressString, $emailName);
+    }
+
     /*
      * Generic Mail send function
      */
     function sendEmail($recipientEmail, $recipientName, $senderEmail, $senderName, $emailSubject, $emailMessage) {
         try {
             $mailer = $this->pm->getServiceLocator()->get('VuFind\Mailer');
+            $recipients = $this->constructAddress($recipientEmail, $recipientName);
+            $mailer->setMaxRecipients(3);
             $mailer->send(
-                 new Address($recipientEmail, $recipientName),
+                 $recipients,
                  new Address($senderEmail, $senderName),
                  $emailSubject, $emailMessage
              );
