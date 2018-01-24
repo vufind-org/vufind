@@ -99,4 +99,39 @@ class Database extends \VuFind\Auth\Database
         // Update the TAD access flag:
         exec("/usr/local/bin/set_tad_access_flag.sh " . $user->id);
     }
+
+
+    protected function updateUserType($userID) {
+         $ixTheoUserTable = $this->getDbTableManager()->get('IxTheoUser');
+         if (!isset($ixTheoUserTable) || !$ixTheoUserTable)
+             return;
+         $ixtheoSelect = $ixTheoUserTable->getSql()->select()->where(['id' => $userID]);
+         $userRow = $ixTheoUserTable->selectWith($ixtheoSelect)->current();
+         // Derive user_type from the instance used
+         $userRow->user_type = \IxTheo\Utility::getUserTypeFromUsedEnvironment();
+         $userRow->save();
+    }
+
+
+    public function authenticate($request)
+
+    {
+        // Make sure the credentials are non-blank:
+        $this->username = trim($request->getPost()->get('username'));
+        $this->password = trim($request->getPost()->get('password'));
+        if ($this->username == '' || $this->password == '') {
+            throw new AuthException('authentication_error_blank');
+        }
+
+        // Validate the credentials:
+        $user = $this->getUserTable()->getByUsername($this->username, false);
+        if (!is_object($user) || !$this->checkPassword($this->password, $user)) {
+            throw new AuthException('authentication_error_invalid');
+        }
+
+        // If we got this far, the login was successful:
+        $this->updateUserType($user->id);
+        return $user;
+    }
+
 }
