@@ -14,3 +14,4 @@ import/solrmarc.log*
 node_modules
 public/swagger-ui
 .vagrant
+lessphp_*.list
