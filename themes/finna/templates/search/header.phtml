@@ -17,8 +17,8 @@
     $advSearch = $options->getAdvancedSearchAction();
     $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
     $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
-    $searchType = isset($this->params) ? $this->params->getsearchType() : $searchType;
-    $searchId = isset($this->results) ? $this->results->getSearchId() : $searchId;
+    $searchType = !empty($this->params) ? $this->params->getSearchType() : $searchType;
+    $searchId = !empty($this->results) ? $this->results->getSearchId() : $searchId;
 ?>
 <div class="<?=$searchType != 'advanced' ? 'hidden-xs' : '';?>">
   <h1 class="search-result-header">

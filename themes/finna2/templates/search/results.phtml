@@ -11,7 +11,7 @@
       $this->headTitle((empty($lookfor) ? "{$this->transEsc('history_empty_search')}" : "{$lookfor}") . ' | ' . $this->translate('Search Results'));
   }
   $account = $this->auth()->getManager();
-  $searchType = $this->params->getsearchType();
+  $searchType = $this->params->getSearchType();
 
     // Set up search box:
     $this->layout()->searchbox = $this->context($this)->renderInContext(
