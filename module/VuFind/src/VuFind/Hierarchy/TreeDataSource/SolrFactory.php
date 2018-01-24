@@ -1,6 +1,6 @@
 <?php
 /**
- * Booksite review plugin factory.
+ * Solr Hierarchy tree data source plugin factory.
  *
  * PHP version 5
  *
@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Content
+ * @package  HierarchyTree_DataSource
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -33,7 +33,7 @@ use Interop\Container\ContainerInterface;
  * Solr Hierarchy tree data source plugin factory.
  *
  * @category VuFind
- * @package  Content
+ * @package  HierarchyTree_DataSource
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -74,7 +74,7 @@ class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
             ->get('Solr')->getConnector();
         $formatterManager = $container
             ->get('VuFind\HierarchyTreeDataFormatterPluginManager');
-        return new Solr(
+        return new $requestedName(
             $solr, $formatterManager, rtrim($cacheDir, '/') . '/hierarchy',
             $filters, $batchSize
         );

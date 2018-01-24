@@ -1,6 +1,6 @@
 <?php
 /**
- * Booksite review plugin factory.
+ * JSTree hierarchy tree renderer plugin factory.
  *
  * PHP version 5
  *
@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Content
+ * @package  HierarchyTree_Renderer
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -30,10 +30,10 @@ namespace VuFind\Hierarchy\TreeRenderer;
 use Interop\Container\ContainerInterface;
 
 /**
- * Solr Hierarchy tree data source plugin factory.
+ * JSTree hierarchy tree renderer plugin factory.
  *
  * @category VuFind
- * @package  Content
+ * @package  HierarchyTree_Renderer
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -60,7 +60,7 @@ class JSTreeFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        return new JSTree(
+        return new $requestedName(
             $container->get('ControllerPluginManager')->get('Url')
         );
     }
