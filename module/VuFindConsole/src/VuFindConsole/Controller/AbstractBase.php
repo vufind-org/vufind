@@ -56,7 +56,7 @@ class AbstractBase extends AbstractActionController
             throw new \Exception('Access denied to command line tools.');
         }
 
-        $this->setServiceLocator($sm);
+        $this->serviceLocator = $sm;
 
         // Switch the context back to the original working directory so that
         // relative paths work as expected. (This constant is set in

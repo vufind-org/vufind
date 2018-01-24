@@ -52,6 +52,7 @@
         "zendframework/zend-mail": "2.8.0",
         "zendframework/zend-modulemanager": "2.8.0",
         "zendframework/zend-mvc": "3.1.1",
+        "zendframework/zend-mvc-console": "1.1.11",
         "zendframework/zend-mvc-i18n": "1.0.0",
         "zendframework/zend-mvc-plugin-flashmessenger": "1.0.0",
         "zendframework/zend-paginator": "2.7.0",
