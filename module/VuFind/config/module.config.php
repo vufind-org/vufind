@@ -416,31 +416,10 @@ $config = [
             'content_toc' => [ /* see VuFind\Content\TOC\PluginManager for defaults */ ],
             'db_row' => [ /* see VuFind\Db\Row\PluginManager for defaults */ ],
             'db_table' => [ /* see VuFind\Db\Table\PluginManager for defaults */ ],
-            'hierarchy_driver' => [
-                'factories' => [
-                    'default' => 'VuFind\Hierarchy\Driver\Factory::getHierarchyDefault',
-                    'flat' => 'VuFind\Hierarchy\Driver\Factory::getHierarchyFlat',
-                ],
-            ],
-            'hierarchy_treedataformatter' => [
-                'invokables' => [
-                    'json' => 'VuFind\Hierarchy\TreeDataFormatter\Json',
-                    'xml' => 'VuFind\Hierarchy\TreeDataFormatter\Xml',
-                ],
-            ],
-            'hierarchy_treedatasource' => [
-                'factories' => [
-                    'solr' => 'VuFind\Hierarchy\TreeDataSource\Factory::getSolr',
-                ],
-                'invokables' => [
-                    'xmlfile' => 'VuFind\Hierarchy\TreeDataSource\XMLFile',
-                ],
-            ],
-            'hierarchy_treerenderer' => [
-                'factories' => [
-                    'jstree' => 'VuFind\Hierarchy\TreeRenderer\Factory::getJSTree'
-                ],
-            ],
+            'hierarchy_driver' => [ /* see VuFind\Hierarchy\Driver\PluginManager for defaults */ ],
+            'hierarchy_treedataformatter' => [ /* see VuFind\Hierarchy\TreeDataFormatter\PluginManager for defaults */ ],
+            'hierarchy_treedatasource' => [ /* see VuFind\Hierarchy\TreeDataSource\PluginManager for defaults */ ],
+            'hierarchy_treerenderer' => [ /* see VuFind\Hierarchy\TreeRenderer\PluginManager for defaults */ ],
             'ils_driver' => [ /* See VuFind\ILS\Driver\PluginManager for defaults */ ],
             'recommend' => [ /* See VuFind\Recommend\PluginManager for defaults */ ],
             'recorddriver' => [ /* See VuFind\RecordDriver\PluginManager for defaults */ ],

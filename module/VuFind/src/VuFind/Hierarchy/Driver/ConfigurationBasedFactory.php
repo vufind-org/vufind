@@ -42,20 +42,28 @@ use Zend\ServiceManager\ServiceManager;
  *
  * @codeCoverageIgnore
  */
-class Factory
+class ConfigurationBasedFactory
 {
     /**
      * This constructs a hierarchy driver using VuFind's service setup.
      *
-     * @param \Zend\ServiceManager\ServiceManager $sm     Top-level service manager
-     * @param string                              $config Name of config to load
-     * @param string                              $class  Name of driver class
+     * @param \Zend\ServiceManager\ServiceManager $sm            Top-level service m.
+     * @param string                              $requestedName Service being built
+     * @param array|null                          $options       Name of driver class
      *
      * @return object
+     *
+     * @throws Exception if options is populated
      */
-    public static function get(ServiceManager $sm, $config,
-        $class = 'VuFind\Hierarchy\Driver\ConfigurationBased'
+    public function __invoke(ServiceManager $sm, $requestedName,
+        array $options = null
     ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        // Get config name from requestedName
+        $parts = explode('\\', $requestedName);
+        $config = end($parts);
         // Set up options based on global VuFind settings:
         $configReader = $sm->get('VuFind\Config');
         $globalConfig = $configReader->get('config');
@@ -68,35 +76,11 @@ class Factory
         $driverConfig = $configReader->get($config);
 
         // Build object:
-        return new $class(
+        return new ConfigurationBased(
             $driverConfig,
             $sm->get('VuFind\HierarchyTreeDataSourcePluginManager'),
             $sm->get('VuFind\HierarchyTreeRendererPluginManager'),
             $options
         );
-    }
-
-    /**
-     * Factory for HierarchyDefault to be called from module.config.php.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return HierarchyDefault
-     */
-    public static function getHierarchyDefault(ServiceManager $sm)
-    {
-        return static::get($sm, 'HierarchyDefault');
-    }
-
-    /**
-     * Factory for HierarchyFlat to be called from module.config.php.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return HierarchyFlat
-     */
-    public static function getHierarchyFlat(ServiceManager $sm)
-    {
-        return static::get($sm, 'HierarchyFlat');
     }
 }
