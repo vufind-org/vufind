@@ -446,21 +446,7 @@ $config = [
             'recorddriver' => [ /* See VuFind\RecordDriver\PluginManager for defaults */ ],
             'recordtab' => [ /* See VuFind\RecordTab\PluginManager for defaults */ ],
             'related' => [ /* See VuFind\Related\PluginManager for defaults */ ],
-            'resolver_driver' => [
-                'abstract_factories' => ['VuFind\Resolver\Driver\PluginFactory'],
-                'factories' => [
-                    '360link' => 'VuFind\Resolver\Driver\Factory::getThreesixtylink',
-                    'ezb' => 'VuFind\Resolver\Driver\Factory::getEzb',
-                    'sfx' => 'VuFind\Resolver\Driver\Factory::getSfx',
-                    'redi' => 'VuFind\Resolver\Driver\Factory::getRedi',
-                ],
-                'invokables' => [
-                    'demo' => 'VuFind\Resolver\Driver\Demo',
-                ],
-                'aliases' => [
-                    'threesixtylink' => '360link',
-                ],
-            ],
+            'resolver_driver' => [ /* See VuFind\Resolver\Driver\PluginManager for defaults */ ],
             'search_backend' => [ /* See VuFind\Search\BackendRegistry for defaults */ ],
             'search_options' => [ /* See VuFind\Search\Options\PluginManager for defaults */ ],
             'search_params' => [ /* See VuFind\Search\Params\PluginManager for defaults */ ],
