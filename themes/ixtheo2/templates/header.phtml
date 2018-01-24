@@ -1,3 +1,19 @@
+<?
+/*********************************************
+ *
+ * header.html
+ *
+ * by Benjamin Schnabel, Benjamin-777@gmx.de
+ *
+ * displays the header (navigation, etc.)
+ *
+ * Changed 23.1.2018; 17:11
+ *
+ *************************************/
+
+
+?>
+
 <div class="container-fluid bg-white">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -7,7 +23,7 @@
             <nav class="navbar navbar-expand-lg navbar-light justify-content-between">
 
                 <!-- Logo -->
-                <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>"><img src="/themes/ixtheo2/images/logo.png" class="logo-img " /></a>
+                <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>"><img src="<?=$this->imageLink('logo.png') ?>" class="logo-img " /></a>
 
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#header-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -121,3 +137,14 @@
 <!--  Begin seachbox -->
 <?=$this->layout()->searchbox ?>
 <!--  End seachbox -->
+
+<!-- Begin header image -->
+<? //Set up the header image. It comes up instead of the search box.
+   //Accepts:
+   //1. false; nothing will be displayed, this is default.
+   //2. A string; the header image in the string will be displayed. JavaScript will not applied.
+if(isset($this->layout()->headerImage)) {
+    echo '<img src="'.$this->imageLink($this->layout()->headerImage).'" class="img-fluid header-image" alt="header image"/>';
+}
+?>
+<!-- End header image -->

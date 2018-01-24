@@ -63,6 +63,6 @@ $('#back-to-top').tooltip();
 $(function() {
     $('#scroll-down-button').click(function(e) {
         e.preventDefault();
-        $('html, body').animate({ scrollTop: $(document).height()}, 500, 'linear');
+        $('html, body').animate({ scrollTop: $("#content").offset().top}, 500, 'linear');
     });
 });
