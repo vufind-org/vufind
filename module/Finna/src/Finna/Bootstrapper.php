@@ -123,7 +123,7 @@ class Bootstrapper
                 $event->stopPropagation(true);
                 return $response;
             }
-            $delay = defined('VUFIND_CRAWLER_DELAY') ? VUFIND_CRAWLER_DELAY : 1;
+            $delay = defined('VUFIND_CRAWLER_DELAY') ? VUFIND_CRAWLER_DELAY : 0;
             if ($delay) {
                 sleep($delay);
             }
