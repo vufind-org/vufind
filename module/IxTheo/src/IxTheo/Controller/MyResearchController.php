@@ -284,4 +284,70 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         return $this->redirect()
             ->toUrl($this->getAuthManager()->logout($logoutTarget));
     }
+
+    protected function updateUserType() {
+         $user = $this->getUser();
+         if (!$user)
+             return;
+         $ixTheoUserTable = $this->getTable('IxTheoUser');
+         if (!isset($ixTheoUserTable) || !$ixTheoUserTable)
+             return;
+         $userID = $user->id;
+         $ixtheoSelect = $ixTheoUserTable->getSql()->select()->where(['id' => $userID]);
+         $userRow = $ixTheoUserTable->selectWith($ixtheoSelect)->current();
+         // Derive user_type from the instance used
+         $userRow->user_type = \IxTheo\Utility::getUserTypeFromUsedEnvironment();
+         $userRow->save();
+    }
+
+
+    /*
+     * Like VuFind-action but force update of ixtheo_user.user_type
+     */
+    public function homeAction()
+    {
+        // Process login request, if necessary (either because a form has been
+        // submitted or because we're using an external login provider):
+        if ($this->params()->fromPost('processLogin')
+            || $this->getSessionInitiator()
+            || $this->params()->fromPost('auth_method')
+            || $this->params()->fromQuery('auth_method')
+        ) {
+            try {
+                if (!$this->getAuthManager()->isLoggedIn()) {
+                    $this->getAuthManager()->login($this->getRequest());
+                    $this->updateUserType();
+                }
+            } catch (AuthException $e) {
+                $this->processAuthenticationException($e);
+            }
+        }
+
+        // Not logged in?  Force user to log in:
+        if (!$this->getAuthManager()->isLoggedIn()) {
+            $this->setFollowupUrlToReferer();
+            return $this->forwardTo('MyResearch', 'Login');
+        }
+        // Logged in?  Forward user to followup action
+        // or default action (if no followup provided):
+        if ($url = $this->getFollowupUrl()) {
+            $this->clearFollowupUrl();
+            // If a user clicks on the "Your Account" link, we want to be sure
+            // they get to their account rather than being redirected to an old
+            // followup URL. We'll use a redirect=0 GET flag to indicate this:
+            if ($this->params()->fromQuery('redirect', true)) {
+                return $this->redirect()->toUrl($url);
+            }
+        }
+
+        $config = $this->getConfig();
+        $page = isset($config->Site->defaultAccountPage)
+            ? $config->Site->defaultAccountPage : 'Favorites';
+
+        // Default to search history if favorites are disabled:
+        if ($page == 'Favorites' && !$this->listsEnabled()) {
+            return $this->forwardTo('Search', 'History');
+        }
+        return $this->forwardTo('MyResearch', $page);
+    }
 }

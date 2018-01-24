@@ -93,6 +93,7 @@ class Database extends \VuFind\Auth\Database
         $ixTheoUser->institution = $params['institution'];
         $ixTheoUser->country = in_array($params['country'], Database::$countries) ? $params['country'] : $ixTheoUser->country;
         $ixTheoUser->language = $params['language'];
+        $ixTheoUser->user_type = \IxTheo\Utility::getUserTypeFromUsedEnvironment();
         $ixTheoUser->save();
 
         // Update the TAD access flag:
