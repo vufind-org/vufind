@@ -296,7 +296,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
          $ixtheoSelect = $ixTheoUserTable->getSql()->select()->where(['id' => $userID]);
          $userRow = $ixTheoUserTable->selectWith($ixtheoSelect)->current();
          // Derive user_type from the instance used
-         $userRow->user_type = basename(getenv('VUFIND_LOCAL_DIR'));
+         $userRow->user_type = \IxTheo\Utility::getUserTypeFromUsedEnvironment();
          $userRow->save();
     }
 

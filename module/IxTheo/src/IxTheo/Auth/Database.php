@@ -80,13 +80,6 @@ class Database extends \VuFind\Auth\Database
         return $user;
     }
 
-
-    public function getUserTypeFromUsedEnvironment() {
-        $vufind_local_dir = getenv('VUFIND_LOCAL_DIR');
-        $instance_type = basename($vufind_local_dir);
-        return $instance_type;
-    }
-
     public function updateIxTheoUser($params, \VuFind\Db\Row\User $user,
                                      \IxTheo\Db\Row\IxTheoUser $ixTheoUser)
     {
@@ -100,7 +93,7 @@ class Database extends \VuFind\Auth\Database
         $ixTheoUser->institution = $params['institution'];
         $ixTheoUser->country = in_array($params['country'], Database::$countries) ? $params['country'] : $ixTheoUser->country;
         $ixTheoUser->language = $params['language'];
-        $ixTheoUser->user_type = $this->getUserTypeFromUsedEnvironment();
+        $ixTheoUser->user_type = \IxTheo\Utility::getUserTypeFromUsedEnvironment();
         $ixTheoUser->save();
 
         // Update the TAD access flag:
