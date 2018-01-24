@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindApi\Controller;
+
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
 use Zend\ServiceManager\ServiceManager;

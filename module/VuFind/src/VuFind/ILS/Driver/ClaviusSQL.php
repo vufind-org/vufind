@@ -26,7 +26,10 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\ILS as ILSException;
+
+use PDO;
+use PDOException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * VuFind Driver for Clavius SQL (version: 0.1 dev)
@@ -135,21 +138,21 @@ class ClaviusSQL extends AbstractBase
         //how long (in days) hide new items
         $this->hideNewItemsDays = 0;
         if (isset($this->config['Catalog']['hide_days'])) {
-             $this->c = $this->config['Catalog']['hide_days'];
+            $this->c = $this->config['Catalog']['hide_days'];
         }
     }
 
-     /**
-      * Get list of departments
-      *
-      * This method queries the ILS for a list of departments to be used as input
-      * to the findReserves method
-      *
-      * @throws ILSException
-      *
-      * @return array An associative array with key = department ID,
-      * value = department name.
-      */
+    /**
+     * Get list of departments
+     *
+     * This method queries the ILS for a list of departments to be used as input
+     * to the findReserves method
+     *
+     * @throws ILSException
+     *
+     * @return array An associative array with key = department ID,
+     * value = department name.
+     */
     public function getDepartments()
     {
         if (!is_array($this->locations)) {
@@ -169,16 +172,17 @@ class ClaviusSQL extends AbstractBase
         }
         return $this->locations;
     }
+
     /**
-      * Get list of fine types
-      *
-      * This method queries the ILS for a list of fine types
-      *
-      * @throws ILSException
-      *
-      * @return array An associative array with key = fine code,
-      * value = fine description
-      */
+     * Get list of fine types
+     *
+     * This method queries the ILS for a list of fine types
+     *
+     * @throws ILSException
+     *
+     * @return array An associative array with key = fine code,
+     * value = fine description
+     */
     public function getFineTypes()
     {
         if (!is_array($this->fineTypes)) {
@@ -204,36 +208,36 @@ class ClaviusSQL extends AbstractBase
     }
 
     /**
-      * Get a list of funds that can be used to limit the "new item" search
-      *
-      * @throws ILSException
-      *
-      * @return array An associative array with key = fund ID, value = fund name.
-      */
+     * Get a list of funds that can be used to limit the "new item" search
+     *
+     * @throws ILSException
+     *
+     * @return array An associative array with key = fund ID, value = fund name.
+     */
     public function getFunds()
     {
         return $this->getDepartments();
     }
 
     /**
-      * Get New Items
-      *
-      * Retrieve the IDs of items recently added to the catalog.
-      *
-      * @param int $page    Page number of results to retrieve (counting starts at 1)
-      * @param int $limit   The size of each page of results to retrieve
-      * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-      * @param int $fundId  optional fund ID to use for limiting results (use a value
-      * returned by getFunds, or exclude for no limit); note that "fund" may be a
-      * misnomer - if funds are not an appropriate way to limit your new item
-      * results, you can return a different set of values from getFunds. The
-      * important thing is that this parameter supports an ID returned by getFunds,
-      * whatever that may mean.
-      *
-      * @return array       An associative array with two keys: 'count' (the number
-      * of items in the 'results' array) and 'results' (an array of associative
-      * arrays, each with a single key: 'id', a record ID).
-      */
+     * Get New Items
+     *
+     * Retrieve the IDs of items recently added to the catalog.
+     *
+     * @param int $page    Page number of results to retrieve (counting starts at 1)
+     * @param int $limit   The size of each page of results to retrieve
+     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * returned by getFunds, or exclude for no limit); note that "fund" may be a
+     * misnomer - if funds are not an appropriate way to limit your new item
+     * results, you can return a different set of values from getFunds. The
+     * important thing is that this parameter supports an ID returned by getFunds,
+     * whatever that may mean.
+     *
+     * @return array       An associative array with two keys: 'count' (the number
+     * of items in the 'results' array) and 'results' (an array of associative
+     * arrays, each with a single key: 'id', a record ID).
+     */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
         $limitFrom = ($page - 1) * $limit;
@@ -265,14 +269,14 @@ class ClaviusSQL extends AbstractBase
     }
 
     /**
-      * Get Short ID
-      *
-      * This method make short id (only title number - tcislo), from full identifier
-      *
-      * @param string $id The full record id
-      *
-      * @return string    Short id
-      */
+     * Get Short ID
+     *
+     * This method make short id (only title number - tcislo), from full identifier
+     *
+     * @param string $id The full record id
+     *
+     * @return string    Short id
+     */
     protected function getShortID($id)
     {
         $shortId = $id;
@@ -283,15 +287,15 @@ class ClaviusSQL extends AbstractBase
     }
 
     /**
-      * Get Long ID
-      *
-      * This method make long id (full identifier) from short id (only title number)
-      *
-      * @param string $id        The short record id
-      * @param string $docPrefix Two chars prefix indicated type of document
-      *
-      * @return string           Long id
-      */
+     * Get Long ID
+     *
+     * This method make long id (full identifier) from short id (only title number)
+     *
+     * @param string $id        The short record id
+     * @param string $docPrefix Two chars prefix indicated type of document
+     *
+     * @return string           Long id
+     */
     protected function getLongID($id, $docPrefix = "KN")
     {
         $longId = $id;
@@ -304,22 +308,20 @@ class ClaviusSQL extends AbstractBase
     }
 
     /**
-      * Get Holding
-      *
-      * This is responsible for retrieving the holding information of a certain
-      * record.
-      *
-      * @param string $id     The record id to retrieve the holdings for
-      * @param array  $patron Patron data
-      *
-      * @throws \VuFind\Exception\Date
-      * @throws ILSException
-      * @return array         On success, an associative array with the following
-      * keys: id, availability (bool), status, location, reserve, callnumber,
-      * duedate, number, barcode.
-      *
-      * todo: reserve
-      */
+     * Get Holding
+     *
+     * This is responsible for retrieving the holding information of a certain
+     * record.
+     *
+     * @param string $id     The record id to retrieve the holdings for
+     * @param array  $patron Patron data
+     *
+     * @throws \VuFind\Exception\Date
+     * @throws ILSException
+     * @return array         On success, an associative array with the following
+     * keys: id, availability (bool), status, location, reserve, callnumber,
+     * duedate, number, barcode.
+     */
     public function getHolding($id, array $patron = null)
     {
         $holding = [];
@@ -338,8 +340,8 @@ class ClaviusSQL extends AbstractBase
             $sqlSt = $this->db->prepare($sql);
             $sqlSt->execute([':id' => $id]);
             $sqlSt2 = $this->db->prepare($sql2);
-            /**** TODO reserve  *******/
             foreach ($sqlSt->fetchAll() as $item) {
+                // TODO: add course reserves support
                 $reserve = "N";
                 $sqlSt2->execute([':scislo' => $item['scislo']]);
                 $item2 = $sqlSt2->fetch();
@@ -395,31 +397,31 @@ class ClaviusSQL extends AbstractBase
     }
 
     /**
-      * Get Patron Fines
-      *
-      * This method queries the ILS for a patron's current fines
-      *
-      * @param array $patron The patron array from patronLogin
-      *
-      * @throws \VuFind\Exception\Date
-      * @throws ILSException
-      * @return mixed        Array associative arrays of the patron's fines on
-      * success.
-      * <ul>
-      *   <li>amount - The total amount of the fine IN PENNIES. Be sure to adjust
-      * decimal points appropriately (i.e. for a $1.00 fine, amount should be set to
-      * 100).</li>
-      *   <li>checkout - A string representing the date when the item was checked
-      * out.</li>
-      *   <li>fine - A string describing the reason for the fine (i.e. "Overdue",
-      * "Long Overdue").</li>
-      *   <li>balance - The unpaid portion of the fine IN PENNIES.</li>
-      *   <li>createdate - A string representing the date when the fine was accrued
-      * (optional)</li>
-      *   <li>duedate - A string representing the date when the item was due.</li>
-      *   <li>id - The bibliographic ID of the record involved in the fine.</li>
-      * </ul>
-      */
+     * Get Patron Fines
+     *
+     * This method queries the ILS for a patron's current fines
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @throws \VuFind\Exception\Date
+     * @throws ILSException
+     * @return mixed        Array associative arrays of the patron's fines on
+     * success.
+     * <ul>
+     *   <li>amount - The total amount of the fine IN PENNIES. Be sure to adjust
+     * decimal points appropriately (i.e. for a $1.00 fine, amount should be set to
+     * 100).</li>
+     *   <li>checkout - A string representing the date when the item was checked
+     * out.</li>
+     *   <li>fine - A string describing the reason for the fine (i.e. "Overdue",
+     * "Long Overdue").</li>
+     *   <li>balance - The unpaid portion of the fine IN PENNIES.</li>
+     *   <li>createdate - A string representing the date when the fine was accrued
+     * (optional)</li>
+     *   <li>duedate - A string representing the date when the item was due.</li>
+     *   <li>id - The bibliographic ID of the record involved in the fine.</li>
+     * </ul>
+     */
     public function getMyFines($patron)
     {
         $fines = [];
@@ -527,13 +529,6 @@ class ClaviusSQL extends AbstractBase
      *
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
-            firstname
-            lastname
-            address1
-            address2
-            zip
-            phone
-            group - i.e. Student, Staff, Faculty, etc.
      */
     public function getMyProfile($patron)
     {
@@ -711,20 +706,20 @@ class ClaviusSQL extends AbstractBase
     }
 
     /**
-      * Encode PIN number
-      *
-      * @param string $pin    password given by user
-      * @param string $patron number of patron
-      *
-      * @return long          encoded pin
-      */
+     * Encode PIN number
+     *
+     * @param string $pin    password given by user
+     * @param string $patron number of patron
+     *
+     * @return long          encoded pin
+     */
     protected function encodePin($pin, $patron)
     {
         for ($i = 0; $i < strlen($pin); $i++) {
             $char = substr($pin, $i, 1);
             $return = 1 + intval($char) + $return * 12;
         }
-        return 2109876543 -  $return * 7 * (intval($patron) % 89 + 7);
+        return 2109876543 - $return * 7 * (intval($patron) % 89 + 7);
     }
 
     /**

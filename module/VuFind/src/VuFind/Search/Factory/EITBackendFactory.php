@@ -29,13 +29,13 @@
 namespace VuFind\Search\Factory;
 
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory;
-use VuFindSearch\Backend\EIT\QueryBuilder;
-use VuFindSearch\Backend\EIT\Connector;
 use VuFindSearch\Backend\EIT\Backend;
+use VuFindSearch\Backend\EIT\Connector;
+use VuFindSearch\Backend\EIT\QueryBuilder;
+use VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for EIT backends.
@@ -79,7 +79,7 @@ class EITBackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $this->config = $this->serviceLocator->get('VuFind\Config')->get('EIT');
         if ($this->serviceLocator->has('VuFind\Logger')) {
             $this->logger = $this->serviceLocator->get('VuFind\Logger');

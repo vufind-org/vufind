@@ -1,14 +1,12 @@
 <?php
 use Zend\Loader\AutoloaderFactory;
-use Zend\ServiceManager\ServiceManager;
-use Zend\Mvc\Service\ServiceManagerConfig;
 
 // If the XHProf profiler is enabled, set it up now:
 $xhprof = getenv('VUFIND_PROFILER_XHPROF');
 if (!empty($xhprof)) {
     if (extension_loaded('xhprof')) {
         xhprof_enable();
-    } else if (extension_loaded('tideways')) {
+    } elseif (extension_loaded('tideways')) {
         tideways_enable();
     } else {
         $xhprof = false;
@@ -57,7 +55,7 @@ chdir(APPLICATION_PATH);
 // Ensure vendor/ is on include_path; some PEAR components may not load correctly
 // otherwise (i.e. File_MARC may cause a "Cannot redeclare class" error by pulling
 // from the shared PEAR directory instead of the local copy):
-$pathParts = array();
+$pathParts = [];
 $pathParts[] = APPLICATION_PATH . '/vendor';
 $pathParts[] = get_include_path();
 set_include_path(implode(PATH_SEPARATOR, $pathParts));

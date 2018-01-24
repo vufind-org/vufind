@@ -27,15 +27,15 @@
  */
 namespace VuFindSearch\Backend\BrowZine;
 
-use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Backend\AbstractBackend;
+
+use VuFindSearch\Backend\Exception\BackendException;
 
 use VuFindSearch\ParamBag;
+use VuFindSearch\Query\AbstractQuery;
 
-use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
-
-use VuFindSearch\Backend\AbstractBackend;
-use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
  * BrowZine backend.

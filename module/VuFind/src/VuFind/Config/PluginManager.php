@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Config;
+
 use Zend\ServiceManager\AbstractPluginManager as Base;
 
 /**

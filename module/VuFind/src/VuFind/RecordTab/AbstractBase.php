@@ -26,8 +26,9 @@
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
-use ZfcRbac\Service\AuthorizationServiceAwareInterface,
-    ZfcRbac\Service\AuthorizationServiceAwareTrait;
+
+use ZfcRbac\Service\AuthorizationServiceAwareInterface;
+use ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
  * Record tab abstract base class

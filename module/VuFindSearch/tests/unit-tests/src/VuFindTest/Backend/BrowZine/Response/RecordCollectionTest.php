@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\BrowZine\Response;
 
-use VuFindSearch\Backend\BrowZine\Response\RecordCollection;
 use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\BrowZine\Response\RecordCollection;
 
 /**
  * Unit tests for BrowZine record collection

@@ -265,7 +265,7 @@ class Map extends AbstractBase
         $mapDisplayCoords = [];
         $mapDisplayLabels = [];
         if ($this->displayCoords) {
-             $mapDisplayCoords = $this->getDisplayCoords();
+            $mapDisplayCoords = $this->getDisplayCoords();
         }
         if (isset($this->mapLabels)) {
             $mapDisplayLabels = $this->getMapLabels();

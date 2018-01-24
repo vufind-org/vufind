@@ -26,8 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\EDS;
-use VuFindSearch\ParamBag;
+
 use VuFindSearch\Backend\EDS\SearchRequestModel as SearchRequestModel;
+use VuFindSearch\ParamBag;
 
 /**
  * EDS API Params
@@ -333,7 +334,6 @@ class Params extends \VuFind\Search\Base\Params
                     $ssLimiter['selectedvalue'], $ssLimiter['description']
                 );
             }
-
         }
     }
 
@@ -353,7 +353,6 @@ class Params extends \VuFind\Search\Base\Params
                     $expander['selectedvalue'], $expander['description']
                 );
             }
-
         }
     }
 

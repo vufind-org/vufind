@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\Solr\Json\Response;
 
-use VuFindSearch\Backend\Solr\Response\Json\NamedList;
 use PHPUnit_Framework_TestCase as TestCase;
+use VuFindSearch\Backend\Solr\Response\Json\NamedList;
 
 /**
  * Unit tests for SOLR NamedList.
@@ -52,7 +52,7 @@ class NamedListTest extends TestCase
         $list = new NamedList([['first term', 'info'], ['second term', 'info']]);
         $keys = [];
         foreach ($list as $key => $value) {
-            $keys [] = $key;
+            $keys[] = $key;
         }
         $this->assertEquals(['first term', 'second term'], $keys);
     }

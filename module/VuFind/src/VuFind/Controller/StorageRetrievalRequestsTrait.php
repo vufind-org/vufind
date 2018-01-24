@@ -93,7 +93,7 @@ trait StorageRetrievalRequestsTrait
             ? explode(":", $checkRequests['extraFields']) : [];
 
         // Process form submissions if necessary:
-        if (!is_null($this->params()->fromPost('placeStorageRetrievalRequest'))) {
+        if (null !== $this->params()->fromPost('placeStorageRetrievalRequest')) {
             // If we made it this far, we're ready to place the hold;
             // if successful, we will redirect and can stop here.
 

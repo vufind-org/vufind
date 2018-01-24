@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development
  */
 namespace VuFindConsole;
+
 use Zend\Console\Adapter\AdapterInterface as Console;
 
 /**

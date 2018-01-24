@@ -26,6 +26,7 @@
  * @link     https://vufind.org
  */
 namespace VuFind;
+
 use Zend\Mvc\MvcEvent;
 
 /**

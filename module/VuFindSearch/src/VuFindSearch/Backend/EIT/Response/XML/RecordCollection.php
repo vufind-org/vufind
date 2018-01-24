@@ -90,7 +90,6 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getOffset()
     {
-    
         return isset($this->response['offset']) ? $this->response['offset'] : 0;
     }
 }

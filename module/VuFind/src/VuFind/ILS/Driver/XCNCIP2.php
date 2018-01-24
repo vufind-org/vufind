@@ -26,8 +26,9 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Exception\ILS as ILSException,
-    VuFind\Config\Locator as ConfigLocator;
+
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * XC NCIP Toolkit (v2) ILS Driver
@@ -347,7 +348,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $agencyList = [];
 
-        if (is_null($agency)) {
+        if (null === $agency) {
             $keys = array_keys($this->agency);
             $agencyList[] = $keys[0];
         }
@@ -445,7 +446,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $holdings = $current->xpath('ns1:HoldingsSet');
 
                 foreach ($holdings as $current) {
-
                     $holdCallNo = $current->xpath('ns1:CallNumber');
                     $holdCallNo = (string)$holdCallNo[0];
 
@@ -504,7 +504,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $agencyList = [];
         $idList = [];
-        if (! is_null($ids)) {
+        if (null !== $ids) {
             foreach ($ids as $_id) {
                 // Need to parse out the 035$a format, e.g., "(Agency) 123"
                 if (preg_match('/\(([^\)]+)\)\s*([0-9]+)/', $_id, $matches)) {
@@ -753,7 +753,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $fines = [];
         $balance = 0;
         foreach ($list as $current) {
-
             $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
 
             $tmp = $current->xpath(
@@ -1486,7 +1485,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             if ($dueDate) {
                 $tmp = $dueDate;
                 $newDueDate = (string)$tmp[0];
-                $tmp = split("T", $newDueDate);
+                $tmp = explode('T', $newDueDate);
                 $splitDate = $tmp[0];
                 $splitTime = $tmp[1];
                 $details[$renewId] = [
@@ -1495,7 +1494,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     "new_time" => rtrim($splitTime, "Z"),
                     "item_id" => $renewId,
                 ];
-
             } else {
                 $details[$renewId] = [
                     "success" => false,
@@ -1526,7 +1524,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $requestId,
         $type
     ) {
-    
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
             '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
             'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
@@ -1687,7 +1684,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $itemAgencyId,
         $patronAgencyId
     ) {
-    
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
             '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
             'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
@@ -1754,7 +1750,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'xsd/ncip_v2_0.xsd">' .
                 '<ns1:LookupUser>';
 
-        if (!is_null($patron_agency_id)) {
+        if (null !== $patron_agency_id) {
             $ret .=
                    '<ns1:InitiationHeader>' .
                         '<ns1:FromAgencyId>' .

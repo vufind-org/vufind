@@ -29,13 +29,13 @@
 namespace VuFind\Search\Factory;
 
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
-use VuFindSearch\Backend\WorldCat\QueryBuilder;
-use VuFindSearch\Backend\WorldCat\Connector;
 use VuFindSearch\Backend\WorldCat\Backend;
+use VuFindSearch\Backend\WorldCat\Connector;
+use VuFindSearch\Backend\WorldCat\QueryBuilder;
+use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for WorldCat backends.
@@ -85,7 +85,7 @@ class WorldCatBackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $this->config = $this->serviceLocator->get('VuFind\Config')->get('config');
         $this->wcConfig = $this->serviceLocator
             ->get('VuFind\Config')->get('WorldCat');
