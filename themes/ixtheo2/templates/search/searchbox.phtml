@@ -1,4 +1,14 @@
 <?
+/*********************************************
+ *
+ * Searchbox.phtml
+ *
+ * Shows the block with the search input.
+ *
+ * Changed 23.1.2017, 15:56
+ *
+ *************************************/
+
 // Set default value if necessary:
 if (!isset($this->searchClassId)) {
     $this->searchClassId = 'Solr';
@@ -35,10 +45,8 @@ $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->s
             <!--  Begin section searchbar -->
             <section class="visible-lg section-home">
                 <div class="panel-home">
-                    <img class="header-image" src="/themes/ixtheo2/images/searchbar.jpg" >
-                    <!-- <video autoplay muted loop id="headervideo" class="header-video">
-                        <source src="/themes/ixtheo2/images/writing.mp4" type="video/mp4">
-                    </video> -->
+                    <img class="searchbox-image" src="/themes/ixtheo2/images/searchbar.jpg" >
+
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10 col-xl-6 mx-auto">
 
                         <!--  Begin title -->
@@ -93,7 +101,7 @@ $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->s
                                                 <input class="form-control form-control-lg searchForm_lookfor form-control search-query<? if ($this->searchbox()->autocompleteEnabled($this->searchClassId)): ?> autocomplete searcher:<?= $this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>"
                                                        type="text" name="lookfor"
                                                        value="<?= $this->escapeHtmlAttr($this->lookfor) ?>"/>
-                                                <span class="input-group-addon">
+                                                <span class="input-group-text">
                                                 <i class="fa fa-search"></i>
                                             </span>
                                             </div>
@@ -249,7 +257,7 @@ $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->s
                         </div>
                     </div><!-- close container -->
                     <div class="scroll-down" id="scroll-down">
-                        <a href="" id="scroll-down-button"><span></span>Scroll down</a>
+                        <a href="" id="scroll-down-button"><span></span><? $this->transEsc("Scroll"); ?></a>
                     </div>
                 </div><!-- close panel-home -->
             </section>

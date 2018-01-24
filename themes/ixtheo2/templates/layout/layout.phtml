@@ -145,15 +145,6 @@ JS;
         $this->layout()->searchbox = $this->render('search/searchbox.phtml');
       }
 
-      //Set up the header image. It comes up instead of the search box.
-      //Accepts:
-      //1. false; nothing will be displayed, this is default.
-      //2. A string; the header image in the string will be displayed. JavaScript will not applied.
-    if (isset ($this->layout()->headerImage)){
-          echo "HeaderImage";
-            //$this->layout()->headerImage =
-            $this->render('headerimage.phtml');
-    }
     ?>
 
     <header class="hidden-print">
