@@ -316,6 +316,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             try {
                 if (!$this->getAuthManager()->isLoggedIn()) {
                     $this->getAuthManager()->login($this->getRequest());
+                    $this->updateUserType();
                 }
             } catch (AuthException $e) {
                 $this->processAuthenticationException($e);
@@ -347,7 +348,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if ($page == 'Favorites' && !$this->listsEnabled()) {
             return $this->forwardTo('Search', 'History');
         }
-        $this->updateUserType();
         return $this->forwardTo('MyResearch', $page);
     }
 }
