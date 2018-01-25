@@ -734,6 +734,10 @@ class AbstractRecord extends AbstractBase
             = isset($config->Site->loadInitialTabWithAjax)
             ? (bool)$config->Site->loadInitialTabWithAjax : false;
 
+        $view->extendedHoldingFields
+            = isset($config->Site->extendedHoldingFields)
+            ? (bool)$config->Site->extendedHoldingFields : false;
+
         // Set up next/previous record links (if appropriate)
         if ($this->resultScrollerActive()) {
             $driver = $this->loadRecord();
