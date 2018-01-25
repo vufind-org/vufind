@@ -241,20 +241,6 @@ class Factory
     }
 
     /**
-     * Construct the cover router.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Cover\Router
-     */
-    public static function getCoverRouter(ServiceManager $sm)
-    {
-        $base = $sm->get('ControllerPluginManager')->get('url')
-            ->fromRoute('cover-show');
-        return new \VuFind\Cover\Router($base);
-    }
-
-    /**
      * Construct the date converter.
      *
      * @param ServiceManager $sm Service manager.
