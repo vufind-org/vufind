@@ -65,7 +65,7 @@ $offcanvas-padding: 30px !default; // Body offset when offcanvas active, also wi
       display: block;
       position: fixed;
       top: 0;
-      width: calc($offcanvas-padding - 5px);
+      width: calc(#{$offcanvas-padding} - 5px);
       height: 100%;
       border-left: 1px solid $gray-lighter;
       border-right: 1px solid $gray-lighter;
