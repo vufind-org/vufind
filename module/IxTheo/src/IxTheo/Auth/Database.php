@@ -108,6 +108,8 @@ class Database extends \VuFind\Auth\Database
          $ixtheoSelect = $ixTheoUserTable->getSql()->select()->where(['id' => $userID]);
          $userRow = $ixTheoUserTable->selectWith($ixtheoSelect)->current();
          // Derive user_type from the instance used
+         if (!isset($userRow))
+             return;
          $userRow->user_type = \IxTheo\Utility::getUserTypeFromUsedEnvironment();
          $userRow->save();
     }
