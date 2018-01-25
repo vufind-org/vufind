@@ -97,28 +97,6 @@ class Factory
     }
 
     /**
-     * Construct the cart.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Cart
-     */
-    public static function getCart(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config')->get('config');
-        $active = isset($config->Site->showBookBag)
-            ? (bool)$config->Site->showBookBag : false;
-        $size = isset($config->Site->bookBagMaxSize)
-            ? $config->Site->bookBagMaxSize : 100;
-        $activeInSearch = isset($config->Site->bookbagTogglesInSearch)
-            ? $config->Site->bookbagTogglesInSearch : true;
-        return new \VuFind\Cart(
-            $sm->get('VuFind\RecordLoader'), $sm->get('VuFind\CookieManager'),
-            $size, $active, $activeInSearch
-        );
-    }
-
-    /**
      * Construct the Channel Provider Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.
