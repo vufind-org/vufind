@@ -677,10 +677,10 @@ class UtilController extends AbstractBase
     /**
      * Abstract delete method.
      *
-     * @param string       $tableName     Table to operate on.
-     * @param string       $successString String for reporting success.
-     * @param string       $failString    String for reporting failure.
-     * @param int|float    $minAge        Minimum age allowed for expiration in days
+     * @param string    $tableName     Table to operate on.
+     * @param string    $successString String for reporting success.
+     * @param string    $failString    String for reporting failure.
+     * @param int|float $minAge        Minimum age allowed for expiration in days
      * (also used as default value).
      *
      * @return mixed
