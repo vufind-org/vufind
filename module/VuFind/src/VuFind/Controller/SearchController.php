@@ -197,7 +197,7 @@ class SearchController extends AbstractSearch
         $facetHelper = null;
         if (!empty($hierarchicalFacets)) {
             $facetHelper = $this->serviceLocator
-                ->get('VuFind\HierarchicalFacetHelper');
+                ->get('VuFind\Search\Solr\HierarchicalFacetHelper');
         }
         foreach ($facetList as $facet => &$list) {
             // Hierarchical facets: format display texts and sort facets

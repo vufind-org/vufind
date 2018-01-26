@@ -333,7 +333,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $facetResults = $results->getFullFieldFacets($facets, false, -1, 'count');
 
         $facetHelper = $this->serviceLocator
-            ->get('VuFind\HierarchicalFacetHelper');
+            ->get('VuFind\Search\Solr\HierarchicalFacetHelper');
 
         $facetList = [];
         foreach ($facets as $facet) {

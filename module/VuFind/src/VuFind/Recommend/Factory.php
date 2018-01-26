@@ -112,7 +112,7 @@ class Factory
     {
         return new CollectionSideFacets(
             $sm->get('VuFind\Config'),
-            $sm->get('VuFind\HierarchicalFacetHelper')
+            $sm->get('VuFind\Search\Solr\HierarchicalFacetHelper')
         );
     }
 
@@ -224,7 +224,7 @@ class Factory
     {
         return new SideFacets(
             $sm->get('VuFind\Config'),
-            $sm->get('VuFind\HierarchicalFacetHelper')
+            $sm->get('VuFind\Search\Solr\HierarchicalFacetHelper')
         );
     }
 

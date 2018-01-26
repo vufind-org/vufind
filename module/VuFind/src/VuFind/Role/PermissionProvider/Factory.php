@@ -53,7 +53,7 @@ class Factory
     {
         return new IpRange(
             $sm->get('Request'),
-            $sm->get('VuFind\IpAddressUtils')
+            $sm->get('VuFind\Net\IpAddressUtils')
         );
     }
 

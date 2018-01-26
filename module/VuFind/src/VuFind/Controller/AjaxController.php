@@ -1384,7 +1384,7 @@ class AjaxController extends AbstractBase
         $facetList = $facets[$facet]['data']['list'];
 
         $facetHelper = $this->serviceLocator
-            ->get('VuFind\HierarchicalFacetHelper');
+            ->get('VuFind\Search\Solr\HierarchicalFacetHelper');
         if (!empty($sort)) {
             $facetHelper->sortFacetList($facetList, $sort == 'top');
         }
