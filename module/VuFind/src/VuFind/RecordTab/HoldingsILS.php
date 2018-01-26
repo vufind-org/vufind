@@ -48,13 +48,18 @@ class HoldingsILS extends AbstractBase
     /**
      * Constructor
      *
-     * @param \VuFind\ILS\Connection|bool $catalog ILS connection to use to check
-     * for holdings before displaying the tab; set to false if no check is needed
+     * @param \VuFind\ILS\Connection|bool $catalog               ILS connection
+     * to use to check for holdings before displaying the tab; set to false if
+     * no check is needed
+     * @param bool                        $extendedHoldingFields Flag to indicate
+     * if the extended holding fields layout should be used
      */
-    public function __construct($catalog)
+    public function __construct($catalog, $extendedHoldingFields)
     {
         $this->catalog = ($catalog && $catalog instanceof \VuFind\ILS\Connection)
             ? $catalog : false;
+        $this->extendedHoldingFields = isset($extendedHoldingFields)
+          ? (bool)$extendedHoldingFields : false;
     }
 
     /**

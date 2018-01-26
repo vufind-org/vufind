@@ -97,7 +97,7 @@
     ?>
     <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
       <tr vocab="http://schema.org/" typeof="Offer">
-        <? if ($this->extendedHoldingFields):?>
+        <? if ($this->tab->extendedHoldingFields):?>
 
           <?=$this->context($this)->renderInContext('RecordTab/extendedholdingsils.phtml', [holding => $row]); ?>
 
