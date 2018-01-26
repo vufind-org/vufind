@@ -152,7 +152,11 @@ class Factory
         } else {
             $catalog = false;
         }
-        return new HoldingsILS($catalog);
+
+        $extendedHoldingFields = isset($config->Site->extendedHoldingFields)
+           ? (bool)$config->Site->extendedHoldingFields : false;
+
+        return new HoldingsILS($catalog, $extendedHoldingFields);
     }
 
     /**
