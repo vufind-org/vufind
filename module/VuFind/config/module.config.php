@@ -545,19 +545,7 @@ $config = [
                 'VuFind\Role\DynamicRoleProvider' => 'VuFind\Role\DynamicRoleProviderFactory',
             ],
         ],
-        'vufind_permission_provider_manager' => [
-            'factories' => [
-                'ipRange' => 'VuFind\Role\PermissionProvider\Factory::getIpRange',
-                'ipRegEx' => 'VuFind\Role\PermissionProvider\Factory::getIpRegEx',
-                'serverParam' => 'VuFind\Role\PermissionProvider\Factory::getServerParam',
-                'shibboleth' => 'VuFind\Role\PermissionProvider\Factory::getShibboleth',
-                'user' => 'VuFind\Role\PermissionProvider\Factory::getUser',
-                'username' => 'VuFind\Role\PermissionProvider\Factory::getUsername',
-            ],
-            'invokables' => [
-                'role' => 'VuFind\Role\PermissionProvider\Role',
-            ],
-        ],
+        'vufind_permission_provider_manager' => [ /* see VuFind\Role\PermissionProvider\PluginManager for defaults */ ],
     ],
 ];
 
