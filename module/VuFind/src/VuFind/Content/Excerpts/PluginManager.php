@@ -44,6 +44,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'demo' => 'VuFind\Content\Excerpts\Demo',
         'syndetics' => 'VuFind\Content\Excerpts\Syndetics',
         'syndeticsplus' => 'VuFind\Content\Excerpts\SyndeticsPlus',
     ];
@@ -54,6 +55,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        'VuFind\Content\Excerpts\Demo' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\Content\Excerpts\Syndetics' =>
             'VuFind\Content\AbstractSyndeticsFactory',
         'VuFind\Content\Excerpts\SyndeticsPlus' =>

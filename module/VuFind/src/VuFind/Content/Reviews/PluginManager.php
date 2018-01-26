@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'amazon' => 'VuFind\Content\Reviews\Amazon',
         'amazoneditorial' => 'VuFind\Content\Reviews\AmazonEditorial',
         'booksite' => 'VuFind\Content\Reviews\Booksite',
+        'demo' => 'VuFind\Content\Reviews\Demo',
         'guardian' => 'VuFind\Content\Reviews\Guardian',
         'syndetics' => 'VuFind\Content\Reviews\Syndetics',
         'syndeticsplus' => 'VuFind\Content\Reviews\SyndeticsPlus',
@@ -63,6 +64,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\Content\AbstractAmazonFactory',
         'VuFind\Content\Reviews\Booksite' =>
             'VuFind\Content\Reviews\BooksiteFactory',
+        'VuFind\Content\Reviews\Demo' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\Content\Reviews\Guardian' =>
             'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\Content\Reviews\Syndetics' =>
