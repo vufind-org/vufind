@@ -91,6 +91,27 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     }
 
     /**
+     * Command-line tool to clear unwanted entries
+     * from session database table.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function expiresessionsAction()
+    {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
+            return $this->expirationHelp('sessions');
+        }
+
+        return $this->expire(
+            'Session',
+            '%%count%% expired sessions deleted.',
+            'No expired sessions to delete.',
+            0.3
+        );
+    }
+
+    /**
      * Anonymizes all the expired user accounts.
      *
      * @return \Zend\Console\Response
