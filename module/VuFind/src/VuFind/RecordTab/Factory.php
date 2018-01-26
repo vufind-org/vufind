@@ -84,7 +84,7 @@ class Factory
         $config = $sm->get('VuFind\Config')->get('config');
         // Only instantiate the loader if the feature is enabled:
         if (isset($config->Content->excerpts)) {
-            $loader = $sm->get('VuFind\ContentPluginManager')
+            $loader = $sm->get('VuFind\Content\PluginManager')
                 ->get('excerpts');
         } else {
             $loader = null;
@@ -243,7 +243,7 @@ class Factory
         $config = $sm->get('VuFind\Config')->get('config');
         // Only instantiate the loader if the feature is enabled:
         if (isset($config->Content->reviews)) {
-            $loader = $sm->get('VuFind\ContentPluginManager')
+            $loader = $sm->get('VuFind\Content\PluginManager')
                 ->get('reviews');
         } else {
             $loader = null;
@@ -263,7 +263,7 @@ class Factory
         $config = $sm->get('VuFind\Config')->get('config');
         // Only instantiate the loader if the feature is enabled:
         if (isset($config->Content->toc)) {
-            $loader = $sm->get('VuFind\ContentPluginManager')
+            $loader = $sm->get('VuFind\Content\PluginManager')
                 ->get('toc');
         } else {
             $loader = null;

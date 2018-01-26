@@ -108,7 +108,7 @@ class Factory
      */
     public static function getAuthorNotes(ServiceManager $sm)
     {
-        $loader = $sm->get('VuFind\ContentPluginManager')
+        $loader = $sm->get('VuFind\Content\PluginManager')
             ->get('authornotes');
         return new ContentLoader($loader);
     }
@@ -572,7 +572,7 @@ class Factory
      */
     public static function getSummaries(ServiceManager $sm)
     {
-        $loader = $sm->get('VuFind\ContentPluginManager')
+        $loader = $sm->get('VuFind\Content\PluginManager')
             ->get('summaries');
         return new ContentLoader($loader);
     }

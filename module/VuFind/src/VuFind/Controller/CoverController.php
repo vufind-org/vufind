@@ -78,7 +78,7 @@ class CoverController extends AbstractBase
             $cacheDir = $this->getCacheDir();
             $this->loader = new Loader(
                 $this->getConfig(),
-                $this->serviceLocator->get('VuFind\ContentCoversPluginManager'),
+                $this->serviceLocator->get('VuFind\Content\Covers\PluginManager'),
                 $this->serviceLocator->get('VuFindTheme\ThemeInfo'),
                 $this->serviceLocator->get('VuFind\Http')->createClient(),
                 $cacheDir
