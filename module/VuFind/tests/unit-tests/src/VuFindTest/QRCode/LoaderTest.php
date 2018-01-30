@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\QRCode;
+
 use VuFind\QRCode\Loader;
 use VuFindTheme\ThemeInfo;
 use Zend\Config\Config;

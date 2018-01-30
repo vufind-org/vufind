@@ -26,7 +26,10 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\ILS as ILSException;
+
+use PDO;
+use PDOException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * VuFind Connector for Evergreen
@@ -56,7 +59,7 @@ class Evergreen extends AbstractBase
      */
     protected $dbName;
 
-     /**
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -582,23 +585,23 @@ HERE;
      */
     //public function placeHold($holdDetails)
     //{
-        // Need to check asset.copy.status -> config.copy_status.holdable = true
-        // If it is holdable, place hold in action.hold_request:
-        // request_time to now, current_copy to asset.copy.id,
-        // usr to action.usr.id of requesting patron,
-        // phone_notify to phone number, email_notify to t/f
-        // set pickup_lib too?
+    // Need to check asset.copy.status -> config.copy_status.holdable = true
+    // If it is holdable, place hold in action.hold_request:
+    // request_time to now, current_copy to asset.copy.id,
+    // usr to action.usr.id of requesting patron,
+    // phone_notify to phone number, email_notify to t/f
+    // set pickup_lib too?
 
-        /*
-        $sql = "";
+    /*
+    $sql = "";
 
-        try {
-            $sqlStmt = $this->db->prepare($sql);
-            $sqlStmt->execute();
-        } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
-        }
-        */
+    try {
+        $sqlStmt = $this->db->prepare($sql);
+        $sqlStmt->execute();
+    } catch (PDOException $e) {
+        throw new ILSException($e->getMessage());
+    }
+    */
     //}
 
     /**

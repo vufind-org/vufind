@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
+
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Record\Loader;
@@ -173,14 +174,14 @@ class Resource extends Gateway
                 $s->where->equalTo('ur.user_id', $user);
 
                 // Adjust for list if necessary:
-                if (!is_null($list)) {
+                if (null !== $list) {
                     $s->where->equalTo('ur.list_id', $list);
                 }
 
                 if ($offset > 0) {
                     $s->offset($offset);
                 }
-                if (!is_null($limit)) {
+                if (null !== $limit) {
                     $s->limit($limit);
                 }
 

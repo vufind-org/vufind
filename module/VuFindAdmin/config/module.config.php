@@ -4,12 +4,20 @@ namespace VuFindAdmin\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
-            'admin' => 'VuFindAdmin\Controller\Factory::getAdminController',
-            'adminconfig' => 'VuFindAdmin\Controller\Factory::getConfigController',
-            'adminsocial' => 'VuFindAdmin\Controller\Factory::getSocialstatsController',
-            'adminmaintenance' => 'VuFindAdmin\Controller\Factory::getMaintenanceController',
-            'adminstatistics' => 'VuFindAdmin\Controller\Factory::getStatisticsController',
-            'admintags' => 'VuFindAdmin\Controller\Factory::getTagsController',
+            'VuFindAdmin\Controller\AdminController' => 'VuFindAdmin\Controller\Factory::getAdminController',
+            'VuFindAdmin\Controller\ConfigController' => 'VuFindAdmin\Controller\Factory::getConfigController',
+            'VuFindAdmin\Controller\MaintenanceController' => 'VuFindAdmin\Controller\Factory::getMaintenanceController',
+            'VuFindAdmin\Controller\SocialController' => 'VuFindAdmin\Controller\Factory::getSocialstatsController',
+            'VuFindAdmin\Controller\StatisticsController' => 'VuFindAdmin\Controller\Factory::getStatisticsController',
+            'VuFindAdmin\Controller\TagsController' => 'VuFindAdmin\Controller\Factory::getTagsController',
+        ],
+        'aliases' => [
+            'Admin' => 'VuFindAdmin\Controller\AdminController',
+            'AdminConfig' => 'VuFindAdmin\Controller\ConfigController',
+            'AdminMaintenance' => 'VuFindAdmin\Controller\MaintenanceController',
+            'AdminSocial' => 'VuFindAdmin\Controller\SocialController',
+            'AdminStatistics' => 'VuFindAdmin\Controller\StatisticsController',
+            'AdminTags' => 'VuFindAdmin\Controller\TagsController',
         ],
     ],
     'router' => [

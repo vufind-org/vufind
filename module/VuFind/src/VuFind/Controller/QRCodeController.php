@@ -27,6 +27,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller;
+
 use VuFind\QRCode\Loader;
 
 /**
@@ -61,9 +62,8 @@ class QRCodeController extends AbstractBase
                 $this->getConfig(),
                 $this->serviceLocator->get('VuFindTheme\ThemeInfo')
             );
-            \VuFind\ServiceManager\Initializer::initInstance(
-                $this->loader, $this->serviceLocator
-            );
+            $initializer = new \VuFind\ServiceManager\ServiceInitializer();
+            $initializer->initialize($this->loader, $this->serviceLocator);
         }
         return $this->loader;
     }

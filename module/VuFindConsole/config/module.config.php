@@ -4,13 +4,22 @@ namespace VuFindConsole\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
-            'compile' => 'VuFindConsole\Controller\Factory::getCompileController',
-            'generate' => 'VuFindConsole\Controller\Factory::getGenerateController',
-            'harvest' => 'VuFindConsole\Controller\Factory::getHarvestController',
-            'import' => 'VuFindConsole\Controller\Factory::getImportController',
-            'language' => 'VuFindConsole\Controller\Factory::getLanguageController',
-            'redirect' => 'VuFindConsole\Controller\Factory::getRedirectController',
-            'util' => 'VuFindConsole\Controller\Factory::getUtilController',
+            'VuFindConsole\Controller\CompileController' => 'VuFindConsole\Controller\Factory::getCompileController',
+            'VuFindConsole\Controller\GenerateController' => 'VuFindConsole\Controller\Factory::getGenerateController',
+            'VuFindConsole\Controller\HarvestController' => 'VuFindConsole\Controller\Factory::getHarvestController',
+            'VuFindConsole\Controller\ImportController' => 'VuFindConsole\Controller\Factory::getImportController',
+            'VuFindConsole\Controller\LanguageController' => 'VuFindConsole\Controller\Factory::getLanguageController',
+            'VuFindConsole\Controller\RedirectController' => 'VuFindConsole\Controller\Factory::getRedirectController',
+            'VuFindConsole\Controller\UtilController' => 'VuFindConsole\Controller\Factory::getUtilController',
+        ],
+        'aliases' => [
+            'compile' => 'VuFindConsole\Controller\CompileController',
+            'generate' => 'VuFindConsole\Controller\GenerateController',
+            'harvest' => 'VuFindConsole\Controller\HarvestController',
+            'import' => 'VuFindConsole\Controller\ImportController',
+            'language' => 'VuFindConsole\Controller\LanguageController',
+            'redirect' => 'VuFindConsole\Controller\RedirectController',
+            'util' => 'VuFindConsole\Controller\UtilController',
         ],
     ],
     'console' => [

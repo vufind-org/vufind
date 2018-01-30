@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\EIT;
 
-use VuFindSearch\Backend\EIT\QueryBuilder;
 use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\EIT\QueryBuilder;
 
 /**
  * Unit tests for EIT query builder

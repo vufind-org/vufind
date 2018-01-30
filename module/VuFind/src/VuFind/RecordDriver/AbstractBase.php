@@ -26,8 +26,8 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\RecordDriver;
-use VuFind\Exception\LoginRequired as LoginRequiredException,
-    VuFind\XSLT\Import\VuFind as ArticleStripper;
+
+use VuFind\XSLT\Import\VuFind as ArticleStripper;
 
 /**
  * Abstract base record model.
@@ -311,7 +311,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getRelated(\VuFind\Related\PluginManager $factory, $types = null)
     {
-        if (is_null($types)) {
+        if (null === $types) {
             $types = isset($this->recordConfig->Record->related) ?
                 $this->recordConfig->Record->related : [];
         }

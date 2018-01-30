@@ -239,7 +239,7 @@ class LibraryCardsController extends AbstractBase
             $user->saveLibraryCard(
                 $id == 'NEW' ? null : $id, $cardName, $username, $password
             );
-        } catch(\VuFind\Exception\LibraryCard $e) {
+        } catch (\VuFind\Exception\LibraryCard $e) {
             $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             return false;
         }

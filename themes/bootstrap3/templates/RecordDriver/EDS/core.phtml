@@ -48,7 +48,8 @@
   <div class="media-body info-col">
     <h3 property="name"><?=$this->driver->getTitle()?></h3>
 
-    <table class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
+    <table class="table table-striped">
+      <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
       <? foreach ($items as $key => $item): ?>
         <? if (!empty($item['Data'])): ?>
         <tr>
@@ -93,7 +94,7 @@
       <? foreach ($customLinks as $customLink): ?>
       <? $url = isset($customLink['Url']) ? $customLink['Url'] : '';
           $mot = isset($customLink['MouseOverText'])? $customLink['MouseOverText'] : '';
-          $icon = isset ($customLink['Icon']) ? $customLink['Icon'] : '';
+          $icon = isset($customLink['Icon']) ? $customLink['Icon'] : '';
           $name = isset($customLink['Text']) ? $customLink['Text'] : '';
       ?>
       <span>

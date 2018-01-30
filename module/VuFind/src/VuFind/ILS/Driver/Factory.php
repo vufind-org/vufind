@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -199,6 +200,18 @@ class Factory
     }
 
     /**
+     * Factory for Koha driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Koha
+     */
+    public static function getKoha(ServiceManager $sm)
+    {
+        return new Koha($sm->getServiceLocator()->get('VuFind\DateConverter'));
+    }
+
+    /**
      * Factory for KohaILSDI driver.
      *
      * @param ServiceManager $sm Service manager.
@@ -212,6 +225,30 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
         );
         return $koha;
+    }
+
+    /**
+     * Factory for Sierra REST driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SierraRest
+     */
+    public static function getSierraRest(ServiceManager $sm)
+    {
+        $sessionFactory = function ($namespace) use ($sm) {
+            $manager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            return new \Zend\Session\Container("SierraRest_$namespace", $manager);
+        };
+
+        $driver = new SierraRest(
+            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+            $sessionFactory
+        );
+        $driver->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+        return $driver;
     }
 
     /**

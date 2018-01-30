@@ -36,7 +36,7 @@ namespace VuFind\RecordTab;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
-class TOC extends AbstractBase
+class TOC extends AbstractContent
 {
     /**
      * Get the on-screen description for this tab.
@@ -56,6 +56,6 @@ class TOC extends AbstractBase
     public function isActive()
     {
         $toc = $this->getRecordDriver()->tryMethod('getTOC');
-        return !empty($toc);
+        return !empty($toc) || parent::isActive();
     }
 }

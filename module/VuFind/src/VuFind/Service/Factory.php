@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Service;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -202,6 +203,30 @@ class Factory
     public static function getContentReviewsPluginManager(ServiceManager $sm)
     {
         return static::getGenericPluginManager($sm, 'Content\Reviews');
+    }
+
+    /**
+     * Construct the Content\Summaries Plugin Manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Content\Summaries\PluginManager
+     */
+    public static function getContentSummariesPluginManager(ServiceManager $sm)
+    {
+        return static::getGenericPluginManager($sm, 'Content\Summaries');
+    }
+
+    /**
+     * Construct the Content\TOC Plugin Manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Content\TOC\PluginManager
+     */
+    public static function getContentTOCPluginManager(ServiceManager $sm)
+    {
+        return static::getGenericPluginManager($sm, 'Content\TOC');
     }
 
     /**
@@ -591,6 +616,38 @@ class Factory
     }
 
     /**
+     * Construct the PermissionDeniedManager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Role\PermissionDeniedManager
+     */
+    public static function getPermissionDeniedManager(ServiceManager $sm)
+    {
+        return new \VuFind\Role\PermissionDeniedManager(
+            $sm->get('VuFind\Config')->get('permissionBehavior')
+        );
+    }
+
+    /**
+     * Construct the PermissionManager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Role\PermissionManager
+     */
+    public static function getPermissionManager(ServiceManager $sm)
+    {
+        $permManager = new \VuFind\Role\PermissionManager(
+            $sm->get('VuFind\Config')->get('permissions')->toArray()
+        );
+        $permManager->setAuthorizationService(
+            $sm->get('ZfcRbac\Service\AuthorizationService')
+        );
+        return $permManager;
+    }
+
+    /**
      * Construct the RecordDriver Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.
@@ -679,14 +736,28 @@ class Factory
     public static function getSearchBackendManager(ServiceManager $sm)
     {
         $config = $sm->get('config');
-        $smConfig = new \Zend\ServiceManager\Config(
-            $config['vufind']['plugin_managers']['search_backend']
+        $registry = new \VuFind\Search\BackendRegistry(
+            $sm, $config['vufind']['plugin_managers']['search_backend']
         );
-        $registry = $sm->createScopedServiceManager();
-        $smConfig->configureServiceManager($registry);
         $manager = new \VuFind\Search\BackendManager($registry);
 
         return $manager;
+    }
+
+    /**
+     * Construct the search history helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Search\History
+     */
+    public static function getSearchHistory(ServiceManager $sm)
+    {
+        $searchTable = $sm->get('VuFind\DbTablePluginManager')
+            ->get("Search");
+        $resultsManager = $sm->get('VuFind\SearchResultsPluginManager');
+        $sessionId = $sm->get('VuFind\SessionManager')->getId();
+        return new \VuFind\Search\History($searchTable, $sessionId, $resultsManager);
     }
 
     /**
@@ -796,10 +867,12 @@ class Factory
             ? $config->SearchTabs->toArray() : [];
         $filterConfig = isset($config->SearchTabsFilters)
             ? $config->SearchTabsFilters->toArray() : [];
+        $permissionConfig = isset($config->SearchTabsPermissions)
+            ? $config->SearchTabsPermissions->toArray() : [];
         return new \VuFind\Search\SearchTabsHelper(
             $sm->get('VuFind\SearchResultsPluginManager'),
             $tabConfig, $filterConfig,
-            $sm->get('Application')->getRequest()
+            $sm->get('Application')->getRequest(), $permissionConfig
         );
     }
 
@@ -875,7 +948,7 @@ class Factory
             return $translator;
         }
         $pm->setService(
-            'extendedini',
+            'ExtendedIni',
             new \VuFind\I18n\Translator\Loader\ExtendedIni(
                 $pathStack, $fallbackLocales
             )

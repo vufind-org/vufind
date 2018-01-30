@@ -150,7 +150,13 @@ module.exports = function(grunt) {
               pattern: '$brand-primary: #619144 !default;',
               replacement: '$brand-primary: #619144;',
               order: 4
-            }
+            },
+			// Wrap calcs in {}
+            {
+              pattern: /calc\((\$[^ ]+)/g,
+              replacement: 'calc(#{$1}',
+              order: 5
+            },
           ]
         }
       }

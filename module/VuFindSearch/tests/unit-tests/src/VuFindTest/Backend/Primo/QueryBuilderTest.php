@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Backend\Primo;
 
+use PHPUnit_Framework_TestCase;
 use VuFindSearch\Backend\Primo\QueryBuilder;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for Primo query builder

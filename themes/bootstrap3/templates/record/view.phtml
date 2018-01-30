@@ -93,7 +93,7 @@
 
         <div class="tab-content">
           <? if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-            <div class="tab-pane active <?=$this->activeTab ?>-tab">
+            <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
               <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
             </div>
           <? endif; ?>
@@ -101,7 +101,7 @@
       </div>
     <? endif; ?>
 
-    <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenURL()).'"></span>':''?>
+    <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">

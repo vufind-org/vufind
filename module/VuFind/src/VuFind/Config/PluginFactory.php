@@ -26,9 +26,11 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Config;
-use Zend\Config\Config, Zend\Config\Reader\Ini as IniReader,
-    Zend\ServiceManager\AbstractFactoryInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+
+use Zend\Config\Config;
+use Zend\Config\Reader\Ini as IniReader;
+use Zend\ServiceManager\AbstractFactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * VuFind Config Plugin Factory
@@ -104,7 +106,7 @@ class PluginFactory implements AbstractFactoryInterface
 
         // Now we'll pull all the children down one at a time and override settings
         // as appropriate:
-        while (!is_null($child = array_pop($configs))) {
+        while (null !== ($child = array_pop($configs))) {
             $overrideSections = isset($child->Parent_Config->override_full_sections)
                 ? explode(
                     ',', str_replace(
