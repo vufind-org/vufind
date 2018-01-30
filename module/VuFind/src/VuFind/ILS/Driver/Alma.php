@@ -55,10 +55,10 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     protected $apiKey;
 
     /**
-	 * Date converter
-	 *
-	 * @var \VuFind\Date\Converter
-	 */
+     * Date converter
+     *
+     * @var \VuFind\Date\Converter
+     */
     protected $dateConverter;
 
     /**
@@ -139,9 +139,10 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
-     * @return array         On success, an associative array with the following keys:
-     * 						 id, source, availability (boolean), status, location, reserve, callnumber,
-     * 						 duedate, returnDate, number, barcode, item_notes, item_id, holding_id, addLink.
+     * @return array         On success an associative array with the following keys:
+     *                       id, source, availability (boolean), status, location,
+     *                       reserve, callnumber, duedate, returnDate, number,
+     *                       barcode, item_notes, item_id, holding_id, addLink.
      */
     public function getHolding($id, array $patron = null)
     {
@@ -154,21 +155,30 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $itemPath = $bibPath . '/' . urlencode($holdingId) . '/items';
                 if ($currentItems = $this->makeRequest($itemPath)) {
                     foreach ($currentItems->item as $item) {
-
-                    	$itemId = (string)$item->item_data->pid;
+                        $itemId = (string)$item->item_data->pid;
                         $barcode = (string)$item->item_data->barcode;
-						$processType = (string) $item->item_data->process_type;
-						$itemNotes = ($item->item_data->public_note != null && !empty($item->item_data->public_note)) ? [(string)$item->item_data->public_note] : null;
-						$requested = ((string)$item->item_data->requested === 'false') ? false : true;
-						
-						// For some data we need to do additional API calls due to the Alma API architecture
-						$duedate = ($requested) ? 'requested' : null;
-						if ($processType == 'LOAN' && !$requested) {
-							$loanDataPath = '/bibs/' . urlencode($id) . '/holdings/' . urlencode($holdingId) . '/items/' . urlencode($itemId) . '/loans';
-					        $loanData = $this->makeRequest($loanDataPath);
-					        $loan = $loanData->item_loan;
-							$duedate = $this->parseDate((string)$loan->due_date);
-						}
+                        $processType = (string)$item->item_data->process_type;
+                        $itemNotes = null;
+                        if ($item->item_data->public_note != null
+                            && !empty($item->item_data->public_note)
+                        ) {
+                            $itemNotes = [(string)$item->item_data->public_note];
+                        }
+                        $requested = ((string)$item->item_data->requested == 'false')
+                            ? false
+                            : true;
+
+                        // For some data we need to do additional API calls
+                        // due to the Alma API architecture
+                        $duedate = ($requested) ? 'requested' : null;
+                        if ($processType == 'LOAN' && !$requested) {
+                            $loanDataPath = '/bibs/' . urlencode($id) . '/holdings/'
+                                . urlencode($holdingId) . '/items/'
+                                . urlencode($itemId) . '/loans';
+                            $loanData = $this->makeRequest($loanDataPath);
+                            $loan = $loanData->item_loan;
+                            $duedate = $this->parseDate((string)$loan->due_date);
+                        }
 
                         $results[] = [
                             'id' => $id,
@@ -184,7 +194,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             'returnDate' => false, // TODO: support recent returns
                             'number' => ++$copyCount,
                             'barcode' => empty($barcode) ? 'n/a' : $barcode,
-                        	'item_notes' => $itemNotes,
+                            'item_notes' => $itemNotes,
                             'item_id' => $itemId,
                             'holding_id' => $holdingId,
                             'addLink' => 'check'
@@ -282,15 +292,15 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         );
         $fineList = [];
         foreach ($xml as $fee) {
-            $checkout = (string) $fee->status_time;
+            $checkout = (string)$fee->status_time;
             $fineList[] = [
-                "title"   => (string) $fee->type,
+                "title"   => (string)$fee->type,
                 "amount"   => $fee->original_amount * 100,
                 "balance"  => $fee->balance * 100,
                 "checkout" => $this->dateConverter->convert(
                     'Y-m-d H:i', 'm-d-Y', $checkout
                 ),
-                "fine"     => (string) $fee->type['desc']
+                "fine"     => (string)$fee->type['desc']
             ];
         }
         return $fineList;
@@ -316,15 +326,15 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $holdList = [];
         foreach ($xml as $request) {
             $holdList[] = [
-                'create' => (string) $request->request_date,
-                'expire' => (string) $request->last_interest_date,
-                'id' => (string) $request->request_id,
+                'create' => (string)$request->request_date,
+                'expire' => (string)$request->last_interest_date,
+                'id' => (string)$request->request_id,
                 'in_transit' => $request->request_status !== 'IN_PROCESS',
-                'item_id' => (string) $request->mms_id,
-                'location' => (string) $request->pickup_location,
+                'item_id' => (string)$request->mms_id,
+                'location' => (string)$request->pickup_location,
                 'processed' => $request->item_policy === 'InterlibraryLoan'
                     && $request->request_status !== 'NOT_STARTED',
-                'title' => (string) $request->title,
+                'title' => (string)$request->title,
                 /*
                 // VuFind keys
                 'available'         => $request->,
@@ -480,10 +490,10 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 );
                 $status = [];
                 $tmpl = [
-                    'id' => (string) $bib->mms_id,
+                    'id' => (string)$bib->mms_id,
                     'source' => 'Solr',
                     'callnumber' => isset($bib->isbn)
-                        ? (string) $bib->isbn
+                        ? (string)$bib->isbn
                         : ''
                 ];
                 if ($record = $marc->next()) {
@@ -493,7 +503,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $avail = $field->getSubfield('e')->getData();
                         $item = $tmpl;
                         $item['availability'] = strtolower($avail) === 'available';
-                        $item['location'] = (string) $field->getSubfield('c')
+                        $item['location'] = (string)$field->getSubfield('c')
                             ->getData();
                         $status[] = $item;
                     }
@@ -648,9 +658,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
 
     /**
+     * Request from /courses.
+     *
      * @return array with key = course ID, value = course name
      */
-    public function getCourses() {
+    public function getCourses()
+    {
         // https://developers.exlibrisgroup.com/alma/apis/courses
         // GET /​almaws/​v1/​courses
         $xml = $this->makeRequest('/courses');
@@ -662,15 +675,18 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
 
     /**
+     * Get reserves by course
+     *
      * @param string $courseID     Value from getCourses
-     * @param string $instructorID Value from getInstructors
-     * @param string $departmentID Value from getDepartments
+     * @param string $instructorID Value from getInstructors (not used yet)
+     * @param string $departmentID Value from getDepartments (not used yet)
      *
      * @return array With key BIB_ID - The record ID of the current reserve item.
      *               Not currently used:
      *               DISPLAY_CALL_NO, AUTHOR, TITLE, PUBLISHER, PUBLISHER_DATE
      */
-    public function findReserves($courseID, $instructorID, $departmentID) {
+    public function findReserves($courseID, $instructorID, $departmentID)
+    {
         // https://developers.exlibrisgroup.com/alma/apis/courses
         // GET /​almaws/​v1/​courses/​{course_id}/​reading-lists
         $xml = $this->makeRequest('/courses/​' . $courseID . '/​reading-lists');
@@ -686,66 +702,80 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         return $reserves;
     }
 
-	/**
-	 * Parse a date.
-	 *
-	 * @param string $date
-	 *        	Date to parse
-	 *        	
-	 * @return string
-	 */
-	public function parseDate($date, $withTime = false) {
-		// Remove trailing Z from end of date (e. g. from Alma we get dates like 2012-07-13Z without time, which is wrong)
-		if (strpos($date, 'Z', (strlen($date) - 1))) {
-			$date = preg_replace('/Z{1}$/', '', $date);
-		}
-		
-		if ($date == null || $date == '') {
-			return '';
-		} else if (preg_match("/^[0-9]{8}$/", $date) === 1) { // e. g. 20120725
-			return $this->dateConverter->convertToDisplayDate('Ynd', $date);
-		} else if (preg_match("/^[0-9]+\/[A-Za-z]{3}\/[0-9]{4}$/", $date) === 1) { // e. g. 13/jan/2012
-			return $this->dateConverter->convertToDisplayDate('d/M/Y', $date);
-		} else if (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{4}$/", $date) === 1) { // e. g. 13/7/2012
-			return $this->dateConverter->convertToDisplayDate('d/m/Y', $date);
-		} else if (preg_match("/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{2,4}$/", $date) === 1) { // e. g. 13/07/2012
-			return $this->dateConverter->convertToDisplayDate('d/m/y', $date);
-		} else if (preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $date) === 1) { // e. g. 2012-07-13
-			return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
-		} else if (preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$/", substr($date, 0, 19)) === 1) { // e. g. 2017-07-09T18:00:00
-			if ($withTime) {
-				return $this->dateConverter->convertToDisplayDateAndTime('Y-m-d\TH:i:s', substr($date, 0, 19));
-			} else {
-				return $this->dateConverter->convertToDisplayDate('Y-m-d', substr($date, 0, 10));
-			}
-		} else {
-			throw new \Exception("Invalid date: $date");
-		}
-	}
-		
-	
+    /**
+     * Parse a date.
+     *
+     * @param string  $date     Date to parse
+     * @param boolean $withTime Add time to return if available?
+     *
+     * @return string
+     */
+    public function parseDate($date, $withTime = false)
+    {
+        // Remove trailing Z from end of date
+        // e.g. from Alma we get dates like 2012-07-13Z without time, which is wrong)
+        if (strpos($date, 'Z', (strlen($date) - 1))) {
+            $date = preg_replace('/Z{1}$/', '', $date);
+        }
+
+        $compactDate = "/^[0-9]{8}$/"; // e. g. 20120725
+        $euroName = "/^[0-9]+\/[A-Za-z]{3}\/[0-9]{4}$/"; // e. g. 13/jan/2012
+        $euro = "/^[0-9]+\/[0-9]+\/[0-9]{4}$/"; // e. g. 13/7/2012
+        $euroPad = "/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{2,4}$/"; // e. g. 13/07/2012
+        $datestamp = "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/"; // e. g. 2012-07-13
+        $timestamp = "/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$/";
+        // e. g. 2017-07-09T18:00:00
+
+        if ($date == null || $date == '') {
+            return '';
+        } elseif (preg_match($compactDate, $date) === 1) {
+            return $this->dateConverter->convertToDisplayDate('Ynd', $date);
+        } elseif (preg_match($euroName, $date) === 1) {
+            return $this->dateConverter->convertToDisplayDate('d/M/Y', $date);
+        } elseif (preg_match($euro, $date) === 1) {
+            return $this->dateConverter->convertToDisplayDate('d/m/Y', $date);
+        } elseif (preg_match($euroPad, $date) === 1) {
+            return $this->dateConverter->convertToDisplayDate('d/m/y', $date);
+        } elseif (preg_match($datestamp, $date) === 1) {
+            return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
+        } elseif (preg_match($timestamp, substr($date, 0, 19)) === 1) {
+            if ($withTime) {
+                return $this->dateConverter->convertToDisplayDateAndTime(
+                    'Y-m-d\TH:i:s',
+                    substr($date, 0, 19)
+                );
+            } else {
+                return $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d',
+                    substr($date, 0, 10)
+                );
+            }
+        } else {
+            throw new \Exception("Invalid date: $date");
+        }
+    }
 
     // @codingStandardsIgnoreStart
 
     /**
      * @return array with key = course ID, value = course name
      * /
-    public function getFunds() {
-        // https://developers.exlibrisgroup.com/alma/apis/acq
-        // GET /​almaws/​v1/​acq/​funds
-    }
-    */
+     * public function getFunds() {
+     * // https://developers.exlibrisgroup.com/alma/apis/acq
+     * // GET /​almaws/​v1/​acq/​funds
+     * }
+     */
 
     /**
      * @param string $bibID Bibligraphic ID
      *
      * @return boolean
      * /
-    public function hasHoldings($bibID) {
-        // https://developers.exlibrisgroup.com/alma/apis/bibs
-        // GET /almaws/v1/bibs/{mms_id}/holdings
-    }
-    */
+     * public function hasHoldings($bibID) {
+     * // https://developers.exlibrisgroup.com/alma/apis/bibs
+     * // GET /almaws/v1/bibs/{mms_id}/holdings
+     * }
+     */
 
     /* ================= METHODS INACCESSIBLE OUTSIDE OF GET ================== */
 
@@ -760,10 +790,10 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *                    status – A status message from the language file (required)
      *                    sysMessage - A system supplied failure message (optional)
      * /
-    public function cancelHolds($cancelDetails) {
-        // https://developers.exlibrisgroup.com/alma/apis/users
-        // DELETE /almaws/v1/users/{user_id}/requests/{request_id}
-    }
-    */
+     * public function cancelHolds($cancelDetails) {
+     * // https://developers.exlibrisgroup.com/alma/apis/users
+     * // DELETE /almaws/v1/users/{user_id}/requests/{request_id}
+     * }
+     */
     // @codingStandardsIgnoreEnd
 }
