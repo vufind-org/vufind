@@ -166,7 +166,7 @@ enabled = true
 ; Transaction fee (in cents) added to each payment
 transactionFee = 50
 ; Minimum fee (in cents) allowed to be paid online
-minimumFee = 60
+minimumFee = 65
 ; Email address for transactions that could not be registered.
 ;errorEmail = ''
 ; Payment processing operator card ID in Koha
@@ -177,5 +177,3 @@ userPassword = ''
 transactionMaxDuration = 15
 ; Currency
 currency = 'EUR'
-; Payment handler
-handler = 'CPU'

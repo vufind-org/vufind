@@ -370,7 +370,7 @@ maxLength = 12
 ; Transaction fee (in cents) added to each payment
 ;transactionFee = 0
 ; Minimum fee (in cents) allowed to be paid online
-;minimumFee = 60
+;minimumFee = 65
 ; Email address for transactions that could not be registered.
 ;errorEmail = ''
 ; Maximum duration (in minutes) for a transaction.
