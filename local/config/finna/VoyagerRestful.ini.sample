@@ -311,6 +311,8 @@ indexes = "868az"
 ; A colon-separated list of item statuses that are ignored when the first due date
 ; is being calculated.
 ignore_due_date_in_statuses = "Lost--Library Applied:Lost--System Applied:Missing:At bindery:Cataloging review"
+; Whether to display title hold links in results list
+display_title_hold_in_results = true
 
 ; Settings for controlling how loans are displayed
 [Loans]

@@ -24,6 +24,8 @@ renewalLimit = 3
 ; used to manually set the order by entering location IDs as a colon-separated list.
 ;holdingsOrganisationOrder = 1
 ;holdingsBranchOrder = 001:095:100:110:115:120:130:135:160:200:210:230:240:260:270:300
+; Whether to display title hold links in results list
+display_title_hold_in_results = true
 
 [Holds]
 
