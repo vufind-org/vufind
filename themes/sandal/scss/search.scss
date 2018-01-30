@@ -195,7 +195,7 @@
 .search { border: 0; }
 #searchForm {
   padding-top: .5rem;
-  padding-bottom: calc($search-tab-height + 1.5rem);
+  padding-bottom: calc(#{$search-tab-height} + 1.5rem);
 }
 .nav.searchbox,
 #searchForm {
@@ -219,8 +219,8 @@
     border-bottom: 3px solid transparent;
   }
   .nav-tabs a {
-    height: calc($search-tab-height + .5rem);
-    line-height: calc($search-tab-height + .5rem);
+    height: calc(#{$search-tab-height} + .5rem);
+    line-height: calc(#{$search-tab-height} + .5rem);
     padding: 0 1rem;
     border-radius: 0;
     background-color: transparent;
