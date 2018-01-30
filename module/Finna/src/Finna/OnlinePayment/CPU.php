@@ -151,7 +151,7 @@ class CPU extends BaseHandler
             $code = isset($productCodeMappings[$fineType])
                 ? $productCodeMappings[$fineType] : $productCode;
             $product = new \Cpu_Client_Product(
-                $code, 1, $fine['amount'], $fineDesc ?: null
+                $code, 1, $fine['balance'], $fineDesc ?: null
             );
             $payment = $payment->addProduct($product);
         }

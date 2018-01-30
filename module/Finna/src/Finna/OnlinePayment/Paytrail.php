@@ -181,7 +181,7 @@ class Paytrail extends BaseHandler
                     . ')';
                 }
                 $payment->addProduct(
-                    $fineDesc ?: '', $code, 1, $fine['amount'] / 100.00, 0, 0
+                    $fineDesc ?: '', $code, 1, $fine['balance'] / 100.00, 0, 0
                 );
             }
             if ($transactionFee) {
