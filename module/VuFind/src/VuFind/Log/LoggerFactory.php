@@ -71,7 +71,7 @@ class LoggerFactory implements FactoryInterface
         // Make Writers
         $filters = explode(',', $error_types);
         $writer = new Writer\Db(
-            $sm->get('VuFind\DbAdapter'),
+            $sm->get('Zend\Db\Adapter\Adapter'),
             $table_name, $columnMapping
         );
         $this->addWriters($logger, $writer, $filters);

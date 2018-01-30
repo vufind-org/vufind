@@ -143,7 +143,7 @@ class Factory
      */
     public static function getDbAdapter(ServiceManager $sm)
     {
-        return $sm->get('VuFind\DbAdapterFactory')->getAdapter();
+        return $sm->get('VuFind\Db\AdapterFactory')->getAdapter();
     }
 
     /**

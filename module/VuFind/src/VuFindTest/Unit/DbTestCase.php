@@ -109,7 +109,7 @@ abstract class DbTestCase extends TestCase
             $dbFactory = new \VuFind\Db\AdapterFactory(
                 $sm->get('VuFind\Config')->get('config')
             );
-            $sm->setService('VuFind\DbAdapter', $dbFactory->getAdapter());
+            $sm->setService('Zend\Db\Adapter\Adapter', $dbFactory->getAdapter());
             $this->addTableManager($sm);
             $this->addRowManager($sm);
             $sm->setService(

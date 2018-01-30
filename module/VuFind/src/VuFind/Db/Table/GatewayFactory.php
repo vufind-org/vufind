@@ -73,7 +73,7 @@ class GatewayFactory implements \Zend\ServiceManager\Factory\FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $adapter = $container->get('VuFind\DbAdapter');
+        $adapter = $container->get('Zend\Db\Adapter\Adapter');
         $tm = $container->get('VuFind\DbTablePluginManager');
         $config = $container->get('config');
         $rowPrototype = $this->getRowPrototype($container, $requestedName);

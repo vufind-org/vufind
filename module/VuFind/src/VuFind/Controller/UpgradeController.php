@@ -237,7 +237,7 @@ class UpgradeController extends AbstractBase
         // subsequent calls.
         static $adapter = false;
         if (!$adapter) {
-            $factory = $this->serviceLocator->get('VuFind\DbAdapterFactory');
+            $factory = $this->serviceLocator->get('VuFind\Db\AdapterFactory');
             $adapter = $factory->getAdapter(
                 $this->session->dbRootUser, $this->session->dbRootPass
             );
@@ -498,7 +498,7 @@ class UpgradeController extends AbstractBase
                 // If this is a MySQL connection, we can do an automatic upgrade;
                 // if VuFind is using a different database, we have to prompt the
                 // user to check the migrations directory and upgrade manually.
-                $adapter = $this->serviceLocator->get('VuFind\DbAdapter');
+                $adapter = $this->serviceLocator->get('Zend\Db\Adapter\Adapter');
                 $platform = $adapter->getDriver()->getDatabasePlatformName();
                 if (strtolower($platform) == 'mysql') {
                     $upgradeResult = $this->upgradeMySQL($adapter);
@@ -597,7 +597,7 @@ class UpgradeController extends AbstractBase
                 try {
                     // Query a table known to exist
                     $factory = $this->serviceLocator
-                        ->get('VuFind\DbAdapterFactory');
+                        ->get('VuFind\Db\AdapterFactory');
                     $db = $factory->getAdapter($dbrootuser, $pass);
                     $db->query("SELECT * FROM user;");
                     $this->session->dbRootUser = $dbrootuser;

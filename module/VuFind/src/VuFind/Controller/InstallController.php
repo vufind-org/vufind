@@ -355,7 +355,7 @@ class InstallController extends AbstractBase
                 try {
                     $dbName = ($view->driver == 'pgsql')
                         ? 'template1' : $view->driver;
-                    $db = $this->serviceLocator->get('VuFind\DbAdapterFactory')
+                    $db = $this->serviceLocator->get('VuFind\Db\AdapterFactory')
                         ->getAdapterFromConnectionString("{$connection}/{$dbName}");
                 } catch (\Exception $e) {
                     $this->flashMessenger()
@@ -392,7 +392,7 @@ class InstallController extends AbstractBase
                             $db->query($query, $db::QUERY_MODE_EXECUTE);
                         }
                         $dbFactory = $this->serviceLocator
-                            ->get('VuFind\DbAdapterFactory');
+                            ->get('VuFind\Db\AdapterFactory');
                         $db = $dbFactory->getAdapterFromConnectionString(
                             $connection . '/' . $view->dbname
                         );

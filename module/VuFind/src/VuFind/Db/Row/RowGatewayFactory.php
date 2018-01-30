@@ -57,7 +57,7 @@ class RowGatewayFactory implements \Zend\ServiceManager\Factory\FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $adapter = $container->get('VuFind\DbAdapter');
+        $adapter = $container->get('Zend\Db\Adapter\Adapter');
         return new $requestedName($adapter, ...($options !== null ? $options : []));
     }
 }
