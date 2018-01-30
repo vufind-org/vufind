@@ -651,7 +651,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             ];
         }
 
-        $this->debug("patron: " . $patron);
+        $this->debug("patron: " . print_r($patron, true));
         $this->debug("patron_id: " . $patron_id);
         $this->debug("request_location: " . $request_location);
         $this->debug("item_id: " . $item_id);

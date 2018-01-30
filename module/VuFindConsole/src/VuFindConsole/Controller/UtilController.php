@@ -695,7 +695,7 @@ class UtilController extends AbstractBase
         $sleepTime = $request->getParam('sleep', 100);
 
         // Abort if we have an invalid expiration age.
-        if ($daysOld < 2) {
+        if ($daysOld < $minAge) {
             Console::writeLine(
                 str_replace(
                     '%%age%%', $minAge,
