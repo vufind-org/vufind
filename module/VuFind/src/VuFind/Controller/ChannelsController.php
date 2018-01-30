@@ -221,7 +221,7 @@ class ChannelsController extends AbstractBase
 
         // Load the service, and configure appropriately:
         $provider = $this->serviceLocator
-            ->get('VuFind\ChannelProviderPluginManager')->get($serviceName);
+            ->get('VuFind\ChannelProvider\PluginManager')->get($serviceName);
         $provider->setProviderId($providerId);
         $provider->setOptions($options);
         return $provider;
