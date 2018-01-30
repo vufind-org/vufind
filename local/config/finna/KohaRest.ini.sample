@@ -127,7 +127,7 @@ pattern = "numeric"
 ; Choose a method on how to update the email address.
 ; Only 'driver' is currently supported.
 [updateEmail]
-;method = driver
+method = driver
 
 ; Uncomment the following lines to enable updating of phone number.
 ; Choose a method on how to update the phone number.
