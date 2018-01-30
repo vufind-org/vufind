@@ -93,7 +93,7 @@
 
         <div class="tab-content">
           <? if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-            <div class="tab-pane active <?=$this->activeTab ?>-tab">
+            <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
               <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
             </div>
           <? endif; ?>
