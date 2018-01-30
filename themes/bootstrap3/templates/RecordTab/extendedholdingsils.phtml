@@ -1,3 +1,9 @@
+<?
+  // AJAX Check record?
+  $check = isset($this->holding['check']) && $this->holding['check'];
+  $checkStorageRetrievalRequest = isset($this->holding['checkStorageRetrievalRequest']) && $this->holding['checkStorageRetrievalRequest'];
+  $checkILLRequest = isset($this->holding['checkILLRequest']) && $this->holding['checkILLRequest'];
+?>
         <td colspan="2" class="holding-<?=$this->holding['availability'] ? "available" : "unavailable" ?>">
           <div class="holding-details">
             <span class="holding-field copy-number">
