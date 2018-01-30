@@ -55,7 +55,7 @@ class Factory
             'ChoiceAuth', $sm->get('VuFind\SessionManager')
         );
         $auth = new ChoiceAuth($container);
-        $auth->setPluginManager($sm->get('VuFind\AuthPluginManager'));
+        $auth->setPluginManager($sm->get('VuFind\Auth\PluginManager'));
         return $auth;
     }
 
@@ -147,7 +147,7 @@ class Factory
         // Load remaining dependencies:
         $userTable = $sm->get('VuFind\DbTablePluginManager')->get('user');
         $sessionManager = $sm->get('VuFind\SessionManager');
-        $pm = $sm->get('VuFind\AuthPluginManager');
+        $pm = $sm->get('VuFind\Auth\PluginManager');
         $cookies = $sm->get('VuFind\CookieManager');
 
         // Build the object and make sure account credentials haven't expired:
@@ -166,7 +166,7 @@ class Factory
     public static function getMultiAuth(ServiceManager $sm)
     {
         $auth = new MultiAuth();
-        $auth->setPluginManager($sm->get('VuFind\AuthPluginManager'));
+        $auth->setPluginManager($sm->get('VuFind\Auth\PluginManager'));
         return $auth;
     }
 

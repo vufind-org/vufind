@@ -58,18 +58,6 @@ class Factory
     }
 
     /**
-     * Construct the Auth Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Auth\PluginManager
-     */
-    public static function getAuthPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Auth');
-    }
-
-    /**
      * Construct the Autocomplete Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.

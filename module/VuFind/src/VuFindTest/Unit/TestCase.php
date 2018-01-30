@@ -222,11 +222,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     public function getAuthManager()
     {
         $sm = $this->getServiceManager();
-        if (!$sm->has('VuFind\AuthPluginManager')) {
+        if (!$sm->has('VuFind\Auth\PluginManager')) {
             $authManager = new \VuFind\Auth\PluginManager($sm);
-            $sm->setService('VuFind\AuthPluginManager', $authManager);
+            $sm->setService('VuFind\Auth\PluginManager', $authManager);
         }
-        return $sm->get('VuFind\AuthPluginManager');
+        return $sm->get('VuFind\Auth\PluginManager');
     }
 
     /**
