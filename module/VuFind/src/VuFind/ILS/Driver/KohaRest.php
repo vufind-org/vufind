@@ -714,9 +714,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'create' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['reservedate']
                 ),
-                'expire' => $this->dateConverter->convertToDisplayDate(
-                    'Y-m-d', $entry['expirationdate']
-                ),
+                'expire' => !empty($entry['expirationdate'])
+                    ? $this->dateConverter->convertToDisplayDate(
+                        'Y-m-d', $entry['expirationdate']
+                    ) : '',
                 'position' => $entry['priority'],
                 'available' => !empty($entry['waitingdate']),
                 'in_transit' => isset($entry['found'])
