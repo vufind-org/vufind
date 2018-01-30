@@ -14,7 +14,8 @@
   <? if (empty($this->fines)): ?>
     <?=$this->transEsc('You do not have any fines')?>
   <? else: ?>
-    <table class="table table-striped" summary="<?=$this->transEsc('Your Fines')?>">
+    <table class="table table-striped">
+      <caption class="sr-only"><?=$this->transEsc('Your Fines')?></caption>
     <tr>
       <th><?=$this->transEsc('Title')?></th>
       <th><?=$this->transEsc('Checked Out')?></th>
