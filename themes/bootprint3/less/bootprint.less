@@ -167,34 +167,3 @@ ul.random.image li img { margin: 0 auto; }
 }
 .jstree-facet .jstree-ocl::before { margin-left: -5px; }
 .jstree-node.active { background-color: @active-orange; }
-
-/* --- extended holdings --- */
-
-div.holding-details {
-    display: flex;
-
-    .holding-field {
-        flex: 0 1 auto;
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-    }
-
-    .holding-field.barcode,
-    .holding-field.availability,
-    .holding-field.place-hold,
-    .holding-field.storage-retrieval,
-    .holding-field.ill-request,
-    .holding-field.recall {
-        flex: 1 1 auto;
-    }
-
-    .due-date:before {
-        content: "\2013";
-        padding-right: 0.3em;
-    }
-}
-
-div.holding-notes {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-}
