@@ -99,7 +99,7 @@
       <tr vocab="http://schema.org/" typeof="Offer">
         <? if ($this->tab->extendedHoldingFields):?>
 
-          <?=$this->context($this)->renderInContext('RecordTab/extendedholdingsils.phtml', [holding => $row]); ?>
+          <?=$this->context($this)->renderInContext('RecordTab/extendedholdingsils.phtml', ["holding" => $row]); ?>
 
         <? else: ?>
           <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($row['number'])?></th>
