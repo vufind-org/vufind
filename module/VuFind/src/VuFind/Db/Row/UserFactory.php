@@ -67,7 +67,7 @@ class UserFactory extends RowGatewayFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $config = $container->get('VuFind\Config')->get('config');
+        $config = $container->get('VuFind\Config\PluginManager')->get('config');
         $privacy = isset($config->Authentication->privacy)
             && $config->Authentication->privacy;
         $rowClass = $privacy ? $this->privateUserClass : $requestedName;

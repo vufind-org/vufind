@@ -51,7 +51,7 @@ class Factory
      */
     public static function getAddThis(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         return new AddThis(
             isset($config->AddThis->key) ? $config->AddThis->key : false
         );
@@ -187,7 +187,7 @@ class Factory
      */
     public static function getFeedback(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $enabled = isset($config->Feedback->tab_enabled)
             ? $config->Feedback->tab_enabled : false;
         return new Feedback($enabled);
@@ -216,7 +216,7 @@ class Factory
      */
     public static function getGeoCoords(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('searches');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('searches');
         $coords = isset($config->MapSelection->default_coordinates)
             ? $config->MapSelection->default_coordinates : false;
         return new GeoCoords($coords);
@@ -231,7 +231,7 @@ class Factory
      */
     public static function getGoogleAnalytics(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $key = isset($config->GoogleAnalytics->apiKey)
             ? $config->GoogleAnalytics->apiKey : false;
         $universal = isset($config->GoogleAnalytics->universal)
@@ -264,7 +264,7 @@ class Factory
      */
     public static function getPiwik(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $url = isset($config->Piwik->url) ? $config->Piwik->url : false;
         $options = [
             'siteId' => isset($config->Piwik->site_id) ? $config->Piwik->site_id : 1,
@@ -304,7 +304,7 @@ class Factory
      */
     public static function getHistoryLabel(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $config = isset($config->SearchHistoryLabels)
             ? $config->SearchHistoryLabels->toArray() : [];
         $helpers = $sm->get('ViewHelperManager');
@@ -345,7 +345,7 @@ class Factory
      */
     public static function getKeepAlive(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         return new KeepAlive(
             isset($config->Session->keepAlive) ? $config->Session->keepAlive : 0
         );
@@ -360,7 +360,7 @@ class Factory
      */
     public static function getOpenUrl(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $openUrlRules = json_decode(
             file_get_contents(
                 \VuFind\Config\Locator::getConfigPath('OpenUrlRules.json')
@@ -388,7 +388,7 @@ class Factory
     public static function getProxyUrl(ServiceManager $sm)
     {
         return new ProxyUrl(
-            $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 
@@ -403,7 +403,7 @@ class Factory
     {
         return new Recaptcha(
             $sm->get('VuFind\Recaptcha'),
-            $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 
@@ -417,7 +417,7 @@ class Factory
     public static function getRecord(ServiceManager $sm)
     {
         $helper = new Record(
-            $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
         $helper->setCoverRouter(
             $sm->get('VuFind\Cover\Router')
@@ -474,7 +474,7 @@ class Factory
      */
     public static function getSafeMoneyFormat(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $defaultCurrency = isset($config->Site->defaultCurrency)
             ? $config->Site->defaultCurrency : null;
         return new SafeMoneyFormat($defaultCurrency);
@@ -489,7 +489,7 @@ class Factory
      */
     public static function getSearchBox(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config');
+        $config = $sm->get('VuFind\Config\PluginManager');
         $mainConfig = $config->get('config');
         $searchboxConfig = $config->get('searchbox')->toArray();
         $includeAlphaOptions
@@ -586,7 +586,7 @@ class Factory
      */
     public static function getSyndeticsPlus(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         return new SyndeticsPlus(
             isset($config->Syndetics) ? $config->Syndetics : null
         );
@@ -601,7 +601,7 @@ class Factory
      */
     public static function getSystemEmail(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         return new SystemEmail(
             isset($config->Site->email) ? $config->Site->email : ''
         );

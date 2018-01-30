@@ -59,7 +59,7 @@ class FeedbackController extends AbstractBase
             }
 
             // These settings are set in the feedback settion of your config.ini
-            $config = $this->serviceLocator->get('VuFind\Config')
+            $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
                 ->get('config');
             $feedback = isset($config->Feedback) ? $config->Feedback : null;
             $recipient_email = isset($feedback->recipient_email)

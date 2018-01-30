@@ -65,7 +65,7 @@ class ConfigurationBasedFactory
         $parts = explode('\\', $requestedName);
         $config = end($parts);
         // Set up options based on global VuFind settings:
-        $configReader = $sm->get('VuFind\Config');
+        $configReader = $sm->get('VuFind\Config\PluginManager');
         $globalConfig = $configReader->get('config');
         $options = [
             'enabled' => isset($globalConfig->Hierarchy->showTree)

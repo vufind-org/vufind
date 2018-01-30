@@ -99,8 +99,8 @@ class Bootstrapper
     {
         // Create the configuration manager:
         $app = $this->event->getApplication();
-        $serviceManager = $app->getServiceManager();
-        $this->config = $serviceManager->get('VuFind\Config')->get('config');
+        $sm = $app->getServiceManager();
+        $this->config = $sm->get('VuFind\Config\PluginManager')->get('config');
     }
 
     /**

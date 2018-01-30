@@ -154,7 +154,7 @@ class AbstractBase extends AbstractActionController
         $view = $this->createViewModel($params);
 
         // Load configuration and current user for convenience:
-        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
+        $config = $this->getConfig();
         $view->disableFrom
             = (isset($config->Mail->disable_from) && $config->Mail->disable_from);
         $view->editableSubject = isset($config->Mail->user_editable_subjects)
@@ -367,7 +367,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getConfig($id = 'config')
     {
-        return $this->serviceLocator->get('VuFind\Config')->get($id);
+        return $this->serviceLocator->get('VuFind\Config\PluginManager')->get($id);
     }
 
     /**

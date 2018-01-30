@@ -59,7 +59,8 @@ class SummonController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('Summon');
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('Summon');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;
     }
@@ -160,7 +161,7 @@ class SummonController extends AbstractSearch
         $language = $this->serviceLocator->get('VuFind\Translator')->getLocale();
         $cacheKey = 'summonSearchAdvancedFacetsList-' . $language;
         if (!($list = $cache->getItem($cacheKey))) {
-            $config = $this->serviceLocator->get('VuFind\Config')
+            $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
                 ->get('Summon');
             $limit = isset($config->Advanced_Facet_Settings->facet_limit)
                 ? $config->Advanced_Facet_Settings->facet_limit : 100;

@@ -193,7 +193,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $this->setupSearchService();
             $cfg = ['abstract_factories' => ['VuFind\Config\PluginFactory']];
             $this->serviceManager->setService(
-                'VuFind\Config',
+                'VuFind\Config\PluginManager',
                 new \VuFind\Config\PluginManager($this->serviceManager, $cfg)
             );
             $this->serviceManager->setService(

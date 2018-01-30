@@ -127,7 +127,7 @@ class Factory
     public static function getManager(ServiceManager $sm)
     {
         // Set up configuration:
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         try {
             // Check if the catalog wants to hide the login link, and override
             // the configuration if necessary.

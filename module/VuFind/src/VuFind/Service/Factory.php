@@ -52,7 +52,7 @@ class Factory
     public static function getAccountCapabilities(ServiceManager $sm)
     {
         return new \VuFind\Config\AccountCapabilities(
-            $sm->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\Config\PluginManager')->get('config'),
             $sm->get('VuFind\AuthManager')
         );
     }
@@ -67,23 +67,8 @@ class Factory
     public static function getCacheManager(ServiceManager $sm)
     {
         return new \VuFind\Cache\Manager(
-            $sm->get('VuFind\Config')->get('config'),
-            $sm->get('VuFind\Config')->get('searches')
-        );
-    }
-
-    /**
-     * Construct the config manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Config\PluginManager
-     */
-    public static function getConfig(ServiceManager $sm)
-    {
-        $config = $sm->get('Config');
-        return new \VuFind\Config\PluginManager(
-            $sm, $config['vufind']['config_reader']
+            $sm->get('VuFind\Config\PluginManager')->get('config'),
+            $sm->get('VuFind\Config\PluginManager')->get('searches')
         );
     }
 
@@ -96,7 +81,7 @@ class Factory
      */
     public static function getCookieManager(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $path = '/';
         if (isset($config->Cookies->limit_by_path)
             && $config->Cookies->limit_by_path
@@ -130,7 +115,7 @@ class Factory
     public static function getDateConverter(ServiceManager $sm)
     {
         return new \VuFind\Date\Converter(
-            $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 
@@ -156,7 +141,7 @@ class Factory
     public static function getDbAdapterFactory(ServiceManager $sm)
     {
         return new \VuFind\Db\AdapterFactory(
-            $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 
@@ -194,8 +179,8 @@ class Factory
     public static function getExport(ServiceManager $sm)
     {
         return new \VuFind\Export(
-            $sm->get('VuFind\Config')->get('config'),
-            $sm->get('VuFind\Config')->get('export')
+            $sm->get('VuFind\Config\PluginManager')->get('config'),
+            $sm->get('VuFind\Config\PluginManager')->get('export')
         );
     }
 
@@ -276,7 +261,7 @@ class Factory
      */
     public static function getHttp(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $options = [];
         if (isset($config->Proxy->host)) {
             $options['proxy_host'] = $config->Proxy->host;
@@ -302,7 +287,7 @@ class Factory
     public static function getHMAC(ServiceManager $sm)
     {
         return new \VuFind\Crypt\HMAC(
-            $sm->get('VuFind\Config')->get('config')->Security->HMACkey
+            $sm->get('VuFind\Config\PluginManager')->get('config')->Security->HMACkey
         );
     }
 
@@ -316,9 +301,9 @@ class Factory
     public static function getILSConnection(ServiceManager $sm)
     {
         $catalog = new \VuFind\ILS\Connection(
-            $sm->get('VuFind\Config')->get('config')->Catalog,
+            $sm->get('VuFind\Config\PluginManager')->get('config')->Catalog,
             $sm->get('VuFind\ILSDriverPluginManager'),
-            $sm->get('VuFind\Config')
+            $sm->get('VuFind\Config\PluginManager')
         );
         return $catalog->setHoldConfig($sm->get('VuFind\ILSHoldSettings'));
     }
@@ -346,7 +331,8 @@ class Factory
     {
         return new \VuFind\ILS\Logic\Holds(
             $sm->get('VuFind\ILSAuthenticator'), $sm->get('VuFind\ILSConnection'),
-            $sm->get('VuFind\HMAC'), $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\HMAC'),
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 
@@ -360,7 +346,7 @@ class Factory
     public static function getILSHoldSettings(ServiceManager $sm)
     {
         return new \VuFind\ILS\HoldSettings(
-            $sm->get('VuFind\Config')->get('config')->Catalog
+            $sm->get('VuFind\Config\PluginManager')->get('config')->Catalog
         );
     }
 
@@ -375,7 +361,8 @@ class Factory
     {
         return new \VuFind\ILS\Logic\TitleHolds(
             $sm->get('VuFind\ILSAuthenticator'), $sm->get('VuFind\ILSConnection'),
-            $sm->get('VuFind\HMAC'), $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\HMAC'),
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 
@@ -407,7 +394,7 @@ class Factory
      */
     public static function getRecaptcha(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $siteKey = isset($config->Captcha->siteKey)
             ? $config->Captcha->siteKey
             : (isset($config->Captcha->publicKey)
@@ -454,7 +441,7 @@ class Factory
     {
         return new \VuFind\Record\Cache(
             $sm->get('VuFind\RecordDriverPluginManager'),
-            $sm->get('VuFind\Config')->get('RecordCache'),
+            $sm->get('VuFind\Config\PluginManager')->get('RecordCache'),
             $sm->get('VuFind\DbTablePluginManager')->get('Record')
         );
     }
@@ -469,7 +456,7 @@ class Factory
     public static function getPermissionDeniedManager(ServiceManager $sm)
     {
         return new \VuFind\Role\PermissionDeniedManager(
-            $sm->get('VuFind\Config')->get('permissionBehavior')
+            $sm->get('VuFind\Config\PluginManager')->get('permissionBehavior')
         );
     }
 
@@ -483,7 +470,7 @@ class Factory
     public static function getPermissionManager(ServiceManager $sm)
     {
         $permManager = new \VuFind\Role\PermissionManager(
-            $sm->get('VuFind\Config')->get('permissions')->toArray()
+            $sm->get('VuFind\Config\PluginManager')->get('permissions')->toArray()
         );
         $permManager->setAuthorizationService(
             $sm->get('ZfcRbac\Service\AuthorizationService')
@@ -530,7 +517,7 @@ class Factory
     {
         return new \VuFind\Record\Router(
             $sm->get('VuFind\RecordLoader'),
-            $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 
@@ -706,7 +693,7 @@ class Factory
      */
     public static function getSearchTabsHelper(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $tabConfig = isset($config->SearchTabs)
             ? $config->SearchTabs->toArray() : [];
         $filterConfig = isset($config->SearchTabsFilters)
@@ -756,7 +743,7 @@ class Factory
      */
     public static function getTags(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $maxLength = isset($config->Social->max_tag_length)
             ? $config->Social->max_tag_length : 64;
         return new \VuFind\Tags($maxLength);
@@ -775,7 +762,7 @@ class Factory
         $translator = $factory->createService($sm);
 
         // Set up the ExtendedIni plugin:
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $pathStack = [
             APPLICATION_PATH . '/languages',
             LOCAL_OVERRIDE_DIR . '/languages'
@@ -825,7 +812,7 @@ class Factory
      */
     public static function getWorldCatUtils(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $client = $sm->get('VuFind\Http')->createClient();
         $ip = $sm->get('Request')->getServer()->get('SERVER_ADDR');
         return new \VuFind\Connection\WorldCatUtils(

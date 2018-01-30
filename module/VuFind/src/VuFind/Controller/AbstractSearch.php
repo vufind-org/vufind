@@ -307,7 +307,8 @@ class AbstractSearch extends AbstractBase
         }
 
         // Search toolbar
-        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('config');
         $view->showBulkOptions = isset($config->Site->showBulkOptions)
           && $config->Site->showBulkOptions;
 
@@ -326,7 +327,8 @@ class AbstractSearch extends AbstractBase
     {
         // Jump to only result, if configured
         $default = null;
-        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('config');
         if (isset($config->Record->jump_to_single_search_result)
             && $config->Record->jump_to_single_search_result
             && $results->getResultTotal() == 1
@@ -493,7 +495,8 @@ class AbstractSearch extends AbstractBase
      */
     protected function getRangeFieldList($config, $section, $filter)
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get($config);
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get($config);
         $fields = isset($config->SpecialFacets->$section)
             ? $config->SpecialFacets->$section->toArray() : [];
 
@@ -646,7 +649,8 @@ class AbstractSearch extends AbstractBase
         $section = isset($params[1]) ? $params[1] : 'CheckboxFacets';
 
         // Load config file:
-        $config = $this->serviceLocator->get('VuFind\Config')->get($config);
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get($config);
 
         // Process checkbox settings in config:
         if (substr($section, 0, 1) == '~') {        // reverse flag
@@ -704,7 +708,7 @@ class AbstractSearch extends AbstractBase
                 ? 'count'
                 : current(array_keys($facetSortOptions));
         }
-        $config = $this->serviceLocator->get('VuFind\Config')
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
             ->get($options->getFacetsIni());
         $limit = isset($config->Results_Settings->lightboxLimit)
             ? $config->Results_Settings->lightboxLimit

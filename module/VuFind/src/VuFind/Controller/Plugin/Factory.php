@@ -128,7 +128,7 @@ class Factory
      */
     public static function getNewItems(ServiceManager $sm)
     {
-        $search = $sm->get('VuFind\Config')->get('searches');
+        $search = $sm->get('VuFind\Config\PluginManager')->get('searches');
         $config = isset($search->NewItem)
             ? $search->NewItem : new \Zend\Config\Config([]);
         return new NewItems($config);
@@ -158,7 +158,7 @@ class Factory
      */
     public static function getRecaptcha(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         return new Recaptcha(
             $sm->get('VuFind\Recaptcha'),
             $config
@@ -174,7 +174,7 @@ class Factory
      */
     public static function getReserves(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $useIndex = isset($config->Reserves->search_enabled)
             && $config->Reserves->search_enabled;
         $ss = $useIndex ? $sm->get('VuFind\Search') : null;

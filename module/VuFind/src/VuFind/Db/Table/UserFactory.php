@@ -57,7 +57,7 @@ class UserFactory extends GatewayFactory
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $config = $container->get('VuFind\Config')->get('config');
+        $config = $container->get('VuFind\Config\PluginManager')->get('config');
         $session = null;
         if (isset($config->Authentication->privacy)
             && $config->Authentication->privacy

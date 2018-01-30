@@ -58,7 +58,7 @@ class AbstractSyndeticsFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $config = $container->get('VuFind\Config')->get('config');
+        $config = $container->get('VuFind\Config\PluginManager')->get('config');
 
         // Special case: if the class name ends in Plus, we need to strip off
         // the "Plus" and instead configure the base Syndetics class into "plus"

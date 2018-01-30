@@ -65,7 +65,7 @@ class Factory
      */
     public static function getAuthorInfo(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         return new AuthorInfo(
             $sm->get('VuFind\SearchResultsPluginManager'),
             $sm->get('VuFind\Http')->createClient(),
@@ -111,7 +111,7 @@ class Factory
     public static function getCollectionSideFacets(ServiceManager $sm)
     {
         return new CollectionSideFacets(
-            $sm->get('VuFind\Config'),
+            $sm->get('VuFind\Config\PluginManager'),
             $sm->get('VuFind\Search\Solr\HierarchicalFacetHelper')
         );
     }
@@ -125,7 +125,7 @@ class Factory
      */
     public static function getDPLATerms(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         if (!isset($config->DPLA->apiKey)) {
             throw new \Exception('DPLA API key missing from configuration.');
         }
@@ -144,7 +144,7 @@ class Factory
      */
     public static function getEuropeanaResults(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         return new EuropeanaResults(
             $config->Content->europeanaAPI
         );
@@ -160,7 +160,7 @@ class Factory
     public static function getExpandFacets(ServiceManager $sm)
     {
         return new ExpandFacets(
-            $sm->get('VuFind\Config'),
+            $sm->get('VuFind\Config\PluginManager'),
             $sm->get('VuFind\SearchResultsPluginManager')
                 ->get('Solr')
         );
@@ -177,7 +177,7 @@ class Factory
     {
         $parentSm = $sm;
         return new FavoriteFacets(
-            $parentSm->get('VuFind\Config'),
+            $parentSm->get('VuFind\Config\PluginManager'),
             null,
             $parentSm->get('VuFind\AccountCapabilities')->getTagSetting()
         );
@@ -192,7 +192,7 @@ class Factory
      */
     public function getMapSelection(ServiceManager $sm)
     {
-        $config = $sm->get('Vufind\Config');
+        $config = $sm->get('VuFind\Config\PluginManager');
         $backend = $sm->get('VuFind\Search\BackendManager');
         $solr = $backend->get('Solr');
         return new MapSelection($config, $solr);
@@ -223,7 +223,7 @@ class Factory
     public static function getSideFacets(ServiceManager $sm)
     {
         return new SideFacets(
-            $sm->get('VuFind\Config'),
+            $sm->get('VuFind\Config\PluginManager'),
             $sm->get('VuFind\Search\Solr\HierarchicalFacetHelper')
         );
     }
@@ -308,7 +308,7 @@ class Factory
     public static function getTopFacets(ServiceManager $sm)
     {
         return new TopFacets(
-            $sm->get('VuFind\Config')
+            $sm->get('VuFind\Config\PluginManager')
         );
     }
 
@@ -322,7 +322,7 @@ class Factory
     public static function getVisualFacets(ServiceManager $sm)
     {
         return new VisualFacets(
-            $sm->get('VuFind\Config')
+            $sm->get('VuFind\Config\PluginManager')
         );
     }
 

@@ -57,8 +57,8 @@ class Factory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         // Load configurations:
-        $mainConfig = $sm->get('VuFind\Config')->get('config');
-        $smsConfig = $sm->get('VuFind\Config')->get('sms');
+        $mainConfig = $sm->get('VuFind\Config\PluginManager')->get('config');
+        $smsConfig = $sm->get('VuFind\Config\PluginManager')->get('sms');
 
         // Determine SMS type:
         $type = isset($smsConfig->General->smsType)

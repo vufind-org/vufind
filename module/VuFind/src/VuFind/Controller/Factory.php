@@ -53,7 +53,7 @@ class Factory extends GenericFactory
     {
         return new BrowseController(
             $sm,
-            $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 
@@ -86,7 +86,7 @@ class Factory extends GenericFactory
     {
         return new CollectionController(
             $sm,
-            $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 
@@ -101,7 +101,7 @@ class Factory extends GenericFactory
     {
         return new CollectionsController(
             $sm,
-            $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 
@@ -115,7 +115,7 @@ class Factory extends GenericFactory
     public static function getIndexController(ServiceManager $sm)
     {
         return new IndexController(
-            $sm->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\Config\PluginManager')->get('config'),
             $sm->get('VuFind\AuthManager')
         );
     }
@@ -131,7 +131,7 @@ class Factory extends GenericFactory
     {
         return new RecordController(
             $sm,
-            $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 

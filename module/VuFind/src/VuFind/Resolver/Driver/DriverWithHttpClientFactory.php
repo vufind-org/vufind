@@ -58,7 +58,7 @@ class DriverWithHttpClientFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $config = $container->get('VuFind\Config')->get('config');
+        $config = $container->get('VuFind\Config\PluginManager')->get('config');
         return new $requestedName(
             $config->OpenURL->url,
             $container->get('VuFind\Http')->createClient(),

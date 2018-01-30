@@ -1,6 +1,6 @@
 <?php
 /**
- * Solr Hierarchy tree data source plugin factory.
+ * Plugin Manager factory.
  *
  * PHP version 5
  *
@@ -20,25 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  HierarchyTree_DataSource
+ * @package  ServiceManager
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Hierarchy\TreeDataSource;
+namespace VuFind\Config;
 
 use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Solr Hierarchy tree data source plugin factory.
+ * Plugin Manager factory.
  *
  * @category VuFind
- * @package  HierarchyTree_DataSource
+ * @package  ServiceManager
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class PluginManagerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -57,26 +58,12 @@ class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        if ($options !== null) {
-            throw new \Exception('Unexpected options sent to factory!');
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        $cacheDir = $container->get('VuFind\CacheManager')
-            ->getCacheDir(false);
-        $hierarchyFilters = $container->get('VuFind\Config\PluginManager')
-            ->get('HierarchyDefault');
-        $filters = isset($hierarchyFilters->HierarchyTree->filterQueries)
-          ? $hierarchyFilters->HierarchyTree->filterQueries->toArray()
-          : [];
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $batchSize = isset($config->Index->cursor_batch_size)
-            ? $config->Index->cursor_batch_size : 1000;
-        $solr = $container->get('VuFind\Search\BackendManager')
-            ->get('Solr')->getConnector();
-        $formatterManager = $container
-            ->get('VuFind\HierarchyTreeDataFormatterPluginManager');
+        $config = $container->get('Config');
         return new $requestedName(
-            $solr, $formatterManager, rtrim($cacheDir, '/') . '/hierarchy',
-            $filters, $batchSize
+            $container, $config['vufind']['config_reader']
         );
     }
 }

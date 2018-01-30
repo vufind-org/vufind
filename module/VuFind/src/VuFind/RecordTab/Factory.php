@@ -52,7 +52,7 @@ class Factory
     public static function getCollectionHierarchyTree(ServiceManager $sm)
     {
         return new CollectionHierarchyTree(
-            $sm->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\Config\PluginManager')->get('config'),
             $sm->get('VuFind\RecordLoader')
         );
     }
@@ -81,7 +81,7 @@ class Factory
      */
     public static function getExcerpt(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         // Only instantiate the loader if the feature is enabled:
         if (isset($config->Content->excerpts)) {
             $loader = $sm->get('VuFind\Content\PluginManager')
@@ -128,7 +128,7 @@ class Factory
     public static function getHierarchyTree(ServiceManager $sm)
     {
         return new HierarchyTree(
-            $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 
@@ -144,7 +144,7 @@ class Factory
         // If VuFind is configured to suppress the holdings tab when the
         // ILS driver specifies no holdings, we need to pass in a connection
         // object:
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         if (isset($config->Site->hideHoldingsTabWhenEmpty)
             && $config->Site->hideHoldingsTabWhenEmpty
         ) {
@@ -177,7 +177,7 @@ class Factory
      */
     public static function getMap(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $mapType = isset($config->Content->recordMap)
             ? $config->Content->recordMap : null;
         $options = [];
@@ -199,7 +199,7 @@ class Factory
      */
     public static function getPreview(ServiceManager $sm)
     {
-        $cfg = $sm->get('VuFind\Config')->get('config');
+        $cfg = $sm->get('VuFind\Config\PluginManager')->get('config');
         // currently only active if config [content] [previews] contains google
         // and googleoptions[tab] is not empty.
         $active = false;
@@ -240,7 +240,7 @@ class Factory
      */
     public static function getReviews(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         // Only instantiate the loader if the feature is enabled:
         if (isset($config->Content->reviews)) {
             $loader = $sm->get('VuFind\Content\PluginManager')
@@ -260,7 +260,7 @@ class Factory
      */
     public static function getTOC(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         // Only instantiate the loader if the feature is enabled:
         if (isset($config->Content->toc)) {
             $loader = $sm->get('VuFind\Content\PluginManager')
@@ -281,7 +281,7 @@ class Factory
     public static function getUserComments(ServiceManager $sm)
     {
         $capabilities = $sm->get('VuFind\AccountCapabilities');
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $useRecaptcha = isset($config->Captcha) && isset($config->Captcha->forms)
             && (trim($config->Captcha->forms) === '*'
             || strpos($config->Captcha->forms, 'userComments'));

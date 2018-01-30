@@ -75,8 +75,8 @@ class CombinedController extends AbstractSearch
 
         // Validate configuration:
         $sectionId = $this->params()->fromQuery('id');
-        $config = $this->serviceLocator->get('VuFind\Config')->get('combined')
-            ->toArray();
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('combined')->toArray();
         $tabConfig = $this->getTabConfig($config);
         if (!isset($tabConfig[$sectionId])) {
             throw new \Exception('Illegal ID');
@@ -108,7 +108,7 @@ class CombinedController extends AbstractSearch
             $html = '';
         } else {
             $cart = $this->serviceLocator->get('VuFind\Cart');
-            $general = $this->serviceLocator->get('VuFind\Config')
+            $general = $this->serviceLocator->get('VuFind\Config\PluginManager')
                 ->get('config');
             $viewParams = [
                 'searchClassId' => $searchClassId,
@@ -154,8 +154,8 @@ class CombinedController extends AbstractSearch
         $combinedResults = [];
         $options = $this->serviceLocator
             ->get('VuFind\SearchOptionsPluginManager');
-        $config = $this->serviceLocator->get('VuFind\Config')->get('combined')
-            ->toArray();
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('combined')->toArray();
         $supportsCart = false;
         $supportsCartOptions = [];
         foreach ($this->getTabConfig($config) as $current => $settings) {
@@ -202,7 +202,8 @@ class CombinedController extends AbstractSearch
         }
 
         // Get default config for showBulkOptions
-        $settings = $this->serviceLocator->get('VuFind\Config')->get('config');
+        $settings = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('config');
 
         // Build view model:
         return $this->createViewModel(

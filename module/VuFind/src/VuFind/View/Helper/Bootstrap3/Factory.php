@@ -65,7 +65,7 @@ class Factory
      */
     public static function getLayoutClass(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $sidebarOnLeft = !isset($config->Site->sidebarOnLeft)
             ? false : $config->Site->sidebarOnLeft;
         $mirror = !isset($config->Site->mirrorSidebarInRTL)
@@ -93,7 +93,7 @@ class Factory
     {
         return new Recaptcha(
             $sm->get('VuFind\Recaptcha'),
-            $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 }

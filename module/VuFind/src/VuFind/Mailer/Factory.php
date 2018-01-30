@@ -99,7 +99,7 @@ class Factory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         // Load configurations:
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
 
         // Create service:
         return new \VuFind\Mailer\Mailer($this->getTransport($config));

@@ -117,7 +117,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getConfig($id = 'config')
     {
-        return $this->serviceLocator->get('VuFind\Config')->get($id);
+        return $this->serviceLocator->get('VuFind\Config\PluginManager')->get($id);
     }
 
     /**

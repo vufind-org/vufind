@@ -141,7 +141,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->serviceLocator = $sm;
-        $this->config         = $this->serviceLocator->get('VuFind\Config');
+        $this->config = $this->serviceLocator->get('VuFind\Config\PluginManager');
         if ($this->serviceLocator->has('VuFind\Logger')) {
             $this->logger = $this->serviceLocator->get('VuFind\Logger');
         }

@@ -51,7 +51,7 @@ class Factory
      */
     protected static function getPipelineConfig(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $default = false;
         if (isset($config['Site']['asset_pipeline'])) {
             $settings = array_map(

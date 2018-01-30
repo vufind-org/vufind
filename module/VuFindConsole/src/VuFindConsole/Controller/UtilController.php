@@ -281,7 +281,7 @@ class UtilController extends AbstractBase
     public function sitemapAction()
     {
         // Build sitemap and display appropriate warnings if needed:
-        $configLoader = $this->serviceLocator->get('VuFind\Config');
+        $configLoader = $this->serviceLocator->get('VuFind\Config\PluginManager');
         $generator = new Sitemap(
             $this->serviceLocator->get('VuFind\Search\BackendManager'),
             $configLoader->get('config')->Site->url, $configLoader->get('sitemap')

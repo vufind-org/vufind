@@ -92,7 +92,7 @@ class Factory
     {
         return new Shibboleth(
             $sm->get('Request'),
-            $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 

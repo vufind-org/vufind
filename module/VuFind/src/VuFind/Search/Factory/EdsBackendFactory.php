@@ -90,7 +90,8 @@ class EdsBackendFactory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->serviceLocator = $sm;
-        $this->edsConfig = $this->serviceLocator->get('VuFind\Config')->get('EDS');
+        $this->edsConfig = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('EDS');
         if ($this->serviceLocator->has('VuFind\Logger')) {
             $this->logger = $this->serviceLocator->get('VuFind\Logger');
         }

@@ -178,7 +178,7 @@ class LoggerFactory implements FactoryInterface
      */
     protected function configureLogger(ContainerInterface $sm, Logger $logger)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
 
         $hasWriter = false;
 

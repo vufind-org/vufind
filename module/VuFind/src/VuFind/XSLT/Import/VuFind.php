@@ -82,7 +82,8 @@ class VuFind
      */
     public static function getConfig($config = 'config')
     {
-        return static::$serviceLocator->get('VuFind\Config')->get($config);
+        return static::$serviceLocator->get('VuFind\Config\PluginManager')
+            ->get($config);
     }
 
     /**

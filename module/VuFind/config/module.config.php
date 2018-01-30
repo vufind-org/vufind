@@ -287,7 +287,7 @@ $config = [
             'VuFind\CacheManager' => 'VuFind\Service\Factory::getCacheManager',
             'VuFind\Cart' => 'VuFind\CartFactory',
             'VuFind\ChannelProvider\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'VuFind\Config' => 'VuFind\Service\Factory::getConfig',
+            'VuFind\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',
             'VuFind\Content\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\AuthorNotes\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\Covers\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -361,6 +361,7 @@ $config = [
             'VuFind\AuthPluginManager' => 'VuFind\Auth\PluginManager',
             'VuFind\AutocompletePluginManager' => 'VuFind\Autocomplete\PluginManager',
             'VuFind\ChannelProviderPluginManager' => 'VuFind\ChannelProvider\PluginManager',
+            'VuFind\Config' => 'VuFind\Config\PluginManager',
             'VuFind\ContentPluginManager' => 'VuFind\Content\PluginManager',
             'VuFind\ContentAuthorNotesPluginManager' => 'VuFind\Content\AuthorNotes\PluginManager',
             'VuFind\ContentCoversPluginManager' => 'VuFind\Content\Covers\PluginManager',
@@ -394,9 +395,7 @@ $config = [
     // unrelated to specific Zend Framework 2 components).
     'vufind' => [
         // The config reader is a special service manager for loading .ini files:
-        'config_reader' => [
-            'abstract_factories' => ['VuFind\Config\PluginFactory'],
-        ],
+        'config_reader' => [ /* see VuFind\Config\PluginManager for defaults */ ],
         // PostgreSQL sequence mapping
         'pgsql_seq_mapping'  => [
             'comments'         => ['id', 'comments_id_seq'],

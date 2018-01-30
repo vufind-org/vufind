@@ -86,7 +86,7 @@ class PrimoBackendFactory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->serviceLocator = $sm;
-        $configReader = $this->serviceLocator->get('VuFind\Config');
+        $configReader = $this->serviceLocator->get('VuFind\Config\PluginManager');
         $this->primoConfig = $configReader->get('Primo');
         if ($this->serviceLocator->has('VuFind\Logger')) {
             $this->logger = $this->serviceLocator->get('VuFind\Logger');
