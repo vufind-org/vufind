@@ -61,6 +61,12 @@
       );
     ?>
   </table>
+
+  <? if ($this->accountDeletion): ?>
+    <div id="account-actions">
+      <a class="btn btn-primary" href="<?=$this->url('myresearch-deleteaccount') ?>" data-lightbox><i class="fa fa-times"></i> <?=$this->transEsc('delete_account_title') ?></a>
+    </div>
+  <? endif; ?>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">

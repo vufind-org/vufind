@@ -654,4 +654,89 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         return ['loggedin'];
     }
+
+    /**
+     * Anonymize user account by updating username to a random string
+     * and setting other user object fields (besides id) to their default values.
+     * User comments are preserved. Library cards, saved searches and lists are
+     * deleted.
+     *
+     * @return void
+     */
+    public function anonymizeAccount()
+    {
+        $connection = $this->sql->getAdapter()->getDriver()->getConnection();
+
+        try {
+            $connection->beginTransaction();
+            $this->deletePersonalData();
+            $this->anonymizeUser();
+            $connection->commit();
+        } catch (\Exception $e) {
+            $connection->rollback();
+            throw $e;
+        }
+    }
+
+    /**
+     * Delete any personal data from the user's account
+     *
+     * @return void
+     */
+    protected function deletePersonalData()
+    {
+        // Delete library cards
+        $cards = $this->getLibraryCards();
+        foreach ($cards as $card) {
+            $card->delete();
+        }
+
+        // Delete lists (linked user_resource objects cascade)
+        $lists = $this->getLists();
+        foreach ($lists as $list) {
+            $list->delete($this);
+        }
+
+        // Delete saved searches
+        $searchTable = $this->getDbTable('Search');
+        $searches = $searchTable->getSearches(null, $this->id);
+        foreach ($searches as $search) {
+            $search->delete();
+        }
+    }
+
+    /**
+     * Anonymize the current user object
+     *
+     * @return void
+     */
+    protected function anonymizeUser()
+    {
+        foreach ($this->toArray() as $key => $value) {
+            switch ($key) {
+            case 'id':
+                break;
+            case 'cat_id':
+            case 'cat_username':
+            case 'cat_password':
+                $this->{$key} = null;
+                break;
+            case 'created':
+                $this->created = '2001-01-01 00:00:00';
+                break;
+            case 'username':
+                $this->username = 'deleted:' . uniqid();
+            case 'finna_due_date_reminder':
+                $this->finna_due_date_reminder = 0;
+                break;
+            case 'finna_last_expiration_reminder':
+            case 'finna_last_login':
+                $this->{$key} = '2001-01-01 00:00:00';
+                break;
+            default:
+                $this->{$key} = '';
+            }
+        }
+        $this->save();
+    }
 }

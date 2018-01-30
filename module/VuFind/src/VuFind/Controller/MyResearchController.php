@@ -417,6 +417,10 @@ class MyResearchController extends AbstractBase
             // locations, they are not supported and we should ignore them.
         }
 
+        $config = $this->getConfig();
+        $view->accountDeletion
+            = !empty($config->Authentication->account_deletion);
+
         return $view;
     }
 
@@ -1678,5 +1682,49 @@ class MyResearchController extends AbstractBase
         if (!empty($method)) {
             $this->getAuthManager()->setAuthMethod($method);
         }
+    }
+
+    /**
+     * Account deletion
+     *
+     * @return mixed
+     */
+    public function deleteAccountAction()
+    {
+        // Force login:
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->forceLogin();
+        }
+
+        $config = $this->getConfig();
+        if (empty($config->Authentication->account_deletion)) {
+            throw new \VuFind\Exception\BadRequest();
+        }
+
+        $view = $this->createViewModel();
+        $view->accountDeleted = false;
+        if ($this->formWasSubmitted('submit')) {
+            $csrf = $this->serviceLocator->get('VuFind\CsrfValidator');
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest(
+                    'error_inconsistent_parameters'
+                );
+            }
+
+            if (!empty($config->Authentication->anonymize_accounts)) {
+                $user->anonymizeAccount();
+            } else {
+                $user->delete();
+            }
+
+            $view->accountDeleted = true;
+            $view->redirectUrl = $this->getAuthManager()->logout(
+                $this->getServerUrl('home')
+            );
+        } elseif ($this->formWasSubmitted('reset')) {
+            return $this->redirect()->toRoute('myresearch-profile');
+        }
+        return $view;
     }
 }

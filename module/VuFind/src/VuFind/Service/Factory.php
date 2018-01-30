@@ -277,6 +277,26 @@ class Factory
     }
 
     /**
+     * Construct the CSRF validator.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Zend\Validator\Csrf
+     */
+    public static function getCsrfValidator(ServiceManager $sm)
+    {
+        $config = $sm->get('VuFind\Config')->get('config');
+        $sessionManager = $sm->get('VuFind\SessionManager');
+        return new \Zend\Validator\Csrf(
+            [
+                'session' => new \Zend\Session\Container('csrf', $sessionManager),
+                'salt' => isset($config->Security->HMACkey)
+                    ? $config->Security->HMACkey : 'VuFindCsrfSalt'
+            ]
+        );
+    }
+
+    /**
      * Construct the date converter.
      *
      * @param ServiceManager $sm Service manager.
