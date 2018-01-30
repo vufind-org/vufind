@@ -722,6 +722,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'in_transit' => isset($entry['found']) && $entry['found'] == 't',
                 'requestId' => $entry['reserve_id'],
                 'title' => $title,
+                'volume' => $volume,
                 'frozen' => $frozen
             ];
         }
