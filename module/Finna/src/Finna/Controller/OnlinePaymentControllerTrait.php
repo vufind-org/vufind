@@ -215,12 +215,17 @@ trait OnlinePaymentControllerTrait
                 return;
             }
 
+            $patronProfile = array_merge(
+                $patron,
+                $catalog->getMyProfile($patron)
+            );
+
             // Start payment
             $result = $paymentHandler->startPayment(
                 $finesUrl,
                 $ajaxUrl,
                 $user,
-                $patron,
+                $patronProfile,
                 $driver,
                 $payableOnline['amount'],
                 $view->transactionFee,
