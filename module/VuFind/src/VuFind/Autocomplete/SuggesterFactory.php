@@ -60,7 +60,7 @@ class SuggesterFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         array $options = null
     ) {
         return new $requestedName(
-            $container->get('VuFind\AutocompletePluginManager'),
+            $container->get('VuFind\Autocomplete\PluginManager'),
             $container->get('VuFind\Config'),
             $container->get('VuFind\SearchOptionsPluginManager')
         );
