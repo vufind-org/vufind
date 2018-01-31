@@ -1,6 +1,6 @@
 <?php
 /**
- * Account capabilities factory.
+ * Authentication Manager factory.
  *
  * PHP version 5
  *
@@ -20,26 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Config
+ * @package  Authentication
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Config;
+namespace VuFind\Auth;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Account capabilities factory.
+ * Authentication Manager factory.
  *
  * @category VuFind
- * @package  Config
+ * @package  Authentication
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AccountCapabilitiesFactory implements FactoryInterface
+class ManagerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -61,9 +61,35 @@ class AccountCapabilitiesFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName(
-            $container->get('VuFind\Config\PluginManager')->get('config'),
-            $container->get('VuFind\Auth\Manager')
+        // Set up configuration:
+        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        try {
+            // Check if the catalog wants to hide the login link, and override
+            // the configuration if necessary.
+            $catalog = $container->get('VuFind\ILSConnection');
+            if ($catalog->loginIsHidden()) {
+                $config = new \Zend\Config\Config($config->toArray(), true);
+                $config->Authentication->hideLogin = true;
+                $config->setReadOnly();
+            }
+        } catch (\Exception $e) {
+            // Ignore exceptions; if the catalog is broken, throwing an exception
+            // here may interfere with UI rendering. If we ignore it now, it will
+            // still get handled appropriately later in processing.
+            error_log($e->getMessage());
+        }
+
+        // Load remaining dependencies:
+        $userTable = $container->get('VuFind\Db\Table\PluginManager')->get('user');
+        $sessionManager = $container->get('VuFind\SessionManager');
+        $pm = $container->get('VuFind\Auth\PluginManager');
+        $cookies = $container->get('VuFind\CookieManager');
+
+        // Build the object and make sure account credentials haven't expired:
+        $manager = new $requestedName(
+            $config, $userTable, $sessionManager, $pm, $cookies
         );
+        $manager->checkForExpiredCredentials();
+        return $manager;
     }
 }

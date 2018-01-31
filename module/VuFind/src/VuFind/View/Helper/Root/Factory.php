@@ -94,7 +94,7 @@ class Factory
     public static function getAuth(ServiceManager $sm)
     {
         return new Auth(
-            $sm->get('VuFind\AuthManager'),
+            $sm->get('VuFind\Auth\Manager'),
             $sm->get('VuFind\ILSAuthenticator')
         );
     }

@@ -116,7 +116,7 @@ class Factory extends GenericFactory
     {
         return new IndexController(
             $sm->get('VuFind\Config\PluginManager')->get('config'),
-            $sm->get('VuFind\AuthManager')
+            $sm->get('VuFind\Auth\Manager')
         );
     }
 

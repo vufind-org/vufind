@@ -279,7 +279,7 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
-            'VuFind\AuthManager' => 'VuFind\Auth\Factory::getManager',
+            'VuFind\Auth\Manager' => 'VuFind\Auth\ManagerFactory',
             'VuFind\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Autocomplete\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Autocomplete\Suggester' => 'VuFind\Autocomplete\SuggesterFactory',
@@ -359,6 +359,7 @@ $config = [
             'mvctranslator' => 'VuFind\Translator',
             'translator' => 'VuFind\Translator',
             'VuFind\AccountCapabilities' => 'VuFind\Config\AccountCapabilities',
+            'VuFind\AuthManager' => 'VuFind\Auth\Manager',
             'VuFind\AuthPluginManager' => 'VuFind\Auth\PluginManager',
             'VuFind\AutocompletePluginManager' => 'VuFind\Autocomplete\PluginManager',
             'VuFind\CacheManager' => 'VuFind\Cache\Manager',
@@ -548,7 +549,7 @@ $config = [
     ],
     // Authorization configuration:
     'zfc_rbac' => [
-        'identity_provider' => 'VuFind\AuthManager',
+        'identity_provider' => 'VuFind\Auth\Manager',
         'guest_role' => 'guest',
         'role_provider' => [
             'VuFind\Role\DynamicRoleProvider' => [

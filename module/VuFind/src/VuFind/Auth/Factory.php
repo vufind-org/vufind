@@ -105,7 +105,7 @@ class Factory
         // actually utilized.
         $callback = function (& $wrapped, $proxy) use ($sm) {
             // Generate wrapped object:
-            $auth = $sm->get('VuFind\AuthManager');
+            $auth = $sm->get('VuFind\Auth\Manager');
             $catalog = $sm->get('VuFind\ILSConnection');
             $wrapped = new ILSAuthenticator($auth, $catalog);
 
@@ -115,45 +115,6 @@ class Factory
         $cfg = $sm->get('VuFind\ProxyConfig');
         $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
         return $factory->createProxy('VuFind\Auth\ILSAuthenticator', $callback);
-    }
-
-    /**
-     * Construct the authentication manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Manager
-     */
-    public static function getManager(ServiceManager $sm)
-    {
-        // Set up configuration:
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        try {
-            // Check if the catalog wants to hide the login link, and override
-            // the configuration if necessary.
-            $catalog = $sm->get('VuFind\ILSConnection');
-            if ($catalog->loginIsHidden()) {
-                $config = new \Zend\Config\Config($config->toArray(), true);
-                $config->Authentication->hideLogin = true;
-                $config->setReadOnly();
-            }
-        } catch (\Exception $e) {
-            // Ignore exceptions; if the catalog is broken, throwing an exception
-            // here may interfere with UI rendering. If we ignore it now, it will
-            // still get handled appropriately later in processing.
-            error_log($e->getMessage());
-        }
-
-        // Load remaining dependencies:
-        $userTable = $sm->get('VuFind\Db\Table\PluginManager')->get('user');
-        $sessionManager = $sm->get('VuFind\SessionManager');
-        $pm = $sm->get('VuFind\Auth\PluginManager');
-        $cookies = $sm->get('VuFind\CookieManager');
-
-        // Build the object and make sure account credentials haven't expired:
-        $manager = new Manager($config, $userTable, $sessionManager, $pm, $cookies);
-        $manager->checkForExpiredCredentials();
-        return $manager;
     }
 
     /**

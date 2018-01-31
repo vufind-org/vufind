@@ -218,7 +218,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function getAuthManager()
     {
-        return $this->serviceLocator->get('VuFind\AuthManager');
+        return $this->serviceLocator->get('VuFind\Auth\Manager');
     }
 
     /**

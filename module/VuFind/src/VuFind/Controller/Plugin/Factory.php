@@ -145,7 +145,7 @@ class Factory
     {
         $pdm = $sm->get('VuFind\Role\PermissionDeniedManager');
         $pm = $sm->get('VuFind\Role\PermissionManager');
-        $auth = $sm->get('VuFind\AuthManager');
+        $auth = $sm->get('VuFind\Auth\Manager');
         return new Permission($pm, $pdm, $auth);
     }
 
