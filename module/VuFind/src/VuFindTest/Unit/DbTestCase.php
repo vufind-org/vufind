@@ -91,7 +91,7 @@ abstract class DbTestCase extends TestCase
     protected function addRowManager(ServiceManager $sm)
     {
         $factory = new \VuFind\Db\Row\PluginManager($sm);
-        $sm->setService('VuFind\DbRowPluginManager', $factory);
+        $sm->setService('VuFind\Db\Row\PluginManager', $factory);
     }
 
     /**

@@ -146,18 +146,6 @@ class Factory
     }
 
     /**
-     * Construct the Db\Row Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Db\Row\PluginManager
-     */
-    public static function getDbRowPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Db\Row');
-    }
-
-    /**
      * Construct the Db\Table Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.

@@ -50,7 +50,7 @@ class GatewayFactory implements \Zend\ServiceManager\Factory\FactoryInterface
      */
     protected function getRowPrototype(ContainerInterface $container, $requestedName)
     {
-        $rowManager = $container->get('VuFind\DbRowPluginManager');
+        $rowManager = $container->get('VuFind\Db\Row\PluginManager');
         // Map Table class to matching Row class.
         $name = str_replace("\\Table\\", "\\Row\\", $requestedName);
         return $rowManager->has($name) ? $rowManager->get($name) : null;
