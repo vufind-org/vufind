@@ -67,7 +67,7 @@ class Factory
     public static function getAccountCapabilities(ServiceManager $sm)
     {
         return new AccountCapabilities(
-            $sm->get('VuFind\AccountCapabilities')
+            $sm->get('VuFind\Config\AccountCapabilities')
         );
     }
 
@@ -618,7 +618,7 @@ class Factory
     {
         $sessionManager = $sm->get('VuFind\SessionManager');
         $session = new \Zend\Session\Container('List', $sessionManager);
-        $capabilities = $sm->get('VuFind\AccountCapabilities');
+        $capabilities = $sm->get('VuFind\Config\AccountCapabilities');
         return new UserList($session, $capabilities->getListSetting());
     }
 
@@ -631,7 +631,7 @@ class Factory
      */
     public static function getUserTags(ServiceManager $sm)
     {
-        $capabilities = $sm->get('VuFind\AccountCapabilities');
+        $capabilities = $sm->get('VuFind\Config\AccountCapabilities');
         return new UserTags($capabilities->getTagSetting());
     }
 }

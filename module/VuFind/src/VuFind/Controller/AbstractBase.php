@@ -550,7 +550,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function commentsEnabled()
     {
-        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\Config\AccountCapabilities');
         return $check->getCommentSetting() !== 'disabled';
     }
 
@@ -561,7 +561,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function listsEnabled()
     {
-        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\Config\AccountCapabilities');
         return $check->getListSetting() !== 'disabled';
     }
 
@@ -572,7 +572,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function tagsEnabled()
     {
-        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\Config\AccountCapabilities');
         return $check->getTagSetting() !== 'disabled';
     }
 

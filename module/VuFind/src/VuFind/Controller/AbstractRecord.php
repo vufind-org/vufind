@@ -452,7 +452,7 @@ class AbstractRecord extends AbstractBase
      */
     protected function smsEnabled()
     {
-        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\Config\AccountCapabilities');
         return $check->getSmsSetting() !== 'disabled';
     }
 

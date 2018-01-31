@@ -344,7 +344,7 @@ class MyResearchController extends AbstractBase
     public function savesearchAction()
     {
         // Fail if saved searches are disabled.
-        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\Config\AccountCapabilities');
         if ($check->getSavedSearchSetting() === 'disabled') {
             throw new ForbiddenException('Saved searches disabled.');
         }

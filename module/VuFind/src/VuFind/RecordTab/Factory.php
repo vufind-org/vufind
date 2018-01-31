@@ -280,7 +280,7 @@ class Factory
      */
     public static function getUserComments(ServiceManager $sm)
     {
-        $capabilities = $sm->get('VuFind\AccountCapabilities');
+        $capabilities = $sm->get('VuFind\Config\AccountCapabilities');
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $useRecaptcha = isset($config->Captcha) && isset($config->Captcha->forms)
             && (trim($config->Captcha->forms) === '*'
