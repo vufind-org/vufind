@@ -104,7 +104,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         'M' => 'Sundry',
         'N' => 'New Card',
         'ODUE' => 'Overdue',
-        'Res' => 'Hold Fee'
+        'Res' => 'Hold Fee',
+        'HE' => 'Hold Expired'
     ];
 
     /**
