@@ -139,7 +139,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getTable($table)
     {
-        return $this->serviceLocator->get('VuFind\DbTablePluginManager')
+        return $this->serviceLocator->get('VuFind\Db\Table\PluginManager')
             ->get($table);
     }
 }

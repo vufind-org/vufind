@@ -78,7 +78,7 @@ abstract class DbTestCase extends TestCase
                 ],
             ]
         );
-        $sm->setService('VuFind\DbTablePluginManager', $factory);
+        $sm->setService('VuFind\Db\Table\PluginManager', $factory);
     }
 
     /**
@@ -105,7 +105,7 @@ abstract class DbTestCase extends TestCase
         $sm = parent::getServiceManager();
 
         // Add database service:
-        if (!$sm->has('VuFind\DbTablePluginManager')) {
+        if (!$sm->has('VuFind\Db\Table\PluginManager')) {
             $dbFactory = new \VuFind\Db\AdapterFactory(
                 $sm->get('VuFind\Config\PluginManager')->get('config')
             );
@@ -154,6 +154,6 @@ abstract class DbTestCase extends TestCase
     public function getTable($table)
     {
         $sm = $this->getServiceManager();
-        return $sm->get('VuFind\DbTablePluginManager')->get($table);
+        return $sm->get('VuFind\Db\Table\PluginManager')->get($table);
     }
 }

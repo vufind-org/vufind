@@ -145,7 +145,7 @@ class Factory
         }
 
         // Load remaining dependencies:
-        $userTable = $sm->get('VuFind\DbTablePluginManager')->get('user');
+        $userTable = $sm->get('VuFind\Db\Table\PluginManager')->get('user');
         $sessionManager = $sm->get('VuFind\SessionManager');
         $pm = $sm->get('VuFind\Auth\PluginManager');
         $cookies = $sm->get('VuFind\CookieManager');

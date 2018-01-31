@@ -425,7 +425,7 @@ class UtilController extends AbstractBase
             return $this->getFailureResponse();
         }
 
-        $recordTable = $this->serviceLocator->get('VuFind\DbTablePluginManager')
+        $recordTable = $this->serviceLocator->get('VuFind\Db\Table\PluginManager')
             ->get('Record');
 
         $count = $recordTable->cleanup();
@@ -826,7 +826,7 @@ class UtilController extends AbstractBase
         }
 
         // Now do the database rewrite:
-        $userTable = $this->serviceLocator->get('VuFind\DbTablePluginManager')
+        $userTable = $this->serviceLocator->get('VuFind\Db\Table\PluginManager')
             ->get('User');
         $users = $userTable->select(
             function ($select) {

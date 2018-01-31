@@ -82,7 +82,7 @@ class ServiceInitializer implements InitializerInterface
     public function __invoke(ContainerInterface $sm, $instance)
     {
         if ($instance instanceof \VuFind\Db\Table\DbTableAwareInterface) {
-            $instance->setDbTableManager($sm->get('VuFind\DbTablePluginManager'));
+            $instance->setDbTableManager($sm->get('VuFind\Db\Table\PluginManager'));
         }
         if ($instance instanceof \Zend\Log\LoggerAwareInterface) {
             $instance->setLogger($sm->get('VuFind\Logger'));

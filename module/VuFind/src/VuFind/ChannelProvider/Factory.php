@@ -93,8 +93,7 @@ class Factory
     public static function getListItems(ServiceManager $sm)
     {
         $helper = new ListItems(
-            $sm->get('VuFind\DbTablePluginManager')
-                ->get('UserList'),
+            $sm->get('VuFind\Db\Table\PluginManager')->get('UserList'),
             $sm->get('ControllerPluginManager')->get('url'),
             $sm->get('VuFind\SearchResultsPluginManager')
         );

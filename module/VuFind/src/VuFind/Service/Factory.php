@@ -146,18 +146,6 @@ class Factory
     }
 
     /**
-     * Construct the Db\Table Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Db\Table\PluginManager
-     */
-    public static function getDbTablePluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Db\Table');
-    }
-
-    /**
      * Construct the export helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -430,7 +418,7 @@ class Factory
         return new \VuFind\Record\Cache(
             $sm->get('VuFind\RecordDriverPluginManager'),
             $sm->get('VuFind\Config\PluginManager')->get('RecordCache'),
-            $sm->get('VuFind\DbTablePluginManager')->get('Record')
+            $sm->get('VuFind\Db\Table\PluginManager')->get('Record')
         );
     }
 
@@ -572,7 +560,7 @@ class Factory
      */
     public static function getSearchHistory(ServiceManager $sm)
     {
-        $searchTable = $sm->get('VuFind\DbTablePluginManager')
+        $searchTable = $sm->get('VuFind\Db\Table\PluginManager')
             ->get("Search");
         $resultsManager = $sm->get('VuFind\SearchResultsPluginManager');
         $sessionId = $sm->get('VuFind\SessionManager')->getId();
@@ -718,7 +706,7 @@ class Factory
     {
         return new \VuFind\Solr\Writer(
             $sm->get('VuFind\Search\BackendManager'),
-            $sm->get('VuFind\DbTablePluginManager')->get('changetracker')
+            $sm->get('VuFind\Db\Table\PluginManager')->get('changetracker')
         );
     }
 

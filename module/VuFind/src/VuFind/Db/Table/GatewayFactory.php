@@ -74,7 +74,7 @@ class GatewayFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         array $options = null
     ) {
         $adapter = $container->get('Zend\Db\Adapter\Adapter');
-        $tm = $container->get('VuFind\DbTablePluginManager');
+        $tm = $container->get('VuFind\Db\Table\PluginManager');
         $config = $container->get('config');
         $rowPrototype = $this->getRowPrototype($container, $requestedName);
         $args = $options ? $options : [];
