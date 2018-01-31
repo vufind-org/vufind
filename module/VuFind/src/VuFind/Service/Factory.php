@@ -534,24 +534,6 @@ class Factory
     }
 
     /**
-     * Construct the search backend manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Search\BackendManager
-     */
-    public static function getSearchBackendManager(ServiceManager $sm)
-    {
-        $config = $sm->get('config');
-        $registry = new \VuFind\Search\BackendRegistry(
-            $sm, $config['vufind']['plugin_managers']['search_backend']
-        );
-        $manager = new \VuFind\Search\BackendManager($registry);
-
-        return $manager;
-    }
-
-    /**
      * Construct the search history helper.
      *
      * @param ServiceManager $sm Service manager.
