@@ -9,13 +9,28 @@
   <? foreach ($results->getRecommendations('top') as $current): ?>
     <?=$this->recommend($current)?>
   <? endforeach; ?>
-  <div class="search-tools">
-    <div class="hidden-print">
-      <?=$this->render('search/controls/view.phtml', $searchDetails)?>
-      <?=$this->render('search/controls/sort.phtml', $searchDetails)?>
+
+  <div class="collection-list-controls">
+    <div class="filter-input">
+      <span class="hidden-xs"><?=$this->transEsc('Search from collection')?></span>
+      <form class="form-inline" role="form" method="get" name="keywordFilterForm" id="keywordFilterForm">
+        <div class="input-group">
+          <input id="keywordFilter_lookfor" type="text" name="lookfor" placeholder="<?=$this->transEsc('Search from collection')?>" value="<?=$params->getDisplayQuery()?>" class="form-control"/>
+            <? foreach ($params->getFilterList(true) as $field => $filters): ?>
+              <? foreach ($filters as $filter): ?>
+                <input type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr($filter['field'])?>:&quot;<?=$this->escapeHtmlAttr($filter['value'])?>&quot;" />
+              <? endforeach; ?>
+            <? endforeach; ?>
+            <input type="hidden" name="view" value="<?=$params->getView() ?>" />
+            <input type="hidden" name="sort" value="<?=$params->getSort() ?>" />
+          <span class="input-group-btn"><button class="btn btn-primary btn-default" type="submit" name="submit"><span class="sr-only"><?=$this->transEsc('Search')?></span><i class="fa fa-search"></i></button></span>
+        </div>
+      </form>
     </div>
-    <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $results])?>
+    <?=$this->render('search/controls/view.phtml', $searchDetails)?>
+    <?=$this->render('search/controls/sort.phtml', $searchDetails)?>
   </div>
+  <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $results])?>
 
   <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
     <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
