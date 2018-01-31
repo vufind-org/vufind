@@ -30,11 +30,15 @@
       padding-left: 0px;
     }
   }
+  .btn {
+    margin-left: 1px;
+  }
 }
 
 // Alternate buttons
 // --------------------------------------------------
-.navbar-form .btn[type="submit"] {
+.navbar-form .btn[type="submit"],
+.searchForm .btn[type="submit"] {
   color: @btn-primary-color;
   padding: 6px 0px;
   border-radius: 0px;
@@ -63,7 +67,8 @@
   margin-top: 5px;
 }
 
-.navbar-form {
+.navbar-form,
+.searchForm {
   width: 100%;
   display:flex;
   margin-left: 0;
@@ -85,7 +90,6 @@
     box-shadow: none;
     background: transparent;
     display: inline-block !important;
-    font-size: @font-size-large;
     color: @gray;
     padding-left: 10px;
     height: 48px;
@@ -113,6 +117,13 @@
       cursor: pointer;
     }
   }
+  .btn {
+    border-radius: 0;
+  }
+}
+
+.navbar-form .form-control.search-query {
+  font-size: @font-size-large;
 }
 
 
