@@ -115,7 +115,7 @@ class EdsBackendFactory implements FactoryInterface
         );
         $backend = new Backend(
             $connector, $this->createRecordCollectionFactory(),
-            $this->serviceLocator->get('VuFind\CacheManager')->getCache('object'),
+            $this->serviceLocator->get('VuFind\Cache\Manager')->getCache('object'),
             $session, $this->edsConfig, $isGuest
         );
         $backend->setAuthManager($this->serviceLocator->get('VuFind\AuthManager'));

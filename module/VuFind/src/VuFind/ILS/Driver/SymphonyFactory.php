@@ -63,7 +63,7 @@ class SymphonyFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get('VuFind\RecordLoader'),
-            $container->get('VuFind\CacheManager')
+            $container->get('VuFind\Cache\Manager')
         );
     }
 }

@@ -58,21 +58,6 @@ class Factory
     }
 
     /**
-     * Construct the cache manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Cache\Manager
-     */
-    public static function getCacheManager(ServiceManager $sm)
-    {
-        return new \VuFind\Cache\Manager(
-            $sm->get('VuFind\Config\PluginManager')->get('config'),
-            $sm->get('VuFind\Config\PluginManager')->get('searches')
-        );
-    }
-
-    /**
      * Construct the cookie manager.
      *
      * @param ServiceManager $sm Service manager.
@@ -352,7 +337,7 @@ class Factory
     public static function getProxyConfig(ServiceManager $sm)
     {
         $config = new \ProxyManager\Configuration();
-        $cacheManager = $sm->get('VuFind\CacheManager');
+        $cacheManager = $sm->get('VuFind\Cache\Manager');
         $dir = $cacheManager->getCacheDir() . 'objects';
         $config->setProxiesTargetDir($dir);
         if (APPLICATION_ENV != 'development') {
@@ -638,7 +623,7 @@ class Factory
     public static function getSearchSpecsReader(ServiceManager $sm)
     {
         return new \VuFind\Config\SearchSpecsReader(
-            $sm->get('VuFind\CacheManager')
+            $sm->get('VuFind\Cache\Manager')
         );
     }
 
@@ -746,7 +731,7 @@ class Factory
         // Set up language caching for better performance:
         try {
             $translator->setCache(
-                $sm->get('VuFind\CacheManager')->getCache('language')
+                $sm->get('VuFind\Cache\Manager')->getCache('language')
             );
         } catch (\Exception $e) {
             // Don't let a cache failure kill the whole application, but make
@@ -789,7 +774,7 @@ class Factory
     public static function getYamlReader(ServiceManager $sm)
     {
         return new \VuFind\Config\YamlReader(
-            $sm->get('VuFind\CacheManager')
+            $sm->get('VuFind\Cache\Manager')
         );
     }
 }

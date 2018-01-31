@@ -425,7 +425,7 @@ class Initializer
             // Override the default cache with a theme-specific cache to avoid
             // key collisions in a multi-theme environment.
             try {
-                $cacheManager = $this->serviceManager->get('VuFind\CacheManager');
+                $cacheManager = $this->serviceManager->get('VuFind\Cache\Manager');
                 $cacheName = $cacheManager->addLanguageCacheForTheme($theme);
                 $translator->setCache($cacheManager->getCache($cacheName));
             } catch (\Exception $e) {

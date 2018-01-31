@@ -667,7 +667,7 @@ class UtilController extends AbstractBase
     {
         $opts = new \Zend\Console\Getopt([]);
         $compiler = new \VuFindTheme\LessCompiler(true);
-        $cacheManager = $this->serviceLocator->get('VuFind\CacheManager');
+        $cacheManager = $this->serviceLocator->get('VuFind\Cache\Manager');
         $cacheDir = $cacheManager->getCacheDir() . 'less/';
         $compiler->setTempPath($cacheDir);
         $compiler->compile(array_unique($opts->getRemainingArgs()));

@@ -60,7 +60,7 @@ class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $cacheDir = $container->get('VuFind\CacheManager')
+        $cacheDir = $container->get('VuFind\Cache\Manager')
             ->getCacheDir(false);
         $hierarchyFilters = $container->get('VuFind\Config\PluginManager')
             ->get('HierarchyDefault');

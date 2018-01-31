@@ -62,7 +62,7 @@ class CoverController extends AbstractBase
      */
     protected function getCacheDir()
     {
-        return $this->serviceLocator->get('VuFind\CacheManager')
+        return $this->serviceLocator->get('VuFind\Cache\Manager')
             ->getCache('cover')->getOptions()->getCacheDir();
     }
 

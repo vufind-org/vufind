@@ -67,7 +67,7 @@ class DriverWithDateConverterFactory implements FactoryInterface
         // Populate cache storage if a setCacheStorage method is present:
         if (method_exists($driver, 'setCacheStorage')) {
             $driver->setCacheStorage(
-                $container->get('VuFind\CacheManager')->getCache('object')
+                $container->get('VuFind\Cache\Manager')->getCache('object')
             );
         }
 

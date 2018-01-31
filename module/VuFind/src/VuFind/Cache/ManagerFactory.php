@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for Aleph ILS driver.
+ * Cache Manager factory.
  *
  * PHP version 5
  *
@@ -20,25 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  Cache
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\ILS\Driver;
+namespace VuFind\Cache;
 
 use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for Aleph ILS driver.
+ * Cache Manager factory.
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  Cache
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AlephFactory extends DriverWithDateConverterFactory
+class ManagerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -58,10 +59,11 @@ class AlephFactory extends DriverWithDateConverterFactory
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        return parent::__invoke(
-            $container, $requestedName, [$container->get('VuFind\Cache\Manager')]
+        return new $requestedName(
+            $container->get('VuFind\Config\PluginManager')->get('config'),
+            $container->get('VuFind\Config\PluginManager')->get('searches')
         );
     }
 }

@@ -91,7 +91,7 @@ class ChannelsController extends AbstractBase
         ) {
             $parts = [implode(',', $providerIds), $searchClassId, $token];
             $cacheKey = 'homeChannels-' . md5(implode('-', $parts));
-            $cache = $this->serviceLocator->get('VuFind\CacheManager')
+            $cache = $this->serviceLocator->get('VuFind\Cache\Manager')
                 ->getCache('object');
         } else {
             $cacheKey = false;
