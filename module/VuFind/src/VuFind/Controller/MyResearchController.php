@@ -1712,12 +1712,7 @@ class MyResearchController extends AbstractBase
                 );
             }
 
-            if (!empty($config->Authentication->anonymize_accounts)) {
-                $user->anonymizeAccount();
-            } else {
-                $user->delete();
-            }
-
+            $user->delete();
             $view->accountDeleted = true;
             $view->redirectUrl = $this->getAuthManager()->logout(
                 $this->getServerUrl('home')

@@ -77,7 +77,8 @@ class Comments extends Gateway
             $select->columns(['*']);
             $select->join(
                 ['u' => 'user'], 'u.id = comments.user_id',
-                ['firstname', 'lastname']
+                ['firstname', 'lastname'],
+                'left'
             );
             $select->where->equalTo('comments.resource_id', $resource->id);
             $select->order('comments.created');
