@@ -116,21 +116,6 @@ class Factory
     }
 
     /**
-     * Construct the export helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Export
-     */
-    public static function getExport(ServiceManager $sm)
-    {
-        return new \VuFind\Export(
-            $sm->get('VuFind\Config\PluginManager')->get('config'),
-            $sm->get('VuFind\Config\PluginManager')->get('export')
-        );
-    }
-
-    /**
      * Generic plugin manager factory (support method).
      *
      * @param ServiceManager $sm Service manager.
