@@ -891,18 +891,20 @@ finna.layout = (function finnaLayout() {
   }
 
   function initFiltersToggle () {
-    var filterAmount = $('.filters-bar .filter-value').length;
-    if (filterAmount > 0) {
-      $('.filters-toggle .active-filter-count').text(' (' + filterAmount + ')');
-    }
+    $('.finna-filters').each(function calcFilterAmount() {
+      var filterAmount = $(this).find('.filters-bar .filter-value').length;
+      $(this).find('.filters-toggle .active-filter-count').text(' (' + filterAmount + ')');
+    });
 
-    $('.filters-toggle').click(function filterToggleClicked(){
-      if ($('.filters-bar').hasClass('hidden')) {
-        $('.filters-bar').removeClass('hidden');
-        $('.filters-toggle .fa-arrow-down').removeClass('fa-arrow-down').addClass('fa-arrow-up');
+    $('.filters-toggle').click(function filterToggleClicked(e){
+      var finnaFilters = $(e.target).closest('.finna-filters');
+      var filtersBar = finnaFilters.find('.filters-bar');
+      if (filtersBar.hasClass('hidden')) {
+        filtersBar.removeClass('hidden');
+        finnaFilters.find('.fa-arrow-down').removeClass('fa-arrow-down').addClass('fa-arrow-up');
       } else {
-        $('.filters-bar').addClass('hidden');
-        $('.filters-toggle .fa-arrow-up').removeClass('fa-arrow-up').addClass('fa-arrow-down');
+        filtersBar.addClass('hidden');
+        finnaFilters.find('.fa-arrow-up').removeClass('fa-arrow-up').addClass('fa-arrow-down');
 
       }
     });

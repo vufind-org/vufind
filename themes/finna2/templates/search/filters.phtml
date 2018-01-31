@@ -1,6 +1,5 @@
 <!-- START of: finna - search/filters.phtml -->
-<? $recordPage = $this->layout()->templateDir == 'record'; ?>
-<? $collectionPage = $this->layout()->templateDir == 'collection'; ?>
+<? $hasDefaultsApplied = $params->hasDefaultsApplied() ?>
 
 <? ob_start(); ?>
   <? foreach ($checkboxFilters as $filter): ?>
@@ -14,7 +13,7 @@
   <? endforeach; ?>
 
   <? foreach ($filterList  as $field => $data): ?>
-    <? if ($params->isGeographicFilter($data)): ?>
+    <? if (is_callable($params, 'isGeographicFilter') && $params->isGeographicFilter($data)): ?>
       <span class="filter-value">
         <? $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($data[0]['field'], $data[0]['value'], $data[0]['operator']) : '';?>
         <?=$this->transEsc($field)?>
@@ -43,9 +42,28 @@
 <? $filters = ob_get_contents(); ?>
 <? ob_end_clean(); ?>
 
-<div class="search-filters">
-  <div class="container filters-container">
-    <div class="finna-filters hidden-xs">
+<div class="finna-filters hidden-xs">
+  <? if (!isset($isCollectionTab) || !$isCollectionTab): ?>
+    <div class="retain-filters">
+      <? $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() || !$defaultSortApplied ? ' checked="checked"' : ''; ?>
+      <span class="checkbox<?=$defaultFilterState ? ' checked' : ''?>">
+        <label>
+          <input onChange="$('.finna-filters .checkbox').toggleClass('checked'); var sort = $(this).closest('form').find('input[name=sort]'); sort.val($('.finna-filters .checkbox').hasClass('checked') ? sort.data('value') : '');" type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
+            <?=$this->transEsc("basic_search_keep_filters")?>
+        </label>
+      </span>
+    </div>
+  <? endif; ?>
+  <div class="filters">
+    <?=$filters ?>
+  </div>
+  <div class="clearfix"></div>
+</div>
+<!-- Mobile view -->
+<div class="finna-filters visible-xs">
+  <div class="filters-toggle-bar">
+    <div class="filters-toggle"><?=$this->transEsc("show_filters")?><span class="active-filter-count"></span><i class="fa fa-arrow-down"></i></div>
+    <? if (!isset($isCollectionTab) || !$isCollectionTab): ?>
       <div class="retain-filters">
         <? $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() || !$defaultSortApplied ? ' checked="checked"' : ''; ?>
         <span class="checkbox<?=$defaultFilterState ? ' checked' : ''?>">
@@ -55,31 +73,12 @@
           </label>
         </span>
       </div>
-      <div class="filters">
-        <?=$filters ?>
-      </div>
-      <div class="clearfix"></div>
-    </div>
-    <!-- Mobile view -->
-    <div class="finna-filters visible-xs">
-      <div class="filters-toggle-bar">
-        <div class="filters-toggle"><?=$this->transEsc("show_filters")?><span class="active-filter-count"></span><i class="fa fa-arrow-down"></i></div>
-        <div class="retain-filters">
-            <? $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() || !$defaultSortApplied ? ' checked="checked"' : ''; ?>
-          <span class="checkbox<?=$defaultFilterState ? ' checked' : ''?>">
-            <label>
-              <input onChange="$('.finna-filters .checkbox').toggleClass('checked'); var sort = $(this).closest('form').find('input[name=sort]'); sort.val($('.finna-filters .checkbox').hasClass('checked') ? sort.data('value') : '');" type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
-                <?=$this->transEsc("basic_search_keep_filters")?>
-            </label>
-          </span>
-        </div>
-        <div class="clearfix"></div>
-      </div>
-      <div class="filters filters-bar hidden">
-        <?=$filters ?>
-      </div>
-      <div class="clearfix"></div>
-    </div>
+    <? endif; ?>
+    <div class="clearfix"></div>
   </div>
+  <div class="filters filters-bar hidden">
+    <?=$filters ?>
+  </div>
+  <div class="clearfix"></div>
 </div>
 <!-- END of: finna - search/filters.phtml -->

@@ -383,7 +383,11 @@ JS;
         <?=$this->layout()->advSearchHeader; ?>
       <? endif; ?>
       <? if (!empty($this->layout()->finnaFilters)): ?>
-        <?=$this->layout()->finnaFilters?>
+        <div class="search-filters">
+          <div class="container filters-container">
+            <?=$this->layout()->finnaFilters?>
+          </div>
+        </div>
       <? endif; ?>
       <? if (!empty($this->layout()->finnaStreetBar)): ?>
         <?=$this->layout()->finnaStreetBar?>

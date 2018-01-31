@@ -5,6 +5,7 @@
   $params = $this->tab->getParams();
   $searchDetails = ['results' => $results, 'params' => $params, 'indexStart' => 1, 'isCollection' => $this->driver->isCollection()];
 ?>
+<div class="mainbody left">
 <? if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
   <? foreach ($results->getRecommendations('top') as $current): ?>
     <?=$this->recommend($current)?>
@@ -30,6 +31,29 @@
     <?=$this->render('search/controls/view.phtml', $searchDetails)?>
     <?=$this->render('search/controls/sort.phtml', $searchDetails)?>
   </div>
+
+  <?
+    $filterList = $params->getFilterList(true);
+    $checkboxFilters = $params->getCheckboxFacets();
+    $options = $this->searchOptions($this->searchClassId);
+    $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
+    $defaultSortApplied = !isset($params) || $lastSort == $options->getDefaultSortByHandler($params->getSearchHandler());
+    $urlQuery = $results->getUrlQuery();
+  ?>
+  <? if(!empty($params->getFilterList(false))): ?>
+    <?=$this->render('search/filters.phtml',
+      [
+        'filterList' => $filterList,
+        'checkboxFilters' => $checkboxFilters,
+        'defaultSortApplied' => $defaultSortApplied,
+        'options' => $options,
+        'params' => $params,
+        'urlQuery' => $results->getUrlQuery(),
+        'isCollectionTab' => true
+      ]
+    ); ?>
+  <? endif; ?>
+
   <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $results])?>
 
   <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
@@ -42,7 +66,19 @@
     <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $results])?>
     </div>
 
-<? else: ?>
-  <h4><?=$this->transEsc('collection_empty')?></h4><br><br>
-<? endif; ?>
+  <? else: ?>
+    <h4><?=$this->transEsc('collection_empty')?></h4><br><br>
+  <? endif; ?>
+</div>
+<div class="sidebar right">
+  <? foreach ( $results->getRecommendations('side') as $current): ?>
+    <?=$this->recommend($current)?>
+  <? endforeach; ?>
+</div>
+<div class="clearfix"></div>
+<div class="mobile-navigation visible-xs hidden-print">
+  <ul>
+    <li class="sidebar-navigation"><i class="fa fa-arrow-up"></i> <?=$this->transEsc('Filter Collection')?> <span class="active-filters hidden"><?=$this->transEsc('Active filters')?>: <span class='active-filter-count'></span></span></li>
+  </ul>
+</div>
 <!-- END of: finna - RecordTab/collectionlist.phtml -->
