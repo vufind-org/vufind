@@ -99,7 +99,7 @@ class Factory
     public static function getHolds(ServiceManager $sm)
     {
         return new Holds(
-            $sm->get('VuFind\HMAC'),
+            $sm->get('VuFind\Crypt\HMAC'),
             $sm->get('VuFind\SessionManager')
         );
     }
@@ -114,7 +114,7 @@ class Factory
     public static function getILLRequests(ServiceManager $sm)
     {
         return new ILLRequests(
-            $sm->get('VuFind\HMAC'),
+            $sm->get('VuFind\Crypt\HMAC'),
             $sm->get('VuFind\SessionManager')
         );
     }
@@ -209,7 +209,7 @@ class Factory
     public static function getStorageRetrievalRequests(ServiceManager $sm)
     {
         return new StorageRetrievalRequests(
-            $sm->get('VuFind\HMAC'),
+            $sm->get('VuFind\Crypt\HMAC'),
             $sm->get('VuFind\SessionManager')
         );
     }

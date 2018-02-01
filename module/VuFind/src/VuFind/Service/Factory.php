@@ -151,7 +151,7 @@ class Factory
     {
         return new \VuFind\ILS\Logic\Holds(
             $sm->get('VuFind\ILSAuthenticator'), $sm->get('VuFind\ILSConnection'),
-            $sm->get('VuFind\HMAC'),
+            $sm->get('VuFind\Crypt\HMAC'),
             $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
@@ -181,7 +181,7 @@ class Factory
     {
         return new \VuFind\ILS\Logic\TitleHolds(
             $sm->get('VuFind\ILSAuthenticator'), $sm->get('VuFind\ILSConnection'),
-            $sm->get('VuFind\HMAC'),
+            $sm->get('VuFind\Crypt\HMAC'),
             $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
