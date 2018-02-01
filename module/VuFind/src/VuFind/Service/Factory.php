@@ -284,7 +284,7 @@ class Factory
     {
         $searchTable = $sm->get('VuFind\Db\Table\PluginManager')
             ->get("Search");
-        $resultsManager = $sm->get('VuFind\SearchResultsPluginManager');
+        $resultsManager = $sm->get('VuFind\Search\Results\PluginManager');
         $sessionId = $sm->get('VuFind\SessionManager')->getId();
         return new \VuFind\Search\History($searchTable, $sessionId, $resultsManager);
     }
@@ -304,42 +304,6 @@ class Factory
     }
 
     /**
-     * Construct the Search\Options Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Search\Options\PluginManager
-     */
-    public static function getSearchOptionsPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Search\Options');
-    }
-
-    /**
-     * Construct the Search\Params Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Search\Params\PluginManager
-     */
-    public static function getSearchParamsPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Search\Params');
-    }
-
-    /**
-     * Construct the Search\Results Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Search\Results\PluginManager
-     */
-    public static function getSearchResultsPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Search\Results');
-    }
-
-    /**
      * Construct the Search runner.
      *
      * @param ServiceManager $sm Service manager.
@@ -349,7 +313,7 @@ class Factory
     public static function getSearchRunner(ServiceManager $sm)
     {
         return new \VuFind\Search\SearchRunner(
-            $sm->get('VuFind\SearchResultsPluginManager'),
+            $sm->get('VuFind\Search\Results\PluginManager'),
             new \Zend\EventManager\EventManager($sm->get('SharedEventManager'))
         );
     }
@@ -399,7 +363,7 @@ class Factory
         $permissionConfig = isset($config->SearchTabsPermissions)
             ? $config->SearchTabsPermissions->toArray() : [];
         return new \VuFind\Search\SearchTabsHelper(
-            $sm->get('VuFind\SearchResultsPluginManager'),
+            $sm->get('VuFind\Search\Results\PluginManager'),
             $tabConfig, $filterConfig,
             $sm->get('Application')->getRequest(), $permissionConfig
         );

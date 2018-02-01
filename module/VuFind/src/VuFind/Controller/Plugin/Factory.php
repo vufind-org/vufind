@@ -195,7 +195,7 @@ class Factory
                 'ResultScroller',
                 $sm->get('VuFind\SessionManager')
             ),
-            $sm->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\Search\Results\PluginManager')
         );
     }
 

@@ -494,7 +494,7 @@ class Factory
             = isset($searchboxConfig['General']['includeAlphaBrowse'])
             && $searchboxConfig['General']['includeAlphaBrowse'];
         return new SearchBox(
-            $sm->get('VuFind\SearchOptionsPluginManager'),
+            $sm->get('VuFind\Search\Options\PluginManager'),
             $searchboxConfig,
             isset($mainConfig->SearchPlaceholder)
                 ? $mainConfig->SearchPlaceholder->toArray() : [],
@@ -527,7 +527,7 @@ class Factory
     public static function getSearchOptions(ServiceManager $sm)
     {
         return new SearchOptions(
-            $sm->get('VuFind\SearchOptionsPluginManager')
+            $sm->get('VuFind\Search\Options\PluginManager')
         );
     }
 
@@ -541,7 +541,7 @@ class Factory
     public static function getSearchParams(ServiceManager $sm)
     {
         return new SearchParams(
-            $sm->get('VuFind\SearchParamsPluginManager')
+            $sm->get('VuFind\Search\Params\PluginManager')
         );
     }
 
@@ -556,7 +556,7 @@ class Factory
     {
         $helpers = $sm->get('ViewHelperManager');
         return new SearchTabs(
-            $sm->get('VuFind\SearchResultsPluginManager'),
+            $sm->get('VuFind\Search\Results\PluginManager'),
             $helpers->get('url'), $sm->get('VuFind\SearchTabsHelper')
         );
     }

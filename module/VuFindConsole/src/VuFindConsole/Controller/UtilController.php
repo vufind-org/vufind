@@ -607,7 +607,7 @@ class UtilController extends AbstractBase
         $skipXml = $request->getParam('skip-xml') || $request->getParam('sx');
         $recordLoader = $this->serviceLocator->get('VuFind\RecordLoader');
         $hierarchies = $this->serviceLocator
-            ->get('VuFind\SearchResultsPluginManager')->get('Solr')
+            ->get('VuFind\Search\Results\PluginManager')->get('Solr')
             ->getFullFieldFacets(['hierarchy_top_id']);
         if (!isset($hierarchies['hierarchy_top_id']['data']['list'])) {
             $hierarchies['hierarchy_top_id']['data']['list'] = [];

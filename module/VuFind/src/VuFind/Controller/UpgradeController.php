@@ -302,7 +302,7 @@ class UpgradeController extends AbstractBase
     protected function fixSearchChecksumsInDatabase()
     {
         $manager = $this->serviceLocator
-            ->get('VuFind\SearchResultsPluginManager');
+            ->get('VuFind\Search\Results\PluginManager');
         $search = $this->getTable('search');
         $searchWhere = ['checksum' => null, 'saved' => 1];
         $searchRows = $search->select($searchWhere);

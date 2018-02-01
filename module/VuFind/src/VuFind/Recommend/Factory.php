@@ -52,7 +52,7 @@ class Factory
     public static function getAuthorFacets(ServiceManager $sm)
     {
         return new AuthorFacets(
-            $sm->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\Search\Results\PluginManager')
         );
     }
 
@@ -67,7 +67,7 @@ class Factory
     {
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         return new AuthorInfo(
-            $sm->get('VuFind\SearchResultsPluginManager'),
+            $sm->get('VuFind\Search\Results\PluginManager'),
             $sm->get('VuFindHttp\HttpService')->createClient(),
             isset($config->Content->authors) ? $config->Content->authors : ''
         );
@@ -83,7 +83,7 @@ class Factory
     public static function getAuthorityRecommend(ServiceManager $sm)
     {
         return new AuthorityRecommend(
-            $sm->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\Search\Results\PluginManager')
         );
     }
 
@@ -161,7 +161,7 @@ class Factory
     {
         return new ExpandFacets(
             $sm->get('VuFind\Config\PluginManager'),
-            $sm->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\Search\Results\PluginManager')
                 ->get('Solr')
         );
     }
@@ -208,7 +208,7 @@ class Factory
     {
         return new RandomRecommend(
             $sm->get('VuFind\Search'),
-            $sm->get('VuFind\SearchParamsPluginManager')
+            $sm->get('VuFind\Search\Params\PluginManager')
         );
     }
 
@@ -237,7 +237,7 @@ class Factory
     public static function getSummonBestBets(ServiceManager $sm)
     {
         return new SummonBestBets(
-            $sm->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\Search\Results\PluginManager')
         );
     }
 
@@ -251,7 +251,7 @@ class Factory
     public static function getSummonDatabases(ServiceManager $sm)
     {
         return new SummonDatabases(
-            $sm->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\Search\Results\PluginManager')
         );
     }
 
@@ -279,7 +279,7 @@ class Factory
     public static function getSummonTopics(ServiceManager $sm)
     {
         return new SummonTopics(
-            $sm->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\Search\Results\PluginManager')
         );
     }
 

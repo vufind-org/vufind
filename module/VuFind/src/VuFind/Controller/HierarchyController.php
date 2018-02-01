@@ -90,7 +90,7 @@ class HierarchyController extends AbstractBase
         $searchType = $this->params()->fromQuery('type', 'AllFields');
 
         $results = $this->serviceLocator
-            ->get('VuFind\SearchResultsPluginManager')->get('Solr');
+            ->get('VuFind\Search\Results\PluginManager')->get('Solr');
         $results->getParams()->setBasicSearch($lookfor, $searchType);
         $results->getParams()->addFilter('hierarchy_top_id:' . $hierarchyID);
         $facets = $results->getFullFieldFacets(['id'], false, $limit + 1);

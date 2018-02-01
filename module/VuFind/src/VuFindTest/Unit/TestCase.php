@@ -149,7 +149,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 ]
             );
             $this->serviceManager->setService(
-                'VuFind\SearchOptionsPluginManager', $optionsFactory
+                'VuFind\Search\Options\PluginManager', $optionsFactory
             );
             $paramsFactory = new \VuFind\Search\Params\PluginManager(
                 $this->serviceManager,
@@ -159,7 +159,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 ]
             );
             $this->serviceManager->setService(
-                'VuFind\SearchParamsPluginManager', $paramsFactory
+                'VuFind\Search\Params\PluginManager', $paramsFactory
             );
             $resultsFactory = new \VuFind\Search\Results\PluginManager(
                 $this->serviceManager,
@@ -169,7 +169,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 ]
             );
             $this->serviceManager->setService(
-                'VuFind\SearchResultsPluginManager', $resultsFactory
+                'VuFind\Search\Results\PluginManager', $resultsFactory
             );
             $recordDriverFactory = new \VuFind\RecordDriver\PluginManager(
                 $this->serviceManager,

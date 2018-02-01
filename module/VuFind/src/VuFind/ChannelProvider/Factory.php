@@ -74,7 +74,7 @@ class Factory
     public static function getFacets(ServiceManager $sm)
     {
         $helper = new Facets(
-            $sm->get('VuFind\SearchResultsPluginManager'),
+            $sm->get('VuFind\Search\Results\PluginManager'),
             $sm->get('ControllerPluginManager')->get('url')
         );
         $helper->setCoverRouter(
@@ -95,7 +95,7 @@ class Factory
         $helper = new ListItems(
             $sm->get('VuFind\Db\Table\PluginManager')->get('UserList'),
             $sm->get('ControllerPluginManager')->get('url'),
-            $sm->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\Search\Results\PluginManager')
         );
         $helper->setCoverRouter(
             $sm->get('VuFind\Cover\Router')
@@ -114,7 +114,7 @@ class Factory
     {
         $helper = new Random(
             $sm->get('VuFind\Search'),
-            $sm->get('VuFind\SearchParamsPluginManager')
+            $sm->get('VuFind\Search\Params\PluginManager')
         );
         $helper->setCoverRouter(
             $sm->get('VuFind\Cover\Router')

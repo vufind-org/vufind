@@ -86,7 +86,7 @@ class AbstractSearch extends AbstractBase
     {
         $view = $this->createViewModel();
         $view->options = $this->serviceLocator
-            ->get('VuFind\SearchOptionsPluginManager')->get($this->searchClassId);
+            ->get('VuFind\Search\Options\PluginManager')->get($this->searchClassId);
         if ($view->options->getAdvancedSearchAction() === false) {
             throw new \Exception('Advanced search not supported.');
         }
@@ -102,7 +102,7 @@ class AbstractSearch extends AbstractBase
         // to properly populate special controls on the advanced screen.
         if (!$view->saved && count($view->options->getDefaultFilters()) > 0) {
             $view->saved = $this->serviceLocator
-                ->get('VuFind\SearchResultsPluginManager')
+                ->get('VuFind\Search\Results\PluginManager')
                 ->get($this->searchClassId);
             $view->saved->getParams()->initFromRequest(
                 new \Zend\StdLib\Parameters([])
@@ -435,7 +435,7 @@ class AbstractSearch extends AbstractBase
      */
     protected function getResultsManager()
     {
-        return $this->serviceLocator->get('VuFind\SearchResultsPluginManager');
+        return $this->serviceLocator->get('VuFind\Search\Results\PluginManager');
     }
 
     /**

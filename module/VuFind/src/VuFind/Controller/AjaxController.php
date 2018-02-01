@@ -1453,7 +1453,7 @@ class AjaxController extends AbstractBase
      */
     protected function getResultsManager()
     {
-        return $this->serviceLocator->get('VuFind\SearchResultsPluginManager');
+        return $this->serviceLocator->get('VuFind\Search\Results\PluginManager');
     }
 
     /**

@@ -85,7 +85,7 @@ class CombinedController extends AbstractSearch
 
         // Retrieve results:
         $options = $this->serviceLocator
-            ->get('VuFind\SearchOptionsPluginManager');
+            ->get('VuFind\Search\Options\PluginManager');
         $currentOptions = $options->get($searchClassId);
         list($controller, $action)
             = explode('-', $currentOptions->getSearchAction());
@@ -153,7 +153,7 @@ class CombinedController extends AbstractSearch
         // Gather combined results:
         $combinedResults = [];
         $options = $this->serviceLocator
-            ->get('VuFind\SearchOptionsPluginManager');
+            ->get('VuFind\Search\Options\PluginManager');
         $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
             ->get('combined')->toArray();
         $supportsCart = false;
@@ -244,7 +244,7 @@ class CombinedController extends AbstractSearch
             unset($params['activeSearchClassId']); // don't need to pass this forward
 
             $route = $this->serviceLocator
-                ->get('VuFind\SearchOptionsPluginManager')
+                ->get('VuFind\Search\Options\PluginManager')
                 ->get($searchClassId)->getSearchAction();
             $base = $this->url()->fromRoute($route);
             return $this->redirect()->toUrl($base . '?' . http_build_query($params));

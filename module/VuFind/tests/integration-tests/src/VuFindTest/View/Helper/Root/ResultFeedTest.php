@@ -119,7 +119,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $request->set('view', 'rss');
 
         $results = $this->getServiceManager()
-            ->get('VuFind\SearchResultsPluginManager')->get('Solr');
+            ->get('VuFind\Search\Results\PluginManager')->get('Solr');
         $results->getParams()->initFromRequest($request);
 
         $helper = new ResultFeed();
