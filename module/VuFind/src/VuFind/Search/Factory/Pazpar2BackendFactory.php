@@ -148,7 +148,7 @@ class Pazpar2BackendFactory implements FactoryInterface
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
+        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('Pazpar2');
             $driver->setRawData($data);

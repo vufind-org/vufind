@@ -177,7 +177,7 @@ class PrimoBackendFactory implements FactoryInterface
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
+        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('Primo');
             $driver->setRawData($data);

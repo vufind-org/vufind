@@ -158,7 +158,7 @@ class BrowZineBackendFactory implements FactoryInterface
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
+        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('BrowZine');
             $driver->setRawData($data);

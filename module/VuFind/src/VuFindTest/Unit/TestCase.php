@@ -179,7 +179,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 ]
             );
             $this->serviceManager->setService(
-                'VuFind\RecordDriverPluginManager', $recordDriverFactory
+                'VuFind\RecordDriver\PluginManager', $recordDriverFactory
             );
             $this->serviceManager->setService(
                 'VuFind\SearchSpecsReader', new \VuFind\Config\SearchSpecsReader()
@@ -202,7 +202,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $this->serviceManager->setService(
                 'VuFind\RecordLoader', new \VuFind\Record\Loader(
                     $this->serviceManager->get('VuFind\Search'),
-                    $this->serviceManager->get('VuFind\RecordDriverPluginManager')
+                    $this->serviceManager->get('VuFind\RecordDriver\PluginManager')
                 )
             );
             $this->serviceManager->setService('Config', []);

@@ -177,7 +177,7 @@ class SummonBackendFactory implements FactoryInterface
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
+        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
         $stripSnippets = !isset($this->summonConfig->General->snippets)
             || !$this->summonConfig->General->snippets;
         $callback = function ($data) use ($manager, $stripSnippets) {
