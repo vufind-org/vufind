@@ -126,9 +126,11 @@ class Results extends BaseResults
         $results_sorted = [];
 
         foreach ($results as $i => $result) {
-            $ppn = $result->getRecordId();
-            $title = $result->getTitle();
-            $results_sorted[$title . '#' . $ppn] = $result;
+            if (!($result instanceof \VuFind\RecordDriver\Missing)) {
+                $ppn = $result->getRecordId();
+                $title = $result->getTitle();
+                $results_sorted[$title . '#' . $ppn] = $result;
+            }
         }
         ksort($results_sorted, SORT_LOCALE_STRING);
         return $results_sorted;
