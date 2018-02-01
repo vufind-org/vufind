@@ -368,7 +368,7 @@ class Factory
             true
         );
         $resolverPluginManager = $sm
-            ->get('VuFind\ResolverDriverPluginManager');
+            ->get('VuFind\Resolver\Driver\PluginManager');
         $helpers = $sm->get('ViewHelperManager');
         return new OpenUrl(
             $helpers->get('context'),

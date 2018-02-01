@@ -1166,7 +1166,7 @@ class AjaxController extends AbstractBase
         $resolverType = isset($config->OpenURL->resolver)
             ? $config->OpenURL->resolver : 'other';
         $pluginManager = $this->serviceLocator
-            ->get('VuFind\ResolverDriverPluginManager');
+            ->get('VuFind\Resolver\Driver\PluginManager');
         if (!$pluginManager->has($resolverType)) {
             return $this->output(
                 $this->translate("Could not load driver for $resolverType"),

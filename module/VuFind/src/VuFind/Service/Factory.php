@@ -274,18 +274,6 @@ class Factory
     }
 
     /**
-     * Construct the Resolver\Driver Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Resolver\Driver\PluginManager
-     */
-    public static function getResolverDriverPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Resolver\Driver');
-    }
-
-    /**
      * Construct the search history helper.
      *
      * @param ServiceManager $sm Service manager.
