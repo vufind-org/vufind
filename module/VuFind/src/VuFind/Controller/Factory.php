@@ -146,7 +146,7 @@ class Factory extends GenericFactory
     {
         return new UpgradeController(
             $sm,
-            $sm->get('VuFind\CookieManager'),
+            $sm->get('VuFind\Cookie\CookieManager'),
             new \Zend\Session\Container(
                 'upgrade', $sm->get('VuFind\SessionManager')
             )

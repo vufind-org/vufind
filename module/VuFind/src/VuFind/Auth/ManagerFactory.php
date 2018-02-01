@@ -83,7 +83,7 @@ class ManagerFactory implements FactoryInterface
         $userTable = $container->get('VuFind\Db\Table\PluginManager')->get('user');
         $sessionManager = $container->get('VuFind\SessionManager');
         $pm = $container->get('VuFind\Auth\PluginManager');
-        $cookies = $container->get('VuFind\CookieManager');
+        $cookies = $container->get('VuFind\Cookie\CookieManager');
 
         // Build the object and make sure account credentials haven't expired:
         $manager = new $requestedName(

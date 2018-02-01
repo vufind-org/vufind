@@ -53,7 +53,7 @@ class ManagerFactory implements FactoryInterface
      */
     protected function getOptions(ContainerInterface $sm)
     {
-        $cookieManager = $sm->get('VuFind\CookieManager');
+        $cookieManager = $sm->get('VuFind\Cookie\CookieManager');
         $options = [
             'cookie_path' => $cookieManager->getPath(),
             'cookie_secure' => $cookieManager->isSecure()

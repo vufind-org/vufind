@@ -1,6 +1,6 @@
 <?php
 /**
- * Cart factory.
+ * Cookie Manager factory.
  *
  * PHP version 5
  *
@@ -20,26 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Cart
+ * @package  Cookie
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind;
+namespace VuFind\Cookie;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Cart factory.
+ * Cookie Manager factory.
  *
  * @category VuFind
- * @package  Cart
+ * @package  Cookie
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CartFactory implements FactoryInterface
+class CookieManagerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -62,16 +62,24 @@ class CartFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $active = isset($config->Site->showBookBag)
-            ? (bool)$config->Site->showBookBag : false;
-        $size = isset($config->Site->bookBagMaxSize)
-            ? $config->Site->bookBagMaxSize : 100;
-        $activeInSearch = isset($config->Site->bookbagTogglesInSearch)
-            ? $config->Site->bookbagTogglesInSearch : true;
-        return new $requestedName(
-            $container->get('VuFind\RecordLoader'),
-            $container->get('VuFind\Cookie\CookieManager'),
-            $size, $active, $activeInSearch
-        );
+        $path = '/';
+        if (isset($config->Cookies->limit_by_path)
+            && $config->Cookies->limit_by_path
+        ) {
+            $path = $container->get('Request')->getBasePath();
+            if (empty($path)) {
+                $path = '/';
+            }
+        }
+        $secure = isset($config->Cookies->only_secure)
+            ? $config->Cookies->only_secure
+            : false;
+        $domain = isset($config->Cookies->domain)
+            ? $config->Cookies->domain
+            : null;
+        $session_name = isset($config->Cookies->session_name)
+            ? $config->Cookies->session_name
+            : null;
+        return new $requestedName($_COOKIE, $path, $domain, $secure, $session_name);
     }
 }

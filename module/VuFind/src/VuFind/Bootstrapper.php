@@ -318,7 +318,7 @@ class Bootstrapper
             if (($language = $request->getPost()->get('mylang', false))
                 || ($language = $request->getQuery()->get('lng', false))
             ) {
-                $cookieManager = $sm->get('VuFind\CookieManager');
+                $cookieManager = $sm->get('VuFind\Cookie\CookieManager');
                 $cookieManager->set('language', $language);
             } elseif (!empty($request->getCookie()->language)) {
                 $language = $request->getCookie()->language;
