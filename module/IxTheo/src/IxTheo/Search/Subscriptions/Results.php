@@ -118,6 +118,10 @@ class Results extends BaseResults
      * Get Results, sorted on PHP side
      * (by title, which is not stored in MySQL due to redundancy issues)
      *
+     * "Missing" records will be hidden
+     * (e.g. if a user has subscribed a record in IxTheo and opens "MyResearch" in RelBib,
+     * it can't be displayed there, cause it's not part of the index)
+     *
      * @return array
      */
     public function getResultsSorted()
