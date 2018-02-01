@@ -446,9 +446,7 @@ class Factory
      */
     public static function getRelated(ServiceManager $sm)
     {
-        return new Related(
-            $sm->get('VuFind\RelatedPluginManager')
-        );
+        return new Related($sm->get('VuFind\Related\PluginManager'));
     }
 
     /**

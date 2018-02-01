@@ -274,18 +274,6 @@ class Factory
     }
 
     /**
-     * Construct the Related Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Related\PluginManager
-     */
-    public static function getRelatedPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Related');
-    }
-
-    /**
      * Construct the Resolver\Driver Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.
