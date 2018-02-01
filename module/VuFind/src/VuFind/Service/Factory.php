@@ -122,22 +122,10 @@ class Factory
     {
         $catalog = new \VuFind\ILS\Connection(
             $sm->get('VuFind\Config\PluginManager')->get('config')->Catalog,
-            $sm->get('VuFind\ILSDriverPluginManager'),
+            $sm->get('VuFind\ILS\Driver\PluginManager'),
             $sm->get('VuFind\Config\PluginManager')
         );
         return $catalog->setHoldConfig($sm->get('VuFind\ILSHoldSettings'));
-    }
-
-    /**
-     * Construct the ILS\Driver Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\ILS\Driver\PluginManager
-     */
-    public static function getILSDriverPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'ILS\Driver');
     }
 
     /**

@@ -64,7 +64,7 @@ class MultiBackendFactory implements FactoryInterface
         return new $requestedName(
             $container->get('VuFind\Config\PluginManager'),
             $container->get('VuFind\ILSAuthenticator'),
-            $container->get('VuFind\ILSDriverPluginManager')
+            $container->get('VuFind\ILS\Driver\PluginManager')
         );
     }
 }
