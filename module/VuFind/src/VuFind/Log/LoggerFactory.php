@@ -157,7 +157,7 @@ class LoggerFactory implements FactoryInterface
         // Make Writers
         $writer = new Writer\Slack(
             $config->Logging->slackurl,
-            $sm->get('VuFind\Http')->createClient(),
+            $sm->get('VuFindHttp\HttpService')->createClient(),
             $options
         );
         $writer->setContentType('application/json');

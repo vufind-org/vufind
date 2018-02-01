@@ -67,7 +67,7 @@ class Factory implements FactoryInterface
         // Initialize object based on requested type:
         switch (strtolower($type)) {
         case 'clickatell':
-            $client = $sm->get('VuFind\Http')->createClient();
+            $client = $sm->get('VuFindHttp\HttpService')->createClient();
             return new Clickatell($smsConfig, ['client' => $client]);
         case 'mailer':
             $options = ['mailer' => $sm->get('VuFind\Mailer')];

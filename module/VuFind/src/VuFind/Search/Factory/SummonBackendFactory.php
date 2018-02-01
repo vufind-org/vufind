@@ -131,7 +131,8 @@ class SummonBackendFactory implements FactoryInterface
             ? $this->config->Summon->apiKey : null;
 
         // Build HTTP client:
-        $client = $this->serviceLocator->get('VuFind\Http')->createClient();
+        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+            ->createClient();
         $timeout = isset($this->summonConfig->General->timeout)
             ? $this->summonConfig->General->timeout : 30;
         $client->setOptions(['timeout' => $timeout]);

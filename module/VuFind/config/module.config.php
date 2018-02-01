@@ -307,7 +307,6 @@ $config = [
             'VuFind\Hierarchy\TreeDataFormatter\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeDataSource\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeRenderer\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'VuFind\Http' => 'VuFind\Service\Factory::getHttp',
             'VuFind\HMAC' => 'VuFind\Service\Factory::getHMAC',
             'VuFind\ILSAuthenticator' => 'VuFind\Auth\Factory::getILSAuthenticator',
             'VuFind\ILSConnection' => 'VuFind\Service\Factory::getILSConnection',
@@ -350,6 +349,7 @@ $config = [
             'VuFind\Translator' => 'VuFind\Service\Factory::getTranslator',
             'VuFind\WorldCatUtils' => 'VuFind\Service\Factory::getWorldCatUtils',
             'VuFind\YamlReader' => 'VuFind\Service\Factory::getYamlReader',
+            'VuFindHttp\HttpService' => 'VuFind\Service\Factory::getHttp',
             'Zend\Db\Adapter\Adapter' => 'VuFind\Service\Factory::getDbAdapter',
         ],
         'initializers' => [
@@ -383,6 +383,7 @@ $config = [
             'VuFind\HierarchyTreeDataFormatterPluginManager' => 'VuFind\Hierarchy\TreeDataFormatter\PluginManager',
             'VuFind\HierarchyTreeDataSourcePluginManager' => 'VuFind\Hierarchy\TreeDataSource\PluginManager',
             'VuFind\HierarchyTreeRendererPluginManager' => 'VuFind\Hierarchy\TreeRenderer\PluginManager',
+            'VuFind\Http' => 'VuFindHttp\HttpService',
             'VuFind\IpAddressUtils' => 'VuFind\Net\IpAddressUtils',
         ],
     ],

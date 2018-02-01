@@ -91,7 +91,7 @@ class ServiceInitializer implements InitializerInterface
             $instance->setTranslator($sm->get('VuFind\Translator'));
         }
         if ($instance instanceof \VuFindHttp\HttpServiceAwareInterface) {
-            $instance->setHttpService($sm->get('VuFind\Http'));
+            $instance->setHttpService($sm->get('VuFindHttp\HttpService'));
         }
         // Only inject cache if configuration enabled (to save resources):
         if ($instance instanceof \VuFind\Record\Cache\RecordCacheAwareInterface

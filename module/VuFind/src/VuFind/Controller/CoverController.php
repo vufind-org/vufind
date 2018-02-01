@@ -80,7 +80,7 @@ class CoverController extends AbstractBase
                 $this->getConfig(),
                 $this->serviceLocator->get('VuFind\Content\Covers\PluginManager'),
                 $this->serviceLocator->get('VuFindTheme\ThemeInfo'),
-                $this->serviceLocator->get('VuFind\Http')->createClient(),
+                $this->serviceLocator->get('VuFindHttp\HttpService')->createClient(),
                 $cacheDir
             );
             $initializer = new \VuFind\ServiceManager\ServiceInitializer();
@@ -97,7 +97,8 @@ class CoverController extends AbstractBase
     protected function getProxy()
     {
         if (!$this->proxy) {
-            $client = $this->serviceLocator->get('VuFind\Http')->createClient();
+            $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+                ->createClient();
             $cacheDir = $this->getCacheDir() . '/proxy';
             $config = $this->getConfig()->toArray();
             $whitelist = isset($config['Content']['coverproxyCache'])

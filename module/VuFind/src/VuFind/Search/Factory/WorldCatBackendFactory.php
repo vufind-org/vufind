@@ -129,7 +129,8 @@ class WorldCatBackendFactory implements FactoryInterface
         $connectorOptions = isset($this->wcConfig->Connector)
             ? $this->wcConfig->Connector->toArray() : [];
         $connector = new Connector(
-            $wsKey, $this->serviceLocator->get('VuFind\Http')->createClient(),
+            $wsKey,
+            $this->serviceLocator->get('VuFindHttp\HttpService')->createClient(),
             $connectorOptions
         );
         $connector->setLogger($this->logger);

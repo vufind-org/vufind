@@ -344,8 +344,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         if ($this->logger) {
             $connector->setLogger($this->logger);
         }
-        if ($this->serviceLocator->has('VuFind\Http')) {
-            $connector->setProxy($this->serviceLocator->get('VuFind\Http'));
+        if ($this->serviceLocator->has('VuFindHttp\HttpService')) {
+            $connector
+                ->setProxy($this->serviceLocator->get('VuFindHttp\HttpService'));
         }
         return $connector;
     }

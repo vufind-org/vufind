@@ -225,7 +225,7 @@ class Factory
             : (isset($config->Captcha->privateKey)
                 ? $config->Captcha->privateKey
                 : '');
-        $httpClient = $sm->get('VuFind\Http')->createClient();
+        $httpClient = $sm->get('VuFindHttp\HttpService')->createClient();
         $translator = $sm->get('VuFind\Translator');
         $options = ['lang' => $translator->getLocale()];
         if (isset($config->Captcha->theme)) {
@@ -583,7 +583,7 @@ class Factory
     public static function getWorldCatUtils(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $client = $sm->get('VuFind\Http')->createClient();
+        $client = $sm->get('VuFindHttp\HttpService')->createClient();
         $ip = $sm->get('Request')->getServer()->get('SERVER_ADDR');
         return new \VuFind\Connection\WorldCatUtils(
             isset($config->WorldCat) ? $config->WorldCat : null,

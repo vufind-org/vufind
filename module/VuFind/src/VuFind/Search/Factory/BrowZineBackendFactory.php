@@ -125,7 +125,8 @@ class BrowZineBackendFactory implements FactoryInterface
             throw new \Exception("Missing library ID in BrowZine.ini");
         }
         // Build HTTP client:
-        $client = $this->serviceLocator->get('VuFind\Http')->createClient();
+        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+            ->createClient();
         $timeout = isset($this->browzineConfig->General->timeout)
             ? $this->browzineConfig->General->timeout : 30;
         $client->setOptions(['timeout' => $timeout]);

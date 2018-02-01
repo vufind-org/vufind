@@ -125,7 +125,7 @@ class EITBackendFactory implements FactoryInterface
             ? $this->config->General->dbs : null;
         $connector = new Connector(
             $base,
-            $this->serviceLocator->get('VuFind\Http')->createClient(),
+            $this->serviceLocator->get('VuFindHttp\HttpService')->createClient(),
             $prof, $pwd, $dbs
         );
         $connector->setLogger($this->logger);

@@ -146,7 +146,8 @@ class PrimoBackendFactory implements FactoryInterface
             : null;
 
         // Build HTTP client:
-        $client = $this->serviceLocator->get('VuFind\Http')->createClient();
+        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+            ->createClient();
         $timeout = isset($this->primoConfig->General->timeout)
             ? $this->primoConfig->General->timeout : 30;
         $client->setOptions(['timeout' => $timeout]);

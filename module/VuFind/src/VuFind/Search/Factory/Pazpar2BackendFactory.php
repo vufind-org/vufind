@@ -125,7 +125,7 @@ class Pazpar2BackendFactory implements FactoryInterface
     {
         $connector = new Connector(
             $this->config->General->base_url,
-            $this->serviceLocator->get('VuFind\Http')->createClient()
+            $this->serviceLocator->get('VuFindHttp\HttpService')->createClient()
         );
         $connector->setLogger($this->logger);
         return $connector;

@@ -135,7 +135,8 @@ class EdsBackendFactory implements FactoryInterface
         $id = 'EDS';
         $key = 'EDS';
         // Build HTTP client:
-        $client = $this->serviceLocator->get('VuFind\Http')->createClient();
+        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+            ->createClient();
         $timeout = isset($this->edsConfig->General->timeout)
             ? $this->edsConfig->General->timeout : 30;
         $client->setOptions(['timeout' => $timeout]);

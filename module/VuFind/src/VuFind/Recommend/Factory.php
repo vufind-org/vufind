@@ -68,7 +68,7 @@ class Factory
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         return new AuthorInfo(
             $sm->get('VuFind\SearchResultsPluginManager'),
-            $sm->get('VuFind\Http')->createClient(),
+            $sm->get('VuFindHttp\HttpService')->createClient(),
             isset($config->Content->authors) ? $config->Content->authors : ''
         );
     }
@@ -131,7 +131,7 @@ class Factory
         }
         return new DPLATerms(
             $config->DPLA->apiKey,
-            $sm->get('VuFind\Http')->createClient()
+            $sm->get('VuFindHttp\HttpService')->createClient()
         );
     }
 

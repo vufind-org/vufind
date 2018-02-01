@@ -128,7 +128,8 @@ class LibGuidesBackendFactory implements FactoryInterface
             ? $this->libGuidesConfig->General->version : 1;
 
         // Build HTTP client:
-        $client = $this->serviceLocator->get('VuFind\Http')->createClient();
+        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+            ->createClient();
         $timeout = isset($this->libGuidesConfig->General->timeout)
             ? $this->libGuidesConfig->General->timeout : 30;
         $client->setOptions(['timeout' => $timeout]);

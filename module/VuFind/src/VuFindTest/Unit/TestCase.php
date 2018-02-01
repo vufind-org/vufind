@@ -188,7 +188,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 'VuFind\Logger', $this->createMock('VuFind\Log\Logger')
             );
             $this->serviceManager->setService(
-                'VuFind\Http', new \VuFindHttp\HttpService()
+                'VuFindHttp\HttpService', new \VuFindHttp\HttpService()
             );
             $this->setupSearchService();
             $cfg = ['abstract_factories' => ['VuFind\Config\PluginFactory']];
