@@ -134,7 +134,7 @@ class Factory
      */
     public static function getCitation(ServiceManager $sm)
     {
-        return new Citation($sm->get('VuFind\DateConverter'));
+        return new Citation($sm->get('VuFind\Date\Converter'));
     }
 
     /**
@@ -146,7 +146,7 @@ class Factory
      */
     public static function getDateTime(ServiceManager $sm)
     {
-        return new DateTime($sm->get('VuFind\DateConverter'));
+        return new DateTime($sm->get('VuFind\Date\Converter'));
     }
 
     /**

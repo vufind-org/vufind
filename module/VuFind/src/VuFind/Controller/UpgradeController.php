@@ -725,7 +725,7 @@ class UpgradeController extends AbstractBase
 
         // Process submit button:
         if ($this->formWasSubmitted('submit')) {
-            $converter = $this->serviceLocator->get('VuFind\DateConverter');
+            $converter = $this->serviceLocator->get('VuFind\Date\Converter');
             foreach ($problems as $problem) {
                 try {
                     $driver = $this->getRecordLoader()

@@ -1,6 +1,6 @@
 <?php
 /**
- * Generic factory suitable for most ILS drivers.
+ * Generic factory to constructor-inject the config.ini settings.
  *
  * PHP version 5
  *
@@ -20,26 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\ILS\Driver;
+namespace VuFind\Service;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Generic factory suitable for most ILS drivers.
+ * Generic factory to constructor-inject the config.ini settings.
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DriverWithDateConverterFactory implements FactoryInterface
+class ServiceWithConfigIniFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -58,19 +58,7 @@ class DriverWithDateConverterFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        // Set up the driver with the date converter (and any extra parameters
-        // passed in as options):
-        $driver = new $requestedName(
-            $container->get('VuFind\Date\Converter'), ...($options ?: [])
-        );
-
-        // Populate cache storage if a setCacheStorage method is present:
-        if (method_exists($driver, 'setCacheStorage')) {
-            $driver->setCacheStorage(
-                $container->get('VuFind\Cache\Manager')->getCache('object')
-            );
-        }
-
-        return $driver;
+        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        return new $requestedName($config, ...($options ?: []));
     }
 }

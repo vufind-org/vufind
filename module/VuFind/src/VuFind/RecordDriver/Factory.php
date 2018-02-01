@@ -243,9 +243,7 @@ class Factory
             $sm->get('VuFind\Config\PluginManager')->get('config'),
             $summon, $summon
         );
-        $driver->setDateConverter(
-            $sm->get('VuFind\DateConverter')
-        );
+        $driver->setDateConverter($sm->get('VuFind\Date\Converter'));
         return $driver;
     }
 

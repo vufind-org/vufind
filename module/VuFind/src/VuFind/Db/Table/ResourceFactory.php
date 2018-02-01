@@ -60,7 +60,7 @@ class ResourceFactory extends GatewayFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $converter = $container->get('VuFind\DateConverter');
+        $converter = $container->get('VuFind\Date\Converter');
         $loader = $container->get('VuFind\RecordLoader');
         return parent::__invoke($container, $requestedName, [$converter, $loader]);
     }
