@@ -62,11 +62,10 @@ table .iconlabel {
         text-decoration: none;
     }
     & img {
-        box-shadow: 0px 0px 0px 2px @gray-lighter inset;
+        box-shadow: 0 0 0 2px @gray-lighter inset;
         position: relative;
-        width: 100%;
+        width: auto;
     }
-
     & .iconlabel {
         width: 100%;
         color: @body-bg;
@@ -116,6 +115,9 @@ table .iconlabel {
     }
 }
 .image-popup-trigger.no-image {
+    img {
+        width: 100%;
+    }
     @media (max-width:@screen-xs-max) {
         display: none;
     }
