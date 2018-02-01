@@ -73,7 +73,7 @@ class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         $solr = $container->get('VuFind\Search\BackendManager')
             ->get('Solr')->getConnector();
         $formatterManager = $container
-            ->get('VuFind\HierarchyTreeDataFormatterPluginManager');
+            ->get('VuFind\Hierarchy\TreeDataFormatter\PluginManager');
         return new $requestedName(
             $solr, $formatterManager, rtrim($cacheDir, '/') . '/hierarchy',
             $filters, $batchSize

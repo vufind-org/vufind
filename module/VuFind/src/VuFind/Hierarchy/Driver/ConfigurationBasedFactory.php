@@ -78,8 +78,8 @@ class ConfigurationBasedFactory
         // Build object:
         return new ConfigurationBased(
             $driverConfig,
-            $sm->get('VuFind\HierarchyTreeDataSourcePluginManager'),
-            $sm->get('VuFind\HierarchyTreeRendererPluginManager'),
+            $sm->get('VuFind\Hierarchy\TreeDataSource\PluginManager'),
+            $sm->get('VuFind\Hierarchy\TreeRenderer\PluginManager'),
             $options
         );
     }

@@ -134,56 +134,6 @@ class Factory
     }
 
     /**
-     * Construct the Hierarchy\Driver Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Hierarchy\Driver\PluginManager
-     */
-    public static function getHierarchyDriverPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Hierarchy\Driver');
-    }
-
-    /**
-     * Construct the Hierarchy\TreeDataFormatter Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Hierarchy\TreeDataFormatter\PluginManager
-     */
-    public static function getHierarchyTreeDataFormatterPluginManager(
-        ServiceManager $sm
-    ) {
-        return static::getGenericPluginManager($sm, 'Hierarchy\TreeDataFormatter');
-    }
-
-    /**
-     * Construct the Hierarchy\TreeDataSource Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Hierarchy\TreeDataSource\PluginManager
-     */
-    public static function getHierarchyTreeDataSourcePluginManager(
-        ServiceManager $sm
-    ) {
-        return static::getGenericPluginManager($sm, 'Hierarchy\TreeDataSource');
-    }
-
-    /**
-     * Construct the Hierarchy\TreeRenderer Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Hierarchy\TreeRenderer\PluginManager
-     */
-    public static function getHierarchyTreeRendererPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Hierarchy\TreeRenderer');
-    }
-
-    /**
      * Construct the HTTP service.
      *
      * @param ServiceManager $sm Service manager.
