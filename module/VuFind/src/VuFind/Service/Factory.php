@@ -47,39 +47,11 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \VuFind\Date\Converter
-     */
-    public static function getDateConverter(ServiceManager $sm)
-    {
-        return new \VuFind\Date\Converter(
-            $sm->get('VuFind\Config\PluginManager')->get('config')
-        );
-    }
-
-    /**
-     * Construct the date converter.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
      * @return \Zend\Db\Adapter\Adapter
      */
     public static function getDbAdapter(ServiceManager $sm)
     {
         return $sm->get('VuFind\Db\AdapterFactory')->getAdapter();
-    }
-
-    /**
-     * Construct the date converter.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Db\AdapterFactory
-     */
-    public static function getDbAdapterFactory(ServiceManager $sm)
-    {
-        return new \VuFind\Db\AdapterFactory(
-            $sm->get('VuFind\Config\PluginManager')->get('config')
-        );
     }
 
     /**
