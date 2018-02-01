@@ -281,13 +281,13 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \Zend\Validator\Csrf
+     * @return \VuFind\Validator\Csrf
      */
     public static function getCsrfValidator(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config')->get('config');
         $sessionManager = $sm->get('VuFind\SessionManager');
-        return new \Zend\Validator\Csrf(
+        return new \VuFind\Validator\Csrf(
             [
                 'session' => new \Zend\Session\Container('csrf', $sessionManager),
                 'salt' => isset($config->Security->HMACkey)

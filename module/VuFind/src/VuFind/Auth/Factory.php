@@ -149,9 +149,12 @@ class Factory
         $sessionManager = $sm->get('VuFind\SessionManager');
         $pm = $sm->get('VuFind\AuthPluginManager');
         $cookies = $sm->get('VuFind\CookieManager');
+        $csrf = $sm->get('VuFind\Validator\Csrf');
 
         // Build the object and make sure account credentials haven't expired:
-        $manager = new Manager($config, $userTable, $sessionManager, $pm, $cookies);
+        $manager = new Manager(
+            $config, $userTable, $sessionManager, $pm, $cookies, $csrf
+        );
         $manager->checkForExpiredCredentials();
         return $manager;
     }
