@@ -227,18 +227,6 @@ class Factory
     }
 
     /**
-     * Construct the Recommend Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Recommend\PluginManager
-     */
-    public static function getRecommendPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Recommend');
-    }
-
-    /**
      * Construct the record cache.
      *
      * @param ServiceManager $sm Service manager.

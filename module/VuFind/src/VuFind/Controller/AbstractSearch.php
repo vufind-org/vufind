@@ -214,7 +214,7 @@ class AbstractSearch extends AbstractBase
             return null;
         }
 
-        $rManager = $this->serviceLocator->get('VuFind\RecommendPluginManager');
+        $rManager = $this->serviceLocator->get('VuFind\Recommend\PluginManager');
 
         // Special case: override recommend settings through parameter (used by
         // combined search)

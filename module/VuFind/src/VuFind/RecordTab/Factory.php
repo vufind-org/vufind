@@ -68,7 +68,7 @@ class Factory
     {
         return new CollectionList(
             $sm->get('VuFind\SearchRunner'),
-            $sm->get('VuFind\RecommendPluginManager')
+            $sm->get('VuFind\Recommend\PluginManager')
         );
     }
 

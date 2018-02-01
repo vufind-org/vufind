@@ -115,7 +115,7 @@ class AjaxController extends AbstractBase
         // Process recommendations -- for now, we assume Solr-based search objects,
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
-        $rm = $this->serviceLocator->get('VuFind\RecommendPluginManager');
+        $rm = $this->serviceLocator->get('VuFind\Recommend\PluginManager');
         $module = $rm->get($this->params()->fromQuery('mod'));
         $module->setConfig($this->params()->fromQuery('params'));
         $results = $this->getResultsManager()->get('Solr');
