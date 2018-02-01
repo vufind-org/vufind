@@ -1712,7 +1712,10 @@ class MyResearchController extends AbstractBase
                 );
             }
 
-            $user->delete();
+            $deleteComments
+                = !isset($config->Authentication->delete_comments_with_user)
+                    || $config->Authentication->delete_comments_with_user;
+            $user->delete($deleteComments);
             $view->accountDeleted = true;
             $view->redirectUrl = $this->getAuthManager()->logout(
                 $this->getServerUrl('home')

@@ -119,6 +119,18 @@ class Comments extends Gateway
     }
 
     /**
+     * Deletes all comments by a user.
+     *
+     * @param \VuFind\Db\Row\User $user User object
+     *
+     * @return void
+     */
+    public function deleteByUser($user)
+    {
+        $this->delete(['user_id' => $user->id]);
+    }
+
+    /**
      * Get statistics on use of comments.
      *
      * @return array
