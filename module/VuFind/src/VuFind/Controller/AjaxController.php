@@ -791,7 +791,7 @@ class AjaxController extends AbstractBase
         $config = $this->serviceLocator->get('Config');
 
         $recordTabPlugin = $this->serviceLocator
-            ->get('VuFind\RecordTabPluginManager');
+            ->get('VuFind\RecordTab\PluginManager');
         $details = $recordTabPlugin
             ->getTabDetailsForRecord(
                 $driver,
@@ -800,7 +800,7 @@ class AjaxController extends AbstractBase
                 'Information'
             );
 
-        $rtpm = $this->serviceLocator->get('VuFind\RecordTabPluginManager');
+        $rtpm = $this->serviceLocator->get('VuFind\RecordTab\PluginManager');
         $html = $this->getViewRenderer()
             ->render(
                 "record/ajaxview-" . $viewtype . ".phtml",
