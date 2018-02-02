@@ -5,7 +5,8 @@
     $formatter = $this->recordDataFormatter();
     $mainFields = $formatter->getData($driver, $formatter->getDefaults('description'));
 ?>
-<table class="table table-striped" summary="<?=$this->transEsc('Description')?>">
+<table class="table table-striped">
+  <caption class="sr-only"><?=$this->transEsc('Description')?></caption>
   <? if (!empty($mainFields)): ?>
     <? foreach ($mainFields as $key => $current): ?>
       <tr><th><?=$this->transEsc($key)?>:</th><td><?=$current['value']?></td></tr>

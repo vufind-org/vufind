@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db;
+
 use Zend\Db\Adapter\Adapter;
 
 /**
@@ -160,8 +161,8 @@ class AdapterFactory
             $username = $credentials;
             $password = null;
         }
-        $username = !is_null($overrideUser) ? $overrideUser : $username;
-        $password = !is_null($overridePass) ? $overridePass : $password;
+        $username = null !== $overrideUser ? $overrideUser : $username;
+        $password = null !== $overridePass ? $overridePass : $password;
 
         // Set up default options:
         $options = [

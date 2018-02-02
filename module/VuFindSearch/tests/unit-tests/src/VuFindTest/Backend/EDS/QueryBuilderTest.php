@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\EDS;
 
-use VuFindSearch\Backend\EDS\QueryBuilder;
 use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\EDS\QueryBuilder;
 
 /**
  * Unit tests for EDS query builder

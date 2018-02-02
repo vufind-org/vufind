@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\EDS\Response;
 
-use VuFindSearch\Backend\EDS\Response\RecordCollection;
 use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\EDS\Response\RecordCollection;
 
 /**
  * Unit tests for EDS record collection

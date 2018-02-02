@@ -28,17 +28,17 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\Primo\Connector;
-use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
-use VuFindSearch\Backend\Primo\QueryBuilder;
-use VuFindSearch\Backend\Primo\Backend;
-
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFind\Search\Primo\PrimoPermissionHandler;
+use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Primo\Backend;
+use VuFindSearch\Backend\Primo\Connector;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use VuFindSearch\Backend\Primo\QueryBuilder;
+use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
+
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for Primo Central backends.
@@ -81,7 +81,7 @@ class PrimoBackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $configReader = $this->serviceLocator->get('VuFind\Config');
         $this->primoConfig = $configReader->get('Primo');
         if ($this->serviceLocator->has('VuFind\Logger')) {
