@@ -53,7 +53,7 @@ class Factory
     {
         return new Favorites(
             $sm->get('VuFind\RecordLoader'),
-            $sm->get('VuFind\RecordCache'),
+            $sm->get('VuFind\Record\Cache'),
             $sm->get('VuFind\Tags')
         );
     }

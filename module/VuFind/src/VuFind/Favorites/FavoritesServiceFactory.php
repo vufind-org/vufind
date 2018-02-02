@@ -60,7 +60,7 @@ class FavoritesServiceFactory implements FactoryInterface
         return new FavoritesService(
             $tableManager->get('userlist'),
             $tableManager->get('resource'),
-            $sm->get('VuFind\RecordCache')
+            $sm->get('VuFind\Record\Cache')
         );
     }
 }

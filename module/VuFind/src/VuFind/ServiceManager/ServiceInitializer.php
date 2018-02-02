@@ -97,7 +97,7 @@ class ServiceInitializer implements InitializerInterface
         if ($instance instanceof \VuFind\Record\Cache\RecordCacheAwareInterface
             && $this->isCacheEnabled($sm)
         ) {
-            $instance->setRecordCache($sm->get('VuFind\RecordCache'));
+            $instance->setRecordCache($sm->get('VuFind\Record\Cache'));
         }
         return $instance;
     }

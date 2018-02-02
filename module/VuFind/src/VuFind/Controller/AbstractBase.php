@@ -397,7 +397,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getRecordCache()
     {
-        return $this->serviceLocator->get('VuFind\RecordCache');
+        return $this->serviceLocator->get('VuFind\Record\Cache');
     }
 
     /**
