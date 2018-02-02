@@ -117,39 +117,6 @@ class Factory
     }
 
     /**
-     * Construct the recaptcha helper
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Record\Loader
-     */
-    public static function getRecaptcha(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $siteKey = isset($config->Captcha->siteKey)
-            ? $config->Captcha->siteKey
-            : (isset($config->Captcha->publicKey)
-                ? $config->Captcha->publicKey
-                : '');
-        $secretKey = isset($config->Captcha->secretKey)
-            ? $config->Captcha->secretKey
-            : (isset($config->Captcha->privateKey)
-                ? $config->Captcha->privateKey
-                : '');
-        $httpClient = $sm->get('VuFindHttp\HttpService')->createClient();
-        $translator = $sm->get('VuFind\Translator');
-        $options = ['lang' => $translator->getLocale()];
-        if (isset($config->Captcha->theme)) {
-            $options['theme'] = $config->Captcha->theme;
-        }
-        $recaptcha = new \VuFind\Service\ReCaptcha(
-            $siteKey, $secretKey, ['ssl' => true], $options, null, $httpClient
-        );
-
-        return $recaptcha;
-    }
-
-    /**
      * Construct the record cache.
      *
      * @param ServiceManager $sm Service manager.

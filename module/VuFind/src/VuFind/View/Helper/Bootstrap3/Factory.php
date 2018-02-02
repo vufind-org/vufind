@@ -92,7 +92,7 @@ class Factory
     public static function getRecaptcha(ServiceManager $sm)
     {
         return new Recaptcha(
-            $sm->get('VuFind\Recaptcha'),
+            $sm->get('VuFind\Service\ReCaptcha'),
             $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
