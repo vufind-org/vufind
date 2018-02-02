@@ -96,7 +96,7 @@ class LoggerFactory implements FactoryInterface
         $error_types = isset($parts[1]) ? $parts[1] : '';
 
         // use smtp
-        $mailer = $container->get('VuFind\Mailer');
+        $mailer = $container->get('VuFind\Mailer\Mailer');
         $msg = $mailer->getNewMessage()
             ->addFrom($config->Site->email)
             ->addTo($email)

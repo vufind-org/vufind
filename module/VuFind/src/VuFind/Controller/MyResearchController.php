@@ -1470,7 +1470,7 @@ class MyResearchController extends AbstractBase
                                 . $user->verify_hash . '&auth_method=' . $method
                         ]
                     );
-                    $this->serviceLocator->get('VuFind\Mailer')->send(
+                    $this->serviceLocator->get('VuFind\Mailer\Mailer')->send(
                         $user->email,
                         $config->Site->email,
                         $this->translate('recovery_email_subject'),

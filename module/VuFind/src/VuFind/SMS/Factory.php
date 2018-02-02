@@ -70,7 +70,7 @@ class Factory implements FactoryInterface
             $client = $sm->get('VuFindHttp\HttpService')->createClient();
             return new Clickatell($smsConfig, ['client' => $client]);
         case 'mailer':
-            $options = ['mailer' => $sm->get('VuFind\Mailer')];
+            $options = ['mailer' => $sm->get('VuFind\Mailer\Mailer')];
             if (isset($mainConfig->Site->email)) {
                 $options['defaultFrom'] = $mainConfig->Site->email;
             }

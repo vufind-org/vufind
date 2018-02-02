@@ -86,22 +86,30 @@ class Factory implements FactoryInterface
     }
 
     /**
-     * Create service
+     * Create an object
      *
-     * @param ContainerInterface $sm      Service manager
-     * @param string             $name    Requested service name (unused)
-     * @param array              $options Extra options (unused)
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return \VuFind\Mailer\Mailer
+     * @return object
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    public function __invoke(ContainerInterface $sm, $name, array $options = null)
-    {
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+
         // Load configurations:
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get('VuFind\Config\PluginManager')->get('config');
 
         // Create service:
-        return new \VuFind\Mailer\Mailer($this->getTransport($config));
+        return new $requestedName($this->getTransport($config));
     }
 }
