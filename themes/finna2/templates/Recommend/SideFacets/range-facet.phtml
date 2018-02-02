@@ -9,7 +9,7 @@
         <? if ($facet['type'] == 'date'): ?>
             <div class="slider-container"><input type="text" class="hidden" id="<?=$this->escapeHtmlAttr($title)?><?=$this->escapeHtml($facet['type'])?>Slider"/></div>
         <? endif; ?>
-        <button class="btn btn-primary btn-default" type="submit" value=""><i class="fa fa-search"></i> <?=$this->transEsc('Update')?></button>
+        <button class="btn btn-primary" type="submit" value=""><i class="fa fa-search"></i> <?=$this->transEsc('Update')?></button>
     </form>
 </div>
 <? if ($facet['type'] == 'date'): ?>
