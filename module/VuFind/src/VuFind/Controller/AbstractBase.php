@@ -241,7 +241,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function getILSAuthenticator()
     {
-        return $this->serviceLocator->get('VuFind\ILSAuthenticator');
+        return $this->serviceLocator->get('VuFind\Auth\ILSAuthenticator');
     }
 
     /**

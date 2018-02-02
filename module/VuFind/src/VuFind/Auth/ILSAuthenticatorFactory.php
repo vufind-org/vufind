@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for MultiBackend ILS driver.
+ * ILS Authenticator factory.
  *
  * PHP version 5
  *
@@ -20,26 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  Authentication
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\ILS\Driver;
+namespace VuFind\Auth;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for MultiBackend ILS driver.
+ * ILS Authenticator factory.
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  Authentication
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class MultiBackendFactory implements FactoryInterface
+class ILSAuthenticatorFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -59,12 +59,24 @@ class MultiBackendFactory implements FactoryInterface
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName(
-            $container->get('VuFind\Config\PluginManager'),
-            $container->get('VuFind\Auth\ILSAuthenticator'),
-            $container->get('VuFind\ILS\Driver\PluginManager')
-        );
+        // Construct the ILS authenticator as a lazy loading value holder so that
+        // the object is not instantiated until it is called. This helps break a
+        // potential circular dependency with the MultiBackend driver as well as
+        // saving on initialization costs in cases where the authenticator is not
+        // actually utilized.
+        $callback = function (& $wrapped, $proxy) use ($container, $requestedName) {
+            // Generate wrapped object:
+            $auth = $container->get('VuFind\Auth\Manager');
+            $catalog = $container->get('VuFind\ILSConnection');
+            $wrapped = new $requestedName($auth, $catalog);
+
+            // Indicate that initialization is complete to avoid reinitialization:
+            $proxy->setProxyInitializer(null);
+        };
+        $cfg = $container->get('VuFind\ProxyConfig');
+        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
+        return $factory->createProxy('VuFind\Auth\ILSAuthenticator', $callback);
     }
 }
