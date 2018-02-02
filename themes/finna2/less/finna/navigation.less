@@ -37,7 +37,7 @@
 }
 @media (min-width:@screen-md-min) {
   .nav > li {
-    display: inline-block;    
+    display: inline-block;
   }
 }
 @media (max-width: @screen-md-max) {
@@ -63,7 +63,7 @@
 
 .navbar-nav>li.lang:first-child {
   border-left: none;
-}  
+}
 
 // fix navbar for logoutoptions
 .finna-navbar .navbar-nav .logoutOptions {
@@ -345,6 +345,10 @@
     float: left;
     margin: 0;
   }
+
+  .btn {
+    vertical-align: baseline;
+  }
 }
 
 .finna-navbar {
@@ -366,19 +370,18 @@
   position: absolute;
   margin:0;
   line-height: @navbar-height;
-  
   top: 0px;
   right: 15px;
   & .dropdown-menu > li > a {
     white-space: normal;
-  }   
+  }
 }
 
 @media (max-width: @screen-sm-max) {
   .nav.nav-absolute {
     right: @navbar-height;
   }
-} 
+}
 
 // Fix dropdowns in navbar for wide screen
 @media (min-width: @screen-md-min) {
