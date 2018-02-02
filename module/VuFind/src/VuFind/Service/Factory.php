@@ -117,22 +117,6 @@ class Factory
     }
 
     /**
-     * Construct the record loader.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Record\Loader
-     */
-    public static function getRecordLoader(ServiceManager $sm)
-    {
-        return new \VuFind\Record\Loader(
-            $sm->get('VuFind\Search'),
-            $sm->get('VuFind\RecordDriver\PluginManager'),
-            $sm->get('VuFind\Record\Cache')
-        );
-    }
-
-    /**
      * Construct the record router.
      *
      * @param ServiceManager $sm Service manager.
@@ -142,7 +126,7 @@ class Factory
     public static function getRecordRouter(ServiceManager $sm)
     {
         return new \VuFind\Record\Router(
-            $sm->get('VuFind\RecordLoader'),
+            $sm->get('VuFind\Record\Loader'),
             $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }

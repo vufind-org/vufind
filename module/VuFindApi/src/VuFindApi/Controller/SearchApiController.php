@@ -189,7 +189,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             return $this->output([], self::STATUS_ERROR, 400, 'Missing id');
         }
 
-        $loader = $this->serviceLocator->get('VuFind\RecordLoader');
+        $loader = $this->serviceLocator->get('VuFind\Record\Loader');
         try {
             if (is_array($request['id'])) {
                 $results = $loader->loadBatchForSource($request['id']);

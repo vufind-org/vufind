@@ -69,7 +69,7 @@ class CartFactory implements FactoryInterface
         $activeInSearch = isset($config->Site->bookbagTogglesInSearch)
             ? $config->Site->bookbagTogglesInSearch : true;
         return new $requestedName(
-            $container->get('VuFind\RecordLoader'),
+            $container->get('VuFind\Record\Loader'),
             $container->get('VuFind\Cookie\CookieManager'),
             $size, $active, $activeInSearch
         );

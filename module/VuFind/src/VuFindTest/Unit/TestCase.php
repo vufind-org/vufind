@@ -200,7 +200,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 'SharedEventManager', new \Zend\EventManager\SharedEventManager()
             );
             $this->serviceManager->setService(
-                'VuFind\RecordLoader', new \VuFind\Record\Loader(
+                'VuFind\Record\Loader', new \VuFind\Record\Loader(
                     $this->serviceManager->get('VuFind\Search'),
                     $this->serviceManager->get('VuFind\RecordDriver\PluginManager')
                 )

@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for Symphony ILS driver.
+ * Record loader factory.
  *
  * PHP version 5
  *
@@ -20,26 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\ILS\Driver;
+namespace VuFind\Record;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for Symphony ILS driver.
+ * Record loader factory.
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SymphonyFactory implements FactoryInterface
+class LoaderFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -62,8 +62,9 @@ class SymphonyFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Record\Loader'),
-            $container->get('VuFind\Cache\Manager')
+            $container->get('VuFind\Search'),
+            $container->get('VuFind\RecordDriver\PluginManager'),
+            $container->get('VuFind\Record\Cache')
         );
     }
 }

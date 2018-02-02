@@ -67,7 +67,7 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
         $params = $container->get('VuFind\Search\Params\PluginManager')
             ->get($paramsService);
         $searchService = $container->get('VuFind\Search');
-        $recordLoader = $container->get('VuFind\RecordLoader');
+        $recordLoader = $container->get('VuFind\Record\Loader');
         $class = $this->getClassName($requestedName);
         return new $class(
             $params, $searchService, $recordLoader, ...($extras ?: [])

@@ -53,7 +53,7 @@ class Factory
     {
         return new CollectionHierarchyTree(
             $sm->get('VuFind\Config\PluginManager')->get('config'),
-            $sm->get('VuFind\RecordLoader')
+            $sm->get('VuFind\Record\Loader')
         );
     }
 

@@ -52,7 +52,7 @@ class Factory
     public static function getFavorites(ServiceManager $sm)
     {
         return new Favorites(
-            $sm->get('VuFind\RecordLoader'),
+            $sm->get('VuFind\Record\Loader'),
             $sm->get('VuFind\Record\Cache'),
             $sm->get('VuFind\Tags')
         );

@@ -63,7 +63,7 @@ class ResultsFactory implements FactoryInterface
         $params = $container->get('VuFind\Search\Params\PluginManager')
             ->get($paramsService);
         $searchService = $container->get('VuFind\Search');
-        $recordLoader = $container->get('VuFind\RecordLoader');
+        $recordLoader = $container->get('VuFind\Record\Loader');
         return new $requestedName(
             $params, $searchService, $recordLoader, ...($options ?: [])
         );

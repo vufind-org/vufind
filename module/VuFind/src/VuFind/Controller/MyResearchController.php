@@ -940,7 +940,7 @@ class MyResearchController extends AbstractBase
         $id = isset($current['id']) ? $current['id'] : null;
         $source = isset($current['source'])
             ? $current['source'] : DEFAULT_SEARCH_BACKEND;
-        $record = $this->serviceLocator->get('VuFind\RecordLoader')
+        $record = $this->serviceLocator->get('VuFind\Record\Loader')
             ->load($id, $source, true);
         $record->setExtraDetail('ils_details', $current);
         return $record;
@@ -1364,7 +1364,7 @@ class MyResearchController extends AbstractBase
                 $source = isset($row['source'])
                     ? $row['source'] : DEFAULT_SEARCH_BACKEND;
                 $row['driver'] = $this->serviceLocator
-                    ->get('VuFind\RecordLoader')->load($row['id'], $source);
+                    ->get('VuFind\Record\Loader')->load($row['id'], $source);
                 if (empty($row['title'])) {
                     $row['title'] = $row['driver']->getShortTitle();
                 }
