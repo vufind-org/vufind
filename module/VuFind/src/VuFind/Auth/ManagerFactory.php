@@ -66,7 +66,7 @@ class ManagerFactory implements FactoryInterface
         try {
             // Check if the catalog wants to hide the login link, and override
             // the configuration if necessary.
-            $catalog = $container->get('VuFind\ILSConnection');
+            $catalog = $container->get('VuFind\ILS\Connection');
             if ($catalog->loginIsHidden()) {
                 $config = new \Zend\Config\Config($config->toArray(), true);
                 $config->Authentication->hideLogin = true;

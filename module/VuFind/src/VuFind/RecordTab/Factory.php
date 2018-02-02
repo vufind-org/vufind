@@ -148,7 +148,7 @@ class Factory
         if (isset($config->Site->hideHoldingsTabWhenEmpty)
             && $config->Site->hideHoldingsTabWhenEmpty
         ) {
-            $catalog = $sm->get('VuFind\ILSConnection');
+            $catalog = $sm->get('VuFind\ILS\Connection');
         } else {
             $catalog = false;
         }

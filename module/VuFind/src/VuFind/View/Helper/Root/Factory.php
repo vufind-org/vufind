@@ -320,7 +320,7 @@ class Factory
      */
     public static function getIls(ServiceManager $sm)
     {
-        return new Ils($sm->get('VuFind\ILSConnection'));
+        return new Ils($sm->get('VuFind\ILS\Connection'));
     }
 
     /**

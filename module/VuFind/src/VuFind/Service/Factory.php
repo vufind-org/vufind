@@ -98,37 +98,6 @@ class Factory
     }
 
     /**
-     * Construct the HMAC service.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Crypt\HMAC
-     */
-    public static function getHMAC(ServiceManager $sm)
-    {
-        return new \VuFind\Crypt\HMAC(
-            $sm->get('VuFind\Config\PluginManager')->get('config')->Security->HMACkey
-        );
-    }
-
-    /**
-     * Construct the ILS connection.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\ILS\Connection
-     */
-    public static function getILSConnection(ServiceManager $sm)
-    {
-        $catalog = new \VuFind\ILS\Connection(
-            $sm->get('VuFind\Config\PluginManager')->get('config')->Catalog,
-            $sm->get('VuFind\ILS\Driver\PluginManager'),
-            $sm->get('VuFind\Config\PluginManager')
-        );
-        return $catalog->setHoldConfig($sm->get('VuFind\ILSHoldSettings'));
-    }
-
-    /**
      * Construct the ILS hold logic.
      *
      * @param ServiceManager $sm Service manager.
@@ -139,7 +108,7 @@ class Factory
     {
         return new \VuFind\ILS\Logic\Holds(
             $sm->get('VuFind\Auth\ILSAuthenticator'),
-            $sm->get('VuFind\ILSConnection'),
+            $sm->get('VuFind\ILS\Connection'),
             $sm->get('VuFind\Crypt\HMAC'),
             $sm->get('VuFind\Config\PluginManager')->get('config')
         );
@@ -170,7 +139,7 @@ class Factory
     {
         return new \VuFind\ILS\Logic\TitleHolds(
             $sm->get('VuFind\Auth\ILSAuthenticator'),
-            $sm->get('VuFind\ILSConnection'),
+            $sm->get('VuFind\ILS\Connection'),
             $sm->get('VuFind\Crypt\HMAC'),
             $sm->get('VuFind\Config\PluginManager')->get('config')
         );

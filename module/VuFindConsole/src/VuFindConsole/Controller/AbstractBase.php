@@ -127,7 +127,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getILS()
     {
-        return $this->serviceLocator->get('VuFind\ILSConnection');
+        return $this->serviceLocator->get('VuFind\ILS\Connection');
     }
 
     /**

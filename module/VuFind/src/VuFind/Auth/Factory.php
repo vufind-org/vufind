@@ -84,7 +84,7 @@ class Factory
     public static function getILS(ServiceManager $sm)
     {
         return new ILS(
-            $sm->get('VuFind\ILSConnection'),
+            $sm->get('VuFind\ILS\Connection'),
             $sm->get('VuFind\Auth\ILSAuthenticator')
         );
     }
@@ -113,7 +113,7 @@ class Factory
     public static function getMultiILS(ServiceManager $sm)
     {
         return new MultiILS(
-            $sm->get('VuFind\ILSConnection'),
+            $sm->get('VuFind\ILS\Connection'),
             $sm->get('VuFind\Auth\ILSAuthenticator')
         );
     }
