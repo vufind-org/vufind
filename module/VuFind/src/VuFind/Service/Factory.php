@@ -98,23 +98,6 @@ class Factory
     }
 
     /**
-     * Construct the ILS hold logic.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\ILS\Logic\Holds
-     */
-    public static function getILSHoldLogic(ServiceManager $sm)
-    {
-        return new \VuFind\ILS\Logic\Holds(
-            $sm->get('VuFind\Auth\ILSAuthenticator'),
-            $sm->get('VuFind\ILS\Connection'),
-            $sm->get('VuFind\Crypt\HMAC'),
-            $sm->get('VuFind\Config\PluginManager')->get('config')
-        );
-    }
-
-    /**
      * Construct the ILS hold settings helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -125,23 +108,6 @@ class Factory
     {
         return new \VuFind\ILS\HoldSettings(
             $sm->get('VuFind\Config\PluginManager')->get('config')->Catalog
-        );
-    }
-
-    /**
-     * Construct the ILS title hold logic.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\ILS\Logic\TitleHolds
-     */
-    public static function getILSTitleHoldLogic(ServiceManager $sm)
-    {
-        return new \VuFind\ILS\Logic\TitleHolds(
-            $sm->get('VuFind\Auth\ILSAuthenticator'),
-            $sm->get('VuFind\ILS\Connection'),
-            $sm->get('VuFind\Crypt\HMAC'),
-            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 

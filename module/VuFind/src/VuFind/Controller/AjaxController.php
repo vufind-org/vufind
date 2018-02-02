@@ -148,7 +148,7 @@ class AjaxController extends AbstractBase
     {
         static $hideHoldings = false;
         if ($hideHoldings === false) {
-            $logic = $this->serviceLocator->get('VuFind\ILSHoldLogic');
+            $logic = $this->serviceLocator->get('VuFind\ILS\Logic\Holds');
             $hideHoldings = $logic->getSuppressedLocations();
         }
 

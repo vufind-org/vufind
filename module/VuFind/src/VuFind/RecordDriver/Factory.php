@@ -168,8 +168,8 @@ class Factory
         );
         $driver->attachILS(
             $sm->get('VuFind\ILS\Connection'),
-            $sm->get('VuFind\ILSHoldLogic'),
-            $sm->get('VuFind\ILSTitleHoldLogic')
+            $sm->get('VuFind\ILS\Logic\Holds'),
+            $sm->get('VuFind\ILS\Logic\TitleHolds')
         );
         $driver->attachSearchService($sm->get('VuFind\Search'));
         return $driver;
@@ -191,8 +191,8 @@ class Factory
         );
         $driver->attachILS(
             $sm->get('VuFind\ILS\Connection'),
-            $sm->get('VuFind\ILSHoldLogic'),
-            $sm->get('VuFind\ILSTitleHoldLogic')
+            $sm->get('VuFind\ILS\Logic\Holds'),
+            $sm->get('VuFind\ILS\Logic\TitleHolds')
         );
         $driver->attachSearchService($sm->get('VuFind\Search'));
         return $driver;
