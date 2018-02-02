@@ -117,21 +117,6 @@ class Factory
     }
 
     /**
-     * Construct the record router.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Record\Router
-     */
-    public static function getRecordRouter(ServiceManager $sm)
-    {
-        return new \VuFind\Record\Router(
-            $sm->get('VuFind\Record\Loader'),
-            $sm->get('VuFind\Config\PluginManager')->get('config')
-        );
-    }
-
-    /**
      * Construct the search history helper.
      *
      * @param ServiceManager $sm Service manager.

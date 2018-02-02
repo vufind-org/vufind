@@ -56,7 +56,7 @@ class Factory
             $sm->get('VuFind\Search\BackendManager')
                 ->get('Solr'),
             $sm->get('ControllerPluginManager')->get('url'),
-            $sm->get('VuFind\RecordRouter')
+            $sm->get('VuFind\Record\Router')
         );
         $helper->setCoverRouter(
             $sm->get('VuFind\Cover\Router')
@@ -134,7 +134,7 @@ class Factory
         $helper = new SimilarItems(
             $sm->get('VuFind\Search'),
             $sm->get('ControllerPluginManager')->get('url'),
-            $sm->get('VuFind\RecordRouter')
+            $sm->get('VuFind\Record\Router')
         );
         $helper->setCoverRouter(
             $sm->get('VuFind\Cover\Router')

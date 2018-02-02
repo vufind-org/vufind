@@ -434,7 +434,7 @@ class Factory
      */
     public static function getRecordLink(ServiceManager $sm)
     {
-        return new RecordLink($sm->get('VuFind\RecordRouter'));
+        return new RecordLink($sm->get('VuFind\Record\Router'));
     }
 
     /**
