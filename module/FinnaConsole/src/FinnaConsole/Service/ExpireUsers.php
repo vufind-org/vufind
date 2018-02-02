@@ -110,7 +110,7 @@ class ExpireUsers extends AbstractService
                 $select->where->lessThan('finna_last_login', $expireDate);
                 $select->where->notEqualTo(
                     'finna_last_login',
-                    '0000-00-00 00:00:00'
+                    '2000-01-01 00:00:00'
                 );
             }
         );

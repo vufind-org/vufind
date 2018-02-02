@@ -228,12 +228,28 @@ class AccountExpirationReminders extends AbstractService
      */
     protected function getUsersToRemind($days, $remindDaysBefore, $frequency)
     {
-        $expireDate = date('Y-m-d', strtotime(sprintf('-%d days', (int)$days)));
+        if ($remindDaysBefore >= $days) {
+            throw new \Exception(
+                'remind_days_before must be less than expiration_days'
+            );
+        }
+        if ($frequency > $remindDaysBefore) {
+            throw new \Exception(
+                'frequency must be less than or equal to remind_days_before'
+            );
+        }
+
+        $limitDate = date(
+            'Y-m-d',
+            strtotime(sprintf('-%d days', (int)$days - (int)$remindDaysBefore))
+        );
+
+        $initialReminderThreshold = time() + $frequency * 86400;
 
         $users = $this->table->select(
-            function (Select $select) use ($expireDate) {
+            function (Select $select) use ($limitDate) {
                 $select->where->notLike('username', 'deleted:%');
-                $select->where->lessThan('finna_last_login', $expireDate);
+                $select->where->lessThan('finna_last_login', $limitDate);
                 $select->where->notEqualTo(
                     'finna_last_login',
                     '2000-01-01 00:00:00'
@@ -255,8 +271,27 @@ class AccountExpirationReminders extends AbstractService
 
             if (!$user->email || trim($user->email) == '') {
                 $this->msg(
-                    "User {$user->username} (id {$user->id})" . ' does not have an'
-                    . 'email address, bypassing expiration reminders'
+                    "User {$user->username} (id {$user->id}) does not have an"
+                    . ' email address, bypassing expiration reminders'
+                );
+                continue;
+            }
+
+            // Avoid sending a reminder if it comes too late (i.e. no reminders have
+            // been sent before and there's less than $frequency days before
+            // expiration)
+            $expirationDatetime = new DateTime($user->finna_last_login);
+            $expirationDatetime->add(new DateInterval('P' . $days . 'D'));
+
+            if (($user->finna_last_expiration_reminder < $user->finna_last_login
+                && $expirationDatetime->getTimestamp() < $initialReminderThreshold)
+                || $expirationDatetime->getTimestamp() < time()
+            ) {
+                $expires = $expirationDatetime->format('Y-m-d');
+                $this->msg(
+                    "User {$user->username} (id {$user->id}) expires already on"
+                    . " $expires without previous reminders, bypassing expiration"
+                    . ' reminders'
                 );
                 continue;
             }
@@ -268,10 +303,6 @@ class AccountExpirationReminders extends AbstractService
                 && $searchTable->getSearches('', $user->id)->count() === 0
                 && $resourceTable->getFavorites($user->id)->count() === 0
             ) {
-                $this->msg(
-                    "User {$user->username} (id {$user->id})"
-                    . ' does not have saved data, bypassing expiration reminders'
-                );
                 continue;
             }
 
