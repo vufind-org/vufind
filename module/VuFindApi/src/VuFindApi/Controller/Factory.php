@@ -54,7 +54,7 @@ class Factory
     public static function getApiController(ServiceManager $sm)
     {
         $controller = new ApiController($sm);
-        $controller->addApi($sm->get('SearchApi'));
+        $controller->addApi($sm->get('ControllerManager')->get('SearchApi'));
         return $controller;
     }
 
