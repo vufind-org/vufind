@@ -85,7 +85,7 @@ class ServiceInitializer implements InitializerInterface
             $instance->setDbTableManager($sm->get('VuFind\Db\Table\PluginManager'));
         }
         if ($instance instanceof \Zend\Log\LoggerAwareInterface) {
-            $instance->setLogger($sm->get('VuFind\Logger'));
+            $instance->setLogger($sm->get('VuFind\Log\Logger'));
         }
         if ($instance instanceof \VuFind\I18n\Translator\TranslatorAwareInterface) {
             $instance->setTranslator($sm->get('VuFind\Translator'));

@@ -94,8 +94,8 @@ class SummonBackendFactory implements FactoryInterface
         $configReader = $this->serviceLocator->get('VuFind\Config\PluginManager');
         $this->config = $configReader->get('config');
         $this->summonConfig = $configReader->get('Summon');
-        if ($this->serviceLocator->has('VuFind\Logger')) {
-            $this->logger = $this->serviceLocator->get('VuFind\Logger');
+        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
+            $this->logger = $this->serviceLocator->get('VuFind\Log\Logger');
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);

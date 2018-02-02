@@ -85,8 +85,8 @@ class Pazpar2BackendFactory implements FactoryInterface
         $this->serviceLocator = $sm;
         $this->config = $this->serviceLocator->get('VuFind\Config\PluginManager')
             ->get('Pazpar2');
-        if ($this->serviceLocator->has('VuFind\Logger')) {
-            $this->logger = $this->serviceLocator->get('VuFind\Logger');
+        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
+            $this->logger = $this->serviceLocator->get('VuFind\Log\Logger');
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);

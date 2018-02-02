@@ -431,7 +431,7 @@ class Initializer
             } catch (\Exception $e) {
                 // Don't let a cache failure kill the whole application, but make
                 // note of it:
-                $logger = $this->serviceManager->get('VuFind\Logger');
+                $logger = $this->serviceManager->get('VuFind\Log\Logger');
                 $logger->debug(
                     'Problem loading cache: ' . get_class($e) . ' exception: '
                     . $e->getMessage()

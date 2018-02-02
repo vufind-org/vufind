@@ -121,7 +121,7 @@ class Bootstrapper
         if ($debugOverride) {
             $auth = $sm->get('ZfcRbac\Service\AuthorizationService');
             if ($auth->isGranted('access.DebugMode')) {
-                $logger = $sm->get('VuFind\Logger');
+                $logger = $sm->get('VuFind\Log\Logger');
                 $logger->addDebugWriter($debugOverride);
             }
         }
@@ -441,8 +441,8 @@ class Bootstrapper
     {
         $callback = function ($event) {
             $sm = $event->getApplication()->getServiceManager();
-            if ($sm->has('VuFind\Logger')) {
-                $log = $sm->get('VuFind\Logger');
+            if ($sm->has('VuFind\Log\Logger')) {
+                $log = $sm->get('VuFind\Log\Logger');
                 if (is_callable([$log, 'logException'])) {
                     $exception = $event->getParam('exception');
                     // Console request does not include server,

@@ -88,8 +88,8 @@ class PrimoBackendFactory implements FactoryInterface
         $this->serviceLocator = $sm;
         $configReader = $this->serviceLocator->get('VuFind\Config\PluginManager');
         $this->primoConfig = $configReader->get('Primo');
-        if ($this->serviceLocator->has('VuFind\Logger')) {
-            $this->logger = $this->serviceLocator->get('VuFind\Logger');
+        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
+            $this->logger = $this->serviceLocator->get('VuFind\Log\Logger');
         }
 
         $connector = $this->createConnector();

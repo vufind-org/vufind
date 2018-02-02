@@ -378,7 +378,7 @@ class Factory
         } catch (\Exception $e) {
             // Don't let a cache failure kill the whole application, but make
             // note of it:
-            $logger = $sm->get('VuFind\Logger');
+            $logger = $sm->get('VuFind\Log\Logger');
             $logger->debug(
                 'Problem loading cache: ' . get_class($e) . ' exception: '
                 . $e->getMessage()
