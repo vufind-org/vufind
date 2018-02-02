@@ -112,6 +112,13 @@ class AccountExpirationReminders extends AbstractService
     protected $currentInstitution = null;
 
     /**
+     * Current site config
+     *
+     * @var object
+     */
+    protected $currentSiteConfig = null;
+
+    /**
      * Datasource configuration
      *
      * @var \Zend\Config\Config
@@ -186,9 +193,6 @@ class AccountExpirationReminders extends AbstractService
             $this->msg($this->getUsage());
             return false;
         }
-
-        $siteConfig = \VuFind\Config\Locator::getLocalConfigPath("config.ini");
-        $this->currentSiteConfig = parse_ini_file($siteConfig, true);
 
         $users = $this->getUsersToRemind(
             $this->expirationDays, $this->remindDaysBefore, $this->reminderFrequency
