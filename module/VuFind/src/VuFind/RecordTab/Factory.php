@@ -67,7 +67,7 @@ class Factory
     public static function getCollectionList(ServiceManager $sm)
     {
         return new CollectionList(
-            $sm->get('VuFind\SearchRunner'),
+            $sm->get('VuFind\Search\SearchRunner'),
             $sm->get('VuFind\Recommend\PluginManager')
         );
     }

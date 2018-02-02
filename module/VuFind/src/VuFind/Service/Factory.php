@@ -117,21 +117,6 @@ class Factory
     }
 
     /**
-     * Construct the Search runner.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Search\SearchRunner
-     */
-    public static function getSearchRunner(ServiceManager $sm)
-    {
-        return new \VuFind\Search\SearchRunner(
-            $sm->get('VuFind\Search\Results\PluginManager'),
-            new \Zend\EventManager\EventManager($sm->get('SharedEventManager'))
-        );
-    }
-
-    /**
      * Construct the search service.
      *
      * @param ServiceManager $sm Service manager.

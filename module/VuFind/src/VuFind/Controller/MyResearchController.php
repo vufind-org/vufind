@@ -739,7 +739,7 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, we just need to display the favorites:
         try {
-            $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+            $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:

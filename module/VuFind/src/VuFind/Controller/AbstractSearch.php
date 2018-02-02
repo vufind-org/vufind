@@ -257,7 +257,7 @@ class AbstractSearch extends AbstractBase
             return $this->redirectToSavedSearch($savedId);
         }
 
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
 
         // Send both GET and POST variables to search class:
         $request = $this->getRequest()->getQuery()->toArray()

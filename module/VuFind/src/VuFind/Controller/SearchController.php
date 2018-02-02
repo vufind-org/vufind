@@ -421,7 +421,7 @@ class SearchController extends AbstractSearch
             + $this->getRequest()->getPost()->toArray()
         );
         $view = $this->createViewModel();
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
         $view->results = $runner->run(
             $request, 'SolrReserves', $this->getSearchSetupCallback()
         );

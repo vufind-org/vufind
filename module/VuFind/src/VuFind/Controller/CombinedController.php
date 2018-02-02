@@ -141,7 +141,7 @@ class CombinedController extends AbstractSearch
         // Set up current request context:
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
-        $results = $this->serviceLocator->get('VuFind\SearchRunner')->run(
+        $results = $this->serviceLocator->get('VuFind\Search\SearchRunner')->run(
             $request, 'Combined', $this->getSearchSetupCallback()
         );
 

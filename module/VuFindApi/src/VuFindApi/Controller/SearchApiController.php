@@ -253,7 +253,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             ? $facetConfig->SpecialFacets->hierarchical->toArray()
             : [];
 
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
         try {
             $results = $runner->run(
                 $request,

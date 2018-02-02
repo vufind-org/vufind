@@ -58,7 +58,7 @@ class ChannelsController extends AbstractBase
                 $provider->configureSearchParams($params);
             }
         };
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
         $results = $runner->run([], $searchClassId, $callback);
 
         $channels = [];
@@ -143,7 +143,7 @@ class ChannelsController extends AbstractBase
     {
         $view = $this->createViewModel();
 
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
 
         // Send both GET and POST variables to search class:
         $request = $this->getRequest()->getQuery()->toArray()
