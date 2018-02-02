@@ -66,7 +66,7 @@ class DemoFactory extends DriverWithDateConverterFactory
         };
         return parent::__invoke(
             $container, $requestedName,
-            [$container->get('VuFind\Search'), $sessionFactory]
+            [$container->get('VuFindSearch\Service'), $sessionFactory]
         );
     }
 }

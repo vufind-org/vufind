@@ -583,7 +583,7 @@ class InstallController extends AbstractBase
     protected function testSearchService()
     {
         // Try to retrieve an arbitrary ID -- this will fail if Solr is down:
-        $searchService = $this->serviceLocator->get('VuFind\Search');
+        $searchService = $this->serviceLocator->get('VuFindSearch\Service');
         $searchService->retrieve('Solr', '1');
     }
 

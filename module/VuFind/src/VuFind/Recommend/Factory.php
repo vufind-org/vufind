@@ -207,7 +207,7 @@ class Factory
     public static function getRandomRecommend(ServiceManager $sm)
     {
         return new RandomRecommend(
-            $sm->get('VuFind\Search'),
+            $sm->get('VuFindSearch\Service'),
             $sm->get('VuFind\Search\Params\PluginManager')
         );
     }

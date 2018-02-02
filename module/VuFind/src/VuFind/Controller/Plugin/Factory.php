@@ -174,7 +174,7 @@ class Factory
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $useIndex = isset($config->Reserves->search_enabled)
             && $config->Reserves->search_enabled;
-        $ss = $useIndex ? $sm->get('VuFind\Search') : null;
+        $ss = $useIndex ? $sm->get('VuFindSearch\Service') : null;
         return new Reserves($useIndex, $ss);
     }
 

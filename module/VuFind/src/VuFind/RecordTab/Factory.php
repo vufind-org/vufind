@@ -226,9 +226,7 @@ class Factory
      */
     public static function getSimilarItemsCarousel(ServiceManager $sm)
     {
-        return new SimilarItemsCarousel(
-            $sm->get('VuFind\Search')
-        );
+        return new SimilarItemsCarousel($sm->get('VuFindSearch\Service'));
     }
 
     /**

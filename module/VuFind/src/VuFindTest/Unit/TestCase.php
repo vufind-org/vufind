@@ -124,7 +124,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $bm = new \VuFind\Search\BackendManager($registry);
         $this->serviceManager->setService('VuFind\Search\BackendManager', $bm);
         $ss = new \VuFindSearch\Service();
-        $this->serviceManager->setService('VuFind\Search', $ss);
+        $this->serviceManager->setService('VuFindSearch\Service', $ss);
         $fh = new \VuFind\Search\Solr\HierarchicalFacetHelper();
         $this->serviceManager
             ->setService('VuFind\Search\Solr\HierarchicalFacetHelper', $fh);
@@ -201,7 +201,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             );
             $this->serviceManager->setService(
                 'VuFind\Record\Loader', new \VuFind\Record\Loader(
-                    $this->serviceManager->get('VuFind\Search'),
+                    $this->serviceManager->get('VuFindSearch\Service'),
                     $this->serviceManager->get('VuFind\RecordDriver\PluginManager')
                 )
             );

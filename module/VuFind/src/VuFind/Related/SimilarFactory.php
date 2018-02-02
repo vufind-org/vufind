@@ -58,6 +58,6 @@ class SimilarFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        return new $requestedName($container->get('VuFind\Search'));
+        return new $requestedName($container->get('VuFindSearch\Service'));
     }
 }

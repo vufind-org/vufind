@@ -62,7 +62,7 @@ class LoaderFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Search'),
+            $container->get('VuFindSearch\Service'),
             $container->get('VuFind\RecordDriver\PluginManager'),
             $container->get('VuFind\Record\Cache')
         );

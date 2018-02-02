@@ -52,7 +52,7 @@ class Factory
     public static function getAlphaBrowse(ServiceManager $sm)
     {
         $helper = new AlphaBrowse(
-            $sm->get('VuFind\Search'),
+            $sm->get('VuFindSearch\Service'),
             $sm->get('VuFind\Search\BackendManager')
                 ->get('Solr'),
             $sm->get('ControllerPluginManager')->get('url'),
@@ -113,7 +113,7 @@ class Factory
     public static function getRandom(ServiceManager $sm)
     {
         $helper = new Random(
-            $sm->get('VuFind\Search'),
+            $sm->get('VuFindSearch\Service'),
             $sm->get('VuFind\Search\Params\PluginManager')
         );
         $helper->setCoverRouter(
@@ -132,7 +132,7 @@ class Factory
     public static function getSimilarItems(ServiceManager $sm)
     {
         $helper = new SimilarItems(
-            $sm->get('VuFind\Search'),
+            $sm->get('VuFindSearch\Service'),
             $sm->get('ControllerPluginManager')->get('url'),
             $sm->get('VuFind\Record\Router')
         );
