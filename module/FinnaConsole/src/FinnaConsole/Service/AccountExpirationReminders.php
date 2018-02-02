@@ -382,10 +382,17 @@ class AccountExpirationReminders extends AbstractService
         $serviceAddress = $this->currentInstitution . '.finna.fi';
         $serviceName = !empty($this->currentSiteConfig['Site']['title'])
             ? $this->currentSiteConfig['Site']['title'] : $serviceAddress;
+        $firstName = $user->firstname;
+        if (!$firstName) {
+            $firstName = $user->lastname;
+        }
+        if (!$firstName) {
+            $firstName = $userName;
+        }
         $params = [
             'loginMethod' => strtolower($user->finna_auth_method),
             'username' => $userName,
-            'firstname' => $user->firstname ? $user->firstname : $userName,
+            'firstname' => $firstName,
             'expirationDate' =>  $expirationDatetime->format('d.m.Y'),
             'serviceName' => $serviceName,
             'serviceAddress' => $serviceAddress
