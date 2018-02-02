@@ -1,6 +1,6 @@
 <?php
 /**
- * ILS connection factory
+ * ILS hold settings factory
  *
  * PHP version 5
  *
@@ -31,7 +31,7 @@ use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * ILS connection factory
+ * ILS hold settings factory
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -39,7 +39,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ConnectionFactory implements FactoryInterface
+class HoldSettingsFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -61,11 +61,8 @@ class ConnectionFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $catalog = new $requestedName(
-            $container->get('VuFind\Config\PluginManager')->get('config')->Catalog,
-            $container->get('VuFind\ILS\Driver\PluginManager'),
-            $container->get('VuFind\Config\PluginManager')
+        return new $requestedName(
+            $container->get('VuFind\Config\PluginManager')->get('config')->Catalog
         );
-        return $catalog->setHoldConfig($container->get('VuFind\ILS\HoldSettings'));
     }
 }

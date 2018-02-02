@@ -98,20 +98,6 @@ class Factory
     }
 
     /**
-     * Construct the ILS hold settings helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\ILS\HoldSettings
-     */
-    public static function getILSHoldSettings(ServiceManager $sm)
-    {
-        return new \VuFind\ILS\HoldSettings(
-            $sm->get('VuFind\Config\PluginManager')->get('config')->Catalog
-        );
-    }
-
-    /**
      * Construct the ProxyManager configuration.
      *
      * @param ServiceManager $sm Service manager.
