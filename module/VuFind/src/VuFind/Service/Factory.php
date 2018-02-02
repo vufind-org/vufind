@@ -265,18 +265,4 @@ class Factory
             $client, true, $ip
         );
     }
-
-    /**
-     * Construct the YAML reader.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Config\YamlReader
-     */
-    public static function getYamlReader(ServiceManager $sm)
-    {
-        return new \VuFind\Config\YamlReader(
-            $sm->get('VuFind\Cache\Manager')
-        );
-    }
 }

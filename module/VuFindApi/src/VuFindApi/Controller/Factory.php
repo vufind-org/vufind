@@ -67,7 +67,7 @@ class Factory
      */
     public static function getSearchApiController(ServiceManager $sm)
     {
-        $recordFields = $sm->get('VuFind\YamlReader')
+        $recordFields = $sm->get('VuFind\Config\YamlReader')
             ->get('SearchApiRecordFields.yaml');
         $helperManager = $sm->get('ViewHelperManager');
         $rf = new RecordFormatter($recordFields, $helperManager);
