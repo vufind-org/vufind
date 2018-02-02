@@ -195,21 +195,6 @@ class Factory
     }
 
     /**
-     * Construct the Solr writer.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Solr\Writer
-     */
-    public static function getSolrWriter(ServiceManager $sm)
-    {
-        return new \VuFind\Solr\Writer(
-            $sm->get('VuFind\Search\BackendManager'),
-            $sm->get('VuFind\Db\Table\PluginManager')->get('changetracker')
-        );
-    }
-
-    /**
      * Construct the tag helper.
      *
      * @param ServiceManager $sm Service manager.
