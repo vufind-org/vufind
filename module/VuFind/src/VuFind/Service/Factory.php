@@ -165,22 +165,4 @@ class Factory
 
         return $translator;
     }
-
-    /**
-     * Construct the WorldCat helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Connection\WorldCatUtils
-     */
-    public static function getWorldCatUtils(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $client = $sm->get('VuFindHttp\HttpService')->createClient();
-        $ip = $sm->get('Request')->getServer()->get('SERVER_ADDR');
-        return new \VuFind\Connection\WorldCatUtils(
-            isset($config->WorldCat) ? $config->WorldCat : null,
-            $client, true, $ip
-        );
-    }
 }

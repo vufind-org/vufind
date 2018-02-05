@@ -342,8 +342,6 @@ class Factory
      */
     public static function getWorldCatIdentities(ServiceManager $sm)
     {
-        return new WorldCatIdentities(
-            $sm->get('VuFind\WorldCatUtils')
-        );
+        return new WorldCatIdentities($sm->get('VuFind\Connection\WorldCatUtils'));
     }
 }
