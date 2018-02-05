@@ -217,8 +217,7 @@ class JSTree extends AbstractBase
         } else {
             $type = $node->type;
             if ('collection' === $type
-                && (!isset($this->config->Collections->collections)
-                || !$this->config->Collections->collections)
+                && empty($this->config->Collections->collections)
             ) {
                 $type = 'record';
             }
