@@ -472,7 +472,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Load the SMS carrier list:
-        $sms = $this->serviceLocator->get('VuFind\SMS');
+        $sms = $this->serviceLocator->get('VuFind\SMS\SMSInterface');
         $view = $this->createViewModel();
         $view->carriers = $sms->getCarriers();
         $view->validation = $sms->getValidationType();
