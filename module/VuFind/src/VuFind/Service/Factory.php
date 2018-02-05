@@ -113,29 +113,6 @@ class Factory
     }
 
     /**
-     * Construct the SearchTabs helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Search\SearchTabsHelper
-     */
-    public static function getSearchTabsHelper(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $tabConfig = isset($config->SearchTabs)
-            ? $config->SearchTabs->toArray() : [];
-        $filterConfig = isset($config->SearchTabsFilters)
-            ? $config->SearchTabsFilters->toArray() : [];
-        $permissionConfig = isset($config->SearchTabsPermissions)
-            ? $config->SearchTabsPermissions->toArray() : [];
-        return new \VuFind\Search\SearchTabsHelper(
-            $sm->get('VuFind\Search\Results\PluginManager'),
-            $tabConfig, $filterConfig,
-            $sm->get('Application')->getRequest(), $permissionConfig
-        );
-    }
-
-    /**
      * Construct the tag helper.
      *
      * @param ServiceManager $sm Service manager.

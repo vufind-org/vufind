@@ -523,7 +523,7 @@ class SearchController extends AbstractSearch
      */
     protected function getActiveHiddenFilters()
     {
-        return $this->serviceLocator->get('VuFind\SearchTabsHelper')
+        return $this->serviceLocator->get('VuFind\Search\SearchTabsHelper')
             ->getHiddenFilters($this->searchClassId);
     }
 

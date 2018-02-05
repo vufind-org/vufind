@@ -557,7 +557,7 @@ class Factory
         $helpers = $sm->get('ViewHelperManager');
         return new SearchTabs(
             $sm->get('VuFind\Search\Results\PluginManager'),
-            $helpers->get('url'), $sm->get('VuFind\SearchTabsHelper')
+            $helpers->get('url'), $sm->get('VuFind\Search\SearchTabsHelper')
         );
     }
 
