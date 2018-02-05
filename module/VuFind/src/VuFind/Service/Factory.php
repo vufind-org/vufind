@@ -113,21 +113,6 @@ class Factory
     }
 
     /**
-     * Construct the tag helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Tags
-     */
-    public static function getTags(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $maxLength = isset($config->Social->max_tag_length)
-            ? $config->Social->max_tag_length : 64;
-        return new \VuFind\Tags($maxLength);
-    }
-
-    /**
      * Construct the translator.
      *
      * @param ServiceManager $sm Service manager.
