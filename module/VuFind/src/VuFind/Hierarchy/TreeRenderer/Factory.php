@@ -54,7 +54,8 @@ class Factory
     public static function getJSTree(ServiceManager $sm)
     {
         return new JSTree(
-            $sm->getServiceLocator()->get('ControllerPluginManager')->get('Url')
+            $sm->getServiceLocator()->get('ControllerPluginManager')->get('Url'),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }
 }

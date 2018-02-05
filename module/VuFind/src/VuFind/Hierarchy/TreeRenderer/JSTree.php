@@ -51,13 +51,23 @@ class JSTree extends AbstractBase
     protected $router = null;
 
     /**
+     * Main configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config = null;
+
+    /**
      * Constructor
      *
      * @param \Zend\Mvc\Controller\Plugin\Url $router Router plugin for urls
+     * @param \Zend\Config\Config             $config Configuration
      */
-    public function __construct(\Zend\Mvc\Controller\Plugin\Url $router)
-    {
+    public function __construct(\Zend\Mvc\Controller\Plugin\Url $router,
+        \Zend\Config\Config $config
+    ) {
         $this->router = $router;
+        $this->config = $config;
     }
 
     /**
@@ -205,7 +215,14 @@ class JSTree extends AbstractBase
             return $this->getUrlFromRouteCache('collection', $node->id)
                 . '#tabnav';
         } else {
-            $url = $this->getUrlFromRouteCache($node->type, $node->id);
+            $type = $node->type;
+            if ('collection' === $type
+                && (!isset($this->config->Collections->collections)
+                || !$this->config->Collections->collections)
+            ) {
+                $type = 'record';
+            }
+            $url = $this->getUrlFromRouteCache($type, $node->id);
             return $node->type == 'collection'
                 ? $url . '#tabnav'
                 : $url . '#tree-' . preg_replace('/\W/', '-', $node->id);
