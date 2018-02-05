@@ -39,9 +39,6 @@ class Params extends \VuFind\Search\Solr\Params {
 	// Make sure we look for the individual terms also
 	$backendParams->add('q.op', 'OR');
 
-        // Trigger choosing the appropriate language field on the solr side
-        $backendParams->add('defType', 'multiLanguageQueryParser');
-
         return $backendParams;
     }
 }
