@@ -55,24 +55,6 @@ class Factory
     }
 
     /**
-     * Generic plugin manager factory (support method).
-     *
-     * @param ServiceManager $sm Service manager.
-     * @param string         $ns VuFind namespace containing plugin manager
-     *
-     * @return object
-     */
-    public static function getGenericPluginManager(ServiceManager $sm, $ns)
-    {
-        $className = 'VuFind\\' . $ns . '\PluginManager';
-        $configKey = strtolower(str_replace('\\', '_', $ns));
-        $config = $sm->get('Config');
-        return new $className(
-            $sm, $config['vufind']['plugin_managers'][$configKey]
-        );
-    }
-
-    /**
      * Construct the HTTP service.
      *
      * @param ServiceManager $sm Service manager.
@@ -151,18 +133,6 @@ class Factory
             $tabConfig, $filterConfig,
             $sm->get('Application')->getRequest(), $permissionConfig
         );
-    }
-
-    /**
-     * Construct the Session Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Session\PluginManager
-     */
-    public static function getSessionPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Session');
     }
 
     /**
