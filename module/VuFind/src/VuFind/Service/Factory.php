@@ -131,20 +131,6 @@ class Factory
     }
 
     /**
-     * Construct the search specs reader.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Config\SearchSpecsReader
-     */
-    public static function getSearchSpecsReader(ServiceManager $sm)
-    {
-        return new \VuFind\Config\SearchSpecsReader(
-            $sm->get('VuFind\Cache\Manager')
-        );
-    }
-
-    /**
      * Construct the SearchTabs helper.
      *
      * @param ServiceManager $sm Service manager.
