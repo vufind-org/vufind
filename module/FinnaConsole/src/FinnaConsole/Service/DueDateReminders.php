@@ -465,6 +465,9 @@ class DueDateReminders extends AbstractService
         $urlParts = explode('/', $this->currentViewPath);
         $urlView = array_pop($urlParts);
         $urlInstitution = array_pop($urlParts);
+        if ('national' === $urlInstitution) {
+            $urlInstitution = 'www';
+        }
 
         $baseUrl = 'https://' . $urlInstitution . '.finna.fi';
         if ($urlView != $this::DEFAULT_PATH) {
