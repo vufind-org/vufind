@@ -326,7 +326,7 @@ class MyResearchController extends AbstractBase
     protected function setSavedFlagSecurely($searchId, $saved, $userId)
     {
         $searchTable = $this->getTable('Search');
-        $sessId = $this->serviceLocator->get('VuFind\SessionManager')->getId();
+        $sessId = $this->serviceLocator->get('Zend\Session\SessionManager')->getId();
         $row = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
         if (empty($row)) {
             throw new ForbiddenException('Access denied.');

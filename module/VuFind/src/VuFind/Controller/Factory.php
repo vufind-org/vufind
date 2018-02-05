@@ -70,7 +70,7 @@ class Factory extends GenericFactory
             $sm,
             new \Zend\Session\Container(
                 'cart_followup',
-                $sm->get('VuFind\SessionManager')
+                $sm->get('Zend\Session\SessionManager')
             )
         );
     }
@@ -148,7 +148,7 @@ class Factory extends GenericFactory
             $sm,
             $sm->get('VuFind\Cookie\CookieManager'),
             new \Zend\Session\Container(
-                'upgrade', $sm->get('VuFind\SessionManager')
+                'upgrade', $sm->get('Zend\Session\SessionManager')
             )
         );
     }

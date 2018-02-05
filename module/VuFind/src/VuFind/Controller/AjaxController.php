@@ -1239,7 +1239,7 @@ class AjaxController extends AbstractBase
     protected function keepAliveAjax()
     {
         // Request ID from session to mark it active
-        $this->serviceLocator->get('VuFind\SessionManager')->getId();
+        $this->serviceLocator->get('Zend\Session\SessionManager')->getId();
         return $this->output(true, self::STATUS_OK);
     }
 
@@ -1441,7 +1441,7 @@ class AjaxController extends AbstractBase
         }
 
         // This may be called frequently, don't leave sessions dangling
-        $this->serviceLocator->get('VuFind\SessionManager')->destroy();
+        $this->serviceLocator->get('Zend\Session\SessionManager')->destroy();
 
         return $this->output('', self::STATUS_OK);
     }

@@ -74,7 +74,7 @@ class UserFactory extends RowGatewayFactory
         $prototype = parent::__invoke($container, $rowClass, $options);
         $prototype->setConfig($config);
         if ($privacy) {
-            $sessionManager = $container->get('VuFind\SessionManager');
+            $sessionManager = $container->get('Zend\Session\SessionManager');
             $session = new \Zend\Session\Container('Account', $sessionManager);
             $prototype->setSession($session);
         }

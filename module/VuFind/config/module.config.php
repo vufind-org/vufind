@@ -342,7 +342,6 @@ $config = [
             'VuFind\Service\ReCaptcha' => 'VuFind\Service\ReCaptchaFactory',
             'VuFind\Session\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Session\Settings' => 'Zend\ServiceManager\Factory\InvokableFactory',
-            'VuFind\SessionManager' => 'VuFind\Session\ManagerFactory',
             'VuFind\SMS' => 'VuFind\SMS\Factory',
             'VuFind\Solr\Writer' => 'VuFind\Solr\WriterFactory',
             'VuFind\Tags' => 'VuFind\Service\Factory::getTags',
@@ -351,6 +350,7 @@ $config = [
             'VuFindHttp\HttpService' => 'VuFind\Service\Factory::getHttp',
             'VuFindSearch\Service' => 'VuFind\Service\Factory::getSearchService',
             'Zend\Db\Adapter\Adapter' => 'VuFind\Service\Factory::getDbAdapter',
+            'Zend\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -410,6 +410,7 @@ $config = [
             'VuFind\SearchResultsPluginManager' => 'VuFind\Search\Results\PluginManager',
             'VuFind\SearchRunner' => 'VuFind\Search\SearchRunner',
             'VuFind\SearchSpecsReader' => 'VuFind\Config\SearchSpecsReader',
+            'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\SessionPluginManager' => 'VuFind\Session\PluginManager',
             'VuFind\YamlReader' => 'VuFind\Config\YamlReader',
         ],

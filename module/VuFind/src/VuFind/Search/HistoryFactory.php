@@ -64,7 +64,7 @@ class HistoryFactory implements FactoryInterface
         $searchTable = $container->get('VuFind\Db\Table\PluginManager')
             ->get('Search');
         $resultsManager = $container->get('VuFind\Search\Results\PluginManager');
-        $sessionId = $container->get('VuFind\SessionManager')->getId();
+        $sessionId = $container->get('Zend\Session\SessionManager')->getId();
         return new $requestedName($searchTable, $sessionId, $resultsManager);
     }
 }

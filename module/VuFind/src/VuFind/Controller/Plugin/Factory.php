@@ -68,7 +68,7 @@ class Factory
     public static function getFlashMessenger(ServiceManager $sm)
     {
         $plugin = new \Zend\Mvc\Plugin\FlashMessenger\FlashMessenger();
-        $sessionManager = $sm->get('VuFind\SessionManager');
+        $sessionManager = $sm->get('Zend\Session\SessionManager');
         $plugin->setSessionManager($sessionManager);
         return $plugin;
     }
@@ -84,7 +84,7 @@ class Factory
     {
         return new Followup(
             new \Zend\Session\Container(
-                'Followup', $sm->get('VuFind\SessionManager')
+                'Followup', $sm->get('Zend\Session\SessionManager')
             )
         );
     }
@@ -100,7 +100,7 @@ class Factory
     {
         return new Holds(
             $sm->get('VuFind\Crypt\HMAC'),
-            $sm->get('VuFind\SessionManager')
+            $sm->get('Zend\Session\SessionManager')
         );
     }
 
@@ -115,7 +115,7 @@ class Factory
     {
         return new ILLRequests(
             $sm->get('VuFind\Crypt\HMAC'),
-            $sm->get('VuFind\SessionManager')
+            $sm->get('Zend\Session\SessionManager')
         );
     }
 
@@ -190,7 +190,7 @@ class Factory
         return new ResultScroller(
             new \Zend\Session\Container(
                 'ResultScroller',
-                $sm->get('VuFind\SessionManager')
+                $sm->get('Zend\Session\SessionManager')
             ),
             $sm->get('VuFind\Search\Results\PluginManager')
         );
@@ -207,7 +207,7 @@ class Factory
     {
         return new StorageRetrievalRequests(
             $sm->get('VuFind\Crypt\HMAC'),
-            $sm->get('VuFind\SessionManager')
+            $sm->get('Zend\Session\SessionManager')
         );
     }
 }

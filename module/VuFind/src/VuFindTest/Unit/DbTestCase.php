@@ -113,7 +113,7 @@ abstract class DbTestCase extends TestCase
             $this->addTableManager($sm);
             $this->addRowManager($sm);
             $sm->setService(
-                'VuFind\SessionManager',
+                'Zend\Session\SessionManager',
                 $this->createMock('Zend\Session\SessionManager')
             );
 

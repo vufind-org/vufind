@@ -365,7 +365,7 @@ class AbstractSearch extends AbstractBase
     protected function retrieveSearchSecurely($searchId)
     {
         $searchTable = $this->getTable('Search');
-        $sessId = $this->serviceLocator->get('VuFind\SessionManager')->getId();
+        $sessId = $this->serviceLocator->get('Zend\Session\SessionManager')->getId();
         $user = $this->getUser();
         $userId = $user ? $user->id : null;
         return $searchTable->getOwnedRowById($searchId, $sessId, $userId);
@@ -381,7 +381,7 @@ class AbstractSearch extends AbstractBase
     protected function saveSearchToHistory($results)
     {
         $user = $this->getUser();
-        $sessId = $this->serviceLocator->get('VuFind\SessionManager')->getId();
+        $sessId = $this->serviceLocator->get('Zend\Session\SessionManager')->getId();
         $history = $this->getTable('Search');
         $history->saveSearch(
             $this->getResultsManager(), $results, $sessId,

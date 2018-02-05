@@ -61,7 +61,7 @@ class DemoFactory extends DriverWithDateConverterFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $sessionFactory = function () use ($container) {
-            $manager = $container->get('VuFind\SessionManager');
+            $manager = $container->get('Zend\Session\SessionManager');
             return new \Zend\Session\Container('DemoDriver', $manager);
         };
         return parent::__invoke(

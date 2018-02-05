@@ -81,7 +81,7 @@ class ManagerFactory implements FactoryInterface
 
         // Load remaining dependencies:
         $userTable = $container->get('VuFind\Db\Table\PluginManager')->get('user');
-        $sessionManager = $container->get('VuFind\SessionManager');
+        $sessionManager = $container->get('Zend\Session\SessionManager');
         $pm = $container->get('VuFind\Auth\PluginManager');
         $cookies = $container->get('VuFind\Cookie\CookieManager');
 

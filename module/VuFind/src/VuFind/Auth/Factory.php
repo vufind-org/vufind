@@ -52,7 +52,7 @@ class Factory
     public static function getChoiceAuth(ServiceManager $sm)
     {
         $container = new \Zend\Session\Container(
-            'ChoiceAuth', $sm->get('VuFind\SessionManager')
+            'ChoiceAuth', $sm->get('Zend\Session\SessionManager')
         );
         $auth = new ChoiceAuth($container);
         $auth->setPluginManager($sm->get('VuFind\Auth\PluginManager'));
@@ -69,7 +69,7 @@ class Factory
     public static function getFacebook(ServiceManager $sm)
     {
         $container = new \Zend\Session\Container(
-            'Facebook', $sm->get('VuFind\SessionManager')
+            'Facebook', $sm->get('Zend\Session\SessionManager')
         );
         return new Facebook($container);
     }
@@ -128,7 +128,7 @@ class Factory
     public static function getShibboleth(ServiceManager $sm)
     {
         return new Shibboleth(
-            $sm->get('VuFind\SessionManager')
+            $sm->get('Zend\Session\SessionManager')
         );
     }
 }
