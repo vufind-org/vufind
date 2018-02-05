@@ -73,7 +73,7 @@ class ReCaptchaFactory implements FactoryInterface
                 ? $config->Captcha->privateKey
                 : '');
         $httpClient = $container->get('VuFindHttp\HttpService')->createClient();
-        $translator = $container->get('VuFind\Translator');
+        $translator = $container->get('Zend\Mvc\I18n\Translator');
         $rcOptions = ['lang' => $translator->getLocale()];
         if (isset($config->Captcha->theme)) {
             $rcOptions['theme'] = $config->Captcha->theme;

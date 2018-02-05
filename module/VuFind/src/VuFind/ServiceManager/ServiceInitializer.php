@@ -88,7 +88,7 @@ class ServiceInitializer implements InitializerInterface
             $instance->setLogger($sm->get('VuFind\Log\Logger'));
         }
         if ($instance instanceof \VuFind\I18n\Translator\TranslatorAwareInterface) {
-            $instance->setTranslator($sm->get('VuFind\Translator'));
+            $instance->setTranslator($sm->get('Zend\Mvc\I18n\Translator'));
         }
         if ($instance instanceof \VuFindHttp\HttpServiceAwareInterface) {
             $instance->setHttpService($sm->get('VuFindHttp\HttpService'));

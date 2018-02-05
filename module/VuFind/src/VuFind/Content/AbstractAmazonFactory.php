@@ -65,7 +65,7 @@ class AbstractAmazonFactory implements \Zend\ServiceManager\Factory\FactoryInter
             ? $config->Content->amazonassociate : null;
         $secret = isset($config->Content->amazonsecret)
             ? $config->Content->amazonsecret : null;
-        $label = $container->get('VuFind\Translator')->translate(
+        $label = $container->get('Zend\Mvc\I18n\Translator')->translate(
             'Supplied by Amazon'
         );
         return new $requestedName($associate, $secret, $label);

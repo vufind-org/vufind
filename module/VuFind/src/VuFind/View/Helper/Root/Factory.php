@@ -288,8 +288,8 @@ class Factory
      */
     public static function getHelpText(ServiceManager $sm)
     {
-        $lang = $sm->has('VuFind\Translator')
-            ? $sm->get('VuFind\Translator')->getLocale()
+        $lang = $sm->has('Zend\Mvc\I18n\Translator')
+            ? $sm->get('Zend\Mvc\I18n\Translator')->getLocale()
             : 'en';
         $helpers = $sm->get('ViewHelperManager');
         return new HelpText($helpers->get('context'), $lang);

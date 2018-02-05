@@ -412,7 +412,7 @@ class Initializer
 
         if (!empty($pathStack)) {
             try {
-                $translator = $this->serviceManager->get('VuFind\Translator');
+                $translator = $this->serviceManager->get('Zend\Mvc\I18n\Translator');
 
                 $pm = $translator->getPluginManager();
                 $pm->get('ExtendedIni')->addToPathStack($pathStack);

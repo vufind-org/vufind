@@ -564,7 +564,8 @@ class SearchController extends AbstractSearch
         // Check if we have facet results cached, and build them if we don't.
         $cache = $this->serviceLocator->get('VuFind\Cache\Manager')
             ->getCache('object');
-        $language = $this->serviceLocator->get('VuFind\Translator')->getLocale();
+        $language = $this->serviceLocator->get('Zend\Mvc\I18n\Translator')
+            ->getLocale();
         $hiddenFilters = $this->getActiveHiddenFilters();
         $hiddenFiltersHash = md5(json_encode($hiddenFilters));
         $cacheName .= "List-$hiddenFiltersHash-$language";

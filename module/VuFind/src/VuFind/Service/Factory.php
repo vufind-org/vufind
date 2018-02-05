@@ -117,7 +117,7 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \Zend\I18n\Translator\TranslatorInterface
+     * @return \Zend\Mvc\I18n\Translator
      */
     public static function getTranslator(ServiceManager $sm)
     {

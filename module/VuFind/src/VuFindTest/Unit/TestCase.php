@@ -209,7 +209,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $this->serviceManager->setService('Config', []);
             $factory = new \Zend\Mvc\I18n\TranslatorFactory();
             $this->serviceManager->setService(
-                'VuFind\Translator', $factory->createService($this->serviceManager)
+                'Zend\Mvc\I18n\Translator',
+                $factory->createService($this->serviceManager)
             );
         }
         return $this->serviceManager;

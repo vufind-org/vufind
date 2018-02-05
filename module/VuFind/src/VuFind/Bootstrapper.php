@@ -332,7 +332,7 @@ class Bootstrapper
                 $language = $config->Site->language;
             }
             try {
-                $translator = $sm->get('VuFind\Translator');
+                $translator = $sm->get('Zend\Mvc\I18n\Translator');
                 $translator->setLocale($language)
                     ->addTranslationFile('ExtendedIni', null, 'default', $language);
                 foreach ($this->getTextDomains() as $domain) {
