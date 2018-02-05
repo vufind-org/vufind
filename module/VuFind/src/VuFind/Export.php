@@ -160,7 +160,8 @@ class Export
      */
     public function needsRedirect($format)
     {
-        return isset($this->exportConfig->$format->redirectUrl);
+        return !empty($this->exportConfig->$format->redirectUrl)
+            && 'link' === $this->getBulkExportType($format);
     }
 
     /**
@@ -384,5 +385,46 @@ class Export
             $this->activeFormats[$context] = array_unique($active);
         }
         return $this->activeFormats[$context];
+    }
+
+    /**
+     * Get the bulk export POST field name.
+     *
+     * @param string $format Format identifier
+     *
+     * @return string
+     */
+    public function getBulkExportPostField($format)
+    {
+        return !empty($this->exportConfig->$format->postField)
+            ? $this->exportConfig->$format->postField : 'ImportData';
+    }
+
+    /**
+     * Get the bulk export POST URL.
+     *
+     * @param string $format Format identifier
+     *
+     * @return string
+     */
+    public function getBulkExportPostUrl($format)
+    {
+        return !empty($this->exportConfig->$format->postUrl)
+            ? $this->exportConfig->$format->postUrl
+            : '';
+    }
+
+    /**
+     * Get the bulk export target window.
+     *
+     * @param string $format Format identifier
+     *
+     * @return string
+     */
+    public function getBulkExportTargetWindow($format)
+    {
+        return !empty($this->exportConfig->$format->targetWindow)
+            ? $this->exportConfig->$format->targetWindow
+            : $format . 'Main';
     }
 }
