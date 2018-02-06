@@ -54,7 +54,7 @@
     <i class="fa <?=$thisFacet['isApplied'] ? 'fa-check-square-o' : 'fa-square-o' ?>" aria-hidden="true"></i>
   <? endif; ?>
 
-  <?=$this->tuefind()->isUnassigned($thisFacet['displayText']) ? $this->transEsc($thisFacet['displayText']) : $this->escapeHtml($thisFacet['displayText'])?>
+  <?=$this->tuefind()->isUnassigned($thisFacet['displayText']) ? $this->transEsc($thisFacet['displayText']) : $this->escapeHtml(str_replace("\\/", "/", $thisFacet['displayText']))?>
 
   <? if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
       </a>
