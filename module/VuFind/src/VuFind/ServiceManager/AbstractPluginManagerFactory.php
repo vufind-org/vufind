@@ -42,6 +42,22 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 class AbstractPluginManagerFactory implements FactoryInterface
 {
     /**
+     * Determine the configuration key for the specified class name.
+     *
+     * @param string $requestedName Service being created
+     *
+     * @return string
+     */
+    public function getConfigKey($requestedName)
+    {
+        // Extract namespace of plugin manager (chop off leading top-level
+        // namespace -- e.g. VuFind -- and trailing PluginManager class).
+        $regex = '/^[^\\\\]+\\\\(.*)\\\\PluginManager$/';
+        preg_match($regex, $requestedName, $matches);
+        return strtolower(str_replace('\\', '_', $matches[1]));
+    }
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -61,11 +77,7 @@ class AbstractPluginManagerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        // Extract namespace of plugin manager (chop off leading top-level
-        // namespace -- e.g. VuFind -- and trailing PluginManager class).
-        $regex = '/^[^\\\\]+\\\\(.*)\\\\PluginManager$/';
-        preg_match($regex, $requestedName, $matches);
-        $configKey = strtolower(str_replace('\\', '_', $matches[1]));
+        $configKey = $this->getConfigKey($requestedName);
         if (empty($configKey)) {
             $error = 'Problem determining config key for ' . $requestedName;
             throw new \Exception($error);
