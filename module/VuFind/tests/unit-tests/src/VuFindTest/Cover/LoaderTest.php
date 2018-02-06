@@ -30,7 +30,6 @@ namespace VuFindTest\Cover;
 use VuFind\Cover\Loader;
 use VuFindTheme\ThemeInfo;
 use Zend\Config\Config;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
 
 /**
  * Cover Loader Test Class
@@ -149,7 +148,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
             $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
         }
         if (null === $httpService) {
-            $httpService = $this->createMock('VuFind\Http');
+            $httpService = $this->getMockBuilder('VuFindHttp\HttpService')->getMock();
         }
         if ($mock) {
             return $this->getMockBuilder(__NAMESPACE__ . '\MockLoader')
