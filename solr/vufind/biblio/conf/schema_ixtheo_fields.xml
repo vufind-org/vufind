@@ -203,4 +203,10 @@
     <copyField source="topic_ru" dest="key_word_chains_sorted_ru"/>
     <copyField source="topic_ru" dest="topic_all"/>
     <copyField source="topic_synonyms" dest="topic_all"/>
+    <!-- CopyFields for Alphabetic Browse -->
+    <copyField source="topic_facet_de" dest="topic_browse"/>
+    <copyField source="era_facet_de" dest="topic_browse"/>
+    <copyField source="genre_facet_de" dest="topic_browse"/>
+    <copyField source="geographic_facet_de" dest="topic_browse"/>
+
 </fields>
