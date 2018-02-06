@@ -57,9 +57,9 @@ class RecordController extends \VuFind\Controller\RecordController
             $flashMsg = $this->flashMessenger();
 
             $message = $this->params()->fromPost('feedback_message');
-            $senderEmail = $this->params()->fromPost('from');
+            $replyToEmail = $this->params()->fromPost('from');
             $validator = new \Zend\Validator\EmailAddress();
-            if (!$validator->isValid($senderEmail)) {
+            if (!$validator->isValid($replyToEmail)) {
                 $flashMsg->setNamespace('error')
                     ->addMessage('Email address is invalid');
                 return $view;
@@ -81,6 +81,13 @@ class RecordController extends \VuFind\Controller\RecordController
                 );
             }
 
+            $config = $this->getConfig();
+            $feedback = isset($config->Feedback) ? $config->Feedback : null;
+            $senderEmail = isset($feedback->sender_email)
+                ? $feedback->sender_email : 'noreply@vufind.org';
+            $senderName = isset($feedback->sender_name)
+                ? $feedback->sender_name : 'VuFind Feedback';
+
             $emailSubject = $this->translate(
                 'feedback_on_record',
                 ['%%record%%' => $driver->getBreadcrumb()]
@@ -89,7 +96,7 @@ class RecordController extends \VuFind\Controller\RecordController
             $serverUrl .= '://' . $this->getRequest()->getServer('HTTP_HOST');
 
             $emailMessage = "\n" . $this->translate('This email was sent from');
-            $emailMessage .= ": " . $senderEmail . "\n";
+            $emailMessage .= ": " . $replyToEmail . "\n";
             $emailMessage .=
                 "------------------------------------------------------------\n";
             // Use the record plugin to render the template for the correct driver
@@ -107,7 +114,8 @@ class RecordController extends \VuFind\Controller\RecordController
             $mail = new Mail\Message();
             $mail->setEncoding('UTF-8');
             $mail->setBody($emailMessage);
-            $mail->setFrom($senderEmail);
+            $mail->setFrom($senderEmail, $senderName);
+            $mail->setReplyTo($replyToEmail);
             $mail->addTo($recipientEmail);
             try {
                 $mail->setSubject($emailSubject);
