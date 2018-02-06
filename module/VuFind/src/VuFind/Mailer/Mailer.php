@@ -330,6 +330,8 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * Convert the given addresses to an AddressList object
      *
      * @param string|Address|AddressList $addresses Addresses
+     *
+     * @return AddressList
      */
     protected function convertToAddressList($addresses)
     {
