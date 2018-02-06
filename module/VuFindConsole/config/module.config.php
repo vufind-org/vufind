@@ -38,6 +38,11 @@ $config = [
             ],
         ],
     ],
+    'service_manager' => [
+        'factories' => [
+            'VuFindConsole\Generator\GeneratorTools' => 'VuFindConsole\Generator\GeneratorToolsFactory',
+        ],
+    ],
     'view_manager' => [
         // CLI tools are admin-oriented, so we should always output full errors:
         'display_exceptions' => true,
