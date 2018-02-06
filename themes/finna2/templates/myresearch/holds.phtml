@@ -13,8 +13,9 @@
     // Add finna-holds.js
     $this->headScript()->appendFile('finna-holds.js');
 
-    $changePickupLocation = $this->ils()->checkFunction('changePickupLocation');
-    $changeRequestStatus = $this->ils()->checkFunction('changeRequestStatus');
+    $patron = $user ? $this->auth()->getILSPatron() : false;
+    $changePickupLocation = $this->ils()->checkFunction('changePickupLocation', [$patron]);
+    $changeRequestStatus = $this->ils()->checkFunction('changeRequestStatus', [$patron]);
 ?>
 <div class="my-research-content">
   <div class="myresearch-grid-list">
