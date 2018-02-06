@@ -144,15 +144,16 @@ class Loader extends \VuFind\ImageLoader
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config     $config      VuFind configuration
-     * @param ApiManager              $manager     Plugin manager for API handlers
-     * @param \VuFindTheme\ThemeInfo  $theme       VuFind theme tools
+     * @param \Zend\Config\Config $config VuFind configuration
+     * @param ApiManager $manager Plugin manager for API handlers
+     * @param \VuFindTheme\ThemeInfo $theme VuFind theme tools
      * @param \VuFindHttp\HttpService $httpService HTTP client factory
-     * @param string                  $baseDir     Directory to store downloaded images
+     * @param string $baseDir Directory to store downloaded images
      * (set to system temp dir if not otherwise specified)
      */
     public function __construct($config, ApiManager $manager,
-        \VuFindTheme\ThemeInfo $theme, \VuFindHttp\HttpService $httpService, $baseDir = null
+        \VuFindTheme\ThemeInfo $theme, \VuFindHttp\HttpService $httpService, 
+        $baseDir = null
     ) {
         $this->setThemeInfo($theme);
         $this->config = $config;
