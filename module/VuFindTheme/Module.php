@@ -67,15 +67,15 @@ class Module
             'factories' => [
                 'VuFindTheme\MixinGenerator' =>
                     'VuFindTheme\Module::getMixinGenerator',
+                'VuFindTheme\Mobile' =>
+                    'Zend\ServiceManager\Factory\InvokableFactory',
+                'VuFindTheme\ResourceContainer' =>
+                    'Zend\ServiceManager\Factory\InvokableFactory',
                 'VuFindTheme\ThemeCompiler' =>
                     'VuFindTheme\Module::getThemeCompiler',
                 'VuFindTheme\ThemeGenerator' =>
                     'VuFindTheme\Module::getThemeGenerator',
                 'VuFindTheme\ThemeInfo' => 'VuFindTheme\Module::getThemeInfo',
-            ],
-            'invokables' => [
-                'VuFindTheme\Mobile' => 'VuFindTheme\Mobile',
-                'VuFindTheme\ResourceContainer' => 'VuFindTheme\ResourceContainer',
             ],
         ];
     }
