@@ -1435,7 +1435,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             }
 
             $message = isset($loan->loanStatus->status)
-                ? $this->mapStatus($loan->loanStatus->status) : '';
+                ? $this->mapStatus($loan->loanStatus->status, $function) : '';
 
             $trans = [
                 'id' => $loan->catalogueRecord->id,
@@ -1728,7 +1728,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $results['details'][$id] = [
                 'success' => $success,
                 'status' => $success ? 'Loan renewed' : 'Renewal failed',
-                'sysMessage' => $this->mapStatus($status),
+                'sysMessage' => $this->mapStatus($status, $function),
                 'item_id' => $id,
                 'new_date' => $this->formatDate(
                     $loan->loanDueDate
@@ -2095,7 +2095,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $this->error("AWS error: '$message'");
             return $status[$message];
         }
-        return $this->mapStatus($message);
+        return $this->mapStatus($message, $function);
     }
 
     /**
@@ -2281,11 +2281,12 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     /**
      * Map statuses
      *
-     * @param string $status as a string
+     * @param string $status   Status as a string
+     * @param string $function AWS function that returned the status
      *
      * @return string Mapped status
      */
-    protected function mapStatus($status)
+    protected function mapStatus($status, $function)
     {
         $statuses =  [
             'copyHasSpecialCircCat' => 'Copy has special circulation',
@@ -2298,7 +2299,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'patronHasDebt'         => 'renew_debt',
             'patronIsInvoiced'      => 'renew_item_patron_is_invoiced',
             'renewalIsDenied'       => 'renew_denied',
-            'ReservationDenied'     => 'hold_error_denied'
+            'ReservationDenied'     => 'hold_error_denied',
+            'BlockedBorrCard'       => 'addReservation' === $function
+                ? 'hold_error_blocked' : 'Borrowing Block Message'
         ];
 
         if (isset($statuses[$status])) {
