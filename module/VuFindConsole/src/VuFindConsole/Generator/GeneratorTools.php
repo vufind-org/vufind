@@ -66,16 +66,18 @@ class GeneratorTools
      * Extend a class defined somewhere in the service manager or its child
      * plugin managers.
      *
-     * @param ContainerInterface $container Service manager
-     * @param string             $class     Class name to extend
-     * @param string             $target    Target module in which to create new
+     * @param ContainerInterface $container     Service manager
+     * @param string             $class         Class name to extend
+     * @param string             $target        Target module in which to create new
      * service
+     * @param bool               $extendFactory Should we extend the factory?
      *
      * @return bool
      * @throws \Exception
      */
-    public function extendClass(ContainerInterface $container, $class, $target)
-    {
+    public function extendClass(ContainerInterface $container, $class, $target,
+        $extendFactory = false
+    ) {
         // Set things up differently depending on whether this is a top-level
         // service or a class in a plugin manager.
         if ($container->has($class)) {
@@ -97,10 +99,15 @@ class GeneratorTools
         // Create the custom subclass.
         $newClass = $this->createSubclassInModule($class, $target);
 
+        // Create the custom factory only if requested.
+        $newFactory = $extendFactory
+            ? $this->createSubclassInModule($factory, $target)
+            : $factory;
+
         // Finalize the local module configuration -- create a factory for the
         // new class, and set up the new class as an alias for the old class.
         $factoryPath = array_merge($configPath, ['factories', $newClass]);
-        $this->writeNewConfig($factoryPath, $factory, $target);
+        $this->writeNewConfig($factoryPath, $newFactory, $target);
         $aliasPath = array_merge($configPath, ['aliases', $class]);
         // Don't back up the config twice -- the first backup from the previous
         // write operation is sufficient.

@@ -98,10 +98,16 @@ class GenerateController extends AbstractBase
         $request = $this->getRequest();
         $class = $request->getParam('class');
         $target = $request->getParam('target');
+        $extendFactory = $request->getParam('extendfactory');
+
         if (empty($class) || empty($target)) {
             Console::writeLine(
                 'Usage: ' . $request->getScriptName() . ' generate extendclass'
-                . ' [class_name] [target_module]'
+                . ' [--extendfactory] [class_name] [target_module]'
+            );
+            Console::writeLine(
+                "\t--extendfactory - optional switch; when set, subclass "
+                . 'the factory; otherwise, use existing factory'
             );
             Console::writeLine(
                 "\tclass_name - the name of the class you wish to extend"
@@ -113,8 +119,9 @@ class GenerateController extends AbstractBase
         }
 
         try {
-            $this->getGeneratorTools()
-                ->extendClass($this->serviceLocator, $class, $target);
+            $this->getGeneratorTools()->extendClass(
+                $this->serviceLocator, $class, $target, $extendFactory
+            );
         } catch (\Exception $e) {
             Console::writeLine($e->getMessage());
             return $this->getFailureResponse();
