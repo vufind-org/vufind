@@ -71,7 +71,7 @@
   <? endif; ?>
 </div>
 <div class="sidebar right">
-  <? foreach ( $results->getRecommendations('side') as $current): ?>
+  <? foreach ($results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
   <? endforeach; ?>
 </div>
