@@ -3,8 +3,6 @@
   $this->headTitle($this->title);
   $this->layout()->finnaMainHeader = '<div><h3>' . $this->title . '</h3></div>';
 
-  $this->headLink()->appendStylesheet('vendor/leaflet.css');
-  $this->headScript()->appendFile('vendor/leaflet.js');
   $this->headLink()->appendStylesheet('vendor/L.Control.Locate.min.css');
   $this->headScript()->appendFile('vendor/L.Control.Locate.min.js');
 

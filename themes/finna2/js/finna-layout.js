@@ -1,21 +1,6 @@
-/*global VuFind, checkSaveStatuses, action, finna, L, initFacetTree, setupFacets, videojs, priorityNav, buildFacetNodes */
+/*global VuFind, checkSaveStatuses, action, finna, initFacetTree, setupFacets, videojs, priorityNav, buildFacetNodes */
 finna.layout = (function finnaLayout() {
   var _fixFooterTimeout = null;
-
-  function initMap(map) {
-    // Add zoom control with translated tooltips
-    L.control.zoom({
-      position: 'topleft',
-      zoomInTitle: VuFind.translate('map_zoom_in'),
-      zoomOutTitle: VuFind.translate('map_zoom_out')
-    }).addTo(map);
-
-    // Enable mouseWheel zoom on click
-    map.once('focus', function onFocusMap() {
-      map.scrollWheelZoom.enable();
-    });
-    map.scrollWheelZoom.disable();
-  }
 
   function initResizeListener() {
     var intervalId = false;
@@ -913,7 +898,6 @@ finna.layout = (function finnaLayout() {
   var my = {
     getOrganisationPageLink: getOrganisationPageLink,
     isTouchDevice: isTouchDevice,
-    initMap: initMap,
     initTruncate: initTruncate,
     initLocationService: initLocationService,
     initHierarchicalFacet: initHierarchicalFacet,

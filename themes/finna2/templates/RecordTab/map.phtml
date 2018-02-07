@@ -1,6 +1,5 @@
 <!-- START of: finna - RecordTab/map.phtml -->
 <?
-  $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/leaflet.js');
   $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/leaflet-omnivore.min.js');
   echo $this->inlineScript();
 ?>
@@ -55,7 +54,7 @@ $(document).ready(function() {
     zoom: 5,
     zoomControl: false
   });
-  finna.layout.initMap(map);
+  finna.map.initMapZooming(map);
   var onLoad = function() {
     fitZoom = map.getBoundsZoom(drawnItems.getBounds());
     map.setZoom(fitZoom <= 9 ? fitZoom - 1 : 9);

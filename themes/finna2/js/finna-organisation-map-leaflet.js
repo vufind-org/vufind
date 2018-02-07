@@ -28,7 +28,7 @@ finna.organisationMap = (function finnaOrganisationMap() {
       closePopupOnClick: false
     });
 
-    finna.layout.initMap(map);
+    finna.map.initMapZooming(map);
 
     // Center popup
     map.on('popupopen', function onPopupOpen(e) {

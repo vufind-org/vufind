@@ -13,7 +13,7 @@
   <? endforeach; ?>
 
   <? foreach ($filterList  as $field => $data): ?>
-    <? if (is_callable($params, 'isGeographicFilter') && $params->isGeographicFilter($data)): ?>
+    <? if (is_callable([$params, 'isGeographicFilter']) && $params->isGeographicFilter($data)): ?>
       <span class="filter-value">
         <? $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($data[0]['field'], $data[0]['value'], $data[0]['operator']) : '';?>
         <?=$this->transEsc($field)?>

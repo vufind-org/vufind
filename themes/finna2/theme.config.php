@@ -88,6 +88,7 @@ return [
         'finna-layout.js',
         'finna-openurl.js',
         'finna-common.js',
+        'finna-map.js',
         'finna-map-facet.js',
         'vendor/jquery.dataTables.min.js',
         'vendor/dataTables.bootstrap.min.js',

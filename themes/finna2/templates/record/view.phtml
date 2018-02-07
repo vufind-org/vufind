@@ -34,13 +34,6 @@
   }
   $this->headTitle($headText);
 
-  // Add map css if necessary:
-  foreach ($this->tabs as $tab) {
-    if ($tab instanceof \Finna\RecordTab\Map) {
-      $this->headLink()->appendStylesheet('vendor/leaflet.css');
-      break;
-    }
-  }
   $this->jsTranslations()->addStrings(
     [
       'map_zoom_in' => 'map_zoom_in',
