@@ -29,7 +29,7 @@ class Results extends \VuFind\Search\Solr\Results
         if ($facetSort == 'index') {
             foreach ($facets as $facet => $facetDetails) {
                 $items = $facetDetails['data']['list'];
-                array_multisort(array_column($items, 'displayText'), SORT_ASC, SORT_LOCALE_STRING, $items);
+                array_multisort(array_column($items, 'displayText'), SORT_ASC, SORT_NATURAL, $items);
                 $facets[$facet]['data']['list'] = $items;
             }
         }
