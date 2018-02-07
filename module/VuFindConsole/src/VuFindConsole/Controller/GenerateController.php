@@ -88,6 +88,42 @@ class GenerateController extends AbstractBase
     }
 
     /**
+     * Extend an existing class
+     *
+     * @return \Zend\Console\Response
+     */
+    public function extendclassAction()
+    {
+        // Display help message if parameters missing:
+        $request = $this->getRequest();
+        $class = $request->getParam('class');
+        $target = $request->getParam('target');
+        if (empty($class) || empty($target)) {
+            Console::writeLine(
+                'Usage: ' . $request->getScriptName() . ' generate extendclass'
+                . ' [class_name] [target_module]'
+            );
+            Console::writeLine(
+                "\tclass_name - the name of the class you wish to extend"
+            );
+            Console::writeLine(
+                "\ttarget_module - the module where the new class will be generated"
+            );
+            return $this->getFailureResponse();
+        }
+
+        try {
+            $this->getGeneratorTools()
+                ->extendClass($this->serviceLocator, $class, $target);
+        } catch (\Exception $e) {
+            Console::writeLine($e->getMessage());
+            return $this->getFailureResponse();
+        }
+
+        return $this->getSuccessResponse();
+    }
+
+    /**
      * Extend an existing service
      *
      * @return \Zend\Console\Response

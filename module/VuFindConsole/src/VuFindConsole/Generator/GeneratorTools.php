@@ -27,6 +27,7 @@
  */
 namespace VuFindConsole\Generator;
 
+use Interop\Container\ContainerInterface;
 use Zend\Code\Generator\ClassGenerator;
 use Zend\Code\Generator\FileGenerator;
 use Zend\Code\Generator\MethodGenerator;
@@ -59,6 +60,106 @@ class GeneratorTools
     public function __construct(array $config)
     {
         $this->config = $config;
+    }
+
+    /**
+     * Extend a class defined somewhere in the service manager or its child
+     * plugin managers.
+     *
+     * @param ContainerInterface $container Service manager
+     * @param string             $class     Class name to extend
+     * @param string             $target    Target module in which to create new
+     * service
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function extendClass(ContainerInterface $container, $class, $target)
+    {
+        // Set things up differently depending on whether this is a top-level
+        // service or a class in a plugin manager.
+        if ($container->has($class)) {
+            $factory = $this->getFactoryFromContainer($container, $class);
+            $configPath = ['service_manager'];
+        } else {
+            $pm = $this->getPluginManagerContainingClass($container, $class);
+            $apmFactory = new \VuFind\ServiceManager\AbstractPluginManagerFactory();
+            $pmKey = $apmFactory->getConfigKey(get_class($pm));
+            $factory = $this->getFactoryFromContainer($pm, $class);
+            $configPath = ['vufind', 'plugin_managers', $pmKey];
+        }
+
+        // No factory found? Throw an error!
+        if (!$factory) {
+            throw new \Exception('Could not find factory for ' . $class);
+        }
+
+        // Create the custom subclass.
+        $newClass = $this->createSubclassInModule($class, $target);
+
+        // Finalize the local module configuration -- create a factory for the
+        // new class, and set up the new class as an alias for the old class.
+        $factoryPath = array_merge($configPath, ['factories', $newClass]);
+        $this->writeNewConfig($factoryPath, $factory, $target);
+        $aliasPath = array_merge($configPath, ['aliases', $class]);
+        // Don't back up the config twice -- the first backup from the previous
+        // write operation is sufficient.
+        $this->writeNewConfig($aliasPath, $newClass, $target, false);
+
+        return true;
+    }
+
+    /**
+     * Get a list of factories in the provided container.
+     *
+     * @param ContainerInterface $container Container to inspect
+     *
+     * @return array
+     */
+    protected function getAllFactoriesFromContainer(ContainerInterface $container)
+    {
+        // There is no "getFactories" method, so we need to use reflection:
+        $reflectionProperty = new \ReflectionProperty($container, 'factories');
+        $reflectionProperty->setAccessible(true);
+        return $reflectionProperty->getValue($container);
+    }
+
+    /**
+     * Get a factory from the provided container (or null if undefined).
+     *
+     * @param ContainerInterface $container Container to inspect
+     * @param string             $class     Class whose factory we want
+     *
+     * @return string
+     */
+    protected function getFactoryFromContainer(ContainerInterface $container, $class)
+    {
+        $factories = $this->getAllFactoriesFromContainer($container);
+        return isset($factories[$class]) ? $factories[$class] : null;
+    }
+
+    /**
+     * Search all plugin managers for one containing the requested class (or return
+     * null if none found).
+     *
+     * @param ContainerInterface $container Service manager
+     * @param string             $class     Class to search for
+     *
+     * @return ContainerInterface
+     */
+    protected function getPluginManagerContainingClass(ContainerInterface $container,
+        $class
+    ) {
+        $factories = $this->getAllFactoriesFromContainer($container);
+        foreach (array_keys($factories) as $service) {
+            if (substr($service, -13) == 'PluginManager') {
+                $pm = $container->get($service);
+                if (null !== $this->getFactoryFromContainer($pm, $class)) {
+                    return $pm;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -376,15 +477,18 @@ class GeneratorTools
      * @param array  $path    Representation of path in config array
      * @param string $setting New setting to write into config
      * @param string $module  Module in which to write the configuration
+     * @param bool   $backup  Should we back up the existing config?
      *
      * @return void
      * @throws \Exception
      */
-    protected function writeNewConfig($path, $setting, $module)
+    protected function writeNewConfig($path, $setting, $module, $backup  = true)
     {
         // Create backup of configuration
         $configPath = $this->getModuleConfigPath($module);
-        $this->backUpFile($configPath);
+        if ($backup) {
+            $this->backUpFile($configPath);
+        }
 
         $config = include $configPath;
         $current = & $config;

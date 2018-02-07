@@ -52,6 +52,7 @@ $config = [
 $routes = [
     'compile/theme' => 'compile theme [--force] [<source>] [<target>]',
     'generate/dynamicroute' => 'generate dynamicroute [<name>] [<newController>] [<newAction>] [<module>]',
+    'generate/extendclass' => 'generate extendclass [<class>] [<target>]',
     'generate/extendservice' => 'generate extendservice [<source>] [<target>]',
     'generate/nontabrecordaction' => 'generate nontabrecordaction [<newAction>] [<module>]',
     'generate/recordroute' => 'generate recordroute [<base>] [<newController>] [<module>]',
