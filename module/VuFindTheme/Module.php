@@ -89,16 +89,20 @@ class Module
     {
         return [
             'factories' => [
-                'headThemeResources' =>
+                'VuFindTheme\View\Helper\HeadThemeResources' =>
                     'VuFindTheme\View\Helper\Factory::getHeadThemeResources',
-                'imageLink' => 'VuFindTheme\View\Helper\Factory::getImageLink',
-                // We have to override the Zend helpers using canonical names:
+                'VuFindTheme\View\Helper\ImageLink' =>
+                    'VuFindTheme\View\Helper\Factory::getImageLink',
                 'Zend\View\Helper\HeadLink' =>
                     'VuFindTheme\View\Helper\Factory::getHeadLink',
                 'Zend\View\Helper\HeadScript' =>
                     'VuFindTheme\View\Helper\Factory::getHeadScript',
                 'Zend\View\Helper\InlineScript' =>
                     'VuFindTheme\View\Helper\Factory::getInlineScript',
+            ],
+            'aliases' => [
+                'headThemeResources' => 'VuFindTheme\View\Helper\HeadThemeResources',
+                'imageLink' => 'VuFindTheme\View\Helper\ImageLink',
             ],
         ];
     }

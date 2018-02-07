@@ -130,7 +130,9 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
     {
         // Build the formatter:
         $factory = new RecordDataFormatterFactory();
-        $formatter = $factory->__invoke();
+        $formatter = $factory->__invoke(
+            $this->getServiceManager(), RecordDataFormatter::class
+        );
 
         // Create a view object with a set of helpers:
         $helpers = $this->getViewHelpers();
