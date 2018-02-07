@@ -80,11 +80,16 @@ class GeneratorTools
     ) {
         // Set things up differently depending on whether this is a top-level
         // service or a class in a plugin manager.
+        $cm = $container->get('ControllerManager');
+        $cpm = $container->get('ControllerPluginManager');
         if ($container->has($class)) {
             $factory = $this->getFactoryFromContainer($container, $class);
             $configPath = ['service_manager'];
-        } else {
-            $pm = $this->getPluginManagerContainingClass($container, $class);
+        } elseif ($factory = $this->getFactoryFromContainer($cm, $class)) {
+            $configPath = ['controllers'];
+        } elseif ($factory = $this->getFactoryFromContainer($cpm, $class)) {
+            $configPath = ['controller_plugins'];
+        } elseif ($pm = $this->getPluginManagerContainingClass($container, $class)) {
             $apmFactory = new \VuFind\ServiceManager\AbstractPluginManagerFactory();
             $pmKey = $apmFactory->getConfigKey(get_class($pm));
             $factory = $this->getFactoryFromContainer($pm, $class);
@@ -92,7 +97,7 @@ class GeneratorTools
         }
 
         // No factory found? Throw an error!
-        if (!$factory) {
+        if (empty($factory)) {
             throw new \Exception('Could not find factory for ' . $class);
         }
 
@@ -101,7 +106,7 @@ class GeneratorTools
 
         // Create the custom factory only if requested.
         $newFactory = $extendFactory
-            ? $this->createSubclassInModule($factory, $target)
+            ? $this->cloneFactory($factory, $target)
             : $factory;
 
         // Finalize the local module configuration -- create a factory for the
@@ -202,6 +207,7 @@ class GeneratorTools
 
         switch ($sourceType) {
         case 'factories':
+            $this->createSubclassInModule($parts[$partCount - 1], $target);
             $newConfig = $this->cloneFactory($config, $target);
             break;
         case 'invokables':
@@ -226,39 +232,63 @@ class GeneratorTools
      */
     protected function cloneFactory($factory, $module)
     {
+        // If the factory is a stand-alone class, it's simple to clone:
+        if (class_exists($factory)) {
+            return $this->createSubclassInModule($factory, $module);
+        }
+
         // Make sure we can figure out how to handle the factory; it should
         // either be a [controller, method] array or a "controller::method"
         // string; anything else will cause a problem.
         $parts = is_string($factory) ? explode('::', $factory) : $factory;
         if (!is_array($parts) || count($parts) != 2 || !class_exists($parts[0])
-            || !method_exists($parts[0], $parts[1])
+            || !is_callable($parts)
         ) {
             throw new \Exception('Unexpected factory configuration format.');
         }
         list($factoryClass, $factoryMethod) = $parts;
         $newFactoryClass = $this->generateLocalClassName($factoryClass, $module);
         if (!class_exists($newFactoryClass)) {
-            $this->createClassInModule($newFactoryClass, $module);
+            $this->createSubclassInModule($factoryClass, $module);
             $skipBackup = true;
         } else {
             $skipBackup = false;
-        }
-        if (method_exists($newFactoryClass, $factoryMethod)) {
-            throw new \Exception("$newFactoryClass::$factoryMethod already exists.");
         }
 
         $oldReflection = new ClassReflection($factoryClass);
         $newReflection = new ClassReflection($newFactoryClass);
 
-        $generator = ClassGenerator::fromReflection($newReflection);
-        $method = MethodGenerator::fromReflection(
-            $oldReflection->getMethod($factoryMethod)
-        );
-        $this->createServiceClassAndUpdateFactory(
-            $method, $oldReflection->getNamespaceName(), $module
-        );
-        $generator->addMethodFromGenerator($method);
-        $this->writeClass($generator, $module, true, $skipBackup);
+        try {
+            $newMethod = $newReflection->getMethod($factoryMethod);
+            if ($newMethod->getDeclaringClass()->getName() == $newFactoryClass) {
+                throw new \Exception(
+                    "$newFactoryClass::$factoryMethod already exists."
+                );
+            }
+
+            $generator = ClassGenerator::fromReflection($newReflection);
+            $method = MethodGenerator::fromReflection(
+                $oldReflection->getMethod($factoryMethod)
+            );
+            $this->updateFactory(
+                $method, $oldReflection->getNamespaceName(), $module
+            );
+            $generator->addMethodFromGenerator($method);
+            $this->writeClass($generator, $module, true, $skipBackup);
+        } catch (\ReflectionException $e) {
+            // If a parent factory has a __callStatic method, the method we are
+            // trying to rewrite may not exist. In that case, we can just inherit
+            // __callStatic and ignore the error. Any other exception should be
+            // treated as a fatal error.
+            if (method_exists($factoryClass, '__callStatic')) {
+                Console::writeLine('Error: ' . $e->getMessage());
+                Console::writeLine(
+                    '__callStatic in parent factory; skipping method generation.'
+                );
+            } else {
+                throw $e;
+            }
+        }
 
         return $newFactoryClass . '::' . $factoryMethod;
     }
@@ -274,7 +304,7 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    protected function createServiceClassAndUpdateFactory(MethodGenerator $method,
+    protected function updateFactory(MethodGenerator $method,
         $ns, $module
     ) {
         $body = $method->getBody();
@@ -289,7 +319,7 @@ class GeneratorTools
         // Figure out fully qualified name for purposes of createSubclassInModule():
         $fqClassName = (substr($className, 0, 1) != '\\')
             ? "$ns\\$className" : $className;
-        $newClass = $this->createSubclassInModule($fqClassName, $module);
+        $newClass = $this->generateLocalClassName($fqClassName, $module);
         $body = preg_replace(
             '/new\s+' . addslashes($className) . '\s*\(/m',
             'new \\' . $newClass . '(',
@@ -370,7 +400,13 @@ class GeneratorTools
                 throw new \Exception("$fullPath already exists.");
             }
         }
-        if (!file_put_contents($fullPath, $generator->generate())) {
+        // TODO: this is a workaround for an apparent bug in Zend\Code which
+        // omits the leading backslash on "extends" statements when rewriting
+        // existing classes. Can we remove this after a future Zend\Code upgrade?
+        $code = str_replace(
+            'extends VuFind\\', 'extends \\VuFind\\', $generator->generate()
+        );
+        if (!file_put_contents($fullPath, $code)) {
             throw new \Exception("Problem writing to $fullPath.");
         }
         Console::writeLine("Saved file: $fullPath");
