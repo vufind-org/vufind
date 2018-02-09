@@ -14,15 +14,6 @@ http_timeout = 30
 ; need to be a properly working url)
 redirect_uri = "http://localhost:8080/vufind/MyResearch/Home?auth_method=sierra"
 
-; This section is used to define library codes and named values which are used by the
-; system to indicate the location at which a hold is to be collected. If you leave it
-; commented out, a list will automatically be generated using the getPickUpLocations
-; method.  Your system will perform better if you fill this in, since it will reduce
-; the number of database lookups necessary when presenting the hold form.
-[pickUpLocations]
-h01 = "Main Library"
-h02 = "Branch Library"
-
 ; This section controls hold behavior; note that you must also ensure that Holds are
 ; enabled in the [Catalog] section of config.ini in order to take advantage of these
 ; settings.
@@ -43,7 +34,7 @@ defaultRequiredDate = 0:0:2
 
 ; extraHoldFields - A colon-separated list used to display extra visible fields in the
 ; place holds form. Supported values are "requiredByDate", "requestGroup"
-; (location in Sierra), "pickUpLocation" and "acceptTerms"
+; (location in Sierra), "pickUpLocation", "acceptTerms" and "comments"
 extraHoldFields = requiredByDate:pickUpLocation
 
 ; A Pick Up Location Code used to pre-select the pick up location drop down list and
