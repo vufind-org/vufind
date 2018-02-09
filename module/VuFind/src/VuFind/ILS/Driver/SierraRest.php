@@ -896,12 +896,12 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             );
             throw new ILSException('Problem with Sierra REST API.');
         }
-        if (empty($result['entries'])) {
+        if (empty($result)) {
             return [];
         }
 
         $locations = [];
-        foreach ($result['entries'] as $entry) {
+        foreach ($result as $entry) {
             $locations[] = [
                 'locationID' => $entry['code'],
                 'locationDisplay' => $this->translateLocation(
@@ -910,7 +910,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             ];
         }
 
-        return $result;
+        usort($locations, [$this, 'pickupLocationSortFunction']);
+        return $locations;
     }
 
     /**
@@ -1832,6 +1833,23 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $result = strcmp($a['location'], $b['location']);
         if ($result == 0) {
             $result = $a['sort'] - $b['sort'];
+        }
+        return $result;
+    }
+
+    /**
+     * Pickup location sort function
+     *
+     * @param array $a First pickup location record to compare
+     * @param array $b Second pickup location record to compare
+     *
+     * @return int
+     */
+    protected function pickupLocationSortFunction($a, $b)
+    {
+        $result = strcmp($a['locationDisplay'], $b['locationDisplay']);
+        if ($result == 0) {
+            $result = $a['locationID'] - $b['locationID'];
         }
         return $result;
     }
