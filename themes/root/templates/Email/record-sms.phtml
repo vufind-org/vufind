@@ -25,7 +25,7 @@
                         // Exit loop in this situation.
                         $useBackupLocation = false;
                         break 2;
-                    } else if (!$backupLocation) {
+                    } elseif (!$backupLocation) {
                         // Save first "available" location without call # as backup
                         // (better than an unavailable location if no call #'s found)
                         $backupLocation = $location;

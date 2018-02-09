@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Unit;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -50,35 +51,33 @@ abstract class DbTestCase extends TestCase
     protected function addTableManager(ServiceManager $sm)
     {
         $factory = new \VuFind\Db\Table\PluginManager(
-            new \Zend\ServiceManager\Config(
-                [
-                    'abstract_factories' =>
-                        ['VuFind\Db\Table\PluginFactory'],
-                    'factories' => [
-                        'changetracker' =>
-                            'VuFind\Db\Table\Factory::getChangeTracker',
-                        'comments' => 'VuFind\Db\Table\Factory::getComments',
-                        'externalsession' =>
-                            'VuFind\Db\Table\Factory::getExternalSession',
-                        'oairesumption' =>
-                            'VuFind\Db\Table\Factory::getOaiResumption',
-                        'record' => 'VuFind\Db\Table\Factory::getRecord',
-                        'resource' => 'VuFind\Db\Table\Factory::getResource',
-                        'resourcetags' =>
-                            'VuFind\Db\Table\Factory::getResourceTags',
-                        'search' => 'VuFind\Db\Table\Factory::getSearch',
-                        'session' => 'VuFind\Db\Table\Factory::getSession',
-                        'tags' => 'VuFind\Db\Table\Factory::getTags',
-                        'user' => 'VuFind\Db\Table\Factory::getUser',
-                        'usercard' => 'VuFind\Db\Table\Factory::getUserCard',
-                        'userlist' => 'VuFind\Db\Table\Factory::getUserList',
-                        'userresource' =>
-                            'VuFind\Db\Table\Factory::getUserResource',
-                    ],
-                ]
-            )
+            $sm,
+            [
+                'abstract_factories' =>
+                    ['VuFind\Db\Table\PluginFactory'],
+                'factories' => [
+                    'changetracker' =>
+                        'VuFind\Db\Table\Factory::getChangeTracker',
+                    'comments' => 'VuFind\Db\Table\Factory::getComments',
+                    'externalsession' =>
+                        'VuFind\Db\Table\Factory::getExternalSession',
+                    'oairesumption' =>
+                        'VuFind\Db\Table\Factory::getOaiResumption',
+                    'record' => 'VuFind\Db\Table\Factory::getRecord',
+                    'resource' => 'VuFind\Db\Table\Factory::getResource',
+                    'resourcetags' =>
+                        'VuFind\Db\Table\Factory::getResourceTags',
+                    'search' => 'VuFind\Db\Table\Factory::getSearch',
+                    'session' => 'VuFind\Db\Table\Factory::getSession',
+                    'tags' => 'VuFind\Db\Table\Factory::getTags',
+                    'user' => 'VuFind\Db\Table\Factory::getUser',
+                    'usercard' => 'VuFind\Db\Table\Factory::getUserCard',
+                    'userlist' => 'VuFind\Db\Table\Factory::getUserList',
+                    'userresource' =>
+                        'VuFind\Db\Table\Factory::getUserResource',
+                ],
+            ]
         );
-        $factory->setServiceLocator($sm);
         $sm->setService('VuFind\DbTablePluginManager', $factory);
     }
 
@@ -92,29 +91,27 @@ abstract class DbTestCase extends TestCase
     protected function addRowManager(ServiceManager $sm)
     {
         $factory = new \VuFind\Db\Row\PluginManager(
-            new \Zend\ServiceManager\Config(
-                [
-                    'factories' => [
-                        'changetracker' => 'VuFind\Db\Row\Factory::getChangeTracker',
-                        'comments' => 'VuFind\Db\Row\Factory::getComments',
-                        'externalsession' =>
-                            'VuFind\Db\Row\Factory::getExternalSession',
-                        'oairesumption' => 'VuFind\Db\Row\Factory::getOaiResumption',
-                        'record' => 'VuFind\Db\Row\Factory::getRecord',
-                        'resource' => 'VuFind\Db\Row\Factory::getResource',
-                        'resourcetags' => 'VuFind\Db\Row\Factory::getResourceTags',
-                        'search' => 'VuFind\Db\Row\Factory::getSearch',
-                        'session' => 'VuFind\Db\Row\Factory::getSession',
-                        'tags' => 'VuFind\Db\Row\Factory::getTags',
-                        'user' => 'VuFind\Db\Row\Factory::getUser',
-                        'usercard' => 'VuFind\Db\Row\Factory::getUserCard',
-                        'userlist' => 'VuFind\Db\Row\Factory::getUserList',
-                        'userresource' => 'VuFind\Db\Row\Factory::getUserResource',
-                    ],
-                ]
-            )
+            $sm,
+            [
+                'factories' => [
+                    'changetracker' => 'VuFind\Db\Row\Factory::getChangeTracker',
+                    'comments' => 'VuFind\Db\Row\Factory::getComments',
+                    'externalsession' =>
+                        'VuFind\Db\Row\Factory::getExternalSession',
+                    'oairesumption' => 'VuFind\Db\Row\Factory::getOaiResumption',
+                    'record' => 'VuFind\Db\Row\Factory::getRecord',
+                    'resource' => 'VuFind\Db\Row\Factory::getResource',
+                    'resourcetags' => 'VuFind\Db\Row\Factory::getResourceTags',
+                    'search' => 'VuFind\Db\Row\Factory::getSearch',
+                    'session' => 'VuFind\Db\Row\Factory::getSession',
+                    'tags' => 'VuFind\Db\Row\Factory::getTags',
+                    'user' => 'VuFind\Db\Row\Factory::getUser',
+                    'usercard' => 'VuFind\Db\Row\Factory::getUserCard',
+                    'userlist' => 'VuFind\Db\Row\Factory::getUserList',
+                    'userresource' => 'VuFind\Db\Row\Factory::getUserResource',
+                ],
+            ]
         );
-        $factory->setServiceLocator($sm);
         $sm->setService('VuFind\DbRowPluginManager', $factory);
     }
 

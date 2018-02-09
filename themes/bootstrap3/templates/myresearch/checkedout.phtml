@@ -35,7 +35,7 @@
         );
         $transParams = [
           '%%start%%' => $this->localizedNumber($paginator->getAbsoluteItemNumber(1)),
-          '%%end%%'   => $this->localizedNumber($end),
+          '%%end%%' => $this->localizedNumber($end),
           '%%total%%' => $this->localizedNumber($paginator->getTotalItemCount())
         ];
       ?>
@@ -99,7 +99,7 @@
                 $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
                 echo '<a href="' . $this->recordLink()->getUrl($resource) .
                   '" class="title">' . $title . '</a>';
-              } else if (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
+              } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
                 // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
                 echo $this->escapeHtml($ilsDetails['title']);
               } else {
@@ -122,6 +122,10 @@
 
             <? if (!empty($ilsDetails['publication_year'])): ?>
               <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
+              <br />
+            <? endif; ?>
+            <? if ($this->displayItemBarcode && !empty($ilsDetails['barcode'])): ?>
+              <strong><?=$this->transEsc('Barcode')?>:</strong> <?=$this->escapeHtml($ilsDetails['barcode'])?>
               <br />
             <? endif; ?>
 
@@ -177,7 +181,7 @@
             <?=$thumbnail ?>
           <? endif ?>
         </div>
-        <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="'.$this->escapeHtmlAttr($resource->getCoinsOpenUrl()).'"></span>':''?>
+        <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>':''?>
       </div>
     <? endforeach; ?>
     <? if ($this->renewForm): ?></form><? endif; ?>

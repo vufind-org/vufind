@@ -29,13 +29,13 @@
 namespace VuFind\Search\Factory;
 
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\Pazpar2\Response\RecordCollectionFactory;
-use VuFindSearch\Backend\Pazpar2\QueryBuilder;
-use VuFindSearch\Backend\Pazpar2\Connector;
 use VuFindSearch\Backend\Pazpar2\Backend;
+use VuFindSearch\Backend\Pazpar2\Connector;
+use VuFindSearch\Backend\Pazpar2\QueryBuilder;
+use VuFindSearch\Backend\Pazpar2\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for Pazpar2 backends.
@@ -78,7 +78,7 @@ class Pazpar2BackendFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
         $this->config = $this->serviceLocator->get('VuFind\Config')->get('Pazpar2');
         if ($this->serviceLocator->has('VuFind\Logger')) {
             $this->logger = $this->serviceLocator->get('VuFind\Logger');

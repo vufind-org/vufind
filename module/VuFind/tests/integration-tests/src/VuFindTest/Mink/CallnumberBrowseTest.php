@@ -169,7 +169,7 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
             // - test multiple
             // else
         } else {
-            $this->assertTrue(is_null($link));
+            $this->assertTrue(null === $link);
         }
     }
 
@@ -188,7 +188,7 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->performSearch('id:' . $this->id);
         // No link
         $link = $page->find('css', '.callnumber a,.groupCallnumber a,.fullCallnumber a');
-        $this->assertTrue(is_null($link));
+        $this->assertTrue(null === $link);
         // With dewey links
         $this->activateAndTestLinks('dewey', $page, $expectLinks);
         // With lcc links

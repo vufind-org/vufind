@@ -276,7 +276,7 @@ class RecordDataFormatterFactory
     public function getDefaultDescriptionSpecs()
     {
         $spec = new RecordDataFormatter\SpecBuilder();
-        $spec->setLine('Summary', 'getSummary');
+        $spec->setTemplateLine('Summary', true, 'data-summary.phtml');
         $spec->setLine('Published', 'getDateSpan');
         $spec->setLine('Item Description', 'getGeneralNotes');
         $spec->setLine('Physical Description', 'getPhysicalDescriptions');

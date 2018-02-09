@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
 namespace VuFindDevTools\Controller;
+
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 use VuFindDevTools\LanguageHelper;
 

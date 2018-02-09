@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindTheme\View\Helper;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -61,9 +62,9 @@ class Factory
                 $parts = array_map('trim', explode(':', $setting));
                 if (APPLICATION_ENV === $parts[0]) {
                     return $parts[1];
-                } else if (count($parts) == 1) {
+                } elseif (count($parts) == 1) {
                     $default = $parts[0];
-                } else if ($parts[0] === '*') {
+                } elseif ($parts[0] === '*') {
                     $default = $parts[1];
                 }
             }
@@ -141,20 +142,6 @@ class Factory
         return new InlineScript(
             $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
             Factory::getPipelineConfig($sm)
-        );
-    }
-
-    /**
-     * Construct the MobileUrl helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return MobileUrl
-     */
-    public static function getMobileUrl(ServiceManager $sm)
-    {
-        return new MobileUrl(
-            $sm->getServiceLocator()->get('VuFindTheme\Mobile')
         );
     }
 }

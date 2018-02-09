@@ -12,11 +12,13 @@
       $toplevelinfo['name'] = $toplevelfacet['value'];
       $toplevelinfo['field'] = $toplevelfacet['field'];
       $toplevelinfo['size'] = $toplevelfacet['count'];
-      foreach($toplevelfacet['pivot'] as $secondlevelfacet) {
+      $pivot = isset($toplevelfacet['pivot']) ? $toplevelfacet['pivot'] : [];
+      foreach($pivot as $secondlevelfacet) {
         $secondlevelinfo = [];
         $secondlevelinfo['name'] = $secondlevelfacet['value'];
         $secondlevelinfo['size'] = $secondlevelfacet['count'];
         $secondlevelinfo['field'] = $secondlevelfacet['field'];
+        $secondlevelinfo['parentfield'] = $toplevelinfo['field'];
         $secondlevelinfo['parentlevel'] = $toplevelinfo['name'];
         array_push($toplevelchildren, $secondlevelinfo);
       }
@@ -142,7 +144,7 @@
         // Stop! Using this algorithm, sometimes all of the topics wind
         // up in a "More" facet, which leads to a confusing display. If
         // that happens, just display the top level, with no topic
-        // boxes inside the callnumber-first box.
+        // boxes inside the main box.
 
         if (morefacet == totalbyfirstpivot) {
           var onechild = new Object();
@@ -158,8 +160,9 @@
           var more = new Object();
           more.name = "<?=$this->transEsc('More Topics')?>";
           more.size = morefacet/totalbyfirstpivot * facetdata.size;
-          more.field = "topic_facet";
+          more.field = ""; // this value doesn't matter, since parent field will be linked.
           more.count = morecount;
+          more.parentfield = facetdata.field;
           more.parentlevel = facetdata.name;
           pivotdata.children[facetindex].children.push(more);
         }
@@ -171,20 +174,20 @@
         .enter().append("a")
       .attr("href", function(d) {
         if (d.parentlevel && d.name != "<?=$this->transEsc('More Topics')?>") {
-          return window.location + "&filter[]=" + d.field + ":\"" + d.name + "\"&filter[]=callnumber-first:\"" + d.parentlevel + "\"&view=list";
+          return window.location + "&filter[]=" + d.field + ":\"" + encodeURIComponent(d.name) + "\"&filter[]=" + d.parentfield + ":\"" + encodeURIComponent(d.parentlevel) + "\"&view=list";
         } else if (d.name == "<?=$this->transEsc('More Topics')?>") {
-          return window.location + "&filter[]=callnumber-first:\"" + d.parentlevel + "\"";
+          return window.location + "&filter[]=" + d.parentfield + ":\"" + encodeURIComponent(d.parentlevel) + "\"";
         } else if (d.name != "theData") {
-          return window.location + "&filter[]=" + d.field + ":\"" + d.name + "\"";
+          return window.location + "&filter[]=" + d.field + ":\"" + encodeURIComponent(d.name) + "\"";
         }
       })
       .append("div")
-      .attr("class", function(d) { return d.field == "callnumber-first" ? "node toplevel" : "node secondlevel" })
+      .attr("class", function(d) { return (typeof d.parentfield === "undefined") ? "node toplevel" : "node secondlevel" })
       .attr("id", function(d) { return  d.name.replace(/\s+/g, ''); })
       .call(position)
       .style("background", function(d) { return d.children ? color(d.name.substr(0,1)) : null; })
       .call(settitle)
-      .style("z-index", function(d) { return d.field == "topic_facet" ? "1" : "0" })
+      .style("z-index", function(d) { return (typeof d.parentfield !== "undefined") ? "1" : "0" })
       .attr("tabindex", 0)
       .append("div")
       .call(settext)
@@ -203,17 +206,34 @@ function position() {
 
 function settext() {
   this.text(function(d) {
-    if (!d.children && d.field == "callnumber-first") {return "";}
-    if (d.field == "callnumber-first") {return d.name + " (" + d.count + ")"; }
-    if (d.field == "topic_facet" && d.name == "<?=$this->transEsc('More Topics')?>") {var topics = "<?=$this->translate('more_topics')?>"; return topics.replace("%%count%%", d.count); }
-    if (d.field == "topic_facet") {return d.name + " (" + d.count + ")"; }
+    // Is this a top-level box?
+    var onTop = (typeof d.parentfield === "undefined");
+
+    // Case 1: top with no children -- no text!
+    if (!d.children && onTop) {
+        return "";
+    }
+
+    // Case 2: top-level field with contents:
+    if (onTop) {
+        return d.name + " (" + d.count + ")";
+    }
+
+    // Case 3: "More Topics" special-case collapsed block:
+    if (d.name == "<?=$this->transEsc('More Topics')?>") {
+        var topics = "<?=$this->translate('more_topics')?>";
+        return topics.replace("%%count%%", d.count);
+    }
+
+    // Csae 4 (default): Standard second-level field
+    return d.name + " (" + d.count + ")";
   });
 }
 
 function setscreenreader() {
   this.attr("class", "sr-only")
   .text(function(d) {
-    if (d.field == "topic_facet") {
+    if (typeof d.parentfield !== "undefined") {
       return "<?=$this->transEsc('visual_facet_parent')?> " + d.parentlevel;
     } else {
       return "";
@@ -223,9 +243,20 @@ function setscreenreader() {
 
 function settitle() {
   this.attr("title", function(d) {
-    if (d.field == "callnumber-first") {return d.name + " (" + d.count + " <?=$this->transEsc('items')?>)"; }
-    if (d.field == "topic_facet" && d.name == "<?=$this->transEsc('More Topics')?>") {return d.count + " <?=$this->transEsc('More Topics')?>"; }
-    if (d.field == "topic_facet") {var on_topic = "<?=$this->translate('on_topic')?>"; return d.name + " (" + on_topic.replace("%%count%%", d.count) + ")"; }
+    // Case 1: Top-level field
+    if (typeof d.parentfield === "undefined") {
+        return d.name + " (" + d.count + " <?=$this->transEsc('items')?>)";
+    }
+    // Case 2: "More Topics" special-case collapsed block:
+    if (d.name == "<?=$this->transEsc('More Topics')?>") {
+        return d.count + " <?=$this->transEsc('More Topics')?>";
+    }
+
+    // Case 3: Standard second-level field
+    if (typeof d.field !== "undefined") {
+        var on_topic = "<?=$this->translate('on_topic')?>";
+        return d.name + " (" + on_topic.replace("%%count%%", d.count) + ")";
+    }
   });
 
 }

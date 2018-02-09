@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Backend\Solr\Json\Response;
 
+use PHPUnit_Framework_TestCase;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindTest\RecordDriver\TestHarness;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for simple JSON-based record collection.

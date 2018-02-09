@@ -26,10 +26,12 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ChannelProvider;
-use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Record\Router as RecordRouter;
-use VuFind\Search\Base\Params, VuFind\Search\Base\Results;
+
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\Record\Router as RecordRouter;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\Search\Base\Params;
+use VuFind\Search\Base\Results;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\ParamBag;
 use Zend\Mvc\Controller\Plugin\Url;

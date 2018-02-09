@@ -37,6 +37,9 @@ table { font-size: $reduced-font-size; }
 }
 .btn-link { color: $brand-primary; }
 
+.media,
+.media-body { overflow: initial; }
+
 .form-control { box-shadow: none; }
 .form-control:hover,
 .form-control:focus { border-color: $brand-primary; }

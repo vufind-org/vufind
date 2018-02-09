@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindSearch\Backend\WorldCat;
+
 use VuFindSearch\ParamBag;
 
 /**
@@ -89,6 +90,10 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         }
         $uri = "http://www.worldcat.org/webservices/catalog/content/libraries/{$id}"
             . "?wskey={$this->wskey}&servicelevel=full&frbrGrouping=$grouping";
+        if (isset($this->options['latLon'])) {
+            list($lat, $lon) = explode(',', $this->options['latLon']);
+            $uri .= '&lat=' . urlencode($lat) . '&lon=' . urlencode($lon);
+        }
         $this->client->setUri($uri);
         $this->debug('Connect: ' . $uri);
         $result = $this->client->setMethod('POST')->send();

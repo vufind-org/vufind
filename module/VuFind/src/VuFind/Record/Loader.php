@@ -28,10 +28,10 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Record;
-use VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\RecordDriver\PluginManager as RecordFactory,
-    VuFindSearch\Service as SearchService,
-    VuFind\Record\Cache;
+
+use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\RecordDriver\PluginManager as RecordFactory;
+use VuFindSearch\Service as SearchService;
 
 /**
  * Record loader

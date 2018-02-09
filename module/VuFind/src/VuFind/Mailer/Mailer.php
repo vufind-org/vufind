@@ -26,11 +26,12 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Mailer;
-use VuFind\Exception\Mail as MailException,
-    Zend\Mail\Address,
-    Zend\Mail\AddressList,
-    Zend\Mail\Message,
-    Zend\Mail\Header\ContentType;
+
+use VuFind\Exception\Mail as MailException;
+use Zend\Mail\Address;
+use Zend\Mail\AddressList;
+use Zend\Mail\Header\ContentType;
+use Zend\Mail\Message;
 
 /**
  * VuFind Mailer Class
@@ -146,7 +147,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     {
         if ($to instanceof AddressList) {
             $recipients = $to;
-        } else if ($to instanceof Address) {
+        } elseif ($to instanceof Address) {
             $recipients = new AddressList();
             $recipients->add($to);
         } else {

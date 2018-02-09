@@ -50,13 +50,13 @@ class Params extends \VuFind\Search\Solr\Params
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (is_null($lookfor = $request->get('author'))) {
+        if (null === ($lookfor = $request->get('author'))) {
             return false;
         }
 
         // Force the search to be a phrase:
         $lookfor = '"' . str_replace('"', '\"', $lookfor) . '"';
-        
+
         // Set the search (handler is always Author for this module):
         $this->setBasicSearch($lookfor, 'Author');
         return true;

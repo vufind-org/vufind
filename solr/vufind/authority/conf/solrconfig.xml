@@ -550,7 +550,10 @@
   <queryResponseWriter name="xslt" class="org.apache.solr.response.XSLTResponseWriter">
     <int name="xsltCacheLifetimeSeconds">5</int>
   </queryResponseWriter> 
-    
+
+  <!-- Mitigate CVE-2017-12629 -->
+  <queryParser name="xmlparser" class="solr.ExtendedDismaxQParserPlugin"/>
+
   <!-- config for the admin interface --> 
   <admin>
     <defaultQuery>shakespeare</defaultQuery>
