@@ -272,7 +272,7 @@ class AccountExpirationReminders extends AbstractService
             if (!$user->email || trim($user->email) == '') {
                 $this->msg(
                     "User {$user->username} (id {$user->id}) does not have an"
-                    . ' email address, bypassing expiration reminders'
+                    . ' email address, bypassing expiration reminder'
                 );
                 continue;
             }
@@ -291,7 +291,7 @@ class AccountExpirationReminders extends AbstractService
                 $this->msg(
                     "User {$user->username} (id {$user->id}) expires already on"
                     . " $expires without previous reminders, bypassing expiration"
-                    . ' reminders'
+                    . ' reminder'
                 );
                 continue;
             }
@@ -328,6 +328,17 @@ class AccountExpirationReminders extends AbstractService
         } else {
             $userInstitution = 'national';
             $userName = $user->username;
+        }
+
+        $dsConfig = isset($this->datasourceConfig[$userInstitution])
+            ? $this->datasourceConfig[$userInstitution] : [];
+        if (!empty($dsConfig['disableAccountExpirationReminders'])) {
+            $this->msg(
+                "User {$user->username} (id {$user->id}) institution"
+                . " $userInstitution has reminders disabled, bypassing expiration"
+                . ' reminder'
+            );
+            return false;
         }
 
         if (!$this->currentInstitution
