@@ -56,7 +56,7 @@ class AbstractBase extends AbstractActionController
             throw new \Exception('Access denied to command line tools.');
         }
 
-        $this->setServiceLocator($sm);
+        $this->serviceLocator = $sm;
 
         // Switch the context back to the original working directory so that
         // relative paths work as expected. (This constant is set in
@@ -117,7 +117,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getConfig($id = 'config')
     {
-        return $this->serviceLocator->get('VuFind\Config')->get($id);
+        return $this->serviceLocator->get('VuFind\Config\PluginManager')->get($id);
     }
 
     /**
@@ -127,7 +127,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getILS()
     {
-        return $this->serviceLocator->get('VuFind\ILSConnection');
+        return $this->serviceLocator->get('VuFind\ILS\Connection');
     }
 
     /**
@@ -139,7 +139,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getTable($table)
     {
-        return $this->serviceLocator->get('VuFind\DbTablePluginManager')
+        return $this->serviceLocator->get('VuFind\Db\Table\PluginManager')
             ->get($table);
     }
 }

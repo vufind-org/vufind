@@ -49,7 +49,7 @@ class ThemeInjectTemplateListenerTest extends Unit\TestCase
     {
         $l = new InjectTemplateListener();
         $this->assertEquals(
-            '', $this->callMethod($l, 'deriveModuleNamespace', ['dummy'])
+            'search', $l->mapController('VuFind\Controller\SearchController')
         );
     }
 

@@ -198,6 +198,25 @@ class SearchHandler
     }
 
     /**
+     * Get a list of all Solr fields searched by this handler.
+     *
+     * @return array
+     */
+    public function getAllFields()
+    {
+        // If we have non-Dismax rules, the keys are the field names.
+        $queryFields = array_keys($this->mungeRules());
+
+        // If we have Dismax fields, we need to strip off boost values.
+        $callback = function ($f) {
+            return current(explode('^', $f));
+        };
+        $dismaxFields = array_map($callback, $this->getDismaxFields());
+
+        return array_unique(array_merge($queryFields, $dismaxFields));
+    }
+
+    /**
      * Return defined dismax fields.
      *
      * @return array
