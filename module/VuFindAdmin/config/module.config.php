@@ -8,7 +8,6 @@ $config = [
             'VuFindAdmin\Controller\ConfigController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\MaintenanceController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\SocialstatsController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFindAdmin\Controller\StatisticsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\TagsController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
@@ -16,7 +15,6 @@ $config = [
             'AdminConfig' => 'VuFindAdmin\Controller\ConfigController',
             'AdminMaintenance' => 'VuFindAdmin\Controller\MaintenanceController',
             'AdminSocial' => 'VuFindAdmin\Controller\SocialstatsController',
-            'AdminStatistics' => 'VuFindAdmin\Controller\StatisticsController',
             'AdminTags' => 'VuFindAdmin\Controller\TagsController',
         ],
     ],
@@ -69,16 +67,6 @@ $config = [
                             'route'    => '/Social[/:action]',
                             'defaults' => [
                                 'controller' => 'AdminSocial',
-                                'action'     => 'Home',
-                            ]
-                        ]
-                    ],
-                    'statistics' => [
-                        'type' => 'Zend\Router\Http\Segment',
-                        'options' => [
-                            'route'    => '/Statistics[/:action]',
-                            'defaults' => [
-                                'controller' => 'AdminStatistics',
                                 'action'     => 'Home',
                             ]
                         ]
