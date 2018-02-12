@@ -4,13 +4,13 @@ namespace VuFindConsole\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
-            'VuFindConsole\Controller\CompileController' => 'VuFindConsole\Controller\Factory::getCompileController',
-            'VuFindConsole\Controller\GenerateController' => 'VuFindConsole\Controller\Factory::getGenerateController',
-            'VuFindConsole\Controller\HarvestController' => 'VuFindConsole\Controller\Factory::getHarvestController',
-            'VuFindConsole\Controller\ImportController' => 'VuFindConsole\Controller\Factory::getImportController',
-            'VuFindConsole\Controller\LanguageController' => 'VuFindConsole\Controller\Factory::getLanguageController',
-            'VuFindConsole\Controller\RedirectController' => 'VuFindConsole\Controller\Factory::getRedirectController',
-            'VuFindConsole\Controller\UtilController' => 'VuFindConsole\Controller\Factory::getUtilController',
+            'VuFindConsole\Controller\CompileController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindConsole\Controller\GenerateController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindConsole\Controller\HarvestController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindConsole\Controller\ImportController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindConsole\Controller\LanguageController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindConsole\Controller\RedirectController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindConsole\Controller\UtilController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
             'compile' => 'VuFindConsole\Controller\CompileController',
