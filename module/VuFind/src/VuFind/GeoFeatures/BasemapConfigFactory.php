@@ -1,11 +1,11 @@
 <?php
 
 /**
- * GeoFeatures Module Factory Class
+ * GeoFeatures Basemap Config Factory Class
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2014.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,10 +28,11 @@
  */
 namespace VuFind\GeoFeatures;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * GeoFeatures service
+ * GeoFeatures Basemap Config Factory Class
  *
  * @category VuFind
  * @package  GeoFeatures
@@ -41,18 +42,28 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  *
  * @codeCoverageIgnore
  */
-class BasemapConfigFactory implements \Zend\ServiceManager\FactoryInterface
+class BasemapConfigFactory implements FactoryInterface
 {
     /**
-     * Create service
+     * Create an object
      *
-     * @param ServiceLocatorInterface $sm Service manager.
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return mixed
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    public function createService(ServiceLocatorInterface $sm)
-    {
-        $config = $sm->get('VuFind\Config');
-        return new BasemapConfig($config);
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
+        }
+        return new $requestedName($container->get('VuFind\Config'));
     }
 }
