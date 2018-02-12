@@ -23,7 +23,7 @@ $config = [
     'router' => [
         'routes' => [
             'admin' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'options' => [
                     'route'    => '/Admin',
                     'defaults' => [
@@ -34,7 +34,7 @@ $config = [
                 'may_terminate' => true,
                 'child_routes' => [
                     'disabled' => [
-                        'type' => 'Zend\Mvc\Router\Http\Literal',
+                        'type' => 'Zend\Router\Http\Literal',
                         'options' => [
                             'route'    => '/Disabled',
                             'defaults' => [
@@ -44,7 +44,7 @@ $config = [
                         ]
                     ],
                     'config' => [
-                        'type' => 'Zend\Mvc\Router\Http\Segment',
+                        'type' => 'Zend\Router\Http\Segment',
                         'options' => [
                             'route'    => '/Config[/:action]',
                             'defaults' => [
@@ -54,7 +54,7 @@ $config = [
                         ]
                     ],
                     'maintenance' => [
-                        'type' => 'Zend\Mvc\Router\Http\Segment',
+                        'type' => 'Zend\Router\Http\Segment',
                         'options' => [
                             'route'    => '/Maintenance[/:action]',
                             'defaults' => [
@@ -64,7 +64,7 @@ $config = [
                         ]
                     ],
                     'social' => [
-                        'type' => 'Zend\Mvc\Router\Http\Segment',
+                        'type' => 'Zend\Router\Http\Segment',
                         'options' => [
                             'route'    => '/Social[/:action]',
                             'defaults' => [
@@ -74,7 +74,7 @@ $config = [
                         ]
                     ],
                     'statistics' => [
-                        'type' => 'Zend\Mvc\Router\Http\Segment',
+                        'type' => 'Zend\Router\Http\Segment',
                         'options' => [
                             'route'    => '/Statistics[/:action]',
                             'defaults' => [
@@ -84,7 +84,7 @@ $config = [
                         ]
                     ],
                     'tags' => [
-                        'type' => 'Zend\Mvc\Router\Http\Segment',
+                        'type' => 'Zend\Router\Http\Segment',
                         'options' => [
                             'route'    => '/Tags[/:action]',
                             'defaults' => [

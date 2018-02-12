@@ -38,6 +38,11 @@ $config = [
             ],
         ],
     ],
+    'service_manager' => [
+        'factories' => [
+            'VuFindConsole\Generator\GeneratorTools' => 'VuFindConsole\Generator\GeneratorToolsFactory',
+        ],
+    ],
     'view_manager' => [
         // CLI tools are admin-oriented, so we should always output full errors:
         'display_exceptions' => true,
@@ -47,6 +52,7 @@ $config = [
 $routes = [
     'compile/theme' => 'compile theme [--force] [<source>] [<target>]',
     'generate/dynamicroute' => 'generate dynamicroute [<name>] [<newController>] [<newAction>] [<module>]',
+    'generate/extendclass' => 'generate extendclass [--extendfactory] [<class>] [<target>]',
     'generate/extendservice' => 'generate extendservice [<source>] [<target>]',
     'generate/nontabrecordaction' => 'generate nontabrecordaction [<newAction>] [<module>]',
     'generate/recordroute' => 'generate recordroute [<base>] [<newController>] [<module>]',
