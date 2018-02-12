@@ -77,6 +77,7 @@ class HarvestController extends AbstractBase
 
         // Get default options, add the default --ini setting if missing:
         $opts = HarvesterConsoleRunner::getDefaultOptions();
+        $opts->setArguments($this->getRequest()->getParam('params'));
         if (!$opts->getOption('ini')) {
             $ini = \VuFind\Config\Locator::getConfigPath('oai.ini', 'harvest');
             $opts->addArguments(['--ini=' . $ini]);

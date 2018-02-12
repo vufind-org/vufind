@@ -59,7 +59,7 @@ $routes = [
     'generate/staticroute' => 'generate staticroute [<name>] [<module>]',
     'generate/theme' => 'generate theme [<themename>]',
     'generate/thememixin' => 'generate thememixin [<name>]',
-    // harvest/harvest_oai is too complex to represent here; we need to rely on default-route
+    'harvest/harvest_oai' => 'harvest harvest_oai [...params]',
     'harvest/merge-marc' => 'harvest merge-marc [<dir>]',
     'import/import-xsl' => 'import import-xsl [--test-only] [--index=] [<xml>] [<properties>]',
     'import/webcrawl' => 'import webcrawl [--test-only] [--index=]',
@@ -70,7 +70,7 @@ $routes = [
     'util/cleanup_record_cache' => 'util (cleanuprecordcache|cleanup_record_cache) [--help|-h]',
     'util/commit' => 'util commit [<core>]',
     'util/createHierarchyTrees' => 'util createHierarchyTrees [--skip-xml|-sx] [--skip-json|-sj] [--help|-h]',
-    // util/cssBuilder relies on default-route because it has an arbitrary number of parameters
+    'util/cssBuilder' => 'util cssBuilder [...themes]',
     'util/deletes' => 'util deletes [--verbose] [<filename>] [<format>] [<index>]',
     'util/expire_external_sessions' => 'util expire_external_sessions [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
     'util/expire_searches' => 'util expire_searches [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
