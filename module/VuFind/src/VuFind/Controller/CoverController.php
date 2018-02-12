@@ -80,7 +80,7 @@ class CoverController extends AbstractBase
                 $this->getConfig(),
                 $this->serviceLocator->get('VuFind\Content\Covers\PluginManager'),
                 $this->serviceLocator->get('VuFindTheme\ThemeInfo'),
-                $this->serviceLocator->get('VuFindHttp\HttpService')->createClient(),
+                $this->serviceLocator->get('VuFindHttp\HttpService'),
                 $cacheDir
             );
             $initializer = new \VuFind\ServiceManager\ServiceInitializer();
