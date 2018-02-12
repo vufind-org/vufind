@@ -313,7 +313,7 @@
               <? if (count($parts) > 0):?>
                 <? $i=0 ?>
                 <? foreach ($parts as $part):?>
-                <a href="<?= $this->record($this->driver)->getLink('subject', $part)?>"><?= $this->escapeHtml($part) ?></a>
+                <a href="<?= $this->record($this->driver)->getLink('subject', $part)?>"><?= $this->escapeHtml(str_replace("\\/", "/", $part)) ?></a>
                 <?= $i++ < count($parts) - 1 ? ' / ' : '' ?>
                 <? endforeach; ?>
              <? endif; ?>
