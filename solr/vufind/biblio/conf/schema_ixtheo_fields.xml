@@ -139,7 +139,6 @@
     <field name="types_and_persistent_identifiers" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="zdb_number" type="string" indexed="true" stored="true" multiValued="false"/>
 
-    <copyField source="ixtheo_notation" dest="ixtheo_notation_facet"/>
     <copyField source="key_word_chain_bag_de" dest="topic_all"/>
     <copyField source="key_word_chain_bag_de" dest="topic_de"/>
     <copyField source="key_word_chain_bag_el" dest="topic_all"/>
