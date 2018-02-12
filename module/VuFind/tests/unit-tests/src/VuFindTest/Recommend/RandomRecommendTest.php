@@ -149,8 +149,8 @@ class RandomRecommendTest extends TestCase
         $recommend = new Random($service, $paramManager);
 
         // Use Solr since some Base components are abstract:
-        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
-            ->get('Solr');
+        $params = $this->getServiceManager()
+            ->get('VuFind\Search\Params\PluginManager')->get('Solr');
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock('\Zend\StdLib\Parameters');
@@ -181,14 +181,14 @@ class RandomRecommendTest extends TestCase
             ->with($this->equalTo("Solr"))
             ->will(
                 $this->returnValue(
-                    $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
-                        ->get('Solr')
+                    $this->getServiceManager()
+                        ->get('VuFind\Search\Params\PluginManager')->get('Solr')
                 )
             );
 
         // Use Solr since some Base components are abstract:
-        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
-            ->get('Solr');
+        $params = $this->getServiceManager()
+            ->get('VuFind\Search\Params\PluginManager')->get('Solr');
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock('\Zend\StdLib\Parameters');
@@ -214,8 +214,8 @@ class RandomRecommendTest extends TestCase
         $records = ["1", "2", "3", "4", "5"];
 
         // Use Solr since some Base components are abstract:
-        $results = $this->getServiceManager()->get('VuFind\SearchResultsPluginManager')
-            ->get('Solr');
+        $results = $this->getServiceManager()
+            ->get('VuFind\Search\Results\PluginManager')->get('Solr');
         $params = $results->getParams();
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
@@ -252,8 +252,8 @@ class RandomRecommendTest extends TestCase
         $records = ["1", "2", "3", "4", "5"];
 
         // Use Solr since some Base components are abstract:
-        $results = $this->getServiceManager()->get('VuFind\SearchResultsPluginManager')
-            ->get('Solr');
+        $results = $this->getServiceManager()
+            ->get('VuFind\Search\Results\PluginManager')->get('Solr');
         $params = $results->getParams();
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());

@@ -267,7 +267,7 @@ class CartController extends AbstractBase
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $mailer = $this->serviceLocator->get('VuFind\Mailer');
+                $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
                 $mailer->setMaxRecipients($view->maxRecipients);
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
                     ? $view->from : null;

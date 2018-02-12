@@ -51,7 +51,7 @@ class Factory
      */
     public static function getAddThis(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         return new AddThis(
             isset($config->AddThis->key) ? $config->AddThis->key : false
         );
@@ -67,7 +67,7 @@ class Factory
     public static function getAccountCapabilities(ServiceManager $sm)
     {
         return new AccountCapabilities(
-            $sm->getServiceLocator()->get('VuFind\AccountCapabilities')
+            $sm->get('VuFind\Config\AccountCapabilities')
         );
     }
 
@@ -80,7 +80,8 @@ class Factory
      */
     public static function getAlphaBrowse(ServiceManager $sm)
     {
-        return new AlphaBrowse($sm->get('url'));
+        $helpers = $sm->get('ViewHelperManager');
+        return new AlphaBrowse($helpers->get('url'));
     }
 
     /**
@@ -93,8 +94,8 @@ class Factory
     public static function getAuth(ServiceManager $sm)
     {
         return new Auth(
-            $sm->getServiceLocator()->get('VuFind\AuthManager'),
-            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+            $sm->get('VuFind\Auth\Manager'),
+            $sm->get('VuFind\Auth\ILSAuthenticator')
         );
     }
 
@@ -107,7 +108,7 @@ class Factory
      */
     public static function getAuthorNotes(ServiceManager $sm)
     {
-        $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
+        $loader = $sm->get('VuFind\Content\PluginManager')
             ->get('authornotes');
         return new ContentLoader($loader);
     }
@@ -121,7 +122,7 @@ class Factory
      */
     public static function getCart(ServiceManager $sm)
     {
-        return new Cart($sm->getServiceLocator()->get('VuFind\Cart'));
+        return new Cart($sm->get('VuFind\Cart'));
     }
 
     /**
@@ -133,7 +134,7 @@ class Factory
      */
     public static function getCitation(ServiceManager $sm)
     {
-        return new Citation($sm->getServiceLocator()->get('VuFind\DateConverter'));
+        return new Citation($sm->get('VuFind\Date\Converter'));
     }
 
     /**
@@ -145,7 +146,7 @@ class Factory
      */
     public static function getDateTime(ServiceManager $sm)
     {
-        return new DateTime($sm->getServiceLocator()->get('VuFind\DateConverter'));
+        return new DateTime($sm->get('VuFind\Date\Converter'));
     }
 
     /**
@@ -161,7 +162,7 @@ class Factory
         // since it configures different language/locale than the core shared
         // instance!
         return new DisplayLanguageOption(
-            \VuFind\Service\Factory::getTranslator($sm->getServiceLocator())
+            \VuFind\Service\Factory::getTranslator($sm)
         );
     }
 
@@ -174,7 +175,7 @@ class Factory
      */
     public static function getExport(ServiceManager $sm)
     {
-        return new Export($sm->getServiceLocator()->get('VuFind\Export'));
+        return new Export($sm->get('VuFind\Export'));
     }
 
     /**
@@ -186,7 +187,7 @@ class Factory
      */
     public static function getFeedback(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $enabled = isset($config->Feedback->tab_enabled)
             ? $config->Feedback->tab_enabled : false;
         return new Feedback($enabled);
@@ -201,8 +202,8 @@ class Factory
      */
     public static function getFlashmessages(ServiceManager $sm)
     {
-        $messenger = $sm->getServiceLocator()->get('ControllerPluginManager')
-            ->get('FlashMessenger');
+        $messenger = $sm->get('ControllerPluginManager')
+            ->get('Zend\Mvc\Plugin\FlashMessenger\FlashMessenger');
         return new Flashmessages($messenger);
     }
 
@@ -215,7 +216,7 @@ class Factory
      */
     public static function getGeoCoords(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('searches');
         $coords = isset($config->MapSelection->default_coordinates)
             ? $config->MapSelection->default_coordinates : false;
         return new GeoCoords($coords);
@@ -230,7 +231,7 @@ class Factory
      */
     public static function getGoogleAnalytics(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $key = isset($config->GoogleAnalytics->apiKey)
             ? $config->GoogleAnalytics->apiKey : false;
         $universal = isset($config->GoogleAnalytics->universal)
@@ -248,8 +249,8 @@ class Factory
     public static function getPermission(ServiceManager $sm)
     {
         $ld = new Permission(
-            $sm->getServiceLocator()->get('VuFind\Role\PermissionManager'),
-            $sm->getServiceLocator()->get('VuFind\Role\PermissionDeniedManager')
+            $sm->get('VuFind\Role\PermissionManager'),
+            $sm->get('VuFind\Role\PermissionDeniedManager')
         );
         return $ld;
     }
@@ -263,7 +264,7 @@ class Factory
      */
     public static function getPiwik(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $url = isset($config->Piwik->url) ? $config->Piwik->url : false;
         $options = [
             'siteId' => isset($config->Piwik->site_id) ? $config->Piwik->site_id : 1,
@@ -273,8 +274,8 @@ class Factory
         $customVars = isset($config->Piwik->custom_variables)
             ? $config->Piwik->custom_variables
             : false;
-        $request = $sm->getServiceLocator()->get('Request');
-        $router = $sm->getServiceLocator()->get('Router');
+        $request = $sm->get('Request');
+        $router = $sm->get('Router');
         return new Piwik($url, $options, $customVars, $router, $request);
     }
 
@@ -287,10 +288,11 @@ class Factory
      */
     public static function getHelpText(ServiceManager $sm)
     {
-        $lang = $sm->getServiceLocator()->has('VuFind\Translator')
-            ? $sm->getServiceLocator()->get('VuFind\Translator')->getLocale()
+        $lang = $sm->has('Zend\Mvc\I18n\Translator')
+            ? $sm->get('Zend\Mvc\I18n\Translator')->getLocale()
             : 'en';
-        return new HelpText($sm->get('context'), $lang);
+        $helpers = $sm->get('ViewHelperManager');
+        return new HelpText($helpers->get('context'), $lang);
     }
 
     /**
@@ -302,10 +304,11 @@ class Factory
      */
     public static function getHistoryLabel(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $config = isset($config->SearchHistoryLabels)
             ? $config->SearchHistoryLabels->toArray() : [];
-        return new HistoryLabel($config, $sm->get('transEsc'));
+        $helpers = $sm->get('ViewHelperManager');
+        return new HistoryLabel($config, $helpers->get('transEsc'));
     }
 
     /**
@@ -317,7 +320,7 @@ class Factory
      */
     public static function getIls(ServiceManager $sm)
     {
-        return new Ils($sm->getServiceLocator()->get('VuFind\ILSConnection'));
+        return new Ils($sm->get('VuFind\ILS\Connection'));
     }
 
     /**
@@ -329,7 +332,8 @@ class Factory
      */
     public static function getJsTranslations(ServiceManager $sm)
     {
-        return new JsTranslations($sm->get('transEsc'));
+        $helpers = $sm->get('ViewHelperManager');
+        return new JsTranslations($helpers->get('transEsc'));
     }
 
     /**
@@ -341,7 +345,7 @@ class Factory
      */
     public static function getKeepAlive(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         return new KeepAlive(
             isset($config->Session->keepAlive) ? $config->Session->keepAlive : 0
         );
@@ -356,17 +360,18 @@ class Factory
      */
     public static function getOpenUrl(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $openUrlRules = json_decode(
             file_get_contents(
                 \VuFind\Config\Locator::getConfigPath('OpenUrlRules.json')
             ),
             true
         );
-        $resolverPluginManager = $sm->getServiceLocator()
-            ->get('VuFind\ResolverDriverPluginManager');
+        $resolverPluginManager = $sm
+            ->get('VuFind\Resolver\Driver\PluginManager');
+        $helpers = $sm->get('ViewHelperManager');
         return new OpenUrl(
-            $sm->get('context'),
+            $helpers->get('context'),
             $openUrlRules,
             $resolverPluginManager,
             isset($config->OpenURL) ? $config->OpenURL : null
@@ -383,7 +388,7 @@ class Factory
     public static function getProxyUrl(ServiceManager $sm)
     {
         return new ProxyUrl(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 
@@ -397,8 +402,8 @@ class Factory
     public static function getRecaptcha(ServiceManager $sm)
     {
         return new Recaptcha(
-            $sm->getServiceLocator()->get('VuFind\Recaptcha'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Service\ReCaptcha'),
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 
@@ -412,10 +417,10 @@ class Factory
     public static function getRecord(ServiceManager $sm)
     {
         $helper = new Record(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
         $helper->setCoverRouter(
-            $sm->getServiceLocator()->get('VuFind\Cover\Router')
+            $sm->get('VuFind\Cover\Router')
         );
         return $helper;
     }
@@ -429,7 +434,7 @@ class Factory
      */
     public static function getRecordLink(ServiceManager $sm)
     {
-        return new RecordLink($sm->getServiceLocator()->get('VuFind\RecordRouter'));
+        return new RecordLink($sm->get('VuFind\Record\Router'));
     }
 
     /**
@@ -441,9 +446,7 @@ class Factory
      */
     public static function getRelated(ServiceManager $sm)
     {
-        return new Related(
-            $sm->getServiceLocator()->get('VuFind\RelatedPluginManager')
-        );
+        return new Related($sm->get('VuFind\Related\PluginManager'));
     }
 
     /**
@@ -469,7 +472,7 @@ class Factory
      */
     public static function getSafeMoneyFormat(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $defaultCurrency = isset($config->Site->defaultCurrency)
             ? $config->Site->defaultCurrency : null;
         return new SafeMoneyFormat($defaultCurrency);
@@ -484,14 +487,14 @@ class Factory
      */
     public static function getSearchBox(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config');
+        $config = $sm->get('VuFind\Config\PluginManager');
         $mainConfig = $config->get('config');
         $searchboxConfig = $config->get('searchbox')->toArray();
         $includeAlphaOptions
             = isset($searchboxConfig['General']['includeAlphaBrowse'])
             && $searchboxConfig['General']['includeAlphaBrowse'];
         return new SearchBox(
-            $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager'),
+            $sm->get('VuFind\Search\Options\PluginManager'),
             $searchboxConfig,
             isset($mainConfig->SearchPlaceholder)
                 ? $mainConfig->SearchPlaceholder->toArray() : [],
@@ -510,7 +513,7 @@ class Factory
     public static function getSearchMemory(ServiceManager $sm)
     {
         return new SearchMemory(
-            $sm->getServiceLocator()->get('VuFind\Search\Memory')
+            $sm->get('VuFind\Search\Memory')
         );
     }
 
@@ -524,7 +527,7 @@ class Factory
     public static function getSearchOptions(ServiceManager $sm)
     {
         return new SearchOptions(
-            $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager')
+            $sm->get('VuFind\Search\Options\PluginManager')
         );
     }
 
@@ -538,7 +541,7 @@ class Factory
     public static function getSearchParams(ServiceManager $sm)
     {
         return new SearchParams(
-            $sm->getServiceLocator()->get('VuFind\SearchParamsPluginManager')
+            $sm->get('VuFind\Search\Params\PluginManager')
         );
     }
 
@@ -551,9 +554,10 @@ class Factory
      */
     public static function getSearchTabs(ServiceManager $sm)
     {
+        $helpers = $sm->get('ViewHelperManager');
         return new SearchTabs(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-            $sm->get('url'), $sm->getServiceLocator()->get('VuFind\SearchTabsHelper')
+            $sm->get('VuFind\Search\Results\PluginManager'),
+            $helpers->get('url'), $sm->get('VuFind\Search\SearchTabsHelper')
         );
     }
 
@@ -566,7 +570,7 @@ class Factory
      */
     public static function getSummaries(ServiceManager $sm)
     {
-        $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
+        $loader = $sm->get('VuFind\Content\PluginManager')
             ->get('summaries');
         return new ContentLoader($loader);
     }
@@ -580,7 +584,7 @@ class Factory
      */
     public static function getSyndeticsPlus(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         return new SyndeticsPlus(
             isset($config->Syndetics) ? $config->Syndetics : null
         );
@@ -595,7 +599,7 @@ class Factory
      */
     public static function getSystemEmail(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         return new SystemEmail(
             isset($config->Site->email) ? $config->Site->email : ''
         );
@@ -610,9 +614,9 @@ class Factory
      */
     public static function getUserList(ServiceManager $sm)
     {
-        $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+        $sessionManager = $sm->get('Zend\Session\SessionManager');
         $session = new \Zend\Session\Container('List', $sessionManager);
-        $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
+        $capabilities = $sm->get('VuFind\Config\AccountCapabilities');
         return new UserList($session, $capabilities->getListSetting());
     }
 
@@ -625,7 +629,7 @@ class Factory
      */
     public static function getUserTags(ServiceManager $sm)
     {
-        $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
+        $capabilities = $sm->get('VuFind\Config\AccountCapabilities');
         return new UserTags($capabilities->getTagSetting());
     }
 }
