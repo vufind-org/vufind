@@ -1122,34 +1122,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Process an export request
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function exportFavoritesAjax()
-    {
-        $format = $this->params()->fromPost('format');
-        $export = $this->serviceLocator->get('VuFind\Export');
-        $url = $export->getBulkUrl(
-            $this->getViewRenderer(), $format,
-            $this->params()->fromPost('ids', [])
-        );
-        $html = $this->getViewRenderer()->render(
-            'ajax/export-favorites.phtml',
-            ['url' => $url, 'format' => $format]
-        );
-        return $this->output(
-            [
-                'result' => $this->translate('Done'),
-                'result_additional' => $html,
-                'needs_redirect' => $export->needsRedirect($format),
-                'export_type' => $export->getBulkExportType($format),
-                'result_url' => $url
-            ], self::STATUS_OK
-        );
-    }
-
-    /**
      * Fetch Links from resolver given an OpenURL and format as HTML
      * and output the HTML content in JSON object.
      *
