@@ -194,9 +194,7 @@ class Factory
         $solr = $backend->get('Solr');
 
         // add basemap options
-        $basemapConfig = $sm->getServiceLocator()->get(
-            'VuFind\GeoFeatures\BasemapConfig'
-        );
+        $basemapConfig = $sm->get('VuFind\GeoFeatures\BasemapConfig');
         $basemapOptions = $basemapConfig->getBasemap($sm, 'MapSelection');
 
         return new MapSelection($config, $solr, $basemapOptions);
