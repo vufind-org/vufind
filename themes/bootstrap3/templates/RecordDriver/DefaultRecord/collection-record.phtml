@@ -6,7 +6,8 @@
   $fields = $formatter->getData($driver, $formatter->getDefaults('collection-record'));
 ?>
 <? if (!empty($fields)): ?>
-  <table class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
+  <table class="table table-striped">
+    <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
     <? foreach ($fields as $key => $current): ?>
       <tr><th><?=$this->transEsc($key)?>:</th><td><?=$current['value']?></td></tr>
     <? endforeach; ?>

@@ -677,11 +677,11 @@ class UtilController extends AbstractBase
     /**
      * Abstract delete method.
      *
-     * @param string $tableName     Table to operate on.
-     * @param string $successString String for reporting success.
-     * @param string $failString    String for reporting failure.
-     * @param int    $minAge        Minimum age allowed for expiration (also used
-     * as default value).
+     * @param string    $tableName     Table to operate on.
+     * @param string    $successString String for reporting success.
+     * @param string    $failString    String for reporting failure.
+     * @param int|float $minAge        Minimum age allowed for expiration in days
+     * (also used as default value).
      *
      * @return mixed
      */
@@ -691,14 +691,14 @@ class UtilController extends AbstractBase
         $request = $this->getRequest();
 
         // Use command line value as expiration age, or default to $minAge.
-        $daysOld = intval($request->getParam('daysOld', $minAge));
+        $daysOld = floatval($request->getParam('daysOld', $minAge));
 
         // Use command line values for batch size and sleep time if specified.
         $batchSize = $request->getParam('batch', 1000);
         $sleepTime = $request->getParam('sleep', 100);
 
         // Abort if we have an invalid expiration age.
-        if ($daysOld < 2) {
+        if ($daysOld < $minAge) {
             Console::writeLine(
                 str_replace(
                     '%%age%%', $minAge,

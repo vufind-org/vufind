@@ -44,7 +44,8 @@
       $fields = $formatter->getData($driver, $formatter->getDefaults('collection-info'));
     ?>
     <? if (!empty($fields)): ?>
-      <table id="collectionInfo" class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
+      <table id="collectionInfo" class="table table-striped">
+        <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
         <? foreach ($fields as $key => $current): ?>
           <tr><th><?=$this->transEsc($key)?>:</th><td><?=$current['value']?></td></tr>
         <? endforeach; ?>
