@@ -27,10 +27,11 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException,
-    VuFind\Exception\ILS as ILSException,
-    Zend\Log\LoggerAwareInterface,
-    VuFind\Log\LoggerAwareTrait;
+
+use PDO;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\Log\LoggerAwareTrait;
+use Zend\Log\LoggerAwareInterface;
 
 /**
  * Horizon ILS Driver
@@ -45,7 +46,7 @@ use PDO, PDOException,
 class Horizon extends AbstractBase implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
-    
+
     /**
      * Date converter object
      *
@@ -84,7 +85,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
         }
-        
+
         // Connect to database
         try {
             $this->db = new PDO(
@@ -94,13 +95,14 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                 $this->config['Catalog']['username'],
                 $this->config['Catalog']['password']
             );
-            
+
             // throw an exception instead of false on sql errors
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException('ILS Configuration problem : ' . $e->getMessage());
+            throw new ILSException(
+                'ILS Configuration problem : ' . $e->getMessage()
+            );
         }
     }
 
@@ -350,9 +352,9 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             foreach ($sqlStmt as $row) {
                 $holding[] = $this->processHoldingRow($id, $row, $patron);
             }
-            
+
             $this->debug(json_encode($holding));
-            
+
             return $holding;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
@@ -441,7 +443,6 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             'innerJoin'   => $sqlInnerJoin,
             'where'       => $sqlWhere
         ];
-        
 
         return $sqlArray;
     }
@@ -527,13 +528,13 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             "where borrower_barcode.bbarcode = " .
                 "'" . addslashes($username) . "' " .
             "and pin# = '" . addslashes($password) . "'";
-        
+
         try {
             $user = [];
-            
+
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
-                list($lastname,$firstname) = explode(', ', $row['FULLNAME']);
+                list($lastname, $firstname) = explode(', ', $row['FULLNAME']);
                 $user = [
                     'id' => $username,
                     'firstname' => $firstname,
@@ -544,12 +545,12 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                     'major' => null,
                     'college' => null
                 ];
-                
+
                 $this->debug(json_encode($user));
-                
+
                 return $user;
             }
-            
+
             throw new ILSException(
                 'Unable to login patron ' . $patron['id']
             );
@@ -708,9 +709,9 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                     $holdList[] = $hold;
                 }
             }
-            
+
             $this->debug(json_encode($holdList));
-            
+
             return $holdList;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
@@ -806,9 +807,9 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                     'title'      => $row['TITLE']
                 ];
             }
-            
+
             $this->debug(json_encode($fineList));
-            
+
             return $fineList;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
@@ -840,11 +841,11 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             "inner join borrower_barcode on " .
             "borrower_barcode.borrower# = borrower.borrower# " .
             "where borrower_barcode.bbarcode = '" . addslashes($patron['id']) . "'";
-            
+
         try {
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
-                list($lastname,$firstname) = explode(', ', $row['FULLNAME']);
+                list($lastname, $firstname) = explode(', ', $row['FULLNAME']);
                 $profile = [
                     'lastname' => $lastname,
                     'firstname' => $firstname,
@@ -854,12 +855,12 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                     'phone' => $row['PHONE'],
                     'group' => null
                 ];
-                
+
                 $this->debug(json_encode($profile));
-                
+
                 return $profile;
             }
-            
+
             throw new ILSException(
                 'Unable to retrieve profile for patron ' . $patron['id']
             );
@@ -997,9 +998,9 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             foreach ($sqlStmt as $row) {
                 $transList[] = $this->processTransactionsRow($row);
             }
-            
+
             $this->debug(json_encode($transList));
-            
+
             return $transList;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
@@ -1074,7 +1075,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                 foreach ($sqlStmt as $row) {
                     $results[] = $row['bib#'];
                 }
-                
+
                 $retVal = ['count' => count($results), 'results' => []];
                 foreach ($results as $result) {
                     $retVal['results'][] = ['id' => $result];
