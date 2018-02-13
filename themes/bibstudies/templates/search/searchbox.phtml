@@ -50,7 +50,7 @@
           <select id="searchForm_type" class="btn btn-default searchForm_type" name="type" data-native-menu="false" style="padding:4px 5px 5px 5px">
             <? foreach ($handlers as $handler): ?>
               <option value="<?=$this->escapeHtmlAttr($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
-              <?$currentHandler = $handler['selected'] ? $handler['value'] : $currentHandler; ?> 
+              <?$currentHandler = $handler['selected'] ? $handler['value'] : $currentHandler; ?>
             <? endforeach; ?>
           </select>
         <? elseif ($handlerCount == 1): ?>
