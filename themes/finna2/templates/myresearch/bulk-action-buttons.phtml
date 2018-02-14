@@ -2,6 +2,7 @@
 <? if (isset($list)): ?>
   <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>" />
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>" />
+  <input type="hidden" name="listDescription" value="<?=$this->escapeHtmlAttr($list->description)?>" />
 <? endif; ?>
 <? $user = $this->auth()->isLoggedIn(); ?>
 <div class="bulk-action-buttons-row hidden-print">

@@ -167,8 +167,10 @@ finna.myList = (function finnaMyList() {
     if (description.html() === '') {
       description.data('empty', '1');
       description.html(VuFind.translate('add_list_description'));
+      $('input[name=listDescription]').val('');
     } else {
       description.data('empty', '0');
+      $('input[name=listDescription]').val(description.data('markdown'));
     }
     toggleTitleEditable(true);
   }
@@ -396,7 +398,6 @@ finna.myList = (function finnaMyList() {
 
       editor = new SimpleMDE(editorSettings);
       currentVal = editor.value();
-
 
       editor.codemirror.on('change', function onChangeEditor(){
         var html = SimpleMDE.prototype.markdown(editor.value());

@@ -51,8 +51,8 @@
 <div class="mylist-error hidden"><?=$this->translate('An error has occurred'); ?></div>
 <div>
   <? if (isset($list)): ?>
-  <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>" />
-  <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>" />
+    <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>" />
+    <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>" />
   <? endif; ?>
   <div class="mainbody right">
     <div class="clearfix mylist-header hidden-print">
