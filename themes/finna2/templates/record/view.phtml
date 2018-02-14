@@ -170,6 +170,10 @@
                 if (0 === strcasecmp($this->activeTab, $accordion)) {
                     $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
                     $activeTabObj = $obj;
+                    if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
+                        $accordion_classes[] = 'active';
+                    }
+                    $accordion_classes[] = 'initiallyActive';
                 }
                 if (!$obj->isVisible()) { $accordion_classes[] = 'hidden'; }
                 if (!$obj->supportsAjax()) { $accordion_classes[] = 'noajax'; }
@@ -177,8 +181,9 @@
             <div <?=count($accordion_classes) > 0 ? ' class="' . implode(' ', $accordion_classes) . '"' : ''?>>
               <div class="accordion-toggle">
                 <a data-tab="<?=strtolower($accordion) ?>" class="accordion-title"
-                   href="<?=$this->recordLink()->getTabUrl($this->driver, $accordion)?>#tabnav"<? if ($obj->supportsAjax() && in_array($accordion, $this->backgroundTabs)):?>
-                  data-background<? endif ?>>
+                  href="<?=$this->recordLink()->getTabUrl($this->driver, $accordion)?>#tabnav"<? if ($obj->supportsAjax() && in_array($accordion, $this->backgroundTabs)):?>
+                  data-background<? endif ?>
+                >
                   <span class="title"><?=$this->transEsc($desc)?><? if (strtolower($accordion) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?></span>
                   <i class="icon"></i>
                 </a>
