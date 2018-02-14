@@ -222,7 +222,7 @@ class JSTree extends AbstractBase
                 $type = 'record';
             }
             $url = $this->getUrlFromRouteCache($type, $node->id);
-            return $node->type == 'collection'
+            return $type === 'collection'
                 ? $url . '#tabnav'
                 : $url . '#tree-' . preg_replace('/\W/', '-', $node->id);
         }
