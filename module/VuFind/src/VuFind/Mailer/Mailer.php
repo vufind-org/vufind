@@ -61,23 +61,19 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     protected $maxRecipients = 1;
 
     /**
-     * Configuration
+     * "From" address override
      *
-     * @var \Zend\Config\Config
+     * @var string
      */
-    protected $config;
+    protected $fromAddressOverride = '';
 
     /**
      * Constructor
      *
      * @param \Zend\Mail\Transport\TransportInterface $transport Mail transport
-     * @param \Zend\Config\Config                     $config    Main configuration
      */
-    public function __construct(\Zend\Mail\Transport\TransportInterface $transport,
-        \Zend\Config\Config $config = null
-    ) {
+    public function __construct(\Zend\Mail\Transport\TransportInterface $transport) {
         $this->setTransport($transport);
-        $this->config = $config;
     }
 
     /**
@@ -189,8 +185,8 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
             throw new MailException('Invalid Sender Email Address');
         }
 
-        if (!empty($this->config->Mail->override_from)
-            && $this->config->Mail->override_from != $fromEmail
+        if (!empty($this->fromAddressOverride)
+            && $this->fromAddressOverride != $fromEmail
         ) {
             $replyTo->add($fromEmail);
             if (!($from instanceof Address)) {
@@ -201,7 +197,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 list($fromPre) = explode('@', $from->getEmail());
                 $name = $fromPre ? $fromPre : null;
             }
-            $from = new Address($this->config->Mail->override_from, $name);
+            $from = new Address($this->fromAddressOverride, $name);
         }
 
         // Convert all exceptions thrown by mailer into MailException objects:
@@ -324,6 +320,28 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     {
         return $this->translate('Library Catalog Record') . ': '
             . $record->getBreadcrumb();
+    }
+
+    /**
+     * Get the "From" address override value
+     *
+     * @return string
+     */
+    public function getFromAddressOverride()
+    {
+        return $this->fromAddressOverride;
+    }
+
+    /**
+     * Set the "From" address override
+     *
+     * @param string $address "From" address
+     *
+     * @return void
+     */
+    public function setFromAddressOverride($address)
+    {
+        $this->fromAddressOverride = $address;
     }
 
     /**
