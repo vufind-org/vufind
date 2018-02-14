@@ -106,8 +106,13 @@ class Primo extends \VuFind\RecordDriver\Primo
         $containerTitle = $this->getContainerTitle();
         // Try to take the part after the title. Account for any 'The' etc. in the
         // beginning.
-        $parts = explode($containerTitle, $partOf);
-        return isset($parts[1]) ? trim($parts[1], " \t\n\r,") : $partOf;
+        if ($containerTitle && ($p = strpos($partOf, $containerTitle)) !== false) {
+            return trim(
+                substr($partOf, $p + strlen($containerTitle) + 1),
+                " \t\n\r,"
+            );
+        }
+        return $partOf;
     }
 
     /**
