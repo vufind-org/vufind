@@ -72,7 +72,8 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      *
      * @param \Zend\Mail\Transport\TransportInterface $transport Mail transport
      */
-    public function __construct(\Zend\Mail\Transport\TransportInterface $transport) {
+    public function __construct(\Zend\Mail\Transport\TransportInterface $transport)
+    {
         $this->setTransport($transport);
     }
 
