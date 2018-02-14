@@ -17,6 +17,7 @@
           <br/>
           <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
         <? endif; ?>
+        <a id="login_library_card_recovery" class="btn btn-link" href="<?=$this->url('librarycards-recover') ?>"><?=$this->transEsc('Forgot Password')?></a>
     </div>
   </form>
 </div>
@@ -32,4 +33,20 @@
 <? else: ?>
   <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>" data-lightbox-ignore><?=$this->transEsc("Institutional Login")?></a>
 <? endif; ?>
+
+<?
+  $recovery = [];
+  foreach ($this->auth()->getManager()->getLoginTargets() as $target) {
+    $recovery[$target] = $this->auth()->getManager()->ilsSupportsPasswordRecovery($target)
+      ? $this->url('librarycards-recover') . "?target=$target" : false;
+  }
+
+  $recovery = json_encode($recovery);
+  $script = <<<EOT
+  finna.layout.initILSPasswordRecoveryLink($recovery);
+EOT;
+
+  // Inline the script for lightbox compatibility
+  echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+?>
 <!-- END of: finna - Auth/MultiILS/login.phtml -->

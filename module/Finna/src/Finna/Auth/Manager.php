@@ -70,6 +70,22 @@ class Manager extends \VuFind\Auth\Manager
     }
 
     /**
+     * Check if ILS supports password recovery
+     *
+     * @param string $target Login target (only for MultiILS)
+     *
+     * @return string|false
+     */
+    public function ilsSupportsPasswordRecovery($target = '')
+    {
+        $auth = $this->getAuth();
+        if (is_callable([$auth, 'ilsSupportsPasswordRecovery'])) {
+            return $auth->ilsSupportsPasswordRecovery($target);
+        }
+        return false;
+    }
+
+    /**
      * Try to log in the user using current query parameters; return User object
      * on success, throws exception on failure.
      *

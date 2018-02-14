@@ -5,8 +5,8 @@
     <? if (count($this->auth()->getManager()->getLoginTargets()) > 1): ?>
       <label class="control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
       <select id="login_target" name="target" class="form-control">
-        <?foreach ($this->auth()->getManager()->getLoginTargets() as $target):?>
-        <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
+        <? foreach ($this->auth()->getManager()->getLoginTargets() as $target):?>
+          <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
         <? endforeach ?>
       </select>
     <? else: ?>
@@ -41,12 +41,12 @@
   $labels = [];
   foreach ($this->auth()->getManager()->getLoginTargets() as $target) {
     $label = $this->auth()->getManager()->getSecondaryLoginFieldLabel($target);
-    $labels[] = '"' . addslashes($target) . '": "' . ($label ? addslashes($this->translate($label)) : '') . '"';
+    $labels[$target] = $label ? addslashes($this->translate($label)) : '';
   }
 
-  $labels = implode(', ', $labels);
+  $labels = json_encode($labels);
   $script = <<<EOT
-  finna.layout.initSecondaryLoginField({{$labels}}, '{$topClass}');
+  finna.layout.initSecondaryLoginField($labels, '{$topClass}');
 EOT;
 
   // Inline the script for lightbox compatibility

@@ -145,6 +145,117 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
     }
 
     /**
+     * Send account recovery email
+     *
+     * @return View object
+     */
+    public function recoverAction()
+    {
+        // Make sure we're configured to do this
+        $target = $this->params()->fromQuery(
+            'target', $this->params()->fromPost('target', '')
+        );
+        $catalog = $this->getILS();
+        $recoveryConfig = $catalog->checkFunction(
+            'getPasswordRecoveryToken', ['cat_username' => "$target.123"]
+        );
+        $view = $this->createViewModel();
+        if (!$recoveryConfig) {
+            $view->recoveryDisabled = true;
+        }
+        $view->useRecaptcha = $this->recaptcha()->active('passwordRecovery');
+        // If we have a submitted form
+        if ($recoveryConfig
+            && $this->formWasSubmitted('submit', $view->useRecaptcha)
+        ) {
+            // Check if we have a submitted form, and use the information
+            // to get the user's information
+            $username = $this->params()->fromPost('username');
+            $email = $this->params()->fromPost('email');
+
+            $result = $catalog->getPasswordRecoveryToken(
+                [
+                    'cat_username' => "$target.123",
+                    'username' => $username,
+                    'email' => $email
+                ]
+            );
+
+            if (!empty($result['success'])) {
+                $this->sendRecoveryEmail(
+                    $email,
+                    $target,
+                    [
+                        'target' => $target,
+                        'token' => $result['token']
+                    ]
+                );
+                $view->emailSent = true;
+                $this->flashMessenger()
+                    ->addMessage('library_card_recovery_email_sent', 'success');
+            } else {
+                $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
+            }
+        }
+        return $view;
+    }
+
+    /**
+     * Handling submission of a new password for a library card.
+     *
+     * @return view
+     */
+    public function resetPasswordAction()
+    {
+        $target = $this->params()->fromQuery(
+            'target', $this->params()->fromPost('target', '')
+        );
+        $token = $this->params()->fromQuery(
+            'token', $this->params()->fromPost('token', '')
+        );
+        $catalog = $this->getILS();
+        $recoveryConfig = $catalog->checkFunction(
+            'recoverPassword', ['cat_username' => "$target.123"]
+        );
+        if (!$recoveryConfig) {
+            $this->flashMessenger()->addMessage('recovery_disabled', 'error');
+            return $this->redirect()->toRoute('myresearch-home');
+        }
+        $view = $this->createViewModel(
+            [
+                'target' => $target,
+                'token' => $token
+            ]
+        );
+        $view->useRecaptcha = $this->recaptcha()->active('changePassword');
+        // Check reCaptcha
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+            $password = $this->params()->fromPost('password', '');
+            $password2 = $this->params()->fromPost('password2', '');
+            if ($password !== $password2) {
+                $this->flashMessenger()->addErrorMessage('Passwords do not match');
+                return $view;
+            }
+
+            $result = $catalog->recoverPassword(
+                [
+                    'cat_username' => "$target.123",
+                    'token' => $token,
+                    'password' => $password
+                ]
+            );
+
+            if (!empty($result['success'])) {
+                $this->flashMessenger()->addSuccessMessage('new_password_success');
+                return $this->redirect()->toRoute('myresearch-home');
+            } else {
+                $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
+            }
+        }
+        return $view;
+    }
+
+    /**
      * Process the "edit library card" submission.
      *
      * @param \VuFind\Db\Row\User $user Logged in user
@@ -300,5 +411,50 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         $this->flashMessenger()->addSuccessMessage('new_password_success');
 
         return $this->redirect()->toRoute('librarycards-home');
+    }
+
+    /**
+     * Helper function for recoverAction
+     *
+     * @param string $email     User's email address
+     * @param string $target    Login target
+     * @param array  $urlParams Recovery URL params
+     *
+     * @return void (sends email or adds error message)
+     */
+    protected function sendRecoveryEmail($email, $target, $urlParams)
+    {
+        // Attempt to send the email
+        try {
+            $config = $this->getConfig();
+            $renderer = $this->getViewRenderer();
+            $library = !empty($target)
+                ? $this->translate("source_$target", null, $target)
+                : $config->Site->title;
+            // Custom template for emails (text-only)
+            $message = $renderer->render(
+                'Email/recover-library-card-password.phtml',
+                [
+                    'library' => $library,
+                    'url' => $this->getServerUrl('librarycards-resetpassword')
+                        . '?' . http_build_query($urlParams)
+                ]
+            );
+            $config = $this->getConfig();
+            $subject = $this->translate(
+                'library_card_recovery_email_subject',
+                [
+                    '%%library%%' => $library
+                ]
+            );
+            $this->serviceLocator->get('VuFind\Mailer')->send(
+                $email,
+                $config->Site->email,
+                $subject,
+                $message
+            );
+        } catch (MailException $e) {
+            $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+        }
     }
 }

@@ -179,3 +179,10 @@ userPassword = ''
 transactionMaxDuration = 15
 ; Currency
 currency = 'EUR'
+
+[PasswordRecovery]
+enabled = true
+; Recovery processing operator card ID in Koha
+userId = 'admin'
+; Recovery processing operator password in Koha
+userPassword = '1234'

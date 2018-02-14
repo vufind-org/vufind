@@ -64,6 +64,12 @@ class Demo extends \VuFind\ILS\Driver\Demo
             return isset($this->config['OnlinePayment'])
                 ? $this->config['OnlinePayment'] : [];
         }
+        if ('getPasswordRecoveryToken' === $function
+            || 'recoverPassword' === $function
+        ) {
+            return !empty($this->config['PasswordRecovery']['enabled'])
+                ? $this->config['PasswordRecovery'] : false;
+        }
 
         return parent::getConfig($function, $params);
     }
@@ -238,5 +244,53 @@ class Demo extends \VuFind\ILS\Driver\Demo
             return true;
         }
         return is_callable([$this, $method]);
+    }
+
+    /**
+     * Get a password recovery token for a user
+     *
+     * @param array $params Required params such as cat_username and email
+     *
+     * @return array Associative array of the results
+     */
+    public function getPasswordRecoveryToken($params)
+    {
+        if ((rand() % 10) > 8) {
+            throw new ILSException('ils_connection_failed');
+        }
+        if ((rand() % 10) > 8) {
+            return [
+                'success' => false,
+                'error' => 'Simulating failure'
+            ];
+        }
+        $session = $this->getSession();
+        $session->passwordRecoveryToken = md5(rand());
+        return [
+            'success' => true,
+            'token' => $session->passwordRecoveryToken
+        ];
+    }
+
+    /**
+     * Recover user's password with a token from getPasswordRecoveryToken
+     *
+     * @param array $params Required params such as cat_username, token and new
+     * password
+     *
+     * @return array Associative array of the results
+     */
+    public function recoverPassword($params)
+    {
+        $session = $this->getSession();
+        if ($session->passwordRecoveryToken != $params['token']) {
+            return [
+                'success' => false,
+                'error' => 'Recovery token mismatch'
+            ];
+        }
+        return [
+            'success' => true
+        ];
     }
 }

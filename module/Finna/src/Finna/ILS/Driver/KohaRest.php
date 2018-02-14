@@ -733,6 +733,118 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     }
 
     /**
+     * Get a password recovery token for a user
+     *
+     * @param array $params Required params such as cat_username and email
+     *
+     * @return array Associative array of the results
+     */
+    public function getPasswordRecoveryToken($params)
+    {
+        $request = [
+            'cardnumber' => $params['cat_username'],
+            'complete_url' => 'localhost',
+            'email' => $params['email'],
+            'skip_email' => true
+        ];
+        $operator = [];
+        if (!empty($this->config['PasswordRecovery']['userId'])
+            && !empty($this->config['PasswordRecovery']['userPassword'])
+        ) {
+            $operator = [
+                'cat_username' => $this->config['PasswordRecovery']['userId'],
+                'cat_password' => $this->config['PasswordRecovery']['userPassword']
+            ];
+        }
+
+        list($code, $result) = $this->makeRequest(
+            ['v1', 'patrons', 'password', 'recovery'],
+            json_encode($request),
+            'POST',
+            $operator,
+            true
+        );
+        if (201 != $code) {
+            if (404 != $code) {
+                throw new ILSException("Failed to get a recovery token: $code");
+            }
+            return [
+                'success' => false,
+                'error' => $result['error']
+            ];
+        }
+        return [
+            'success' => true,
+            'token' => $result['uuid']
+        ];
+    }
+
+    /**
+     * Recover user's password with a token from getPasswordRecoveryToken
+     *
+     * @param array $params Required params such as cat_username, token and new
+     * password
+     *
+     * @return array Associative array of the results
+     */
+    public function recoverPassword($params)
+    {
+        $request = [
+            'uuid' => $params['token'],
+            'new_password' => $params['password'],
+            'confirm_new_password' => $params['password']
+        ];
+        $operator = [];
+        if (!empty($this->config['passwordRecovery']['userId'])
+            && !empty($this->config['passwordRecovery']['userPassword'])
+        ) {
+            $operator = [
+                'cat_username' => $this->config['passwordRecovery']['userId'],
+                'cat_password' => $this->config['passwordRecovery']['userPassword']
+            ];
+        }
+
+        list($code, $result) = $this->makeRequest(
+            ['v1', 'patrons', 'password', 'recovery', 'complete'],
+            json_encode($request),
+            'POST',
+            $operator,
+            true
+        );
+        if (200 != $code) {
+            return [
+                'success' => false,
+                'error' => $result['error']
+            ];
+        }
+        return [
+            'success' => true
+        ];
+    }
+
+    /**
+     * Public Function which retrieves renew, hold and cancel settings from the
+     * driver ini file.
+     *
+     * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
+     *
+     * @return array An array with key-value pairs.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getConfig($function, $params = null)
+    {
+        if ('getPasswordRecoveryToken' === $function
+            || 'recoverPassword' === $function
+        ) {
+            return !empty($this->config['PasswordRecovery']['enabled'])
+                ? $this->config['PasswordRecovery'] : false;
+        }
+        return parent::getConfig($function, $params);
+    }
+
+    /**
      * Return summary of holdings items.
      *
      * @param array $holdings Parsed holdings items

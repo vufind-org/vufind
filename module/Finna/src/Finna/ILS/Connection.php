@@ -463,4 +463,36 @@ class Connection extends \VuFind\ILS\Connection
         }
         return false;
     }
+
+    /**
+     * Check if password recovery is supported.
+     *
+     * @param array $functionConfig Function configuration values
+     * @param array $params         An array of function-specific params (or null)
+     *
+     * @return boolean
+     */
+    protected function checkMethodgetPasswordRecoveryToken($functionConfig, $params)
+    {
+        if ($this->checkCapability('getPasswordRecoveryToken', [$params ?: []])) {
+            return $functionConfig;
+        }
+        return false;
+    }
+
+    /**
+     * Check if password recovery is supported.
+     *
+     * @param array $functionConfig Function configuration values
+     * @param array $params         An array of function-specific params (or null)
+     *
+     * @return boolean
+     */
+    protected function checkMethodrecoverPassword($functionConfig, $params)
+    {
+        if ($this->checkCapability('recoverPassword', [$params ?: []])) {
+            return $functionConfig;
+        }
+        return false;
+    }
 }

@@ -66,6 +66,22 @@ trait ILSFinna
     }
 
     /**
+     * Check if ILS supports password recovery
+     *
+     * @param string $target Login target (MultiILS)
+     *
+     * @return string
+     */
+    public function ilsSupportsPasswordRecovery($target)
+    {
+        $catalog = $this->getCatalog();
+        $recoveryConfig = $catalog->checkFunction(
+            'recoverPassword', ['cat_username' => "$target.123"]
+        );
+        return $recoveryConfig ? true : false;
+    }
+
+    /**
      * Make sure passwords match and fulfill ILS policy
      *
      * @param array $params request parameters

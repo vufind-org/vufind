@@ -507,6 +507,17 @@ finna.layout = (function finnaLayout() {
     }).change();
   }
 
+  function initILSPasswordRecoveryLink(links) {
+    $('#login_target').change(function onChangeLoginTargetLink() {
+      var target = $('#login_target').val();
+      if (links[target]) {
+        $('#login_library_card_recovery').attr('href', links[target]).show();
+      } else {
+        $('#login_library_card_recovery').hide();
+      }
+    }).change();
+  }
+
   function initSideFacets() {
     // Load new-style ajax facets
     $('.side-facets-container-ajax')
@@ -905,6 +916,7 @@ finna.layout = (function finnaLayout() {
     initMobileNarrowSearch: initMobileNarrowSearch,
     initOrganisationPageLinks: initOrganisationPageLinks,
     initSecondaryLoginField: initSecondaryLoginField,
+    initILSPasswordRecoveryLink: initILSPasswordRecoveryLink,
     initIframeEmbed: initIframeEmbed,
     initVideoPopup: initVideoPopup,
     init: function init() {

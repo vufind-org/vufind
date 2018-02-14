@@ -438,6 +438,45 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     }
 
     /**
+     * Get a password recovery token for a user
+     *
+     * @param array $params Required params such as cat_username and email
+     *
+     * @return array Associative array of the results
+     */
+    public function getPasswordRecoveryToken($params)
+    {
+        $source = $this->getSource($params['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            return $driver->getPasswordRecoveryToken(
+                $this->stripIdPrefixes($params, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Recover user's password with a token from getPasswordRecoveryToken
+     *
+     * @param array $params Required params such as cat_username, token and new
+     * password
+     *
+     * @return array Associative array of the results
+     */
+    public function recoverPassword($params)
+    {
+        $source = $this->getSource($params['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            return $driver->recoverPassword(
+                $this->stripIdPrefixes($params, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
      * Get configuration for the ILS driver.  We will load an .ini file named
      * after the driver class and number if it exists;
      * otherwise we will return an empty array.
