@@ -60,7 +60,8 @@ class JSTree extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Mvc\Controller\Plugin\Url $router Router plugin for urls
+     * @param \Zend\Mvc\Controller\Plugin\Url $router             Router plugin for
+     * urls
      * @param bool                            $collectionsEnabled Whether the
      * collections functionality is enabled
      */
