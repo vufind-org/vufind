@@ -81,7 +81,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
         }
         $obj = new Shibboleth($this->createMock('Zend\Session\ManagerInterface'));
         $initializer = new \VuFind\ServiceManager\ServiceInitializer();
-        $initializer->initialize($obj, $this->getServiceManager());
+        $initializer($this->getServiceManager(), $obj);
         $obj->setConfig($config);
         return $obj;
     }

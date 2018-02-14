@@ -121,6 +121,7 @@ abstract class AbstractBase
      */
     public function getTreeRenderer(\VuFind\RecordDriver\AbstractBase $driver)
     {
+
         $renderer = $this->rendererManager->get($this->getTreeRendererType());
         $renderer->setRecordDriver($driver);
         return $renderer;

@@ -68,7 +68,8 @@ class RecordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('config');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;
     }

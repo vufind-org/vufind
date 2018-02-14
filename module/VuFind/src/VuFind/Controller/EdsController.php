@@ -59,7 +59,8 @@ class EdsController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('EDS');
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('EDS');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;
     }

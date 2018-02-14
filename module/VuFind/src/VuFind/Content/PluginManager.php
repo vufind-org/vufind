@@ -39,6 +39,19 @@ namespace VuFind\Content;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'authornotes' => 'VuFind\Content\Factory::getAuthorNotes',
+        'excerpts' => 'VuFind\Content\Factory::getExcerpts',
+        'reviews' => 'VuFind\Content\Factory::getReviews',
+        'summaries' => 'VuFind\Content\Factory::getSummaries',
+        'toc' => 'VuFind\Content\Factory::getTOC',
+    ];
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *

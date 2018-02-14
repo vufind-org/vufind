@@ -241,7 +241,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         $recordLink = $this->getView()->plugin('recordlink');
         try {
             $url = $serverUrl($recordLink->getUrl($record));
-        } catch (\Zend\Mvc\Router\Exception\RuntimeException $e) {
+        } catch (\Zend\Router\Exception\RuntimeException $e) {
             // No route defined? See if we can get a URL out of the driver.
             // Useful for web results, among other things.
             $url = $record->tryMethod('getUrl');

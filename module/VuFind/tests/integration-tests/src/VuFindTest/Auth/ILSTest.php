@@ -98,7 +98,9 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
             $driver = $this->getMockDriver();
         }
         $authenticator = $this->getMockILSAuthenticator($patron);
-        $driverManager = new \VuFind\ILS\Driver\PluginManager();
+        $driverManager = new \VuFind\ILS\Driver\PluginManager(
+            $this->getServiceManager()
+        );
         $driverManager->setService('Sample', $driver);
         $mockConfigReader = $this->createMock('VuFind\Config\PluginManager');
         $mockConfigReader->expects($this->any())->method('get')
@@ -111,7 +113,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
             $authenticator
         );
         $auth->setDbTableManager(
-            $this->getServiceManager()->get('VuFind\DbTablePluginManager')
+            $this->getServiceManager()->get('VuFind\Db\Table\PluginManager')
         );
         $auth->getCatalog()->setDriver($driver);
         return $auth;

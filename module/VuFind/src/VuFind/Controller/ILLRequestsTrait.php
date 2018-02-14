@@ -132,7 +132,7 @@ trait ILLRequestsTrait
         // Find and format the default required date:
         $defaultRequired = $this->ILLRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
+        $defaultRequired = $this->serviceLocator->get('VuFind\Date\Converter')
             ->convertToDisplayDate("U", $defaultRequired);
 
         // Get pickup libraries

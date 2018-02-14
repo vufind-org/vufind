@@ -156,7 +156,7 @@ class RecordFormatter extends BaseFormatter
      */
     protected function getURLs($record)
     {
-        $recordHelper = $this->helperManager->get('Record');
+        $recordHelper = $this->helperManager->get('record');
         return $recordHelper($record)->getLinkDetails();
     }
 

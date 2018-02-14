@@ -110,11 +110,11 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Test login with handler configured to load a service which does not exist.
      *
      * @return void
+     *
+     * @expectedException Zend\ServiceManager\Exception\ServiceNotFoundException
      */
     public function testLoginWithBadService()
     {
-        $this
-            ->setExpectedException('Zend\ServiceManager\Exception\ServiceNotFoundException');
         $config = $this->getAuthConfig();
         $config->MultiAuth->method_order = 'InappropriateService,Database';
 
@@ -128,11 +128,11 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * as an arbitrary inappropriate class).
      *
      * @return void
+     *
+     * @expectedException Zend\ServiceManager\Exception\InvalidServiceException
      */
     public function testLoginWithBadClass()
     {
-        $this
-            ->setExpectedException('Zend\ServiceManager\Exception\RuntimeException');
         $config = $this->getAuthConfig();
         $config->MultiAuth->method_order = get_class($this) . ',Database';
 
