@@ -47,8 +47,10 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testShareByDefault()
     {
-        $pm = new PluginManager(null);
-        $this->assertTrue($pm->shareByDefault());
+        $pm = new PluginManager(
+            $this->createMock('Interop\Container\ContainerInterface')
+        );
+        $this->assertTrue($this->getProperty($pm, 'sharedByDefault'));
     }
 
     /**
@@ -56,12 +58,14 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        Zend\ServiceManager\Exception\RuntimeException
+     * @expectedException        Zend\ServiceManager\Exception\InvalidServiceException
      * @expectedExceptionMessage Plugin ArrayObject does not belong to VuFind\Content\AbstractCover
      */
     public function testExpectedInterface()
     {
-        $pm = new PluginManager(null);
-        $pm->validatePlugin(new \ArrayObject());
+        $pm = new PluginManager(
+            $this->createMock('Interop\Container\ContainerInterface')
+        );
+        $pm->validate(new \ArrayObject());
     }
 }

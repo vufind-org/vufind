@@ -92,7 +92,7 @@ class SearchController extends AbstractSearch
     {
         // If a URL was explicitly passed in, use that; otherwise, try to
         // find the HTTP referrer.
-        $mailer = $this->serviceLocator->get('VuFind\Mailer');
+        $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
         $view = $this->createEmailViewModel(null, $mailer->getDefaultLinkSubject());
         $mailer->setMaxRecipients($view->maxRecipients);
         // Set up reCaptcha
@@ -197,7 +197,7 @@ class SearchController extends AbstractSearch
         $facetHelper = null;
         if (!empty($hierarchicalFacets)) {
             $facetHelper = $this->serviceLocator
-                ->get('VuFind\HierarchicalFacetHelper');
+                ->get('VuFind\Search\Solr\HierarchicalFacetHelper');
         }
         foreach ($facetList as $facet => &$list) {
             // Hierarchical facets: format display texts and sort facets
@@ -421,7 +421,7 @@ class SearchController extends AbstractSearch
             + $this->getRequest()->getPost()->toArray()
         );
         $view = $this->createViewModel();
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
         $view->results = $runner->run(
             $request, 'SolrReserves', $this->getSearchSetupCallback()
         );
@@ -523,7 +523,7 @@ class SearchController extends AbstractSearch
      */
     protected function getActiveHiddenFilters()
     {
-        return $this->serviceLocator->get('VuFind\SearchTabsHelper')
+        return $this->serviceLocator->get('VuFind\Search\SearchTabsHelper')
             ->getHiddenFilters($this->searchClassId);
     }
 
@@ -562,9 +562,10 @@ class SearchController extends AbstractSearch
     protected function getFacetResults($initMethod, $cacheName)
     {
         // Check if we have facet results cached, and build them if we don't.
-        $cache = $this->serviceLocator->get('VuFind\CacheManager')
+        $cache = $this->serviceLocator->get('VuFind\Cache\Manager')
             ->getCache('object');
-        $language = $this->serviceLocator->get('VuFind\Translator')->getLocale();
+        $language = $this->serviceLocator->get('Zend\Mvc\I18n\Translator')
+            ->getLocale();
         $hiddenFilters = $this->getActiveHiddenFilters();
         $hiddenFiltersHash = md5(json_encode($hiddenFilters));
         $cacheName .= "List-$hiddenFiltersHash-$language";
@@ -660,11 +661,8 @@ class SearchController extends AbstractSearch
 
         // Get suggestions and make sure they are an array (we don't want to JSON
         // encode them into an object):
-        $autocompleteManager = $this->serviceLocator
-            ->get('VuFind\AutocompletePluginManager');
-        $suggestions = $autocompleteManager->getSuggestions(
-            $query, 'type', 'lookfor'
-        );
+        $suggester = $this->serviceLocator->get('VuFind\Autocomplete\Suggester');
+        $suggestions = $suggester->getSuggestions($query, 'type', 'lookfor');
 
         // Send the JSON response:
         $response = $this->getResponse();
@@ -683,7 +681,8 @@ class SearchController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('config');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;
     }
