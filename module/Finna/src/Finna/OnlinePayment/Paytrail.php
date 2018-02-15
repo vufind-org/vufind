@@ -95,7 +95,7 @@ class Paytrail extends BaseHandler
      * @param strin              $currency       Currency
      * @param string             $statusParam    Payment status URL parameter
      *
-     * @return false on error, otherwise redirects to payment handler.
+     * @return string Error message on error, otherwise redirects to payment handler.
      */
     public function startPayment(
         $finesUrl, $ajaxUrl, $user, $patron, $driver, $amount, $transactionFee,
@@ -128,8 +128,17 @@ class Paytrail extends BaseHandler
                 $orderNumber, $urlset, $totAmount
             );
         } else {
+            $email = !empty($user->email) ? $user->email : '';
+            if (empty($email)) {
+                if (empty($patron['email'])) {
+                    return 'online_payment_email_address_required';
+                }
+                $email = $patron['email'];
+            }
             $contact = new Paytrail_Module_Rest_Contact(
-                $user->firstname, $user->lastname, $user->email,
+                !empty($user->firstname) ? $user->firstname : 'N/A',
+                !empty($user->lastname) ? $user->lastname : 'N/A',
+                $email,
                 !empty($patron['address1']) ? $patron['address1'] : 'N/A',
                 !empty($patron['zip']) ? $patron['zip'] : 'N/A',
                 !empty($patron['city']) ? $patron['city'] : 'N/A',

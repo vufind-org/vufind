@@ -78,7 +78,7 @@ interface OnlinePaymentHandlerInterface
      * @param strin              $currency       Currency
      * @param string             $statusParam    Payment status URL parameter
      *
-     * @return false on error, otherwise redirects to payment handler.
+     * @return string Error message on error, otherwise redirects to payment handler.
      */
     public function startPayment(
         $finesUrl, $ajaxUrl, $user, $patron, $driver,

@@ -67,7 +67,7 @@ class CPU extends BaseHandler
      * @param string             $currency       Currency
      * @param string             $statusParam    Payment status URL parameter
      *
-     * @return false on error, otherwise redirects to payment handler.
+     * @return string Error message on error, otherwise redirects to payment handler.
      */
     public function startPayment(
         $finesUrl, $ajaxUrl, $user, $patron, $driver, $amount, $transactionFee,
@@ -117,7 +117,7 @@ class CPU extends BaseHandler
 
         if (!isset($this->config->productCode)) {
             $this->handleCPUError('missing productCode configuration option');
-            return false;
+            return '';
         }
         $productCode = $this->config->productCode;
         $productCodeMappings = [];
@@ -165,34 +165,34 @@ class CPU extends BaseHandler
             $payment = $payment->addProduct($product);
         }
 
-        if (!$module = $this->initCpu()) {
-            $this->handleCPUError('error initing CPU online payment');
-            return false;
+        if (!($module = $this->initCpu())) {
+            $this->handleCPUError('error initializing CPU online payment');
+            return '';
         }
 
         try {
             $response = $module->sendPayment($payment);
         } catch (\Exception $e) {
             $this->handleCPUError('exception sending payment: ' . $e->getMessage());
-            return false;
+            return '';
         }
         if (!$response) {
             $this->handleCPUError('error sending payment');
-            return false;
+            return '';
         }
 
         $response = json_decode($response);
 
         if (empty($response->Id) || empty($response->Status)) {
             $this->handleCPUError('error starting payment, no response');
-            return false;
+            return '';
         }
 
         $status = intval($response->Status);
         if (in_array($status, [self::STATUS_ERROR, self::STATUS_INVALID_REQUEST])) {
             // System error or Request failed.
             $this->handleCPUError('error starting transaction', $response);
-            return false;
+            return '';
         }
 
         $params = [
@@ -203,7 +203,7 @@ class CPU extends BaseHandler
             $this->handleCPUError(
                 'error starting transaction, invalid checksum', $response
             );
-            return false;
+            return '';
         }
 
         if ($status === self::STATUS_SUCCESS) {
@@ -212,7 +212,7 @@ class CPU extends BaseHandler
                 'error starting transaction, transaction already processed',
                 $response
             );
-            return false;
+            return '';
         }
 
         if ($status === self::STATUS_ID_EXISTS) {
@@ -221,7 +221,7 @@ class CPU extends BaseHandler
                 'error starting transaction, order exists',
                 $response
             );
-            return false;
+            return '';
         }
 
         if ($status === self::STATUS_CANCELLED) {
@@ -229,7 +229,7 @@ class CPU extends BaseHandler
             $this->handleCPUError(
                 'error starting transaction, order cancelled', $response
             );
-            return false;
+            return '';
         }
 
         if ($status === self::STATUS_PENDING) {
@@ -246,11 +246,11 @@ class CPU extends BaseHandler
                 $fines
             );
             if (!$success) {
-                return false;
+                return '';
             }
             $this->redirectToPayment($response->PaymentAddress);
         }
-        return false;
+        return '';
     }
 
     /**

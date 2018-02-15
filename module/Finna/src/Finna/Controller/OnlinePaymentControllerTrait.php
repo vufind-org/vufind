@@ -233,12 +233,10 @@ trait OnlinePaymentControllerTrait
                 $paymentConfig['currency'],
                 $paymentParam
             );
-            if (!$result) {
-                $this->flashMessenger()->addMessage(
-                    'online_payment_failed', 'error'
-                );
-                header("Location: " . $this->getServerUrl('myresearch-fines'));
-            }
+            $this->flashMessenger()->addMessage(
+                $result ? $result : 'online_payment_failed', 'error'
+            );
+            header("Location: " . $this->getServerUrl('myresearch-fines'));
             exit();
         } elseif ($payment) {
             // Payment response received.
