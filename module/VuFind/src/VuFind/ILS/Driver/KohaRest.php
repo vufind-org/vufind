@@ -1070,15 +1070,18 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if (isset($this->feeTypeMappings[$type])) {
                 $type = $this->feeTypeMappings[$type];
             }
-            $fines[] = [
+            $fine = [
                 'amount' => $entry['amount'] * 100,
                 'balance' => $entry['amountoutstanding'] * 100,
                 'fine' => $type,
                 'createdate' => $createDate,
                 'checkout' => '',
-                'id' => $bibId,
                 'title' => $entry['description']
             ];
+            if (null !== $bibId) {
+                $fine['id'] = $bibId;
+            }
+            $fines[] = $fine;
         }
         return $fines;
     }
