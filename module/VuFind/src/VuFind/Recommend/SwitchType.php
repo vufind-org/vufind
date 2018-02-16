@@ -119,7 +119,7 @@ class SwitchType implements RecommendInterface
         // anything!  We should only show recommendations if we know what handler is
         // being used and can determine that it is not the same as the new handler
         // that we want to recommend.
-        $this->active = (!is_null($handler) && $handler != $this->newHandler);
+        $this->active = (null !== $handler && $handler != $this->newHandler);
     }
 
     /**

@@ -53,7 +53,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     {
         $this->setExpectedException('VuFind\Exception\ILS');
         $test = new MultiBackend(
-            new \VuFind\Config\PluginManager(), $this->getMockILSAuthenticator(),
+            new \VuFind\Config\PluginManager($this->getServiceManager()),
+            $this->getMockILSAuthenticator(),
             $this->getMockSM()
         );
         $test->init();

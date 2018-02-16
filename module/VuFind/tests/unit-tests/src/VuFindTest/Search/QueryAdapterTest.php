@@ -66,6 +66,36 @@ class QueryAdapterTest extends TestCase
     }
 
     /**
+     * Test that when one part of the query contains an operator, ALL parts of the
+     * query contain an operator. (We want to be sure that in cases where the first
+     * part of the query has no operator associated with it, a blank value is filled
+     * in as a placeholder.
+     *
+     * @return void
+     */
+    public function testOperatorDefinedEverywhere()
+    {
+        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches') . '/';
+        $q = unserialize(file_get_contents($fixturePath . '/operators'));
+        $minified = QueryAdapter::minify($q);
+
+        // First, check that count of 'o' values matches count of queries in group:
+        $callback = function ($carry, $item) {
+            return $carry + (isset($item['o']) ? 1 : 0);
+        };
+        $this->assertEquals(
+            count($minified[0]['g']),
+            array_reduce($minified[0]['g'], $callback, 0)
+        );
+
+        // Next, confirm that first operator is set to empty (filler) value:
+        $this->assertEquals('', $minified[0]['g'][0]['o']);
+
+        // Finally, make sure that we can round-trip back to the input.
+        $this->assertEquals($q, QueryAdapter::deminify($minified));
+    }
+
+    /**
      * Test building an advanced query from a request.
      *
      * @return void

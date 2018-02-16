@@ -109,12 +109,12 @@ class Results extends BaseResults
     public function getFacetList($filter = null)
     {
         // Make sure we have processed the search before proceeding:
-        if (is_null($this->user)) {
+        if (null === $this->user) {
             $this->performAndProcessSearch();
         }
 
         // If there is no filter, we'll use all facets as the filter:
-        if (is_null($filter)) {
+        if (null === $filter) {
             $filter = $this->getParams()->getFacetConfig();
         }
 
@@ -170,12 +170,12 @@ class Results extends BaseResults
         // Make sure the user and/or list objects make it possible to view
         // the current result set -- we need to check logged in status and
         // list permissions.
-        if (is_null($list) && !$this->user) {
+        if (null === $list && !$this->user) {
             throw new ListPermissionException(
                 'Cannot retrieve favorites without logged in user.'
             );
         }
-        if (!is_null($list) && !$list->public
+        if (null !== $list && !$list->public
             && (!$this->user || $list->user_id != $this->user->id)
         ) {
             throw new ListPermissionException(
@@ -184,8 +184,8 @@ class Results extends BaseResults
         }
 
         // How many results were there?
-        $userId = is_null($list) ? $this->user->id : $list->user_id;
-        $listId = is_null($list) ? null : $list->id;
+        $userId = null === $list ? $this->user->id : $list->user_id;
+        $listId = null === $list ? null : $list->id;
         $rawResults = $this->resourceTable->getFavorites(
             $userId, $listId, $this->getTagFilters(), $this->getParams()->getSort()
         );

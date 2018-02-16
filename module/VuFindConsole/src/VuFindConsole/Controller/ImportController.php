@@ -140,7 +140,7 @@ class ImportController extends AbstractBase
         $testMode = $request->getParam('test-only') ? true : false;
         $index = $request->getParam('index', 'SolrWeb');
 
-        $configLoader = $this->serviceLocator->get('VuFind\Config');
+        $configLoader = $this->serviceLocator->get('VuFind\Config\PluginManager');
         $crawlConfig = $configLoader->get('webcrawl');
 
         // Get the time we started indexing -- we'll delete records older than this

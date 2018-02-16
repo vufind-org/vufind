@@ -64,7 +64,7 @@ class SolrReservesBackendFactory extends AbstractSolrBackendFactory
     protected function createBackend(Connector $connector)
     {
         $backend = parent::createBackend($connector);
-        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
+        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('SolrReserves');
             $driver->setRawData($data);

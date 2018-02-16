@@ -62,9 +62,8 @@ class QRCodeController extends AbstractBase
                 $this->getConfig(),
                 $this->serviceLocator->get('VuFindTheme\ThemeInfo')
             );
-            \VuFind\ServiceManager\Initializer::initInstance(
-                $this->loader, $this->serviceLocator
-            );
+            $initializer = new \VuFind\ServiceManager\ServiceInitializer();
+            $initializer($this->serviceLocator, $this->loader);
         }
         return $this->loader;
     }

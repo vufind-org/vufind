@@ -105,6 +105,7 @@ function checkSaveStatus(el) {
   }, $item);
 }
 
+var saveStatusObserver = null;
 function checkSaveStatuses(_container) {
   if (!userIsLoggedIn) {
     return;
@@ -134,7 +135,6 @@ function checkSaveStatusesCallback() {
   checkSaveStatuses();
 }
 
-var saveStatusObserver = null;
 $(document).ready(function checkSaveStatusFail() {
   if (typeof Hunt === 'undefined') {
     checkSaveStatuses();
