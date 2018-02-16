@@ -861,6 +861,9 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $sqlStmtWaitingReserve->execute([':item_id' => $inum]);
             $waitingReserveRow = $sqlStmtWaitingReserve->fetch();
             $waitingReserve = $waitingReserveRow["WAITING"];
+
+	    $duedate 	= '';
+	    $available 	= false;
             $sql = "select date_due as DUEDATE from issues where itemnumber = :inum";
             switch ($rowItem['NOTFORLOAN']) {
             case 0:
@@ -870,21 +873,16 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $issueSqlStmt->execute([':inum' => $inum]);
                 $rowIssue = $issueSqlStmt->fetch();
                 if ($rowIssue) {
-                    $available = false;
                     $status = 'Checked out';
                     $duedate = $rowIssue['DUEDATE'];
                 } else {
                     $available = true;
                     $status = 'Available';
                     // No due date for an available item
-                    $duedate = '';
                 }
                 break;
-            case 1: // The item is not available for loan
-            default:
-                $available = false;
-                $status = 'Not for loan';
-                $duedate = '';
+            default: // if additional values are entered in Koha's 'authorised_values' table with 'category' = 'NOT_LOAN', use this value in $status
+                $status = 'status_' .$rowItem['NOTFORLOAN'];
                 break;
             }
             /*
@@ -895,13 +893,11 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
             if (in_array($rowItem['LOCATION'], $this->availableLocationsDefault)) {
                 $available = true;
-                $duedate = '';
                 $status = 'Available';
             }
 
             // If Item is Lost or Missing, provide that status
             if ($rowItem['ITEMLOST'] > 0) {
-                $available = false;
                 $duedate = $rowItem['LOSTON'];
                 $status = 'Lost/Missing';
             }
@@ -968,11 +964,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 'notes'        => $notes["MFHD"],
                 //'reserve'      => (null == $rowItem['RESERVES'])
                 //    ? 'N' : $rowItem['RESERVES'],
-                'reserve'      => 'N',
+                //'reserve'      => 'N',
+		'reserve'      => ($rowItem['NOTFORLOAN']) ? 'X':'N',
                 'callnumber'   =>
                     ((null == $rowItem['CALLNO']) || ($rowItem['DOCTYPE'] == "PE"))
                         ? '' : $rowItem['CALLNO'],
-                'duedate'      => ($onTransfer || $waiting)
+                'duedate'      => ($onTransfer || $waiting || $rowItem['NOTFORLOAN'])
                     ? '' : (string)$duedate_formatted,
                 'barcode'      => (null == $rowItem['BARCODE'])
                     ? 'Unknown' : $rowItem['BARCODE'],

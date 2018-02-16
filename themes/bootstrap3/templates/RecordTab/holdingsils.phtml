@@ -120,7 +120,7 @@
               <? endif; ?>
             <? else: ?>
               <? /* Begin Unavailable Items (Recalls) */ ?>
-              <span class="text-danger"><?=$this->transEsc($row['status'])?><link property="availability" href="http://schema.org/OutOfStock" /></span>
+              <span class="text-danger"><?=$this->translate("HoldingStatus::" .$row['status'])?><link property="availability" href="http://schema.org/OutOfStock" /></span>
               <? if (isset($row['returnDate']) && $row['returnDate']): ?>&ndash; <span class="small"><?=$this->escapeHtml($row['returnDate'])?></span><? endif; ?>
               <? if (isset($row['duedate']) && $row['duedate']): ?>
                 &ndash; <span class="small"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($row['duedate'])?></span>
@@ -128,9 +128,11 @@
               <? if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
                 <span><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
               <? endif; ?>
-              <? if (isset($row['link']) && $row['link']): ?>
-                <a class="<?=$check ? 'checkRequest' : ''?> placehold" <? if (!empty($row['linkLightbox'])): ?>data-lightbox <? endif; ?>href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
-              <? endif; ?>
+	      <? if ($row['reserve'] != "X"): ?> 
+                 <? if (isset($row['link']) && $row['link']): ?>
+                     <a class="<?=$check ? 'checkRequest' : ''?> placehold" <? if (!empty($row['linkLightbox'])): ?>data-lightbox <? endif; ?>href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
+                 <? endif; ?>
+	       <? endif; ?>
             <? endif; ?>
             <? if (isset($row['item_notes'])): ?>
               <div class="item-notes">
