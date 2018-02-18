@@ -105,9 +105,9 @@ class OaiController extends AbstractBase
                 $this->serviceLocator->get('VuFind\Db\Table\PluginManager'),
                 $config, $baseURL, $params
             );
-            // $server->setRecordLinkHelper(
-            //     $this->getViewRenderer()->plugin('recordlink')
-            // );
+            $server->setRecordLinkHelper(
+                $this->getViewRenderer()->plugin('recordLink')
+            );
             $xml = $server->getResponse();
         } catch (\Exception $e) {
             $response->setStatusCode(500);
