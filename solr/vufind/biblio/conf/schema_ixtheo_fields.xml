@@ -39,7 +39,6 @@
     <field name="geographic_facet_pt" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_ru" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="is_biblical_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
-    <field name="is_open_access" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="is_potentially_pda" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_probably_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
