@@ -10,4 +10,5 @@ fi
 echo "Updating TueFind configuration (git hook post-merge)"
 DIR="$(dirname $(readlink --canonicalize "$0"))"
 $DIR/../../update_tuefind_config.sh
+$DIR/../../clean_vufind_cache.sh
 
