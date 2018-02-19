@@ -1,0 +1,122 @@
+[Catalog]
+host =
+base =
+unit =
+username =
+password =
+
+[Holds]
+; HMACKeys - A list of hold form element names that will be analyzed for consistency
+; during hold form processing. Most users should not need to change this setting.
+HMACKeys = item_id:holdtype:level
+
+; extraHoldFields - A colon-separated list used to display extra visible fields in the
+; place holds form. Supported values are "requiredByDate" and "pickUpLocation"
+extraHoldFields = pickUpLocation
+
+; By default the pick up location list is sorted alphabetically. This setting can be
+; used to manually set the order by entering location IDs as a colon-separated list.
+; You can also disable sorting by setting this to false.
+;pickUpLocationOrder = 1
+
+; A Pick Up Location Code used to pre-select the pick up location drop down list and
+; provide a default option if others are not available. Must correspond with one of
+; the Location IDs returned by getPickUpLocations()
+;defaultPickUpLocation = 1
+
+; This setting can be used to exclude locations from the pickup location list
+;excludePickupLocations = 10:11
+
+[Holdings]
+; By default the holdings location list is sorted alphabetically. This setting can be
+; used to manually set the order by entering location IDs as a colon-separated list.
+;holdingsOrganisationOrder = 1:2:3
+; Top-level organisation id used in grouping holdings.
+; Translation "source_<organisationId>" is used as the display string.
+; NOTE: this setting is needed only when the library unit hierarchy consists of 2 levels
+; (1. branch, 2. department). Comment out if the hierarchy also includes the organisation.
+; (1. organisation, 2. branch, 3. department)
+; organisationId =
+
+[Loans]
+renewalLimit = 3
+
+; Changing of pickup location is enabled if method parameter is set. Only valid value
+; is 'driver'.
+[changePickupLocation]
+method = driver
+
+; Uncomment the following lines to enable password (PIN) change
+[changePassword]
+; PIN change parameters. The default limits are taken from the interface documentation.
+minLength = 4
+maxLength = 4
+; See the password_pattern/password_hint settings in the [Authentication] section
+; of config.ini for notes on these settings. When set here, these will override the
+; config.ini defaults when Voyager is used for authentication.
+pattern = "numeric"
+;hint = "Your optional custom hint can go here."
+
+; Uncomment the following lines to enable updating of address information.
+; Choose a method on how to update the address information (driver, email or url).
+; Only 'driver' is currently supported.
+[updateAddress]
+method = email
+; emailAddress is required for the email method
+;emailAddress =
+; Uncomment the following lines to change which fields are included in the form
+; when using the email method. Format for the fields is label:profile_field
+; Default is address, zip, city and country. Email and phone are included unless
+; they have their own sections [updateEmail] or [updatePhone] defined. Also custom
+; fields can be defined.
+fields[] = Address:address1
+fields[] = Address:address2
+fields[] = Zip:zip
+fields[] = City:city
+;fields[] = Phone:phone
+;fields[] = Email:email
+; url is required for the url method. url can be a single address or an array of
+; language-specific addresses. First example is a single one:
+;url = http://address.of.change.form
+; Alternatively different links can be specified for each language:
+;url[fi] = http://address.of.change.form/finnish
+;url[sv] = http://address.of.change.form/swedish
+;url[en-gb] = http://address.of.change.form/english
+
+; Uncomment the following lines to enable updating of email address.
+; Choose a method on how to update the email address.
+; Only 'driver' is currently supported.
+[updateEmail]
+method = driver
+
+; Uncomment the following lines to enable updating of phone number.
+; Choose a method on how to update the phone number.
+; Only 'driver' is currently supported.
+[updatePhone]
+method = driver
+
+; Transport methods for messaging services.
+; Format of the methods is name:label.
+; Method name needs to be supported by the API.
+[messaging]
+checkoutNotice[] = Email:email
+;checkoutNotice[] = Paper:paper
+notifications[] = Email:email
+notifications[] = SMS:sms
+
+; Changing of loan history state is enabled if method parameter is set. Only
+; valid value is 'driver'.
+[updateTransactionHistoryState]
+method = driver
+options[0] = loan_history_forever
+options[1] = loan_history_never
+
+; Uncomment the following lines to enable transaction history
+; Only 'driver' is currently supported method.
+;[getMyTransactionHistory]
+;enabled = true
+
+; Changing of messaging settings is enabled if method parameter is set. Only valid
+; value for Micromarc is 'driver'.
+[updateMessagingSettings]
+method = driver

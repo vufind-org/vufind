@@ -85,6 +85,26 @@ class Factory
     }
 
     /**
+     * Factory for Mikromarc driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Mikromarc
+     */
+    public static function getMikromarc(ServiceManager $sm)
+    {
+        $driver = new Mikromarc(
+            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+            $sm->getServiceLocator()->get('VuFind\Translator')
+        );
+        $driver->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+
+        return $driver;
+    }
+
+    /**
      * Factory for MultiBackend driver.
      *
      * @param ServiceManager $sm Service manager.
