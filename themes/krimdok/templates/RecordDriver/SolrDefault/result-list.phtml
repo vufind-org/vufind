@@ -116,8 +116,9 @@
           <? endforeach; ?>
         <? endif; ?>
 
-        <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?>
-
+        <?$label=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?>
+        <? /* Remove separator needed for long title view */ ?>
+        <?=str_replace(' | ', '', $label)?>
         <? if ($this->driver->supportsAjaxStatus()): ?>
           <span class="status ajax-availability hidden">
             <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
