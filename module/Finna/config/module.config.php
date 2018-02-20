@@ -375,6 +375,17 @@ $config = [
                 ],
             ],
         ],
+        'recorddriver_collection_tabs' => [
+            'Finna\RecordDriver\SolrEad' => [
+                'tabs' => [
+                    'CollectionList' => 'CollectionList',
+                    'HierarchyTree' => 'CollectionHierarchyTree',
+                    'UserComments' => 'UserComments',
+                    'Details' => 'StaffViewArray',
+                ],
+                'defaultTab' => null,
+            ],
+        ],
         'recorddriver_tabs' => [
             'Finna\RecordDriver\EDS' => [
                 'tabs' => [
