@@ -1,7 +1,7 @@
 .accordion {
   list-style-type: none;
   .accordion-toggle {
-    padding: 10px;
+    padding: 15px 10px;
     margin-bottom: 5px;
     font-size: 1em;
     font-weight: 600;
@@ -20,10 +20,11 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: @line-height-computed;
+    line-height: @content-headings-line-height;
     width: 100%;
     .title {
       float: left;
+      font-size: @font-size-h2;
     }
     .icon:after {
       font-family: icomoon;
