@@ -109,6 +109,9 @@
     margin: 20px 0px;
     border: 1px solid @gray-lighter;
     border-top: none;
+    @media print {
+        border-top: 1px solid @gray-lighter;
+    }
 
     h5{
         padding-left: 15px;
@@ -140,6 +143,9 @@
             padding-bottom: 5px;
             border-top: 2px solid @gray-lighter;
             vertical-align: middle;
+            @media print {
+                border-top: 1px solid @gray-lighter;
+            }
         }
         & .holdings-details {
             padding-right: 15px;

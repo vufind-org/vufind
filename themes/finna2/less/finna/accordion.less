@@ -13,6 +13,12 @@
     @media(min-width: @screen-md) {
       display: none;
     }
+    @media print {
+      border: none;
+      i {
+        display: none;
+      }
+    }
   }
   .accordion-toggle a {
     color: @text-color;
@@ -40,6 +46,11 @@
       display: @accordion-details-display;
     }
   }
+  @media print {
+    &:not(.active) {
+      display: none;
+    }
+  }
 }
 
 .record-accordions.record-tabs {
@@ -52,6 +63,9 @@
         content: "\e916";
         float: right;
         color: @action-link-color;
+      }
+      @media print {
+        border-left: none;
       }
     }
     @media (max-width: @screen-sm-max) {
