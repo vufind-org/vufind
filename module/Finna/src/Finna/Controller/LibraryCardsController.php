@@ -219,7 +219,9 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         );
         if (!$recoveryConfig) {
             $this->flashMessenger()->addMessage('recovery_disabled', 'error');
-            return $this->redirect()->toRoute('myresearch-home');
+            return $this->redirect()->toRoute(
+                'myresearch-home', [], ['query' => ['redirect' => 0]]
+            );
         }
         $view = $this->createViewModel(
             [
@@ -247,10 +249,12 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
 
             if (!empty($result['success'])) {
                 $this->flashMessenger()->addSuccessMessage('new_password_success');
-                return $this->redirect()->toRoute('myresearch-home');
             } else {
                 $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
             }
+            return $this->redirect()->toRoute(
+                'myresearch-home', [], ['query' => ['redirect' => 0]]
+            );
         }
         return $view;
     }
