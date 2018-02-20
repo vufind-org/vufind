@@ -438,8 +438,13 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             }
             // Now, navigate the DOM and set values to the array
             // cast to (string) to get the element's value not an XML object
+            // URL encode the record ID to protect it as Primo Central record
+            // IDs can contain characters that you don't want in the URL (e.g.
+            // slashes)
             $item['recordid']
-                = substr((string)$prefix->PrimoNMBib->record->control->recordid, 3);
+                = urlencode(
+                    substr((string)$prefix->PrimoNMBib->record->control->recordid, 3)
+                );
             $item['title']
                 = (string)$prefix->PrimoNMBib->record->display->title;
             // format
@@ -606,6 +611,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     {
         // Query String Parameters
         if (isset($recordId)) {
+            $recordId = urldecode($recordId);
             $qs   = [];
             // There is currently (at 2015-12-17) a problem with Primo fetching
             // records that have colons in the id (e.g.
@@ -651,7 +657,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     {
         // Callback function for formatting IDs:
         $formatIds = function ($id) {
-            return addcslashes($id, '":()');
+            return addcslashes(urldecode($id), '":()');
         };
 
         // Query String Parameters
