@@ -81,8 +81,8 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
             ->will($this->returnValue('http://server/url'));
 
         return [
-            'currentpath' => $currentPath,
-            'recordlink' => $recordLink,
+            'currentPath' => $currentPath,
+            'recordLink' => $recordLink,
             'serverurl' => $serverUrl
         ];
     }
