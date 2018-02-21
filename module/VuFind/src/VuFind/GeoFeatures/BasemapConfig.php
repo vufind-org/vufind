@@ -199,5 +199,5 @@ class BasemapConfig
         }
         return $options;
     }
- }
+}
 ?>
