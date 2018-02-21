@@ -73,14 +73,14 @@ class Map extends AbstractBase
      *
      * @var string
      */
-    protected $basemap_url;
+    protected $basemapUrl;
 
     /**
      * Basemap attribution
      *
      * @var string
      */
-    protected $basemap_attribution;
+    protected $basemapAttribution;
 
     /**
      * Constructor

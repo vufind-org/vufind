@@ -28,6 +28,7 @@
 namespace VuFind\GeoFeatures;
 
 use Zend\ServiceManager\ServiceManager;
+
 /**
  * Basemap Configuration Class
  *
