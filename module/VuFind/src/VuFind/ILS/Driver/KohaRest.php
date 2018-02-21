@@ -358,7 +358,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'cat_password' => $password,
             'email' => $result['email'],
             'major' => null,
-            'college' => null
+            'college' => null,
+            'home_library' => $result['branchcode']
         ];
     }
 
