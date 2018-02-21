@@ -27,8 +27,6 @@
  */
 namespace VuFind\GeoFeatures;
 
-use Zend\ServiceManager\ServiceManager;
-
 /**
  * Basemap Configuration Class
  *
@@ -80,7 +78,7 @@ class BasemapConfig
     {
         $this->configLoader = $configLoader;
     }
-  
+
     /**
      * Get the basemap configuration settings.
      *
@@ -201,4 +199,3 @@ class BasemapConfig
         return $options;
     }
 }
-?>
