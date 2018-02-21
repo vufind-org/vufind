@@ -69,6 +69,20 @@ class Map extends AbstractBase
     protected $graticule = false;
 
     /**
+     * Basemap URL
+     *
+     * @var string
+     */
+    protected $basemap_url;
+
+    /**
+     * Basemap attribution
+     *
+     * @var string
+     */
+    protected $basemap_attribution;
+
+    /**
      * Constructor
      *
      * @param string $mapType Map provider (valid options: 'openlayers';
@@ -80,7 +94,9 @@ class Map extends AbstractBase
         switch (trim(strtolower($mapType))) {
         case 'openlayers':
             $this->mapType = trim(strtolower($mapType));
-            $legalOptions = ['displayCoords', 'mapLabels', 'graticule'];
+            $legalOptions = ['displayCoords', 'mapLabels', 'graticule',
+                'basemap_url', 'basemap_attribution'
+            ];
             foreach ($legalOptions as $option) {
                 if (isset($options[$option])) {
                     $this->$option = $options[$option];
@@ -129,6 +145,19 @@ class Map extends AbstractBase
     public function getMapGraticule()
     {
         return $this->graticule;
+    }
+
+    /**
+     * Get the basemap configuration settings.
+     *
+     * @return array
+     */
+    public function getBasemap()
+    {
+        $basemapParams = [];
+        $basemapParams[0] = $this->basemap_url;
+        $basemapParams[1] = $this->basemap_attribution;
+        return $basemapParams;
     }
 
     /**
