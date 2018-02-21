@@ -46,14 +46,14 @@ class BasemapConfig
      *
      * @var string
      */
-    protected $basemap_url = "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png";
+    protected $basemapUrl = "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png";
 
     /**
      * Basemap attribution
      *
      * @var string
      */
-    protected $basemap_attribution = '<a href="https://wikimediafoundation.org/wiki/
+    protected $basemapAttribution = '<a href="https://wikimediafoundation.org/wiki/
         Maps_Terms_of_Use">Wikimedia</a> | © <a href="https://www.openstreetmap.org/
         copyright">OpenStreetMap</a>';
 
@@ -65,29 +65,43 @@ class BasemapConfig
     protected $requestOrigin;
 
     /**
+     * Configuration loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configLoader;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     */
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    {
+        $this->configLoader = $configLoader;
+    }
+  
+    /**
      * Get the basemap configuration settings.
      *
-     * @param ServiceManager $sm     Service manager.
-     * @param string         $origin Origin of request MapTab or MapSelection
+     * @param string $origin Origin of request MapTab or MapSelection
      *
      * @return array
      */
-    public function getBasemap(ServiceManager $sm, $origin)
+    public function getBasemap($origin)
     {
-        $basemap_url = $this->basemap_url;
-        $basemap_attribution = $this->basemap_attribution;
+        $basemapUrl = $this->basemapUrl;
+        $basemapAttribution = $this->basemapAttribution;
         $options = [];
         $optionFields = ['basemap_url', 'basemap_attribution'];
 
-        $geofeatures = $sm->getServiceLocator()->get('VuFind\Config')->get(
-            'geofeatures'
-        );
+        $geofeatures = $this->configLoader->get('geofeatures');
 
         if ($origin == "MapSelection") {
-            $options = $this->getMapSelectionBasemap($sm, $origin);
+            $options = $this->getMapSelectionBasemap($origin);
         }
         if ($origin == "MapTab") {
-            $options = $this->getMapTabBasemap($sm, $origin);
+            $options = $this->getMapTabBasemap($origin);
         }
         if (empty($options)) {
             // Check geofeatures.ini [Basemaps] section
@@ -103,8 +117,8 @@ class BasemapConfig
         }
         if (empty($options)) {
             // Fill array with defaults
-            $options['basemap_url'] = $basemap_url;
-            $options['basemap_attribution'] = $basemap_attribution;
+            $options['basemap_url'] = $basemapUrl;
+            $options['basemap_attribution'] = $basemapAttribution;
         }
         return $options;
     }
@@ -112,19 +126,16 @@ class BasemapConfig
     /**
      * Get the basemap configuration settings for MapSelection.
      *
-     * @param ServiceManager $sm     Service manager.
-     * @param string         $origin Origin of request MapTab or MapSelection
+     * @param string $origin Origin of request MapTab or MapSelection
      *
      * @return array
      */
-    public function getMapSelectionBasemap(ServiceManager $sm, $origin)
+    public function getMapSelectionBasemap($origin)
     {
         $options = [];
         $optionFields = ['basemap_url', 'basemap_attribution'];
-        $searches = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
-        $geofeatures = $sm->getServiceLocator()->get('VuFind\Config')->get(
-            'geofeatures'
-        );
+        $searches = $this->configLoader->get('searches');
+        $geofeatures = $this->configLoader->get('geofeatures');
 
         // Check searches.ini [MapSelection] section
         foreach ($optionFields as $field) {
@@ -154,19 +165,16 @@ class BasemapConfig
     /**
      * Get the basemap configuration settings for MapTab.
      *
-     * @param ServiceManager $sm     Service manager.
-     * @param string         $origin Origin of request MapTab or MapSelection
+     * @param string $origin Origin of request MapTab or MapSelection
      *
      * @return array
      */
-    public function getMapTabBasemap(ServiceManager $sm, $origin)
+    public function getMapTabBasemap($origin)
     {
         $options = [];
         $optionFields = ['basemap_url', 'basemap_attribution'];
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $geofeatures = $sm->getServiceLocator()->get('VuFind\Config')->get(
-            'geofeatures'
-        );
+        $config = $this->configLoader->get('config');
+        $geofeatures = $this->configLoader->get('geofeatures');
 
         // Check config.ini [Content] section
         foreach ($optionFields as $field) {
@@ -193,6 +201,4 @@ class BasemapConfig
         return $options;
     }
 }
-
 ?>
-
