@@ -60,7 +60,10 @@
     <script>
        $(function(){
            showKb = function(layout, rtl) {
-               var kb = $('#searchForm_lookfor').keyboard().getkeyboard();
+               var kb = $('#searchForm_lookfor').keyboard(
+                         { display: {'accept' : 'Einfügen:Einfügen',
+                                     'enter'  : 'Eingabe:Eingabe'}
+                                                          }).getkeyboard();
                kb.options.layout = layout;
                kb.options.rtl = rtl;
                kb.redraw();
