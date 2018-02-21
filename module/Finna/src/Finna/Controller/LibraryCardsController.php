@@ -179,8 +179,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
 
             $result = $catalog->getPasswordRecoveryToken(
                 [
-                    'cat_username' => "$target.123",
-                    'username' => $username,
+                    'cat_username' => "$target.$username",
                     'email' => $email
                 ]
             );
@@ -272,10 +271,17 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
                 'myresearch-home', [], ['query' => ['redirect' => 0]]
             );
         }
+        $policy = $catalog->getPasswordPolicy(['cat_username' => "$target.123"]);
+        if (isset($policy['pattern']) && empty($policy['hint'])) {
+            $policy['hint']
+                = in_array($policy['pattern'], ['numeric', 'alphanumeric'])
+                    ? 'password_only_' . $policy['pattern'] : null;
+        }
         $view = $this->createViewModel(
             [
                 'target' => $target,
-                'hash' => $hash
+                'hash' => $hash,
+                'passwordPolicy' => $policy
             ]
         );
         $view->useRecaptcha = $this->recaptcha()->active('changePassword');
