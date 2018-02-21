@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -145,7 +145,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
     }
 
     /**
-     * Send account recovery email
+     * Recover a library account
      *
      * @return View object
      */
@@ -159,7 +159,11 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         $recoveryConfig = $catalog->checkFunction(
             'getPasswordRecoveryToken', ['cat_username' => "$target.123"]
         );
-        $view = $this->createViewModel();
+        $view = $this->createViewModel(
+            [
+                'target' => $target
+            ]
+        );
         if (!$recoveryConfig) {
             $view->recoveryDisabled = true;
         }
@@ -182,12 +186,29 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
             );
 
             if (!empty($result['success'])) {
+                // Make totally sure the timestamp is exactly 10 characters:
+                $time
+                    = str_pad(substr((string)time(), 0, 10), 10, '0', STR_PAD_LEFT);
+                $hash = md5($username . $email . rand()) . $time;
+
+                $finnaCache = $this->getTable('FinnaCache');
+                $row = $finnaCache->createRow();
+                $row->resource_id = $hash . '.recovery_hash';
+                $row->mtime = time();
+                $row->data = json_encode(
+                    [
+                        'target' => $target,
+                        'username' => $username,
+                        'email' => $email,
+                        'token' => $result['token']
+                    ]
+                );
+                $row->save();
                 $this->sendRecoveryEmail(
                     $email,
                     $target,
                     [
-                        'target' => $target,
-                        'token' => $result['token']
+                        'hash' => $hash
                     ]
                 );
                 $view->emailSent = true;
@@ -207,15 +228,43 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
      */
     public function resetPasswordAction()
     {
-        $target = $this->params()->fromQuery(
-            'target', $this->params()->fromPost('target', '')
+        if ($this->getUser()) {
+            return $this->redirect()->toRoute(
+                'myresearch-home', [], ['query' => ['redirect' => 0]]
+            );
+        }
+
+        $hash = $this->params()->fromQuery(
+            'hash', $this->params()->fromPost('hash', '')
         );
-        $token = $this->params()->fromQuery(
-            'token', $this->params()->fromPost('token', '')
-        );
+
+        // Check if hash is expired
+        $hashtime = $this->getHashAge($hash);
+        $hashLifetime = isset($config->Authentication->recover_hash_lifetime)
+            ? $config->Authentication->recover_hash_lifetime
+            : 1209600; // Two weeks
+        if (time() - $hashtime > $hashLifetime) {
+            $this->flashMessenger()->addErrorMessage('recovery_expired_hash');
+            return $this->redirect()->toRoute(
+                'myresearch-home', [], ['query' => ['redirect' => 0]]
+            );
+        }
+
+        $finnaCache = $this->getTable('FinnaCache');
+        $recoveryRecord = $finnaCache->getByResourceId("$hash.recovery_hash");
+        if (!$recoveryRecord) {
+            $this->flashMessenger()->addMessage('recovery_invalid_hash', 'error');
+            return $this->redirect()->toRoute(
+                'myresearch-home', [], ['query' => ['redirect' => 0]]
+            );
+        }
+        $recoveryData = json_decode($recoveryRecord->data, true);
+
+        $target = $recoveryData['target'];
         $catalog = $this->getILS();
         $recoveryConfig = $catalog->checkFunction(
-            'recoverPassword', ['cat_username' => "$target.123"]
+            'recoverPassword',
+            ['cat_username' => "$target." . $recoveryData['username']]
         );
         if (!$recoveryConfig) {
             $this->flashMessenger()->addMessage('recovery_disabled', 'error');
@@ -226,7 +275,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         $view = $this->createViewModel(
             [
                 'target' => $target,
-                'token' => $token
+                'hash' => $hash
             ]
         );
         $view->useRecaptcha = $this->recaptcha()->active('changePassword');
@@ -239,10 +288,13 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
                 return $view;
             }
 
+            $recoveryRecord->delete();
+
             $result = $catalog->recoverPassword(
                 [
-                    'cat_username' => "$target.123",
-                    'token' => $token,
+                    'cat_username' => "$target." . $recoveryData['username'],
+                    'email' => $recoveryData['email'],
+                    'token' => $recoveryData['token'],
                     'password' => $password
                 ]
             );
@@ -460,5 +512,17 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         } catch (MailException $e) {
             $this->flashMessenger()->addMessage($e->getMessage(), 'error');
         }
+    }
+
+    /**
+     * Helper function for verification hashes
+     *
+     * @param string $hash User-unique hash string from request
+     *
+     * @return int age in seconds
+     */
+    protected function getHashAge($hash)
+    {
+        return intval(substr($hash, -10));
     }
 }
