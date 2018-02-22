@@ -1,10 +1,7 @@
 .ui-keyboard {
      width: 100%;
      height: auto;
-}
-.ui-keyboard-nokeyboard {
-     color: #33333;
-     border-color: #888;
+     background: #cccccc
 }
 .rtl {
      text-align: right;
