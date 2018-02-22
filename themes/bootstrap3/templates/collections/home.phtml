@@ -55,7 +55,7 @@
 
 <ul class="pagination">
   <? foreach ($letters as $letter): ?>
-    <li<? if("{$letter}" === "{$from}"): ?> class="active"<?endif?>><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($letter)?><?=$this->escapeHtmlAttr($filterString)?>"><?=$this->escapeHtml($letter)?></a></li>
+    <li<? if (strcasecmp($letter, $from) == 0): ?> class="active"<?endif?>><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($letter)?><?=$this->escapeHtmlAttr($filterString)?>"><?=$this->escapeHtml($letter)?></a></li>
   <? endforeach; ?>
 </ul>
 <?=$pageLinks ?>
