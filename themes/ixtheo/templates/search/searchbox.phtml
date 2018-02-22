@@ -61,8 +61,8 @@
        $(function(){
            showKb = function(layout, rtl) {
                var kb = $('#searchForm_lookfor').keyboard(
-                         { display: {'accept' : 'Einfügen:Einfügen',
-                                     'enter'  : 'Eingabe:Eingabe'}
+                         { display: {'accept' : '<?=$this->transEsc("Accept") . ':' . $this->transEsc("Accept")?>',
+                                     'enter'  : '<?=$this->transEsc("Enter") . ':' . $this->transEsc("Enter")?>'}
                                                           }).getkeyboard();
                kb.options.layout = layout;
                kb.options.rtl = rtl;
