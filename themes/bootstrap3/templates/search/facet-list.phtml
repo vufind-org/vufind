@@ -40,8 +40,10 @@
           <? endif; ?>
               <? if (!empty($item['displayText'])): ?>
                 <?=$this->escapeHtml($item['displayText']) ?>
-              <? else: ?>
+              <? elseif (!empty($item['value'])): ?>
                 <?=$this->escapeHtml($item['value']) ?>
+              <? else: ?>
+                (<?=strtolower($this->translate("empty")) ?>)
               <? endif; ?>
             <? if ($subLinks): ?>
               </a>
