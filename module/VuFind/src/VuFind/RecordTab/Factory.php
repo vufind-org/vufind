@@ -189,7 +189,7 @@ class Factory
         }
         // add basemap options
         $basemapConfig = $sm->get('VuFind\GeoFeatures\BasemapConfig');
-        $basemapOptions = $basemapConfig->getBasemap($sm, 'MapTab');
+        $basemapOptions = $basemapConfig->getBasemap('MapTab');
         $options['basemap_url'] = $basemapOptions['basemap_url'];
         $options['basemap_attribution'] = $basemapOptions['basemap_attribution'];
 
