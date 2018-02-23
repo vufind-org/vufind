@@ -106,7 +106,7 @@ class OaiController extends AbstractBase
                 $config, $baseURL, $params
             );
             $server->setRecordLinkHelper(
-                $this->getViewRenderer()->plugin('recordlink')
+                $this->getViewRenderer()->plugin('recordLink')
             );
             $xml = $server->getResponse();
         } catch (\Exception $e) {
