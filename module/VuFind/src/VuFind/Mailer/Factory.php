@@ -97,6 +97,10 @@ class Factory implements \Zend\ServiceManager\FactoryInterface
         $config = $sm->get('VuFind\Config')->get('config');
 
         // Create service:
-        return new \VuFind\Mailer\Mailer($this->getTransport($config));
+        $class = new \VuFind\Mailer\Mailer($this->getTransport($config));
+        if (!empty($config->Mail->override_from)) {
+            $class->setFromAddressOverride($config->Mail->override_from);
+        }
+        return $class;
     }
 }
