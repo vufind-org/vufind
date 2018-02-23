@@ -195,7 +195,7 @@ class Factory
 
         // add basemap options
         $basemapConfig = $sm->get('VuFind\GeoFeatures\BasemapConfig');
-        $basemapOptions = $basemapConfig->getBasemap($sm, 'MapSelection');
+        $basemapOptions = $basemapConfig->getBasemap('MapSelection');
 
         return new MapSelection($config, $solr, $basemapOptions);
     }
