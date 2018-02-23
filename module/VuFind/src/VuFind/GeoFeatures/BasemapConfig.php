@@ -27,6 +27,8 @@
  */
 namespace VuFind\GeoFeatures;
 
+use Zend\Config\Config;
+
 /**
  * Basemap Configuration Class
  *
@@ -88,35 +90,20 @@ class BasemapConfig
      */
     public function getBasemap($origin)
     {
-        $basemapUrl = $this->basemapUrl;
-        $basemapAttribution = $this->basemapAttribution;
         $options = [];
-        $optionFields = ['basemap_url', 'basemap_attribution'];
-
-        $geofeatures = $this->configLoader->get('geofeatures');
-
-        if ($origin == "MapSelection") {
-            $options = $this->getMapSelectionBasemap($origin);
+        if ($origin == 'MapSelection') {
+            $options = $this->getMapSelectionBasemap();
+        } else if ($origin == 'MapTab') {
+            $options = $this->getMapTabBasemap();
         }
-        if ($origin == "MapTab") {
-            $options = $this->getMapTabBasemap($origin);
-        }
+        // Check geofeatures.ini [Basemaps] section as a fallback:
         if (empty($options)) {
-            // Check geofeatures.ini [Basemaps] section
-            foreach ($optionFields as $field) {
-                if (isset($geofeatures->Basemaps->$field)) {
-                    $options[$field] = $geofeatures->Basemaps->$field;
-                }
-                // If basemap_url is not set, clear $options array.
-                if (!isset($options['basemap_url'])) {
-                    $options = [];
-                }
-            }
+            $options = $this->getOptions('geofeatures', 'Basemaps');
         }
+        // Fill array with defaults if nothing else worked:
         if (empty($options)) {
-            // Fill array with defaults
-            $options['basemap_url'] = $basemapUrl;
-            $options['basemap_attribution'] = $basemapAttribution;
+            $options['basemap_url'] = $this->basemapUrl;
+            $options['basemap_attribution'] = $this->basemapAttribution;
         }
         return $options;
     }
@@ -124,38 +111,15 @@ class BasemapConfig
     /**
      * Get the basemap configuration settings for MapSelection.
      *
-     * @param string $origin Origin of request MapTab or MapSelection
-     *
      * @return array
      */
-    public function getMapSelectionBasemap($origin)
+    protected function getMapSelectionBasemap()
     {
-        $options = [];
-        $optionFields = ['basemap_url', 'basemap_attribution'];
-        $searches = $this->configLoader->get('searches');
-        $geofeatures = $this->configLoader->get('geofeatures');
-
-        // Check searches.ini [MapSelection] section
-        foreach ($optionFields as $field) {
-            if (isset($searches->MapSelection->$field)) {
-                $options[$field] = $searches->MapSelection->$field;
-            }
-            // If basemap_url is not set, clear $options array.
-            if (!isset($options['basemap_url'])) {
-                $options = [];
-            }
-        }
+        // First check legacy location:
+        $options = $this->getOptions('searches', 'MapSelection');
+        // Check geofeatures.ini [MapSelection] section next:
         if (empty($options)) {
-            // Check geofeatures.ini [MapSelection] section
-            foreach ($optionFields as $field) {
-                if (isset($geofeatures->MapSelection->$field)) {
-                    $options[$field] = $geofeatures->MapSelection->$field;
-                }
-                // If basemap_url is not set, clear $options array.
-                if (!isset($options['basemap_url'])) {
-                    $options = [];
-                }
-            }
+            $options = $this->getOptions('geofeatures', 'MapSelection');
         }
         return $options;
     }
@@ -163,39 +127,38 @@ class BasemapConfig
     /**
      * Get the basemap configuration settings for MapTab.
      *
-     * @param string $origin Origin of request MapTab or MapSelection
+     * @return array
+     */
+    protected function getMapTabBasemap()
+    {
+        // First check legacy location:
+        $options = $this->getOptions('config', 'Content');
+        // Check geofeatures.ini [MapTab] section next:
+        if (empty($options)) {
+            $options = $this->getOptions('geofeatures', 'MapTab');
+        }
+        return $options;
+    }
+
+    /**
+     * Convert a config object to an options array; return empty array if
+     * configuration is missing or incomplete.
+     *
+     * @param string $configName Name of config file to read
+     * @param string $section    Name of section to read
      *
      * @return array
      */
-    public function getMapTabBasemap($origin)
-    {
+    protected function getOptions($configName, $section) {
+        $config = $this->configLoader->get($configName);
         $options = [];
-        $optionFields = ['basemap_url', 'basemap_attribution'];
-        $config = $this->configLoader->get('config');
-        $geofeatures = $this->configLoader->get('geofeatures');
-
-        // Check config.ini [Content] section
-        foreach ($optionFields as $field) {
-            if (isset($config->Content->$field)) {
-                $options[$field] = $config->Content->$field;
-            }
-            // If basemap_url is not set, clear $options array.
-            if (!isset($options['basemap_url'])) {
-                $options = [];
+        $fields = ['basemap_url', 'basemap_attribution'];
+        foreach ($fields as $field) {
+            if (isset($config->$section->$field)) {
+                $options[$field] = $config->$section->$field;
             }
         }
-        if (empty($options)) {
-            // Check geofeatures.ini [MapTab] section
-            foreach ($optionFields as $field) {
-                if (isset($geofeatures->MapTab->$field)) {
-                    $options[$field] = $geofeatures->MapTab->$field;
-                }
-                // If basemap_url is not set, clear $options array.
-                if (!isset($options['basemap_url'])) {
-                    $options = [];
-                }
-            }
-        }
-        return $options;
+        // If basemap_url is not set, options array is invalid!
+        return isset($options['basemap_url']) ? $options : [];
     }
 }
