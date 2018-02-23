@@ -149,7 +149,8 @@ class BasemapConfig
      *
      * @return array
      */
-    protected function getOptions($configName, $section) {
+    protected function getOptions($configName, $section)
+    {
         $config = $this->configLoader->get($configName);
         $options = [];
         $fields = ['basemap_url', 'basemap_attribution'];
