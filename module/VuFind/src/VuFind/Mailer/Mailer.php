@@ -162,9 +162,6 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
             if ($this->maxRecipients < count($recipients)) {
                 throw new MailException('Too Many Email Recipients');
             }
-            if ($this->maxRecipients < count($replyTo)) {
-                throw new MailException('Too Many Email Reply-To Addresses');
-            }
         }
         $validator = new \Zend\Validator\EmailAddress();
         if (count($recipients) == 0) {

@@ -211,24 +211,6 @@ class MailerTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Test that we only accept one reply-to address by default
-     *
-     * @return void
-     *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Too Many Email Reply-To Addresses
-     */
-    public function testTooManyReplyToAddresses()
-    {
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
-        $mailer = new Mailer($transport);
-        $mailer->send(
-            'one@test.com', 'from@example.com', 'subject', 'body',
-            null, 'one@test.com;two@test.com'
-        );
-    }
-
-    /**
      * Test bad from address.
      *
      * @return void
