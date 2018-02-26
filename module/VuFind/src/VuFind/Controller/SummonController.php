@@ -59,7 +59,8 @@ class SummonController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('Summon');
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('Summon');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;
     }
@@ -155,12 +156,13 @@ class SummonController extends AbstractSearch
     protected function getAdvancedFacets()
     {
         // Check if we have facet results cached, and build them if we don't.
-        $cache = $this->serviceLocator->get('VuFind\CacheManager')
+        $cache = $this->serviceLocator->get('VuFind\Cache\Manager')
             ->getCache('object');
-        $language = $this->serviceLocator->get('VuFind\Translator')->getLocale();
+        $language = $this->serviceLocator->get('Zend\Mvc\I18n\Translator')
+            ->getLocale();
         $cacheKey = 'summonSearchAdvancedFacetsList-' . $language;
         if (!($list = $cache->getItem($cacheKey))) {
-            $config = $this->serviceLocator->get('VuFind\Config')
+            $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
                 ->get('Summon');
             $limit = isset($config->Advanced_Facet_Settings->facet_limit)
                 ? $config->Advanced_Facet_Settings->facet_limit : 100;

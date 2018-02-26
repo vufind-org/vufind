@@ -81,7 +81,7 @@ class PAIA extends DAIA
     /**
      * SessionManager
      *
-     * @var \VuFind\SessionManager
+     * @var \Zend\Session\SessionManager
      */
     protected $sessionManager;
 

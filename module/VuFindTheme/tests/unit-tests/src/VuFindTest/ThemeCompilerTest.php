@@ -128,7 +128,7 @@ class ThemeCompilerTest extends Unit\TestCase
                     'foo' => 'fooOverrideFactory',
                     'bar' => 'barFactory',
                 ],
-                'invokables' => [
+                'aliases' => [
                     'xyzzy' => 'Xyzzy',
                 ]
             ],
@@ -186,7 +186,7 @@ class ThemeCompilerTest extends Unit\TestCase
                     'foo' => 'fooOverrideFactory',
                     'bar' => 'barFactory',
                 ],
-                'invokables' => [
+                'aliases' => [
                     'xyzzy' => 'Xyzzy',
                 ]
             ],

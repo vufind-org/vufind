@@ -27,9 +27,10 @@
  */
 namespace VuFind\Log;
 
+use Interop\Container\ContainerInterface;
 use Zend\Config\Config;
 use Zend\Log\Writer\WriterInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for instantiating Logger
@@ -42,18 +43,18 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  *
  * @codeCoverageIgnore
  */
-class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
+class LoggerFactory implements FactoryInterface
 {
     /**
      * Configure database writers.
      *
-     * @param Logger                  $logger Logger object
-     * @param ServiceLocatorInterface $sm     Service locator
-     * @param string                  $config Configuration
+     * @param Logger             $logger    Logger object
+     * @param ContainerInterface $container Service manager
+     * @param string             $config    Configuration
      *
      * @return void
      */
-    protected function addDbWriters(Logger $logger, ServiceLocatorInterface $sm,
+    protected function addDbWriters(Logger $logger, ContainerInterface $container,
         $config
     ) {
         $parts = explode(':', $config);
@@ -70,7 +71,7 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
         // Make Writers
         $filters = explode(',', $error_types);
         $writer = new Writer\Db(
-            $sm->get('VuFind\DbAdapter'),
+            $container->get('Zend\Db\Adapter\Adapter'),
             $table_name, $columnMapping
         );
         $this->addWriters($logger, $writer, $filters);
@@ -79,13 +80,13 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
     /**
      * Configure email writers.
      *
-     * @param Logger                  $logger Logger object
-     * @param ServiceLocatorInterface $sm     Service locator
-     * @param Config                  $config Configuration
+     * @param Logger             $logger    Logger object
+     * @param ContainerInterface $container Service manager
+     * @param Config             $config    Configuration
      *
      * @return void
      */
-    protected function addEmailWriters(Logger $logger, ServiceLocatorInterface $sm,
+    protected function addEmailWriters(Logger $logger, ContainerInterface $container,
         Config $config
     ) {
         // Set up the logger's mailer to behave consistently with VuFind's
@@ -95,7 +96,7 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
         $error_types = isset($parts[1]) ? $parts[1] : '';
 
         // use smtp
-        $mailer = $sm->get('VuFind\Mailer');
+        $mailer = $container->get('VuFind\Mailer\Mailer');
         $msg = $mailer->getNewMessage()
             ->addFrom($config->Site->email)
             ->addTo($email)
@@ -130,13 +131,13 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
     /**
      * Configure Slack writers.
      *
-     * @param Logger                  $logger Logger object
-     * @param ServiceLocatorInterface $sm     Service locator
-     * @param Config                  $config Configuration
+     * @param Logger             $logger    Logger object
+     * @param ContainerInterface $container Service manager
+     * @param Config             $config    Configuration
      *
      * @return void
      */
-    protected function addSlackWriters(Logger $logger, ServiceLocatorInterface $sm,
+    protected function addSlackWriters(Logger $logger, ContainerInterface $container,
         Config $config
     ) {
         $options = [];
@@ -156,7 +157,7 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
         // Make Writers
         $writer = new Writer\Slack(
             $config->Logging->slackurl,
-            $sm->get('VuFind\Http')->createClient(),
+            $container->get('VuFindHttp\HttpService')->createClient(),
             $options
         );
         $writer->setContentType('application/json');
@@ -170,14 +171,14 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
     /**
      * Set configuration
      *
-     * @param ServiceLocatorInterface $sm     Service manager
-     * @param Logger                  $logger Logger to configure
+     * @param ContainerInterface $container Service manager
+     * @param Logger             $logger    Logger to configure
      *
      * @return void
      */
-    protected function configureLogger(ServiceLocatorInterface $sm, Logger $logger)
+    protected function configureLogger(ContainerInterface $container, Logger $logger)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $container->get('VuFind\Config\PluginManager')->get('config');
 
         $hasWriter = false;
 
@@ -190,7 +191,7 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
         // Activate database logging, if applicable:
         if (isset($config->Logging->database)) {
             $hasWriter = true;
-            $this->addDbWriters($logger, $sm, $config->Logging->database);
+            $this->addDbWriters($logger, $container, $config->Logging->database);
         }
 
         // Activate file logging, if applicable:
@@ -202,13 +203,13 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
         // Activate email logging, if applicable:
         if (isset($config->Logging->email)) {
             $hasWriter = true;
-            $this->addEmailWriters($logger, $sm, $config);
+            $this->addEmailWriters($logger, $container, $config);
         }
 
         // Activate slack logging, if applicable:
         if (isset($config->Logging->slack) && isset($config->Logging->slackurl)) {
             $hasWriter = true;
-            $this->addSlackWriters($logger, $sm, $config);
+            $this->addSlackWriters($logger, $container, $config);
         }
 
         // Null (no-op) writer to avoid errors
@@ -322,16 +323,27 @@ class LoggerFactory implements \Zend\ServiceManager\FactoryInterface
     }
 
     /**
-     * Create service
+     * Create an object
      *
-     * @param ServiceLocatorInterface $sm Service manager
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return mixed
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    public function createService(ServiceLocatorInterface $sm)
-    {
-        $logger = new Logger();
-        $this->configureLogger($sm, $logger);
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        $logger = new $requestedName();
+        $this->configureLogger($container, $logger);
         return $logger;
     }
 }

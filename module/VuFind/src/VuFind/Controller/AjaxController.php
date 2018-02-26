@@ -115,7 +115,7 @@ class AjaxController extends AbstractBase
         // Process recommendations -- for now, we assume Solr-based search objects,
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
-        $rm = $this->serviceLocator->get('VuFind\RecommendPluginManager');
+        $rm = $this->serviceLocator->get('VuFind\Recommend\PluginManager');
         $module = $rm->get($this->params()->fromQuery('mod'));
         $module->setConfig($this->params()->fromQuery('params'));
         $results = $this->getResultsManager()->get('Solr');
@@ -148,7 +148,7 @@ class AjaxController extends AbstractBase
     {
         static $hideHoldings = false;
         if ($hideHoldings === false) {
-            $logic = $this->serviceLocator->get('VuFind\ILSHoldLogic');
+            $logic = $this->serviceLocator->get('VuFind\ILS\Logic\Holds');
             $hideHoldings = $logic->getSuppressedLocations();
         }
 
@@ -791,7 +791,7 @@ class AjaxController extends AbstractBase
         $config = $this->serviceLocator->get('Config');
 
         $recordTabPlugin = $this->serviceLocator
-            ->get('VuFind\RecordTabPluginManager');
+            ->get('VuFind\RecordTab\PluginManager');
         $details = $recordTabPlugin
             ->getTabDetailsForRecord(
                 $driver,
@@ -800,7 +800,7 @@ class AjaxController extends AbstractBase
                 'Information'
             );
 
-        $rtpm = $this->serviceLocator->get('VuFind\RecordTabPluginManager');
+        $rtpm = $this->serviceLocator->get('VuFind\RecordTab\PluginManager');
         $html = $this->getViewRenderer()
             ->render(
                 "record/ajaxview-" . $viewtype . ".phtml",
@@ -922,11 +922,8 @@ class AjaxController extends AbstractBase
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $query = $this->getRequest()->getQuery();
-        $autocompleteManager = $this->serviceLocator
-            ->get('VuFind\AutocompletePluginManager');
-        return $this->output(
-            $autocompleteManager->getSuggestions($query), self::STATUS_OK
-        );
+        $suggester = $this->serviceLocator->get('VuFind\Autocomplete\Suggester');
+        return $this->output($suggester->getSuggestions($query), self::STATUS_OK);
     }
 
     /**
@@ -1125,34 +1122,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Process an export request
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function exportFavoritesAjax()
-    {
-        $format = $this->params()->fromPost('format');
-        $export = $this->serviceLocator->get('VuFind\Export');
-        $url = $export->getBulkUrl(
-            $this->getViewRenderer(), $format,
-            $this->params()->fromPost('ids', [])
-        );
-        $html = $this->getViewRenderer()->render(
-            'ajax/export-favorites.phtml',
-            ['url' => $url, 'format' => $format]
-        );
-        return $this->output(
-            [
-                'result' => $this->translate('Done'),
-                'result_additional' => $html,
-                'needs_redirect' => $export->needsRedirect($format),
-                'export_type' => $export->getBulkExportType($format),
-                'result_url' => $url
-            ], self::STATUS_OK
-        );
-    }
-
-    /**
      * Fetch Links from resolver given an OpenURL and format as HTML
      * and output the HTML content in JSON object.
      *
@@ -1169,7 +1138,7 @@ class AjaxController extends AbstractBase
         $resolverType = isset($config->OpenURL->resolver)
             ? $config->OpenURL->resolver : 'other';
         $pluginManager = $this->serviceLocator
-            ->get('VuFind\ResolverDriverPluginManager');
+            ->get('VuFind\Resolver\Driver\PluginManager');
         if (!$pluginManager->has($resolverType)) {
             return $this->output(
                 $this->translate("Could not load driver for $resolverType"),
@@ -1242,7 +1211,7 @@ class AjaxController extends AbstractBase
     protected function keepAliveAjax()
     {
         // Request ID from session to mark it active
-        $this->serviceLocator->get('VuFind\SessionManager')->getId();
+        $this->serviceLocator->get('Zend\Session\SessionManager')->getId();
         return $this->output(true, self::STATUS_OK);
     }
 
@@ -1387,7 +1356,7 @@ class AjaxController extends AbstractBase
         $facetList = $facets[$facet]['data']['list'];
 
         $facetHelper = $this->serviceLocator
-            ->get('VuFind\HierarchicalFacetHelper');
+            ->get('VuFind\Search\Solr\HierarchicalFacetHelper');
         if (!empty($sort)) {
             $facetHelper->sortFacetList($facetList, $sort == 'top');
         }
@@ -1444,7 +1413,7 @@ class AjaxController extends AbstractBase
         }
 
         // This may be called frequently, don't leave sessions dangling
-        $this->serviceLocator->get('VuFind\SessionManager')->destroy();
+        $this->serviceLocator->get('Zend\Session\SessionManager')->destroy();
 
         return $this->output('', self::STATUS_OK);
     }
@@ -1456,7 +1425,7 @@ class AjaxController extends AbstractBase
      */
     protected function getResultsManager()
     {
-        return $this->serviceLocator->get('VuFind\SearchResultsPluginManager');
+        return $this->serviceLocator->get('VuFind\Search\Results\PluginManager');
     }
 
     /**

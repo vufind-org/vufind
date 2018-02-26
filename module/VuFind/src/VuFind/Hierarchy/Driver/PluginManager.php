@@ -39,6 +39,28 @@ namespace VuFind\Hierarchy\Driver;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'default' => 'VuFind\Hierarchy\Driver\HierarchyDefault',
+        'flat' => 'VuFind\Hierarchy\Driver\HierarchyFlat',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\Hierarchy\Driver\HierarchyDefault' =>
+            'VuFind\Hierarchy\Driver\ConfigurationBasedFactory',
+        'VuFind\Hierarchy\Driver\HierarchyFlat' =>
+            'VuFind\Hierarchy\Driver\ConfigurationBasedFactory',
+    ];
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
