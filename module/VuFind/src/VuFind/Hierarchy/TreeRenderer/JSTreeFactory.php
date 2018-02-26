@@ -60,8 +60,10 @@ class JSTreeFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
+        $config = $container->get('VuFind\Config\PluginManager')->get('config');
         return new $requestedName(
-            $container->get('ControllerPluginManager')->get('Url')
+            $container->get('ControllerPluginManager')->get('Url'),
+            !empty($config->Collections->collections)
         );
     }
 }

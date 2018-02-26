@@ -110,6 +110,10 @@ class Factory implements FactoryInterface
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
 
         // Create service:
-        return new $requestedName($this->getTransport($config));
+        $class = new $requestedName($this->getTransport($config));
+        if (!empty($config->Mail->override_from)) {
+            $class->setFromAddressOverride($config->Mail->override_from);
+        }
+        return $class;
     }
 }
