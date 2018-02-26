@@ -93,7 +93,7 @@ class BasemapConfig
         $options = [];
         if ($origin == 'MapSelection') {
             $options = $this->getMapSelectionBasemap();
-        } else if ($origin == 'MapTab') {
+        } elseif ($origin == 'MapTab') {
             $options = $this->getMapTabBasemap();
         }
         // Check geofeatures.ini [Basemaps] section as a fallback:
