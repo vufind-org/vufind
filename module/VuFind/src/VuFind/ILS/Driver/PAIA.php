@@ -594,18 +594,18 @@ class PAIA extends DAIA
         if (isset($fees['fee'])) {
             foreach ($fees['fee'] as $fee) {
                 $result = [
-                    // fee.amount 	1..1 	money 	amount of a single fee
+                    // fee.amount    1..1   money    amount of a single fee
                     'amount'      => $feeConverter($fee['amount']),
                     'checkout'    => '',
-                    // fee.feetype 	0..1 	string 	textual description of the type
+                    // fee.feetype   0..1   string   textual description of the type
                     // of service that caused the fee
                     'fine'    => (isset($fee['feetype']) ? $fee['feetype'] : null),
                     'balance' => $feeConverter($fee['amount']),
-                    // fee.date 	0..1 	date 	date when the fee was claimed
+                    // fee.date      0..1   date     date when the fee was claimed
                     'createdate'  => (isset($fee['date'])
                         ? $this->convertDate($fee['date']) : null),
                     'duedate' => '',
-                    // fee.edition 	0..1 	URI 	edition that caused the fee
+                    // fee.edition   0..1   URI      edition that caused the fee
                     'id' => (isset($fee['edition'])
                         ? $this->getAlternativeItemId($fee['edition']) : ''),
                 ];
@@ -636,9 +636,9 @@ class PAIA extends DAIA
         }
 
         // custom PAIA fields
-        // fee.about 	0..1 	string 	textual information about the fee
-        // fee.item 	0..1 	URI 	item that caused the fee
-        // fee.feeid 	0..1 	URI 	URI of the type of service that
+        // fee.about     0..1     string    textual information about the fee
+        // fee.item      0..1     URI       item that caused the fee
+        // fee.feeid     0..1     URI       URI of the type of service that
         // caused the fee
         $additionalData['feeid']      = (isset($fee['feeid'])
             ? $fee['feeid'] : null);
