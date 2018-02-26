@@ -37,7 +37,7 @@
         "zendframework/zend-captcha": "2.7.1",
         "zendframework/zend-code": "2.6.3",
         "zendframework/zend-config": "3.1.0",
-        "zendframework/zend-console": "2.6.0",
+        "zendframework/zend-console": "2.7.0",
         "zendframework/zend-crypt": "3.2.1",
         "zendframework/zend-db": "2.8.2",
         "zendframework/zend-dom": "2.6.0",
