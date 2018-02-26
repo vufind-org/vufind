@@ -1,12 +1,17 @@
 /*global ol */
 /*exported loadMapTab */
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
-function loadMapTab(mapData, popupTitle, mapGraticule) {
+function loadMapTab(mapData, popupTitle, mapGraticule, basemap) {
   var init = true;
   var pTitle = popupTitle + '<button class="close">&times;</button>';
   var srcProj = 'EPSG:4326';
   var dstProj = 'EPSG:900913';
-  var osm = new ol.layer.Tile({source: new ol.source.OSM()});
+  var basemapLayer = new ol.layer.Tile({
+    source: new ol.source.XYZ({
+      url: basemap[0],
+      attributions: basemap[1]
+    })
+  });
   var vectorSource = new ol.source.Vector();
   var map;
   var iconStyle = new ol.style.Style({
@@ -114,7 +119,7 @@ function loadMapTab(mapData, popupTitle, mapGraticule) {
     map = new ol.Map({
       renderer: 'canvas',
       projection: dstProj,
-      layers: [osm, vectorLayer],
+      layers: [basemapLayer, vectorLayer],
       target: 'map-canvas',
       view: new ol.View({
         center: [0, 0],
