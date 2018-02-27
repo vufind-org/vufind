@@ -4,11 +4,8 @@
   <? $recordNumber = $this->results->getStartRecord() + $i-$this->indexStart; ?>
   <div id="result<?=$i++ ?>" class="result<?=$current->supportsAjaxStatus()?' ajaxItem':''?>">
     <? if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
-      <?=$this->record($current)->getCheckbox('', 'search-cart-form')?>
+      <?=$this->record($current)->getCheckbox('', 'search-cart-form', $recordNumber)?>
     <? endif; ?>
-    <div class="record-number">
-      <?=$recordNumber ?>
-    </div>
     <?=$this->record($current)->getSearchResult('list')?>
   </div>
 <? endforeach; ?>
