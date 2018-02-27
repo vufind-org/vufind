@@ -1,4 +1,14 @@
 <div class="text-center">
-  <?=$this->transEsc('export_success')?>&nbsp;&mdash;&nbsp;
-  <a class="btn btn-primary <?=$this->exportType?>" href="<?=$this->escapeHtmlAttr($this->url)?>"><?=$this->transEsc('export_download')?></a>
+  <? if ('post' === $this->exportType): ?>
+    <form id="export-form" method="POST" action="<?=$this->escapeHtmlAttr($this->url)?>" target="<?=$this->escapeHtmlAttr($this->targetWindow)?>">
+      <input type="hidden" name="<?=$this->escapeHtmlAttr($this->postField)?>" value="<?=$this->escapeHtmlAttr($this->postData)?>">
+      <?=$this->transEsc('export_success')?>&nbsp;&mdash;&nbsp;
+      <input class="btn btn-primary" type="submit" name="submit"
+        value="<?=$this->escapeHtmlAttr($this->translate('export_send', ['%%service%%' => $this->translate($this->export()->getLabelForFormat($this->format))]))?>"
+      >
+    </form>
+  <? else: ?>
+    <?=$this->transEsc('export_success')?>&nbsp;&mdash;&nbsp;
+    <a class="btn btn-primary <?=$this->exportType?>" href="<?=$this->escapeHtmlAttr($this->url)?>"><?=$this->transEsc('export_download')?></a>
+  <? endif; ?>
 </div>
