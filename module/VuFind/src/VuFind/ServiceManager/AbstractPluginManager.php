@@ -77,7 +77,7 @@ abstract class AbstractPluginManager extends Base
     public function validate($plugin)
     {
         $expectedInterface = $this->getExpectedInterface();
-        if (!($plugin instanceof $expectedInterface)) {
+        if (!$plugin instanceof $expectedInterface) {
             throw new InvalidServiceException(
                 'Plugin ' . get_class($plugin) . ' does not belong to '
                 . $expectedInterface
