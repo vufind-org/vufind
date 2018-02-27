@@ -388,40 +388,26 @@ class Export
     }
 
     /**
-     * Get the bulk export POST field name.
+     * Get the export POST field name.
      *
      * @param string $format Format identifier
      *
      * @return string
      */
-    public function getBulkExportPostField($format)
+    public function getPostField($format)
     {
         return !empty($this->exportConfig->$format->postField)
             ? $this->exportConfig->$format->postField : 'ImportData';
     }
 
     /**
-     * Get the bulk export POST URL.
+     * Get the export target window.
      *
      * @param string $format Format identifier
      *
      * @return string
      */
-    public function getBulkExportPostUrl($format)
-    {
-        return !empty($this->exportConfig->$format->postUrl)
-            ? $this->exportConfig->$format->postUrl
-            : '';
-    }
-
-    /**
-     * Get the bulk export target window.
-     *
-     * @param string $format Format identifier
-     *
-     * @return string
-     */
-    public function getBulkExportTargetWindow($format)
+    public function getTargetWindow($format)
     {
         return !empty($this->exportConfig->$format->targetWindow)
             ? $this->exportConfig->$format->targetWindow

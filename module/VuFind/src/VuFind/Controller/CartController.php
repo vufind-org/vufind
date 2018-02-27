@@ -353,11 +353,9 @@ class CartController extends AbstractBase
                     $parts[] = $recordHelper($record)->getExport($format);
                 }
 
-                $params['postField'] = $export->getBulkExportPostField($format);
+                $params['postField'] = $export->getPostField($format);
                 $params['postData'] = $export->processGroup($format, $parts);
-                $params['targetWindow'] = $export->getBulkExportTargetWindow(
-                    $format
-                );
+                $params['targetWindow'] = $export->getTargetWindow($format);
                 $params['url'] = $export->getRedirectUrl($format, '');
             } else {
                 $params['url'] = $url;

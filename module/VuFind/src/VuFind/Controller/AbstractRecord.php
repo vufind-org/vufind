@@ -556,11 +556,9 @@ class AbstractRecord extends AbstractBase
         if ('post' === $exportType) {
             $params = [
                 'exportType' => 'post',
-                'postField' => $export->getBulkExportPostField($format),
+                'postField' => $export->getPostField($format),
                 'postData' => $recordHelper($driver)->getExport($format),
-                'targetWindow' => $export->getBulkExportTargetWindow(
-                    $format
-                ),
+                'targetWindow' => $export->getTargetWindow($format),
                 'url' => $export->getRedirectUrl($format, ''),
                 'format' => $format
             ];
