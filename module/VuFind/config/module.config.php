@@ -346,12 +346,12 @@ $config = [
             'VuFind\Solr\Writer' => 'VuFind\Solr\WriterFactory',
             'VuFind\Tags' => 'VuFind\TagsFactory',
             'VuFind\Connection\WorldCatUtils' => 'VuFind\Connection\WorldCatUtilsFactory',
-            'VuFind\Validator\Csrf' => 'VuFind\Service\Factory::getCsrfValidator',
             'VuFindHttp\HttpService' => 'VuFind\Service\Factory::getHttp',
             'VuFindSearch\Service' => 'VuFind\Service\Factory::getSearchService',
             'Zend\Db\Adapter\Adapter' => 'VuFind\Service\Factory::getDbAdapter',
             'Zend\Mvc\I18n\Translator' => 'VuFind\Service\Factory::getTranslator',
             'Zend\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
+            'Zend\Validator\Csrf' => 'VuFind\Service\CsrfValidatorFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',

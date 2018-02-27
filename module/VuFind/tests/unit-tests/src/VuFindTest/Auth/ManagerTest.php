@@ -514,7 +514,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
             $pm = $this->getMockPluginManager();
         }
         $cookies = new \VuFind\Cookie\CookieManager([]);
-        $csrf = new \VuFind\Validator\Csrf(
+        $csrf = new \Zend\Validator\Csrf(
             [
                 'session' => new \Zend\Session\Container('csrf', $sessionManager),
                 'salt' => 'csrftest'
