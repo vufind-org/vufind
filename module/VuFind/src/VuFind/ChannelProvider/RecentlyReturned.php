@@ -27,10 +27,6 @@
  */
 namespace VuFind\ChannelProvider;
 
-use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Search\Base\Results;
-
 /**
  * "Recently returned" channel provider.
  *
