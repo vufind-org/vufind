@@ -67,7 +67,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\ChannelProvider\Random' =>
             'VuFind\ChannelProvider\Factory::getRandom',
         'VuFind\ChannelProvider\RecentlyReturned' =>
-            'VuFind\ChannelProvider\Factory::getRecentlyReturned',
+            'VuFind\ChannelProvider\AbstractILSChannelProviderFactory',
         'VuFind\ChannelProvider\SimilarItems' =>
             'VuFind\ChannelProvider\Factory::getSimilarItems',
     ];

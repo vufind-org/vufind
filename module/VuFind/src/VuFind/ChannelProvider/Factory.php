@@ -123,25 +123,6 @@ class Factory
     }
 
     /**
-     * Construct the RecentlyReturned channel provider.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return RecentlyReturned
-     */
-    public static function getRecentlyReturned(ServiceManager $sm)
-    {
-        $helper = new RecentlyReturned(
-            $sm->getServiceLocator()->get('VuFind\Search'),
-            $sm->getServiceLocator()->get('VuFind\ILSConnection')
-        );
-        $helper->setCoverRouter(
-            $sm->getServiceLocator()->get('VuFind\Cover\Router')
-        );
-        return $helper;
-    }
-
-    /**
      * Construct the SimilarItems channel provider.
      *
      * @param ServiceManager $sm Service manager.
