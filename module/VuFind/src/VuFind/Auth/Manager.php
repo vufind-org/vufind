@@ -128,7 +128,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function __construct(Config $config, UserTable $userTable,
         SessionManager $sessionManager, PluginManager $pm,
-        CookieManager $cookieManager, $csrf
+        CookieManager $cookieManager, Csrf $csrf
     ) {
         // Store dependencies:
         $this->config = $config;
