@@ -345,6 +345,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             $params->set('rows', '10000000'); // set to return all results
             $response = json_decode($this->solrConnector->search($params));
             foreach ($response->response->docs as $current) {
+                if (!isset($current->title)) {
+                    $current->title = "No Title Available";
+                }
                 $result[] = [
                     $current->id, $current->{$this->geoField}, $current->title
                 ];
@@ -599,6 +602,11 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                 $recId = $idCoords[0];
                 $rawCoordIds[] = $recId;
                 $title = $idCoords[2];
+                // Test for nonUTF titles and encode them if needed
+                $json_test = json_encode($title);
+                if (json_last_error() == 5 ) {
+                    $title = utf8_encode($title);
+                }
                 $centerPoint = $this->createGeoFeature(
                     $recId, $coord, $title, $bboxCoords
                 );
