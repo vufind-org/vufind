@@ -604,7 +604,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                 $title = $idCoords[2];
                 // Test for nonUTF titles and encode them if needed
                 $json_test = json_encode($title);
-                if (json_last_error() == 5 ) {
+                if (json_last_error() == 5) {
                     $title = utf8_encode($title);
                 }
                 $centerPoint = $this->createGeoFeature(
