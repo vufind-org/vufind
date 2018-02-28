@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Backend\Solr\Json\Response;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindTest\RecordDriver\TestHarness;
 
@@ -41,7 +41,7 @@ use VuFindTest\RecordDriver\TestHarness;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordCollectionTest extends PHPUnit_Framework_TestCase
+class RecordCollectionTest extends TestCase
 {
     /**
      * Test that the object returns appropriate defaults for missing elements.

@@ -40,7 +40,7 @@ use VuFindCode\ISBN;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SummonTest extends \PHPUnit_Framework_TestCase
+class SummonTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test cover loading
