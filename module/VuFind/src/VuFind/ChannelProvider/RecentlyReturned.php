@@ -40,130 +40,37 @@ use VuFind\Search\Base\Results;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecentlyReturned extends AbstractChannelProvider
-    implements TranslatorAwareInterface
+class RecentlyReturned extends AbstractILSChannelProvider
 {
-    use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
     /**
-     * Number of results to include in each channel.
+     * Channel title (will be run through translator).
      *
-     * @var int
+     * @var string
      */
-    protected $channelSize;
+    protected $channelTitle = 'recently_returned_channel_title';
 
     /**
-     * Maximum age (in days) of results to retrieve.
-     *
-     * @var int
-     */
-    protected $maxAge;
-
-    /**
-     * ILS connection
-     *
-     * @var \VuFind\ILS\Connection
-     */
-    protected $ils;
-
-    /**
-     * Search service
-     *
-     * @var \VuFindSearch\Service
-     */
-    protected $searchService;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFindSearch\Service  $search  Search service
-     * @param \VuFind\ILS\Connection $ils     ILS connection
-     * @param array                  $options Settings (optional)
-     */
-    public function __construct(\VuFindSearch\Service $search,
-        \VuFind\ILS\Connection $ils, array $options = []
-    ) {
-        $this->searchService = $search;
-        $this->ils = $ils;
-        $this->setOptions($options);
-    }
-
-    /**
-     * Set the options for the provider.
-     *
-     * @param array $options Options
-     *
-     * @return void
-     */
-    public function setOptions(array $options)
-    {
-        $this->channelSize = isset($options['channelSize'])
-            ? $options['channelSize'] : 20;
-        $this->maxAge = isset($options['maxAge'])
-            ? $options['maxAge'] : 30;
-    }
-
-    /**
-     * Return channel information derived from a record driver object.
-     *
-     * @param RecordDriver $driver       Record driver
-     * @param string       $channelToken Token identifying a single specific channel
-     * to load (if omitted, all channels will be loaded) -- not used in this provider
-     *
-     * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getFromRecord(RecordDriver $driver, $channelToken = null)
-    {
-        return $this->getChannel();
-    }
-
-    /**
-     * Return channel information derived from a search results object.
-     *
-     * @param Results $results      Search results
-     * @param string  $channelToken Token identifying a single specific channel
-     * to load (if omitted, all channels will be loaded) -- not used in this provider
-     *
-     * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getFromSearch(Results $results, $channelToken = null)
-    {
-        return $this->getChannel();
-    }
-
-    /**
-     * Recently returned channel contents are always the same; this does not
-     * care about specific records or search parameters.
+     * Retrieve data from the ILS.
      *
      * @return array
      */
-    protected function getChannel()
+    protected function getIlsResponse()
     {
-        // If the ILS does not support this channel, give up now:
-        if (!$this->ils->checkCapability('getRecentlyReturnedBibs')) {
-            return [];
-        }
-        // Set up channel metadata:
-        $retVal = [
-            'title' => $this->translate('recently_returned_channel_title'),
-            'providerId' => $this->providerId,
-        ];
-        // Use a callback to extract IDs from the arrays in the ILS return value:
-        $callback = function ($arr) {
-            return $arr['id'];
-        };
-        $ids = array_map(
-            $callback,
-            $this->ils->getRecentlyReturnedBibs($this->channelSize, $this->maxAge)
-        );
-        // Look up the record drivers for the recently returned IDs:
-        $recent = $this->searchService->retrieveBatch('Solr', $ids)->getRecords();
-        // Build the channel contents:
-        $retVal['contents'] = $this->summarizeRecordDrivers($recent);
-        return (count($retVal['contents']) > 0) ? [$retVal] : [];
+        return $this->ils->checkCapability('getRecentlyReturnedBibs')
+            ? $this->ils->getRecentlyReturnedBibs($this->channelSize, $this->maxAge)
+            : [];
+    }
+
+    /**
+     * Given one element from the ILS function's response array, extract the
+     * ID value.
+     *
+     * @param array $response Response array
+     *
+     * @return string
+     */
+    protected function extractIdsFromResponse($response)
+    {
+        return $response['id'];
     }
 }
