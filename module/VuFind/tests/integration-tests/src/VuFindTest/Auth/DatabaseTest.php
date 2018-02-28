@@ -185,14 +185,20 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
     }
 
     /**
-     * Test password mismatch.
+     * Test successful account creation.
      *
      * @return void
      */
     public function testSuccessfulCreation()
     {
         $request = $this->getAccountCreationRequest();
-        $this->auth->create($request);
+        $newUser = $this->auth->create($request)->toArray();
+        foreach ($request->getPost() as $key => $value) {
+            // Skip the password confirmation value!
+            if ($key !== 'password2') {
+                $this->assertEquals($value, $newUser[$key]);
+            }
+        }
     }
 
     /**
