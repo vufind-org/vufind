@@ -142,7 +142,7 @@ class UserList extends Gateway
                 ->equalTo('r.record_id', $resourceId);
             $select->order(['title']);
 
-            if (!is_null($userId)) {
+            if (null !== $userId) {
                 $select->where->equalTo('ur.user_id', $userId);
             }
         };

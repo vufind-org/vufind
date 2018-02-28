@@ -232,7 +232,7 @@ class Results extends \VuFind\Search\Base\Results
         }
 
         // If there is no filter, we'll use all facets as the filter:
-        if (is_null($filter)) {
+        if (null === $filter) {
             $filter = $this->getParams()->getFacetConfig();
         }
 

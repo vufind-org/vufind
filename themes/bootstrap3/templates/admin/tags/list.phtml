@@ -49,7 +49,7 @@
       </label>
       <label for="taglistsubmit">
         <input type="submit" id="taglistsubmit" value="<?=$this->transEsc('Filter')?>" class="btn btn-primary">
-        <? if((isset($this->params['user_id']) && !is_null($this->params['user_id'])) || (isset($this->params['tag_id']) && !is_null($this->params['tag_id'])) || (isset($this->params['resource_id']) && !is_null($this->params['resource_id']))):?>
+        <? if((isset($this->params['user_id']) && null !== $this->params['user_id']) || (isset($this->params['tag_id']) && null !== $this->params['tag_id']) || (isset($this->params['resource_id']) && null !== $this->params['resource_id'])):?>
           <a href="<?= $this->url('admin/tags', ['action' => 'List']); ?>"><?=$this->translate('clear_tag_filter')?></a>
         <? endif;?>
       </label>

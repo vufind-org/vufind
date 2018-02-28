@@ -41,9 +41,11 @@ use VuFind\ILS\Driver\Aleph;
 class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     /**
-     * Constructor
+     * Standard setup method.
+     *
+     * @return void
      */
-    public function __construct()
+    public function setUp()
     {
         $this->driver = new Aleph(new \VuFind\Date\Converter());
     }

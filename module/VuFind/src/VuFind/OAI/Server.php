@@ -323,7 +323,7 @@ class Server
 
         // Check for sets:
         $fields = $record->getRawData();
-        if (!is_null($this->setField) && !empty($fields[$this->setField])) {
+        if (null !== $this->setField && !empty($fields[$this->setField])) {
             $sets = $fields[$this->setField];
         } else {
             $sets = [];

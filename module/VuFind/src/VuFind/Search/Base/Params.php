@@ -384,7 +384,7 @@ class Params
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (is_null($lookfor = $request->get('lookfor'))) {
+        if (null === ($lookfor = $request->get('lookfor'))) {
             return false;
         }
 
@@ -668,7 +668,7 @@ class Params
      */
     public function getView()
     {
-        return is_null($this->view)
+        return null === $this->view
             ? $this->getOptions()->getDefaultView() : $this->view;
     }
 

@@ -105,7 +105,7 @@ class Record extends AbstractHelper
     public function renderTemplate($name, $context = null)
     {
         // Set default context if none provided:
-        if (is_null($context)) {
+        if (null === $context) {
             $context = ['driver' => $this->driver];
         }
 

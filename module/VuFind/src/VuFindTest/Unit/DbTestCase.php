@@ -78,7 +78,7 @@ abstract class DbTestCase extends TestCase
                 ],
             ]
         );
-        $sm->setService('VuFind\DbTablePluginManager', $factory);
+        $sm->setService('VuFind\Db\Table\PluginManager', $factory);
     }
 
     /**
@@ -90,29 +90,8 @@ abstract class DbTestCase extends TestCase
      */
     protected function addRowManager(ServiceManager $sm)
     {
-        $factory = new \VuFind\Db\Row\PluginManager(
-            $sm,
-            [
-                'factories' => [
-                    'changetracker' => 'VuFind\Db\Row\Factory::getChangeTracker',
-                    'comments' => 'VuFind\Db\Row\Factory::getComments',
-                    'externalsession' =>
-                        'VuFind\Db\Row\Factory::getExternalSession',
-                    'oairesumption' => 'VuFind\Db\Row\Factory::getOaiResumption',
-                    'record' => 'VuFind\Db\Row\Factory::getRecord',
-                    'resource' => 'VuFind\Db\Row\Factory::getResource',
-                    'resourcetags' => 'VuFind\Db\Row\Factory::getResourceTags',
-                    'search' => 'VuFind\Db\Row\Factory::getSearch',
-                    'session' => 'VuFind\Db\Row\Factory::getSession',
-                    'tags' => 'VuFind\Db\Row\Factory::getTags',
-                    'user' => 'VuFind\Db\Row\Factory::getUser',
-                    'usercard' => 'VuFind\Db\Row\Factory::getUserCard',
-                    'userlist' => 'VuFind\Db\Row\Factory::getUserList',
-                    'userresource' => 'VuFind\Db\Row\Factory::getUserResource',
-                ],
-            ]
-        );
-        $sm->setService('VuFind\DbRowPluginManager', $factory);
+        $factory = new \VuFind\Db\Row\PluginManager($sm);
+        $sm->setService('VuFind\Db\Row\PluginManager', $factory);
     }
 
     /**
@@ -126,15 +105,15 @@ abstract class DbTestCase extends TestCase
         $sm = parent::getServiceManager();
 
         // Add database service:
-        if (!$sm->has('VuFind\DbTablePluginManager')) {
+        if (!$sm->has('VuFind\Db\Table\PluginManager')) {
             $dbFactory = new \VuFind\Db\AdapterFactory(
-                $sm->get('VuFind\Config')->get('config')
+                $sm->get('VuFind\Config\PluginManager')->get('config')
             );
-            $sm->setService('VuFind\DbAdapter', $dbFactory->getAdapter());
+            $sm->setService('Zend\Db\Adapter\Adapter', $dbFactory->getAdapter());
             $this->addTableManager($sm);
             $this->addRowManager($sm);
             $sm->setService(
-                'VuFind\SessionManager',
+                'Zend\Session\SessionManager',
                 $this->createMock('Zend\Session\SessionManager')
             );
 
@@ -175,6 +154,6 @@ abstract class DbTestCase extends TestCase
     public function getTable($table)
     {
         $sm = $this->getServiceManager();
-        return $sm->get('VuFind\DbTablePluginManager')->get($table);
+        return $sm->get('VuFind\Db\Table\PluginManager')->get($table);
     }
 }

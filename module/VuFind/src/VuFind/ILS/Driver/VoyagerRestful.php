@@ -50,6 +50,7 @@ use VuFind\Exception\ILS as ILSException;
  */
 class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use CacheTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**

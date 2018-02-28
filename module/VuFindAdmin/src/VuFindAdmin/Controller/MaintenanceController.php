@@ -46,7 +46,7 @@ class MaintenanceController extends AbstractAdmin
     public function homeAction()
     {
         $view = $this->createViewModel();
-        $view->caches = $this->serviceLocator->get('VuFind\CacheManager')
+        $view->caches = $this->serviceLocator->get('VuFind\Cache\Manager')
             ->getCacheList();
         $view->setTemplate('admin/maintenance/home');
         return $view;
@@ -59,7 +59,7 @@ class MaintenanceController extends AbstractAdmin
      */
     public function clearcacheAction()
     {
-        $cacheManager = $this->serviceLocator->get('VuFind\CacheManager');
+        $cacheManager = $this->serviceLocator->get('VuFind\Cache\Manager');
         foreach ($this->params()->fromQuery('cache', []) as $cache) {
             $cacheManager->getCache($cache)->flush();
         }

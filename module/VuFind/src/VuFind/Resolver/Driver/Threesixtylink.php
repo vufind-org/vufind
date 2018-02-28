@@ -101,7 +101,7 @@ class Threesixtylink extends AbstractBase
 
         $xpath = new DOMXpath($xml);
         $linkGroups = $xpath->query("//ssopenurl:linkGroup[@type='holding']");
-        if (!is_null($linkGroups)) {
+        if (null !== $linkGroups) {
             foreach ($linkGroups as $linkGroup) {
                 $record = [];
                 // select the deepest link returned
