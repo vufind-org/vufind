@@ -10,7 +10,7 @@
     "license": "GPL-2.0",
     "config": {
         "platform": {
-            "php": "7.0.0"
+            "php": "7.0.8"
         }
     },
     "require": {
@@ -77,7 +77,7 @@
         "friendsofphp/php-cs-fixer": "2.10.3",
         "phploc/phploc": "4.0.1",
         "phpmd/phpmd": "2.6.0",
-        "phpunit/phpunit": "5.7.27",
+        "phpunit/phpunit": "6.5.7",
         "sebastian/phpcpd": "3.0.1",
         "squizlabs/php_codesniffer": "3.2.3"
     },

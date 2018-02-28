@@ -39,7 +39,7 @@ use VuFind\View\Helper\Root\Translate;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class TranslateTest extends \PHPUnit_Framework_TestCase
+class TranslateTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test translation without a loaded translator

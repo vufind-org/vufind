@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Backend\Summon;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Summon\QueryBuilder;
 
 /**
@@ -40,7 +40,7 @@ use VuFindSearch\Backend\Summon\QueryBuilder;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class QueryBuilderTest extends PHPUnit_Framework_TestCase
+class QueryBuilderTest extends TestCase
 {
     /**
      * Test query parsing.
