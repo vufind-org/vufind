@@ -734,23 +734,23 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         //TODO - test this new functionality
         /*
         if ( $level == "title" ) {
-        	$rsp2 = $this->makeIlsdiRequest("HoldTitle",
-        			array("patron_id" => $patron_id,
-        				  "bib_id" => $bib_id,
-        				  "request_location" => $request_location,
-        				  "pickup_location" => $pickup_location,
-        				  "pickup_expiry_date" => $needed_before_date,
-        				  "needed_before_date" => $needed_before_date
-        			));
+            $rsp2 = $this->makeIlsdiRequest("HoldTitle",
+                    array("patron_id" => $patron_id,
+                          "bib_id" => $bib_id,
+                          "request_location" => $request_location,
+                          "pickup_location" => $pickup_location,
+                          "pickup_expiry_date" => $needed_before_date,
+                          "needed_before_date" => $needed_before_date
+                    ));
         } else {
-        	$rsp2 = $this->makeIlsdiRequest("HoldItem",
-        			array("patron_id" => $patron_id,
-        				  "bib_id" => $bib_id,
-        				  "item_id" => $item_id,
-        				  "pickup_location" => $pickup_location,
-        				  "pickup_expiry_date" => $needed_before_date,
-        				  "needed_before_date" => $needed_before_date
-        			));
+            $rsp2 = $this->makeIlsdiRequest("HoldItem",
+                    array("patron_id" => $patron_id,
+                          "bib_id" => $bib_id,
+                          "item_id" => $item_id,
+                          "pickup_location" => $pickup_location,
+                          "pickup_expiry_date" => $needed_before_date,
+                          "needed_before_date" => $needed_before_date
+                    ));
         }
         */
         $this->debug("Title: " . $rsp->{'title'});

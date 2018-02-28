@@ -550,12 +550,33 @@ class AbstractRecord extends AbstractBase
                 ->toUrl($export->getRedirectUrl($format, $callback));
         }
 
+        $recordHelper = $this->getViewRenderer()->plugin('record');
+
+        $exportType = $export->getBulkExportType($format);
+        if ('post' === $exportType) {
+            $params = [
+                'exportType' => 'post',
+                'postField' => $export->getPostField($format),
+                'postData' => $recordHelper($driver)->getExport($format),
+                'targetWindow' => $export->getTargetWindow($format),
+                'url' => $export->getRedirectUrl($format, ''),
+                'format' => $format
+            ];
+            $msg = [
+                'translate' => false, 'html' => true,
+                'msg' => $this->getViewRenderer()->render(
+                    'cart/export-success.phtml', $params
+                )
+            ];
+            $this->flashMessenger()->addSuccessMessage($msg);
+            return $this->redirectToRecord();
+        }
+
         // Send appropriate HTTP headers for requested format:
         $response = $this->getResponse();
         $response->getHeaders()->addHeaders($export->getHeaders($format));
 
         // Actually export the record
-        $recordHelper = $this->getViewRenderer()->plugin('record');
         $response->setContent($recordHelper($driver)->getExport($format));
         return $response;
     }

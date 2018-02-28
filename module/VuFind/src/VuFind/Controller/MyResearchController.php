@@ -136,7 +136,10 @@ class MyResearchController extends AbstractBase
 
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->isLoggedIn()) {
-            $this->setFollowupUrlToReferer();
+            // Allow bypassing of post-login redirect
+            if ($this->params()->fromQuery('redirect', true)) {
+                $this->setFollowupUrlToReferer();
+            }
             return $this->forwardTo('MyResearch', 'Login');
         }
         // Logged in?  Forward user to followup action
