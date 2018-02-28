@@ -308,6 +308,7 @@ $config = [
             'VuFind\Db\Table\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Export' => 'VuFind\ExportFactory',
             'VuFind\Favorites\FavoritesService' => 'VuFind\Favorites\FavoritesServiceFactory',
+            'VuFind\GeoFeatures\BasemapConfig' => 'VuFind\GeoFeatures\BasemapConfigFactory',
             'VuFind\Hierarchy\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeDataFormatter\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeDataSource\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',

@@ -41,6 +41,13 @@ namespace VuFind\Recommend;
 class MapSelection implements \VuFind\Recommend\RecommendInterface
 {
     /**
+     * Basemap configuration parameters
+     *
+     * @var array
+     */
+    protected $basemapOptions = [];
+
+    /**
      * Default coordinates. Order is WENS
      *
      * @var array
@@ -141,15 +148,18 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
-     * @param \VuFind\Search\BackendManager $solr         Search interface
+     * @param \VuFind\Config\PluginManager  $configLoader   Configuration loader
+     * @param \VuFind\Search\BackendManager $solr           Search interface
+     * @param array                         $basemapOptions Basemap Options
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader, $solr)
-    {
+    public function __construct(\VuFind\Config\PluginManager $configLoader, $solr,
+        $basemapOptions
+    ) {
         $this->configLoader = $configLoader;
         $this->solr = $solr;
         $this->queryBuilder = $solr->getQueryBuilder();
         $this->solrConnector = $solr->getConnector();
+        $this->basemapOptions = $basemapOptions;
     }
 
     /**
@@ -196,6 +206,19 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      */
     public function init($params, $request)
     {
+    }
+
+    /**
+     * Get the basemap configuration settings.
+     *
+     * @return array
+     */
+    public function getBasemap()
+    {
+        return [
+            $this->basemapOptions['basemap_url'],
+            $this->basemapOptions['basemap_attribution']
+        ];
     }
 
     /**
