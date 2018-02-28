@@ -136,10 +136,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test blank username.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testCreationWithBlankUsername()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getAccountCreationRequest(['username' => '']);
         $this->auth->create($request);
     }
@@ -148,10 +149,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test blank password.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testCreationWithBlankPassword()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getAccountCreationRequest(['password' => '']);
         $this->auth->create($request);
     }
@@ -160,10 +162,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test password mismatch.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testCreationWithPasswordMismatch()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getAccountCreationRequest(['password2' => '']);
         $this->auth->create($request);
     }
@@ -172,10 +175,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test invalid email.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testCreationWithInvalidEmail()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getAccountCreationRequest(['email' => 'garbage']);
         $this->auth->create($request);
     }
@@ -195,10 +199,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test duplicate username.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testCreationWithDuplicateUsername()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getAccountCreationRequest(['email' => 'user2@test.com']);
         $this->auth->create($request);
     }
@@ -207,10 +212,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test duplicate email.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testCreationWithDuplicateEmail()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getAccountCreationRequest(['username' => 'testuser2']);
         $this->auth->create($request);
     }
@@ -219,10 +225,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankUsername()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getLoginRequest(['username' => '']);
         $this->auth->authenticate($request);
     }
@@ -231,10 +238,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank password.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankPassword()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getLoginRequest(['password' => '']);
         $this->auth->authenticate($request);
     }
@@ -243,10 +251,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test login with unknown username.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithUnrecognizedUsername()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getLoginRequest(['username' => 'unknown']);
         $this->auth->authenticate($request);
     }
@@ -255,10 +264,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test login with bad password.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBadPassword()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getLoginRequest(['password' => "' OR 1=1 LIMIT 1"]);
         $this->auth->authenticate($request);
     }
