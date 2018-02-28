@@ -40,12 +40,19 @@ use VuFind\ILS\Driver\Symphony;
  */
 class SymphonyTest extends \VuFindTest\Unit\TestCase
 {
+    /**
+     * Driver object
+     *
+     * @var Symphony
+     */
     protected $driver;
 
     /**
-     * Constructor
+     * Standard setup method.
+     *
+     * @return void
      */
-    public function __construct()
+    public function setUp()
     {
         $loader = $this->getMockBuilder('VuFind\Record\Loader')
             ->disableOriginalConstructor()->getMock();
