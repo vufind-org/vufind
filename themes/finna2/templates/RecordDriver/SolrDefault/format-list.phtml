@@ -1,5 +1,20 @@
 <!-- START of: finna - RecordDriver/SolrDefault/format-list.phtml -->
-<? $formats = $this->driver->tryMethod('getFormats'); if ($formats): ?>
-  <span class="label label-info iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"><?=$this->transEsc(end($formats))?></span>
-<? endif; ?>
+<?
+  $formatMap = [];
+  $formats = (array)$this->driver->tryMethod('getFormats');
+  if ($formats) {
+    // Take last level of each format main type
+    foreach ($formats as $format) {
+      $parts = explode('/', $format);
+      if (isset($parts[1])) {
+        $formatMap[$parts[1]] = $format;
+      } else {
+        $formatMap['-'] = $format;
+      }
+    }
+  }
+?>
+<? foreach ($formatMap as $format): ?>
+  <span class="label label-info iconlabel format-<?=$this->record($this->driver)->getFormatClass($format)?>"><?=$this->transEsc($format)?></span>
+<? endforeach; ?>
 <!-- END of: finna - RecordDriver/SolrDefault/format-list.phtml -->

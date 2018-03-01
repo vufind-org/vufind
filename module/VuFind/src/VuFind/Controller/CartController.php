@@ -340,13 +340,30 @@ class CartController extends AbstractBase
             if ($export->needsRedirect($format)) {
                 return $this->redirect()->toUrl($url);
             }
+            $exportType = $export->getBulkExportType($format);
+            $params = [
+                'exportType' => $exportType,
+                'format' => $format
+            ];
+            if ('post' === $exportType) {
+                $records = $this->getRecordLoader()->loadBatch($ids);
+                $recordHelper = $this->getViewRenderer()->plugin('record');
+                $parts = [];
+                foreach ($records as $record) {
+                    $parts[] = $recordHelper($record)->getExport($format);
+                }
+
+                $params['postField'] = $export->getPostField($format);
+                $params['postData'] = $export->processGroup($format, $parts);
+                $params['targetWindow'] = $export->getTargetWindow($format);
+                $params['url'] = $export->getRedirectUrl($format, '');
+            } else {
+                $params['url'] = $url;
+            }
             $msg = [
                 'translate' => false, 'html' => true,
                 'msg' => $this->getViewRenderer()->render(
-                    'cart/export-success.phtml', [
-                        'url' => $url,
-                        'exportType' => $export->getBulkExportType($format)
-                    ]
+                    'cart/export-success.phtml', $params
                 )
             ];
             return $this->redirectToSource('success', $msg);

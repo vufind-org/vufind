@@ -147,6 +147,11 @@ trait ILSFinna
             $user->$field = isset($info[$field]) ? $info[$field] : ' ';
         }
 
+        // Set home library if not already set
+        if (!empty($info['home_library']) && empty($user->home_library)) {
+            $user->home_library = $info['home_library'];
+        }
+
         // Update the user in the database, then return it to the caller:
         $user->saveCredentials(
             isset($info['cat_username']) ? $info['cat_username'] : ' ',

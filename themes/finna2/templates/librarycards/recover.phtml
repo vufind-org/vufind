@@ -2,13 +2,13 @@
 <?
     // Set up page title:
     $this->headTitle($this->translate('recovery_title'));
-    $this->layout()->finnaMainHeader = '<div><h3 class="finna-main-header">' . $this->transEsc('recovery_title') . '</h3></div>';
+    $this->layout()->finnaMainHeader = '';
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('recovery_title') . '</li>';
 
 ?>
-<h2 class="ligthbox-header"><?=$this->transEsc('recovery_title') ?></h2>
+<h2><?=$this->transEsc('recovery_title') ?></h2>
 <?=$this->flashmessages()?>
 <? if ($this->recoveryDisabled): ?>
   <div class="error"><?=$this->transEsc('recovery_disabled') ?></div>
@@ -17,6 +17,10 @@
     <? if (!$this->translationEmpty('library_card_recovery_help_html')): ?>
       <p><?=$this->translate('library_card_recovery_help_html') ?></p>
     <? endif; ?>
+    <div class="form-group">
+      <label class="control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
+      <p style="padding-top:7px;"><?=$this->transEsc('source_' . $this->target, null, $this->target)?></p>
+    </div>
     <div class="form-group">
       <label class="control-label" for="login_username"><?=$this->transEsc('Username')?>:</label>
       <input id="login_username" type="text" name="username" class="form-control"/>

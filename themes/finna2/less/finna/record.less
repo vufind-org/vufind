@@ -1,4 +1,18 @@
 .record {
+  // .media and .media-body code added to fix IE11 display: table-cell issues
+  .media {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+    @media(max-width: @screen-sm) {
+      display: block;
+    }
+  }
+
+  .media-body {
+    width: auto;
+  }
+
   .media-left,
   .media-right {
     width: 25%;
@@ -44,6 +58,11 @@
       margin-right: 10px;
       float: left;
     }
+    @media print {
+      a[href]::after {
+        content: " (" attr(href) ")";
+      }
+    }
   }
   .video-link-container {
     margin-bottom: 10px;
@@ -73,6 +92,16 @@
       font-weight: bold;
       color: @btn-default-color;
       width: 100%;
+    }
+  }
+
+  @media print {
+    .organisation-menu {
+      display: none;
+    }
+
+    a[href]::after {
+      content: "";
     }
   }
 }

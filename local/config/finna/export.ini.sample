@@ -32,9 +32,9 @@
 ;     cannot be implemented in a user-friendly way when Javascript is disabled.
 
 [RefWorks]
-requiredMethods[] = getTitle
-redirectUrl = "{config|RefWorks|url|http://www.refworks.com}/express/expressimport.asp?vendor={encodedConfig|RefWorks|vendor|VuFind}&filter=RefWorks%20Tagged%20Format&url={encodedCallback}"
-headers[] = "Content-type: text/plain; charset=utf-8"
+redirectUrl = "{config|RefWorks|url|http://www.refworks.com}/express/expressimport.asp?vendor={encodedConfig|RefWorks|vendor|VuFind}&filter=RefWorks%20Tagged%20Format&encoding=65001"
+bulkExportType = post
+postField = ImportData
 
 [EndNoteWeb]
 requiredMethods[] = getTitle

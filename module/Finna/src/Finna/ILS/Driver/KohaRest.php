@@ -743,7 +743,6 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     {
         $request = [
             'cardnumber' => $params['cat_username'],
-            'complete_url' => 'localhost',
             'email' => $params['email'],
             'skip_email' => true
         ];

@@ -1,9 +1,0 @@
-<? // This template is a text fragment of a complete Swagger specification ?>
-<? $mainDescriptionLinks = <<<EOT
-See https://www.kiwi.fi/display/Finna/Finna+API+Terms+of+Use for Finna API Terms of Use.\\n\\n
-Note: The CC0 metadata licence does not pertain to the resources linked to the metadata, such as images relating to the entries.\\n\\n
-See https://www.kiwi.fi/pages/viewpage.action?pageId=53839221 for more information and examples.
-EOT;
-$mainDescriptionLinks = str_replace(["\n", "\r"], '', $mainDescriptionLinks);
-?>
-Search the index with given terms and filters. POST method may also be used if sending a long request.\n\nThe URL syntax here is the as the one used in Finna user interface. It is possible to make a search in Finna and copy the query parameters here to make the same search via the API.\n\n<?=$mainDescriptionLinks?>

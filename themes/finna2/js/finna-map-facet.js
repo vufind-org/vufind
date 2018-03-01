@@ -118,7 +118,7 @@ finna.MapFacet = (function finnaStreetMap() {
           'filter': [
             '~format:"0/Image/"',
             '~format:"0/Place/"',
-            'online_boolean:"1"',
+            'free_online_boolean:"1"',
             geoFilters
           ],
           'streetsearch': '1'

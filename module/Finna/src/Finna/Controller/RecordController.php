@@ -626,8 +626,8 @@ class RecordController extends \VuFind\Controller\RecordController
                 'defaultRequiredDate' => $defaultRequired,
                 'helpText' => isset($checkRequests['helpText'])
                     ? $checkRequests['helpText'] : null,
-                'acceptTermsText' => isset($checkHolds['acceptTermsText'])
-                    ? $checkHolds['acceptTermsText'] : null
+                'acceptTermsText' => isset($checkRequests['acceptTermsText'])
+                    ? $checkRequests['acceptTermsText'] : null
             ]
         );
         $view->setTemplate('record/storageretrievalrequest');
@@ -759,8 +759,8 @@ class RecordController extends \VuFind\Controller\RecordController
                 'defaultRequiredDate' => $defaultRequired,
                 'helpText' => isset($checkRequests['helpText'])
                     ? $checkRequests['helpText'] : null,
-                'acceptTermsText' => isset($checkHolds['acceptTermsText'])
-                    ? $checkHolds['acceptTermsText'] : null
+                'acceptTermsText' => isset($checkRequests['acceptTermsText'])
+                    ? $checkRequests['acceptTermsText'] : null
             ]
         );
         $view->setTemplate('record/illrequest');

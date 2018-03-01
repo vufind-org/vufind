@@ -1,7 +1,7 @@
 .accordion {
   list-style-type: none;
   .accordion-toggle {
-    padding: 10px;
+    padding: 15px 10px;
     margin-bottom: 5px;
     font-size: 1em;
     font-weight: 600;
@@ -13,6 +13,12 @@
     @media(min-width: @screen-md) {
       display: none;
     }
+    @media print {
+      border: none;
+      i {
+        display: none;
+      }
+    }
   }
   .accordion-toggle a {
     color: @text-color;
@@ -20,10 +26,11 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: @line-height-computed;
+    line-height: @content-headings-line-height;
     width: 100%;
     .title {
       float: left;
+      font-size: @font-size-h2;
     }
     .icon:after {
       font-family: icomoon;
@@ -39,6 +46,11 @@
       display: @accordion-details-display;
     }
   }
+  @media print {
+    &:not(.active) {
+      display: none;
+    }
+  }
 }
 
 .record-accordions.record-tabs {
@@ -51,6 +63,9 @@
         content: "\e916";
         float: right;
         color: @action-link-color;
+      }
+      @media print {
+        border-left: none;
       }
     }
     @media (max-width: @screen-sm-max) {
@@ -69,12 +84,5 @@
     width: 75%;
     padding-right: 15px;
     float: left;
-  }
-  @media(max-width: @screen-sm-max) {
-    .tab-content {
-      display: none;
-      padding: 0;
-      margin: 0;
-    }
   }
 }

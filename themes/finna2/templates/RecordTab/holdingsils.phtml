@@ -73,7 +73,7 @@
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline' && $ilsLoginAvailable): ?>
     <? if (!$user): ?>
       <div class="pull-right">
-        <a href="?login=true&amp;catalogLogin=true" class="btn btn-primary login-link" data-lightbox><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("hold_login")?></a>
+        <a href="?login=true&amp;catalogLogin=true" class="btn btn-primary login-link" data-lightbox><?=$this->transEsc("title_hold_login")?></a>
       </div>
       <div class="clearfix"></div>
     <? elseif (!$user->cat_username): ?>

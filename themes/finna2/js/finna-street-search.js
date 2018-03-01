@@ -72,7 +72,7 @@ finna.StreetSearch = (function finnaStreetSearch() {
       'filter': [
         '~format:"0/Image/"',
         '~format:"0/Place/"',
-        'online_boolean:"1"',
+        'free_online_boolean:"1"',
         '{!geofilt sfield=location_geo pt=' + position.coords.latitude + ',' + position.coords.longitude + ' d=' + searchRadius + '}'
       ],
       'streetsearch': '1'

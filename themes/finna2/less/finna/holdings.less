@@ -109,6 +109,9 @@
     margin: 20px 0px;
     border: 1px solid @gray-lighter;
     border-top: none;
+    @media print {
+        border-top: 1px solid @gray-lighter;
+    }
 
     h5{
         padding-left: 15px;
@@ -140,6 +143,9 @@
             padding-bottom: 5px;
             border-top: 2px solid @gray-lighter;
             vertical-align: middle;
+            @media print {
+                border-top: 1px solid @gray-lighter;
+            }
         }
         & .holdings-details {
             padding-right: 15px;
@@ -150,6 +156,7 @@
             @media (max-width: @screen-xs-max) {
                 width: 50%;
                 text-align: right;
+                line-height: 1.3;
             }
             .small {
                 font-weight: normal;
@@ -170,7 +177,9 @@
                 width: 100%;
                 text-align: right;
                 border-top: none;
-                padding-top: 4px;
+                padding-top: 0px;
+                padding-bottom: 0px;
+                line-height: 1.3;
             }
         }
         & .holdings-extra-text {
@@ -197,6 +206,9 @@
         @media (min-width: @screen-sm-min) {
             width: 50%;
             float: left;
+        }
+        @media (max-width: @screen-xs-max) {
+            line-height: 1.3;
         }
     }
     & .copy-available {
@@ -232,6 +244,9 @@
         .details-info {
             @media (min-width: @screen-sm) {
                 width: 75%;
+            }
+            @media (max-width: @screen-xs-max) {
+                line-height: 1.3;
             }
             width: 50%;
             float: left;

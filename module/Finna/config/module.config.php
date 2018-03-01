@@ -280,6 +280,7 @@ $config = [
                     'demo' => 'Finna\ILS\Driver\Factory::getDemo',
                     'gemini' => 'Finna\ILS\Driver\Factory::getGemini',
                     'koharest' => 'Finna\ILS\Driver\Factory::getKohaRest',
+                    'mikromarc' => 'Finna\ILS\Driver\Factory::getMikromarc',
                     'multibackend' => 'Finna\ILS\Driver\Factory::getMultiBackend',
                     'sierrarest' => 'Finna\ILS\Driver\Factory::getSierraRest',
                     'voyager' => 'Finna\ILS\Driver\Factory::getVoyager',
@@ -372,6 +373,17 @@ $config = [
                     'nothing' => 'Finna\Related\Factory::getNothing',
                     'similardeferred' => 'Finna\Related\Factory::getSimilarDeferred',
                 ],
+            ],
+        ],
+        'recorddriver_collection_tabs' => [
+            'Finna\RecordDriver\SolrEad' => [
+                'tabs' => [
+                    'CollectionList' => 'CollectionList',
+                    'HierarchyTree' => 'CollectionHierarchyTree',
+                    'UserComments' => 'UserComments',
+                    'Details' => 'StaffViewArray',
+                ],
+                'defaultTab' => null,
             ],
         ],
         'recorddriver_tabs' => [

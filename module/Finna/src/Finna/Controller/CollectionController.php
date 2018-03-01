@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2017.
+ * Copyright (C) The National Library of Finland 2017-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Controller
  * @author   Anna Niku <anna.niku@gofore.com>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -33,11 +34,14 @@ namespace Finna\Controller;
  * @category VuFind
  * @package  Controller
  * @author   Anna Niku <anna.niku@gofore.com>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
 class CollectionController extends \VuFind\Controller\CollectionController
 {
+    use CatalogLoginTrait;
+
     /**
      * Display a particular tab.
      *
@@ -48,6 +52,13 @@ class CollectionController extends \VuFind\Controller\CollectionController
      */
     protected function showTab($tab, $ajax = false)
     {
+        // Call for login modal
+        if ($this->params()->fromQuery('layout', 'false') == 'lightbox'
+            && $this->params()->fromQuery('catalogLogin', 'false') == 'true'
+        ) {
+            return $this->catalogLogin();
+        }
+
         $view = parent::showTab($tab, $ajax);
 
         $this->getSearchMemory()->rememberScrollData($view->scrollData);
