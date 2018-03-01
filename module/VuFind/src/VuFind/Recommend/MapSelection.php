@@ -38,8 +38,11 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class MapSelection implements \VuFind\Recommend\RecommendInterface
+class MapSelection implements \VuFind\Recommend\RecommendInterface,
+    \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Basemap configuration parameters
      *
@@ -346,7 +349,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             $response = json_decode($this->solrConnector->search($params));
             foreach ($response->response->docs as $current) {
                 if (!isset($current->title)) {
-                    $current->title = "No Title Available";
+                    $current->title = $this->translate('Title not available');
                 }
                 $result[] = [
                     $current->id, $current->{$this->geoField}, $current->title
