@@ -156,9 +156,10 @@ finna.record = (function finnaRecord() {
       ? window.location.hash.toLowerCase() : '';
 
     // Open tab in url hash
-    var accordion = (newTab.length <= 1 || newTab === '#tabnav')
+    var $tab = $("a[data-tab='" + newTab.substr(1) + "']");
+    var accordion = (newTab.length <= 1 || newTab === '#tabnav' || $tab.length === 0)
       ? $('.record-accordions .accordion.initiallyActive')
-      : $("a[data-tab='" + newTab.substr(1) + "']").closest('.accordion');
+      : $tab.closest('.accordion');
     _toggleAccordion(accordion, true);
   }
 
