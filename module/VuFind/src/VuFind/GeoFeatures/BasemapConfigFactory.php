@@ -1,6 +1,7 @@
 <?php
+
 /**
- * JSTree hierarchy tree renderer plugin factory.
+ * GeoFeatures Basemap Config Factory Class
  *
  * PHP version 5
  *
@@ -17,28 +18,31 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind
- * @package  HierarchyTree_Renderer
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  GeoFeatures
+ * @author   Leila Gonzales <lmg@agiweb.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-namespace VuFind\Hierarchy\TreeRenderer;
+namespace VuFind\GeoFeatures;
 
 use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * JSTree hierarchy tree renderer plugin factory.
+ * GeoFeatures Basemap Config Factory Class
  *
  * @category VuFind
- * @package  HierarchyTree_Renderer
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  GeoFeatures
+ * @author   Leila Gonzales <lmg@agiweb.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
+ *
+ * @codeCoverageIgnore
  */
-class JSTreeFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class BasemapConfigFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -57,13 +61,9 @@ class JSTreeFactory implements \Zend\ServiceManager\Factory\FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        if ($options !== null) {
-            throw new \Exception('Unexpected options sent to factory!');
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        return new $requestedName(
-            $container->get('ControllerPluginManager')->get('Url'),
-            !empty($config->Collections->collections)
-        );
+        return new $requestedName($container->get('VuFind\Config\PluginManager'));
     }
 }

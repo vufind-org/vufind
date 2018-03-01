@@ -192,7 +192,12 @@ class Factory
         $config = $sm->get('VuFind\Config\PluginManager');
         $backend = $sm->get('VuFind\Search\BackendManager');
         $solr = $backend->get('Solr');
-        return new MapSelection($config, $solr);
+
+        // add basemap options
+        $basemapConfig = $sm->get('VuFind\GeoFeatures\BasemapConfig');
+        $basemapOptions = $basemapConfig->getBasemap('MapSelection');
+
+        return new MapSelection($config, $solr, $basemapOptions);
     }
 
     /**
