@@ -1,8 +1,0 @@
-<? //Don't add START and END comments ?>
-<? if (!empty($data['presenters'])): ?>
-  <div class="truncate-field">
-    <? foreach($data['presenters'] as $index => $author): ?>
-      <?=($index > 0 ? '<br/> ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['roleName'])): ?><span class="author-rolename">, <?=$this->escapeHtml($author['roleName']) ?></span><? endif; ?>
-    <? endforeach; ?>
-  </div>
-<? endif; ?>

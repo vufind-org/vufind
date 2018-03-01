@@ -1,6 +1,0 @@
-<? //Don't add START and END comments ?>
-<? if (!empty($data)): ?>
-    <? foreach($data as $field): ?>
-      <a href="<?=$this->record($this->driver)->getLink('title', $field)?>"><?=$this->escapeHtml($field)?></a><br/>
-    <? endforeach; ?>
-<? endif; ?>
