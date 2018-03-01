@@ -50,6 +50,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'random' => 'VuFind\ChannelProvider\Random',
         'recentlyreturned' => 'VuFind\ChannelProvider\RecentlyReturned',
         'similaritems' => 'VuFind\ChannelProvider\SimilarItems',
+        'trendingitems' => 'VuFind\ChannelProvider\TrendingItems',
     ];
 
     /**
@@ -70,6 +71,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\ChannelProvider\AbstractILSChannelProviderFactory',
         'VuFind\ChannelProvider\SimilarItems' =>
             'VuFind\ChannelProvider\Factory::getSimilarItems',
+        'VuFind\ChannelProvider\TrendingItems' =>
+            'VuFind\ChannelProvider\AbstractILSChannelProviderFactory',
     ];
 
     /**

@@ -2501,6 +2501,20 @@ EOT;
     }
 
     /**
+     * Get bib records for "trending" items (recently returned with high usage).
+     *
+     * @param int $limit  Maximum number of records to retrieve (default = 30)
+     * @param int $maxage The maximum number of days to consider "recently returned."
+     *
+     * @return array
+     */
+    public function getTrendingBibs($limit = 30, $maxage = 30)
+    {
+        // TODO -- make this work differently than getRecentlyReturnedBibs
+        return $this->getRecentlyReturnedBibs($limit, $maxage);
+    }
+
+    /**
      * Get suppressed records.
      *
      * @throws ILSException
