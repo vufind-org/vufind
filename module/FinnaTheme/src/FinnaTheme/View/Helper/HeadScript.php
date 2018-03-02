@@ -42,6 +42,8 @@ use Zend\Http\Request;
  */
 class HeadScript extends \VuFindTheme\View\Helper\HeadScript
 {
+    use FinnaConcatTrait;
+
     /**
      * Request
      *
@@ -50,7 +52,7 @@ class HeadScript extends \VuFindTheme\View\Helper\HeadScript
     protected $request;
 
     /**
-     * FinnaCache table
+     * FinnaCache table. Requirement of FinnaConcatTrait.
      *
      * @var FinnaCache
      */
@@ -106,16 +108,5 @@ class HeadScript extends \VuFindTheme\View\Helper\HeadScript
             }
         }
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
-    }
-
-    /**
-     * Get the minifier that can handle these file types
-     * Required by ConcatTrait
-     *
-     * @return \FinnaTheme\Minify\JS
-     */
-    protected function getMinifier()
-    {
-        return new \FinnaTheme\Minify\JS($this->finnaCache);
     }
 }

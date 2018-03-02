@@ -46,6 +46,8 @@ use Zend\Http\Request;
  */
 class HeadLink extends \VuFindTheme\View\Helper\HeadLink
 {
+    use FinnaConcatTrait;
+
     /**
      * Cache Manager
      *
@@ -61,7 +63,7 @@ class HeadLink extends \VuFindTheme\View\Helper\HeadLink
     protected $request;
 
     /**
-     * FinnaCache table
+     * FinnaCache table. Requirement of FinnaConcatTrait.
      *
      * @var FinnaCache
      */
@@ -230,16 +232,5 @@ class HeadLink extends \VuFindTheme\View\Helper\HeadLink
         $agent = is_object($ua) ? $ua->toString() : '';
         return strstr($agent, 'MSIE 9.0') || strstr($agent, 'MSIE 8.0')
             || strstr($agent, 'MSIE 7.0');
-    }
-
-    /**
-     * Get the minifier that can handle these file types
-     * Required by ConcatTrait
-     *
-     * @return \FinnaTheme\Minify\CSS
-     */
-    protected function getMinifier()
-    {
-        return new \FinnaTheme\Minify\CSS($this->finnaCache);
     }
 }
