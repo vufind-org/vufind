@@ -18,7 +18,7 @@ function loadMapTab(mapData, mapGraticule, basemap) {
  //NOTE: These are hardcoded for now but will need to be genericized
   var redIcon = new displayIcon({
     iconUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/marker-icon-2x-red.png',
-    shadowUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png',
+    shadowUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
   });
 
   $('#map-canvas').show();
