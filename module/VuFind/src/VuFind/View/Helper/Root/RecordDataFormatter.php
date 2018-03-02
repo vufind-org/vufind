@@ -282,7 +282,7 @@ class RecordDataFormatter extends AbstractHelper
             ? $options['separator'] : '<br />';
         $retVal = '';
         $array = (array)$data;
-        $remaining = count($data);
+        $remaining = count($array);
         foreach ($array as $line) {
             $remaining--;
             $text = $escaper($transDomain . $line);
