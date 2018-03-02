@@ -78,7 +78,7 @@ class Map extends AbstractBase
     /**
      * Constructor
      *
-     * @param string $mapType        Map provider 
+     * @param string $mapType        Map provider
      * (valid options: 'openlayers' or 'leaflet'
      * null to disable this feature)
      * @param array  $basemapOptions basemap settings
@@ -86,8 +86,7 @@ class Map extends AbstractBase
      */
     public function __construct($mapType = null, $basemapOptions = [],
         $mapTabOptions = []
-    ) { 
-    
+    ) {
         $mapType = trim(strtolower($mapType));
         if ($mapType == 'openlayers' || $mapType == 'leaflet') {
             $this->mapType = trim(strtolower($mapType));
@@ -329,7 +328,7 @@ class Map extends AbstractBase
         $mapDisplayCoords = [];
         $mapDisplayLabels = [];
         if ($this->displayCoords) {
-             $mapDisplayCoords = $this->getDisplayCoords();
+            $mapDisplayCoords = $this->getDisplayCoords();
         }
         if (isset($this->mapLabels)) {
             $mapDisplayLabels = $this->getMapLabels();

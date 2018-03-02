@@ -38,10 +38,8 @@ use Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-
 class MapSelectionConfig
 {
-
     /**
      * Which mapping platform should be used?
      *
@@ -52,7 +50,7 @@ class MapSelectionConfig
     /**
      * Default coordinates. Order is WENS
      *
-     * @var string 
+     * @var string
      */
     protected $defaultCoords = "-95, 30, 72, 15";
 
@@ -79,11 +77,11 @@ class MapSelectionConfig
     {
         $this->configLoader = $configLoader;
     }
- 
+
     /**
      * Get the map tab configuration settings.
      *
-     * @return array  
+     * @return array
      */
     public function getMapSelectionOptions()
     {
@@ -142,4 +140,3 @@ class MapSelectionConfig
         return $options;
     }
 }
-?>

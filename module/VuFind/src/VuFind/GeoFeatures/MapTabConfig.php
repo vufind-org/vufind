@@ -38,10 +38,8 @@ use Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-
 class MapTabConfig
 {
-
     /**
      * What mapping platform should be used?
      *
@@ -86,11 +84,11 @@ class MapTabConfig
     {
         $this->configLoader = $configLoader;
     }
- 
+
     /**
      * Get the map tab configuration settings.
      *
-     * @return array  
+     * @return array
      */
     public function getMapTabOptions()
     {
@@ -127,7 +125,7 @@ class MapTabConfig
      *
      * @return array
      */
-    protected function getOptions($configName, $section, $validOptions) 
+    protected function getOptions($configName, $section, $validOptions)
     {
         $config = $this->configLoader->get($configName);
         $options = [];
@@ -140,4 +138,3 @@ class MapTabConfig
         return $options;
     }
 }
-?>

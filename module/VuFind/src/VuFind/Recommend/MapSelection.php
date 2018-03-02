@@ -686,5 +686,4 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
         }
         return $results;
     }
-
 }
