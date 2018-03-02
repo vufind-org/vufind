@@ -28,6 +28,7 @@
 namespace VuFindTheme;
 
 use Zend\Config\Config;
+use Zend\Console\Console;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\View\Http\InjectTemplateListener as BaseInjectTemplateListener;
 use Zend\Stdlib\RequestInterface as Request;
@@ -270,7 +271,7 @@ class Initializer
     {
         // Get access to the view model:
         $viewManager = $this->serviceManager->get('ViewManager');
-        if (!($viewManager instanceof \Zend\Mvc\Console\View\ViewManager)) {
+        if (!Console::isConsole()) {
             $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
 
             // Send down the view options:

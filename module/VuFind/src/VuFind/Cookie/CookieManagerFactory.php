@@ -28,6 +28,7 @@
 namespace VuFind\Cookie;
 
 use Interop\Container\ContainerInterface;
+use Zend\Console\Console;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -67,8 +68,7 @@ class CookieManagerFactory implements FactoryInterface
             && $config->Cookies->limit_by_path
         ) {
             $request = $container->get('Request');
-            $path = ($request instanceof \Zend\Console\Request)
-                ? '' : $request->getBasePath();
+            $path = Console::isConsole() ? '' : $request->getBasePath();
             if (empty($path)) {
                 $path = '/';
             }
