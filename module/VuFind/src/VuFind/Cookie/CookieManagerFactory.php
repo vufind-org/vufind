@@ -66,7 +66,9 @@ class CookieManagerFactory implements FactoryInterface
         if (isset($config->Cookies->limit_by_path)
             && $config->Cookies->limit_by_path
         ) {
-            $path = $container->get('Request')->getBasePath();
+            $request = $container->get('Request');
+            $path = ($request instanceof \Zend\Console\Request)
+                ? '' : $request->getBasePath();
             if (empty($path)) {
                 $path = '/';
             }
