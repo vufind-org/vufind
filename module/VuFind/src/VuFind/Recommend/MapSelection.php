@@ -65,11 +65,25 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     protected $geoField = 'long_lat';
 
     /**
+     * Which type of mapping interface should be used?
+     *
+     * @var string
+     */
+    protected $geoPlatform;
+
+    /**
      * Height of search map pane
      *
      * @var string
      */
     protected $height;
+
+    /**
+     * Map Selection configuration options
+     *
+     * @var array
+     */
+    protected $mapSelectionOptions = [];
 
     /**
      * Selected coordinates
@@ -105,13 +119,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
      * @var array
      */
     protected $bboxSearchCoords = [];
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
 
     /**
      * Solr search loader
@@ -151,18 +158,17 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager  $configLoader   Configuration loader
-     * @param \VuFind\Search\BackendManager $solr           Search interface
-     * @param array                         $basemapOptions Basemap Options
+     * @param \VuFind\Search\BackendManager $solr                Search interface
+     * @param array                         $basemapOptions      Basemap Options
+     * @param array                         $mapSelectionOptions Map Options
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader, $solr,
-        $basemapOptions
-    ) {
-        $this->configLoader = $configLoader;
+    public function __construct($solr, $basemapOptions, $mapSelectionOptions)
+    {
         $this->solr = $solr;
         $this->queryBuilder = $solr->getQueryBuilder();
         $this->solrConnector = $solr->getConnector();
         $this->basemapOptions = $basemapOptions;
+        $this->mapSelectionOptions = $mapSelectionOptions;
     }
 
     /**
@@ -176,21 +182,16 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
      */
     public function setConfig($settings)
     {
-        $settings = explode(':', $settings);
-        $mainSection = empty($settings[0]) ? 'MapSelection' : $settings[0];
-        $iniFile = empty($settings[1]) ? 'searches' : $settings[1];
-        $config = $this->configLoader->get($iniFile);
-        if (isset($config->$mainSection)) {
-            $entries = $config->$mainSection;
-            if (isset($entries->default_coordinates)) {
-                $this->defaultCoordinates = explode(
-                    ',', $entries->default_coordinates
-                );
-            }
-            if (isset($entries->height)) {
-                $this->height = $entries->height;
-            }
-        }
+        $basemapOptions = $this->basemapOptions;
+        $mapSelectionOptions = $this->mapSelectionOptions;
+        $this->geoPlatform = $mapSelectionOptions['geoPlatform'];
+        $this->defaultCoordinates = explode(
+            ',',
+            $mapSelectionOptions['default_coordinates']
+        );
+        $this->height = $mapSelectionOptions['height'];
+        $this->basemapUrl = $basemapOptions['basemap_url'];
+        $this->basemapAttribution = $basemapOptions['basemap_attribution'];
     }
 
     /**
@@ -209,19 +210,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
      */
     public function init($params, $request)
     {
-    }
-
-    /**
-     * Get the basemap configuration settings.
-     *
-     * @return array
-     */
-    public function getBasemap()
-    {
-        return [
-            $this->basemapOptions['basemap_url'],
-            $this->basemapOptions['basemap_attribution']
-        ];
     }
 
     /**
@@ -293,6 +281,31 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     public function getDefaultCoordinates()
     {
         return $this->defaultCoordinates;
+    }
+
+    /**
+     * Get the basemap configuration settings.
+     *
+     * @return array
+     */
+    public function getBasemap()
+    {
+        return [
+            $this->basemapOptions['basemap_url'],
+            $this->basemapOptions['basemap_attribution']
+        ];
+    }
+
+    /**
+     * Get GeoPlatform
+     *
+     * Return mapping platform to use
+     *
+     * @return string
+     */
+    public function getGeoPlatform()
+    {
+        return $this->geoPlatform;
     }
 
     /**
@@ -643,4 +656,35 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
         }
         return $centerCoords;
     }
+
+    /**
+     * Process search result record coordinate values
+     * for Leaflet mapping platform.
+     *
+     * @return array
+     */
+    public function getLeafletMapResultCoordinates()
+    {
+        $results = [];
+        $rawCoords = $this->getSearchResultCoordinates();
+        foreach ($rawCoords as $idCoords) {
+            foreach ($idCoords[1] as $coord) {
+                $recCoords = [];
+                $recId = $idCoords[0];
+                $title = $idCoords[2];
+                // convert title to UTF-8
+                $title = mb_convert_encoding($title, 'UTF-8');
+                $patternStr = '/ENVELOPE\((.*),(.*),(.*),(.*)\)/';
+                if (preg_match($patternStr, $coord, $match)) {
+                    $floats = array_map('floatval', $match);
+                    $recCoords = [$floats[1], $floats[2], $floats[3], $floats[4]];
+                }
+                $results[] = [$recId, $title, $recCoords[0],
+                    $recCoords[1], $recCoords[2], $recCoords[3]
+                ];
+            }
+        }
+        return $results;
+    }
+
 }

@@ -1,14 +1,31 @@
 <? $mapType = $this->tab->getMapType(); ?>
-<? if (isset($mapType) && ($mapType == 'openlayers')) : ?>
-  <? $this->headScript()->appendFile('vendor/ol/ol.js');
-  $this->headScript()->appendFile('map_tab_ol.js');
-  $this->headLink()->appendStylesheet('vendor/ol/ol.css');
-  $mapTabData = $this->tab->getMapTabData();
-  $mapGraticule = $this->tab->getMapGraticule();
-  $basemap = $this->tab->getBasemap();
-  $popupTitle = $this->transEsc('map_results_label');
-  $params = [json_encode($mapTabData), json_encode($popupTitle), json_encode($mapGraticule),
-    json_encode($basemap)];
+<? if (isset($mapType) && (($mapType == 'openlayers') || ($mapType == 'leaflet'))) : ?>
+  <? if ($mapType == 'openlayers') :?>
+     <?
+       $this->headScript()->appendFile('vendor/ol/ol.js');
+       $this->headScript()->appendFile('map_tab_ol.js');
+       $this->headLink()->appendStylesheet('vendor/ol/ol.css');
+     ?>
+  <? elseif ($mapType == 'leaflet') : ?>
+     <?
+       $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
+       $this->headScript()->appendFile('vendor/leaflet/leaflet.latlng-graticule.js');
+       $this->headScript()->appendFile('map_tab_leaflet.js');
+       $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.css');
+     ?>
+  <? endif; ?>
+  <?
+    $mapGraticule = $this->tab->getMapGraticule();
+    $basemap = $this->tab->getBasemap();
+
+    if ($mapType == 'openlayers') {
+      $mapTabData = $this->tab->getMapTabData();
+      $popupTitle = $this->transEsc('map_results_label');
+      $params = [json_encode($mapTabData), json_encode($popupTitle), json_encode($mapGraticule), json_encode($basemap)];
+    } elseif ($mapType == 'leaflet') {
+      $mapTabData = $this->tab->getLeafletMapTabData();
+      $params = [json_encode($mapTabData), json_encode($mapGraticule), json_encode($basemap)];
+    }
   $jsParams = implode(', ', $params);
   $jsLoad = "loadMapTab(" . $jsParams . ");"; ?>
   <div id="wrap" style="width: inherit; height: 479px">

@@ -1,26 +1,53 @@
 <? if ($this->recommend->getSearchResultCoordinates()) :?>
 <?
-  $this->headScript()->appendFile('vendor/ol/ol.js');
-  $this->headScript()->appendFile('map_selection.js');
-  $this->headLink()->appendStylesheet('vendor/ol/ol.css');
+  $geoPlatform = $this->recommend->getGeoPlatform();
+  //Include files based on geoPlatform configuration
+  if ($geoPlatform == 'openlayers') {
+    $this->headScript()->appendFile('vendor/ol/ol.js');
+    $this->headScript()->appendFile('map_selection.js');
+    $this->headLink()->appendStylesheet('vendor/ol/ol.css');
+  } elseif ($geoPlatform == 'leaflet') {
+    $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
+    $this->headScript()->appendFile('vendor/leaflet/leaflet.draw.js');
+    $this->headScript()->appendFile('vendor/leaflet/leaflet.markercluster.js');
+    $this->headScript()->appendFile('map_selection_leaflet.js');
+    $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.css');
+    $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.draw.css');
+    $this->headLink()->appendStylesheet('vendor/leaflet/MarkerCluster.css');
+    $this->headLink()->appendStylesheet('vendor/leaflet/MarkerCluster.Default.css');
+  }
 
-  $resultsCoords = $this->recommend->getMapResultCoordinates();
+  // Call methods based on geoPlatform configuration
   $basemap = $this->recommend->getBasemap();
-  $baseUrl = $this->url('home');
   $geoField = $this->recommend->getGeoField();
-  $urlpath = $this->url('search-results');
-  $coordinates = $this->recommend->getSelectedCoordinates();
-  $showSelection = true;
+  $height = $this->recommend->getHeight();
   $popupTitle = $this->transEsc('map_results_label');
+  $showSelection = true;
+  $baseUrl = $this->url('home');
+  $urlpath = $this->url('search-results');
+  $searchParams = $this->recommend->getSearchParams();
+  $coordinates = $this->recommend->getSelectedCoordinates();
+
   if ($coordinates == null) {
     $coordinates = $this->recommend->getDefaultCoordinates();
     $showSelection = false;
   }
-  $height = $this->recommend->getHeight();
-  $searchParams = $this->recommend->getSearchParams();
-  $params = [json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
-    json_encode($baseUrl), json_encode($searchParams), json_encode($showSelection),
-    json_encode($resultsCoords), json_encode($popupTitle), json_encode($basemap)];
+
+  if ($geoPlatform == 'openlayers') {
+    $helpTopic = 'geosearch';
+    $resultsCoords = $this->recommend->getMapResultCoordinates();
+    $popupTitle = $this->transEsc('map_results_label');
+    $params = [json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
+      json_encode($baseUrl), json_encode($searchParams), json_encode($showSelection),
+      json_encode($resultsCoords), json_encode($popupTitle), json_encode($basemap)];
+  } elseif ($geoPlatform == 'leaflet') {
+    $helpTopic = 'geosearch_leaflet';
+    $resultsCoords = $this->recommend->getLeafletMapResultCoordinates();
+    $params = [json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
+      json_encode($baseUrl), json_encode($searchParams), json_encode($showSelection),
+      json_encode($resultsCoords), json_encode($basemap)];
+  }
+
   $jsParams = implode(', ', $params);
   $jsLoad = "loadMapSelection(" . $jsParams . ");";
   $addSearchOption = <<<EOF

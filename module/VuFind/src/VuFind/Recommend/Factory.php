@@ -189,7 +189,6 @@ class Factory
      */
     public function getMapSelection(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config\PluginManager');
         $backend = $sm->get('VuFind\Search\BackendManager');
         $solr = $backend->get('Solr');
 
@@ -197,7 +196,13 @@ class Factory
         $basemapConfig = $sm->get('VuFind\GeoFeatures\BasemapConfig');
         $basemapOptions = $basemapConfig->getBasemap('MapSelection');
 
-        return new MapSelection($config, $solr, $basemapOptions);
+        // get MapSelection options
+        $mapSelectionConfig = $sm->getServiceLocator()->get(
+            'VuFind\GeoFeatures\MapSelectionConfig'
+        );
+        $mapSelectionOptions = $mapSelectionConfig->getMapSelectionOptions($sm);
+
+        return new MapSelection($solr, $basemapOptions, $mapSelectionOptions);
     }
 
     /**
