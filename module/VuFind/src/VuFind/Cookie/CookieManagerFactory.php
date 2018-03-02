@@ -67,8 +67,8 @@ class CookieManagerFactory implements FactoryInterface
         if (isset($config->Cookies->limit_by_path)
             && $config->Cookies->limit_by_path
         ) {
-            $request = $container->get('Request');
-            $path = Console::isConsole() ? '' : $request->getBasePath();
+            $path = Console::isConsole()
+                ? '' : $container->get('Request')->getBasePath();
             if (empty($path)) {
                 $path = '/';
             }
