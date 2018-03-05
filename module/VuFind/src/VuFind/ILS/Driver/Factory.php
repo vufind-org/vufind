@@ -66,9 +66,15 @@ class Factory
      */
     public static function getAlma(ServiceManager $sm)
     {
-        return new Alma(
+        $alma = new Alma(
             $sm->getServiceLocator()->get('VuFind\DateConverter')
         );
+        
+        $alma->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+        
+        return $alma;
     }
 
     /**

@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Alma ILS Driver
@@ -39,6 +40,7 @@ namespace VuFind\ILS\Driver;
 class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
+    use CacheTrait;
 
     /**
      * Alma API base URL.
@@ -146,12 +148,19 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getHolding($id, array $patron = null)
     {
+        // Get config data:
+        $fulfillementUnits = $this->config['FulfillmentUnits'];
+        $requestableConfig = $this->config['Requestable'];
+        
         $results = [];
         $copyCount = 0;
         $bibPath = '/bibs/' . urlencode($id) . '/holdings';
         if ($holdings = $this->makeRequest($bibPath)) {
             foreach ($holdings->holding as $holding) {
                 $holdingId = (string)$holding->holding_id;
+                $locationCode = (string)$holding->location;
+                $addLink = $this->requestsAllowed($fulfillementUnits, $locationCode, $requestableConfig, $patron);
+                
                 $itemPath = $bibPath . '/' . urlencode($holdingId) . '/items';
                 if ($currentItems = $this->makeRequest($itemPath)) {
                     foreach ($currentItems->item as $item) {
@@ -179,15 +188,13 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             $loan = $loanData->item_loan;
                             $duedate = $this->parseDate((string)$loan->due_date);
                         }
-
+                        
                         $results[] = [
                             'id' => $id,
                             'source' => 'Solr',
                             'availability' => $this->getAvailabilityFromItem($item),
-                            'status' => (string)$item->item_data->base_status[0]
-                                ->attributes()['desc'],
-                            'location' => (string)$holding->library[0]
-                                ->attributes()['desc'],
+                            'status' => (string)$item->item_data->base_status[0]->attributes()['desc'],
+                            'location' => $locationCode,
                             'reserve' => 'N',   // TODO: support reserve status
                             'callnumber' => (string)$item->holding_data->call_number,
                             'duedate' => $duedate,
@@ -197,16 +204,121 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             'item_notes' => $itemNotes,
                             'item_id' => $itemId,
                             'holding_id' => $holdingId,
-                            'addLink' => 'check'
+                            'addLink' => $addLink
                         ];
                     }
                 }
             }
         }
-
+        
         return $results;
     }
+    
+    /**
+     * Check if the user is allowed to place requests for an Alma fulfillment unit in general.
+     * We check for blocks on the patron account that could block a request in getRequestBlocks().
+     * 
+     * @param array $fulfillementUnits      An array of fulfillment units and associated locations from Alma.ini (see section [FulfillmentUnits])
+     * @param string $locationCode          The location code of the holding to be checked
+     * @param array $requestableConfig      An array of fulfillment units and associated patron groups and their request policy from Alma.ini (see section [Requestable])
+     * @param array $patron                 An array with the patron details (username and password)
+     * @return boolean                      true if the the patron is allowed to place requests on holdings of this fulfillment unit, false otherwise.
+     * @author Michael Birkner
+     */
+    protected function requestsAllowed($fulfillementUnits, $locationCode, $requestableConfig, $patron) {
+        $requestsAllowed = false;
+        
+        // Get user group code
+        $cacheId = 'alma|user|'.$patron['cat_username'].'|group_code';
+        $userGroupCode = $this->getCachedData($cacheId);
+        if ($userGroupCode === null) {
+            $profile = $this->getMyProfile($patron);
+            $userGroupCode = (string)$profile['group_code'];
+        }
 
+        // Get the fulfillment unit of the location.
+        $locationFulfillmentUnit = $this->getFulfillmentUnitByLocation($locationCode, $fulfillementUnits);
+
+        // Check if the group of the currently logged in user is allowed to place requests on items belonging to current fulfillment unit
+        if (($locationFulfillmentUnit != null && !empty($locationFulfillmentUnit)) && ($userGroupCode!= null && !empty($userGroupCode))) {
+            $requestsAllowed = ($requestableConfig[$locationFulfillmentUnit][$userGroupCode] == 'Y') ? true : false;
+        }
+        
+        return $requestsAllowed;
+    }
+    
+    /**
+     * Check for request blocks.
+     * @param array $patron   The patron array with username and password
+     * @return array|boolean    An array of block messages or false if there are no blocks
+     * @author  Michael Birkner
+     */
+    public function getRequestBlocks($patron) {
+        return $this->getAccountBlocks($patron);
+    }
+    
+    /**
+     * Check for account blocks in Alma and cache them.
+     * 
+     * @param array $patron     The patron array with username and password
+     * @return array|boolean    An array of block messages or false if there are no blocks
+     * @author Michael Birkner
+     */
+    public function getAccountBlocks($patron) {
+        $patronId = $patron['cat_username'];
+        $cacheId = 'alma|user|'.$patronId.'|blocks';
+        $cachedBlocks = $this->getCachedData($cacheId);
+        if ($cachedBlocks !== null) {
+            return $cachedBlocks;
+        }
+        
+        $xml = $this->makeRequest('/users/' . $patron['cat_username']);
+        if ($xml == null || empty($xml)) {
+            return false;
+        }
+        
+        $userBlocks = $xml->user_blocks->user_block;
+        if ($userBlocks == null || empty($userBlocks)) {
+            return false;
+        }
+        
+        $blocks = [];
+        foreach($userBlocks as $block) {
+            $blockStatus = (string)$block->block_status;
+            if ($blockStatus === 'ACTIVE') {
+                $blockNote = (isset($block->block_note)) ? (string)$block->block_note : null;
+                $blockDesc = (string)$block->block_description->attributes()->desc;
+                $blockDesc = ($blockNote != null) ? $blockDesc.'. '.$blockNote : $blockDesc;
+                $blocks[] = $blockDesc;
+            }
+        }
+        
+        if (!empty($blocks)) {
+            $this->putCachedData($cacheId, $blocks);
+            return $blocks;
+        } else {
+            $this->putCachedData($cacheId, false);
+            return false;
+        }
+    }
+    
+    /**
+     * Get an Alma fulfillment unit by an Alma location.
+     * 
+     * @param string $locationCode      A location code, e. g. "SCI"
+     * @param array $fulfillmentUnits   An array of fulfillment units with all its locations.
+     * @return string|NULL              Null if the location was not found or a string specifying the fulfillment unit of the location that was found.
+     * @author Michael Birkner
+     */
+    protected function getFulfillmentUnitByLocation($locationCode, $fulfillmentUnits) {
+        foreach ($fulfillmentUnits as $key => $val) {
+            if (array_search($locationCode, $val) !== false) {
+                return $key;
+            }
+        }
+        return null;
+    }
+    
     /**
      * Patron Login
      *
@@ -249,30 +361,37 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getMyProfile($patron)
     {
-        $xml = $this->makeRequest('/users/' . $patron['cat_username']);
+        $patronId = $patron['cat_username'];
+        $xml = $this->makeRequest('/users/' . $patronId);
         if (empty($xml)) {
             return [];
         }
         $profile = [
-            'firstname' => $xml->first_name,
-            'lastname'  => $xml->last_name,
-            'group'     => $xml->user_group['desc']
+            'firstname'     => (isset($xml->first_name)) ? (string)$xml->first_name : null,
+            'lastname'      => (isset($xml->last_name)) ? (string)$xml->last_name : null,
+            'group'         => (isset($xml->user_group['desc'])) ? (string)$xml->user_group['desc'] : null,
+            'group_code'    => (isset($xml->user_group)) ? (string)$xml->user_group : null
         ];
         $contact = $xml->contact_info;
         if ($contact) {
             if ($contact->addresses) {
                 $address = $contact->addresses[0]->address;
-                $profile['address1'] = $address->line1;
-                $profile['address2'] = $address->line2;
-                $profile['address3'] = $address->line3;
-                $profile['zip']      = $address->postal_code;
-                $profile['city']     = $address->city;
-                $profile['country']  = $address->country;
+                $profile['address1'] = (isset($address->line1)) ? (string)$address->line1 : null;
+                $profile['address2'] = (isset($address->line2)) ? (string)$address->line2 : null;
+                $profile['address3'] = (isset($address->line3)) ? (string)$address->line3 : null;
+                $profile['zip']      = (isset($address->postal_code)) ? (string)$address->postal_code : null;
+                $profile['city']     = (isset($address->city)) ? (string)$address->city : null;
+                $profile['country']  = (isset($address->country)) ? (string)$address->country : null;
             }
             if ($contact->phones) {
-                $profile['phone'] = $contact->phones[0]->phone->phone_number;
+                $profile['phone'] = (isset($contact->phones[0]->phone->phone_number)) ? (string)$contact->phones[0]->phone->phone_number : null;
             }
         }
+        
+        // Cache the user group code
+        $cacheId = 'alma|user|'.$patronId.'|group_code';
+        $this->putCachedData($cacheId, (isset($profile['group_code'])) ? $profile['group_code'] : null);
+        
         return $profile;
     }
 
@@ -754,6 +873,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new \Exception("Invalid date: $date");
         }
     }
+    
 
     // @codingStandardsIgnoreStart
 
