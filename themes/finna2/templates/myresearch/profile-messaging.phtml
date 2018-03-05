@@ -1,5 +1,5 @@
 <!-- START of: finna - myresearch/profile-messaging.phtml -->
-<? $updateSettings = $this->ils()->checkFunction('updateMessagingSettings', compact($user)); ?>
+<? $updateSettings = $this->ils()->checkFunction('updateMessagingSettings', $capabilityParams); ?>
 <form method="post" class="inline" id="messaging-form">
     <div>
         <span class="myresearch-profile-middle-header"><?= $this->transEsc('messaging_settings_title') ?></span>
