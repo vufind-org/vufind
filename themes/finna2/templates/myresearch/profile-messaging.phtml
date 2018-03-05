@@ -1,4 +1,10 @@
 <!-- START of: finna - myresearch/profile-messaging.phtml -->
+<?
+if (!isset($capabilityParams)) {
+    $patron = $user ? $this->auth()->getILSPatron() : false;
+    $capabilityParams = $patron ? ['patron' => $patron] : [];
+}
+?>
 <? $updateSettings = $this->ils()->checkFunction('updateMessagingSettings', $capabilityParams); ?>
 <form method="post" class="inline" id="messaging-form">
     <div>
