@@ -205,7 +205,11 @@
         <? endif; ?>
         <? if (isset($this->profile['loan_history']) || $updateLoanHistory): ?>
           <div class="my-profile-col profile-title">
-            <label for="loan-history"><?=$this->transEsc('loan_history_retention') ?>:</label>
+            <? if ($updateLoanHistory): ?>
+              <label for="loan-history"><?=$this->transEsc('loan_history_retention') ?>:</label>
+            <? else: ?>
+              <?=$this->transEsc('loan_history_retention') ?>:
+            <? endif; ?>
           </div>
           <? if ($updateLoanHistory): ?>
             <div class="my-profile-col profile-text-value">
