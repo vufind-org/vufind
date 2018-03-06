@@ -153,10 +153,10 @@ class Factory
             $catalog = false;
         }
 
-        $extendedHoldingFields = isset($config->Site->extendedHoldingFields)
-           ? (bool)$config->Site->extendedHoldingFields : false;
+        $holdingsTemplate = isset($config->Site->holdingsTemplate)
+           ? (string)$config->Site->holdingsTemplate : 'standard';
 
-        return new HoldingsILS($catalog, $extendedHoldingFields);
+        return new HoldingsILS($catalog, $holdingsTemplate);
     }
 
     /**

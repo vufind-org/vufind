@@ -1,9 +1,3 @@
-<?
-  // AJAX Check record?
-  $check = isset($this->holding['check']) && $this->holding['check'];
-  $checkStorageRetrievalRequest = isset($this->holding['checkStorageRetrievalRequest']) && $this->holding['checkStorageRetrievalRequest'];
-  $checkILLRequest = isset($this->holding['checkILLRequest']) && $this->holding['checkILLRequest'];
-?>
         <td colspan="2" class="holding-<?=$this->holding['availability'] ? "available" : "unavailable" ?>">
           <div class="holding-details">
             <span class="holding-field copy-number">
@@ -41,22 +35,22 @@
             </span>
             <span class="holding-field place-hold">
               <? if (isset($this->holding['link']) && $this->holding['link']): ?>
-                <a class="<?=$check ? 'checkRequest ' : ''?>placehold" <? if (!empty($this->holding['linkLightbox'])): ?>data-lightbox <? endif; ?>href="<?=$this->recordLink()->getRequestUrl($this->holding['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
+                <a class="<?=$this->check ? 'checkRequest ' : ''?>placehold" <? if (!empty($this->holding['linkLightbox'])): ?>data-lightbox <? endif; ?>href="<?=$this->recordLink()->getRequestUrl($this->holding['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($this->check ? "Check Hold" : "Place a Hold")?></a>
               <? endif; ?>
             </span>
             <span class="holding-field storage-retrieval">
               <? if (isset($this->holding['storageRetrievalRequestLink']) && $this->holding['storageRetrievalRequestLink']): ?>
-                <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest" data-lightbox href="<?=$this->recordLink()->getRequestUrl($this->holding['storageRetrievalRequestLink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
+                <a class="<?=$this->checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest" data-lightbox href="<?=$this->recordLink()->getRequestUrl($this->holding['storageRetrievalRequestLink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($this->checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
               <? endif; ?>
             </span>
             <span class="holding-field ill-request">
               <? if (isset($this->holding['ILLRequestLink']) && $this->holding['ILLRequestLink']): ?>
-                  <a class="<?=$checkILLRequest ? 'checkILLRequest ' : ''?>placeILLRequest" data-lightbox href="<?=$this->recordLink()->getRequestUrl($this->holding['ILLRequestLink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
+                  <a class="<?=$this->checkILLRequest ? 'checkILLRequest ' : ''?>placeILLRequest" data-lightbox href="<?=$this->recordLink()->getRequestUrl($this->holding['ILLRequestLink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($this->checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
               <? endif; ?>
             </span>
             <span class="holding-field recall">
               <? if (isset($this->holding['link']) && $this->holding['link']): ?>
-                <a class="<?=$check ? 'checkRequest' : ''?> placehold" <? if (!empty($this->holding['linkLightbox'])): ?>data-lightbox <? endif; ?>href="<?=$this->recordLink()->getRequestUrl($this->holding['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
+                <a class="<?=$this->check ? 'checkRequest' : ''?> placehold" <? if (!empty($this->holding['linkLightbox'])): ?>data-lightbox <? endif; ?>href="<?=$this->recordLink()->getRequestUrl($this->holding['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($this->check ? "Check Recall" : "Recall This")?></a>
               <? endif; ?>
             </span>
           </div>

@@ -54,12 +54,12 @@ class HoldingsILS extends AbstractBase
      * @param bool                        $extendedHoldingFields Flag to indicate
      * if the extended holding fields layout should be used
      */
-    public function __construct($catalog, $extendedHoldingFields)
+    public function __construct($catalog, $holdingsTemplate)
     {
         $this->catalog = ($catalog && $catalog instanceof \VuFind\ILS\Connection)
             ? $catalog : false;
-        $this->extendedHoldingFields = isset($extendedHoldingFields)
-          ? (bool)$extendedHoldingFields : false;
+        $this->holdingsTemplate = isset($holdingsTemplate)
+          ? (string)$holdingsTemplate : 'standard';
     }
 
     /**
