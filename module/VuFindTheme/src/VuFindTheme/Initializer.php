@@ -28,6 +28,7 @@
 namespace VuFindTheme;
 
 use Zend\Config\Config;
+use Zend\Console\Console;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\View\Http\InjectTemplateListener as BaseInjectTemplateListener;
 use Zend\Stdlib\RequestInterface as Request;
@@ -269,10 +270,12 @@ class Initializer
     protected function sendThemeOptionsToView()
     {
         // Get access to the view model:
-        $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
+        if (!Console::isConsole()) {
+            $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
 
-        // Send down the view options:
-        $viewModel->setVariable('themeOptions', $this->getThemeOptions());
+            // Send down the view options:
+            $viewModel->setVariable('themeOptions', $this->getThemeOptions());
+        }
     }
 
     /**
