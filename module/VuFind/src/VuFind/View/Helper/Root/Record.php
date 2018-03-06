@@ -635,6 +635,9 @@ class Record extends AbstractHelper
         if (empty($urls) || ($openUrlActive && $this->hasOpenUrlReplaceSetting())) {
             return [];
         }
+        
+		// Calling function for the deduplication of URLs
+		$urls = $this->dedupe_urls($urls);
 
         // If we found links, we may need to convert from the "route" format
         // to the "full URL" format.
@@ -686,4 +689,31 @@ class Record extends AbstractHelper
         return isset($this->config->OpenURL->replace_other_urls)
             && $this->config->OpenURL->replace_other_urls;
     }
+    
+    /**
+     * Deduplicates multi-dimensional URL array
+     *
+     * @return array
+     */	
+	protected function dedupe_urls($urls) {
+
+		$deduped = [];
+		$urlLookup = [];
+		foreach ($urls as $url) {
+			if (!isset($urlLookup[$url['url']])) {
+				$i = count($deduped);
+				$deduped[] = $url;
+				$urlLookup[$url['url']] = & $deduped[$i];
+			} else {
+				if ($urlLookup[$url['url']]['desc'] === $url['url']) {
+					// previous description was just a URL; replace it!
+					$urlLookup[$url['url']]['desc'] = $url['desc'];
+				} else if ($url['url'] !== $url['desc']) {
+					// current description is not a URL; append it!
+					$urlLookup[$url['url']]['desc'] .= ' / ' . $url['desc'];
+				}
+			}
+		}
+		return $deduped;
+	}
 }
