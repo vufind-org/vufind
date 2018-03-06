@@ -15,15 +15,14 @@
      ?>
   <? endif; ?>
   <?
+    $mapTabData = $this->tab->getMapTabData($mapType);
     $mapGraticule = $this->tab->getMapGraticule();
     $basemap = $this->tab->getBasemap();
 
     if ($mapType == 'openlayers') {
-      $mapTabData = $this->tab->getMapTabData();
       $popupTitle = $this->transEsc('map_results_label');
       $params = [json_encode($mapTabData), json_encode($popupTitle), json_encode($mapGraticule), json_encode($basemap)];
     } elseif ($mapType == 'leaflet') {
-      $mapTabData = $this->tab->getLeafletMapTabData();
       $params = [json_encode($mapTabData), json_encode($mapGraticule), json_encode($basemap)];
     }
   $jsParams = implode(', ', $params);

@@ -274,10 +274,13 @@ class Map extends AbstractBase
     /**
      * Construct the map coordinates and labels array.
      *
+     * @param string $mapType geoPlatform parameter from geofeatures.ini
+     *
      * @return array
      */
-    public function getMapTabData()
+    public function getMapTabData($mapType)
     {
+        $mapType = trim(strtolower($mapType));
         $geoCoords = $this->getGeoLocationCoords();
         if (empty($geoCoords)) {
             return [];
@@ -301,56 +304,25 @@ class Map extends AbstractBase
             if (isset($this->mapLabels)) {
                 $mapLabel = $mapDisplayLabels[$key];
             }
-            array_push(
-                $mapTabData, [
-                    $geoCoords[$key][0], $geoCoords[$key][1],
-                    $geoCoords[$key][2], $geoCoords[$key][3],
-                    $geoCoords[$key][4], $mapLabel, $mapCoords
-                    ]
-            );
+            if ($mapType == 'openlayers') {
+                array_push(
+                    $mapTabData, [
+                        $geoCoords[$key][0], $geoCoords[$key][1],
+                        $geoCoords[$key][2], $geoCoords[$key][3],
+                        $geoCoords[$key][4], $mapLabel, $mapCoords
+                       ]
+                );
+            } elseif ($mapType == 'leaflet') {
+                array_push(
+                    $mapTabData, [
+                        $geoCoords[$key][0], $geoCoords[$key][1],
+                        $geoCoords[$key][2], $geoCoords[$key][3],
+                        $mapLabel, $mapCoords
+                       ]
+                );
+            } 
         }
         return $mapTabData;
     }
 
-    /**
-     * Construct the map coordinates and labels array
-     * for Leaflet implementation.
-     *
-     * @return array
-     */
-    public function getLeafletMapTabData()
-    {
-        $geoCoords = $this->getGeoLocationCoords();
-        if (empty($geoCoords)) {
-            return [];
-        }
-        $mapTabData = [];
-        $mapDisplayCoords = [];
-        $mapDisplayLabels = [];
-        if ($this->displayCoords) {
-            $mapDisplayCoords = $this->getDisplayCoords();
-        }
-        if (isset($this->mapLabels)) {
-            $mapDisplayLabels = $this->getMapLabels();
-        }
-        // Pass coordinates, display coordinates, and labels
-        foreach (array_keys($geoCoords) as $key) {
-            $mapCoords = '';
-            $mapLabel = '';
-            if ($this->displayCoords) {
-                $mapCoords = $mapDisplayCoords[$key];
-            }
-            if (isset($this->mapLabels)) {
-                $mapLabel = $mapDisplayLabels[$key];
-            }
-            array_push(
-                $mapTabData, [
-                    $geoCoords[$key][0], $geoCoords[$key][1],
-                    $geoCoords[$key][2], $geoCoords[$key][3],
-                    $mapLabel, $mapCoords
-                    ]
-            );
-        }
-        return $mapTabData;
-    }
 }
