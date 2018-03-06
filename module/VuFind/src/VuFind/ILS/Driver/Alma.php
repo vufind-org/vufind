@@ -149,8 +149,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getHolding($id, array $patron = null)
     {
         // Get config data:
-        $fulfillementUnits = $this->config['FulfillmentUnits'];
-        $requestableConfig = $this->config['Requestable'];
+        $fulfillementUnits = (isset($this->config['FulfillmentUnits'])) ? $this->config['FulfillmentUnits'] : null;
+        $requestableConfig = (isset($this->config['Requestable'])) ? $this->config['Requestable'] : null;
         
         $results = [];
         $copyCount = 0;
@@ -159,7 +159,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             foreach ($holdings->holding as $holding) {
                 $holdingId = (string)$holding->holding_id;
                 $locationCode = (string)$holding->location;
-                $addLink = $this->requestsAllowed($fulfillementUnits, $locationCode, $requestableConfig, $patron);
+                $addLink = ($fulfillementUnits != null && $requestableConfig != null) ? $this->requestsAllowed($fulfillementUnits, $locationCode, $requestableConfig, $patron) : false;
                 
                 $itemPath = $bibPath . '/' . urlencode($holdingId) . '/items';
                 if ($currentItems = $this->makeRequest($itemPath)) {
