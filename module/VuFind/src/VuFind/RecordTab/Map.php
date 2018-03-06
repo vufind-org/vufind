@@ -320,9 +320,8 @@ class Map extends AbstractBase
                         $mapLabel, $mapCoords
                        ]
                 );
-            } 
+            }
         }
         return $mapTabData;
     }
-
 }
