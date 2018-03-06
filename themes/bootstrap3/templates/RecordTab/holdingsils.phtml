@@ -92,30 +92,26 @@
     <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
       <tr vocab="http://schema.org/" typeof="Offer">
           <?
-            // AJAX Check record?
-            $check = isset($row['check']) && $row['check'];
-            $checkStorageRetrievalRequest = isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest'];
-            $checkILLRequest = isset($row['checkILLRequest']) && $row['checkILLRequest'];
-
-            $holding = "";
+            $templateParameters = [
+                // AJAX Check record?
+                "check" => isset($row['check']) && $row['check'],
+                "checkStorageRetrievalRequest" => isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest'],
+                "checkILLRequest" => isset($row['checkILLRequest']) && $row['checkILLRequest'],
+                "holding" => $row
+            ];
 
             try {
-                $holding = $this->context($this)->renderInContext('RecordTab/holdingsils/' . $this->tab->holdingsTemplate .  '.phtml', [
-                    "check" => $check,
-                    "checkStorageRetrievalRequest" => $checkStorageRetrievalRequest,
-                    "checkILLRequest" => $checkILLRequest,
-                    "holding" => $row
-                ]);
-            } catch (Exception $e) { 
-                $holding = $this->context($this)->renderInContext('RecordTab/holdingsils/standard.phtml', [
-                    "check" => $check,
-                    "checkStorageRetrievalRequest" => $checkStorageRetrievalRequest,
-                    "checkILLRequest" => $checkILLRequest,
-                    "holding" => $row
-                ]);
-            }
+                echo $this->context($this)->renderInContext(
+                    'RecordTab/holdingsils/' . $this->tab->holdingsTemplate .  '.phtml', 
+                    $templateParameters
+                );
 
-            echo $holding;
+            } catch (Exception $e) {
+                echo $this->context($this)->renderInContext(
+                    'RecordTab/holdingsils/standard.phtml',
+                    $templateParameters
+                );
+            }
           ?>
         </tr>
     <? endif; ?>
