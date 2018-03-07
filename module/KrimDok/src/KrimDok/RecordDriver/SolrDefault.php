@@ -79,6 +79,11 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc {
         return isset($this->fields['topic']) ? $this->fields['topic'] : array();
     }
 
+    public function isAvailableForPDA()
+    {
+        return isset($this->fields['available_for_pda']) ? $this->fields['available_for_pda'] : false;
+    }
+
     public function isAvailableInTuebingen()
     {
         return (isset($this->fields['available_in_tubingen']) ? $this->fields['available_in_tubingen'] : false);

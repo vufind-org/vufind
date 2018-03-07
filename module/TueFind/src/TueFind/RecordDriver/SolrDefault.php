@@ -250,7 +250,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocato
         $titleSection = $this->getTitleSection();
         if (!empty($subtitle)) {
             if ($title != '') {
-                $separator = preg_match("/^[\\s=]+/", $subtitle) ? " " : " : ";
+                $separator = preg_match("/^[\\s=]+/", $subtitle) ? " " : ": ";
                 $title .= $separator;
             }
             $title .= $subtitle;
@@ -310,15 +310,6 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocato
     {
         return (isset($this->fields['zdb_number'])) ?
             $this->fields['zdb_number'] : '';
-    }
-
-    /** Check whether a record is potentially available for PDA
-     *
-     * @return bool
-     */
-    public function isPotentiallyPDA()
-    {
-        return isset($this->fields['is_potentially_pda']) && $this->fields['is_potentially_pda'];
     }
 
     public function isSuperiorWork() {
