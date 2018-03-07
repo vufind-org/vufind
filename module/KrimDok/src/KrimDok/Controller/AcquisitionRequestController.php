@@ -13,6 +13,13 @@ class AcquisitionRequestController extends \VuFind\Controller\AbstractBase
     {
         $view = $this->createViewModel();
         $view->useRecaptcha = $this->recaptcha()->active('acquisitionrequest');
+        $id = $this->params()->fromQuery('id');
+        if ($id == '') {
+            $view->driver = null;
+        } else {
+            $recordLoader = $this->getRecordLoader();
+            $view->driver = $recordLoader->load($id);
+        }
         return $view;
     }
 
