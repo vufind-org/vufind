@@ -80,7 +80,9 @@ class Database extends \VuFind\Auth\Database
         return $user;
     }
 
-    public function updateIxTheoUser($params, $user, $ixTheoUser) {
+    public function updateIxTheoUser($params, \VuFind\Db\Row\User $user,
+                                     \IxTheo\Db\Row\IxTheoUser $ixTheoUser)
+    {
         $user->firstname = $params['firstname'];
         $user->lastname = $params['lastname'];
         $user->email = $params['email'];
@@ -91,9 +93,47 @@ class Database extends \VuFind\Auth\Database
         $ixTheoUser->institution = $params['institution'];
         $ixTheoUser->country = in_array($params['country'], Database::$countries) ? $params['country'] : $ixTheoUser->country;
         $ixTheoUser->language = $params['language'];
+        $ixTheoUser->user_type = \IxTheo\Utility::getUserTypeFromUsedEnvironment();
         $ixTheoUser->save();
 
         // Update the TAD access flag:
         exec("/usr/local/bin/set_tad_access_flag.sh " . $user->id);
     }
+
+
+    protected function updateUserType($userID) {
+         $ixTheoUserTable = $this->getDbTableManager()->get('IxTheoUser');
+         if (!isset($ixTheoUserTable) || !$ixTheoUserTable)
+             return;
+         $ixtheoSelect = $ixTheoUserTable->getSql()->select()->where(['id' => $userID]);
+         $userRow = $ixTheoUserTable->selectWith($ixtheoSelect)->current();
+         // Derive user_type from the instance used
+         if (!isset($userRow))
+             return;
+         $userRow->user_type = \IxTheo\Utility::getUserTypeFromUsedEnvironment();
+         $userRow->save();
+    }
+
+
+    public function authenticate($request)
+
+    {
+        // Make sure the credentials are non-blank:
+        $this->username = trim($request->getPost()->get('username'));
+        $this->password = trim($request->getPost()->get('password'));
+        if ($this->username == '' || $this->password == '') {
+            throw new AuthException('authentication_error_blank');
+        }
+
+        // Validate the credentials:
+        $user = $this->getUserTable()->getByUsername($this->username, false);
+        if (!is_object($user) || !$this->checkPassword($this->password, $user)) {
+            throw new AuthException('authentication_error_invalid');
+        }
+
+        // If we got this far, the login was successful:
+        $this->updateUserType($user->id);
+        return $user;
+    }
+
 }

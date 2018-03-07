@@ -24,7 +24,7 @@ class PDAProxyController extends \VuFind\Controller\AbstractBase
 {
 
     protected $base_url = 'http://gvi.bsz-bw.de/solr/GVI/select';
-    protected $base_query = 'rows=10&wt=json&facet=true&facet.field=ill_region&facet.field=ill_flag&q=(ill_region:BSZ+OR+ill_region:KOBV+OR+ill_region:BVB+OR+ill_region:GBV+OR+ill_region:HEBIS+OR+ill_region:DNB)+AND+isbn:';
+    protected $base_query = 'rows=10&wt=json&facet=true&facet.field=ill_region&facet.field=ill_flag&fl=id,fullrecord&q=isbn:';
 
 
     protected function isAvailableForILL($isbn)

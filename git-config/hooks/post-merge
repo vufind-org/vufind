@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+# Git hook for updating TueFind configuration
+# (only if TueFind is already installed)
+#
+if [ -z "$TUEFIND_FLAVOUR" ]; then
+    exit 0
+fi
+
+echo "Updating TueFind configuration (git hook post-merge)"
+DIR="$(dirname $(readlink --canonicalize "$0"))"
+$DIR/../../update_tuefind_config.sh
+$DIR/../../clean_vufind_cache.sh
+

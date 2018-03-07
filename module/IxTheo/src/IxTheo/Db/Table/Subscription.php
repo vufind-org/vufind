@@ -30,12 +30,9 @@ class Subscription extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Table\
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
-    public function getNew($userId, $recordId, $title, $author, $year) {
+    public function getNew($userId, $recordId) {
         $row = $this->createRow();
         $row->id = $userId;
-        $row->journal_title = $title ?: "";
-        $row->journal_author = $author ?: "";
-        $row->journal_year = $year ?: "";
         $row->journal_control_number = $recordId;
         $row->max_last_modification_time = date('Y-m-d H:i:s');
         return $row;
@@ -45,8 +42,8 @@ class Subscription extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Table\
         return $this->select(['id' => $userId, 'journal_control_number' => $recordId])->current();
     }
 
-    public function subscribe($userId, $recordId, $title, $author, $year) {
-        $row = $this->getNew($userId, $recordId, $title, $author, $year);
+    public function subscribe($userId, $recordId) {
+        $row = $this->getNew($userId, $recordId);
         $row->save();
         return $row->id;
     }
@@ -80,7 +77,10 @@ class Subscription extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Table\
     {
         // Apply sorting, if necessary:
         $legalSorts = [
-            'journal_title', 'journal_title desc', 'journal_author', 'journal_author desc', 'journal_year', 'journal_year desc'
+            // deprecated, sorting is done on php side
+            // (fields like "title" are no longer stored in mysql,
+            // else we have updating problem e.g. if title is changed in original data)
+            'journal_title'
         ];
         if (!empty($sort) && in_array(strtolower($sort), $legalSorts)) {
             $query->order([$sort]);

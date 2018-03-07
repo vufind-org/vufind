@@ -28,4 +28,6 @@
     <field name="pndnum" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="signature" type="signaturestring" indexed="true" stored="true" multiValued="true"/>
     <field name="tue_local_indexed_date" type="date" indexed="true" stored="true"/>
+    <!-- CopyFields for Alphabetic Browse -->
+    <copyField source="topic" dest="topic_browse"/>
 </fields>

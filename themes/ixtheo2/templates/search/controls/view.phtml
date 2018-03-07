@@ -1,0 +1,11 @@
+<div class="view-buttons hidden-xs">
+  <? $viewList = $this->params->getViewList(); if (count($viewList) > 1): ?>
+    <? foreach ($viewList as $viewType => $viewData): ?>
+      <? if (!$viewData['selected']): ?>
+        <a href="<?=$this->results->getUrlQuery()->setViewParam($viewType)?>" title="<?=$this->transEsc('Switch view to')?> <?=$this->transEsc($viewData['desc'])?>" >
+      <? endif; ?>
+      <i class="fa fa-<?=$viewType ?>"<? if($viewData['selected']): ?> title="<?=$this->transEsc($viewData['desc']) ?> <?=$this->transEsc('view already selected') ?>" <? endif ?> alt="<?=$this->transEsc($viewData['desc'])?>"></i>
+      <?=$this->transEsc($viewData['desc']) ?><? if (!$viewData['selected']): ?></a><? endif; ?>&nbsp;
+    <? endforeach; ?>
+  <? endif; ?>
+</div>

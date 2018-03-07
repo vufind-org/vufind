@@ -3,7 +3,7 @@
 namespace IxTheo\Search\Results;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class PluginFactory extends \VuFind\Search\Results\PluginFactory
+class PluginFactory extends \TueFind\Search\Results\PluginFactory
 {
     /**
      * Constructor

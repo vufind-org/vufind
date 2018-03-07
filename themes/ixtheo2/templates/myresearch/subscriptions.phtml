@@ -1,0 +1,45 @@
+<?php
+// Set up page title:
+$this->headTitle($this->translate('Subscriptions'));
+
+// Set up breadcrumbs:
+$this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Subscriptions') . '</li>';
+
+// Grab list object from search results (if applicable):
+$list = isset($this->results) ? $this->results->getListObject() : null;
+$recordTotal = isset($this->results) ? $this->results->getResultTotal() : 0;
+
+// Convenience variable:
+$account = $this->auth()->getManager();
+$user = $this->auth()->isLoggedIn();
+?>
+
+<?=$this->flashmessages()?>
+
+<div class="container">
+    <div class="<?=$this->layoutClass('mainbody')?>">
+        <? if ($recordTotal > 0): ?>
+            <div class="resulthead">
+                <div class="pull-right flip">
+                    <?=$this->render('search/controls/sort.phtml')?>
+                </div>
+            </div>
+            <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+                <?=$this->context($this)->renderInContext('myresearch/subscriptions-bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account))?>
+                <? foreach ($this->results->getResultsSorted() as $i=>$current): ?>
+                    <?=$this->record($current)->getSubscriptionListEntry($list, $user)?>
+                <? endforeach; ?>
+            </form>
+            <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+        <? else: ?>
+            <p><?=$this->transEsc('You do not have any saved resources')?></p>
+        <? endif; ?>
+    </div>
+
+    <div class="<?=$this->layoutClass('sidebar')?>">
+        <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'subscriptions'))?>
+        <? foreach ($this->results->getRecommendations('side') as $current): ?>
+            <?=$this->recommend($current)?>
+        <? endforeach; ?>
+    </div>
+</div>

@@ -14,7 +14,7 @@ node_modules
 public/swagger-ui
 /import/marc_local.properties
 .vagrant
-
+.idea
 
 # CUSTOM TUEFIND IGNORES START HERE
 nbproject

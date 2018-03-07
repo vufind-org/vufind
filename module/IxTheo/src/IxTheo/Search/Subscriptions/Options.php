@@ -12,10 +12,13 @@ class Options extends \VuFind\Search\Base\Options
     {
         parent::__construct($configLoader);
 
-        $this->defaultSort = 'journal_title';
+        // set high default limit, because sorting is done on PHP side
+        // (prevent having more than 1 page)
+        $this->defaultLimit = 5000;
+
+        // Only allow sorting by title
         $this->sortOptions = [
-            'journal_title' => 'sort_title', 'journal_author' => 'sort_author',
-            'journal_year DESC' => 'sort_year', 'journal_year' => 'sort_year asc'
+            'journal_title' => 'sort_title'
         ];
     }
 

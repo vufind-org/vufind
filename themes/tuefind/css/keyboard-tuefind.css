@@ -1,0 +1,8 @@
+.ui-keyboard {
+     width: 100%;
+     height: auto;
+     background: #cccccc
+}
+.rtl {
+     text-align: right;
+}

@@ -1,0 +1,8 @@
+<div class="row">
+<? $i = 0; foreach ($this->results->getResults() as $current): ?>
+  <div id="result<?=$i++ ?>" class="col-sm-3 col-xs-6 grid">
+    <?=$this->record($current)->getSearchResult('grid')?>
+  </div>
+  <?=($i%4==0)?'</div><div class="row">':''?>
+<? endforeach; ?>
+</div>

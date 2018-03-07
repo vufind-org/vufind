@@ -26,7 +26,7 @@ $user = $this->auth()->isLoggedIn();
             </div>
             <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
                 <?=$this->context($this)->renderInContext('myresearch/subscriptions-bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account))?>
-                <? foreach ($this->results->getResults() as $i=>$current): ?>
+                <? foreach ($this->results->getResultsSorted() as $i=>$current): ?>
                     <?=$this->record($current)->getSubscriptionListEntry($list, $user)?>
                 <? endforeach; ?>
             </form>

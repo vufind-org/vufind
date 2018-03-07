@@ -12,7 +12,7 @@
                 <tr>
                     <td>
                         <?$first = true;?>
-                        <? foreach (explode('/', $current['value']) as $term): ?>
+                        <? foreach (preg_split("~(?<!\\\)/~", $current['value']) as $term): ?>
                             <?=$first ? '' : ' / '; $first = false; ?>
                             <a href="<?= $this->url('keywordchainsearch-results') ?>?lookfor=<?= urlencode('"' . $term . '"') ?>" data-toggle="tooltip" title="<?=$this->transEsc('tooltip_add_remove_with_shift', array(), '')?>">
                                 <span class="kwc_single_term" style="padding:5px;"><?= $this->escapeHtml($term) ?></span></a>
@@ -24,9 +24,9 @@
                     <td>
                         <?
                         // Sort KWC alphabetically
-                        $kwc = explode('/', $current['value']);
+                        $kwc = preg_split("~(?<!\\\)/~", $current['value']);
                         usort($kwc, 'strcoll');
-                        $kwc_sorted = implode('/', $kwc);
+                        $kwc_sorted = implode('/', preg_replace("#\\\/#", "\\\\\\\\/", $kwc)); //Double escape escaped slashes
 
                         ?>
                         <a href="<?= $this->url('search-results') ?>?lookfor=<?= urlencode('"' . $kwc_sorted . '"') ?>&type=Keywordchains">

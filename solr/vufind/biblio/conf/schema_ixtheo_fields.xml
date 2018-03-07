@@ -39,7 +39,6 @@
     <field name="geographic_facet_pt" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_ru" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="is_biblical_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
-    <field name="is_open_access" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="is_potentially_pda" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_probably_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
@@ -139,7 +138,6 @@
     <field name="types_and_persistent_identifiers" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="zdb_number" type="string" indexed="true" stored="true" multiValued="false"/>
 
-    <copyField source="ixtheo_notation" dest="ixtheo_notation_facet"/>
     <copyField source="key_word_chain_bag_de" dest="topic_all"/>
     <copyField source="key_word_chain_bag_de" dest="topic_de"/>
     <copyField source="key_word_chain_bag_el" dest="topic_all"/>
@@ -203,4 +201,10 @@
     <copyField source="topic_ru" dest="key_word_chains_sorted_ru"/>
     <copyField source="topic_ru" dest="topic_all"/>
     <copyField source="topic_synonyms" dest="topic_all"/>
+    <!-- CopyFields for Alphabetic Browse -->
+    <copyField source="topic_facet_de" dest="topic_browse"/>
+    <copyField source="era_facet_de" dest="topic_browse"/>
+    <copyField source="genre_facet_de" dest="topic_browse"/>
+    <copyField source="geographic_facet_de" dest="topic_browse"/>
+
 </fields>

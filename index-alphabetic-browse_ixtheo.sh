@@ -82,8 +82,7 @@ function build_browse
 
     mv "${browse}_browse.db" "$out_dir/${browse}_browse.db-updated"
     touch "$out_dir/${browse}_browse.db-ready"
-    chown solr:solr "$out_dir/${browse}_browse.db-updated"
-    chown solr:solr "$out_dir/${browse}_browse.db-ready"
+    chown -R solr:solr "$out_dir"
 }
 
 build_browse "hierarchy" "hierarchy_browse" 1

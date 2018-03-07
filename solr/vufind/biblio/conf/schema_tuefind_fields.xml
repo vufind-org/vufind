@@ -12,4 +12,5 @@
     <field name="urls_and_material_types" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="volume" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="year" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="is_open_access" type="string" indexed="true" stored="true" multiValued="false"/>
 </fields>

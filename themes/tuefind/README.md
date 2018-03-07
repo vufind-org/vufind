@@ -13,3 +13,6 @@ After git pull of your main repository (e.g. ixtheo/krimdok), dont forget:
 
 For later checkouts
 * git submodule update --init --recursive --remote
+##
+Integration of motty/keyboard
+For providing a virtual keyboard it also contains files taken from of https://github.com/Mottie/Keyboard

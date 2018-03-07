@@ -4,7 +4,9 @@ namespace IxTheo\Controller\Plugin;
 use VuFind\Exception\LoginRequired as LoginRequiredException,
     Zend\Mvc\Controller\Plugin\AbstractPlugin,
     VuFind\Db\Row\User, VuFind\Record\Cache,
-    Zend\Mail\Address;
+    Zend\Mail\Address,
+    Zend\Mail\AddressList;
+
 
 
 /**
@@ -81,14 +83,31 @@ class PDASubscriptions extends AbstractPlugin
               ];
     }
 
+
+    /*
+     * Helper to handle one or several Addresses
+     */
+
+    function constructAddress($emailAddressString, $emailName = "") {
+       $addresses = array_map('trim', explode(',', $emailAddressString));
+       if (count($addresses) > 1) {
+          $addressList = new AddressList;
+          $addressList->addMany($addresses);
+          return $addressList;
+       }
+       return new Address($emailAddressString, $emailName);
+    }
+
     /*
      * Generic Mail send function
      */
     function sendEmail($recipientEmail, $recipientName, $senderEmail, $senderName, $emailSubject, $emailMessage) {
         try {
             $mailer = $this->pm->getServiceLocator()->get('VuFind\Mailer');
+            $recipients = $this->constructAddress($recipientEmail, $recipientName);
+            $mailer->setMaxRecipients(3);
             $mailer->send(
-                 new Address($recipientEmail, $recipientName),
+                 $recipients,
                  new Address($senderEmail, $senderName),
                  $emailSubject, $emailMessage
              );
@@ -111,9 +130,20 @@ class PDASubscriptions extends AbstractPlugin
         $emailMessage = "Benutzer:\r\n" .  implode("\r\n", $userData) . "\r\n\r\n" .
                         "Versandaddresse:\r\n" . $addressForDispatch . "\r\n\r\n" .
                         "Titel:\r\n" . $this->getBookInformation($id) . "\r\n\r\n" .
+                        "Link:\r\n" . $this->getRecordLink($id) . "\r\n\r\n" .
                         "Benutzer Typ:\r\n" . $userType;
         $this->sendEmail($recipientData['email'], $recipientData['name'], $senderData['email'], $senderData['name'], $emailSubject, $emailMessage);
     }
+
+
+    function getRecordLink($id) {
+        $url = $this->getController()->getServerUrl();
+        // Strip our plugin part
+        $url_parts = explode('/', $url);
+        array_pop($url_parts);
+        return implode('/', $url_parts);
+    }
+
 
     function getBookInformation($id) {
         $recordLoader = $this->pm->getServiceLocator()->get('VuFind\RecordLoader');
@@ -180,8 +210,10 @@ class PDASubscriptions extends AbstractPlugin
         $senderData = $this->getPDASenderData($userType);
         $emailSubject = "PDA Abbestellung";
         $recipientData = $this->getPDAInstitutionRecipientData($userType);
+        $recordLink = $this->getRecordLink($id);
         $emailMessage = "Abbestellung: " . $this->getBookInformation($id) . "\r\n\r\n" .
-                         "für: " . $userData[0] . "(" . $userData[1] . ")" . " [Benutzertyp: " . $userType . "]";
+                        "Link: " . $recordLink . "\r\n\r\n" .
+                        "für: " . $userData[0] . "(" . $userData[1] . ")" . " [Benutzertyp: " . $userType . "]";
         $this->sendEmail($recipientData['email'], $recipientData['name'], $senderData['email'], $senderData['name'], $emailSubject, $emailMessage);
     }
 
