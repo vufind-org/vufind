@@ -38,7 +38,7 @@
     </div>
 
     <a id="moreInfoToggle" href="#" class="hidden"><?=$this->transEsc('more_info_toggle')?></a>
-    <?/* Display Main Details */?>
+    <? /* Display Main Details */ ?>
     <?
       $formatter = $this->recordDataFormatter();
       $fields = $formatter->getData($driver, $formatter->getDefaults('collection-info'));
@@ -51,6 +51,6 @@
         <? endforeach; ?>
       </table>
     <? endif; ?>
-    <?/* End Main Details */?>
+    <? /* End Main Details */ ?>
   </div>
 </div>

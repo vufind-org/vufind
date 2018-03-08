@@ -66,8 +66,8 @@
         </tr>
       <? endif; ?>
 
-      <?if ($this->driver->hasHTMLFullTextAvailable() && !$restrictedView):
-          $fullText = $this->driver->getHtmlFullText();?>
+      <? if ($this->driver->hasHTMLFullTextAvailable() && !$restrictedView): ?>
+        <? $fullText = $this->driver->getHtmlFullText(); ?>
         <tr id="html">
           <td colspan="2">
             <?=$fullText?>
