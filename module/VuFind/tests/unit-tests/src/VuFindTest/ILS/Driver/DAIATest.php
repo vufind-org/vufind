@@ -137,9 +137,11 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Constructor
+     * Standard setup method.
+     *
+     * @return void
      */
-    public function __construct()
+    public function setUp()
     {
         $this->driver = $this->createConnector();
     }

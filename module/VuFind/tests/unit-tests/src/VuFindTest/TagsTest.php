@@ -46,9 +46,11 @@ class TagsTest extends \PHPUnit_Framework_TestCase
     protected $parser;
 
     /**
-     * Constructor
+     * Standard setup method.
+     *
+     * @return void
      */
-    public function __construct()
+    public function setUp()
     {
         $this->parser = new \VuFind\Tags();
     }

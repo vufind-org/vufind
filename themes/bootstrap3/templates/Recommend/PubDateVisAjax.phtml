@@ -1,13 +1,12 @@
-<? $visFacets = $this->recommend->getVisFacets(); ?>
-<? if ($visFacets): ?>
-
-  <? /* load jQuery flot */ ?>
-<?$this->headScript()->appendFile('vendor/flot/excanvas.min.js', null, ['conditional' => 'IE']);
-  $this->headScript()->appendFile('vendor/flot/jquery.flot.min.js');
-  $this->headScript()->appendFile('vendor/flot/jquery.flot.resize.min.js');
-  $this->headScript()->appendFile('vendor/flot/jquery.flot.selection.min.js');
-  $this->headScript()->appendFile('pubdate_vis.js'); ?>
-
+<? if ($visFacets = $this->recommend->getVisFacets()): ?>
+  <?
+    // load jQuery flot:
+    $this->headScript()->appendFile('vendor/flot/excanvas.min.js', null, ['conditional' => 'IE']);
+    $this->headScript()->appendFile('vendor/flot/jquery.flot.min.js');
+    $this->headScript()->appendFile('vendor/flot/jquery.flot.resize.min.js');
+    $this->headScript()->appendFile('vendor/flot/jquery.flot.selection.min.js');
+    $this->headScript()->appendFile('pubdate_vis.js');
+  ?>
   <? foreach ($visFacets as $facetField => $facetRange): ?>
     <div class="authorbox">
       <div id="datevis<?=$this->escapeHtml($facetField)?>xWrapper" class="hidden">

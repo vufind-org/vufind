@@ -415,7 +415,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Create view
-        $mailer = $this->serviceLocator->get('VuFind\Mailer');
+        $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
         $view = $this->createEmailViewModel(
             null, $mailer->getDefaultRecordSubject($driver)
         );
@@ -452,7 +452,7 @@ class AbstractRecord extends AbstractBase
      */
     protected function smsEnabled()
     {
-        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\Config\AccountCapabilities');
         return $check->getSmsSetting() !== 'disabled';
     }
 
@@ -472,7 +472,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Load the SMS carrier list:
-        $sms = $this->serviceLocator->get('VuFind\SMS');
+        $sms = $this->serviceLocator->get('VuFind\SMS\SMSInterface');
         $view = $this->createViewModel();
         $view->carriers = $sms->getCarriers();
         $view->validation = $sms->getValidationType();
@@ -550,12 +550,33 @@ class AbstractRecord extends AbstractBase
                 ->toUrl($export->getRedirectUrl($format, $callback));
         }
 
+        $recordHelper = $this->getViewRenderer()->plugin('record');
+
+        $exportType = $export->getBulkExportType($format);
+        if ('post' === $exportType) {
+            $params = [
+                'exportType' => 'post',
+                'postField' => $export->getPostField($format),
+                'postData' => $recordHelper($driver)->getExport($format),
+                'targetWindow' => $export->getTargetWindow($format),
+                'url' => $export->getRedirectUrl($format, ''),
+                'format' => $format
+            ];
+            $msg = [
+                'translate' => false, 'html' => true,
+                'msg' => $this->getViewRenderer()->render(
+                    'cart/export-success.phtml', $params
+                )
+            ];
+            $this->flashMessenger()->addSuccessMessage($msg);
+            return $this->redirectToRecord();
+        }
+
         // Send appropriate HTTP headers for requested format:
         $response = $this->getResponse();
         $response->getHeaders()->addHeaders($export->getHeaders($format));
 
         // Actually export the record
-        $recordHelper = $this->getViewRenderer()->plugin('record');
         $response->setContent($recordHelper($driver)->getExport($format));
         return $response;
     }
@@ -629,7 +650,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Support method to load tab information from the RecordTabPluginManager.
+     * Support method to load tab information from the RecordTab PluginManager.
      *
      * @return void
      */
@@ -637,7 +658,7 @@ class AbstractRecord extends AbstractBase
     {
         $driver = $this->loadRecord();
         $request = $this->getRequest();
-        $rtpm = $this->serviceLocator->get('VuFind\RecordTabPluginManager');
+        $rtpm = $this->serviceLocator->get('VuFind\RecordTab\PluginManager');
         $details = $rtpm->getTabDetailsForRecord(
             $driver, $this->getRecordTabConfig(), $request,
             $this->fallbackDefaultTab

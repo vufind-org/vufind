@@ -99,7 +99,7 @@ class BackendManager
      */
     public function get($name)
     {
-        $backend = $this->registry->get($name, false);
+        $backend = $this->registry->get($name);
         if (!is_object($backend)) {
             throw new UnexpectedValueException(
                 sprintf(

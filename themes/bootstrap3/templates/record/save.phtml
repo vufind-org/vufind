@@ -20,7 +20,7 @@
     </p><hr/>
   <? endif; ?>
 
-  <?/* Only display the list drop-down if the user has lists that do not contain
+  <? /* Only display the list drop-down if the user has lists that do not contain
   this item OR if they have no lists at all and need to create a default list */?>
   <? $showLists = (!empty($this->nonContainingLists) || (empty($this->containingLists) && empty($this->nonContainingLists))); ?>
 

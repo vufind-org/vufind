@@ -69,7 +69,7 @@
         <? if (isset($this->highlight_row) && $row == $this->highlight_row): ?>
           <tr class="browse-match">
           <? if (isset($this->match_type) && ($this->match_type == "NONE")): ?>
-            <?// this is the right row but query doesn't match value ?>
+            <? // this is the right row but query doesn't match value ?>
             <td colspan="<?=count($this->extras) + 2;?>"><?=$this->transEsc('your_match_would_be_here')?></td>
             </tr>
             <tr>

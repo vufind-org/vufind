@@ -6,11 +6,10 @@
     <div id="side-collapse-randomrecommend" class="collapse<? if(!in_array('RandomRecommend', $collapsedFacets)): ?> in<? endif ?>">
     <? foreach ($recommend as $driver): ?>
       <li class="list-group-item">
-        <?if($this->recommend->getDisplayMode() === "images" || $this->recommend->getDisplayMode() === "mixed"):?>
-
+        <? if ($this->recommend->getDisplayMode() === "images" || $this->recommend->getDisplayMode() === "mixed"): ?>
           <? /* Display thumbnail if appropriate: */ ?>
           <?=$this->record($driver)->getCover('RandomRecommend', 'small:medium', $this->recordLink()->getUrl($driver)); ?>
-        <?endif;?>
+        <? endif; ?>
 
         <? $formats = $driver->getFormats(); $format = isset($formats[0]) ? $formats[0] : ''; ?>
         <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?> clearfix">
@@ -33,4 +32,4 @@
     <? endforeach; ?>
     </div>
   </ul>
-<?endif;?>
+<? endif; ?>

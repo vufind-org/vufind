@@ -28,6 +28,9 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
+
 /**
  * Factory for record driver data formatting view helper
  *
@@ -38,16 +41,31 @@ namespace VuFind\View\Helper\Root;
  * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
  * Wiki
  */
-class RecordDataFormatterFactory
+class RecordDataFormatterFactory implements FactoryInterface
 {
     /**
-     * Create the helper.
+     * Create an object
      *
-     * @return RecordDataFormatter
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
+     *
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke()
-    {
-        $helper = new RecordDataFormatter();
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
+        }
+        $helper = new $requestedName();
         $helper->setDefaults(
             'collection-info', [$this, 'getDefaultCollectionInfoSpecs']
         );
