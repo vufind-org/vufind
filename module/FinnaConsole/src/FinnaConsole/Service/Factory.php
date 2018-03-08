@@ -73,7 +73,7 @@ class Factory
     {
         $tableManager = $sm->get('VuFind\DbTablePluginManager');
         $userTable = $tableManager->get('user');
-        $dueDateReminderTable = $tableManager->get('due-date-reminder');
+        $dueDateReminderTable = $tableManager->get('duedatereminder');
 
         $catalog = $sm->get('VuFind\ILS\Connection');
         $configReader = $sm->get('VuFind\Config');

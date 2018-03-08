@@ -4,7 +4,10 @@ namespace FinnaConsole\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
-            'util' => 'FinnaConsole\Controller\Factory::getUtilController',
+            'FinnaConsole\Controller\UtilController' => 'VuFind\Controller\AbstractBaseFactory',
+        ],
+        'aliases' => [
+            'VuFindConsole\Controller\UtilController' => 'FinnaConsole\Controller\UtilController',
         ]
     ],
     'service_manager' => [
