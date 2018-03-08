@@ -1,6 +1,6 @@
 <?php
 /**
- * Row Definition for Comments-Record link table.
+ * Row Definition for CommentsRecord link table.
  *
  * PHP version 5
  *
@@ -30,7 +30,7 @@ namespace Finna\Db\Row;
 use VuFind\Db\Row\RowGateway;
 
 /**
- * Row Definition for Comments-Record link table.
+ * Row Definition for CommentsRecord link table.
  *
  * @category VuFind
  * @package  Db_Row

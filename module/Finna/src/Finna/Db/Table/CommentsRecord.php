@@ -1,6 +1,6 @@
 <?php
 /**
- * Table Definition for Comments-Record link table.
+ * Table Definition for CommentsRecord link table.
  *
  * PHP version 5
  *
@@ -33,7 +33,7 @@ use VuFind\Db\Table\PluginManager;
 use Zend\Db\Adapter\Adapter;
 
 /**
- * Table Definition for Comments-Record link table.
+ * Table Definition for CommentsRecord link table.
  *
  * @category VuFind
  * @package  Db_Table

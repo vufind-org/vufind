@@ -92,8 +92,8 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter
-    ) {
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
         $this->dateConverter = $dateConverter;
     }
 

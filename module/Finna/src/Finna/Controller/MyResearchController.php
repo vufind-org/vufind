@@ -995,7 +995,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 if (!$user) {
                     throw new \Exception('Invalid parameters.');
                 }
-                $dueDateTable = $this->getTable('due-date-reminder');
+                $dueDateTable = $this->getTable('duedatereminder');
                 $secret = $dueDateTable->getUnsubscribeSecret(
                     $this->serviceLocator->get('VuFind\HMAC'), $user, $user->id
                 );
