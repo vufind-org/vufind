@@ -325,7 +325,7 @@ class Loader extends \VuFind\Cover\Loader
         );
 
         // Attempt to pull down the image:
-        $result = $this->client->setUri($url)->send();
+        $result = $this->httpService->createClient($url)->send();
         if (!$result->isSuccess()) {
             $this->debug("Failed to retrieve image from $url");
             return false;

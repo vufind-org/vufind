@@ -25,9 +25,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Cookie;
+namespace Finna\Cookie;
 
 use Interop\Container\ContainerInterface;
+use Zend\Console\Console;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -61,6 +62,11 @@ class CookieManagerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+
+        if (Console::isConsole()) {
+            return new \VuFind\Cookie\CookieManager([]);
+        }
+
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
         $path = '/';
         if (isset($config->Cookies->limit_by_path)
@@ -81,7 +87,7 @@ class CookieManagerFactory implements FactoryInterface
             : null;
         $session_name = isset($config->Cookies->session_name)
             ? $config->Cookies->session_name
-            : null;
+            : 'FINNA_SESSION';
         return new $requestedName($_COOKIE, $path, $domain, $secure, $session_name);
     }
 }

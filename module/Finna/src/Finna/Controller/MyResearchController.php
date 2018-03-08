@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015-2017.
+ * Copyright (C) The National Library of Finland 2015-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,7 +30,6 @@
 namespace Finna\Controller;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Session\SessionManager;
 
 /**
  * Controller for the user account area.
@@ -47,26 +46,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 {
     use OnlinePaymentControllerTrait;
     use CatalogLoginTrait;
-
-    /**
-     * Session manager
-     *
-     * @var SessionManager
-     */
-    protected $sessionManager;
-
-    /**
-     * Constructor
-     *
-     * @param ServiceLocatorInterface $sm             Service manager
-     * @param SessionManager          $sessionManager Session manager
-     */
-    public function __construct(ServiceLocatorInterface $sm,
-        SessionManager $sessionManager
-    ) {
-        parent::__construct($sm);
-        $this->sessionManager = $sessionManager;
-    }
 
     /**
      * Catalog Login Action
@@ -295,10 +274,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         // Set up CSRF:
+        $sessionManager = $this->serviceLocator->get('Zend\Session\SessionManager');
         $this->csrf = new \Zend\Validator\Csrf(
             [
                 'session' => new \Zend\Session\Container(
-                    'csrf', $this->sessionManager
+                    'csrf', $sessionManager
                 ),
                 'salt' => isset($this->config->Security->HMACkey)
                     ? $this->config->Security->HMACkey : 'VuFindCsrfSalt',

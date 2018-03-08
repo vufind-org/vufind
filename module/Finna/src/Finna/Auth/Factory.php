@@ -54,8 +54,8 @@ class Factory extends \VuFind\Auth\Factory
     public static function getILS(ServiceManager $sm)
     {
         return new ILS(
-            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
-            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+            $sm->get('VuFind\ILSConnection'),
+            $sm->get('VuFind\ILSAuthenticator')
         );
     }
 
@@ -136,8 +136,8 @@ class Factory extends \VuFind\Auth\Factory
     public static function getMultiILS(ServiceManager $sm)
     {
         return new MultiILS(
-            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
-            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+            $sm->get('VuFind\ILSConnection'),
+            $sm->get('VuFind\ILSAuthenticator')
         );
     }
 
@@ -151,7 +151,7 @@ class Factory extends \VuFind\Auth\Factory
     public static function getShibboleth(ServiceManager $sm)
     {
         return new Shibboleth(
-            $sm->getServiceLocator()->get('VuFind\SessionManager')
+            $sm->get('VuFind\SessionManager')
         );
     }
 }

@@ -1,10 +1,10 @@
 <?php
 /**
- * Dummy MetaLib view helper (for legacy code template code)
+ * Database table plugin factory
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) Villanova University 2010.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,34 +20,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @package  Db_Table
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-namespace Finna\View\Helper\Root;
+namespace Finna\Db\Table;
 
 /**
- * Dummy MetaLib view helper (for legacy code template code)
+ * Database table plugin factory
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @package  Db_Table
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class MetaLib extends \Zend\View\Helper\AbstractHelper
+class PluginFactory extends \VuFind\Db\Table\PluginFactory
 {
     /**
-     * Return false for all MetaLib view helper calls.
-     *
-     * @param string $name      Method name
-     * @param array  $arguments Method arguments
-     *
-     * @return bool
+     * Constructor
      */
-    public function __call($name, $arguments)
+    public function __construct()
     {
-        return false;
+        $this->defaultNamespace = 'Finna\Db\Table';
     }
 }

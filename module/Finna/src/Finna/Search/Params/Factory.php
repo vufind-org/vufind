@@ -55,8 +55,8 @@ class Factory
     public static function getSolr(ServiceManager $sm)
     {
         $factory = new PluginFactory();
-        $helper = $sm->getServiceLocator()->get('VuFind\HierarchicalFacetHelper');
-        $converter = $sm->getServiceLocator()->get('VuFind\DateConverter');
+        $helper = $sm->get('VuFind\HierarchicalFacetHelper');
+        $converter = $sm->get('VuFind\DateConverter');
         return $factory->createServiceWithName(
             $sm, 'solr', 'Solr', [$helper, $converter]
         );
@@ -72,8 +72,8 @@ class Factory
     public static function getCombined(ServiceManager $sm)
     {
         $factory = new PluginFactory();
-        $helper = $sm->getServiceLocator()->get('VuFind\HierarchicalFacetHelper');
-        $converter = $sm->getServiceLocator()->get('VuFind\DateConverter');
+        $helper = $sm->get('VuFind\HierarchicalFacetHelper');
+        $converter = $sm->get('VuFind\DateConverter');
         return $factory->createServiceWithName(
             $sm, 'combined', 'Combined', [$helper, $converter]
         );

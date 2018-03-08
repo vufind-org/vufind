@@ -1,10 +1,11 @@
 <?php
 /**
- * Factory for autocomplete plugins.
+ * VuFind Config Manager
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,41 +21,39 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Autocomplete
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @package  ServiceManager
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace Finna\Autocomplete;
-
-use Zend\ServiceManager\ServiceManager;
+namespace Finna\Config;
 
 /**
- * Factory for autocomplete plugins.
+ * VuFind Config Manager
  *
  * @category VuFind
- * @package  Autocomplete
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @package  ServiceManager
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
- *
- * @codeCoverageIgnore
  */
-class Factory extends \VuFind\Autocomplete\Factory
+class PluginManager extends \VuFind\Config\PluginManager
 {
     /**
-     * Construct the Solr plugin.
+     * Constructor
      *
-     * @param ServiceManager $sm Service manager.
+     * Make sure plugins are properly initialized.
      *
-     * @return Solr
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
      */
-    public static function getSolr(ServiceManager $sm)
-    {
-        return new Solr(
-            $sm->get('VuFind\SearchResultsPluginManager'),
-            $sm->get('VuFind\Config')->get('facets'),
-            $sm->get('VuFind\Config')->get('searches')
-        );
+    public function __construct($configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory('Finna\Config\PluginFactory');
+        parent::__construct($configOrContainerInstance, $v3config);
     }
 }

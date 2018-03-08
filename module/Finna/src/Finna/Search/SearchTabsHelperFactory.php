@@ -1,6 +1,6 @@
 <?php
 /**
- * Cookie Manager factory.
+ * Search tabs helper factory.
  *
  * PHP version 5
  *
@@ -20,26 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Cookie
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Cookie;
+namespace Finna\Search;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Cookie Manager factory.
+ * Search tabs helper factory.
  *
  * @category VuFind
- * @package  Cookie
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CookieManagerFactory implements FactoryInterface
+class SearchTabsHelperFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -62,26 +62,20 @@ class CookieManagerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $path = '/';
-        if (isset($config->Cookies->limit_by_path)
-            && $config->Cookies->limit_by_path
-        ) {
-            $request = $container->get('Request');
-            $path = ($request instanceof \Zend\Console\Request)
-                ? '' : $request->getBasePath();
-            if (empty($path)) {
-                $path = '/';
-            }
-        }
-        $secure = isset($config->Cookies->only_secure)
-            ? $config->Cookies->only_secure
-            : false;
-        $domain = isset($config->Cookies->domain)
-            ? $config->Cookies->domain
-            : null;
-        $session_name = isset($config->Cookies->session_name)
-            ? $config->Cookies->session_name
-            : null;
-        return new $requestedName($_COOKIE, $path, $domain, $secure, $session_name);
+        $tabConfig = isset($config->SearchTabs)
+            ? $config->SearchTabs->toArray() : [];
+
+        // Remove MetaLib tab
+        unset($tabConfig['MetaLib']);
+
+        $filterConfig = isset($config->SearchTabsFilters)
+            ? $config->SearchTabsFilters->toArray() : [];
+        $permissionConfig = isset($config->SearchTabsPermissions)
+            ? $config->SearchTabsPermissions->toArray() : [];
+        return new $requestedName(
+            $container->get('VuFind\Search\Results\PluginManager'),
+            $tabConfig, $filterConfig,
+            $container->get('Application')->getRequest(), $permissionConfig
+        );
     }
 }

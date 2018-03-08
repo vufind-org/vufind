@@ -62,7 +62,7 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
      * @param int                              $siteId     Piwik site ID
      * @param bool                             $customVars Whether to track
      * additional information in custom variables
-     * @param Zend\Mvc\Router\Http\RouteMatch  $router     Request
+     * @param Zend\Router\Http\RouteMatch      $router     Request
      * @param Zend\Http\PhpEnvironment\Request $request    Request
      * @param \VuFind\Translator               $translator Translator
      */

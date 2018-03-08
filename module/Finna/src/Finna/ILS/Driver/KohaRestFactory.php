@@ -1,6 +1,6 @@
 <?php
 /**
- * Cookie Manager factory.
+ * Factory for KohaRest ILS driver.
  *
  * PHP version 5
  *
@@ -20,26 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Cookie
+ * @package  ILS_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Cookie;
+namespace Finna\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Cookie Manager factory.
+ * Factory for KohaRest ILS driver.
  *
  * @category VuFind
- * @package  Cookie
+ * @package  ILS_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CookieManagerFactory implements FactoryInterface
+class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
 {
     /**
      * Create an object
@@ -59,29 +58,12 @@ class CookieManagerFactory implements FactoryInterface
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $path = '/';
-        if (isset($config->Cookies->limit_by_path)
-            && $config->Cookies->limit_by_path
-        ) {
-            $request = $container->get('Request');
-            $path = ($request instanceof \Zend\Console\Request)
-                ? '' : $request->getBasePath();
-            if (empty($path)) {
-                $path = '/';
-            }
-        }
-        $secure = isset($config->Cookies->only_secure)
-            ? $config->Cookies->only_secure
-            : false;
-        $domain = isset($config->Cookies->domain)
-            ? $config->Cookies->domain
-            : null;
-        $session_name = isset($config->Cookies->session_name)
-            ? $config->Cookies->session_name
-            : null;
-        return new $requestedName($_COOKIE, $path, $domain, $secure, $session_name);
+        $sessionFactory = function ($namespace) use ($container) {
+            $manager = $container->get('Zend\Session\SessionManager');
+            return new \Zend\Session\Container("KohaRest_$namespace", $manager);
+        };
+        return parent::__invoke($container, $requestedName, [$sessionFactory]);
     }
 }

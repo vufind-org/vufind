@@ -51,7 +51,7 @@ class Factory
      */
     public static function getAddThis(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
+        $config = $sm->get('VuFind\Config')->get('config');
         return new AddThis(
             isset($config->AddThis->key) ? $config->AddThis->key : false
         );

@@ -51,9 +51,9 @@ class Factory
      */
     public static function getEDS(ServiceManager $sm)
     {
-        $eds = $sm->getServiceLocator()->get('VuFind\Config')->get('EDS');
+        $eds = $sm->get('VuFind\Config')->get('EDS');
         return new EDS(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'), $eds, $eds
+            $sm->get('VuFind\Config')->get('config'), $eds, $eds
         );
     }
 
@@ -67,11 +67,11 @@ class Factory
     public static function getSolrDefault(ServiceManager $sm)
     {
         $driver = new SolrDefault(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+            $sm->get('VuFind\Config')->get('searches')
         );
-        $driver->attachSearchService($sm->getServiceLocator()->get('VuFind\Search'));
+        $driver->attachSearchService($sm->get('VuFind\Search'));
         return $driver;
     }
 
@@ -85,9 +85,9 @@ class Factory
     public static function getSolrEad(ServiceManager $sm)
     {
         $driver = new SolrEad(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+            $sm->get('VuFind\Config')->get('searches')
         );
         return $driver;
     }
@@ -102,9 +102,9 @@ class Factory
     public static function getSolrForward(ServiceManager $sm)
     {
         $driver = new SolrForward(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+            $sm->get('VuFind\Config')->get('searches')
         );
         return $driver;
     }
@@ -119,10 +119,10 @@ class Factory
     public static function getSolrLido(ServiceManager $sm)
     {
         $driver = new SolrLido(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
-            $sm->getServiceLocator()->get('VuFind\DateConverter')
+            $sm->get('VuFind\Config')->get('searches'),
+            $sm->get('VuFind\DateConverter')
         );
         return $driver;
     }
@@ -137,18 +137,18 @@ class Factory
     public static function getSolrMarc(ServiceManager $sm)
     {
         $driver = new SolrMarc(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('datasources')
+            $sm->get('VuFind\Config')->get('searches'),
+            $sm->get('VuFind\SearchResultsPluginManager'),
+            $sm->get('VuFind\Config')->get('datasources')
         );
         $driver->attachILS(
-            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
-            $sm->getServiceLocator()->get('VuFind\ILSHoldLogic'),
-            $sm->getServiceLocator()->get('VuFind\ILSTitleHoldLogic')
+            $sm->get('VuFind\ILSConnection'),
+            $sm->get('VuFind\ILSHoldLogic'),
+            $sm->get('VuFind\ILSTitleHoldLogic')
         );
-        $driver->attachSearchService($sm->getServiceLocator()->get('VuFind\Search'));
+        $driver->attachSearchService($sm->get('VuFind\Search'));
         return $driver;
     }
 
@@ -162,11 +162,11 @@ class Factory
     public static function getSolrQdc(ServiceManager $sm)
     {
         $driver = new SolrQdc(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+            $sm->get('VuFind\Config')->get('searches')
         );
-        $driver->attachSearchService($sm->getServiceLocator()->get('VuFind\Search'));
+        $driver->attachSearchService($sm->get('VuFind\Search'));
         return $driver;
     }
 
@@ -179,9 +179,9 @@ class Factory
      */
     public static function getPrimo(ServiceManager $sm)
     {
-        $primo = $sm->getServiceLocator()->get('VuFind\Config')->get('Primo');
+        $primo = $sm->get('VuFind\Config')->get('Primo');
         $driver = new Primo(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\Config')->get('config'),
             $primo, $primo
         );
         return $driver;

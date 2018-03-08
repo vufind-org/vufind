@@ -19,7 +19,7 @@
 <form class="edit-card-form" method="post" name="<?=empty($this->card->id) ? 'newCardForm' : 'editCardForm'?>" autocomplete="off">
   <input type="hidden" name="id" value="<?=empty($this->card->id) ? 'NEW' : $this->card->id ?>"/>
   <div class="form-group">
-    <label class="control-label" for="card_name"><?=$this->transEsc('Library Card Name'); ?>: <? if (!$this->translationEmpty('tooltip_library_card_name_html')): ?><span class="tooltip-library-card-name" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title='<?=$this->transesc("tooltip_library_card_name_html") ?>'><i class="fa fa-info-big"></i> </span><? endif; ?></label>
+    <label class="control-label" for="card_name"><?=$this->transEsc('Library Card Name'); ?>: <? if (!$this->translationEmpty('tooltip_library_card_name_html')): ?><span class="tooltip-library-card-name" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title='<?=$this->transEsc("tooltip_library_card_name_html") ?>'><i class="fa fa-info-big"></i> </span><? endif; ?></label>
     <input id="card_name" class="form-control" type="text" placeholder="<?=$this->transEsc('library_card_name_placeholder'); ?>" name="card_name" value="<?=$this->escapeHtmlAttr($this->cardName == "{$this->target}.{$this->username}" ? $this->username : $this->cardName)?>"/>
   </div>
   <? if ($this->targets !== null): ?>

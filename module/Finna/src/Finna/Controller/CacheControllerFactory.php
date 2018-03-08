@@ -1,10 +1,10 @@
 <?php
 /**
- * Cookie Manager factory.
+ * Cache controller factory.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Cookie
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Controller
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Cookie;
+namespace Finna\Controller;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Cookie Manager factory.
+ * Cache controller factory.
  *
  * @category VuFind
- * @package  Cookie
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Controller
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CookieManagerFactory implements FactoryInterface
+class CacheControllerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -61,27 +61,10 @@ class CookieManagerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $path = '/';
-        if (isset($config->Cookies->limit_by_path)
-            && $config->Cookies->limit_by_path
-        ) {
-            $request = $container->get('Request');
-            $path = ($request instanceof \Zend\Console\Request)
-                ? '' : $request->getBasePath();
-            if (empty($path)) {
-                $path = '/';
-            }
-        }
-        $secure = isset($config->Cookies->only_secure)
-            ? $config->Cookies->only_secure
-            : false;
-        $domain = isset($config->Cookies->domain)
-            ? $config->Cookies->domain
-            : null;
-        $session_name = isset($config->Cookies->session_name)
-            ? $config->Cookies->session_name
-            : null;
-        return new $requestedName($_COOKIE, $path, $domain, $secure, $session_name);
+        return new $requestedName(
+            $container,
+            $container->get('VuFind\DbTablePluginManager')->get('FinnaCache'),
+            $container->get('VuFindTheme\ThemeInfo')
+        );
     }
 }

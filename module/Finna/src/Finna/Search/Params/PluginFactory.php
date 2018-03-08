@@ -54,7 +54,7 @@ class PluginFactory extends \VuFind\Search\Params\PluginFactory
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
         $name, $requestedName, array $extraParams = []
     ) {
-        $options = $serviceLocator->getServiceLocator()
+        $options = $serviceLocator
             ->get('VuFind\SearchOptionsPluginManager')->get($requestedName);
 
         $class = '\Finna\Search\\' . $requestedName . $this->classSuffix;
@@ -62,7 +62,7 @@ class PluginFactory extends \VuFind\Search\Params\PluginFactory
             $class = $this->getClassName($name, $requestedName);
         }
 
-        $configLoader = $serviceLocator->getServiceLocator()->get('VuFind\Config');
+        $configLoader = $serviceLocator->get('VuFind\Config');
         // Clone the options instance in case caller modifies it:
         return new $class(clone $options, $configLoader, ...$extraParams);
     }

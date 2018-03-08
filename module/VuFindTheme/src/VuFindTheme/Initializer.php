@@ -269,10 +269,13 @@ class Initializer
     protected function sendThemeOptionsToView()
     {
         // Get access to the view model:
-        $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
+        $viewManager = $this->serviceManager->get('ViewManager');
+        if (!($viewManager instanceof \Zend\Mvc\Console\View\ViewManager)) {
+            $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
 
-        // Send down the view options:
-        $viewModel->setVariable('themeOptions', $this->getThemeOptions());
+            // Send down the view options:
+            $viewModel->setVariable('themeOptions', $this->getThemeOptions());
+        }
     }
 
     /**
