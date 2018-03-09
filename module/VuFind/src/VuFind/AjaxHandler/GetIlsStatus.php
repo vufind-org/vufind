@@ -63,7 +63,7 @@ class GetIlsStatus extends AbstractBase
 
     /**
      * Constructor
-     * 
+     *
      * @param Connection        $ils      ILS connection
      * @param RendererInterface $renderer View renderer
      */

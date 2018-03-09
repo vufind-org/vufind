@@ -116,7 +116,7 @@ class AjaxController extends AbstractBase
                 return $this->getExceptionOutput($e);
             }
         }
-    
+
         // Fallback: Call the method specified by the 'method' parameter; append
         // Ajax to the end to avoid access to arbitrary inappropriate methods.
         $callback = [$this, $method . 'Ajax'];
