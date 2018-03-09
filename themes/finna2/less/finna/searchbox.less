@@ -23,7 +23,14 @@
       }
     }
   }
-
+  .pager {
+    & li.pager-text {
+      font-size: 1em;
+    }
+    & li > a {
+      padding: 0 5px;        
+    }
+  }
   @media (max-width: @screen-sm) {
     .dropdown.form-control {
       display: none;

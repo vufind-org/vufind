@@ -35,13 +35,13 @@
       <? ++$ind; ?>
       <div class="image-details-container<?=$ind > 0 ? ' hidden' : '' ?> text-left" data-img-index="<?=$ind ?>">
         <div class="image-link">
-            <?
+          <?
             $recordImage = $this->recordImage($this->record($this->driver));
             $originalImage = $recordImage->getMasterImage($ind);
             $formats = $this->driver->tryMethod('getFormats');
             $translatedFormat = $this->transEsc(end($formats));
             $rights = $image['rights'];
-            ?>
+          ?>
           <? if (isset($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
           <div class="open-link"><a target="_blank" href="<?=$originalImage ?>" download="<?=$originalImage ?>">
               <i aria-hidden="true" class="fa fa-download"></i>
@@ -63,9 +63,9 @@
             <strong><?= $this->transEsc('Image Rights') ?>:</strong>
             <? if (!empty($rights['copyright'])): ?><? if ($hasLink): ?><span class="imagerights"><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><? if ($this->transEsc($rights['copyright']) === "Luvanvarainen käyttö / ei tiedossa"): ?><?= $this->transEsc('usage_F') ?><? else: ?><?=$this->transEsc($rights['copyright']) ?><? endif; ?><? if ($hasLink): ?></a></span><? endif; ?>
             <? else: ?>
-              <? foreach ($this->driver->tryMethod('getUsageRights', [], []) as $usageRights): ?>
-                <?=$this->transEsc($usageRights) ?><br>
-              <? endforeach; ?>
+              <? if (in_array('usage_F', $this->driver->tryMethod('getUsageRights', [], []))): ?>
+                <?=$this->transEsc('usage_F') ?><br>
+              <? endif; ?>
             <? endif; ?>
           </div>
           <div class="copyright truncate-field">

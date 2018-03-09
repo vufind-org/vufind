@@ -127,33 +127,38 @@
           <div class="record-link"><a href="<?=$this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-circle-right"></i><span><?=$this->transEsc('To the record') ?></span></a></div>
           <? if ($this->userlist()->getMode() !== 'disabled'): ?><div class="save-record-link"><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i><span><?=$this->transEsc('Add to favorites')?></span></a></div><? endif; ?>
           <? if (isset($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
-          <div class="open-link"><a target="_blank" href="<?=$originalImage ?>"><i class="fa fa-download"></i><span><?=$this->transEsc('Show image in new window') ?></span></a> <span class="image-dimensions"></span></div>
+            <div class="open-link"><a target="_blank" href="<?=$originalImage ?>"><i class="fa fa-download"></i><span><?=$this->transEsc('Show image in new window') ?></span></a> <span class="image-dimensions"></span></div>
           <? endif ?>
         </div>
         <div class="image-rights">
           <div class="rights">
             <? $hasLink = isset($rights['link']); ?>
             <span><?=$this->transEsc('Image Rights') ?>:</span>
-            <? if (!empty($rights['copyright'])): ?><? if ($hasLink): ?><a target="_blank" href="<?=$rights['link'] ?>"><? endif; ?><? if ($this->transEsc($rights['copyright']) === "Luvanvarainen käyttö / ei tiedossa"): ?><?= $this->transEsc('usage_F') ?><? else: ?><?=$this->transEsc($rights['copyright']) ?><? endif; ?><? if ($hasLink): ?></a><? endif; ?>
+            <? if (!empty($rights['copyright'])): ?>
+              <? if ($hasLink): ?><a target="_blank" href="<?=$rights['link'] ?>"><? endif; ?><? if ($this->transEsc($rights['copyright']) === "Luvanvarainen käyttö / ei tiedossa"): ?><?= $this->transEsc('usage_F') ?><? else: ?><?=$this->transEsc($rights['copyright']) ?><? endif; ?><? if ($hasLink): ?></a><? endif; ?>
             <? else: ?>
-              <? foreach ($this->driver->tryMethod('getUsageRights', [], []) as $usageRights): ?>
-                <?=$this->transEsc($usageRights) ?><br>
-              <? endforeach; ?>
+              <? if (in_array('usage_F', $this->driver->tryMethod('getUsageRights', [], []))): ?>
+                <?=$this->transEsc('usage_F') ?><br>
+              <? endif; ?>
             <? endif; ?>
           </div>
-          <div class="more-link copyright-link"><a data-mode="1" href=""><?=$this->transEsc('show_more') ?><i class="fa fa-arrow-down"></i></a></div>
-          <div class="copyright">
-            <? if (isset($rights['description'])): ?>
-              <? foreach ($rights['description'] as $item): ?>
+          <? if (!empty($rights['copyright']) && (isset($rights['description']))): ?>
+            <div class="more-link copyright-link"><a data-mode="1" href=""><?=$this->transEsc('show_more') ?><i class="fa fa-arrow-down"></i></a></div>
+            <div class="copyright">
+          <? endif; ?>
+          <? if (isset($rights['description'])): ?>
+            <? foreach ($rights['description'] as $item): ?>
               <p><?=$this->transEsc($item) ?></p>
-              <? endforeach ?>
-            <? endif ?>
-            <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
-              <p><?=$this->transEsc('Image Rights Default') ?>
-              <p><a href="<?=$this->url('content-page', ['page' => 'terms']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?=$this->transEsc('See also terms and conditions') ?></a>
-            <? endif; ?>
-          </div>
-          <div class="less-link copyright-link"><a data-mode="0" href=""><?=$this->transEsc('show_less') ?><i class="fa fa-arrow-up"></i></a></div>
+            <? endforeach; ?>
+          <? endif; ?>
+          <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
+            <p><?=$this->transEsc('Image Rights Default') ?>
+            <p><a href="<?=$this->url('content-page', ['page' => 'terms']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?=$this->transEsc('See also terms and conditions') ?></a>
+          <? endif; ?>
+          <? if (!empty($rights['copyright']) && (isset($rights['description']))): ?>
+            </div>
+            <div class="less-link copyright-link"><a data-mode="0" href=""><?=$this->transEsc('show_less') ?><i class="fa fa-arrow-up"></i></a></div>
+          <? endif; ?>
           <? if ($this->resolver('record/record-organisation-menu.phtml')): ?>
             <?=$this->render('record/record-organisation-menu.phtml') ?>
           <? endif; ?>

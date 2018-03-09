@@ -14,11 +14,13 @@
     $user = $this->auth()->isLoggedIn();
     $cards = $user->getLibraryCards();
 
-    $updateAddress = $this->ils()->checkFunction('updateAddress', compact($user));
-    $updatePhone = $this->ils()->checkFunction('updatePhone', compact($user));
-    $updateSmsNumber = $this->ils()->checkFunction('updateSmsNumber', compact($user));
-    $updateEmail = $this->ils()->checkFunction('updateEmail', compact($user));
-    $updateLoanHistory = $this->ils()->checkFunction('updateTransactionHistoryState', compact($user));
+    $patron = $user ? $this->auth()->getILSPatron() : false;
+    $capabilityParams = $patron ? ['patron' => $patron] : [];
+    $updateAddress = $this->ils()->checkFunction('updateAddress', $capabilityParams);
+    $updatePhone = $this->ils()->checkFunction('updatePhone', $capabilityParams);
+    $updateSmsNumber = $this->ils()->checkFunction('updateSmsNumber', $capabilityParams);
+    $updateEmail = $this->ils()->checkFunction('updateEmail', $capabilityParams);
+    $updateLoanHistory = $this->ils()->checkFunction('updateTransactionHistoryState', $capabilityParams);
 
     $updateAddressLink = '';
     if ($updateAddress) {
@@ -98,7 +100,7 @@
       <? endif; ?>
 
       <? if (isset($profile['messagingServices']) && !empty($profile['messagingServices'])): ?>
-        <?= $this->partial('myresearch/profile-messaging.phtml', ['profile' => $profile, 'user' => $user]); ?>
+        <?= $this->partial('myresearch/profile-messaging.phtml', ['profile' => $profile, 'user' => $user, 'capabilityParams' => $capabilityParams]); ?>
       <? endif; ?>
 
       <?
@@ -203,7 +205,11 @@
         <? endif; ?>
         <? if (isset($this->profile['loan_history']) || $updateLoanHistory): ?>
           <div class="my-profile-col profile-title">
-            <label for="loan-history"><?=$this->transEsc('loan_history_retention') ?>:</label>
+            <? if ($updateLoanHistory): ?>
+              <label for="loan-history"><?=$this->transEsc('loan_history_retention') ?>:</label>
+            <? else: ?>
+              <?=$this->transEsc('loan_history_retention') ?>:
+            <? endif; ?>
           </div>
           <? if ($updateLoanHistory): ?>
             <div class="my-profile-col profile-text-value">
@@ -220,7 +226,7 @@
               </div>
             <? endif; ?>
           <? else: ?>
-            <div class="profile-text-value"><?=$this->transEsc($this->profile['loan_history'] ? 'loan_history_active' : 'loan_history_inactive') ?></div>
+            <div class="profile-text-value"><?=$this->transEsc($this->profile['loan_history'] ? 'loan_history_forever' : 'loan_history_never') ?></div>
           <? endif; ?>
           <div class="clearfix"></div>
         <? endif; ?>

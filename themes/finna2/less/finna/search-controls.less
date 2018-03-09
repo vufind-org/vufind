@@ -2,7 +2,7 @@
 .search-controls {
   margin-bottom: 0.5em;
   .button-label {
-    padding: 5px;
+    padding: 3px;
   }
   @media(max-width:@screen-xs-max) {
     margin-top: -5px;
@@ -13,9 +13,6 @@
   }
   @media (max-width: @screen-xxs) {
     & .view-options, & .view-dropdown, & .sort-button {
-      & .dropdown>a {
-        padding: 3px 3px 3px 8px;
-      }
       &  .dropdown > a span {
         padding-right: 20px;
         max-width: 72px;
@@ -31,6 +28,7 @@
   .control-container{
     margin: auto;
     text-align: left;
+    font-size: 0.9em;
     @media(max-width: @screen-sm-min) {
       margin-top: 10px;
     }
@@ -48,7 +46,6 @@
   }
   .sort-option-container, .limit-option-container, .view-option-container{
     display: inline-block;
-    margin-top: -5px;
   }
 }
 
@@ -76,11 +73,13 @@
     color: @brand-primary;
     border-radius: @border-radius-small;
     font-size: 1em;
-    padding: 4px 5px;
+    padding: 5px;
+    margin-bottom: 3px;
     display: inline-block;
     white-space: nowrap;
     & span {
       padding-right: 20px;
+      padding-left: 5px;
     }
     &:hover, &:focus {
       text-decoration: none;
@@ -93,10 +92,9 @@
     }
   }
   & i {
-    font-size: 18px;
+    font-size: 1.3em;
     vertical-align: middle;
     color: @brand-primary;
-    margin-top: -3px;
     margin-right: 0;
     border-radius: @finna-button-radius;
   }
@@ -138,7 +136,7 @@
     padding: 2px 5px;
     & i{
       color: @brand-primary;
-      font-size: 1.5em;
+      font-size: 1.85em;
     }
     &.selected {
       border: 2px solid @brand-primary;
