@@ -332,6 +332,9 @@ $config = [
                     'VuFind\Db\Row\User' => 'Finna\Db\Row\User',
                     'VuFind\Db\Row\UserList' => 'Finna\Db\Row\UserList',
 
+                    // Alias for Finna\Db\Table\Session to work
+                    'Finna\Db\Row\Session' => 'VuFind\Db\Row\Session',
+
                     'commentsinappropriate' => 'Finna\Db\Row\CommentsInappropriate',
                     'commentsrecord' => 'Finna\Db\Row\CommentsRecord',
                     'duedatereminder' => 'Finna\Db\Row\DueDateReminder',
