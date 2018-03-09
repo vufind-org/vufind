@@ -272,7 +272,6 @@ $config = [
             'Finna\Search\Memory' => 'VuFind\Search\MemoryFactory',
             'Finna\Search\Solr\HierarchicalFacetHelper' => 'Zend\ServiceManager\Factory\InvokableFactory',
 
-            'VuFind\Cookie\CookieManager' => 'Finna\Cookie\CookieManagerFactory',
             'VuFind\Search\SearchTabsHelper' => 'Finna\Search\SearchTabsHelperFactory',
         ],
         'aliases' => [
@@ -418,10 +417,8 @@ $config = [
             ],
             'search_backend' => [
                 'factories' => [
-                    'EDS' => 'Finna\Search\Factory\EdsBackendFactory',
                     'Primo' => 'Finna\Search\Factory\PrimoBackendFactory',
                     'Solr' => 'Finna\Search\Factory\SolrDefaultBackendFactory',
-                    'Summon' => 'Finna\Search\Factory\SummonBackendFactory',
                 ],
                 'aliases' => [
                     // Allow Solr core names to be used as aliases for services:

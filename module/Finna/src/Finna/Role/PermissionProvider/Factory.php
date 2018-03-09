@@ -51,7 +51,7 @@ class Factory extends \VuFind\Role\PermissionProvider\Factory
      */
     public static function getAuthenticationStrategy(ServiceManager $sm)
     {
-        return new AuthenticationStrategy($sm->getServiceLocator());
+        return new AuthenticationStrategy($sm);
     }
 
     /**
@@ -63,9 +63,6 @@ class Factory extends \VuFind\Role\PermissionProvider\Factory
      */
     public static function getIpRange(ServiceManager $sm)
     {
-        return new IpRange(
-            $sm->getServiceLocator()->get('Request'),
-            $sm->getServiceLocator()->get('VuFind\IpAddressUtils')
-        );
+        return new IpRange($sm->get('Request'), $sm->get('VuFind\IpAddressUtils'));
     }
 }

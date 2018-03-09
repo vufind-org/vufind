@@ -61,18 +61,13 @@ class PrimoBackendFactory
         if (!isset($this->primoConfig->General->url)) {
             throw new \Exception('Missing url in Primo.ini');
         }
-        if (Console::isConsole()) {
-            $instCode = isset($this->primoConfig->Institutions->defaultCode)
-                ? $this->primoConfig->Institutions->defaultCode
-                : null;
-        } else {
-            $instCode = null !== $permHandler
-                ? $permHandler->getInstCode()
-                : null;
-        }
+        $instCode = isset($permHandler)
+            ? $permHandler->getInstCode()
+            : null;
 
         // Build HTTP client:
-        $client = $this->serviceLocator->get('VuFind\Http')->createClient();
+        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+            ->createClient();
         $timeout = isset($this->primoConfig->General->timeout)
             ? $this->primoConfig->General->timeout : 30;
         $client->setOptions(['timeout' => $timeout]);
@@ -81,33 +76,6 @@ class PrimoBackendFactory
             $this->primoConfig->General->url, $instCode, $client
         );
         $connector->setLogger($this->logger);
-
-        if (isset($this->primoConfig->General->highlighting)
-            && $this->primoConfig->General->highlighting
-        ) {
-            $connector->setHighlighting(true);
-        }
-
-        if ($this->primoConfig->HiddenFilters) {
-            $connector->setHiddenFilters(
-                $this->primoConfig->HiddenFilters->toArray()
-            );
-        }
-
         return $connector;
-    }
-
-    /**
-     * Get a PrimoPermissionHandler
-     *
-     * @return PrimoPermissionHandler
-     */
-    protected function getPermissionHandler()
-    {
-        if (Console::isConsole()) {
-            // Permissions handler requires an HTTP request, can't use with console
-            return null;
-        }
-        return parent::getPermissionHandler();
     }
 }

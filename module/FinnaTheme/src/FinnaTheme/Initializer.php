@@ -41,20 +41,4 @@ use Zend\Stdlib\RequestInterface as Request;
  */
 class Initializer extends \VuFindTheme\Initializer
 {
-    /**
-     * Support method for init() -- figure out which theme option is active.
-     *
-     * @param Request $request Request object (for obtaining user parameters).
-     *
-     * @return string
-     */
-    protected function pickTheme(Request $request)
-    {
-        if (Console::isConsole()) {
-            return $this->config->theme;
-        } else {
-            // Theme is already set up in VuFindTheme initializer
-            return $this->tools->getTheme();
-        }
-    }
 }

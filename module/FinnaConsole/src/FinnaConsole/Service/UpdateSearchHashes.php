@@ -28,7 +28,7 @@
 namespace FinnaConsole\Service;
 
 /**
- * Console service for anonymizing expired user accounts.
+ * Console service for updating search hashes.
  *
  * @category VuFind
  * @package  Service
