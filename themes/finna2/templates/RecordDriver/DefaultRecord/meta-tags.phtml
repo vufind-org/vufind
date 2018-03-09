@@ -14,7 +14,7 @@
   }
   $publisher = $this->driver->getPublishers();
   $imagePath = $this->recordImage($this->record($this->driver))->getLargeImage();
-  $baseUrl = $this->serverURL();
+  $baseUrl = $this->serverUrl();
 
   // Fetch correct image link and metadata here for Facebook, Pinterest and Twitter
   $this->doctype(Zend\View\Helper\Doctype::XHTML1_RDFA); // See: http://framework.zend.com/manual/current/en/modules/zend.view.helpers.head-meta.html

@@ -100,10 +100,11 @@ if ($img):
           <? endif; ?>
         <? endif; ?>
 
-        <?=$this->partial('RecordDriver/SolrDefault/holdings.phtml') ?>
-        <?=$this->record($this->driver)->getOnlineUrls('results')?>
+        <? $recordHelper = $this->record($this->driver); ?>
+        <?=$recordHelper->renderTemplate('holdings.phtml');?>
+        <?=$recordHelper->getOnlineUrls('results');?>
+        <?=$recordHelper->getPreviews();?>
 
-        <?=$this->record($this->driver)->getPreviews()?>
         <? if ($this->layout()->templateDir === 'list'): ?>
           <?=$this->render('list/list-notes.phtml')?>
         <? endif; ?>

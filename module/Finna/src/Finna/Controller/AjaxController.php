@@ -1021,11 +1021,10 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
         $driver = $this->getRecordLoader()->load($id, $source);
 
-        $view = $this->createViewModel();
-        $view->setTemplate('RecordDriver/SolrDefault/record-image-popup.phtml');
-        $view->setTerminal(true);
-        $view->driver = $driver;
-        $view->index = $index;
+        $context = [
+            'driver' => $driver,
+            'index' => $index
+        ];
 
         $user = null;
         if ($publicList) {
@@ -1048,13 +1047,18 @@ class AjaxController extends \VuFind\Controller\AjaxController
                     $notes[] = $list->notes;
                 }
             }
-            $view->listNotes = $notes;
+            $context['listNotes'] = $notes;
             if ($publicList) {
-                $view->listUser = $user;
+                $context['listUser'] = $user;
             }
         }
 
-        return $view;
+        $recordHelper = $this->getViewRenderer()->plugin('record');
+        $html = $recordHelper($driver)
+            ->renderTemplate('record-image-popup.phtml', $context);
+        $response = $this->getResponse();
+        $response->setContent($html);
+        return $response;
     }
 
     /**

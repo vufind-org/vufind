@@ -1,4 +1,4 @@
-<!-- START of: finna - RecordDriver/SolrDefault/result-condensed.phtml -->
+<!-- START of: finna - RecordDriver/DefaultRecord/result-condensed.phtml -->
 <?
   $formats = $this->driver->tryMethod('getFormats');
   $this->record($this->driver)->getFormatClass(end($formats)) === '0database' ? $database = 'true' :  $database = 'false';
@@ -240,13 +240,13 @@
   <? endif; ?>
   <? endif; ?><? /* this will end layout for format other than database or e-magazines */ ?>
   <? if ($database == 'true'): ?>
-    <?=$this->partial('RecordDriver/SolrDefault/result-condensed-database.phtml'); ?>
+    <?=$this->record($this->driver)->renderTemplate('result-condensed-database.phtml'); ?>
   <? endif; ?>
   <? if ($ejournal == 'true'): ?>
-    <?=$this->partial('RecordDriver/SolrDefault/result-condensed-ejournal.phtml'); ?>
+    <?=$this->record($this->driver)->renderTemplate('result-condensed-ejournal.phtml'); ?>
   <? endif; ?>
   <? endif; ?>
   <div class="clearfix visible-xs"></div>
   </div>
 </div>
-<!-- END of: finna - RecordDriver/SolrDefault/result-condensed.phtml -->
+<!-- END of: finna - RecordDriver/DefaultRecord/result-condensed.phtml -->

@@ -199,9 +199,11 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
             $images = [$images[0]];
         }
 
-        $view->type = $type;
-        $view->images = $images;
+        $context = [
+            'type' => $type,
+            'images' => $images
+        ];
 
-        return $view->render('RecordDriver/SolrDefault/record-image.phtml');
+        return $this->record->renderTemplate('record-image.phtml', $context);
     }
 }

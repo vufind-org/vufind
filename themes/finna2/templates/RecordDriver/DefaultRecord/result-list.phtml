@@ -1,4 +1,4 @@
-<!-- START of: finna - RecordDriver/SolrDefault/result-list.phtml -->
+<!-- START of: finna - RecordDriver/DefaultRecord/result-list.phtml -->
 <?
   $combinedView = !$this->layout()->templateDir || $this->layout()->templateDir === 'combined';
   $img = $this->recordImage($this->record($this->driver));
@@ -151,9 +151,10 @@ if ($img):
           <? endif; ?>
         <? endif; ?>
 
-        <?=$this->partial('RecordDriver/SolrDefault/holdings.phtml') ?>
-        <?=$this->record($this->driver)->getOnlineUrls('results')?>
-        <?=$this->record($this->driver)->getPreviews()?>
+        <? $recordHelper = $this->record($this->driver); ?>
+        <?=$recordHelper->renderTemplate('holdings.phtml');?>
+        <?=$recordHelper->getOnlineUrls('results');?>
+        <?=$recordHelper->getPreviews();?>
         <? if ($this->layout()->templateDir === 'list'): ?>
           <?=$this->render('list/list-notes.phtml')?>
         <? endif; ?>
@@ -218,4 +219,4 @@ if ($img):
     <? endif; ?>
   </div>
 </div>
-<!-- END of: finna - RecordDriver/SolrDefault/result-list.phtml -->
+<!-- END of: finna - RecordDriver/DefaultRecord/result-list.phtml -->
