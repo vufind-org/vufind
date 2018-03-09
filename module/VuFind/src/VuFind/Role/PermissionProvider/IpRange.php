@@ -30,8 +30,8 @@
  */
 namespace VuFind\Role\PermissionProvider;
 
-use Zend\Console\Console;
 use VuFind\Net\IpAddressUtils;
+use Zend\Console\Console;
 use Zend\Stdlib\RequestInterface;
 
 /**
