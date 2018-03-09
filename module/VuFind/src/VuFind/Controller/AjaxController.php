@@ -104,7 +104,7 @@ class AjaxController extends AbstractBase
         $method = $this->params()->fromQuery('method');
 
         // Check the AJAX handler plugin manager for the method.
-        $manager = $this->serviceLocator->get('VuFind\AuthHandler\PluginManager');
+        $manager = $this->serviceLocator->get('VuFind\AjaxHandler\PluginManager');
         if ($manager->has($method)) {
             $handler = $manager->get($method);
             try {
