@@ -73,6 +73,24 @@ class AjaxController extends AbstractBase
     }
 
     /**
+     * Turn an exception into error output.
+     *
+     * @param \Exception $e Exception to output.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getExceptionOutput(\Exception $e)
+    {
+        $debugMsg = ('development' == APPLICATION_ENV)
+            ? ': ' . $e->getMessage() : '';
+        return $this->output(
+            $this->translate('An error has occurred') . $debugMsg,
+            self::STATUS_ERROR,
+            500
+        );
+    }
+
+    /**
      * Handles passing data to the class
      *
      * @return mixed
@@ -82,26 +100,35 @@ class AjaxController extends AbstractBase
         // Set the output mode to JSON:
         $this->outputMode = 'json';
 
-        // Call the method specified by the 'method' parameter; append Ajax to
-        // the end to avoid access to arbitrary inappropriate methods.
-        $callback = [$this, $this->params()->fromQuery('method') . 'Ajax'];
+        // Get the requested AJAX method:
+        $method = $this->params()->fromQuery('method');
+
+        // Check the AJAX handler plugin manager for the method.
+        $manager = $this->serviceLocator->get('VuFind\AuthHandler\PluginManager');
+        if ($manager->has($method)) {
+            $handler = $manager->get($method);
+            try {
+                return $this->output(...$handler->handleRequest($this->params()));
+            } catch (\Exception $e) {
+                return $this->getExceptionOutput($e);
+            }
+        }
+    
+        // Fallback: Call the method specified by the 'method' parameter; append
+        // Ajax to the end to avoid access to arbitrary inappropriate methods.
+        $callback = [$this, $method . 'Ajax'];
         if (is_callable($callback)) {
             try {
                 return call_user_func($callback);
             } catch (\Exception $e) {
-                $debugMsg = ('development' == APPLICATION_ENV)
-                    ? ': ' . $e->getMessage() : '';
-                return $this->output(
-                    $this->translate('An error has occurred') . $debugMsg,
-                    self::STATUS_ERROR,
-                    500
-                );
+                return $this->getExceptionOutput($e);
             }
-        } else {
-            return $this->output(
-                $this->translate('Invalid Method'), self::STATUS_ERROR, 400
-            );
         }
+
+        // If we got this far, we can't handle the requested method:
+        return $this->output(
+            $this->translate('Invalid Method'), self::STATUS_ERROR, 400
+        );
     }
 
     /**
