@@ -25,6 +25,8 @@
   </div>
 <? endif; ?>
 
+<a id="relaisRecordButton" class="modal-link" href='#' title="<?=$this->transEsc('PALCI Request')?>">PALCI Request (fastest)</a>
+
 <?=($offlineMode == "ils-offline") ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message']) : ''?>
 <? if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>

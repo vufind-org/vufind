@@ -264,9 +264,128 @@ function applyRecordTabHash() {
   }
 }
 
+//VUFIND/EZBORROW INTEGRATION
+//WHEN THE LINK IS CLICKED -- CALL startPalciRequest
+//CHECKS TO SEE IF THE ITEM IS AVAIALABLE.
+$('#relaisRecordButton').click(startPalciRequest);
+
+Lightbox.addOpenAction(function() {
+  //REMOVE THIS?
+  //var serverResponse = event.srcElement.responseText;
+  //var icon = "spinning";
+  //alert(icon);
+  //if (serverResponse.indexOf(icon) !== -1) {
+  //  relaisRecordClickedFunction();
+  //}
+  //if ((serverResponse.indexOf(icon) !== -1) {
+ //  startPalciRequest();
+ // }
+});
+
+Lightbox.addCloseAction(function() {
+$('#relaisRecordButton').click(startPalciRequest);
+});
+
+  //IF ITEM IS AVAILABLE -- START REQUEST
+  //OTHERWISE, OPEN EZ BORROW PAGE IN A DIFFERENT TAB
+  function startPalciRequest() {
+    relaisRecordClickedFunction();
+  }
+
+
+
+  function isItemAvailableThroughPalci() {
+    //IF THERE IS NO OPTION TO REQUEST
+    //THROUGH PALCI ON THIS PAGE (E.G. ITS AVAILABLE)
+    //THAN NO NEED TO CHECK FOR PALCI AVAILABILITY
+    //8/30/2016
+    if (!$('.palciLink').length) {
+       return false;
+    }
+    //IS THIS ITEM AVAILABLE VIA EZBORROW
+    var recordId = $('#record_id').val();
+    var recordSource = $('.hiddenSource').val();
+    var oclc = $('#oclcid').val();
+    var avail = false;
+    var url = path + '/AJAX/JSON?' + $.param({method:'isItemAvailable',id:recordId,'oclcNumber':oclc});
+    $.ajax({
+          dataType: 'json',
+          url: url,
+          success: function(response) {
+            if (response.data == "ok") {
+             avail = true;
+             $("span[class='palciLink']").each(function( index ) {
+                 console.log( index + ": " + $( this ).text() + ":" + avail);
+                 $( this ).html('<a id="relaisRecordButton" href="#" class="modal-link"  href="#"  title="PALCI Request">PALCI Request (fastest)</a>&nbsp;&nbsp;');
+                 $('#relaisRecordButton').click(startPalciRequest);
+             });
+            }
+            if (response.data == "no") {
+              avail = false;
+            }
+          },
+          error: function(response) {
+            avail = false;
+          }
+      });
+     return avail;
+     //return true;
+  }
+
+
+
+ //MAKE THE REQUEST FOR THE ITEM
+ //CHECKS TO SEE IF PATRON IS SIGNED IN
+ function relaisRecordClickedFunction() {
+
+    var id = $('.hiddenId')[0].value;
+    var theUrl = $("#relaisRecordUrl").val();
+    var parts = theUrl.split('/');
+
+    return Lightbox.get(parts[parts.length-3],'AddRelais',{id:id});
+
+
+  };
+
+
+
+  function makeRelaisRequest(url) {
+    $('#requestButton').html("<button class='btn btn-lg btn-info'><span class='glyphicon glyphicon-refresh spinning'></span> Requesting... </button>");
+    //alert(url);
+    $.ajax({
+          dataType: 'json',
+          url: url,
+          success: function(response) {
+            status = response.status;
+            var obj = jQuery.parseJSON(response.data);
+            //alert("in success");
+            if (status == "ERROR") {
+                $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Close'>");
+                $('#requestMessage').html("<br><h4><b>There was a problem with this request.  Click <a href='https://library.lehigh.edu/content/e_zborrow_authentication' target='new'>here to request this item using the EZBorrow Website.</a></b></h4>");
+            }
+            else {
+                $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Close'>");
+                $('#requestMessage').html("<br><h4><b>Confirmation:</b> Request id #" + obj.RequestNumber + " was created.  You will receive a confirmation email.<h4>");
+            }
+            $('#cancelPalciRequest').click(function() {
+                  $('#modal').modal('hide'); // hide the modal 
+                  $('#modal-dynamic-content').empty(); // empties dynamic content
+                  $('.modal-backdrop').remove(); // removes all modal-backdrops
+             });
+          },
+          error: function(response) {
+           //alert("error");
+          }
+    });
+}
+
+
 $(window).on('hashchange', applyRecordTabHash);
 
 function recordDocReady() {
+  //NEW FOR VUFIND/EZBORROW INTEGRATION
+  isItemAvailableThroughPalci();
+  //END NEW
   $('.record-tabs .nav-tabs a').click(function recordTabsClick() {
     var $li = $(this).parent();
     // If it's an active tab, click again to follow to a shareable link.
