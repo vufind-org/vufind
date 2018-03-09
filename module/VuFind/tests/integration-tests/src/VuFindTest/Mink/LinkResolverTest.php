@@ -158,6 +158,7 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:testsample1');
         $this->findCss($page, '.btn.btn-primary')->click();
+        $this->snooze();
 
         // Verify the OpenURL
         $this->assertOpenUrl($page);

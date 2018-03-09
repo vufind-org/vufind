@@ -6,7 +6,7 @@
   <li><a href="#Proximity Searches">Suche nach ähnlichen Wörtern</a></li>
   <li><a href="#Range Searches">Bereichssuche</a></li>
   <li><a href="#Boosting a Term">Wort gewichten</a></li>
-  <li><a href="#Boolean operators">Boolsche Operatoren</a>
+  <li><a href="#Boolean operators">Boolesche Operatoren</a>
     <ul>
       <li><a href="#AND">AND</a></li>
       <li><a href="#+">+</a></li>
@@ -29,7 +29,7 @@
     <p>Beispiel: Sie wollen nach "Test", "Tests" oder "Tester" suchen, dann geben
        Sie:</p>
     <pre class="code">Test*</pre>
-    <p>ein</p>
+    <p>ein.</p>
     <p>Sie können Platzhalter irgendwo platzieren:</p>
     <pre class="code">Te*t</pre>
   </dd>
@@ -86,19 +86,19 @@
     </p>
   </dd>
 
-  <dt><a name="Boolean operators"></a>Boolsche Operatoren</dt>
+  <dt><a name="Boolean operators"></a>Boolesche Operatoren</dt>
   <dd>
     <p>
-      Boolsche Operatoren erlauben es Wörter, logisch miteinander zu verknüpfen.
+      Boolesche Operatoren erlauben es, Wörter logisch miteinander zu verknüpfen.
       Folgende Operatoren sind erlaubt:
-      <strong>(AND)</strong>, <strong>(+)</strong>, <strong>(OR)</strong>,
-      <strong>(NOT)</strong> and <strong>(-)</strong>.
+      <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>,
+      <strong>NOT</strong> und <strong>-</strong>.
     </p>
-    <p>Hinweis: Boolsche Operatoren müssen groß geschrieben werden!</p>
+    <p>Hinweis: Boolesche Operatoren müssen großgeschrieben werden!</p>
     <dl>
       <dt><a name="AND"></a>AND</dt>
       <dd>
-        <p>Die Und-Verknüpfung (<strong>AND</strong>) ist der Standardoperator. Das
+        <p>Die Und-Verknüpfung <strong>(AND)</strong> ist der Standardoperator. Das
             bedeutet, dass wenn zwischen zwei Wörtern kein Operator gesetzt wird,
             die Und-Verknüpfung verwendet wird. Wenn Sie zwei Wörter mit AND verbinden,
             erhalten Sie Treffer, in denen beide Wörter vorhanden sind.
@@ -111,15 +111,15 @@
       </dd>      
       <dt><a name="+"></a>+</dt>
       <dd>
-        <p>Indem Sie den "+"-Operator vor ein Wort setzen, erhalten Sie
-           nur Treffer in denen dieses Wort vorkommt.
+        <p>Indem Sie den <strong>+</strong>-Operator vor ein Wort setzen, erhalten Sie
+           nur Treffer, in denen dieses Wort vorkommt.
         </p>
         <p>Beispiel:</p>
         <pre class="code">+Ökonomie +Keynes</pre>
       </dd>
       <dt><a name="OR"></a>OR</dt>
       <dd>
-        <p>Steht eine Oder-Verknüpfung (<strong>(OR)</strong>) zwischen zwei Wörtern, so 
+        <p>Steht eine Oder-Verknüpfung <strong>(OR)</strong> zwischen zwei Wörtern, so
            erhalten Sie Treffer, in denen eines oder beide Wörter gefunden wurden.
         </p>
         <p>Beispiel: Sie suchen nach Titeln, in denen die Phrasen "Ökonomie Keynes" oder
@@ -128,10 +128,10 @@
       </dd>
       <dt><a name="NOT"></a>NOT</dt>
       <dd>
-        <p>Indem Sie NOT vor ein Wort setzen, schließen Sie Treffer aus,
+        <p>Indem Sie <strong>NOT</strong> vor ein Wort setzen, schließen Sie Treffer aus,
            die dieses Wort enthalten.</p>
         <p>Beispiel: Sie wollen nach Titeln suchen, welche das Wort "Ökonomie"
-           enthalten aber nicht das Wort "Keynes":</p>
+           enthalten, aber nicht das Wort "Keynes":</p>
         <pre class="code">Ökonomie NOT Keynes</pre>
         <p>Hinweis: NOT muss mit mindestens zwei Wörtern verwendet werden.
            Beispielsweise liefert folgende Suche keine Treffer:</p>

@@ -41,7 +41,7 @@
             <li class="facet js-facet-item">
               <a href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<? if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<? endif;?>>
           <? else: ?>
-            <a href="<?=$toggleUrl ?>" data-lightbox-ignore class="facet js-facet-item<? if($item['isApplied']): ?> active<?endif;?>" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<? if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<? endif;?>>
+            <a href="<?=$toggleUrl ?>" data-lightbox-ignore class="facet js-facet-item<? if($item['isApplied']): ?> active<? endif; ?>" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<? if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<? endif;?>>
           <? endif; ?>
               <? if (!empty($item['displayText'])): ?>
                 <?=$this->escapeHtml($item['displayText']) ?>

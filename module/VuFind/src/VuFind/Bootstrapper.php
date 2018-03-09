@@ -179,9 +179,8 @@ class Bootstrapper
     {
         $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
-            $viewManager = $serviceManager->get('ViewManager');
-            if (!($viewManager instanceof \Zend\Mvc\Console\View\ViewManager)) {
-                $viewModel = $viewManager->getViewModel();
+            if (!Console::isConsole()) {
+                $viewModel = $serviceManager->get('ViewManager')->getViewModel();
 
                 // Grab the template name from the first child -- we can use this to
                 // figure out the current template context.
