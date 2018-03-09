@@ -150,7 +150,7 @@
           <strong><?=$this->transEsc('Description')?>:</strong> <?=$countNotes?>
         <? endif; ?>
         <div class="result-links hidden">
-          <i class="fa fa-pen"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
+          <i class="fa fa-pen"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (null !== $list_id):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
             <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
             $deleteUrl = null === $list_id
                 ? $this->url('myresearch-favorites')

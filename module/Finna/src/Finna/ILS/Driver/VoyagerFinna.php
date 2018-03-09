@@ -818,7 +818,7 @@ trait VoyagerFinna
                 }
 
                 $success = false;
-                if (!is_null($row['LOGIN'])) {
+                if (null !== $row['LOGIN']) {
                     // User has a primary login so it needs to match
                     $primary = mb_strtolower(utf8_encode($row['LOGIN']), 'UTF-8');
                     $success = $primary == $compareLogin

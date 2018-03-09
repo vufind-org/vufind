@@ -148,7 +148,7 @@ abstract class AbstractService implements ConsoleServiceInterface
         if (is_int($arg) || is_float($arg)) {
             return (string)$arg;
         }
-        if (is_null($arg)) {
+        if (null === $arg) {
             return 'null';
         }
         return "'$arg'";

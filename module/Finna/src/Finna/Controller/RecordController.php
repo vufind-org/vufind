@@ -558,7 +558,7 @@ class RecordController extends \VuFind\Controller\RecordController
             ? explode(":", $checkRequests['extraFields']) : [];
 
         // Process form submissions if necessary:
-        if (!is_null($this->params()->fromPost('placeStorageRetrievalRequest'))) {
+        if (null !== $this->params()->fromPost('placeStorageRetrievalRequest')) {
             if (in_array('acceptTerms', $extraFields)
                 && empty($gatheredDetails['acceptTerms'])
             ) {
@@ -688,7 +688,7 @@ class RecordController extends \VuFind\Controller\RecordController
             ? explode(":", $checkRequests['extraFields']) : [];
 
         // Process form submissions if necessary:
-        if (!is_null($this->params()->fromPost('placeILLRequest'))) {
+        if (null !== $this->params()->fromPost('placeILLRequest')) {
             if (in_array('acceptTerms', $extraFields)
                 && empty($gatheredDetails['acceptTerms'])
             ) {
