@@ -54,7 +54,7 @@ class Factory
      */
     public static function getMap(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config')->get('config');
         $enabled = isset($config->Content->recordMap);
         return new Map($enabled);
     }
@@ -68,8 +68,8 @@ class Factory
      */
     public static function getUserComments(ServiceManager $sm)
     {
-        $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $capabilities = $sm->get('VuFind\AccountCapabilities');
+        $config = $sm->get('VuFind\Config')->get('config');
         $recaptcha = \Finna\Controller\Plugin\Factory::getRecaptcha($sm);
         $useRecaptcha = $recaptcha->active('userComments');
         return new UserComments(

@@ -485,20 +485,31 @@ $config = [
             ],
             'recordtab' => [
                 'factories' => [
-                    'map' => 'Finna\RecordTab\Factory::getMap',
-                    'usercomments' => 'Finna\RecordTab\Factory::getUserComments',
-                    'pressreview' => 'Finna\RecordTab\Factory::getPressReviews',
-                    'music' => 'Finna\RecordTab\Factory::getMusic',
-                    'distribution' => 'Finna\RecordTab\Factory::getDistribution',
-                    'inspectionDetails' =>
-                        'Finna\RecordTab\Factory::getInspectionDetails',
-                    'descriptionFWD' => 'Finna\RecordTab\Factory::getDescriptionFWD',
-                    'itemdescription' =>
-                        'Finna\RecordTab\Factory::getItemDescription',
+                    'Finna\RecordTab\DescriptionFWD' => 'Finna\RecordTab\Factory::getDescriptionFWD',
+                    'Finna\RecordTab\Distribution' => 'Finna\RecordTab\Factory::getDistribution',
+                    'Finna\RecordTab\InspectionDetails' => 'Finna\RecordTab\Factory::getInspectionDetails',
+                    'Finna\RecordTab\ItemDescription' => 'Finna\RecordTab\Factory::getItemDescription',
+                    'Finna\RecordTab\Map' => 'Finna\RecordTab\Factory::getMap',
+                    'Finna\RecordTab\Music' => 'Finna\RecordTab\Factory::getMusic',
+                    'Finna\RecordTab\PressReviews' => 'Finna\RecordTab\Factory::getPressReviews',
+                    'Finna\RecordTab\UserComments' => 'Finna\RecordTab\Factory::getUserComments',
                 ],
                 'invokables' => [
                     'componentparts' => 'Finna\RecordTab\ComponentParts',
                 ],
+                'aliases' => [
+                    'componentparts' => 'Finna\RecordTab\ComponentParts',
+                    'descriptionFWD' => 'Finna\RecordTab\DescriptionFWD',
+                    'distribution' => 'Finna\RecordTab\Distribution',
+                    'inspectionDetails' => 'Finna\RecordTab\InspectionDetails',
+                    'itemdescription' => 'Finna\RecordTab\ItemDescription',
+                    'music' => 'Finna\RecordTab\Music',
+                    'pressreview' => 'Finna\RecordTab\PressReviews',
+
+                    // Overrides:
+                    'VuFind\RecordTab\Map' => 'Finna\RecordTab\Map',
+                    'VuFind\RecordTab\UserComments' => 'Finna\RecordTab\UserComments',
+                ]
             ],
             'related' => [
                 'factories' => [
