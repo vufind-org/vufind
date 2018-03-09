@@ -63,6 +63,9 @@ class GetIlsStatus extends AbstractBase
 
     /**
      * Constructor
+     * 
+     * @param Connection        $ils      ILS connection
+     * @param RendererInterface $renderer View renderer
      */
     public function __construct(Connection $ils, RendererInterface $renderer)
     {
