@@ -28,7 +28,6 @@
  */
 namespace Finna\Service;
 
-use Zend\Console\Console;
 use Zend\ServiceManager\ServiceManager;
 
 /**

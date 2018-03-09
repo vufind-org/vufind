@@ -29,8 +29,6 @@
  */
 namespace Finna\Controller;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
-
 /**
  * Controller for the user account area.
  *
