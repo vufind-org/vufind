@@ -1,6 +1,6 @@
 <?php
 /**
- * AJAX handler interface
+ * "Get ILS Status" AJAX handler
  *
  * PHP version 5
  *
@@ -22,35 +22,54 @@
  * @category VuFind
  * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\AjaxHandler;
 
+use VuFind\ILS\Connection;
 use Zend\Mvc\Controller\Plugin\Params;
+use Zend\View\Renderer\RendererInterface;
 
 /**
- * AJAX handler interface
+ * "Get ILS Status" AJAX handler
+ *
+ * This will check the ILS for being online and will return the ils-offline
+ * template upon failure.
  *
  * @category VuFind
  * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-interface AjaxHandlerInterface
+class GetIlsStatus extends AbstractBase
 {
-    // define some status constants
-    const STATUS_OK = 'OK';                  // good
-    const STATUS_ERROR = 'ERROR';            // bad
-    const STATUS_NEED_AUTH = 'NEED_AUTH';    // must login first
+    /**
+     * ILS connection
+     *
+     * @var Connection
+     */
+    protected $ils;
 
     /**
-     * Should we disable session writes?
+     * View renderer
      *
-     * @return bool
+     * @var RendererInterface
      */
-    public function sessionWritesDisabled();
+    protected $renderer;
+
+    /**
+     * Constructor
+     */
+    public function __construct(Connection $ils, RendererInterface $renderer)
+    {
+        $this->disableSessionWrites = true;
+        $this->ils = $ils;
+        $this->renderer = $renderer;
+    }
 
     /**
      * Handle a request.
@@ -59,5 +78,15 @@ interface AjaxHandlerInterface
      *
      * @return array [response data, internal status code, HTTP status code]
      */
-    public function handleRequest(Params $params);
+    public function handleRequest(Params $params)
+    {
+        if ($this->ils->getOfflineMode(true) == 'ils-offline') {
+            $offlineModeMsg = $params->fromPost(
+                'offlineModeMsg', $params->fromQuery('offlineModeMsg')
+            );
+            $html = $this->renderer
+                ->render('Helpers/ils-offline.phtml', compact('offlineModeMsg'));
+        }
+        return [isset($html) ? $html : '', self::STATUS_OK];
+    }
 }
