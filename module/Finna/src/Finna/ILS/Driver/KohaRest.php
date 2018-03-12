@@ -822,6 +822,80 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     }
 
     /**
+     * Get Patron Holds
+     *
+     * This is responsible for retrieving all holds by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @throws DateException
+     * @throws ILSException
+     * @return array        Array of the patron's holds on success.
+     */
+    public function getMyHolds($patron)
+    {
+        $result = $this->makeRequest(
+            ['v1', 'holds'],
+            ['borrowernumber' => $patron['id']],
+            'GET',
+            $patron
+        );
+        if (!isset($result)) {
+            return [];
+        }
+        $holds = [];
+        foreach ($result as $entry) {
+            $bibId = isset($entry['biblionumber']) ? $entry['biblionumber'] : null;
+            $itemId = isset($entry['itemnumber']) ? $entry['itemnumber'] : null;
+            $title = '';
+            $volume = '';
+            $publicationYear = '';
+            if ($itemId) {
+                $item = $this->getItem($itemId);
+                $bibId = $item['biblionumber'];
+                $volume = $item['enumchron'];
+            }
+            if (!empty($bibId)) {
+                $bib = $this->getBibRecord($bibId);
+                $title = isset($bib['title']) ? $bib['title'] : '';
+                if (!empty($bib['title_remainder'])) {
+                    $title .= ' ' . $bib['title_remainder'];
+                    $title = trim($title);
+                }
+            }
+            $frozen = false;
+            if (!empty($entry['suspend'])) {
+                $frozen = !empty($entry['suspend_until']) ? $entry['suspend_until']
+                    : true;
+            }
+            $available = !empty($entry['waitingdate']);
+            $inTransit = isset($entry['found'])
+                && strtolower($entry['found']) == 't';
+            $holds[] = [
+                'id' => $bibId,
+                'item_id' => $itemId ? $itemId : $entry['reserve_id'],
+                'location' => $entry['branchcode'],
+                'create' => $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d', $entry['reservedate']
+                ),
+                'expire' => !empty($entry['expirationdate'])
+                    ? $this->dateConverter->convertToDisplayDate(
+                        'Y-m-d', $entry['expirationdate']
+                    ) : '',
+                'position' => $entry['priority'],
+                'available' => $available,
+                'in_transit' => $inTransit,
+                'requestId' => $entry['reserve_id'],
+                'title' => $title,
+                'volume' => $volume,
+                'frozen' => $frozen,
+                'is_editable' => !$available && !$inTransit
+            ];
+        }
+        return $holds;
+    }
+
+    /**
      * Public Function which retrieves renew, hold and cancel settings from the
      * driver ini file.
      *
