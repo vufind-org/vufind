@@ -84,7 +84,11 @@ class GetRecordDetails extends AbstractBase
     /**
      * Constructor
      *
-     * @param Loader $loader Record loader
+     * @param array             $config   ZF configuration
+     * @param Request           $request  HTTP request
+     * @param Loader            $loader   Record loader
+     * @param PluginManager     $pm       RecordTab plugin manager
+     * @param RendererInterface $renderer Renderer
      */
     public function __construct(array $config, Request $request, Loader $loader,
         PluginManager $pm, RendererInterface $renderer
