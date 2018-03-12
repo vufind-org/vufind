@@ -44,6 +44,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'checkRequestIsValid' => 'VuFind\AjaxHandler\CheckRequestIsValid',
         'getACSuggestions' => 'VuFind\AjaxHandler\GetACSuggestions',
         'getIlsStatus' => 'VuFind\AjaxHandler\GetIlsStatus',
         'getSaveStatuses' => 'VuFind\AjaxHandler\GetSaveStatuses',
@@ -56,6 +57,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        'VuFind\AjaxHandler\CheckRequestIsValid' =>
+            'VuFind\AjaxHandler\CheckRequestIsValidFactory',
         'VuFind\AjaxHandler\GetACSuggestions' =>
             'VuFind\AjaxHandler\GetACSuggestionsFactory',
         'VuFind\AjaxHandler\GetIlsStatus' =>
