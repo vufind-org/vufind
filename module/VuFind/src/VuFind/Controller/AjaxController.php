@@ -296,50 +296,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Get record for integrated list view.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function getRecordDetailsAjax()
-    {
-        $driver = $this->getRecordLoader()->load(
-            $this->params()->fromQuery('id'),
-            $this->params()->fromQuery('source')
-        );
-        $viewtype = preg_replace(
-            '/\W/', '',
-            trim(strtolower($this->params()->fromQuery('type')))
-        );
-        $request = $this->getRequest();
-        $config = $this->serviceLocator->get('Config');
-
-        $recordTabPlugin = $this->serviceLocator
-            ->get('VuFind\RecordTab\PluginManager');
-        $details = $recordTabPlugin
-            ->getTabDetailsForRecord(
-                $driver,
-                $config['vufind']['recorddriver_tabs'],
-                $request,
-                'Information'
-            );
-
-        $rtpm = $this->serviceLocator->get('VuFind\RecordTab\PluginManager');
-        $html = $this->getViewRenderer()
-            ->render(
-                "record/ajaxview-" . $viewtype . ".phtml",
-                [
-                    'defaultTab' => $details['default'],
-                    'driver' => $driver,
-                    'tabs' => $details['tabs'],
-                    'backgroundTabs' => $rtpm->getBackgroundTabNames(
-                        $driver, $this->getRecordTabConfig()
-                    )
-                ]
-            );
-        return $this->output($html, self::STATUS_OK);
-    }
-
-    /**
      * Comment on a record.
      *
      * @return \Zend\Http\Response
