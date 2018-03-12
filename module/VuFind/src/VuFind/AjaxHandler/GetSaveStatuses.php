@@ -38,8 +38,7 @@ use Zend\Mvc\Controller\Plugin\Url;
 /**
  * "Get Save Statuses" AJAX handler
  *
- * This will check the ILS for being online and will return the ils-offline
- * template upon failure.
+ * Check one or more records to see if they are saved in one of the user's list.
  *
  * @category VuFind
  * @package  AJAX
