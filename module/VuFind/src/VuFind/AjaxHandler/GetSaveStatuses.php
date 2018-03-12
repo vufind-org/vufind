@@ -65,9 +65,9 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param SessionSettings   $ss   Session settings
-     * @param User|bool         $user Logged in user (or false)
-     * @param Url               $url  URL helper
+     * @param SessionSettings   $ss        Session settings
+     * @param User|bool         $user      Logged in user (or false)
+     * @param Url               $urlHelper URL helper
      */
     public function __construct(SessionSettings $ss, $user, Url $urlHelper)
     {
