@@ -607,8 +607,10 @@ class Voyager extends AbstractBase
     public function getStatuses($idList)
     {
         $status = [];
-        foreach ($idList as $id) {
-            $status[] = $this->getStatus($id);
+        if (is_array($idList)) {
+            foreach ($idList as $id) {
+                $status[] = $this->getStatus($id);
+            }
         }
         return $status;
     }
