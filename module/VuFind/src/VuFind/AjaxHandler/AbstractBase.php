@@ -62,4 +62,24 @@ abstract class AbstractBase implements AjaxHandlerInterface
         }
         $this->sessionSettings->disableWrite();
     }
+
+    /**
+     * Format a response array.
+     *
+     * @param mixed  $response Response data
+     * @param string $status   Internal status code (see constants in interface;
+     * defaults to OK)
+     * @param int    $httpCode HTTP status code (omit for default)
+     *
+     * @return array
+     */
+    protected function formatResponse($response, $status = self::STATUS_OK,
+        $httpCode = null
+    ) {
+        $arr = [$response, $status];
+        if ($httpCode !== null) {
+            $arr[] = $httpCode;
+        }
+        return $arr;
+    }
 }

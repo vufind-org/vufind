@@ -94,6 +94,6 @@ class GetIlsStatus extends AbstractBase
             $html = $this->renderer
                 ->render('Helpers/ils-offline.phtml', compact('offlineModeMsg'));
         }
-        return [isset($html) ? $html : '', self::STATUS_OK];
+        return $this->formatResponse(isset($html) ? $html : '');
     }
 }
