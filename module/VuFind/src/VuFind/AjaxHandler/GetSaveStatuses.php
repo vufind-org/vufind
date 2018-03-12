@@ -30,7 +30,6 @@ namespace VuFind\AjaxHandler;
 
 use VuFind\Db\Row\User;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;
 use Zend\Mvc\Controller\Plugin\Params;
 use Zend\Mvc\Controller\Plugin\Url;
