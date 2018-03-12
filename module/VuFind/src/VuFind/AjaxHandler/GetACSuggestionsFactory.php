@@ -1,6 +1,6 @@
 <?php
 /**
- * AJAX handler plugin manager
+ * Factory for GetACSuggestions AJAX handler.
  *
  * PHP version 5
  *
@@ -27,8 +27,10 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Interop\Container\ContainerInterface;
+
 /**
- * AJAX handler plugin manager
+ * Factory for GetACSuggestions AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -36,43 +38,34 @@ namespace VuFind\AjaxHandler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class GetACSuggestionsFactory implements
+    \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Default plugin aliases.
+     * Create an object
      *
-     * @var array
-     */
-    protected $aliases = [
-        'getACSuggestions' => 'VuFind\AjaxHandler\GetACSuggestions',
-        'getIlsStatus' => 'VuFind\AjaxHandler\GetIlsStatus',
-        'getSaveStatuses' => 'VuFind\AjaxHandler\GetSaveStatuses',
-        'getVisData' => 'VuFind\AjaxHandler\GetVisData',
-    ];
-
-    /**
-     * Default plugin factories.
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @var array
-     */
-    protected $factories = [
-        'VuFind\AjaxHandler\GetACSuggestions' =>
-            'VuFind\AjaxHandler\GetACSuggestionsFactory',
-        'VuFind\AjaxHandler\GetIlsStatus' =>
-            'VuFind\AjaxHandler\GetIlsStatusFactory',
-        'VuFind\AjaxHandler\GetSaveStatuses' =>
-            'VuFind\AjaxHandler\GetSaveStatusesFactory',
-        'VuFind\AjaxHandler\GetVisData' => 'VuFind\AjaxHandler\GetVisDataFactory',
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
+     * @return object
      *
-     * @return string
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getExpectedInterface()
-    {
-        return 'VuFind\AjaxHandler\AjaxHandlerInterface';
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        return new $requestedName(
+            $container->get('VuFind\Session\Settings'),
+            $container->get('VuFind\Autocomplete\Suggester')
+        );
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * AJAX handler plugin manager
+ * "Get Autocomplete Suggestions" AJAX handler
  *
  * PHP version 5
  *
@@ -21,58 +21,60 @@
  *
  * @category VuFind
  * @package  AJAX
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>0
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\AjaxHandler;
 
+use VuFind\Autocomplete\Suggester;
+use VuFind\Session\Settings as SessionSettings;
+use Zend\Mvc\Controller\Plugin\Params;
+use Zend\Stdlib\Parameters;
+
 /**
- * AJAX handler plugin manager
+ * "Get Autocomplete Suggestions" AJAX handler
  *
  * @category VuFind
  * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Chris Hallberg <crhallberg@gmail.com>
+ * @author   Till Kinstler <kinstler@gbv.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class GetACSuggestions extends AbstractBase
 {
     /**
-     * Default plugin aliases.
+     * Autocomplete suggester
      *
-     * @var array
+     * @var Suggester
      */
-    protected $aliases = [
-        'getACSuggestions' => 'VuFind\AjaxHandler\GetACSuggestions',
-        'getIlsStatus' => 'VuFind\AjaxHandler\GetIlsStatus',
-        'getSaveStatuses' => 'VuFind\AjaxHandler\GetSaveStatuses',
-        'getVisData' => 'VuFind\AjaxHandler\GetVisData',
-    ];
+    protected $suggester;
 
     /**
-     * Default plugin factories.
+     * Constructor
      *
-     * @var array
+     * @param SessionSettings $ss        Session settings
+     * @param Suggester       $suggester Autocomplete suggester
      */
-    protected $factories = [
-        'VuFind\AjaxHandler\GetACSuggestions' =>
-            'VuFind\AjaxHandler\GetACSuggestionsFactory',
-        'VuFind\AjaxHandler\GetIlsStatus' =>
-            'VuFind\AjaxHandler\GetIlsStatusFactory',
-        'VuFind\AjaxHandler\GetSaveStatuses' =>
-            'VuFind\AjaxHandler\GetSaveStatusesFactory',
-        'VuFind\AjaxHandler\GetVisData' => 'VuFind\AjaxHandler\GetVisDataFactory',
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
-     *
-     * @return string
-     */
-    protected function getExpectedInterface()
+    public function __construct(SessionSettings $ss, Suggester $suggester)
     {
-        return 'VuFind\AjaxHandler\AjaxHandlerInterface';
+        $this->sessionSettings = $ss;
+        $this->suggester = $suggester;
+    }
+
+    /**
+     * Handle a request.
+     *
+     * @param Params $params Parameter helper from controller
+     *
+     * @return array [response data, internal status code, HTTP status code]
+     */
+    public function handleRequest(Params $params)
+    {
+        $this->disableSessionWrites();  // avoid session write timing bug
+        $query = new Parameters($params->fromQuery());
+        return $this->formatResponse($this->suggester->getSuggestions($query));
     }
 }

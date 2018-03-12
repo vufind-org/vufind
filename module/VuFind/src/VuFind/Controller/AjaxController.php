@@ -784,19 +784,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Get Autocomplete suggestions.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function getACSuggestionsAjax()
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        $query = $this->getRequest()->getQuery();
-        $suggester = $this->serviceLocator->get('VuFind\Autocomplete\Suggester');
-        return $this->output($suggester->getSuggestions($query), self::STATUS_OK);
-    }
-
-    /**
      * Check Request is Valid
      *
      * @return \Zend\Http\Response
