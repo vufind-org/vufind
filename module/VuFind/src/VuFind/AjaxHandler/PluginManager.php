@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'checkRequestIsValid' => 'VuFind\AjaxHandler\CheckRequestIsValid',
         'getACSuggestions' => 'VuFind\AjaxHandler\GetACSuggestions',
         'getIlsStatus' => 'VuFind\AjaxHandler\GetIlsStatus',
+        'getItemStatuses' => 'VuFind\AjaxHandler\GetItemStatuses',
         'getSaveStatuses' => 'VuFind\AjaxHandler\GetSaveStatuses',
         'getVisData' => 'VuFind\AjaxHandler\GetVisData',
     ];
@@ -63,6 +64,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\AjaxHandler\GetACSuggestionsFactory',
         'VuFind\AjaxHandler\GetIlsStatus' =>
             'VuFind\AjaxHandler\GetIlsStatusFactory',
+        'VuFind\AjaxHandler\GetItemStatuses' =>
+            'VuFind\AjaxHandler\GetItemStatusesFactory',
         'VuFind\AjaxHandler\GetSaveStatuses' =>
             'VuFind\AjaxHandler\GetSaveStatusesFactory',
         'VuFind\AjaxHandler\GetVisData' => 'VuFind\AjaxHandler\GetVisDataFactory',
