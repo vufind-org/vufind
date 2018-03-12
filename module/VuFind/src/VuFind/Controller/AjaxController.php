@@ -638,61 +638,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Generate the "salt" used in the salt'ed login request.
-     *
-     * @return string
-     */
-    protected function generateSalt()
-    {
-        return str_replace(
-            '.', '', $this->getRequest()->getServer()->get('REMOTE_ADDR')
-        );
-    }
-
-    /**
-     * Send the "salt" to be used in the salt'ed login request.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function getSaltAjax()
-    {
-        return $this->output($this->generateSalt(), self::STATUS_OK);
-    }
-
-    /**
-     * Login with post'ed username and encrypted password.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function loginAjax()
-    {
-        // Fetch Salt
-        $salt = $this->generateSalt();
-
-        // HexDecode Password
-        $password = pack('H*', $this->params()->fromPost('password'));
-
-        // Decrypt Password
-        $password = base64_decode(\VuFind\Crypt\RC4::encrypt($salt, $password));
-
-        // Update the request with the decrypted password:
-        $this->getRequest()->getPost()->set('password', $password);
-
-        // Authenticate the user:
-        try {
-            $this->getAuthManager()->login($this->getRequest());
-        } catch (AuthException $e) {
-            return $this->output(
-                $this->translate($e->getMessage()),
-                self::STATUS_ERROR,
-                401
-            );
-        }
-
-        return $this->output(true, self::STATUS_OK);
-    }
-
-    /**
      * Tag a record.
      *
      * @return \Zend\Http\Response
