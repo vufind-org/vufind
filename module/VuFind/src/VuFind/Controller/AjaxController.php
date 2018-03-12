@@ -552,66 +552,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Check one or more records to see if they are saved in one of the user's list.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function getSaveStatusesAjax()
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        // check if user is logged in
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
-            );
-        }
-
-        // loop through each ID check if it is saved to any of the user's lists
-        $ids = $this->params()->fromPost('id', $this->params()->fromQuery('id', []));
-        $sources = $this->params()->fromPost(
-            'source', $this->params()->fromQuery('source', [])
-        );
-        if (!is_array($ids) || !is_array($sources)) {
-            return $this->output(
-                $this->translate('Argument must be array.'),
-                self::STATUS_ERROR,
-                400
-            );
-        }
-        $result = $checked = [];
-        foreach ($ids as $i => $id) {
-            $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
-            $selector = $source . '|' . $id;
-
-            // We don't want to bother checking the same ID more than once, so
-            // use the $checked flag array to avoid duplicates:
-            if (isset($checked[$selector])) {
-                continue;
-            }
-            $checked[$selector] = true;
-
-            $data = $user->getSavedData($id, null, $source);
-            $result[$selector] = [];
-            if ($data && count($data) > 0) {
-                // if this item was saved, add it to the list of saved items.
-                foreach ($data as $list) {
-                    $result[$selector][] = [
-                        'list_url' => $this->url()->fromRoute(
-                            'userList',
-                            ['id' => $list->list_id]
-                        ),
-                        'list_title' => $list->list_title
-                    ];
-                }
-            }
-        }
-        return $this->output($result, self::STATUS_OK);
-    }
-
-    /**
      * Send output data and exit.
      *
      * @param mixed  $data     The response data
