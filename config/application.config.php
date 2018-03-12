@@ -54,6 +54,8 @@ if (!is_dir($cacheDir)) {
 // Enable caching unless in dev mode or running tests:
 $useCache = APPLICATION_ENV != 'development' && !defined('VUFIND_PHPUNIT_RUNNING');
 
+defined('CACHE_ENABLED') || define('CACHE_ENABLED', $useCache);
+
 // Build configuration:
 return [
     'modules' => array_unique($modules),

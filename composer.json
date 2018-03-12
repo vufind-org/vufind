@@ -69,7 +69,9 @@
         "zendframework/zendservice-recaptcha": "3.0.0",
         "zf-commons/zfc-rbac": "2.6.3",
         "ghislainf/zf2-whoops": "dev-master#2649cf7caf400409942ddc3f8fe15b89381fc74e",
-        "pear/archive_tar": "^1.4"
+        "pear/archive_tar": "^1.4",
+        "zendframework/zend-config-aggregator": "^1.1",
+        "webmozart/glob": "^4.1"
     },
     "require-dev": {
         "behat/mink": "1.7.1",

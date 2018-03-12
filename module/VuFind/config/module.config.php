@@ -289,6 +289,7 @@ $config = [
             'VuFind\Cart' => 'VuFind\CartFactory',
             'VuFind\ChannelProvider\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Config\AccountCapabilities' => 'VuFind\Config\AccountCapabilitiesFactory',
+            'VuFind\Config\Manager' => 'VuFind\Config\ManagerFactory',
             'VuFind\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',
             'VuFind\Config\SearchSpecsReader' => 'VuFind\Config\YamlReaderFactory',
             'VuFind\Config\YamlReader' => 'VuFind\Config\YamlReaderFactory',
