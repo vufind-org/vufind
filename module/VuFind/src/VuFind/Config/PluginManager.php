@@ -4,7 +4,8 @@
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) 2010 Villanova University,
+ *               2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,71 +23,74 @@
  * @category VuFind
  * @package  ServiceManager
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Config;
 
+use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\AbstractPluginManager as Base;
 
 /**
- * VuFind Config Manager
+ * VuFind Configuration Plugin Manager
  *
- * @category VuFind
- * @package  ServiceManager
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * Please use {@see \VuFind\Config\Manager} instead as this class
+ * only exists for backwards compatibility.
+ *
+ * @category   VuFind
+ * @package    Config
+ * @author     Demian Katz <demian.katz@villanova.edu>
+ * @author     Sebastian Kehr <kehr@ub.uni-leipzig.de>
+ * @license    http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link       https://vufind.org/wiki/development Wiki
+ * @deprecated File deprecated since X.0.0
  */
 class PluginManager extends Base
 {
     /**
-     * Constructor
-     *
-     * Make sure plugins are properly initialized.
-     *
-     * @param mixed $configOrContainerInstance Configuration or container instance
-     * @param array $v3config                  If $configOrContainerInstance is a
-     * container, this value will be passed to the parent constructor.
+     * @var Manager
      */
-    public function __construct($configOrContainerInstance = null,
-        array $v3config = []
-    ) {
-        $this->addAbstractFactory('VuFind\Config\PluginFactory');
-        parent::__construct($configOrContainerInstance, $v3config);
+    protected $manager;
+
+    /**
+     * PluginManager constructor.
+     *
+     * @param ContainerInterface $container
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct($container);
+        $this->manager = $container->get('VuFind\Config\Manager');;
+    }
+
+    public function get($name, array $options = null)
+    {
+        return $this->manager->get($name);
     }
 
     /**
      * Validate the plugin
      *
-     * Checks that the filter loaded is either a valid callback or an instance
-     * of FilterInterface.
-     *
      * @param mixed $plugin Plugin to validate
-     *
-     * @throws ServiceManagerRuntimeException if invalid
-     * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function validate($plugin)
     {
-        // Assume everything is okay.
     }
 
     /**
-     * Reload a configuration and return the new version
+     * Reload a configuration
      *
-     * @param string $id Service identifier
+     * @param string $name
      *
      * @return \Zend\Config\Config
      */
-    public function reload($id)
+    public function reload($name)
     {
-        $oldOverrideSetting = $this->getAllowOverride();
-        $this->setAllowOverride(true);
-        $this->setService($id, $this->create($id));
-        $this->setAllowOverride($oldOverrideSetting);
-        return $this->get($id);
+        $this->manager->reset();
+        return $this->get($name);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * VuFind Configuration Manager Factory
+ * VuFind Configuration Main Provider
  *
  * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
@@ -25,11 +25,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Config;
+namespace VuFind\Config\Provider;
 
-use Interop\Container\ContainerInterface;
+use Zend\ConfigAggregator\ArrayProvider;
+use Zend\ConfigAggregator\ConfigAggregator;
+
 /**
- * VuFind Configuration Manager
+ * VuFind Configuration Main Provider
  *
  * @category VuFind
  * @package  Config
@@ -37,21 +39,29 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ManagerFactory
+class Main
 {
-    public function __invoke(ContainerInterface $container)
+    const STOCK_PATH = APPLICATION_PATH . '/config/vufind/';
+    const LOCAL_PATH = LOCAL_OVERRIDE_DIR . '/config/vufind/';
+
+    public function __invoke()
     {
-        if (!file_exists(Manager::CONFIG_CACHE_DIR)) {
-            mkdir(Manager::CONFIG_CACHE_DIR, 0700);
-        }
+        $iniGlob = "**/*.ini";
+        $yamlGlob = "**/*.y{,a}ml";
+        $jsonGlob = "**/*.json";
+        $iniFlags = Base::FLAG_FLAT_INI | Base::FLAG_PARENT_CONFIG;
+        $ymlFlags = Base::FLAG_PARENT_YAML;
 
-        Manager::init();
-        $manager = new Manager;
+        $list = array_map('call_user_func', [
+            new ArrayProvider([ConfigAggregator::ENABLE_CACHE => true]),
+            new Base($iniGlob, static::STOCK_PATH, $iniFlags),
+            new Base($iniGlob, static::LOCAL_PATH, $iniFlags),
+            new Base($yamlGlob, static::STOCK_PATH, $ymlFlags),
+            new Base($yamlGlob, static::LOCAL_PATH, $ymlFlags),
+            new Base($jsonGlob, static::STOCK_PATH),
+            new Base($jsonGlob, static::LOCAL_PATH),
+        ]);
 
-        if (!Manager::CACHE_ENABLED) {
-            $manager->reset();
-        }
-
-        return $manager;
+        return array_replace_recursive(...$list);
     }
 }

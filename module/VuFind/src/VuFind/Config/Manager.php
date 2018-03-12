@@ -1,15 +1,58 @@
 <?php
+/**
+ * VuFind Configuration Manager
+ *
+ * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
+ *
+ * PHP version 5.6
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc. 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ *
+ * @category VuFind
+ * @package  Config
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
+ * @link     https://vufind.org/wiki/development Wiki
+ */
 namespace VuFind\Config;
 
+use Symfony\Component\Yaml\Yaml as YamlParser;
 use Zend\Config\Config;
 use Zend\Config\Factory;
+use Zend\Config\Reader\Ini as IniReader;
+use Zend\Config\Reader\Yaml as YamlReader;
 
+/**
+ * VuFind Configuration Manager
+ *
+ * @category VuFind
+ * @package  Config
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
 class Manager
 {
+    const CACHE_ENABLED = APPLICATION_ENV !== 'development';
     const CONFIG_PATH = APPLICATION_PATH . '/config/config.php';
     const CONFIG_CACHE_DIR = LOCAL_CACHE_DIR . '/config';
     const ENTIRE_CONFIG_PATH = self::CONFIG_CACHE_DIR . '/entire.php';
     const SPARSE_CONFIG_PATH = self::CONFIG_CACHE_DIR . '/sparse.php';
+    /**
+     * @var IniReader
+     */
+    protected static $iniReader;
 
     /**
      * Contains all aggregated configuration
@@ -24,6 +67,19 @@ class Manager
      * @var Config
      */
     protected $sparseConfig;
+
+    public static function init()
+    {
+        self::$iniReader = new IniReader;
+        $yamlReader = new YamlReader([YamlParser::class, 'parse']);
+        Factory::registerReader('ini', self::$iniReader);
+        Factory::registerReader('yaml', $yamlReader);
+    }
+
+    public static function getIniReader()
+    {
+        return self::$iniReader;
+    }
 
     public function get($path = null)
     {
@@ -56,10 +112,8 @@ class Manager
         $data = $this->getValue($this->getEntireConfig(), ...$keys);
         $this->setValue($config, $data, 'content', ...$keys);
         $this->setValue($config, true, 'loaded', ...$keys);
-        
-        if (CACHE_ENABLED) {
-            Factory::toFile(static::SPARSE_CONFIG_PATH, $config);
-        }
+
+        Factory::toFile(static::SPARSE_CONFIG_PATH, $config);
 
         return $data;
     }
@@ -91,8 +145,8 @@ class Manager
 
     protected function loadSparseConfig()
     {
-        $data = CACHE_ENABLED && file_exists(static::SPARSE_CONFIG_PATH)
-            ? (Factory::fromFile(static::SPARSE_CONFIG_PATH))
+        $data = static::CACHE_ENABLED && file_exists(static::SPARSE_CONFIG_PATH)
+            ? Factory::fromFile(static::SPARSE_CONFIG_PATH)
             : ['loaded' => [], 'content' => []];
         return $this->sparseConfig = new Config($data, true);
     }
@@ -104,8 +158,8 @@ class Manager
 
     protected function loadEntireConfig()
     {
-        $cache = CACHE_ENABLED ? (static::ENTIRE_CONFIG_PATH) : null;
-        $data = (require static::CONFIG_PATH)($cache)->getMergedConfig();
+        $merger = require static::CONFIG_PATH;
+        $data = $merger->getMergedConfig();
         return $this->entireConfig = new Config($data, true);
     }
 }

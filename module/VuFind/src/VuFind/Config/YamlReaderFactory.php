@@ -4,7 +4,8 @@
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) 2018 Villanova University,
+ *               2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -33,27 +35,28 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 /**
  * Factory for YamlReader (and subclasses).
  *
- * @category VuFind
- * @package  Config
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * Deprecated as {@see \VuFind\Config\Manager} should be used instead
+ * of {@see \VuFind\Config\PluginManager}.
+ *
+ * @category   VuFind
+ * @package    Config
+ * @author     Demian Katz <demian.katz@villanova.edu>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
+ * @license    http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link       https://vufind.org/wiki/development Wiki
+ * @deprecated File deprecated since X.0.0
  */
 class YamlReaderFactory implements FactoryInterface
 {
     /**
-     * Create an object
-     *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
      * @param null|array         $options       Extra options (optional)
      *
-     * @return object
-     *
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @return mixed|object
+     * @throws \Exception
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -61,6 +64,6 @@ class YamlReaderFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName($container->get('VuFind\Cache\Manager'));
+        return new $requestedName($container->get('VuFind\Config\Manager'));
     }
 }

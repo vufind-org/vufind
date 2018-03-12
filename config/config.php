@@ -1,6 +1,6 @@
 <?php
 /**
- * VuFind configuration aggregation
+ * VuFind configuration aggregator
  *
  * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
@@ -21,13 +21,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
-use VuFind\Config\Provider\Classic as ConfigProvider;
-use Zend\ConfigAggregator\ArrayProvider;
+use VuFind\Config\Manager;
+use VuFind\Config\Provider\Main as Provider;
 use Zend\ConfigAggregator\ConfigAggregator;
 
-return function ($cache) {
-    return new ConfigAggregator([
-        new ArrayProvider([ConfigAggregator::ENABLE_CACHE => !!$cache]),
-        new ConfigProvider
-    ], $cache);
-};
+return new ConfigAggregator([
+    new Provider
+], Manager::ENTIRE_CONFIG_PATH);
+
