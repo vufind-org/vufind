@@ -159,12 +159,12 @@ class CheckRequestIsValid extends AbstractBase implements TranslatorAwareInterfa
             if ($patron) {
                 switch ($requestType) {
                 case 'ILLRequest':
-                    $results = $this->ils->checkILLRequestIsValid($id, $data, $patron);
+                    $results = $this->ils
+                        ->checkILLRequestIsValid($id, $data, $patron);
                     break;
                 case 'StorageRetrievalRequest':
-                    $results = $this->ils->checkStorageRetrievalRequestIsValid(
-                        $id, $data, $patron
-                    );
+                    $results = $this->ils
+                        ->checkStorageRetrievalRequestIsValid($id, $data, $patron);
                     break;
                 default:
                     $results = $this->ils->checkRequestIsValid($id, $data, $patron);
