@@ -27,7 +27,6 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Auth as AuthException;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
