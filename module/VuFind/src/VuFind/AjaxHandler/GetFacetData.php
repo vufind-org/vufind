@@ -33,7 +33,6 @@ use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings as SessionSettings;
 use Zend\Mvc\Controller\Plugin\Params;
 use Zend\Stdlib\Parameters;
-use Zend\View\Renderer\RendererInterface;
 
 /**
  * "Get Facet Data" AJAX handler
