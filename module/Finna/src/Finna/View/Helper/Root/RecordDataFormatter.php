@@ -170,4 +170,24 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
         }
         return $coreFields;
     }
+
+    /**
+     * Filter unnecessary fields from EAD-collection records.
+     *
+     * @param array $coreFields data to filter.
+     *
+     * @return array
+     */
+    public function filterCollectionFields($coreFields)
+    {
+        $filter = [
+            'Contributors', 'Format', 'Online Access',
+            'Access', 'Item Description FWD', 'Physical Description',
+            'Published in', 'Published', 'Source Collection'
+        ];
+        foreach ($filter as $key) {
+            unset($coreFields[$key]);
+        }
+        return $coreFields;
+    }
 }
