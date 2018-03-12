@@ -27,6 +27,8 @@
  */
 namespace VuFind\AjaxHandler;
 
+use VuFind\Session\Settings as SessionSettings;
+
 /**
  * Abstract base AJAX handler
  *
@@ -39,19 +41,25 @@ namespace VuFind\AjaxHandler;
 abstract class AbstractBase implements AjaxHandlerInterface
 {
     /**
-     * Should we disable session writes?
+     * Session settings
      *
-     * @var bool
+     * @var SessionSettings
      */
-    protected $disableSessionWrites = false;
+    protected $sessionSettings = null;
 
     /**
-     * Should we disable session writes?
+     * Prevent session writes -- this is designed to be called prior to time-
+     * consuming AJAX operations to help reduce the odds of a timing-related bug
+     * that causes the wrong version of session data to be written to disk (see
+     * VUFIND-716 for more details).
      *
-     * @return bool
+     * @return void
      */
-    public function sessionWritesDisabled()
+    protected function disableSessionWrites()
     {
-        return $this->disableSessionWrites;
+        if (null === $this->sessionSettings) {
+            throw new \Exception('Session settings object missing.');
+        }
+        $this->sessionSettings->disableWrite();
     }
 }

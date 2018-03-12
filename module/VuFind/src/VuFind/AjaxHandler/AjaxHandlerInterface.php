@@ -46,13 +46,6 @@ interface AjaxHandlerInterface
     const STATUS_NEED_AUTH = 'NEED_AUTH';    // must login first
 
     /**
-     * Should we disable session writes?
-     *
-     * @return bool
-     */
-    public function sessionWritesDisabled();
-
-    /**
      * Handle a request.
      *
      * @param Params $params Parameter helper from controller

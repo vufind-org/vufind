@@ -63,6 +63,7 @@ class GetIlsStatusFactory implements \Zend\ServiceManager\Factory\FactoryInterfa
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
+            $container->get('VuFind\Session\Settings'),
             $container->get('VuFind\ILS\Connection'),
             $container->get('ViewRenderer')
         );

@@ -29,6 +29,7 @@
 namespace VuFind\AjaxHandler;
 
 use VuFind\ILS\Connection;
+use VuFind\Session\Settings as SessionSettings;
 use Zend\Mvc\Controller\Plugin\Params;
 use Zend\View\Renderer\RendererInterface;
 
@@ -64,12 +65,14 @@ class GetIlsStatus extends AbstractBase
     /**
      * Constructor
      *
+     * @param SessionSettings   $ss       Session settings
      * @param Connection        $ils      ILS connection
      * @param RendererInterface $renderer View renderer
      */
-    public function __construct(Connection $ils, RendererInterface $renderer)
-    {
-        $this->disableSessionWrites = true;
+    public function __construct(SessionSettings $ss, Connection $ils,
+        RendererInterface $renderer
+    ) {
+        $this->sessionSettings = $ss;
         $this->ils = $ils;
         $this->renderer = $renderer;
     }
@@ -83,6 +86,7 @@ class GetIlsStatus extends AbstractBase
      */
     public function handleRequest(Params $params)
     {
+        $this->disableSessionWrites();
         if ($this->ils->getOfflineMode(true) == 'ils-offline') {
             $offlineModeMsg = $params->fromPost(
                 'offlineModeMsg', $params->fromQuery('offlineModeMsg')

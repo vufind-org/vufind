@@ -108,9 +108,6 @@ class AjaxController extends AbstractBase
         if ($manager->has($method)) {
             $handler = $manager->get($method);
             try {
-                if ($handler->sessionWritesDisabled()) {
-                    $this->disableSessionWrites();
-                }
                 return $this->output(...$handler->handleRequest($this->params()));
             } catch (\Exception $e) {
                 return $this->getExceptionOutput($e);
