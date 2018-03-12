@@ -46,6 +46,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'checkRequestIsValid' => 'VuFind\AjaxHandler\CheckRequestIsValid',
         'getACSuggestions' => 'VuFind\AjaxHandler\GetACSuggestions',
+        'getFacetData' => 'VuFind\AjaxHandler\GetFacetData',
         'getIlsStatus' => 'VuFind\AjaxHandler\GetIlsStatus',
         'getItemStatuses' => 'VuFind\AjaxHandler\GetItemStatuses',
         'getRecordDetails' => 'VuFind\AjaxHandler\GetRecordDetails',
@@ -64,6 +65,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\AjaxHandler\CheckRequestIsValidFactory',
         'VuFind\AjaxHandler\GetACSuggestions' =>
             'VuFind\AjaxHandler\GetACSuggestionsFactory',
+        'VuFind\AjaxHandler\GetFacetData' =>
+            'VuFind\AjaxHandler\GetFacetDataFactory',
         'VuFind\AjaxHandler\GetIlsStatus' =>
             'VuFind\AjaxHandler\GetIlsStatusFactory',
         'VuFind\AjaxHandler\GetItemStatuses' =>

@@ -534,52 +534,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Get hierarchical facet data for jsTree
-     *
-     * Parameters:
-     * facetName  The facet to retrieve
-     * facetSort  By default all facets are sorted by count. Two values are available
-     * for alternative sorting:
-     *   top = sort the top level alphabetically, rest by count
-     *   all = sort all levels alphabetically
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function getFacetDataAjax()
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-
-        $facet = $this->params()->fromQuery('facetName');
-        $sort = $this->params()->fromQuery('facetSort');
-        $operator = $this->params()->fromQuery('facetOperator');
-
-        $results = $this->getResultsManager()->get('Solr');
-        $params = $results->getParams();
-        $params->addFacet($facet, null, $operator === 'OR');
-        $params->initFromRequest($this->getRequest()->getQuery());
-
-        $facets = $results->getFullFieldFacets([$facet], false, -1, 'count');
-        if (empty($facets[$facet]['data']['list'])) {
-            return $this->output([], self::STATUS_OK);
-        }
-
-        $facetList = $facets[$facet]['data']['list'];
-
-        $facetHelper = $this->serviceLocator
-            ->get('VuFind\Search\Solr\HierarchicalFacetHelper');
-        if (!empty($sort)) {
-            $facetHelper->sortFacetList($facetList, $sort == 'top');
-        }
-
-        return $this->output(
-            $facetHelper->buildFacetArray(
-                $facet, $facetList, $results->getUrlQuery()
-            ),
-            self::STATUS_OK
-        );
-    }
-
-    /**
      * Check status and return a status message for e.g. a load balancer.
      *
      * A simple OK as text/plain is returned if everything works properly.
