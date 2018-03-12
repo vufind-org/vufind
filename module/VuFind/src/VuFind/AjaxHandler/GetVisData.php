@@ -54,14 +54,7 @@ class GetVisData extends AbstractBase
      *
      * @var Results
      */
-    protected $ils;
-
-    /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
+    protected $results;
 
     /**
      * Constructor
