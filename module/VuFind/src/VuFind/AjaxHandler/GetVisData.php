@@ -68,7 +68,6 @@ class GetVisData extends AbstractBase
      *
      * @param SessionSettings   $ss       Session settings
      * @param Results           $results  Solr search results object
-     * @param RendererInterface $renderer View renderer
      */
     public function __construct(SessionSettings $ss, Results $results)
     {
