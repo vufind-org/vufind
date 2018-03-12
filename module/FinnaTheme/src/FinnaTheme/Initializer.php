@@ -27,9 +27,6 @@
  */
 namespace FinnaTheme;
 
-use Zend\Console\Console;
-use Zend\Stdlib\RequestInterface as Request;
-
 /**
  * VuFind Theme Initializer
  *

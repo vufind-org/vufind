@@ -30,7 +30,6 @@
 namespace Finna\Search\Factory;
 
 use FinnaSearch\Backend\Primo\Connector;
-use Zend\Console\Console;
 
 /**
  * Factory for Primo Central backends.
