@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  AJAX
- * @author   Demian Katz <demian.katz@villanova.edu>0
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -38,8 +38,6 @@ use Zend\Stdlib\Parameters;
  * @category VuFind
  * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Chris Hallberg <crhallberg@gmail.com>
- * @author   Till Kinstler <kinstler@gbv.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
