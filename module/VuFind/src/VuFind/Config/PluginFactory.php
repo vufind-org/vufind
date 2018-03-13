@@ -76,6 +76,7 @@ class PluginFactory implements AbstractFactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-       return $container->get('VuFind\Config\Manager')->get($requestedName);
+        $manager = $container->get('VuFind\Config\Manager');
+        return $manager->getConfig($requestedName);
     }
 }

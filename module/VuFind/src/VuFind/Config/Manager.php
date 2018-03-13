@@ -4,7 +4,7 @@
  *
  * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
- * PHP version 5.6
+ * PHP version 7
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config;
 
 use Symfony\Component\Yaml\Yaml as YamlParser;
@@ -84,7 +85,7 @@ class Manager
      *
      * @return Manager
      */
-    public static function getInstance()
+    public static function getInstance(): Manager
     {
         return static::$manager ?: static::$manager = new static;
     }
@@ -105,13 +106,51 @@ class Manager
         }
     }
 
-    public function get($path = null)
+    /**
+     * Gets the configuration section at the specfied path.
+     *
+     * @param string $path
+     *
+     * @return Config
+     */
+    public function getConfig(string $path = '/'): Config
     {
-        $data = $this->getData($path);
-        return $data instanceof Config ? new Config($data->toArray()) : $data;
+        return new Config($this->getValue($path)->toArray());
     }
 
-    public function getIniReader()
+    /**
+     * Gets the configuration value at the specified path.
+     *
+     * @param string $path
+     *
+     * @return mixed
+     */
+    public function getValue(string $path = '/')
+    {
+        $path = trim($path, '/');
+        $keys = $path ? explode('/', $path) : [];
+
+        $config = $this->getSparseConfig();
+
+        if ($this->trueOn($config->loaded, ...$keys)) {
+            return $this->getAt($config->content, ...$keys);
+        }
+
+        $data = $this->getAt($this->getEntireConfig(), ...$keys);
+        $this->setAt($config, $data, 'content', ...$keys);
+        $this->setAt($config, true, 'loaded', ...$keys);
+
+        Factory::toFile(static::SPARSE_CONFIG_PATH, $config);
+
+        return $data;
+    }
+
+    /**
+     * Gets the reader for INI files registered with the configuration factory.
+     *
+     * @return IniReader
+     */
+    public function getIniReader(): IniReader
     {
         return $this->iniReader;
     }
@@ -127,52 +166,67 @@ class Manager
         }
     }
 
-    protected function getData($path)
+    /**
+     * Checks if some value on the given path strictly equals true.
+     *
+     * @param Config $config
+     * @param array  $path
+     *
+     * @return bool
+     */
+    protected function trueOn(Config $config, ...$path) : bool
     {
-        $path = trim($path, '/');
-        $keys = $path ? explode('/', $path) : [];
-        
-        $config = $this->getSparseConfig();
-        
-        if ($this->someEqualsTrue($config->loaded, ...$keys)) {
-            return $this->getValue($config->content, ...$keys);
-        }
-                
-        $data = $this->getValue($this->getEntireConfig(), ...$keys);
-        $this->setValue($config, $data, 'content', ...$keys);
-        $this->setValue($config, true, 'loaded', ...$keys);
-
-        Factory::toFile(static::SPARSE_CONFIG_PATH, $config);
-
-        return $data;
+        $head = $config->{array_pop($path)};
+        return $head instanceof Config ?
+            $this->trueOn($head, ...$path) : $head === true;
     }
 
-    protected function setValue($config, $value, $key, ...$keys)
+    /**
+     * Sets configuration value at the specified path automatically creating
+     * nested configurations for each non-existing path segment.
+     *
+     * @param Config $config
+     * @param mixed  $value
+     * @param array  $path
+     *
+     * @return mixed
+     */
+    protected function setAt(Config $config, $value, ...$path)
     {
-        if ($keys) {
-            $config->$key = $config->$key ?: new Config([], true);
-            return $this->setValue($config->$key, $value, ...$keys);
-        }
-        $config->$key = $value;
+        $head = $config->{array_pop($path)} ?: new Config([], true);
+        return $head = $path ? $this->setAt($head, $value, ...$path) : $value;
     }
 
-    protected function getValue($value, $key = null, ...$keys)
+    /**
+     * Gets a configuation value at the specified path.
+     *
+     * @param Config $config
+     * @param array  $path
+     *
+     * @return mixed
+     */
+    protected function getAt(Config $config, ...$path)
     {
-        return $key ? $this->getValue($value->$key, ...$keys) : $value;
+        $head = $config->{array_pop($path)};
+        return $path ? $this->getAt($head, ...$path) : $head;
     }
 
-    protected function someEqualsTrue($value, $key = null, ...$keys)
-    {
-        return $value === true || $key && $value->$key
-            && $this->someEqualsTrue($value->$key, ...$keys);
-    }
-
-    protected function getSparseConfig()
+    /**
+     * Gets the required configuration.
+     *
+     * @return Config
+     */
+    protected function getSparseConfig(): Config
     {
         return $this->sparseConfig ?: $this->loadSparseConfig();
     }
 
-    protected function loadSparseConfig()
+    /**
+     * Loads the required configuration.
+     *
+     * @return Config
+     */
+    protected function loadSparseConfig(): Config
     {
         $data = static::CACHE_ENABLED && file_exists(static::SPARSE_CONFIG_PATH)
             ? Factory::fromFile(static::SPARSE_CONFIG_PATH)
@@ -180,12 +234,22 @@ class Manager
         return $this->sparseConfig = new Config($data, true);
     }
 
-    protected function getEntireConfig()
+    /**
+     * Gets the entire configuration.
+     *
+     * @return Config
+     */
+    protected function getEntireConfig(): Config
     {
         return $this->entireConfig ?: $this->loadEntireConfig();
     }
 
-    protected function loadEntireConfig()
+    /**
+     * Loads the entire configuration.
+     *
+     * @return Config
+     */
+    protected function loadEntireConfig(): Config
     {
         $merger = require static::CONFIG_PATH;
         $data = $merger->getMergedConfig();

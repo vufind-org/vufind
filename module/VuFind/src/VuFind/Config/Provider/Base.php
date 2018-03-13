@@ -4,7 +4,7 @@
  *
  * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
- * PHP version 5.6
+ * PHP version 7
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -73,12 +73,7 @@ class Base extends Glob
      */
     protected $iniReader;
 
-    protected static function getIniReader()
-    {
-        return Manager::getInstance()->getIniReader();
-    }
-
-    public function __construct($pattern, $base, $flags = 0)
+    public function __construct(string $pattern, string $base, int $flags = 0)
     {
         parent::__construct($pattern, $base);
         $this->flags = $flags;
@@ -86,13 +81,24 @@ class Base extends Glob
     }
 
     /**
-     * Loads a configuration file according to the specified flags.
+     * Gets the reader used for parsing INI configuration files
+     *
+     * @return IniReader
+     */
+    protected static function getIniReader() : IniReader
+    {
+        return Manager::getInstance()->getIniReader();
+    }
+
+    /**
+     * Loads the configuration file at the specified path with consideration
+     * of enabled flags.
      *
      * @param string $path
      *
-     * @return array|Config
+     * @return array
      */
-    protected function load($path)
+    protected function load(string $path) : array
     {
         $iniSeparator = $this->iniReader->getNestSeparator();
         if ($this->flags & static::FLAG_FLAT_INI) {
@@ -115,14 +121,15 @@ class Base extends Glob
     }
 
     /**
-     * Parses and evaluates the «Parent_Config» and associated directives.
+     * Merges a parent configuration declared with «Parent_Config» and
+     * associated directives.
      *
      * @param array  $childData
      * @param string $childPath
      *
      * @return array
      */
-    protected function mergeParentConfig(array $childData, $childPath)
+    protected function mergeParentConfig(array $childData, string $childPath) : array
     {
         $child = new Config($childData, true);
         $settings = $child->Parent_Config ?: new Config([]);
@@ -176,13 +183,13 @@ class Base extends Glob
     }
 
     /**
-     * Parses and evaluates the «@parent_yaml» directive.
+     * Merges a parent configuration declared with the «@parent_yaml» directive.
      *
      * @param array $child
      *
      * @return array
      */
-    protected function mergeParentYaml(array $child)
+    protected function mergeParentYaml(array $child) : array
     {
         if (!isset($child['@parent_yaml'])) {
             return $child;

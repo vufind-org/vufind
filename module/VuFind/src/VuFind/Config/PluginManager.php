@@ -30,6 +30,7 @@
 namespace VuFind\Config;
 
 use Interop\Container\ContainerInterface;
+use Zend\Config\Config;
 use Zend\ServiceManager\AbstractPluginManager as Base;
 
 /**
@@ -67,9 +68,15 @@ class PluginManager extends Base
         $this->manager = $container->get('VuFind\Config\Manager');;
     }
 
-    public function get($name, array $options = null)
+    /**
+     * @param string     $name
+     * @param array|null $options
+     *
+     * @return Config
+     */
+    public function get($name, array $options = null) : Config
     {
-        return $this->manager->get($name);
+        return $this->manager->getConfig($name);
     }
 
     /**

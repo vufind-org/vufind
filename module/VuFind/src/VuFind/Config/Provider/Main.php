@@ -4,7 +4,7 @@
  *
  * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
- * PHP version 5.6
+ * PHP version 7
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -46,7 +46,13 @@ class Main
     const APP_CONFIG_PATH = APPLICATION_PATH . '/config/vufind/';
     const LCO_CONFIG_PATH = LOCAL_OVERRIDE_DIR . '/config/vufind/';
 
-    public function __invoke()
+    /**
+     * Provides all the configuration data contained in INI, YAML and JSON files
+     * located at the usual places.
+     *
+     * @return array
+     */
+    public function __invoke() : array
     {
         $iniGlob = "**/*.ini";
         $yamlGlob = "**/*.y{,a}ml";

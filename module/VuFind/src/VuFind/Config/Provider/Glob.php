@@ -4,7 +4,7 @@
  *
  * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
- * PHP version 5.6
+ * PHP version 7
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -61,16 +61,21 @@ class Glob
     /**
      * Glob constructor.
      *
-     * @param        $pattern
+     * @param string $pattern
      * @param string $base
      */
-    public function __construct($pattern, $base = '')
+    public function __construct(string $pattern, string $base = '')
     {
         $this->baseLen = strlen($base);
         $this->pattern = $base . $pattern;
     }
 
-    public function __invoke()
+    /**
+     * Provides the merged configuration data of all loaded files.
+     *
+     * @return array
+     */
+    public function __invoke() : array
     {
         $glob = Globber::glob($this->pattern);
         $data = array_map([$this, 'load'], $glob);
@@ -78,12 +83,27 @@ class Glob
         return array_merge([], ...$list);
     }
 
-    protected function load($path)
+    /**
+     * Loads the configuration file at the specified path
+     *
+     * @param string $path
+     *
+     * @return array
+     */
+    protected function load(string $path) : array
     {
         return Factory::fromFile($path);
     }
 
-    protected function nest($path, $data)
+    /**
+     * Nests the given data array according the specified path.
+     *
+     * @param string $path
+     * @param array  $data
+     *
+     * @return array
+     */
+    protected function nest(string $path, array $data) : array
     {
         foreach ($this->getKeys($path) as $key) {
             $data = [$key => $data];
@@ -92,14 +112,14 @@ class Glob
     }
 
     /**
-     * Strips base path and extension and returns the remaining segments
-     * in reversed order to be used for nesting the loaded configuration.
+     * Strips base path and extension and returns an array of the remaining
+     * segments in reversed order.
      *
      * @param string $path
      *
      * @return array
      */
-    protected function getKeys($path)
+    protected function getKeys(string $path) : array
     {
         $path = substr_replace($path, "", 0, $this->baseLen);
         $offset = strlen(pathinfo($path, PATHINFO_EXTENSION)) + 1;

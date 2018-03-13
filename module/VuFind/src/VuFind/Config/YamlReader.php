@@ -71,6 +71,6 @@ class YamlReader
     {
         $offset = strlen(pathinfo($filename, PATHINFO_EXTENSION)) + 1;
         $key = trim(substr_replace($filename, '', -$offset), '/');
-        return $this->manager->get($key)->toArray();
+        return $this->manager->getConfig($key)->toArray();
     }
 }
