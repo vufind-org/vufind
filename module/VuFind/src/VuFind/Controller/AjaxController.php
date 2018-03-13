@@ -216,47 +216,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Tag a record.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function tagRecordAjax()
-    {
-        $user = $this->getUser();
-        if ($user === false) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
-            );
-        }
-        // empty tag
-        try {
-            $driver = $this->getRecordLoader()->load(
-                $this->params()->fromPost('id'),
-                $this->params()->fromPost('source', DEFAULT_SEARCH_BACKEND)
-            );
-            $tag = $this->params()->fromPost('tag', '');
-            $tagParser = $this->serviceLocator->get('VuFind\Tags');
-            if (strlen($tag) > 0) { // don't add empty tags
-                if ('false' === $this->params()->fromPost('remove', 'false')) {
-                    $driver->addTags($user, $tagParser->parse($tag));
-                } else {
-                    $driver->deleteTags($user, $tagParser->parse($tag));
-                }
-            }
-        } catch (\Exception $e) {
-            return $this->output(
-                ('development' == APPLICATION_ENV) ? $e->getMessage() : 'Failed',
-                self::STATUS_ERROR,
-                500
-            );
-        }
-
-        return $this->output($this->translate('Done'), self::STATUS_OK);
-    }
-
-    /**
      * Check status and return a status message for e.g. a load balancer.
      *
      * A simple OK as text/plain is returned if everything works properly.
