@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Cache\Storage\Adapter;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 use VuFind\Cache\Storage\Adapter\NoCacheAdapter;
 
@@ -41,7 +41,7 @@ use VuFind\Cache\Storage\Adapter\NoCacheAdapter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class NoCacheAdapterTest extends PHPUnit_Framework_TestCase
+class NoCacheAdapterTest extends TestCase
 {
     /**
      * Test that an item is not stored.

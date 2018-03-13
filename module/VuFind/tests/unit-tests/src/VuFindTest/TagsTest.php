@@ -36,7 +36,7 @@ namespace VuFindTest;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class TagsTest extends \PHPUnit_Framework_TestCase
+class TagsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Tag parser
