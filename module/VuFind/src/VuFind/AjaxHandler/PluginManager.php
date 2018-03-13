@@ -49,6 +49,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'getFacetData' => 'VuFind\AjaxHandler\GetFacetData',
         'getIlsStatus' => 'VuFind\AjaxHandler\GetIlsStatus',
         'getItemStatuses' => 'VuFind\AjaxHandler\GetItemStatuses',
+        'getLibraryPickupLocations' =>
+            'VuFind\AjaxHandler\GetLibraryPickupLocations',
         'getRecordDetails' => 'VuFind\AjaxHandler\GetRecordDetails',
         'getResolverLinks' => 'VuFind\AjaxHandler\GetResolverLinks',
         'getSaveStatuses' => 'VuFind\AjaxHandler\GetSaveStatuses',
@@ -62,7 +64,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         'VuFind\AjaxHandler\CheckRequestIsValid' =>
-            'VuFind\AjaxHandler\CheckRequestIsValidFactory',
+            'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
         'VuFind\AjaxHandler\GetACSuggestions' =>
             'VuFind\AjaxHandler\GetACSuggestionsFactory',
         'VuFind\AjaxHandler\GetFacetData' =>
@@ -71,6 +73,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\AjaxHandler\GetIlsStatusFactory',
         'VuFind\AjaxHandler\GetItemStatuses' =>
             'VuFind\AjaxHandler\GetItemStatusesFactory',
+        'VuFind\AjaxHandler\GetLibraryPickupLocations' =>
+            'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
         'VuFind\AjaxHandler\GetRecordDetails' =>
             'VuFind\AjaxHandler\GetRecordDetailsFactory',
         'VuFind\AjaxHandler\GetResolverLinks' =>

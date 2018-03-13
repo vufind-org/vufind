@@ -27,10 +27,6 @@
  */
 namespace VuFind\AjaxHandler;
 
-use VuFind\Auth\ILSAuthenticator;
-use VuFind\Db\Row\User;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;
 use Zend\Mvc\Controller\Plugin\Params;
 
@@ -43,31 +39,8 @@ use Zend\Mvc\Controller\Plugin\Params;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CheckRequestIsValid extends AbstractBase implements TranslatorAwareInterface
+class CheckRequestIsValid extends AbstractIlsAndUserAction
 {
-    use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * ILS connection
-     *
-     * @var Connection
-     */
-    protected $ils;
-
-    /**
-     * ILS authenticator
-     *
-     * @var ILSAuthenticator
-     */
-    protected $ilsAuthenticator;
-
-    /**
-     * Logged in user (or false)
-     *
-     * @var User|bool
-     */
-    protected $user;
-
     /**
      * Status messages
      *
@@ -83,23 +56,6 @@ class CheckRequestIsValid extends AbstractBase implements TranslatorAwareInterfa
             'failure' => 'storage_retrieval_request_error_blocked',
         ],
     ];
-
-    /**
-     * Constructor
-     *
-     * @param SessionSettings  $ss               Session settings
-     * @param Connection       $ils              ILS connection
-     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
-     * @param User|bool        $user             Logged in user (or false)
-     */
-    public function __construct(SessionSettings $ss, Connection $ils,
-        ILSAuthenticator $ilsAuthenticator, $user
-    ) {
-        $this->sessionSettings = $ss;
-        $this->ils = $ils;
-        $this->ilsAuthenticator = $ilsAuthenticator;
-        $this->user = $user;
-    }
 
     /**
      * Given a request type and a boolean success status, return an appropriate

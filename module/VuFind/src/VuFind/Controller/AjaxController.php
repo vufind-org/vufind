@@ -426,58 +426,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Get pick up locations for a library
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function getLibraryPickupLocationsAjax()
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        $id = $this->params()->fromQuery('id');
-        $pickupLib = $this->params()->fromQuery('pickupLib');
-        if (null === $id || null === $pickupLib) {
-            return $this->output(
-                $this->translate('bulk_error_missing'),
-                self::STATUS_ERROR,
-                400
-            );
-        }
-        // check if user is logged in
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
-            );
-        }
-
-        try {
-            $catalog = $this->getILS();
-            $patron = $this->getILSAuthenticator()->storedCatalogLogin();
-            if ($patron) {
-                $results = $catalog->getILLPickupLocations($id, $pickupLib, $patron);
-                foreach ($results as &$result) {
-                    if (isset($result['name'])) {
-                        $result['name'] = $this->translate(
-                            'location_' . $result['name'],
-                            [],
-                            $result['name']
-                        );
-                    }
-                }
-                return $this->output(['locations' => $results], self::STATUS_OK);
-            }
-        } catch (\Exception $e) {
-            // Do nothing -- just fail through to the error message below.
-        }
-
-        return $this->output(
-            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
-        );
-    }
-
-    /**
      * Get pick up locations for a request group
      *
      * @return \Zend\Http\Response

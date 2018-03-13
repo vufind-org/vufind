@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for CheckRequestIsValid AJAX handler.
+ * Factory for AbstractIlsAndUserAction AJAX handlers.
  *
  * PHP version 5
  *
@@ -30,7 +30,7 @@ namespace VuFind\AjaxHandler;
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for CheckRequestIsValid AJAX handler.
+ * Factory for AbstractIlsAndUserAction AJAX handlers.
  *
  * @category VuFind
  * @package  AJAX
@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CheckRequestIsValidFactory
+class AbstractIlsAndUserActionFactory
     implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
