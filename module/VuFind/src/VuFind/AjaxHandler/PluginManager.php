@@ -52,6 +52,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'getLibraryPickupLocations' =>
             'VuFind\AjaxHandler\GetLibraryPickupLocations',
         'getRecordDetails' => 'VuFind\AjaxHandler\GetRecordDetails',
+        'getRequestGroupPickupLocations' =>
+            'VuFind\AjaxHandler\GetRequestGroupPickupLocations',
         'getResolverLinks' => 'VuFind\AjaxHandler\GetResolverLinks',
         'getSaveStatuses' => 'VuFind\AjaxHandler\GetSaveStatuses',
         'getVisData' => 'VuFind\AjaxHandler\GetVisData',
@@ -77,6 +79,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
         'VuFind\AjaxHandler\GetRecordDetails' =>
             'VuFind\AjaxHandler\GetRecordDetailsFactory',
+        'VuFind\AjaxHandler\GetRequestGroupPickupLocations' =>
+            'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
         'VuFind\AjaxHandler\GetResolverLinks' =>
             'VuFind\AjaxHandler\GetResolverLinksFactory',
         'VuFind\AjaxHandler\GetSaveStatuses' =>

@@ -426,62 +426,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Get pick up locations for a request group
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function getRequestGroupPickupLocationsAjax()
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        $id = $this->params()->fromQuery('id');
-        $requestGroupId = $this->params()->fromQuery('requestGroupId');
-        if (null === $id || null === $requestGroupId) {
-            return $this->output(
-                $this->translate('bulk_error_missing'),
-                self::STATUS_ERROR,
-                400
-            );
-        }
-        // check if user is logged in
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
-            );
-        }
-
-        try {
-            $catalog = $this->getILS();
-            $patron = $this->getILSAuthenticator()->storedCatalogLogin();
-            if ($patron) {
-                $details = [
-                    'id' => $id,
-                    'requestGroupId' => $requestGroupId
-                ];
-                $results = $catalog->getPickupLocations($patron, $details);
-                foreach ($results as &$result) {
-                    if (isset($result['locationDisplay'])) {
-                        $result['locationDisplay'] = $this->translate(
-                            'location_' . $result['locationDisplay'],
-                            [],
-                            $result['locationDisplay']
-                        );
-                    }
-                }
-                return $this->output(['locations' => $results], self::STATUS_OK);
-            }
-        } catch (\Exception $e) {
-            // Do nothing -- just fail through to the error message below.
-        }
-
-        return $this->output(
-            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
-        );
-    }
-
-    /**
      * Check status and return a status message for e.g. a load balancer.
      *
      * A simple OK as text/plain is returned if everything works properly.
