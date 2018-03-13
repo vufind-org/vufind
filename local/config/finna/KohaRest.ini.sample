@@ -166,7 +166,7 @@ Item::Waiting = "On Hold"
 ; Whether online payment is enabled. Default is false.
 enabled = true
 ; Transaction fee (in cents) added to each payment
-transactionFee = 50
+;transactionFee = 50
 ; Minimum fee (in cents) allowed to be paid online
 minimumFee = 65
 ; Email address for transactions that could not be registered.
