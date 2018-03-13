@@ -73,7 +73,8 @@ class GetLibraryPickupLocations extends AbstractIlsAndUserAction
         try {
             $patron = $this->ilsAuthenticator->storedCatalogLogin();
             if ($patron) {
-                $results = $this->ils->getILLPickupLocations($id, $pickupLib, $patron);
+                $results = $this->ils
+                    ->getILLPickupLocations($id, $pickupLib, $patron);
                 foreach ($results as &$result) {
                     if (isset($result['name'])) {
                         $result['name'] = $this->translate(
