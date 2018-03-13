@@ -51,6 +51,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'getItemStatuses' => 'VuFind\AjaxHandler\GetItemStatuses',
         'getLibraryPickupLocations' =>
             'VuFind\AjaxHandler\GetLibraryPickupLocations',
+        'getRecordCommentsAsHTML' => 'VuFind\AjaxHandler\GetRecordCommentsAsHTML',
         'getRecordDetails' => 'VuFind\AjaxHandler\GetRecordDetails',
         'getRequestGroupPickupLocations' =>
             'VuFind\AjaxHandler\GetRequestGroupPickupLocations',
@@ -78,6 +79,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\AjaxHandler\GetItemStatusesFactory',
         'VuFind\AjaxHandler\GetLibraryPickupLocations' =>
             'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
+        'VuFind\AjaxHandler\GetRecordCommentsAsHTML' =>
+            'VuFind\AjaxHandler\GetRecordCommentsAsHTMLFactory',
         'VuFind\AjaxHandler\GetRecordDetails' =>
             'VuFind\AjaxHandler\GetRecordDetailsFactory',
         'VuFind\AjaxHandler\GetRequestGroupPickupLocations' =>

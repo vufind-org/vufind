@@ -395,22 +395,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Get list of comments for a record as HTML.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function getRecordCommentsAsHTMLAjax()
-    {
-        $driver = $this->getRecordLoader()->load(
-            $this->params()->fromQuery('id'),
-            $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
-        );
-        $html = $this->getViewRenderer()
-            ->render('record/comments-list.phtml', ['driver' => $driver]);
-        return $this->output($html, self::STATUS_OK);
-    }
-
-    /**
      * Check status and return a status message for e.g. a load balancer.
      *
      * A simple OK as text/plain is returned if everything works properly.
