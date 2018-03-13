@@ -1,6 +1,6 @@
 <?php
 /**
- * "Get Library Pickup Locations" AJAX handler
+ * Abstract base class for handlers depending on the ILS and a logged-in user.
  *
  * PHP version 5
  *
@@ -34,9 +34,7 @@ use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * "Get Library Pickup Locations" AJAX handler
- *
- * Get pick up locations for a library
+ * Abstract base class for handlers depending on the ILS and a logged-in user.
  *
  * @category VuFind
  * @package  AJAX
