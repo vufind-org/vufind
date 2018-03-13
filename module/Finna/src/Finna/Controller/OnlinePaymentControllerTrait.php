@@ -424,7 +424,7 @@ trait OnlinePaymentControllerTrait
             $session->paymentOk = true;
         } catch (\Exception $e) {
             $this->handleError(
-                'SIP2 payment error (patron ' . $patron['id'] . '): '
+                'Payment registration error (patron ' . $patron['id'] . '): '
                 . $e->getMessage()
             );
             $this->handleException($e);
