@@ -198,12 +198,12 @@ function refreshTagList(_target, _loggedin) {
       source: recordSource
     });
     $.ajax({
-      dataType: 'html',
+      dataType: 'json',
       url: url
     })
     .done(function getRecordTagsDone(response) {
       $tagList.empty();
-      $tagList.replaceWith(response);
+      $tagList.replaceWith(response.data);
       if (loggedin) {
         $tagList.addClass('loggedin');
       } else {

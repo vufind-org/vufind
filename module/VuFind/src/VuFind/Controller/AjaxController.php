@@ -257,45 +257,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Get all tags for a record.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function getRecordTagsAjax()
-    {
-        $user = $this->getUser();
-        $is_me_id = null === $user ? null : $user->id;
-        // Retrieve from database:
-        $tagTable = $this->getTable('Tags');
-        $tags = $tagTable->getForResource(
-            $this->params()->fromQuery('id'),
-            $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND),
-            0, null, null, 'count', $is_me_id
-        );
-
-        // Build data structure for return:
-        $tagList = [];
-        foreach ($tags as $tag) {
-            $tagList[] = [
-                'tag'   => $tag->tag,
-                'cnt'   => $tag->cnt,
-                'is_me' => !empty($tag->is_me)
-            ];
-        }
-
-        // Set layout to render content only:
-        $this->layout()->setTemplate('layout/lightbox');
-        $view = $this->createViewModel(
-            [
-                'tagList' => $tagList,
-                'loggedin' => null !== $user
-            ]
-        );
-        $view->setTemplate('record/taglist');
-        return $view;
-    }
-
-    /**
      * Check status and return a status message for e.g. a load balancer.
      *
      * A simple OK as text/plain is returned if everything works properly.
