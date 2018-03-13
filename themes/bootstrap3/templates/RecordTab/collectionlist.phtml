@@ -1,4 +1,4 @@
-<?
+<?php
   // Set page title.
   $this->headTitle($this->translate('Collection Items') . ': ' . $this->driver->getBreadcrumb());
 
@@ -7,24 +7,24 @@
   $params = $this->tab->getParams();
   $searchDetails = ['results' => $results, 'params' => $params, 'indexStart' => 1];
 ?>
-<? if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
-  <? foreach ($results->getRecommendations('top') as $current): ?>
+<?php if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+  <?php foreach ($results->getRecommendations('top') as $current): ?>
     <?=$this->recommend($current)?>
-  <? endforeach; ?>
+  <?php endforeach; ?>
   <div class="clearfix hidden-print">
     <div class="pull-left flip">
-      <?
+      <?php
         $transParams = [
           '%%start%%' => $this->localizedNumber($results->getStartRecord()),
           '%%end%%' => $this->localizedNumber($results->getEndRecord()),
           '%%total%%' => $this->localizedNumber($recordTotal)
         ];
       ?>
-      <? if (!isset($this->skipTotalCount)): ?>
+      <?php if (!isset($this->skipTotalCount)): ?>
         <?=$this->translate('showing_items_of_html', $transParams); ?>
-      <? else: ?>
+      <?php else: ?>
         <?=$this->translate('showing_items_html', $transParams); ?>
-      <? endif; ?>
+      <?php endif; ?>
     </div>
     <div class="pull-right flip">
       <?=$this->render('search/controls/limit.phtml', $searchDetails)?>
@@ -36,6 +36,6 @@
     <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
     <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $results])?>
   </form>
-<? else: ?>
+<?php else: ?>
   <?=$this->transEsc('collection_empty')?>
-<? endif; ?>
+<?php endif; ?>
