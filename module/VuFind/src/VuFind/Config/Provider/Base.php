@@ -34,6 +34,8 @@ use Zend\Config\Reader\Ini as IniReader;
 /**
  * VuFind Configuration Base Provider
  *
+ * Provides configuration data according to specifiable flags.
+ *
  * @category VuFind
  * @package  Config
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
@@ -42,24 +44,54 @@ use Zend\Config\Reader\Ini as IniReader;
  */
 class Base extends Glob
 {
+    /**
+     * Should INI configuration files be treated as flat.
+     */
     const FLAG_FLAT_INI = 1;
+
+    /**
+     * Should «Parent_Config» and associated directives be evaluated.
+     */
     const FLAG_PARENT_CONFIG = 2;
+
+    /**
+     * Should the «@parent_yaml» directive be evaluated.
+     */
     const FLAG_PARENT_YAML = 4;
 
+    /**
+     * Flags to be used when loading configuration data.
+     *
+     * @var int
+     */
     protected $flags;
 
     /**
+     * Reference to the INI reader instance.
+     *
      * @var IniReader
      */
     protected $iniReader;
+
+    protected static function getIniReader()
+    {
+        return Manager::getInstance()->getIniReader();
+    }
 
     public function __construct($pattern, $base, $flags = 0)
     {
         parent::__construct($pattern, $base);
         $this->flags = $flags;
-        $this->iniReader = Manager::getIniReader();
+        $this->iniReader = static::getIniReader();
     }
 
+    /**
+     * Loads a configuration file according to the specified flags.
+     *
+     * @param string $path
+     *
+     * @return array|Config
+     */
     protected function load($path)
     {
         $iniSeparator = $this->iniReader->getNestSeparator();
@@ -82,6 +114,14 @@ class Base extends Glob
         return $data;
     }
 
+    /**
+     * Parses and evaluates the «Parent_Config» and associated directives.
+     *
+     * @param array  $childData
+     * @param string $childPath
+     *
+     * @return array
+     */
     protected function mergeParentConfig(array $childData, $childPath)
     {
         $child = new Config($childData, true);
@@ -135,6 +175,13 @@ class Base extends Glob
         return $parent->toArray();
     }
 
+    /**
+     * Parses and evaluates the «@parent_yaml» directive.
+     *
+     * @param array $child
+     *
+     * @return array
+     */
     protected function mergeParentYaml(array $child)
     {
         if (!isset($child['@parent_yaml'])) {

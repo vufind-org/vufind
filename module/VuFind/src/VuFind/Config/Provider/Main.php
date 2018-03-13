@@ -33,6 +33,8 @@ use Zend\ConfigAggregator\ConfigAggregator;
 /**
  * VuFind Configuration Main Provider
  *
+ * Provides VuFind configuration data
+ *
  * @category VuFind
  * @package  Config
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
@@ -41,8 +43,8 @@ use Zend\ConfigAggregator\ConfigAggregator;
  */
 class Main
 {
-    const STOCK_PATH = APPLICATION_PATH . '/config/vufind/';
-    const LOCAL_PATH = LOCAL_OVERRIDE_DIR . '/config/vufind/';
+    const APP_CONFIG_PATH = APPLICATION_PATH . '/config/vufind/';
+    const LCO_CONFIG_PATH = LOCAL_OVERRIDE_DIR . '/config/vufind/';
 
     public function __invoke()
     {
@@ -54,12 +56,12 @@ class Main
 
         $list = array_map('call_user_func', [
             new ArrayProvider([ConfigAggregator::ENABLE_CACHE => true]),
-            new Base($iniGlob, static::STOCK_PATH, $iniFlags),
-            new Base($iniGlob, static::LOCAL_PATH, $iniFlags),
-            new Base($yamlGlob, static::STOCK_PATH, $ymlFlags),
-            new Base($yamlGlob, static::LOCAL_PATH, $ymlFlags),
-            new Base($jsonGlob, static::STOCK_PATH),
-            new Base($jsonGlob, static::LOCAL_PATH),
+            new Base($iniGlob, static::APP_CONFIG_PATH, $iniFlags),
+            new Base($iniGlob, static::LCO_CONFIG_PATH, $iniFlags),
+            new Base($yamlGlob, static::APP_CONFIG_PATH, $ymlFlags),
+            new Base($yamlGlob, static::LCO_CONFIG_PATH, $ymlFlags),
+            new Base($jsonGlob, static::APP_CONFIG_PATH),
+            new Base($jsonGlob, static::LCO_CONFIG_PATH),
         ]);
 
         return array_replace_recursive(...$list);

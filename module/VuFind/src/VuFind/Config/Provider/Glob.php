@@ -33,6 +33,9 @@ use Zend\Config\Factory;
 /**
  * VuFind Configuration Glob Provider
  *
+ * Provides configuration data whose structure reflects the path of loaded files
+ * relative to an optionally specified base path.
+ *
  * @category VuFind
  * @package  Config
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
@@ -41,9 +44,26 @@ use Zend\Config\Factory;
  */
 class Glob
 {
+    /**
+     * Base length to be stripped off file paths
+     *
+     * @var int
+     */
     protected $baseLen;
+
+    /**
+     * Glob pattern for files to be loaded
+     *
+     * @var string
+     */
     protected $pattern;
 
+    /**
+     * Glob constructor.
+     *
+     * @param        $pattern
+     * @param string $base
+     */
     public function __construct($pattern, $base = '')
     {
         $this->baseLen = strlen($base);
@@ -71,6 +91,14 @@ class Glob
         return $data;
     }
 
+    /**
+     * Strips base path and extension and returns the remaining segments
+     * in reversed order to be used for nesting the loaded configuration.
+     *
+     * @param string $path
+     *
+     * @return array
+     */
     protected function getKeys($path)
     {
         $path = substr_replace($path, "", 0, $this->baseLen);

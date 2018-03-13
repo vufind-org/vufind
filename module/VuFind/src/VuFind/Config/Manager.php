@@ -49,42 +49,71 @@ class Manager
     const CONFIG_CACHE_DIR = LOCAL_CACHE_DIR . '/config';
     const ENTIRE_CONFIG_PATH = self::CONFIG_CACHE_DIR . '/entire.php';
     const SPARSE_CONFIG_PATH = self::CONFIG_CACHE_DIR . '/sparse.php';
-    /**
-     * @var IniReader
-     */
-    protected static $iniReader;
 
     /**
-     * Contains all aggregated configuration
+     * Static reference to this
+     *
+     * @var Manager
+     */
+    protected static $manager;
+
+    /**
+     * Reference to the used INI reader
+     *
+     * @var IniReader
+     */
+    protected $iniReader;
+
+    /**
+     * Contains the entire aggregated configuration data to be loaded and looked
+     * up only in case a look-up on the sparse configuration failed.
      *
      * @var Config
      */
     protected $entireConfig;
 
     /**
-     * Contains only required configurations
+     * Contains only the required configuration data.
      *
      * @var Config
      */
     protected $sparseConfig;
 
-    public static function init()
+    /**
+     * Enables to statically get the manager instance in providers.
+     *
+     * @return Manager
+     */
+    public static function getInstance()
     {
-        self::$iniReader = new IniReader;
-        $yamlReader = new YamlReader([YamlParser::class, 'parse']);
-        Factory::registerReader('ini', self::$iniReader);
-        Factory::registerReader('yaml', $yamlReader);
+        return static::$manager ?: static::$manager = new static;
     }
 
-    public static function getIniReader()
+    protected function __construct()
     {
-        return self::$iniReader;
+        $this->iniReader = new IniReader;
+        $yamlReader = new YamlReader([YamlParser::class, 'parse']);
+        Factory::registerReader('ini', $this->iniReader);
+        Factory::registerReader('yaml', $yamlReader);
+
+        if (!file_exists(static::CONFIG_CACHE_DIR)) {
+            mkdir(static::CONFIG_CACHE_DIR, 0700);
+        }
+
+        if (!static::CACHE_ENABLED) {
+            $this->reset();
+        }
     }
 
     public function get($path = null)
     {
         $data = $this->getData($path);
         return $data instanceof Config ? new Config($data->toArray()) : $data;
+    }
+
+    public function getIniReader()
+    {
+        return $this->iniReader;
     }
 
     public function reset()
