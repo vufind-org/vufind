@@ -92,15 +92,16 @@ class Manager
 
     protected function __construct()
     {
+        // register custom readers
         $this->iniReader = new IniReader;
         $yamlReader = new YamlReader([YamlParser::class, 'parse']);
         Factory::registerReader('ini', $this->iniReader);
         Factory::registerReader('yaml', $yamlReader);
-
+        // create configuration cache directory if needed
         if (!file_exists(static::CONFIG_CACHE_DIR)) {
             mkdir(static::CONFIG_CACHE_DIR, 0700);
         }
-
+        // delete the cache files if caching is disabled
         if (!static::CACHE_ENABLED) {
             $this->reset();
         }
@@ -127,26 +128,30 @@ class Manager
      */
     public function getValue(string $path = '/')
     {
-        $path = trim($path, '/');
-        $keys = $path ? explode('/', $path) : [];
+        // normalize path into an array of segments
+        $path = ($path = trim($path, '/')) ? explode('/', $path) : [];
 
         $config = $this->getSparseConfig();
 
-        if ($this->trueOn($config->loaded, ...$keys)) {
-            return $this->getAt($config->content, ...$keys);
+        // return the configuration if already loaded
+        if ($this->trueOn($config->loaded, ...$path)) {
+            return $this->getAt($config->content, ...$path);
         }
 
-        $data = $this->getAt($this->getEntireConfig(), ...$keys);
-        $this->setAt($config, $data, 'content', ...$keys);
-        $this->setAt($config, true, 'loaded', ...$keys);
-
+        // otherwise look-up the entire configuration
+        $data = $this->getAt($this->getEntireConfig(), ...$path);
+        // store the data in the sparse configuration
+        $this->setAt($config, $data, 'content', ...$path);
+        // flag the data as «loaded» for this path
+        $this->setAt($config, true, 'loaded', ...$path);
+        // write sparse configuration to cache file
         Factory::toFile(static::SPARSE_CONFIG_PATH, $config);
-
+        // finally return the configuration data
         return $data;
     }
 
     /**
-     * Gets the reader for INI files registered with the configuration factory.
+     * Gets the registered reader for INI configuration files.
      *
      * @return IniReader
      */
@@ -155,6 +160,9 @@ class Manager
         return $this->iniReader;
     }
 
+    /**
+     * Deletes cached configuration files and resets the manager accordingly.
+     */
     public function reset()
     {
         $this->sparseConfig = $this->entireConfig = null;
@@ -176,25 +184,33 @@ class Manager
      */
     protected function trueOn(Config $config, ...$path) : bool
     {
-        $head = $config->{array_pop($path)};
+        $head = $config->{array_shift($path)};
         return $head instanceof Config ?
             $this->trueOn($head, ...$path) : $head === true;
     }
 
     /**
-     * Sets configuration value at the specified path automatically creating
-     * nested configurations for each non-existing path segment.
+     * Sets a configuration value at the specified path recursively creating
+     * a nested configuration for each non-existing intermediate path segment.
      *
      * @param Config $config
      * @param mixed  $value
-     * @param array  $path
+     * @param array  ...$path
      *
-     * @return mixed
+     * @return Config
      */
-    protected function setAt(Config $config, $value, ...$path)
+    protected function setAt(Config $config, $value, ...$path) : Config
     {
-        $head = $config->{array_pop($path)} ?: new Config([], true);
-        return $head = $path ? $this->setAt($head, $value, ...$path) : $value;
+        $head = array_shift($path);
+
+        if ($path) {
+            $headConfig = $config->$head ?: new Config([], true);
+            $config->$head = $this->setAt($headConfig, $value, ...$path);
+        } else {
+            $config->$head = $value;
+        }
+
+        return $config;
     }
 
     /**
@@ -207,7 +223,7 @@ class Manager
      */
     protected function getAt(Config $config, ...$path)
     {
-        $head = $config->{array_pop($path)};
+        $head = $config->{array_shift($path)};
         return $path ? $this->getAt($head, ...$path) : $head;
     }
 
