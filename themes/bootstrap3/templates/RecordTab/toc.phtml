@@ -1,4 +1,4 @@
-<?
+<?php
     // Set page title.
     $this->headTitle($this->translate('Table of Contents') . ': ' . $this->driver->getBreadcrumb());
 
@@ -10,19 +10,19 @@
         }
     }
 ?>
-<? if (!empty($toc)): ?>
+<?php if (!empty($toc)): ?>
   <strong><?=$this->transEsc('Table of Contents')?>: </strong>
-  <? foreach ($toc as $provider => $content): ?>
-    <? if (!is_array($content)): // treat non-array content as raw HTML ?>
+  <?php foreach ($toc as $provider => $content): ?>
+    <?php if (!is_array($content)): // treat non-array content as raw HTML ?>
       <?=$content?>
-    <? else: ?>
+    <?php else: ?>
       <ul class="toc">
-      <? foreach ($content as $line): ?>
+      <?php foreach ($content as $line): ?>
         <li><?=$this->escapeHtml($line)?></li>
-      <? endforeach; ?>
+      <?php endforeach; ?>
       </ul>
-    <? endif; ?>
-  <? endforeach; ?>
-<? else: ?>
+    <?php endif; ?>
+  <?php endforeach; ?>
+<?php else: ?>
   <?=$this->transEsc('Table of Contents unavailable')?>.
-<? endif; ?>
+<?php endif; ?>

@@ -1,4 +1,4 @@
-<?
+<?php
   // Set up page title:
   $this->headTitle($this->translate('Loan History'));
 
@@ -12,11 +12,11 @@
 
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
 
-  <? if (!empty($this->transactions)): ?>
+  <?php if (!empty($this->transactions)): ?>
     <nav class="search-header hidden-print">
-      <? if ($this->paginator): ?>
+      <?php if ($this->paginator): ?>
         <div class="search-stats">
-          <?
+          <?php
             $end = min(
               $this->paginator->getAbsoluteItemNumber($this->paginator->getItemCountPerPage()),
               $this->paginator->getTotalItemCount()
@@ -29,16 +29,16 @@
           ?>
           <?=$this->translate('showing_items_of_html', $transParams); ?>
         </div>
-      <? endif; ?>
-      <? if ($this->sortList): ?>
+      <?php endif; ?>
+      <?php if ($this->sortList): ?>
         <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
-      <? endif; ?>
+      <?php endif; ?>
     </nav>
 
-    <? $i = 0; foreach ($this->transactions as $resource): ?>
-      <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
+    <?php $i = 0; foreach ($this->transactions as $resource): ?>
+      <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
       <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
-        <?
+        <?php
           $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLink()->getUrl($resource));
           $cover = $coverDetails['html'];
           $thumbnail = false;
@@ -48,15 +48,15 @@
             <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
               <?=$cover ?>
             </div>
-            <? $thumbnail = ob_get_contents();
+            <?php $thumbnail = ob_get_contents();
             ob_end_clean();
           endif; ?>
         <div class="media">
-          <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+          <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
             <?=$thumbnail ?>
-          <? endif ?>
+          <?php endif ?>
           <div class="media-body">
-            <?
+            <?php
               // If this is a non-missing Solr record, we should display a link:
               if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
                 $title = $resource->getTitle();
@@ -71,59 +71,59 @@
                 echo $this->transEsc('Title not available');
               }
             ?><br/>
-            <? $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
+            <?php $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
               <?=$this->transEsc('by')?>:
-              <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><? if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?><br/>
-            <? endif; ?>
-            <? if (count($resource->getFormats()) > 0): ?>
+              <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br/>
+            <?php endif; ?>
+            <?php if (count($resource->getFormats()) > 0): ?>
               <?=$this->record($resource)->getFormatList() ?>
               <br/>
-            <? endif; ?>
-            <? if (!empty($ilsDetails['volume'])): ?>
+            <?php endif; ?>
+            <?php if (!empty($ilsDetails['volume'])): ?>
               <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
               <br />
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? if (!empty($ilsDetails['publication_year'])): ?>
+            <?php if (!empty($ilsDetails['publication_year'])): ?>
               <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
               <br />
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
+            <?php if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
               <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], [], $ilsDetails['institution_name'])?></strong>
               <br />
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? if (!empty($ilsDetails['borrowingLocation'])): ?>
+            <?php if (!empty($ilsDetails['borrowingLocation'])): ?>
               <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['borrowingLocation'], [], $ilsDetails['borrowingLocation'])?>
               <br />
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? if (!empty($ilsDetails['checkoutDate'])): ?>
-              <strong><?=$this->transEsc('Checkout Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['checkoutDate'])?><? if (isset($ilsDetails['checkoutTime'])): ?> <span class="checkout-time"><?=$this->escapeHtml($ilsDetails['checkoutTime'])?><? endif; ?></span><br/>
-            <? endif; ?>
-            <? if (!empty($ilsDetails['returnDate'])): ?>
-              <strong><?=$this->transEsc('Return Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['returnDate'])?><? if (isset($ilsDetails['returnTime'])): ?> <span class="return-time"><?=$this->escapeHtml($ilsDetails['returnTime'])?><? endif; ?></span><br/>
-            <? endif; ?>
-            <? if (!empty($ilsDetails['dueDate'])): ?>
-              <strong><?=$this->transEsc('Due Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['dueDate'])?><? if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><? endif; ?>
-            <? endif; ?>
+            <?php if (!empty($ilsDetails['checkoutDate'])): ?>
+              <strong><?=$this->transEsc('Checkout Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['checkoutDate'])?><?php if (isset($ilsDetails['checkoutTime'])): ?> <span class="checkout-time"><?=$this->escapeHtml($ilsDetails['checkoutTime'])?><?php endif; ?></span><br/>
+            <?php endif; ?>
+            <?php if (!empty($ilsDetails['returnDate'])): ?>
+              <strong><?=$this->transEsc('Return Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['returnDate'])?><?php if (isset($ilsDetails['returnTime'])): ?> <span class="return-time"><?=$this->escapeHtml($ilsDetails['returnTime'])?><?php endif; ?></span><br/>
+            <?php endif; ?>
+            <?php if (!empty($ilsDetails['dueDate'])): ?>
+              <strong><?=$this->transEsc('Due Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['dueDate'])?><?php if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><?php endif; ?>
+            <?php endif; ?>
 
-            <? if (isset($ilsDetails['message']) && !empty($ilsDetails['message'])): ?>
+            <?php if (isset($ilsDetails['message']) && !empty($ilsDetails['message'])): ?>
               <div class="alert alert-info"><?=$this->transEsc($ilsDetails['message'])?></div>
-            <? endif; ?>
+            <?php endif; ?>
           </div>
-          <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+          <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
             <?=$thumbnail ?>
-          <? endif ?>
+          <?php endif ?>
         </div>
         <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>':''?>
       </div>
-    <? endforeach; ?>
+    <?php endforeach; ?>
     <?=$this->paginator ? $this->paginationControl($this->paginator, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params]) : ''?>
-  <? else: ?>
+  <?php else: ?>
     <?=$this->transEsc('loan_history_empty')?>
-  <? endif; ?>
+  <?php endif; ?>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">

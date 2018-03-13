@@ -1,4 +1,4 @@
-<?
+<?php
   // Set page title.
   $this->headTitle($this->translate('Search History'));
 
@@ -11,21 +11,21 @@
 
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?=$this->flashmessages()?>
-  <? if ($saveSupported && !empty($this->saved)): ?>
+  <?php if ($saveSupported && !empty($this->saved)): ?>
     <h2><?=$this->transEsc("history_saved_searches")?></h2>
     <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => true]);?>
-  <? endif; ?>
+  <?php endif; ?>
 
   <h2><?=$this->transEsc("history_recent_searches")?></h2>
-  <? if (!empty($this->unsaved)): ?>
+  <?php if (!empty($this->unsaved)): ?>
     <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => false]);?>
     <a href="?purge=true"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_purge")?></a>
-  <? else: ?>
+  <?php else: ?>
     <?=$this->transEsc("history_no_searches")?>
-  <? endif; ?>
+  <?php endif; ?>
 </div>
 
-<? if ($saveSupported): ?>
+<?php if ($saveSupported): ?>
   <div class="<?=$this->layoutClass('sidebar')?>">
     <?=$this->context($this)->renderInContext(
         "myresearch/menu.phtml",
@@ -34,4 +34,4 @@
      );
      ?>
   </div>
-<? endif; ?>
+<?php endif; ?>

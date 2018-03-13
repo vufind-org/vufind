@@ -1,6 +1,6 @@
-<? $mapType = $this->tab->getMapType(); ?>
-<? if (isset($mapType) && ($mapType == 'openlayers')) : ?>
-  <? $this->headScript()->appendFile('vendor/ol/ol.js');
+<?php $mapType = $this->tab->getMapType(); ?>
+<?php if (isset($mapType) && ($mapType == 'openlayers')) : ?>
+  <?php $this->headScript()->appendFile('vendor/ol/ol.js');
   $this->headScript()->appendFile('map_tab_ol.js');
   $this->headLink()->appendStylesheet('vendor/ol/ol.css');
   $mapTabData = $this->tab->getMapTabData();
@@ -15,4 +15,4 @@
     <div id="map-canvas" style="width: 100%; height: 100%"><div id="popup"></div></div>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET');?>
   </div>
-<? endif; ?>
+<?php endif; ?>
