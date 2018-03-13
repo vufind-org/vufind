@@ -411,21 +411,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Keep Alive
-     *
-     * This is responsible for keeping the session alive whenever called
-     * (via JavaScript)
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function keepAliveAjax()
-    {
-        // Request ID from session to mark it active
-        $this->serviceLocator->get('Zend\Session\SessionManager')->getId();
-        return $this->output(true, self::STATUS_OK);
-    }
-
-    /**
      * Check status and return a status message for e.g. a load balancer.
      *
      * A simple OK as text/plain is returned if everything works properly.
