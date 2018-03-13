@@ -328,6 +328,7 @@ $config = [
                     'duedatereminder' => 'Finna\Db\Row\DueDateReminder',
                     'fee' => 'Finna\Db\Row\Fee',
                     'finnacache' => 'Finna\Db\Row\FinnaCache',
+                    'transaction' => 'Finna\Db\Row\Transaction',
                 ]
             ],
             'db_table' => [
@@ -361,6 +362,7 @@ $config = [
                     'duedatereminder' => 'Finna\Db\Table\DueDateReminder',
                     'fee' => 'Finna\Db\Table\Fee',
                     'finnacache' => 'Finna\Db\Table\FinnaCache',
+                    'transaction' => 'Finna\Db\Table\Transaction',
                 ]
             ],
             'ils_driver' => [
