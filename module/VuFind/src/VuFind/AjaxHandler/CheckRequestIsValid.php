@@ -27,7 +27,6 @@
  */
 namespace VuFind\AjaxHandler;
 
-use VuFind\Session\Settings as SessionSettings;
 use Zend\Mvc\Controller\Plugin\Params;
 
 /**
