@@ -27,6 +27,7 @@
  */
 namespace VuFind\Controller;
 
+use VuFind\AjaxHandler\AjaxHandlerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -40,11 +41,6 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  */
 class AjaxController extends AbstractBase
 {
-    // define some status constants
-    const STATUS_OK = 'OK';                  // good
-    const STATUS_ERROR = 'ERROR';            // bad
-    const STATUS_NEED_AUTH = 'NEED_AUTH';    // must login first
-
     /**
      * Type of output to use
      *
@@ -84,29 +80,29 @@ class AjaxController extends AbstractBase
             ? ': ' . $e->getMessage() : '';
         return $this->output(
             $this->translate('An error has occurred') . $debugMsg,
-            self::STATUS_ERROR,
+            AjaxHandlerInterface::STATUS_ERROR,
             500
         );
     }
 
     /**
-     * Handles passing data to the class
+     * Call an AJAX method and turn the result into a response.
      *
-     * @return mixed
+     * @param string $method     AJAX method to call
+     * @param string $outputMode Output format to use (json/plainText/html)
+     *
+     * @return \Zend\Http\Response
      */
-    public function jsonAction()
+    protected function callAjaxMethod($method, $outputMode = 'json')
     {
-        // Set the output mode to JSON:
-        $this->outputMode = 'json';
-
-        // Get the requested AJAX method:
-        $method = $this->params()->fromQuery('method');
+        // Set the output mode
+        $this->outputMode = $outputMode;
 
         // Check the AJAX handler plugin manager for the method.
         $manager = $this->serviceLocator->get('VuFind\AjaxHandler\PluginManager');
         if ($manager->has($method)) {
-            $handler = $manager->get($method);
             try {
+                $handler = $manager->get($method);
                 return $this->output(...$handler->handleRequest($this->params()));
             } catch (\Exception $e) {
                 return $this->getExceptionOutput($e);
@@ -115,8 +111,20 @@ class AjaxController extends AbstractBase
 
         // If we got this far, we can't handle the requested method:
         return $this->output(
-            $this->translate('Invalid Method'), self::STATUS_ERROR, 400
+            $this->translate('Invalid Method'),
+            AjaxHandlerInterface::STATUS_ERROR,
+            400
         );
+    }
+
+    /**
+     * Make an AJAX call with a JSON-formatted response.
+     *
+     * @return \Zend\Http\Response
+     */
+    public function jsonAction()
+    {
+        return $this->callAjaxMethod($this->params()->fromQuery('method'));
     }
 
     /**
@@ -213,44 +221,7 @@ class AjaxController extends AbstractBase
      */
     protected function systemStatusAction()
     {
-        $this->outputMode = 'plaintext';
-
-        // Check system status
-        $config = $this->getConfig();
-        if (!empty($config->System->healthCheckFile)
-            && file_exists($config->System->healthCheckFile)
-        ) {
-            return $this->output(
-                'Health check file exists', self::STATUS_ERROR, 503
-            );
-        }
-
-        // Test search index
-        try {
-            $results = $this->getResultsManager()->get('Solr');
-            $params = $results->getParams();
-            $params->setQueryIDs(['healthcheck']);
-            $results->performAndProcessSearch();
-        } catch (\Exception $e) {
-            return $this->output(
-                'Search index error: ' . $e->getMessage(), self::STATUS_ERROR, 500
-            );
-        }
-
-        // Test database connection
-        try {
-            $sessionTable = $this->getTable('Session');
-            $sessionTable->getBySessionId('healthcheck', false);
-        } catch (\Exception $e) {
-            return $this->output(
-                'Database error: ' . $e->getMessage(), self::STATUS_ERROR, 500
-            );
-        }
-
-        // This may be called frequently, don't leave sessions dangling
-        $this->serviceLocator->get('Zend\Session\SessionManager')->destroy();
-
-        return $this->output('', self::STATUS_OK);
+        return $this->callAjaxMethod('systemStatus', 'plaintext');
     }
 
     /**

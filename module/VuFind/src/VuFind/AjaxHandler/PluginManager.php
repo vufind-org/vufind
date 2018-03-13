@@ -62,6 +62,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'getSaveStatuses' => 'VuFind\AjaxHandler\GetSaveStatuses',
         'getVisData' => 'VuFind\AjaxHandler\GetVisData',
         'keepAlive' => 'VuFind\AjaxHandler\KeepAlive',
+        'systemStatus' => 'VuFind\AjaxHandler\SystemStatus',
         'tagRecord' => 'VuFind\AjaxHandler\TagRecord',
     ];
 
@@ -101,6 +102,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\AjaxHandler\GetSaveStatusesFactory',
         'VuFind\AjaxHandler\GetVisData' => 'VuFind\AjaxHandler\GetVisDataFactory',
         'VuFind\AjaxHandler\KeepAlive' => 'VuFind\AjaxHandler\KeepAliveFactory',
+        'VuFind\AjaxHandler\SystemStatus' =>
+            'VuFind\AjaxHandler\SystemStatusFactory',
         'VuFind\AjaxHandler\TagRecord' => 'VuFind\AjaxHandler\TagRecordFactory',
     ];
 
