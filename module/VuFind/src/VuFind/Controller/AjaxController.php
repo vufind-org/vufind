@@ -350,51 +350,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Delete a comment on a record.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function deleteRecordCommentAjax()
-    {
-        // Make sure comments are enabled:
-        if (!$this->commentsEnabled()) {
-            return $this->output(
-                $this->translate('Comments disabled'),
-                self::STATUS_ERROR,
-                403
-            );
-        }
-
-        $user = $this->getUser();
-        if ($user === false) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
-            );
-        }
-
-        $id = $this->params()->fromQuery('id');
-        if (empty($id)) {
-            return $this->output(
-                $this->translate('bulk_error_missing'),
-                self::STATUS_ERROR,
-                400
-            );
-        }
-        $table = $this->getTable('Comments');
-        if (!$table->deleteIfOwnedByUser($id, $user)) {
-            return $this->output(
-                $this->translate('edit_list_fail'),
-                self::STATUS_ERROR,
-                403
-            );
-        }
-
-        return $this->output($this->translate('Done'), self::STATUS_OK);
-    }
-
-    /**
      * Check status and return a status message for e.g. a load balancer.
      *
      * A simple OK as text/plain is returned if everything works properly.

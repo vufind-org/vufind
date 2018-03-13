@@ -45,6 +45,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'checkRequestIsValid' => 'VuFind\AjaxHandler\CheckRequestIsValid',
+        'deleteRecordComment' => 'VuFind\AjaxHandler\DeleteRecordComment',
         'getACSuggestions' => 'VuFind\AjaxHandler\GetACSuggestions',
         'getFacetData' => 'VuFind\AjaxHandler\GetFacetData',
         'getIlsStatus' => 'VuFind\AjaxHandler\GetIlsStatus',
@@ -69,6 +70,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         'VuFind\AjaxHandler\CheckRequestIsValid' =>
             'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
+        'VuFind\AjaxHandler\DeleteRecordComment' =>
+            'VuFind\AjaxHandler\DeleteRecordCommentFactory',
         'VuFind\AjaxHandler\GetACSuggestions' =>
             'VuFind\AjaxHandler\GetACSuggestionsFactory',
         'VuFind\AjaxHandler\GetFacetData' =>
