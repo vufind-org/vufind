@@ -113,17 +113,6 @@ class AjaxController extends AbstractBase
             }
         }
 
-        // Fallback: Call the method specified by the 'method' parameter; append
-        // Ajax to the end to avoid access to arbitrary inappropriate methods.
-        $callback = [$this, $method . 'Ajax'];
-        if (is_callable($callback)) {
-            try {
-                return call_user_func($callback);
-            } catch (\Exception $e) {
-                return $this->getExceptionOutput($e);
-            }
-        }
-
         // If we got this far, we can't handle the requested method:
         return $this->output(
             $this->translate('Invalid Method'), self::STATUS_ERROR, 400
