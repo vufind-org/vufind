@@ -54,7 +54,7 @@ use Zend\Stdlib\Parameters;
 class GetFacetData extends AbstractBase
 {
     /**
-     * ILS connection
+     * Hierarchical facet helper
      *
      * @var HierarchicalFacetHelper
      */
