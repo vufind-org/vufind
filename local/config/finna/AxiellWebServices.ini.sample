@@ -157,3 +157,17 @@ dueDateAlert = "none:email"
 [dueDateReminder]
 ; By default due date reminder is disabled in Finna since the ILS does the job
 enabled = false
+
+[onlinePayment]
+; Whether online payment is enabled. Default is false.
+enabled = true
+; Transaction fee (in cents) added to each payment
+;transactionFee = 50
+; Minimum fee (in cents) allowed to be paid online
+minimumFee = 65
+; Email address for transactions that could not be registered.
+;errorEmail = ''
+; Maximum duration (in minutes) for a transaction.
+transactionMaxDuration = 15
+; Currency
+currency = 'EUR'

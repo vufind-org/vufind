@@ -1510,13 +1510,12 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             }
             return [];
         }
+        if (!isset($result->$functionResult->debts->debt)) {
+            return [];
+        }
 
         $finesList = [];
-        if (!isset($result->$functionResult->debts->debt)) {
-            return $finesList;
-        }
-        $debts =  $this->objectToArray($result->$functionResult->debts->debt);
-
+        $debts = $this->objectToArray($result->$functionResult->debts->debt);
         foreach ($debts as $debt) {
             // Have to use debtAmountFormatted, because debtAmount shows negative
             // values as positive. Try to extract the numeric part from the formatted
@@ -1532,8 +1531,12 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'checkout' => '',
                 'fine' => $debt->debtType . ' - ' . $debt->debtNote,
                 'balance' => $amount,
-                'createdate' => $debt->debtDate
+                'createdate' => $debt->debtDate,
+                'payableOnline' => true
             ];
+            if (!empty($debt->organisation)) {
+                $debt->organisation = $debt->organisation;
+            }
             $finesList[] = $fine;
         }
 
@@ -1551,6 +1554,106 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         }
 
         return $finesList;
+    }
+
+    /**
+     * Return total amount of fees that may be paid online.
+     *
+     * @param array $patron Patron
+     * @param array $fines  Patron's fines
+     *
+     * @throws ILSException
+     * @return array Associative array of payment info,
+     * false if an ILSException occurred.
+     */
+    public function getOnlinePayableAmount($patron, $fines)
+    {
+        if (!empty($fines)) {
+            $amount = 0;
+            foreach ($fines as $fine) {
+                if ($fine['payableOnline']) {
+                    $amount += $fine['balance'];
+                }
+            }
+            $config = $this->getConfig('onlinePayment');
+            $nonPayableReason = false;
+            if (isset($config['minimumFee']) && $amount < $config['minimumFee']) {
+                $nonPayableReason = 'online_payment_minimum_fee';
+            }
+            $res = ['payable' => empty($nonPayableReason), 'amount' => $amount];
+            if ($nonPayableReason) {
+                $res['reason'] = $nonPayableReason;
+            }
+            return $res;
+        }
+        return [
+            'payable' => false,
+            'amount' => 0,
+            'reason' => 'online_payment_minimum_fee'
+        ];
+    }
+
+    /**
+     * Mark fees as paid.
+     *
+     * This is called after a successful online payment.
+     *
+     * @param array  $patron            Patron
+     * @param int    $amount            Amount to be registered as paid
+     * @param string $transactionId     Transaction ID
+     * @param int    $transactionNumber Internal transaction number
+     *
+     * @throws ILSException
+     * @return boolean success
+     */
+    public function markFeesAsPaid($patron, $amount, $transactionId,
+        $transactionNumber
+    ) {
+        $function = 'AddPayment';
+        $functionResult = 'addPaymentResponse';
+        $functionParam = 'addPaymentRequest';
+
+        $debtIds = [];
+        $fines = $this->getMyFines($patron);
+        foreach ($fines as $fine) {
+            if ($fine['payableOnline']) {
+                $debtIds[] = $fine['debt_id'];
+            }
+        }
+        $request = [
+            'arenaMember'       => $this->arenaMember,
+            'orderId'           => (string)$transactionNumber,
+            'transactionNumber' => (string)$transactionId,
+            'paymentAmount'     => $amount,
+            // Comma-separated list of IDs since the API has it single-valued
+            'debts'             => ['id' => implode(',', $debtIds)]
+        ];
+
+        $result = $this->doSOAPRequest(
+            $this->payments_wsdl, $function, $functionResult,
+            $patron['cat_username'],
+            [$functionParam => $request]
+        );
+
+        $statusAWS = $result->$functionResult->status;
+
+        if ($statusAWS->type != 'ok') {
+            $message = $this->handleError($function, $statusAWS->message, $username);
+            if ($message == 'ils_connection_failed') {
+                throw new ILSException('ils_offline_status');
+            }
+            $error = "Failed to mark payment of $amount paid for patron"
+                . " {$patron['id']}: " . $statusAWS->message;
+
+            $this->error($error);
+            throw new ILSException($error);
+        }
+
+        // Clear patron cache
+        $cacheKey = $this->getPatronCacheKey($username);
+        $this->putCachedData($cacheKey, null);
+
+        return true;
     }
 
     /**
