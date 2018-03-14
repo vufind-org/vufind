@@ -2156,8 +2156,7 @@ EOT;
      */
     public function getRenewDetails($checkOutDetails)
     {
-        $renewDetails = ($checkOutDetails['institution_dbkey']
-            ?? '')
+        $renewDetails = ($checkOutDetails['institution_dbkey'] ?? '')
             . '|' . $checkOutDetails['item_id'];
         return $renewDetails;
     }
@@ -2633,9 +2632,7 @@ EOT;
     public function getCancelStorageRetrievalRequestDetails($details)
     {
         $details
-            = ($details['institution_dbkey']
-                ?? ''
-            )
+            = ($details['institution_dbkey'] ?? '')
             . '|' . $details['item_id']
             . '|' . $details['reqnum'];
         return $details;
@@ -3236,8 +3233,7 @@ EOT;
      */
     public function getCancelILLRequestDetails($details)
     {
-        $details = ($details['institution_dbkey']
-            ?? '')
+        $details = ($details['institution_dbkey'] ?? '')
             . '|' . $details['item_id']
             . '|' . $details['type']
             . '|' . $details['reqnum'];
