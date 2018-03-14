@@ -155,7 +155,7 @@ trait OnlinePaymentControllerTrait
             return false;
         }
 
-        $payableOnline = $catalog->getOnlinePayableAmount($patron);
+        $payableOnline = $catalog->getOnlinePayableAmount($patron, $fines);
 
         // Check if there is a payment in progress
         // or if the user has unregistered payments
@@ -388,7 +388,8 @@ trait OnlinePaymentControllerTrait
 
         $tId = $res['transactionId'];
         try {
-            $finesAmount = $catalog->getOnlinePayableAmount($patron);
+            $fines = $catalog->getMyFines($patron);
+            $finesAmount = $catalog->getOnlinePayableAmount($patron, $fines);
         } catch (\Exception $e) {
             $this->handleException($e);
             return ['success' => false];
@@ -414,7 +415,7 @@ trait OnlinePaymentControllerTrait
         }
 
         try {
-            $catalog->markFeesAsPaid($patron, $res['amount'], $tId);
+            $catalog->markFeesAsPaid($patron, $res['amount'], $tId, $t['id']);
             if (!$transactionTable->setTransactionRegistered($tId)) {
                 $this->handleError(
                     "Error updating transaction $transactionId status: registered"

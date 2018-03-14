@@ -307,7 +307,7 @@ class OnlinePaymentMonitor extends AbstractService
 
             try {
                 $this->catalog->markFeesAsPaid(
-                    $patron, $t->amount, $t->transaction_id
+                    $patron, $t->amount, $t->transaction_id, $t->id
                 );
                 $result = $this->transactionTable->setTransactionRegistered(
                     $t->transaction_id
