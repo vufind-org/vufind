@@ -64,10 +64,9 @@ trait AjaxResponseTrait
     /**
      * Format the content of the AJAX response based on the response type.
      *
-     * @param string $type     Content-type of output
-     * @param mixed  $data     The response data
-     * @param string $status   Status of the request
-     * @param int    $httpCode A custom HTTP Status Code
+     * @param string $type   Content-type of output
+     * @param mixed  $data   The response data
+     * @param string $status Status of the request
      *
      * @return string
      * @throws \Exception
