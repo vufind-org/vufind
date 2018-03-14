@@ -1016,8 +1016,7 @@ EOT;
             'use_unknown_message' =>
                 in_array('No information available', $sqlRow['STATUS_ARRAY']),
             'item_sort_seq' => $sqlRow['ITEM_SEQUENCE_NUMBER'],
-            'sort_seq' => $sqlRow['SORT_SEQ']
-                ?? PHP_INT_MAX
+            'sort_seq' => $sqlRow['SORT_SEQ'] ?? PHP_INT_MAX
         ];
     }
 
