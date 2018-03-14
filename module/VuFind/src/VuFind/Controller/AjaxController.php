@@ -488,8 +488,7 @@ class AjaxController extends AbstractBase
                 $locationCallnumbers, $callnumberSetting, 'Multiple Call Numbers'
             );
             $locationInfo = [
-                'availability' =>
-                    $details['available'] ?? false,
+                'availability' => $details['available'] ?? false,
                 'location' => htmlentities(
                     $this->translate('location_' . $location, [], $location),
                     ENT_COMPAT, 'UTF-8'
