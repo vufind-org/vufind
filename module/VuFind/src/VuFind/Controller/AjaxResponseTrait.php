@@ -48,8 +48,7 @@ trait AjaxResponseTrait
     /**
      * Array of PHP errors captured during execution. Add this code to your
      * constructor in order to populate the array:
-     *
-     * set_error_handler([static::class, 'storeError']);
+     *     set_error_handler([static::class, 'storeError']);
      *
      * @var array
      */
@@ -65,6 +64,7 @@ trait AjaxResponseTrait
     /**
      * Format the content of the AJAX response based on the response type.
      *
+     * @param string $type     Content-type of output
      * @param mixed  $data     The response data
      * @param string $status   Status of the request
      * @param int    $httpCode A custom HTTP Status Code

@@ -67,7 +67,8 @@ class GetRecordTags extends AbstractBase
     /**
      * Constructor
      *
-     * @param Connection        $loader   Record loader
+     * @param Tags              $table    Tags table
+     * @param User|bool         $user     Logged in user (or false)
      * @param RendererInterface $renderer View renderer
      */
     public function __construct(Tags $table, $user, RendererInterface $renderer)
