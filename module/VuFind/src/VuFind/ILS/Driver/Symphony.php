@@ -302,8 +302,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
          */
         if (isset($options['login'])) {
             $login    = $options['login'];
-            $password = $options['password']
-                ?? null;
+            $password = $options['password'] ?? null;
         } elseif (isset($options['WebServices']['login'])
             && !in_array(
                 $operation,
