@@ -455,8 +455,7 @@ class Wikipedia implements TranslatorAwareInterface
             $imageUrl = $this->getWikipediaImageURL($imageName);
             if ($imageUrl != false) {
                 $info['image'] = $imageUrl;
-                $info['altimage'] = $imageCaption
-                    ?? $name;
+                $info['altimage'] = $imageCaption ?? $name;
             }
         }
 
