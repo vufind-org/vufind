@@ -12,7 +12,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
         var excludeURL = currentPath + this.exclude;
         excludeURL.replace("'", "\\'");
         // Just to be safe
-        html += ' <a href="' + excludeURL + '" onclick="document.location.href=\'' + excludeURL + '\'; return false;" title="' + htmlEncode(excludeTitle) + '"><i class="fa fa-times" title="' + VuFind.translate('Selected') + '"></i></a>';
+        html += ' <a href="' + excludeURL + '" onclick="document.location.href=\'' + excludeURL + '\'; return false;" title="' + htmlEncode(excludeTitle) + '"><i class="fa fa-times"></i></a>';
       }
       html += '</span>';
     }
