@@ -76,7 +76,7 @@ abstract class AjaxHandlerTest extends \PHPUnit\Framework\TestCase
      * @param string         $name      Name of service to create
      * @param mixed          $value     Value of service (or null to create mock)
      *
-     * return void
+     * @return void
      */
     protected function addServiceToContainer($container, $name, $value = null)
     {
