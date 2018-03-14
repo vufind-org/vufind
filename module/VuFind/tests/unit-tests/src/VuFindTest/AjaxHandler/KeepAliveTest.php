@@ -39,7 +39,7 @@ use VuFind\AjaxHandler\KeepAliveFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class KeepAliveTest extends \PHPUnit\Framework\TestCase
+class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTest
 {
     /**
      * Test the AJAX handler's basic response.
@@ -48,10 +48,7 @@ class KeepAliveTest extends \PHPUnit\Framework\TestCase
      */
     public function testResponse()
     {
-        $sm = $this->getMockBuilder('Zend\Session\SessionManager')
-            ->disableOriginalConstructor()
-            ->setMethods(['getId'])
-            ->getMock();
+        $sm = $this->getMockService('Zend\Session\SessionManager', ['getId']);
         $sm->expects($this->once())->method('getId');
         $container = new \Zend\ServiceManager\ServiceManager();
         $container->setService('Zend\Session\SessionManager', $sm);
