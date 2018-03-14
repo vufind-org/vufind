@@ -161,6 +161,17 @@ class HierarchyTree extends AbstractBase
     }
 
     /**
+     * Is non-Javascript tree support enabled?
+     *
+     * @return bool
+     */
+    public function nonJavascriptTreeSupportEnabled()
+    {
+        $config = $this->getConfig();
+        return $config->Hierarchy->supportNonJavascriptBrowsers ?? false;
+    }
+
+    /**
      * Render a hierarchy tree
      *
      * @param string $baseUrl Base URL to use in links within tree
