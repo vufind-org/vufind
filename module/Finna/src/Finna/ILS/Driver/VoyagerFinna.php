@@ -585,14 +585,14 @@ trait VoyagerFinna
      * Return total amount of fees that may be paid online.
      *
      * @param array $patron Patron
+     * @param array $fines  Patron's fines
      *
      * @throws ILSException
      * @return array Associative array of payment info,
      * false if an ILSException occurred.
      */
-    public function getOnlinePayableAmount($patron)
+    public function getOnlinePayableAmount($patron, $fines)
     {
-        $fines = $this->getMyFines($patron);
         if (!empty($fines)) {
             $nonPayableReason = false;
             $amount = 0;
@@ -628,15 +628,17 @@ trait VoyagerFinna
      *
      * This is called after a successful online payment.
      *
-     * @param array  $patron        Patron.
-     * @param int    $amount        Amount to be registered as paid.
-     * @param string $transactionId Transaction ID.
+     * @param array  $patron            Patron
+     * @param int    $amount            Amount to be registered as paid
+     * @param string $transactionId     Transaction ID
+     * @param int    $transactionNumber Internal transaction number
      *
      * @throws ILSException
      * @return boolean success
      */
-    public function markFeesAsPaid($patron, $amount, $transactionId)
-    {
+    public function markFeesAsPaid($patron, $amount, $transactionId,
+        $transactionNumber
+    ) {
         $params
             = isset($this->config['OnlinePayment']['registrationParams'])
             ? $this->config['OnlinePayment']['registrationParams'] : []

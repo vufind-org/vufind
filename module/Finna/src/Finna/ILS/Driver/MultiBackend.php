@@ -289,19 +289,21 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      * Return total amount of fees that may be paid online.
      *
      * @param array $patron Patron
+     * @param array $fines  Patron's fines
      *
      * @throws ILSException
      * @return array Associative array of payment info,
      * false if an ILSException occurred.
      */
-    public function getOnlinePayableAmount($patron)
+    public function getOnlinePayableAmount($patron, $fines)
     {
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver
         ) {
             return $driver->getOnlinePayableAmount(
-                $this->stripIdPrefixes($patron, $source)
+                $this->stripIdPrefixes($patron, $source),
+                $this->stripIdPrefixes($fines, $source)
             );
         }
         throw new ILSException('Online payment not supported');
@@ -312,22 +314,25 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      *
      * This is called after a successful online payment.
      *
-     * @param array  $patron        Patron.
-     * @param int    $amount        Amount to be registered as paid.
-     * @param string $transactionId Transaction ID.
+     * @param array  $patron            Patron
+     * @param int    $amount            Amount to be registered as paid
+     * @param string $transactionId     Transaction ID
+     * @param int    $transactionNumber Internal transaction number
      *
      * @throws ILSException
      * @return boolean success
      */
-    public function markFeesAsPaid($patron, $amount, $transactionId)
-    {
+    public function markFeesAsPaid($patron, $amount, $transactionId,
+        $transactionNumber
+    ) {
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported($driver, 'markFeesAsPaid')
         ) {
             return $driver->markFeesAsPaid(
-                $this->stripIdPrefixes($patron, $source), $amount, $transactionId
+                $this->stripIdPrefixes($patron, $source), $amount, $transactionId,
+                $transactionNumber
             );
         }
         throw new ILSException('Online payment not supported');
