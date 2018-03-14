@@ -114,7 +114,7 @@ class RecordFormatter extends BaseFormatter
             return $xml;
         }
         $rawData = $record->tryMethod('getRawData');
-        return isset($rawData['fullrecord']) ? $rawData['fullrecord'] : null;
+        return $rawData['fullrecord'] ?? null;
     }
 
     /**

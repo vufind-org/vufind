@@ -9,7 +9,7 @@
   <?php foreach ($excerpts as $provider => $list): ?>
     <?php foreach ($list as $excerpt): ?>
       <p class="summary"><?=$excerpt['Content']?></p>
-      <?=isset($excerpt['Copyright']) ? $excerpt['Copyright'] : ''?>
+      <?=$excerpt['Copyright'] ?? ''?>
       <hr/>
     <?php endforeach; ?>
   <?php endforeach; ?>

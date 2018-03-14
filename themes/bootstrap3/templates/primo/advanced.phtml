@@ -52,7 +52,7 @@
             }
           ?>
           <?php for ($j = 0; $j < $numRows; $j++): ?>
-            <?php $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>
+            <?php $currRow = $currentGroup[$j] ?? false; ?>
             <div class="search">
               <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control">
                 <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>

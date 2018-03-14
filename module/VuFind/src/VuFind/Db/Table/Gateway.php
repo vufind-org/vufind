@@ -86,8 +86,7 @@ class Gateway extends AbstractTableGateway
     {
         // Special case for PostgreSQL sequences:
         if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql") {
-            $maps = isset($cfg['vufind']['pgsql_seq_mapping'])
-                ? $cfg['vufind']['pgsql_seq_mapping'] : null;
+            $maps = $cfg['vufind']['pgsql_seq_mapping'] ?? null;
             if (isset($maps[$this->table])) {
                 if (!is_object($this->featureSet)) {
                     $this->featureSet = new Feature\FeatureSet();

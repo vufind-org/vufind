@@ -60,8 +60,8 @@ class RecordDataFormatter extends AbstractHelper
      */
     public function specSortCallback($a, $b)
     {
-        $posA = isset($a['pos']) ? $a['pos'] : 0;
-        $posB = isset($b['pos']) ? $b['pos'] : 0;
+        $posA = $a['pos'] ?? 0;
+        $posB = $b['pos'] ?? 0;
         if ($posA === $posB) {
             return 0;
         }
@@ -87,7 +87,7 @@ class RecordDataFormatter extends AbstractHelper
         foreach ($spec as $field => $current) {
             // Extract the relevant data from the driver.
             $data = $this->extractData($driver, $current);
-            $allowZero = isset($current['allowZero']) ? $current['allowZero'] : true;
+            $allowZero = $current['allowZero'] ?? true;
             if (!empty($data) || ($allowZero && ($data === 0 || $data === '0'))) {
                 // Determine the rendering method to use with the second element
                 // of the current spec.
@@ -106,7 +106,7 @@ class RecordDataFormatter extends AbstractHelper
                     ) {
                         $field = call_user_func($current['labelFunction'], $data);
                     }
-                    $context = isset($current['context']) ? $current['context'] : [];
+                    $context = $current['context'] ?? [];
                     $result[$field] = [
                         'value' => $text,
                         'context' => $context
@@ -174,7 +174,7 @@ class RecordDataFormatter extends AbstractHelper
         // If $method is a bool, return it as-is; this allows us to force the
         // rendering (or non-rendering) of particular data independent of the
         // record driver.
-        $method = isset($options['dataMethod']) ? $options['dataMethod'] : false;
+        $method = $options['dataMethod'] ?? false;
         if ($method === true || $method === false) {
             return $method;
         }
@@ -211,7 +211,7 @@ class RecordDataFormatter extends AbstractHelper
     protected function renderRecordHelper(RecordDriver $driver, $data,
         array $options
     ) {
-        $method = isset($options['helperMethod']) ? $options['helperMethod'] : null;
+        $method = $options['helperMethod'] ?? null;
         $plugin = $this->getView()->plugin('record');
         if (empty($method) || !is_callable([$plugin, $method])) {
             throw new \Exception('Cannot call "' . $method . '" on helper.');
@@ -235,7 +235,7 @@ class RecordDataFormatter extends AbstractHelper
             throw new \Exception('Template option missing.');
         }
         $helper = $this->getView()->plugin('record');
-        $context = isset($options['context']) ? $options['context'] : [];
+        $context = $options['context'] ?? [];
         $context['driver'] = $driver;
         $context['data'] = $data;
         return trim(
@@ -277,10 +277,8 @@ class RecordDataFormatter extends AbstractHelper
         $view = $this->getView();
         $escaper = (isset($options['translate']) && $options['translate'])
             ? $view->plugin('transEsc') : $view->plugin('escapeHtml');
-        $transDomain = isset($options['translationTextDomain'])
-            ? $options['translationTextDomain'] : '';
-        $separator = isset($options['separator'])
-            ? $options['separator'] : '<br />';
+        $transDomain = $options['translationTextDomain'] ?? '';
+        $separator = $options['separator'] ?? '<br />';
         $retVal = '';
         $array = (array)$data;
         $remaining = count($array);
@@ -293,8 +291,8 @@ class RecordDataFormatter extends AbstractHelper
                 $retVal .= $separator;
             }
         }
-        return (isset($options['prefix']) ? $options['prefix'] : '')
+        return ($options['prefix'] ?? '')
             . $retVal
-            . (isset($options['suffix']) ? $options['suffix'] : '');
+            . ($options['suffix'] ?? '');
     }
 }

@@ -254,8 +254,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         // objects:
         foreach ($ids as $i => $details) {
             if (!isset($retVal[$i]) || !is_object($retVal[$i])) {
-                $fields = isset($details['extra_fields'])
-                    ? $details['extra_fields'] : [];
+                $fields = $details['extra_fields'] ?? [];
                 $fields['id'] = $details['id'];
                 $retVal[$i] = $this->recordFactory->get('Missing');
                 $retVal[$i]->setRawData($fields);
