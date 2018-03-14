@@ -61,16 +61,17 @@
         <?php $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
         if (!empty($customLinks)): ?>
           <?php foreach ($customLinks as $customLink): ?>
-          <?php $url = $customLink['Url'] ?? '';
+            <?php 
+              $url = $customLink['Url'] ?? '';
               $mot = $customLink['MouseOverText'] ?? '';
               $icon = $customLink['Icon'] ?? '';
               $name = $customLink['Text'] ?? '';
-          ?>
-          <span>
-            <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
-              <?php if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>" /> <?php endif; ?><?=$this->escapeHtml($name)?>
-            </a>
-          </span>
+            ?>
+            <span>
+              <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
+                <?php if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>" /> <?php endif; ?><?=$this->escapeHtml($name)?>
+              </a>
+            </span>
           <?php endforeach; ?>
         <?php endif; ?>
       </div>
