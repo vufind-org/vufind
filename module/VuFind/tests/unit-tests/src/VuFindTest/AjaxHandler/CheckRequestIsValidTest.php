@@ -27,8 +27,8 @@
  */
 namespace VuFindTest\AjaxHandler;
 
-use VuFind\AjaxHandler\CheckRequestIsValid;
 use VuFind\AjaxHandler\AbstractIlsAndUserActionFactory;
+use VuFind\AjaxHandler\CheckRequestIsValid;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\ILS\Connection;
 use VuFind\Session\Settings;
