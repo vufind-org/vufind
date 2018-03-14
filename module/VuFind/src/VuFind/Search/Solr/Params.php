@@ -630,8 +630,7 @@ class Params extends \VuFind\Search\Base\Params
             }
         } elseif ($this->facetHelper && in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely
-            $separator = $hierarchicalFacetSeparators[$field]
-                ?? '/';
+            $separator = $hierarchicalFacetSeparators[$field] ?? '/';
             $filter['displayText'] = $this->facetHelper->formatDisplayText(
                 $filter['displayText'], true, $separator
             );
