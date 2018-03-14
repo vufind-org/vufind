@@ -488,8 +488,7 @@ class Voyager extends AbstractBase
                     'reserve' => $row['ON_RESERVE'],
                     'callnumber' => $row['CALLNUMBER'],
                     'item_sort_seq' => $row['ITEM_SEQUENCE_NUMBER'],
-                    'sort_seq' => $row['SORT_SEQ']
-                        ?? PHP_INT_MAX
+                    'sort_seq' => $row['SORT_SEQ'] ?? PHP_INT_MAX
                 ];
             } else {
                 $statusFound = in_array(
