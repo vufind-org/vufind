@@ -721,8 +721,7 @@ class DbUpgrade extends AbstractPlugin
                 $deleteRule = 'RESTRICT';
                 $updateRule = 'RESTRICT';
                 $options = 'RESTRICT|CASCADE|SET NULL|NO ACTION|SET DEFAULT';
-                $actions = isset($foreignKeyMatches[3][$i])
-                    ? $foreignKeyMatches[3][$i] : '';
+                $actions = $foreignKeyMatches[3][$i] ?? '';
                 if (preg_match("/ON DELETE ($options)/", $actions, $matches)) {
                     $deleteRule = $matches[1];
                 }
@@ -766,7 +765,7 @@ class DbUpgrade extends AbstractPlugin
     protected function defaultMatches($currentDefault, $sql)
     {
         preg_match("/.* DEFAULT (.*)$/", $sql, $matches);
-        $expectedDefault = isset($matches[1]) ? $matches[1] : null;
+        $expectedDefault = $matches[1] ?? null;
         if (null !== $expectedDefault) {
             $expectedDefault = trim(rtrim($expectedDefault, ','), "'");
             $expectedDefault = (strtoupper($expectedDefault) == 'NULL')

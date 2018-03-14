@@ -314,7 +314,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             $policy['hint'] = $config->Authentication->password_hint;
         } else {
             $policy['hint'] = $this->getCannedPasswordPolicyHint(
-                isset($policy['pattern']) ? $policy['pattern'] : null
+                $policy['pattern'] ?? null
             );
         }
         return $policy;

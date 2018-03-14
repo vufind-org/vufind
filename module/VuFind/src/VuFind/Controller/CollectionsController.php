@@ -183,8 +183,7 @@ class CollectionsController extends AbstractBase
         $result = $searchObject->getFullFieldFacets(
             [$browseField], false, 150000, 'index'
         );
-        $result = isset($result[$browseField]['data']['list'])
-            ? $result[$browseField]['data']['list'] : [];
+        $result = $result[$browseField]['data']['list'] ?? [];
 
         $delimiter = $this->getBrowseDelimiter();
         foreach ($result as $rkey => $collection) {
@@ -266,7 +265,7 @@ class CollectionsController extends AbstractBase
         }
         $result = $sorted;
 
-        return isset($key) ? $key : 0;
+        return $key ?? 0;
     }
 
     /**

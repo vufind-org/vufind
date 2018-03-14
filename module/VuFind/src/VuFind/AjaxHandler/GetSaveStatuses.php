@@ -104,7 +104,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
     {
         $result = $checked = [];
         foreach ($ids as $i => $id) {
-            $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
+            $source = $sources[$i] ?? DEFAULT_SEARCH_BACKEND;
             $selector = $source . '|' . $id;
 
             // We don't want to bother checking the same ID more than once, so

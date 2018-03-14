@@ -51,7 +51,7 @@
           <?php $contextVars = [
             'allowExclude' => $this->recommend->excludeAllowed($title),
             'title' => $title,
-            'sortOptions' => isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : '',
+            'sortOptions' => $hierarchicalFacetSortOptions[$title] ?? '',
             'collapsedFacets' => $collapsedFacets
           ]; ?>
           <?php if (in_array($title, $hierarchicalFacets)): ?>

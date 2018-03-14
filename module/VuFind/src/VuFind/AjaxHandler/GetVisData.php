@@ -111,7 +111,7 @@ class GetVisData extends AbstractBase
         $facets = $this->results->getFullFieldFacets(array_keys($fields));
         $retVal = [];
         foreach ($facets as $field => $values) {
-            $filter = isset($filters[$field][0]) ? $filters[$field][0] : null;
+            $filter = $filters[$field][0] ?? null;
             $newValues = [
                 'data' => [],
                 'min' => $fields[$field][0] > 0 ? $fields[$field][0] : 0,

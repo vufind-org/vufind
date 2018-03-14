@@ -116,8 +116,7 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
             if ($dl === false) {
                 return null;
             }
-            $exceptionDescription = isset($dl['exceptionMessage'])
-                ? $dl['exceptionMessage'] : 'Access denied.';
+            $exceptionDescription = $dl['exceptionMessage'] ?? 'Access denied.';
             switch (strtolower($dl['action'])) {
             case 'promptlogin':
                 // If the user is already logged in, but we're getting a "prompt

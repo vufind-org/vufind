@@ -18,12 +18,12 @@
       <?php endif; ?>
       <?php if (isset($review['Source'])): ?><strong><?=$this->transEsc('Review by')?> <?=$review['Source']?></strong><?php endif; ?>
       <p class="summary">
-        <?=isset($review['Content']) ? $review['Content'] : ''?>
+        <?=$review['Content'] ?? ''?>
         <?php if ((!isset($review['Content']) || empty($review['Content'])) && isset($review['ReviewURL'])): ?>
           <a target="new" href="<?=$this->escapeHtmlAttr($review['ReviewURL'])?>"><?=$this->transEsc('Read the full review online...')?></a>
         <?php endif; ?>
       </p>
-      <?=isset($review['Copyright']) ? $review['Copyright'] : ''?>
+      <?=$review['Copyright'] ?? ''?>
       <hr/>
     <?php endforeach; ?>
   <?php endforeach; ?>

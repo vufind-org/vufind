@@ -109,10 +109,8 @@ class SimilarItems extends AbstractChannelProvider
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = isset($options['channelSize'])
-            ? $options['channelSize'] : 20;
-        $this->maxRecordsToExamine = isset($options['maxRecordsToExamine'])
-            ? $options['maxRecordsToExamine'] : 2;
+        $this->channelSize = $options['channelSize'] ?? 20;
+        $this->maxRecordsToExamine = $options['maxRecordsToExamine'] ?? 2;
     }
 
     /**

@@ -361,15 +361,14 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
             );
             $locationInfo = [
                 'availability' =>
-                    isset($details['available']) ? $details['available'] : false,
+                    $details['available'] ?? false,
                 'location' => htmlentities(
                     $this->translate('location_' . $location, [], $location),
                     ENT_COMPAT, 'UTF-8'
                 ),
                 'callnumbers' =>
                     htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
-                'status_unknown' => isset($details['status_unknown'])
-                    ? $details['status_unknown'] : false,
+                'status_unknown' => $details['status_unknown'] ?? false,
                 'callnumber_handler' => $callnumberHandler
             ];
             $locationList[] = $locationInfo;

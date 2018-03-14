@@ -122,7 +122,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         // Sort the returned links into categories based on service type:
         $electronic = $print = $services = [];
         foreach ($result as $link) {
-            switch (isset($link['service_type']) ? $link['service_type'] : '') {
+            switch ($link['service_type'] ?? '') {
             case 'getHolding':
                 $print[] = $link;
                 break;
