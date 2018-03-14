@@ -23,9 +23,8 @@
 <?php $insideButton = false; ?>
 <?php foreach ($channels as $channel): ?>
   <?php
-    $groupId = isset($channel['groupId'])
-      ? $channel['groupId']
-      : $channel['providerId'];
+    $groupId = $channel['groupId']
+      ?? $channel['providerId'];
   ?>
   <?php $channelID = 'channel-' . md5(serialize($channel)); ?>
   <?php if (isset($channel['contents'])): ?>

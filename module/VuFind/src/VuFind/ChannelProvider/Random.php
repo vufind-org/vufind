@@ -98,9 +98,8 @@ class Random extends AbstractChannelProvider
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = isset($options['channelSize'])
-            ? $options['channelSize'] : 20;
-        $this->mode = isset($options['mode']) ? $options['mode'] : 'retain';
+        $this->channelSize = $options['channelSize'] ?? 20;
+        $this->mode = $options['mode'] ?? 'retain';
     }
 
     /**

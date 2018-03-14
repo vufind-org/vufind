@@ -24,7 +24,7 @@ $formattedAuthors = [];
         if (!empty($requiredDataFields)) {
           foreach ($requiredDataFields as $field) {
               $name = $field['name'];
-              $prefix = isset($field['prefix']) ? $field['prefix'] : '';
+              $prefix = $field['prefix'] ?? '';
               if (isset($dataFields[$name])) {
                   echo $formatProperty($dataFields[$name], $name, $prefix);
               }

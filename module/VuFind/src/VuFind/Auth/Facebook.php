@@ -169,7 +169,7 @@ class Facebook extends AbstractBase implements
         $response = $this->httpService->get($requestUrl);
         $parts = explode('&', $response->getBody(), 2);
         $parts = explode('=', $parts[0], 2);
-        return isset($parts[1]) ? $parts[1] : null;
+        return $parts[1] ?? null;
     }
 
     /**

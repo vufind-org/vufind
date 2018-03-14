@@ -190,7 +190,7 @@ class Bootstrapper
                     $viewModel->setVariable('templateDir', $parts[0]);
                     $viewModel->setVariable(
                         'templateName',
-                        isset($parts[1]) ? $parts[1] : null
+                        $parts[1] ?? null
                     );
                 }
             }

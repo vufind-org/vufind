@@ -92,10 +92,10 @@
     <?php $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
     if (!empty($customLinks)): ?>
       <?php foreach ($customLinks as $customLink): ?>
-      <?php $url = isset($customLink['Url']) ? $customLink['Url'] : '';
-          $mot = isset($customLink['MouseOverText'])? $customLink['MouseOverText'] : '';
-          $icon = isset($customLink['Icon']) ? $customLink['Icon'] : '';
-          $name = isset($customLink['Text']) ? $customLink['Text'] : '';
+      <?php $url = $customLink['Url'] ?? '';
+          $mot = $customLink['MouseOverText'] ?? '';
+          $icon = $customLink['Icon'] ?? '';
+          $name = $customLink['Text'] ?? '';
       ?>
       <span>
         <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">

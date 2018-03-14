@@ -251,8 +251,7 @@ class CAS extends AbstractBase
         foreach ($cas as $key => $value) {
             if (preg_match("/userattribute_[0-9]{1,}/", $key)) {
                 $valueKey = 'userattribute_value_' . substr($key, 14);
-                $sortedUserAttributes[$value] = isset($cas->$valueKey)
-                    ? $cas->$valueKey : null;
+                $sortedUserAttributes[$value] = $cas->$valueKey ?? null;
 
                 // Throw an exception if attributes are missing/empty.
                 if (empty($sortedUserAttributes[$value])) {

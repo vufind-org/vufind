@@ -488,9 +488,8 @@ class Voyager extends AbstractBase
                     'reserve' => $row['ON_RESERVE'],
                     'callnumber' => $row['CALLNUMBER'],
                     'item_sort_seq' => $row['ITEM_SEQUENCE_NUMBER'],
-                    'sort_seq' => isset($row['SORT_SEQ'])
-                        ? $row['SORT_SEQ']
-                        : PHP_INT_MAX
+                    'sort_seq' => $row['SORT_SEQ']
+                        ?? PHP_INT_MAX
                 ];
             } else {
                 $statusFound = in_array(
@@ -775,8 +774,7 @@ EOT;
 
             // Concat wrapped rows (MARC data more than 300 bytes gets split
             // into multiple rows)
-            $rowId = isset($row['ITEM_ID'])
-                ? $row['ITEM_ID'] : 'MFHD' . $row['MFHD_ID'];
+            $rowId = $row['ITEM_ID'] ?? 'MFHD' . $row['MFHD_ID'];
             if (isset($data[$rowId][$number])) {
                 // We don't want to concatenate the same MARC information to
                 // itself over and over due to a record with multiple status
@@ -1019,9 +1017,8 @@ EOT;
             'use_unknown_message' =>
                 in_array('No information available', $sqlRow['STATUS_ARRAY']),
             'item_sort_seq' => $sqlRow['ITEM_SEQUENCE_NUMBER'],
-            'sort_seq' => isset($sqlRow['SORT_SEQ'])
-                ? $sqlRow['SORT_SEQ']
-                : PHP_INT_MAX
+            'sort_seq' => $sqlRow['SORT_SEQ']
+                ?? PHP_INT_MAX
         ];
     }
 
@@ -1076,8 +1073,7 @@ EOT;
                     );
                 }
 
-                $requests_placed = isset($row['HOLDS_PLACED'])
-                    ? $row['HOLDS_PLACED'] : 0;
+                $requests_placed = $row['HOLDS_PLACED'] ?? 0;
                 if (isset($row['RECALLS_PLACED'])) {
                     $requests_placed += $row['RECALLS_PLACED'];
                 }

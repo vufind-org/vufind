@@ -302,9 +302,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
          */
         if (isset($options['login'])) {
             $login    = $options['login'];
-            $password = isset($options['password'])
-                ? $options['password']
-                : null;
+            $password = $options['password']
+                ?? null;
         } elseif (isset($options['WebServices']['login'])
             && !in_array(
                 $operation,
@@ -978,8 +977,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         $policyID   = strtoupper($policyID);
         $policyList = $this->getPolicyList($policyType);
 
-        return isset($policyList[$policyID]) ?
-            $policyList[$policyID] : $policyID;
+        return $policyList[$policyID] ?? $policyID;
     }
 
     /**
@@ -997,7 +995,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     public function getStatus($id)
     {
         $statuses = $this->getStatuses([$id]);
-        return isset($statuses[$id]) ? $statuses[$id] : [];
+        return $statuses[$id] ?? [];
     }
 
     /**

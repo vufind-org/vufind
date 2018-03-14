@@ -56,8 +56,7 @@ class XMLFile extends AbstractBase
     {
         if (null === $this->basePath) {
             $settings = $this->getHierarchyDriver()->getTreeSettings();
-            $this->basePath = isset($settings['XMLFileDir'])
-                ? $settings['XMLFileDir'] : '';
+            $this->basePath = $settings['XMLFileDir'] ?? '';
         }
         return $this->basePath;
     }

@@ -3,15 +3,15 @@
 <form class="form-feedback" name="feedback" method="post" action="<?=$this->url('feedback-email')?>">
   <div class="form-group">
     <label class="control-label" for="name"><?=$this->transEsc("feedback_name")?></label>
-    <input type="text" id="name" name="name" value="<?=$this->escapeHtmlAttr(isset($name) ? $name : '')?>" class="form-control"/>
+    <input type="text" id="name" name="name" value="<?=$this->escapeHtmlAttr($name ?? '')?>" class="form-control"/>
   </div>
   <div class="form-group">
     <label class="control-label" for="email"><?=$this->transEsc("Email")?></label>
-    <input type="email" id="email" name="email" value="<?=$this->escapeHtmlAttr(isset($email) ? $email : '')?>" class="form-control" required/>
+    <input type="email" id="email" name="email" value="<?=$this->escapeHtmlAttr($email ?? '')?>" class="form-control" required/>
   </div>
   <div class="form-group">
     <label class="control-label" for="comments"><?=$this->transEsc("Comments")?></label>
-    <textarea id="comments" name="comments" class="form-control" required><?=$this->escapeHtml(isset($comments) ? $comments : '')?></textarea>
+    <textarea id="comments" name="comments" class="form-control" required><?=$this->escapeHtml($comments ?? '')?></textarea>
   </div>
   <?=$this->recaptcha()->html($this->useRecaptcha) ?>
   <div class="form-group">
