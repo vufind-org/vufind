@@ -1,4 +1,4 @@
-<?
+<?php
     // Set up page title:
     $this->headTitle($this->translate('My Profile'));
 
@@ -18,7 +18,7 @@
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
 
   <table class="table table-striped">
-    <?
+    <?php
       echo $this->renderArray(
         $arrTemplate, $this->profile,
         [
@@ -27,24 +27,24 @@
         ]
       );
      ?>
-    <? if ($showHomeLibForm): ?>
+    <?php if ($showHomeLibForm): ?>
       <tr><th><?=$this->transEsc('Preferred Library')?>:</th>
-      <?
+      <?php
         $selected = (isset($this->profile['home_library']) && $this->profile['home_library'] != "")
             ? $this->profile['home_library'] : $this->defaultPickupLocation
       ?>
       <td>
         <form id="profile_form" class="form-inline" method="post">
           <select id="home_library" name="home_library" class="form-control">
-            <? foreach ($this->pickup as $lib): ?>
+            <?php foreach ($this->pickup as $lib): ?>
               <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?></option>
-            <? endforeach; ?>
+            <?php endforeach; ?>
           </select>
           <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Save')?>" />
         </form>
       </td>
-    <? endif; ?>
-    <?
+    <?php endif; ?>
+    <?php
       echo $this->renderArray(
         $arrTemplate, $this->profile,
         [

@@ -1,42 +1,42 @@
 <h4><?=$this->transEsc('Similar Items')?></h4>
-<? $similarRecords = $this->tab->getResults(); ?>
-<? if (!empty($similarRecords)): ?>
-  <? $perPage = 4 ?>
+<?php $similarRecords = $this->tab->getResults(); ?>
+<?php if (!empty($similarRecords)): ?>
+  <?php $perPage = 4 ?>
   <div id="similar-items-carousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
     <ol class="carousel-indicators">
       <li data-target="#similar-items-carousel" data-slide-to="0" class="active"></li>
-      <? for($i = 1;$i < count($similarRecords) / $perPage;$i++): ?>
+      <?php for($i = 1;$i < count($similarRecords) / $perPage;$i++): ?>
         <li data-target="#similar-items-carousel" data-slide-to="<?=$i ?>"></li>
-      <? endfor; ?>
+      <?php endfor; ?>
     </ol>
 
     <!-- Wrapper for slides -->
     <div class="carousel-inner">
       <div class="item active">
-        <? foreach ($similarRecords as $index => $data): ?>
+        <?php foreach ($similarRecords as $index => $data): ?>
           <div class="carousel-item">
             <a class="hover-overlay" href="<?=$this->recordLink()->getUrl($data)?>">
-              <? $thumb = $this->record($data)->getThumbnail('large'); ?>
+              <?php $thumb = $this->record($data)->getThumbnail('large'); ?>
               <img src="<?=$thumb ?>" title="<?=$data->getTitle() ?>"/>
               <div class="content">
-                <? $formats = $data->getFormats(); ?>
-                <i class="fa fa-x<? if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><? endif; ?>"></i>
+                <?php $formats = $data->getFormats(); ?>
+                <i class="fa fa-x<?php if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><?php endif; ?>"></i>
                 <b><?=$this->escapeHtml($data->getTitle())?></b>
-                <? $authors = $data->getPrimaryAuthors(); if (!empty($authors)): ?>
-                  <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><? if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
-                <? endif; ?>
-                <? $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
+                <?php $authors = $data->getPrimaryAuthors(); if (!empty($authors)): ?>
+                  <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+                <?php endif; ?>
+                <?php $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
                   <br/><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
-                <? endif; ?>
+                <?php endif; ?>
               </div>
             </a>
           </div>
-          <? if(($index + 1) % $perPage == 0 && $index < count($similarRecords) - 1): ?>
+          <?php if(($index + 1) % $perPage == 0 && $index < count($similarRecords) - 1): ?>
       </div>
       <div class="item">
-          <? endif; ?>
-        <? endforeach; ?>
+          <?php endif; ?>
+        <?php endforeach; ?>
       </div>
     </div>
 
@@ -48,10 +48,10 @@
       <span class="fa fa-chevron-right glyphicon-chevron-right" title="<?=$this->transEsc('Next') ?>"></span>
     </a>
   </div>
-<? else: ?>
+<?php else: ?>
   <p><?=$this->transEsc('Cannot find similar records')?></p>
-<? endif; ?>
-<?
+<?php endif; ?>
+<?php
   $script = <<<JS
 var normalizeHeightCount = $('#similar-items-carousel img').length;
 function normalizeHeights() {

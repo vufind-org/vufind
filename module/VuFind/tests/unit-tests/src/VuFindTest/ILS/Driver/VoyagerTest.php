@@ -41,9 +41,11 @@ use VuFind\ILS\Driver\Voyager;
 class VoyagerTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     /**
-     * Constructor
+     * Standard setup method.
+     *
+     * @return void
      */
-    public function __construct()
+    public function setUp()
     {
         $this->driver = new Voyager(new \VuFind\Date\Converter());
     }

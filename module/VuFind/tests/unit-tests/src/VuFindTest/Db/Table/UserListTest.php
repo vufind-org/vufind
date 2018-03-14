@@ -45,10 +45,11 @@ class UserListTest extends \VuFindTest\Unit\DbTestCase
      * list.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\LoginRequired
      */
     public function testLoginRequiredToCreateList()
     {
-        $this->setExpectedException('VuFind\Exception\LoginRequired');
         $table = $this->getTable('UserList');
         $list = $table->getNew(false);
     }

@@ -1,12 +1,12 @@
 <div class="search-grid">
-  <? $it = 0; ?>
-  <? foreach ($this->results->getResults() as $current): ?>
+  <?php $it = 0; ?>
+  <?php foreach ($this->results->getResults() as $current): ?>
     <?=$this->record($current)->getSearchResult('grid')?>
-    <? $it++; ?>
-    <? if ($it % 4 === 0): ?>
+    <?php $it++; ?>
+    <?php if ($it % 4 === 0): ?>
       <br class="grid-large-break"/>
-    <? elseif ($it % 2 === 0): ?>
+    <?php elseif ($it % 2 === 0): ?>
       <br class="grid-small-break"/>
-    <? endif; ?>
-  <? endforeach; ?>
+    <?php endif; ?>
+  <?php endforeach; ?>
 </div>

@@ -41,9 +41,11 @@ use VuFind\ILS\Driver\Horizon;
 class HorizonTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     /**
-     * Constructor
+     * Standard setup method.
+     *
+     * @return void
      */
-    public function __construct()
+    public function setUp()
     {
         $this->driver = new Horizon(new \VuFind\Date\Converter());
     }

@@ -1,4 +1,4 @@
-<?
+<?php
     // Set up convenience variables:
     $account = $this->auth()->getManager();
     $user = $account->isLoggedIn();
@@ -19,79 +19,79 @@
 
 <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
 
-<? if (!empty($holdings['blocks'])):?>
+<?php if (!empty($holdings['blocks'])):?>
   <div id="account-block-msg" class="alert alert-danger">
     <?=$this->transEsc('account_block_options_missing', ['%%details%%' => implode('; ', $holdings['blocks'])]) ?>
   </div>
-<? endif; ?>
+<?php endif; ?>
 
 <?=($offlineMode == "ils-offline") ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message']) : ''?>
-<? if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
-  <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
-    <? if (!$user): ?>
+<?php if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
+  <?php if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
+    <?php if (!$user): ?>
       <div class="alert alert-info">
         <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'Holdings')?>?login=true&amp;catalogLogin=true" data-lightbox><?=$this->transEsc("hold_login")?></a>
       </div>
-    <? elseif (!$user->cat_username): ?>
+    <?php elseif (!$user->cat_username): ?>
       <div class="alert alert-info">
         <?=$this->translate("hold_profile_html", ['%%url%%' => $this->recordLink()->getTabUrl($this->driver, 'Holdings') . '?catalogLogin=true'])?>
       </div>
-    <? endif; ?>
-  <? endif; ?>
-<? endif; ?>
-<? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
+    <?php endif; ?>
+  <?php endif; ?>
+<?php endif; ?>
+<?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
   <a class="placehold" data-lightbox title="<?=$this->transEsc('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('title_hold_place')?></a>
-<? endif; ?>
-<? if (!empty($urls) || $openUrlActive): ?>
+<?php endif; ?>
+<?php if (!empty($urls) || $openUrlActive): ?>
   <h3><?=$this->transEsc("Internet")?></h3>
-  <? if (!empty($urls)): ?>
-    <? foreach ($urls as $current): ?>
+  <?php if (!empty($urls)): ?>
+    <?php foreach ($urls as $current): ?>
       <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
-    <? endforeach; ?>
-  <? endif; ?>
-  <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
-<? endif; ?>
-<? foreach ($holdings['holdings'] as $holding): ?>
+    <?php endforeach; ?>
+  <?php endif; ?>
+  <?php if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><?php endif; ?>
+<?php endif; ?>
+<?php foreach ($holdings['holdings'] as $holding): ?>
 <h3>
-  <? $locationText = $this->transEsc('location_' . $holding['location'], [], $holding['location']); ?>
-  <? if (isset($holding['locationhref']) && $holding['locationhref']): ?>
+  <?php $locationText = $this->transEsc('location_' . $holding['location'], [], $holding['location']); ?>
+  <?php if (isset($holding['locationhref']) && $holding['locationhref']): ?>
     <a href="<?=$holding['locationhref']?>" target="_blank"><?=$locationText?></a>
-  <? else: ?>
+  <?php else: ?>
     <?=$locationText?>
-  <? endif; ?>
+  <?php endif; ?>
 </h3>
 <table class="table table-striped">
   <caption class="sr-only"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
-  <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
+  <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
     <td width="50%">
-      <? foreach ($callNos as $callNo): ?>
-        <? if ($this->callnumberHandler): ?>
+      <?php foreach ($callNos as $callNo): ?>
+        <?php if ($this->callnumberHandler): ?>
           <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($callNo) ?>"><?=$this->escapeHtml($callNo)?></a>
-        <? else: ?>
+        <?php else: ?>
           <?=$this->escapeHtml($callNo)?>
-        <? endif; ?>
+        <?php endif; ?>
         <br />
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </td>
   </tr>
-  <? endif; ?>
-  <? if (isset($holding['textfields'])): foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
+  <?php endif; ?>
+  <?php if (isset($holding['textfields'])): foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
     <tr>
-      <? // Translation for summary is a special case for backwards-compatibility ?>
+      <?php // Translation for summary is a special case for backwards-compatibility ?>
       <th><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</th>
       <td>
-        <? foreach ($textFields as $current): ?>
+        <?php foreach ($textFields as $current): ?>
           <?=$this->escapeHtml($current)?><br/>
-        <? endforeach; ?>
+        <?php endforeach; ?>
       </td>
     </tr>
-  <? endforeach; endif; ?>
-  <? foreach ($holding['items'] as $row): ?>
-    <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
+  <?php endforeach; endif; ?>
+  <?php foreach ($holding['items'] as $row): ?>
+    <?php if (isset($row['barcode']) && $row['barcode'] != ""): ?>
       <tr vocab="http://schema.org/" typeof="Offer">
-          <?
+          <?php
             $templateParameters = [
                 // AJAX Check record?
                 "check" => isset($row['check']) && $row['check'],
@@ -102,7 +102,7 @@
 
             try {
                 echo $this->context($this)->renderInContext(
-                    'RecordTab/holdingsils/' . $this->tab->holdingsTemplate .  '.phtml', 
+                    'RecordTab/holdingsils/' . $this->tab->holdingsTemplate . '.phtml',
                     $templateParameters
                 );
 
@@ -114,27 +114,27 @@
             }
           ?>
         </tr>
-    <? endif; ?>
-  <? endforeach; ?>
-  <? if (!empty($holding['purchase_history'])): ?>
+    <?php endif; ?>
+  <?php endforeach; ?>
+  <?php if (!empty($holding['purchase_history'])): ?>
     <tr>
       <th><?=$this->transEsc("Most Recent Received Issues")?>:</th>
       <td>
-        <? foreach ($holding['purchase_history'] as $current): ?>
+        <?php foreach ($holding['purchase_history'] as $current): ?>
           <?=$this->escapeHtml($current['issue'])?><br/>
-        <? endforeach; ?>
+        <?php endforeach; ?>
       </td>
     </tr>
-  <? endif; ?>
+  <?php endif; ?>
 </table>
-<? endforeach; ?>
+<?php endforeach; ?>
 
-<? $history = $this->driver->getRealTimeHistory(); ?>
-<? if (is_array($history) && !empty($history)): ?>
+<?php $history = $this->driver->getRealTimeHistory(); ?>
+<?php if (is_array($history) && !empty($history)): ?>
 <h3><?=$this->transEsc("Most Recent Received Issues")?></h3>
 <table class="table table-striped">
-  <? foreach ($history as $row): ?>
+  <?php foreach ($history as $row): ?>
     <tr><td><?=$this->escapeHtml($row['issue'])?></td></tr>
-  <? endforeach; ?>
+  <?php endforeach; ?>
 </table>
-<? endif; ?>
+<?php endif; ?>

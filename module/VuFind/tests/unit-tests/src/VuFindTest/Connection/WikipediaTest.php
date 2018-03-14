@@ -42,7 +42,7 @@ use Zend\Http\Client as HttpClient;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class WikipediaTest extends \PHPUnit_Framework_TestCase
+class WikipediaTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test processing of English-language Jane Austen entry.

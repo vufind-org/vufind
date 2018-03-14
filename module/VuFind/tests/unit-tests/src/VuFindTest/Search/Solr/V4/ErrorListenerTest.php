@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Search\Solr\V4;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 use RuntimeException;
 

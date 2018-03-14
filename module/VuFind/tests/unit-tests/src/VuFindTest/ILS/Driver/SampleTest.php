@@ -40,12 +40,19 @@ use VuFind\ILS\Driver\Sample;
  */
 class SampleTest extends \VuFindTest\Unit\TestCase
 {
+    /**
+     * Driver object.
+     *
+     * @var Sample
+     */
     protected $driver;
 
     /**
-     * Constructor
+     * Standard setup method.
+     *
+     * @return void
      */
-    public function __construct()
+    public function setUp()
     {
         $this->driver = new Sample();
         $this->driver->init();
