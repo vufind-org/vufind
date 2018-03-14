@@ -2,9 +2,11 @@
 /**
  * Config Factory Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) 2010 Villanova University,
+ *               2018 Leipzig University Library <info@ub.uni-leipzig.de>
+ *
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +24,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -37,10 +40,11 @@ use VuFind\Config\Manager;
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Hallberg <challber@villanova.edu>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PluginFactoryTest extends \VuFindTest\Unit\TestCase
+class ManagerTest extends \VuFindTest\Unit\TestCase
 {
     /**
      * Flag -- did writing config files fail?
@@ -59,9 +63,9 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
     /**
      * Plugin factory instance.
      *
-     * @var \VuFind\Config\PluginFactory
+     * @var Manager
      */
-    protected $factory;
+    protected $manager;
 
     /**
      * Standard setup method.
@@ -123,21 +127,19 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      */
     public function setUp()
     {
-        $this->factory = new \VuFind\Config\PluginFactory();
+        $this->manager = Manager::getInstance();
     }
 
     /**
-     * Wrapper around factory
+     * Wrapper around manager
      *
-     * @param string $name Configuration to load
+     * @param string $path Relative to configuration file without extension
      *
      * @return \Zend\Config\Config
      */
-    protected function getConfig($name)
+    protected function getConfig($path)
     {
-        $container = $this->createMock('Interop\Container\ContainerInterface');
-        $container->method('get')->willReturn(Manager::getInstance());
-        return $this->factory->__invoke($container, $name);
+        return $this->manager->getConfig($path);
     }
 
     /**
@@ -253,7 +255,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException Zend\Config\Exception\RuntimeException
+     * @expectedException \Zend\Config\Exception\RuntimeException
      */
     public function testReadOnlyConfig()
     {

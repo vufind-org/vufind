@@ -40,6 +40,8 @@ defined('LOCAL_CACHE_DIR')
             : (strlen(LOCAL_OVERRIDE_DIR) > 0 ? LOCAL_OVERRIDE_DIR . '/cache' : ''))
     );
 
+defined('CACHE_ENABLED') || define('CACHE_ENABLED', false);
+
 chdir(APPLICATION_PATH);
 
 // Ensure vendor/ is on include_path; some PEAR components may not load correctly

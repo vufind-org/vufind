@@ -137,7 +137,7 @@ class Base extends Glob
             ? dirname($childPath) . '/' . $settings->relative_path
             : $settings->path;
 
-        $parent = $parentPath ? $this->load($parentPath) : new Config([], true);
+        $parent = new Config($parentPath ? $this->load($parentPath) : [], true);
 
         $overrideSections = $settings->override_full_sections;
         $overrideSections = $overrideSections
