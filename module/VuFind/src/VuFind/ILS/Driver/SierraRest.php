@@ -751,8 +751,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 // Fetch bib information
                 $bib = $this->getBibRecord($bibId, 'title,publishYear', $patron);
                 $title = $bib['title'] ?? '';
-                $publicationYear = $bib['publishYear']
-                    ?? '';
+                $publicationYear = $bib['publishYear'] ?? '';
             }
             $available = in_array($entry['status']['code'], ['b', 'j', 'i']);
             if ($entry['priority'] >= $entry['priorityQueueLength']) {
