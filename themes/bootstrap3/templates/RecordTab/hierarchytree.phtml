@@ -53,7 +53,7 @@
       <input type="hidden" value="<?=isset($this->treeContext) ? $this->treeContext : 'Record'?>" class="hiddenContext" />
       <?php if ($this->layout()->getTemplate() != 'layout/lightbox'): ?>
         <noscript>
-          <?php if ($this->tab->nonJavascriptTreeSupportEnabled()): ?>
+          <?php if ($this->tab->nonJavascriptSupportEnabled()): ?>
             <ul class="fa-ul">
               <?=$this->tab->renderTree($this->url('home'))?>
             </ul>

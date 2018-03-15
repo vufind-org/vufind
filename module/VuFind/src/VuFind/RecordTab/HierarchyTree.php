@@ -161,14 +161,13 @@ class HierarchyTree extends AbstractBase
     }
 
     /**
-     * Is non-Javascript tree support enabled?
+     * Is non-Javascript support enabled?
      *
      * @return bool
      */
-    public function nonJavascriptTreeSupportEnabled()
+    public function nonJavascriptSupportEnabled()
     {
-        $config = $this->getConfig();
-        return $config->Hierarchy->supportNonJavascriptBrowsers ?? false;
+        return $this->getConfig()->Site->nonJavascriptSupportEnabled ?? false;
     }
 
     /**
