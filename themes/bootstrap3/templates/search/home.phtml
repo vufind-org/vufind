@@ -14,6 +14,7 @@
   $options = $this->searchOptions($this->searchClassId);
   $basicSearch = $options->getSearchAction();
   $advSearch = $options->getAdvancedSearchAction();
+  $columnSize = 10;
 
   $this->layout()->breadcrumbs = false;
 ?>
@@ -40,22 +41,22 @@ JS;
   <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$("#searchForm_lookfor").focus();', 'SET'); ?>
 </div>
 
-<?php if (isset($facetList) && is_array($facetList)): ?>
+<?php if (!empty($facetList)): ?>
   <div class="search-home-facets">
     <?php foreach ($facetList as $field => $details): ?>
-      <?php if (isset($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>
-        <?php $this->headScript()->appendFile('vendor/jsTree/jstree.min.js'); ?>
-        <?php $this->headScript()->appendFile('facets.js'); ?>
-        <?php $sort = isset($this->hierarchicalFacetSortOptions[$field]) ? $this->hierarchicalFacetSortOptions[$field] : ''; ?>
-        <?php
-        $script = <<<JS
+      <?php if ($isHierarchy = in_array($field, $this->hierarchicalFacets ?? [])):
+          $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
+          $this->headScript()->appendFile('facets.js');
+          $sort = $this->hierarchicalFacetSortOptions[$field] ?? '';
+          $script = <<<JS
 $(document).ready(function() {
+  $('#facet_{$this->escapeHtml($field)}_container').removeClass('hide');
   initFacetTree($('#facet_{$this->escapeHtml($field)}'), false);
 });
 JS;
+          echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
         ?>
-        <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-        <div class="home-facet <?=$this->escapeHtmlAttr($field) ?>">
+        <div id="facet_<?=$this->escapeHtml($field)?>_container" class="home-facet <?=$this->escapeHtmlAttr($field)?> hide">
           <h2><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></h2>
           <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet"
               data-facet="<?=$this->escapeHtml($field)?>"
@@ -73,41 +74,37 @@ JS;
         <h2><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></h2>
         <div class="home-facet-container">
           <ul class="home-facet-list">
-            <?php /* Special case: two columns for LC call numbers... */ ?>
-            <?php if ($field == "callnumber-first"): ?>
-              <?php $i = 0; foreach ($sortedList as $url => $value): ?>
-                <?php if (!empty($value)): ?>
-                  <li><a href="<?=$url?>"><?=$this->escapeHtml($value)?></a></li>
-                <?php else: $i--; ?>
-                <?php endif; ?>
-                <?php if (++$i == 10): ?>
-                  </ul><ul class="home-facet-list">
-                <?php endif; ?>
-              <?php endforeach; ?>
-            <?php /* Special case: collections */ ?>
-            <?php elseif ($field == 'hierarchy_top_title'): ?>
-              <?php $i = 0; foreach ($sortedList as $url => $value): ?>
-                <?php if (++$i > 10): ?>
-                  <li><a href="<?=$this->url('collections-home')?>"><strong><?=$this->transEsc("More options")?>...</strong></a></li>
-                  <?php break; ?>
-                <?php endif; ?>
-                <li><a href="<?=$this->url('collections-bytitle')?>?title=<?=urlencode($value)?>"><?=$this->escapeHtml($value)?></a></li>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <?php $i = 0; foreach ($sortedList as $url => $value): ?>
-                <?php if (++$i > 10): ?>
-                  <li><a href="<?=$this->url($advSearch)?>"><strong><?=$this->transEsc("More options")?>...</strong></a></li>
-                  <?php break; ?>
-                <?php elseif (!empty($value)): ?>
-                  <li><a href="<?=$url?>"><?=$this->escapeHtml($value)?></a></li>
-                <?php else: $i--; ?>
-                <?php endif; ?>
-              <?php endforeach; ?>
-            <?php endif; ?>
+            <?php
+              // Special case: two columns for LC call numbers...
+              $maxListLength = $field == 'callnumber-first'
+                ? $columnSize * 2 : $columnSize;
+
+              // Special case: custom URLs for collections...
+              $moreUrl = $field == 'hierarchy_top_title'
+                ? $this->url('collections-home') : $this->url($advSearch);
+
+              // Convenience variable:
+              $currentListLength = count($sortedList);
+            ?>
+            <?php $i = 0; foreach ($sortedList as $url => $value):
+                // Special case: custom URLs for collections...
+                if ($field == 'hierarchy_top_title') {
+                    $url = $this->url('collections-bytitle') . '?title=' . urlencode($value);
+                }
+              ?>
+              <li><a href="<?=$url?>"><?=$this->escapeHtml(empty($value) ? '-' : $value)?></a></li>
+              <?php if (++$i >= $currentListLength) break; // end of list? bail out! ?>
+              <?php if ($i >= $maxListLength): // list too long? show more link! ?>
+                <li><a href="<?=$moreUrl?>"><strong><?=$this->transEsc("More options")?>...</strong></a></li>
+                <?php break; ?>
+              <?php elseif ($i % $columnSize === 0): // end of column? insert break! ?>
+                </ul><ul class="home-facet-list">
+              <?php endif; ?>
+            <?php endforeach; ?>
           </ul>
         </div>
       </div>
-      <?php if (isset($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>
+      <?php if ($isHierarchy): ?>
         </noscript>
       <?php endif; ?>
     <?php endforeach; ?>
