@@ -88,6 +88,9 @@ mark, .highlight {
     display: table;
     table-layout: fixed;
     width: 100%;
+    @media(max-width: @screen-sm) {
+      display: block;
+    }
   }
   .media-body {
     width: auto;
