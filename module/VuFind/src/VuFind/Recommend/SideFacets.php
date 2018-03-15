@@ -225,6 +225,17 @@ class SideFacets extends AbstractFacets
     }
 
     /**
+     * Is non-Javascript support enabled?
+     *
+     * @return bool
+     */
+    public function nonJavascriptSupportEnabled()
+    {
+        return $this->configLoader->get('config')->Site->nonJavascriptSupportEnabled
+            ?? false;
+    }
+
+    /**
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may

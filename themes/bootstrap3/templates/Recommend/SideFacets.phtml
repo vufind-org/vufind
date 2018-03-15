@@ -45,27 +45,49 @@
         <?=$this->transEsc($cluster['label'])?>
       </button>
       <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<?php if(!in_array($title, $collapsedFacets)): ?> in<?php endif ?>">
-        <?php if (isset($rangeFacets[$title])): ?>
-          <?=$this->context($this)->renderInContext('Recommend/SideFacets/range-slider.phtml', ['title' => $title, 'facet' => $rangeFacets[$title]]); ?>
+        <?php if (isset($rangeFacets[$title])): // special display for ranges ?>
+          <?=$this->context($this)->renderInContext(
+            'Recommend/SideFacets/range-slider.phtml',
+            ['title' => $title, 'facet' => $rangeFacets[$title]]
+          ); ?>
         <?php else: ?>
-          <?php $contextVars = [
-            'allowExclude' => $this->recommend->excludeAllowed($title),
-            'title' => $title,
-            'sortOptions' => $hierarchicalFacetSortOptions[$title] ?? '',
-            'collapsedFacets' => $collapsedFacets
-          ]; ?>
-          <?php if (in_array($title, $hierarchicalFacets)): ?>
-            <?=$this->context($this)->renderInContext('Recommend/SideFacets/hierarchical-facet.phtml', $contextVars); ?>
+          <?php
+            // Set some variables so we can figure out which sub-template(s) to
+            // render. If we have a hierarchical facet, we will need to render a
+            // jsTree Javascript-based template. If we also support non-JS browsers,
+            // we will also need to render the basic default template. If we
+            // do NOT support non-JS browsers, we should instead display an error
+            // message.
+            $isHierarchical = in_array($title, $hierarchicalFacets);
+            $noJsSupport = $this->recommend->nonJavascriptSupportEnabled();
+          ?>
+          <?php if ($isHierarchical): // do we need hierarchical JS display? ?>
+            <?=$this->context($this)->renderInContext(
+              'Recommend/SideFacets/hierarchical-facet.phtml',
+              [
+                'allowExclude' => $this->recommend->excludeAllowed($title),
+                'title' => $title,
+                'sortOptions' => $hierarchicalFacetSortOptions[$title] ?? '',
+                'collapsedFacets' => $collapsedFacets
+              ]
+            ); ?>
             <noscript>
+            <?php if (!$noJsSupport): ?>
+              <span class="facet"><?=$this->transEsc('Please enable JavaScript.')?></span>
+            <?php endif; ?>
           <?php endif; ?>
-          <?php $contextVars = [
-            'options' => $options,
-            'allowExclude' => $this->recommend->excludeAllowed($title),
-            'facets_before_more' => $this->recommend->getShowMoreSetting($title),
-            'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($title)
-          ]; ?>
-          <?=$this->context($this)->renderInContext('Recommend/SideFacets/cluster-list.phtml', array_merge($contextVars, ['title' => $title, 'cluster' => $cluster])); ?>
-          <?php if (in_array($title, $hierarchicalFacets)): ?>
+          <?php if (!$isHierarchical || $noJsSupport): // do we need regular display? ?>
+            <?=$this->context($this)->renderInContext(
+              'Recommend/SideFacets/cluster-list.phtml',
+              [
+                'options' => $options, 'title' => $title, 'cluster' => $cluster,
+                'allowExclude' => $this->recommend->excludeAllowed($title),
+                'facets_before_more' => $this->recommend->getShowMoreSetting($title),
+                'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($title)
+              ]
+            ); ?>
+          <?php endif; ?>
+          <?php if ($isHierarchical): // close tag opened in matching if above ?>
             </noscript>
           <?php endif; ?>
         <?php endif; ?>
