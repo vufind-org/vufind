@@ -15,18 +15,17 @@
   <h2><?=$this->transEsc('Your Profile')?></h2>
   <?=$this->flashmessages();?>
 
-  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
-
   <table class="table table-striped">
     <?php
       echo $this->renderArray(
-        $arrTemplate, $this->profile,
+        $arrTemplate, $this->user,
         [
           $this->transEsc('First Name') => 'firstname',
-          $this->transEsc('Last Name') => 'lastname'
+          $this->transEsc('Last Name') => 'lastname',
+          $this->transEsc('Email') => 'email',
         ]
       );
-     ?>
+    ?>
     <?php if ($showHomeLibForm): ?>
       <tr><th><?=$this->transEsc('Preferred Library')?>:</th>
       <?php
@@ -44,23 +43,43 @@
         </form>
       </td>
     <?php endif; ?>
-    <?php
-      echo $this->renderArray(
-        $arrTemplate, $this->profile,
-        [
-          $this->transEsc('Address') . ' 1' => 'address1',
-          $this->transEsc('Address') . ' 2' => 'address2',
-          $this->transEsc('Zip') => 'zip',
-          $this->transEsc('City') => 'city',
-          $this->transEsc('Country') => 'country',
-          $this->transEsc('Phone Number') => 'phone',
-          $this->transEsc('Mobile Number') => 'mobile_phone',
-          $this->transEsc('Group') => 'group',
-          $this->transEsc('Expires') => 'expiration_date'
-        ]
-      );
-    ?>
   </table>
+
+  <?php if (is_array($this->profile)): ?>
+    <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+    <p>
+      <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
+    </p>
+    <table class="table table-striped">
+      <?php
+        echo $this->renderArray(
+          $arrTemplate, $this->profile,
+          [
+            $this->transEsc('First Name') => 'firstname',
+            $this->transEsc('Last Name') => 'lastname'
+          ]
+        );
+      ?>
+      <?php
+        echo $this->renderArray(
+          $arrTemplate, $this->profile,
+          [
+            $this->transEsc('Address') . ' 1' => 'address1',
+            $this->transEsc('Address') . ' 2' => 'address2',
+            $this->transEsc('Zip') => 'zip',
+            $this->transEsc('City') => 'city',
+            $this->transEsc('Country') => 'country',
+            $this->transEsc('Phone Number') => 'phone',
+            $this->transEsc('Mobile Number') => 'mobile_phone',
+            $this->transEsc('Group') => 'group',
+            $this->transEsc('Expires') => 'expiration_date'
+          ]
+        );
+      ?>
+    </table>
+  <?php else: ?>
+    <?=$this->partial($this->patronLoginView);?>
+  <?php endif; ?>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">
