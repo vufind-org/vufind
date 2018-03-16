@@ -178,7 +178,7 @@ class RecordDataFormatter extends AbstractHelper
             return $method;
         }
 
-        $useCache = isset($options['cacheData']) && $options['cacheData'];
+        $useCache = isset($options['useCache']) && $options['useCache'];
 
         if ($useCache) {
             $cacheKey = $driver->getUniqueID() . '|'
