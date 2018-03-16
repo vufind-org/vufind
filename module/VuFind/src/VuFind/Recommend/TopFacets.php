@@ -71,7 +71,7 @@ class TopFacets extends AbstractFacets
     {
         $settings = explode(':', $settings);
         $mainSection = empty($settings[0]) ? 'ResultsTop' : $settings[0];
-        $iniName = isset($settings[1]) ? $settings[1] : 'facets';
+        $iniName = $settings[1] ?? 'facets';
 
         // Load the desired facet information:
         $config = $this->configLoader->get($iniName);

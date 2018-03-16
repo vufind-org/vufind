@@ -39,7 +39,7 @@ use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordCollectionFactoryTest extends \PHPUnit_Framework_TestCase
+class RecordCollectionFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test bad callback.

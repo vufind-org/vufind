@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Query;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Query\Query;
 
 /**
@@ -40,7 +40,7 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class QueryTest extends PHPUnit_Framework_TestCase
+class QueryTest extends TestCase
 {
     /**
      * Test containsTerm() method

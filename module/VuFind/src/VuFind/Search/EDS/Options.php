@@ -500,8 +500,7 @@ class Options extends \VuFind\Search\Base\Options
                                 $limiter['LimiterValues']
                             )
                             : [['Value' => $val]],
-                        'DefaultOn' => isset($limiter['DefaultOn'])
-                            ? $limiter['DefaultOn'] : 'n',
+                        'DefaultOn' => $limiter['DefaultOn'] ?? 'n',
                     ];
                 }
             }

@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Backend\Solr;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\SearchHandler;
 
 /**
@@ -40,7 +40,7 @@ use VuFindSearch\Backend\Solr\SearchHandler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SearchHandlerTest extends PHPUnit_Framework_TestCase
+class SearchHandlerTest extends TestCase
 {
     /**
      * Test creating simple dismax query.

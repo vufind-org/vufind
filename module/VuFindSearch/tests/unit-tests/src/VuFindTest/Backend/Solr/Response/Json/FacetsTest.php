@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Backend\Solr\Json\Response;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Response\Json\Facets;
 
 /**

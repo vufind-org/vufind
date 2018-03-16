@@ -1,10 +1,10 @@
 <?php
 /**
- * RC4 Test Class
+ * Config view helper
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,35 +20,52 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Tests
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFindTest\Crypt;
+namespace VuFind\View\Helper\Root;
 
-use VuFind\Crypt\RC4;
+use VuFind\Config\PluginManager;
 
 /**
- * RC4 Test Class
+ * Config view helper
  *
  * @category VuFind
- * @package  Tests
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class RC4Test extends \VuFindTest\Unit\TestCase
+class Config extends \Zend\View\Helper\AbstractHelper
 {
     /**
-     * Test encryption/decryption.
+     * Configuration plugin manager
      *
-     * @return void
+     * @var PluginManager
      */
-    public function testEncryptionAndDecryption()
+    protected $configLoader;
+
+    /**
+     * Constructor
+     *
+     * @param Helper $helper Capabilities helper
+     */
+    public function __construct(PluginManager $configLoader)
     {
-        $key = 'secret';
-        $text = 'test';
-        $this->assertEquals($text, RC4::decrypt($key, RC4::encrypt($key, $text)));
+        $this->configLoader = $configLoader;
+    }
+
+    /**
+     * Get the specified configuration.
+     *
+     * @param string $config Name of configuration
+     *
+     * @return \Zend\Config\Config
+     */
+    public function get($config)
+    {
+        return $this->configLoader->get($config);
     }
 }

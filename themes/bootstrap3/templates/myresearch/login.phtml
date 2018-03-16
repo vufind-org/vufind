@@ -1,4 +1,4 @@
-<?
+<?php
   // Set up page title:
   $this->headTitle($this->translate('Login'));
 
@@ -11,15 +11,15 @@
   $offlineMode = $this->ils()->getOfflineMode();
 ?>
 
-<? if ($offlineMode == "ils-offline"): ?>
+<?php if ($offlineMode == "ils-offline"): ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
-<? endif; ?>
+<?php endif; ?>
 
 <h2 class="lightbox-header"><?=$this->transEsc('Login')?></h2>
 <?=$this->flashmessages()?>
 
-<? if ($hideLogin): ?>
+<?php if ($hideLogin): ?>
   <div class="alert alert-danger"><?=$this->transEsc('login_disabled')?></div>
-<? else: ?>
+<?php else: ?>
   <?=$this->auth()->getLogin()?>
-<? endif; ?>
+<?php endif; ?>

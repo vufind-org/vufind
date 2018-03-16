@@ -1,4 +1,4 @@
-<?
+<?php
     // Set page title.
     $this->headTitle($this->translate('VuFind Administration - System Maintenance'));
 ?>
@@ -21,12 +21,12 @@
   <hr />
   <form class="form-admin-maintenance clear-cache" method="get" action="<?=$this->url('admin/maintenance', ['action' => 'ClearCache'])?>">
     Clear cache(s):
-    <? foreach ($caches as $cache): ?>
+    <?php foreach ($caches as $cache): ?>
       <label>
         <input type="checkbox" checked="checked" name="cache[]" value="<?=$this->escapeHtmlAttr($cache)?>" />
         <?=$this->escapeHtml($cache) ?>
       </label>
-    <? endforeach; ?>
+    <?php endforeach; ?>
     <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>" class="btn btn-danger"/>
   </form>
 </div>

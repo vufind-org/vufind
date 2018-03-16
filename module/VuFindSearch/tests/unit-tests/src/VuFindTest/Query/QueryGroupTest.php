@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Query;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
@@ -41,7 +41,7 @@ use VuFindSearch\Query\QueryGroup;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class QueryGroupTest extends PHPUnit_Framework_TestCase
+class QueryGroupTest extends TestCase
 {
     /**
      * Test containsTerm() method

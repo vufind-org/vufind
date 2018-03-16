@@ -1,4 +1,4 @@
-<?
+<?php
   // Grab list object from search results (if applicable):
   $list = $this->results->getListObject();
 
@@ -31,8 +31,8 @@
   <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></h2>
   <nav class="search-header hidden-print">
     <div class="search-stats">
-      <? if ($recordTotal > 0): ?>
-        <?
+      <?php if ($recordTotal > 0): ?>
+        <?php
           $transParams = [
             '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
             '%%end%%' => $this->localizedNumber($this->results->getEndRecord()),
@@ -40,11 +40,11 @@
           ];
         ?>
         <?=$this->translate('showing_items_of_html', $transParams); ?>
-      <? endif; ?>
+      <?php endif; ?>
     </div>
     <div class="search-controls">
-      <? if (isset($list)): ?>
-        <? if ($list->editAllowed($account->isLoggedIn())): ?>
+      <?php if (isset($list)): ?>
+        <?php if ($list->editAllowed($account->isLoggedIn())): ?>
           <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc("edit_list")?></a>
           <div class="btn-group">
             <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
@@ -55,33 +55,33 @@
               <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>
-        <? endif; ?>
-      <? endif; ?>
-      <? if ($recordTotal > 0): ?>
+        <?php endif; ?>
+      <?php endif; ?>
+      <?php if ($recordTotal > 0): ?>
         <?=$this->render('search/controls/limit.phtml')?>
         <?=$this->render('search/controls/sort.phtml')?>
-      <? endif; ?>
+      <?php endif; ?>
     </div>
   </nav>
-  <? if ($list && !empty($list->description)): ?>
+  <?php if ($list && !empty($list->description)): ?>
     <p><?=$this->escapeHtml($list->description)?></p>
-  <? endif; ?>
-  <? if ($recordTotal > 0): ?>
+  <?php endif; ?>
+  <?php if ($recordTotal > 0): ?>
     <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
-      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account])?>
-      <? foreach ($this->results->getResults() as $i => $current): ?>
+      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => $list ?? null, 'account' => $this->account])?>
+      <?php foreach ($this->results->getResults() as $i => $current): ?>
         <?=$this->record($current)->getListEntry($list, $user)?>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </form>
     <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results])?>
-  <? else: ?>
+  <?php else: ?>
     <p><?=$this->transEsc('You do not have any saved resources')?></p>
-  <? endif; ?>
+  <?php endif; ?>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">
   <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => isset($list) ? 'list' . $list['id'] : 'favorites'])?>
-  <? foreach ($this->results->getRecommendations('side') as $current): ?>
+  <?php foreach ($this->results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
-  <? endforeach; ?>
+  <?php endforeach; ?>
 </div>

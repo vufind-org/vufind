@@ -226,7 +226,7 @@ abstract class EdsApi_REST_Base
             "Authenticating: username: $username, password: $password, orgid: $orgid"
         );
         $url = $this->authHost . '/uidauth';
-        $org = isset($orgid) ? $orgid : $this->orgId;
+        $org = $orgid ?? $this->orgId;
         $authInfo = [];
         if (isset($username)) {
             $authInfo['UserId'] = $username;
