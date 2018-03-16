@@ -45,6 +45,12 @@
     <?php endif; ?>
   </table>
 
+  <?php if ($this->auth()->getManager()->supportsPasswordChange()): ?>
+    <a class="btn btn-default" href="<?=$this->url('myresearch-changepassword') ?>">
+      <i class="fa fa-fw fa-lock" aria-hidden="true"></i> <?=$this->transEsc('Change Password') ?>
+    </a>
+  <?php endif; ?>
+
   <?php if (is_array($this->profile)): ?>
     <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
     <p>
