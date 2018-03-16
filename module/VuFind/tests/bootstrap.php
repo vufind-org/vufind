@@ -40,7 +40,18 @@ defined('LOCAL_CACHE_DIR')
             : (strlen(LOCAL_OVERRIDE_DIR) > 0 ? LOCAL_OVERRIDE_DIR . '/cache' : ''))
     );
 
-defined('CACHE_ENABLED') || define('CACHE_ENABLED', false);
+defined('CONFIG_PATH')
+    || define('CONFIG_PATH', APPLICATION_PATH . '/config/config.php');
+
+defined('CONFIG_CACHE_DIR') || define('CONFIG_CACHE_DIR', LOCAL_CACHE_DIR);
+
+defined('CONFIG_CACHE_PATH')
+    || define('CONFIG_CACHE_PATH', CONFIG_CACHE_DIR . '/config-cache.php');
+
+// Enable caching unless in dev mode or running tests:
+defined('CONFIG_CACHE_ENABLED')
+    || define('CONFIG_CACHE_ENABLED', getenv('VUFIND_CONFIG_CACHE_ENABLED')
+        ?? APPLICATION_ENV != 'development' && !defined('VUFIND_PHPUNIT_RUNNING'));
 
 chdir(APPLICATION_PATH);
 

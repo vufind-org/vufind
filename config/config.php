@@ -21,11 +21,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
-use VuFind\Config\Manager;
 use VuFind\Config\Provider\Main as Provider;
 use Zend\ConfigAggregator\ConfigAggregator;
 
 return new ConfigAggregator([
     new Provider
-], Manager::ENTIRE_CONFIG_PATH);
+], CONFIG_CACHE_PATH);
 

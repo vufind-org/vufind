@@ -45,11 +45,7 @@ use Zend\Config\Reader\Yaml as YamlReader;
  */
 class Manager
 {
-    const CACHE_ENABLED = APPLICATION_ENV !== 'development';
-    const CONFIG_PATH = APPLICATION_PATH . '/config/config.php';
-    const CONFIG_CACHE_DIR = LOCAL_CACHE_DIR . '/config';
-    const ENTIRE_CONFIG_PATH = self::CONFIG_CACHE_DIR . '/entire.php';
-    const SPARSE_CONFIG_PATH = self::CONFIG_CACHE_DIR . '/sparse.php';
+    const CACHE_PATH = CONFIG_CACHE_DIR . '/managed-config-cache.php';
 
     /**
      * Static reference to this
@@ -74,37 +70,29 @@ class Manager
     protected $entireConfig;
 
     /**
-     * Contains only the required configuration data.
-     *
-     * @var Config
+     * Contains only the demanded configuration
      */
-    protected $sparseConfig;
+    protected $managedConfig;
 
     /**
      * Enables to statically get the manager instance in providers.
      *
      * @return Manager
      */
-    public static function getInstance(): Manager
+    public static function getManager(): Manager
     {
+        // see constructor for registration of custom readers etc.
         return static::$manager ?: static::$manager = new static;
     }
 
-    protected function __construct()
+    /**
+     * Gets the registered reader for INI configuration files.
+     *
+     * @return IniReader
+     */
+    public static function getIniReader(): IniReader
     {
-        // register custom readers
-        $this->iniReader = new IniReader;
-        $yamlReader = new YamlReader([YamlParser::class, 'parse']);
-        Factory::registerReader('ini', $this->iniReader);
-        Factory::registerReader('yaml', $yamlReader);
-        // create configuration cache directory if needed
-        if (!file_exists(static::CONFIG_CACHE_DIR)) {
-            mkdir(static::CONFIG_CACHE_DIR, 0700);
-        }
-        // delete the cache files if caching is disabled
-        if (!static::CACHE_ENABLED) {
-            $this->reset();
-        }
+        return static::getManager()->iniReader;
     }
 
     /**
@@ -131,33 +119,23 @@ class Manager
         // normalize path into an array of segments
         $path = ($path = trim($path, '/')) ? explode('/', $path) : [];
 
-        $config = $this->getSparseConfig();
+        $managedConfig = $this->getManagedConfig();
 
         // return the configuration if already loaded
-        if ($this->trueOn($config->loaded, ...$path)) {
-            return $this->getAt($config->content, ...$path);
+        if ($this->trueOn($managedConfig, 'demanded', ...$path)) {
+            return $this->getAt($managedConfig, 'content', ...$path);
         }
 
         // otherwise look-up the entire configuration
         $data = $this->getAt($this->getEntireConfig(), ...$path);
         // store the data in the sparse configuration
-        $this->setAt($config, $data, 'content', ...$path);
+        $this->setAt($managedConfig, $data, 'content', ...$path);
         // flag the data as «loaded» for this path
-        $this->setAt($config, true, 'loaded', ...$path);
+        $this->setAt($managedConfig, true, 'demanded', ...$path);
         // write sparse configuration to cache file
-        Factory::toFile(static::SPARSE_CONFIG_PATH, $config);
+        Factory::toFile(static::CACHE_PATH, $managedConfig);
         // finally return the configuration data
         return $data;
-    }
-
-    /**
-     * Gets the registered reader for INI configuration files.
-     *
-     * @return IniReader
-     */
-    public function getIniReader(): IniReader
-    {
-        return $this->iniReader;
     }
 
     /**
@@ -165,12 +143,29 @@ class Manager
      */
     public function reset()
     {
-        $this->sparseConfig = $this->entireConfig = null;
-        if (file_exists(static::SPARSE_CONFIG_PATH)) {
-            unlink(static::SPARSE_CONFIG_PATH);
+        $this->managedConfig = $this->entireConfig = null;
+
+        if (file_exists(CONFIG_CACHE_PATH)) {
+            unlink(CONFIG_CACHE_PATH);
         }
-        if (file_exists(static::ENTIRE_CONFIG_PATH)) {
-            unlink(static::ENTIRE_CONFIG_PATH);
+
+        if (file_exists(static::CACHE_PATH)) {
+            unlink(static::CACHE_PATH);
+        }
+
+    }
+
+    protected function __construct()
+    {
+        // register custom readers
+        $this->iniReader = new IniReader;
+        $yamlReader = new YamlReader([YamlParser::class, 'parse']);
+        Factory::registerReader('ini', $this->iniReader);
+        Factory::registerReader('yaml', $yamlReader);
+
+        // delete the cache files if caching is disabled
+        if (!CONFIG_CACHE_ENABLED) {
+            $this->reset();
         }
     }
 
@@ -182,7 +177,7 @@ class Manager
      *
      * @return bool
      */
-    protected function trueOn(Config $config, ...$path) : bool
+    protected function trueOn(Config $config, ...$path): bool
     {
         $head = $config->{array_shift($path)};
         return $head instanceof Config ?
@@ -199,7 +194,7 @@ class Manager
      *
      * @return Config
      */
-    protected function setAt(Config $config, $value, ...$path) : Config
+    protected function setAt(Config $config, $value, ...$path): Config
     {
         $head = array_shift($path);
 
@@ -214,7 +209,7 @@ class Manager
     }
 
     /**
-     * Gets a configuation value at the specified path.
+     * Gets a configuration value at the specified path.
      *
      * @param Config $config
      * @param array  $path
@@ -232,9 +227,9 @@ class Manager
      *
      * @return Config
      */
-    protected function getSparseConfig(): Config
+    protected function getManagedConfig(): Config
     {
-        return $this->sparseConfig ?: $this->loadSparseConfig();
+        return $this->managedConfig ?: $this->loadManagedConfig();
     }
 
     /**
@@ -242,12 +237,12 @@ class Manager
      *
      * @return Config
      */
-    protected function loadSparseConfig(): Config
+    protected function loadManagedConfig(): Config
     {
-        $data = static::CACHE_ENABLED && file_exists(static::SPARSE_CONFIG_PATH)
-            ? Factory::fromFile(static::SPARSE_CONFIG_PATH)
-            : ['loaded' => [], 'content' => []];
-        return $this->sparseConfig = new Config($data, true);
+        $data = CONFIG_CACHE_ENABLED && file_exists(static::CACHE_PATH)
+            ? Factory::fromFile(static::CACHE_PATH)
+            : ['demanded' => [], 'content' => []];
+        return $this->managedConfig = new Config($data, true);
     }
 
     /**
@@ -267,8 +262,7 @@ class Manager
      */
     protected function loadEntireConfig(): Config
     {
-        $merger = require static::CONFIG_PATH;
-        $data = $merger->getMergedConfig();
+        $data = (require CONFIG_PATH)->getMergedConfig();
         return $this->entireConfig = new Config($data, true);
     }
 }

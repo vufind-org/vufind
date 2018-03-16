@@ -1,0 +1,8 @@
+first:
+  '%weired;Key$\': true
+
+second:
+  - nested: { str: "string" }
+  - otherNested:
+    num: 43
+    bool: false

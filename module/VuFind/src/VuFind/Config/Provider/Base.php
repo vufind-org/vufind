@@ -73,21 +73,11 @@ class Base extends Glob
      */
     protected $iniReader;
 
-    public function __construct(string $pattern, string $base, int $flags = 0)
+    public function __construct(string $base, string $pattern, int $flags = 0)
     {
-        parent::__construct($pattern, $base);
+        parent::__construct($base, $pattern);
         $this->flags = $flags;
-        $this->iniReader = static::getIniReader();
-    }
-
-    /**
-     * Gets the reader used for parsing INI configuration files
-     *
-     * @return IniReader
-     */
-    protected static function getIniReader() : IniReader
-    {
-        return Manager::getInstance()->getIniReader();
+        $this->iniReader = Manager::getIniReader();
     }
 
     /**

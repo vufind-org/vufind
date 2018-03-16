@@ -43,8 +43,24 @@ use Zend\ConfigAggregator\ConfigAggregator;
  */
 class Main
 {
-    const APP_CONFIG_PATH = APPLICATION_PATH . '/config/vufind/';
-    const LCO_CONFIG_PATH = LOCAL_OVERRIDE_DIR . '/config/vufind/';
+    const CORE_DIR = APPLICATION_PATH . '/config/vufind';
+    const LOCAL_DIR = LOCAL_OVERRIDE_DIR . '/config/vufind';
+
+    /**
+     * @var string
+     */
+    protected $coreDir;
+
+    /**
+     * @var string
+     */
+    protected $localDir;
+
+    public function __construct($corePath = '', $localPath = '')
+    {
+        $this->coreDir = $corePath ?: self::CORE_DIR;
+        $this->localDir = $localPath ?: self::LOCAL_DIR;
+    }
 
     /**
      * Provides all the configuration data contained in INI, YAML and JSON files
@@ -55,19 +71,21 @@ class Main
     public function __invoke() : array
     {
         $iniGlob = "**/*.ini";
-        $yamlGlob = "**/*.y{,a}ml";
-        $jsonGlob = "**/*.json";
         $iniFlags = Base::FLAG_FLAT_INI | Base::FLAG_PARENT_CONFIG;
-        $ymlFlags = Base::FLAG_PARENT_YAML;
+
+        $yamlGlob = "**/*.y{,a}ml";
+        $yamlFlags = Base::FLAG_PARENT_YAML;
+
+        $jsonGlob = "**/*.json";
 
         $list = array_map('call_user_func', [
             new ArrayProvider([ConfigAggregator::ENABLE_CACHE => true]),
-            new Base($iniGlob, static::APP_CONFIG_PATH, $iniFlags),
-            new Base($iniGlob, static::LCO_CONFIG_PATH, $iniFlags),
-            new Base($yamlGlob, static::APP_CONFIG_PATH, $ymlFlags),
-            new Base($yamlGlob, static::LCO_CONFIG_PATH, $ymlFlags),
-            new Base($jsonGlob, static::APP_CONFIG_PATH),
-            new Base($jsonGlob, static::LCO_CONFIG_PATH),
+            new Base($this->coreDir, $iniGlob, $iniFlags),
+            new Base($this->localDir, $iniGlob, $iniFlags),
+            new Base($this->coreDir, $yamlGlob, $yamlFlags),
+            new Base($this->localDir, $yamlGlob, $yamlFlags),
+            new Base($this->coreDir, $jsonGlob),
+            new Base($this->localDir, $jsonGlob),
         ]);
 
         return array_replace_recursive(...$list);

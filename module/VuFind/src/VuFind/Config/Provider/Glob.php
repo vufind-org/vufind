@@ -61,13 +61,14 @@ class Glob
     /**
      * Glob constructor.
      *
-     * @param string $pattern
-     * @param string $base
+     * @param string $base Absolute base path prepended to pattern
+     * @param string $pattern Relative glob pattern
      */
-    public function __construct(string $pattern, string $base = '')
+    public function __construct(string $base, string $pattern)
     {
-        $this->baseLen = strlen($base);
-        $this->pattern = $base . $pattern;
+        $base = realpath($base);
+        $this->baseLen = strlen($base) + 1;
+        $this->pattern = "$base/$pattern";
     }
 
     /**
@@ -80,7 +81,7 @@ class Glob
         $glob = Globber::glob($this->pattern);
         $data = array_map([$this, 'load'], $glob);
         $list = array_map([$this, 'nest'], $glob, $data);
-        return array_merge([], ...$list);
+        return array_replace_recursive([], ...$list);
     }
 
     /**
