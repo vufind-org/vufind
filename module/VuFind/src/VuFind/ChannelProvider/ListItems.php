@@ -115,11 +115,10 @@ class ListItems extends AbstractChannelProvider
      */
     public function setOptions(array $options)
     {
-        $this->ids = isset($options['ids']) ? $options['ids'] : [];
+        $this->ids = $options['ids'] ?? [];
         $this->displayPublicLists = isset($options['displayPublicLists'])
             ? (bool)$options['displayPublicLists'] : true;
-        $this->initialListsToDisplay = isset($options['initialListsToDisplay'])
-            ? $options['initialListsToDisplay'] : 2;
+        $this->initialListsToDisplay = $options['initialListsToDisplay'] ?? 2;
     }
 
     /**

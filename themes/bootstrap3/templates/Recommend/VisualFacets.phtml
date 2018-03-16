@@ -12,7 +12,7 @@
       $toplevelinfo['name'] = $toplevelfacet['value'];
       $toplevelinfo['field'] = $toplevelfacet['field'];
       $toplevelinfo['size'] = $toplevelfacet['count'];
-      $pivot = isset($toplevelfacet['pivot']) ? $toplevelfacet['pivot'] : [];
+      $pivot = $toplevelfacet['pivot'] ?? [];
       foreach($pivot as $secondlevelfacet) {
         $secondlevelinfo = [];
         $secondlevelinfo['name'] = $secondlevelfacet['value'];

@@ -355,7 +355,7 @@ class VuFind
                 $map[$key] = trim($parts[1]);
             }
         }
-        return isset($map[$in]) ? $map[$in] : $in;
+        return $map[$in] ?? $in;
     }
 
     /**

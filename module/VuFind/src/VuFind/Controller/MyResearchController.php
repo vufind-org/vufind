@@ -940,9 +940,8 @@ class MyResearchController extends AbstractBase
      */
     protected function getDriverForILSRecord($current)
     {
-        $id = isset($current['id']) ? $current['id'] : null;
-        $source = isset($current['source'])
-            ? $current['source'] : DEFAULT_SEARCH_BACKEND;
+        $id = $current['id'] ?? null;
+        $source = $current['source'] ?? DEFAULT_SEARCH_BACKEND;
         $record = $this->serviceLocator->get('VuFind\Record\Loader')
             ->load($id, $source, true);
         $record->setExtraDetail('ils_details', $current);
@@ -1248,9 +1247,8 @@ class MyResearchController extends AbstractBase
             $limit = min([$functionConfig['max_results'], $limit]);
         } elseif (isset($functionConfig['page_size'])) {
             if (!in_array($limit, $functionConfig['page_size'])) {
-                $limit = isset($functionConfig['default_page_size'])
-                    ? $functionConfig['default_page_size']
-                    : $functionConfig['page_size'][0];
+                $limit = $functionConfig['default_page_size']
+                    ?? $functionConfig['page_size'][0];
             }
         } else {
             $ilsPaging = false;
@@ -1364,8 +1362,7 @@ class MyResearchController extends AbstractBase
                 if (!isset($row['id']) || empty($row['id'])) {
                     throw new \Exception();
                 }
-                $source = isset($row['source'])
-                    ? $row['source'] : DEFAULT_SEARCH_BACKEND;
+                $source = $row['source'] ?? DEFAULT_SEARCH_BACKEND;
                 $row['driver'] = $this->serviceLocator
                     ->get('VuFind\Record\Loader')->load($row['id'], $source);
                 if (empty($row['title'])) {

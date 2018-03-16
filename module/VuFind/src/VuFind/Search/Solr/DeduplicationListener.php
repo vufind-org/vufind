@@ -238,7 +238,7 @@ class DeduplicationListener
                 }
                 $dedupData[$source] = [
                     'id' => $localId,
-                    'priority' => isset($localPriority) ? $localPriority : 99999
+                    'priority' => $localPriority ?? 99999
                 ];
             }
             $fields['dedup_id'] = $dedupId;

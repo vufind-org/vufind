@@ -13,7 +13,7 @@
   <?php $cores = is_object($this->xml) ? $this->xml->xpath('/response/lst[@name="status"]/lst') : []; ?>
   <?php foreach ($cores as $core): ?>
     <?php $coreName = (string)$core['name']; ?>
-    <?php $coreLabel = isset($coreLabels[$coreName]) ? $coreLabels[$coreName] : ucwords($coreName) . ' Index'; ?>
+    <?php $coreLabel = $coreLabels[$coreName] ?? ucwords($coreName) . ' Index'; ?>
     <h3><?=$this->transEsc($coreLabel)?></h3>
     <table class="table table-striped">
       <tr>
