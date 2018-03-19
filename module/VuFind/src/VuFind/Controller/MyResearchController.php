@@ -1359,11 +1359,7 @@ class MyResearchController extends AbstractBase
         foreach ($result as $row) {
             // Attempt to look up and inject title:
             try {
-                if (!isset($row['id']) || empty($row['id'])) {
-                    if (!isset($row['title'])) {
-                        $row['title'] = null;
-                    }
-                } else {
+                if (strlen($row['id'] ?? '') > 0) {
                     $source = $row['source'] ?? DEFAULT_SEARCH_BACKEND;
                     $row['driver'] = $this->serviceLocator
                         ->get('VuFind\Record\Loader')->load($row['id'], $source);
@@ -1372,9 +1368,11 @@ class MyResearchController extends AbstractBase
                     }
                 }
             } catch (\Exception $e) {
-                if (!isset($row['title'])) {
-                    $row['title'] = null;
-                }
+                // Ignore record loading exceptions...
+            }
+            // In case we skipped or failed record loading, make sure title is set.
+            if (!isset($row['title'])) {
+                $row['title'] = null;
             }
             $fines[] = $row;
         }
