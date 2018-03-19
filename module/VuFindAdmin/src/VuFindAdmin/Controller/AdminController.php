@@ -58,7 +58,7 @@ class AdminController extends AbstractAdmin
         $config = $this->getConfig();
         $xml = false;
         if (isset($config->Index->url)) {
-            $response = $this->serviceLocator->get('VuFind\Http')
+            $response = $this->serviceLocator->get('VuFindHttp\HttpService')
                 ->get($config->Index->url . '/admin/cores');
             $xml = $response->isSuccess() ? $response->getBody() : false;
         }

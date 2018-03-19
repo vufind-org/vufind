@@ -106,7 +106,7 @@ class QueryGroup extends AbstractQuery
     {
         $new = [];
         foreach ($this->queries as $q) {
-            $new[] = clone($q);
+            $new[] = clone $q;
         }
         $this->queries = $new;
     }

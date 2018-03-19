@@ -131,7 +131,7 @@ class Results extends \VuFind\Search\Base\Results
         }
 
         // If there is no filter, we'll use all facets as the filter:
-        $filter = is_null($filter)
+        $filter = null === $filter
             ? $this->getParams()->getFacetConfig()
             : $this->stripFilterParameters($filter);
 
@@ -229,8 +229,7 @@ class Results extends \VuFind\Search\Base\Results
             // present in the filter list?  Second, is the current value
             // an active filter for the current field?
             $orField = '~' . $field;
-            $itemsToCheck = isset($filterList[$field])
-                ? $filterList[$field] : [];
+            $itemsToCheck = $filterList[$field] ?? [];
             if (isset($filterList[$orField])) {
                 $itemsToCheck += $filterList[$orField];
             }

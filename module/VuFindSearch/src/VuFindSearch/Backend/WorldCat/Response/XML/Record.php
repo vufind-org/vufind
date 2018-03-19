@@ -28,8 +28,8 @@
  */
 namespace VuFindSearch\Backend\WorldCat\Response\XML;
 
-use VuFindSearch\Response\RecordInterface;
 use File_MARC_Record;
+use VuFindSearch\Response\RecordInterface;
 
 /**
  * Simple WorldCat record.

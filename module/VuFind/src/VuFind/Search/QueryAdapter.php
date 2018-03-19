@@ -29,8 +29,8 @@
 namespace VuFind\Search;
 
 use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
+use VuFindSearch\Query\QueryGroup;
 use Zend\StdLib\Parameters;
 
 /**
@@ -58,9 +58,9 @@ abstract class QueryAdapter
     {
         // Use array_key_exists since null is also valid
         if (array_key_exists('l', $search)) {
-            $handler = isset($search['i']) ? $search['i'] : $search['f'];
+            $handler = $search['i'] ?? $search['f'];
             return new Query(
-                $search['l'], $handler, isset($search['o']) ? $search['o'] : null
+                $search['l'], $handler, $search['o'] ?? null
             );
         } elseif (isset($search['g'])) {
             $operator = $search['g'][0]['b'];
@@ -193,7 +193,7 @@ abstract class QueryAdapter
 
                     // Add term to this group
                     $boolArr = $request->get("bool$groupId");
-                    $lastBool = isset($boolArr[0]) ? $boolArr[0] : 'AND';
+                    $lastBool = $boolArr[0] ?? 'AND';
                     $group[] = new Query($value[$i], $handler, $operator);
                 }
             }

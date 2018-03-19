@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
+
 use Behat\Mink\Element\Element;
 
 /**
@@ -104,7 +105,7 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
         );
         // Check facet
         $this->assertEquals(
-            'Suggested Topics: Adult children of aging parents',
+            'Clear Filter Suggested Topics: Adult children of aging parents',
             $this->findCss($page, '.active-filters .facet')->getText()
         );
     }

@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
+
 use VuFind\Search\SearchRunner;
 
 /**

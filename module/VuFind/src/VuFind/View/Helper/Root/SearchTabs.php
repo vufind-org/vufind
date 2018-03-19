@@ -28,11 +28,12 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\Search\Base\Results,
-    VuFind\Search\Results\PluginManager,
-    VuFind\Search\SearchTabsHelper,
-    Zend\View\Helper\Url,
-    Zend\Http\Request;
+
+use VuFind\Search\Base\Results;
+use VuFind\Search\Results\PluginManager;
+use VuFind\Search\SearchTabsHelper;
+use Zend\Http\Request;
+use Zend\View\Helper\Url;
 
 /**
  * "Search tabs" view helper
@@ -126,7 +127,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
                 $retVal['selected'] = $this
                     ->createSelectedTab($key, $class, $label, $permissionName);
                 $retVal['tabs'][] = $retVal['selected'];
-            } else if ($type == 'basic') {
+            } elseif ($type == 'basic') {
                 if (!isset($activeOptions)) {
                     $activeOptions
                         = $this->results->get($activeSearchClass)->getOptions();
@@ -137,7 +138,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
                 $retVal['tabs'][] = $this->createBasicTab(
                     $key, $class, $label, $newUrl, $permissionName
                 );
-            } else if ($type == 'advanced') {
+            } elseif ($type == 'advanced') {
                 $retVal['tabs'][] = $this->createAdvancedTab(
                     $key, $class, $label, $filters, $permissionName
                 );

@@ -73,6 +73,17 @@ class SearchController extends AbstractSearch
     }
 
     /**
+     * Show facet list for Solr-driven collections.
+     *
+     * @return mixed
+     */
+    public function collectionfacetlistAction()
+    {
+        $this->searchClassId = 'SolrCollection';
+        return $this->facetListAction();
+    }
+
+    /**
      * Email action - Allows the email form to appear.
      *
      * @return mixed
@@ -81,7 +92,7 @@ class SearchController extends AbstractSearch
     {
         // If a URL was explicitly passed in, use that; otherwise, try to
         // find the HTTP referrer.
-        $mailer = $this->serviceLocator->get('VuFind\Mailer');
+        $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
         $view = $this->createEmailViewModel(null, $mailer->getDefaultLinkSubject());
         $mailer->setMaxRecipients($view->maxRecipients);
         // Set up reCaptcha
@@ -160,7 +171,7 @@ class SearchController extends AbstractSearch
         ) {
             $illYes['selected'] = true;
             $savedSearch->getParams()->removeFilter('illustrated:Illustrated');
-        } else if ($savedSearch
+        } elseif ($savedSearch
             && $savedSearch->getParams()->hasFilter('illustrated:"Not Illustrated"')
         ) {
             $illNo['selected'] = true;
@@ -186,7 +197,7 @@ class SearchController extends AbstractSearch
         $facetHelper = null;
         if (!empty($hierarchicalFacets)) {
             $facetHelper = $this->serviceLocator
-                ->get('VuFind\HierarchicalFacetHelper');
+                ->get('VuFind\Search\Solr\HierarchicalFacetHelper');
         }
         foreach ($facetList as $facet => &$list) {
             // Hierarchical facets: format display texts and sort facets
@@ -236,43 +247,18 @@ class SearchController extends AbstractSearch
         if ($this->params()->fromQuery('require_login', 'no') !== 'no' && !$user) {
             return $this->forceLogin();
         }
+        $userId = is_object($user) ? $user->id : null;
 
-        // Retrieve search history
-        $search = $this->getTable('Search');
-        $searchHistory = $search->getSearches(
-            $this->serviceLocator->get('VuFind\SessionManager')->getId(),
-            is_object($user) ? $user->id : null
-        );
+        $searchHistoryHelper = $this->serviceLocator->get('VuFind\Search\History');
 
-        // Build arrays of history entries
-        $saved = $unsaved = [];
+        if ($this->params()->fromQuery('purge')) {
+            $searchHistoryHelper->purgeSearchHistory($userId);
 
-        // Loop through the history
-        foreach ($searchHistory as $current) {
-            $minSO = $current->getSearchObject();
-
-            // Saved searches
-            if ($current->saved == 1) {
-                $saved[] = $minSO->deminify($this->getResultsManager());
-            } else {
-                // All the others...
-
-                // If this was a purge request we don't need this
-                if ($this->params()->fromQuery('purge') == 'true') {
-                    $current->delete();
-
-                    // We don't want to remember the last search after a purge:
-                    $this->getSearchMemory()->forgetSearch();
-                } else {
-                    // Otherwise add to the list
-                    $unsaved[] = $minSO->deminify($this->getResultsManager());
-                }
-            }
+            // We don't want to remember the last search after a purge:
+            $this->getSearchMemory()->forgetSearch();
         }
-
-        return $this->createViewModel(
-            ['saved' => $saved, 'unsaved' => $unsaved]
-        );
+        $lastSearches = $searchHistoryHelper->getSearchHistory($userId);
+        return $this->createViewModel($lastSearches);
     }
 
     /**
@@ -435,7 +421,7 @@ class SearchController extends AbstractSearch
             + $this->getRequest()->getPost()->toArray()
         );
         $view = $this->createViewModel();
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
         $view->results = $runner->run(
             $request, 'SolrReserves', $this->getSearchSetupCallback()
         );
@@ -537,7 +523,7 @@ class SearchController extends AbstractSearch
      */
     protected function getActiveHiddenFilters()
     {
-        return $this->serviceLocator->get('VuFind\SearchTabsHelper')
+        return $this->serviceLocator->get('VuFind\Search\SearchTabsHelper')
             ->getHiddenFilters($this->searchClassId);
     }
 
@@ -576,9 +562,10 @@ class SearchController extends AbstractSearch
     protected function getFacetResults($initMethod, $cacheName)
     {
         // Check if we have facet results cached, and build them if we don't.
-        $cache = $this->serviceLocator->get('VuFind\CacheManager')
+        $cache = $this->serviceLocator->get('VuFind\Cache\Manager')
             ->getCache('object');
-        $language = $this->serviceLocator->get('VuFind\Translator')->getLocale();
+        $language = $this->serviceLocator->get('Zend\Mvc\I18n\Translator')
+            ->getLocale();
         $hiddenFilters = $this->getActiveHiddenFilters();
         $hiddenFiltersHash = md5(json_encode($hiddenFilters));
         $cacheName .= "List-$hiddenFiltersHash-$language";
@@ -674,11 +661,8 @@ class SearchController extends AbstractSearch
 
         // Get suggestions and make sure they are an array (we don't want to JSON
         // encode them into an object):
-        $autocompleteManager = $this->serviceLocator
-            ->get('VuFind\AutocompletePluginManager');
-        $suggestions = $autocompleteManager->getSuggestions(
-            $query, 'type', 'lookfor'
-        );
+        $suggester = $this->serviceLocator->get('VuFind\Autocomplete\Suggester');
+        $suggestions = $suggester->getSuggestions($query, 'type', 'lookfor');
 
         // Send the JSON response:
         $response = $this->getResponse();
@@ -697,9 +681,10 @@ class SearchController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
-        return (isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation);
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('config');
+        return isset($config->Record->next_prev_navigation)
+            && $config->Record->next_prev_navigation;
     }
 
     /**
@@ -727,5 +712,4 @@ class SearchController extends AbstractSearch
             ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
             : [];
     }
-
 }

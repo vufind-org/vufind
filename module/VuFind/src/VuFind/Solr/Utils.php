@@ -102,7 +102,7 @@ class Utils
                     if ($year) {
                         $date = str_replace('1999', $year, $date);
                     }
-                } else if ($year) {
+                } elseif ($year) {
                     // If the best we can do is extract a 4-digit year, that's better
                     // than nothing....
                     $date = $year;

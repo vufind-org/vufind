@@ -26,8 +26,9 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\SolrAuthor;
-use VuFind\Search\Solr\Results as SolrResults;
+
 use VuFind\Record\Loader;
+use VuFind\Search\Solr\Results as SolrResults;
 use VuFindSearch\Service as SearchService;
 
 /**

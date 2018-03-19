@@ -27,8 +27,9 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Factory;
-use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
+
 use VuFindSearch\Backend\Solr\Connector;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 
 /**
  * Factory for the authority SOLR backend.
@@ -63,7 +64,7 @@ class SolrAuthBackendFactory extends AbstractSolrBackendFactory
     protected function createBackend(Connector $connector)
     {
         $backend = parent::createBackend($connector);
-        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
+        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('SolrAuth');
             $driver->setRawData($data);

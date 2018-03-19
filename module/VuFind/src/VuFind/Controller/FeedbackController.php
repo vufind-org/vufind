@@ -11,6 +11,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
 use Zend\Mail\Address;
 
 /**
@@ -52,14 +53,13 @@ class FeedbackController extends AbstractBase
 
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
-
             if (empty($view->email) || empty($view->comments)) {
                 $this->flashMessenger()->addMessage('bulk_error_missing', 'error');
                 return;
             }
 
             // These settings are set in the feedback settion of your config.ini
-            $config = $this->serviceLocator->get('VuFind\Config')
+            $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
                 ->get('config');
             $feedback = isset($config->Feedback) ? $config->Feedback : null;
             $recipient_email = isset($feedback->recipient_email)
@@ -85,7 +85,7 @@ class FeedbackController extends AbstractBase
             // This sets up the email to be sent
             // Attempt to send the email and show an appropriate flash message:
             try {
-                $mailer = $this->serviceLocator->get('VuFind\Mailer');
+                $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
                 $mailer->send(
                     new Address($recipient_email, $recipient_name),
                     new Address($sender_email, $sender_name),

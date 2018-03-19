@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
+
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
@@ -85,7 +86,7 @@ class Renewals extends AbstractPlugin
         $selected = $request->get('renewSelected');
         if (!empty($all)) {
             $ids = $request->get('renewAllIDS');
-        } else if (!empty($selected)) {
+        } elseif (!empty($selected)) {
             $ids = $request->get('selectAll')
                 ? $request->get('selectAllIDS')
                 : $request->get('renewSelectedIDS');
@@ -117,7 +118,7 @@ class Renewals extends AbstractPlugin
                 // System failure:
                 $flashMsg->addMessage('renew_error', 'error');
             }
-        } else if (!empty($all) || !empty($selected)) {
+        } elseif (!empty($all) || !empty($selected)) {
             // Button was clicked but no items were selected:
             $flashMsg->addMessage('renew_empty_selection', 'error');
         }

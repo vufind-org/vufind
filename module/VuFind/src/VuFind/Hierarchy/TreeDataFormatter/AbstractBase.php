@@ -129,7 +129,7 @@ abstract class AbstractBase
         return $retVal;
     }
 
-     /**
+    /**
      * Get the titles of this item within parent collections. Returns an array
      * of parent ID => sequence number.
      *
@@ -169,7 +169,7 @@ abstract class AbstractBase
         // Check config setting for what constitutes a collection
         switch ($this->collectionType) {
         case 'All':
-            return (isset($fields->is_hierarchy_id));
+            return isset($fields->is_hierarchy_id);
         case 'Top':
             return isset($fields->is_hierarchy_id)
                 && in_array($fields->is_hierarchy_id, $fields->hierarchy_top_id);

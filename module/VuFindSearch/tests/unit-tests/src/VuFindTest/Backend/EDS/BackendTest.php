@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Backend\EDS;
 
+use InvalidArgumentException;
 use VuFindSearch\Backend\EDS\Backend;
 use VuFindSearch\Query\Query;
-use InvalidArgumentException;
 
 /**
  * Unit tests for EDS backend.
@@ -245,7 +245,6 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         };
         return new \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory($callback);
     }
-
 }
 
 class BackendMock extends \VuFindSearch\Backend\EDS\Backend

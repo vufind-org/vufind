@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller;
-use VuFind\Cover\CachingProxy, VuFind\Cover\Loader;
+
+use VuFind\Cover\CachingProxy;
+use VuFind\Cover\Loader;
 
 /**
  * Generates covers for book entries
@@ -60,7 +62,7 @@ class CoverController extends AbstractBase
      */
     protected function getCacheDir()
     {
-        return $this->serviceLocator->get('VuFind\CacheManager')
+        return $this->serviceLocator->get('VuFind\Cache\Manager')
             ->getCache('cover')->getOptions()->getCacheDir();
     }
 
@@ -76,14 +78,13 @@ class CoverController extends AbstractBase
             $cacheDir = $this->getCacheDir();
             $this->loader = new Loader(
                 $this->getConfig(),
-                $this->serviceLocator->get('VuFind\ContentCoversPluginManager'),
+                $this->serviceLocator->get('VuFind\Content\Covers\PluginManager'),
                 $this->serviceLocator->get('VuFindTheme\ThemeInfo'),
-                $this->serviceLocator->get('VuFind\Http')->createClient(),
+                $this->serviceLocator->get('VuFindHttp\HttpService'),
                 $cacheDir
             );
-            \VuFind\ServiceManager\Initializer::initInstance(
-                $this->loader, $this->serviceLocator
-            );
+            $initializer = new \VuFind\ServiceManager\ServiceInitializer();
+            $initializer($this->serviceLocator, $this->loader);
         }
         return $this->loader;
     }
@@ -96,7 +97,8 @@ class CoverController extends AbstractBase
     protected function getProxy()
     {
         if (!$this->proxy) {
-            $client = $this->serviceLocator->get('VuFind\Http')->createClient();
+            $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+                ->createClient();
             $cacheDir = $this->getCacheDir() . '/proxy';
             $config = $this->getConfig()->toArray();
             $whitelist = isset($config['Content']['coverproxyCache'])

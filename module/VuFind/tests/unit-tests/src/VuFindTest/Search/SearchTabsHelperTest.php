@@ -132,9 +132,9 @@ class SearchTabsHelperTest extends TestCase
     {
         $helper = $this->getSearchTabsHelper();
         $this->assertEquals(
-            $this->tabConfig['default_unfiltered'],  $helper->getTabConfig()
+            $this->tabConfig['default_unfiltered'], $helper->getTabConfig()
         );
-        $this->assertEquals($this->filterConfig,  $helper->getTabFilterConfig());
+        $this->assertEquals($this->filterConfig, $helper->getTabFilterConfig());
     }
 
     /**
@@ -241,7 +241,7 @@ class SearchTabsHelperTest extends TestCase
             ->method('get')
             ->will(
                 $this->returnCallback(
-                    function($backend) use ($mockSolr, $mockPrimo) {
+                    function ($backend) use ($mockSolr, $mockPrimo) {
                         switch ($backend) {
                             case 'Solr': return $mockSolr;
                             case 'Primo': return $mockPrimo;

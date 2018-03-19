@@ -28,8 +28,8 @@
  */
 namespace VuFindSearch\Backend;
 
-use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Query\AbstractQuery;
 
 /**
  * Search backend interface definition.
@@ -81,5 +81,4 @@ interface BackendInterface
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
     public function retrieve($id, ParamBag $params = null);
-
 }

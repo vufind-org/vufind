@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Feed\Writer\Extension\DublinCore;
+
 use Zend\Feed\Writer\Extension\ITunes\Entry as ParentEntry;
 
 /**

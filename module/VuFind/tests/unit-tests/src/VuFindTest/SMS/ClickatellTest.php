@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\SMS;
+
 use VuFind\SMS\Clickatell;
 
 /**

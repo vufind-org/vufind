@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Backend\WorldCat;
 
+use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\WorldCat\Backend;
 use VuFindSearch\Query\Query;
-use PHPUnit_Framework_TestCase;
-use InvalidArgumentException;
 
 /**
  * Unit tests for WorldCat backend.
@@ -42,7 +42,7 @@ use InvalidArgumentException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class BackendTest extends PHPUnit_Framework_TestCase
+class BackendTest extends TestCase
 {
     /**
      * Test retrieving a record.

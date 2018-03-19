@@ -27,8 +27,8 @@
  */
 namespace VuFindSearch\Backend;
 
-use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
+use VuFindSearch\Response\RecordCollectionInterface;
 
 use Zend\Log\LoggerAwareInterface;
 

@@ -28,8 +28,8 @@
  */
 namespace VuFindSearch\Backend\Pazpar2\Response;
 
-use VuFindSearch\Response\RecordInterface;
 use SimpleXMLElement;
+use VuFindSearch\Response\RecordInterface;
 
 /**
  * Simple Pazpar2 record.

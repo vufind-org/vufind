@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Auth;
+
 use VuFind\ILS\Connection as ILSConnection;
 
 /**

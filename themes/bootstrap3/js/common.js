@@ -1,8 +1,8 @@
-/*global grecaptcha, isPhoneNumberValid */
+/*global Event, grecaptcha, isPhoneNumberValid */
 /*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler */
 
 // IE 9< console polyfill
-window.console = window.console || {log: function polyfillLog() {}};
+window.console = window.console || { log: function polyfillLog() {} };
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -10,6 +10,22 @@ var VuFind = (function VuFind() {
   var _initialized = false;
   var _submodules = [];
   var _translations = {};
+
+  // Emit a custom event
+  // Recommendation: prefix with vf-
+  var emit = function emit(name, detail) {
+    if (typeof detail === 'undefined') {
+      document.dispatchEvent(new Event(name));
+    } else {
+      var event = document.createEvent('CustomEvent');
+      event.initCustomEvent(name, true, true, detail); // name, canBubble, cancelable, detail
+      document.dispatchEvent(event);
+    }
+  };
+  // Listen shortcut to put everyone on the same element
+  var listen = function listen(name, func) {
+    document.addEventListener(name, func, false);
+  };
 
   var register = function register(name, module) {
     if (_submodules.indexOf(name) === -1) {
@@ -73,6 +89,8 @@ var VuFind = (function VuFind() {
 
     addTranslations: addTranslations,
     init: init,
+    emit: emit,
+    listen: listen,
     refreshPage: refreshPage,
     register: register,
     translate: translate
@@ -246,10 +264,8 @@ function setupAutocomplete() {
   if (searchbox.length < 1) {
     return;
   }
-  var cacheObj = {};
   // Search autocomplete
   searchbox.autocomplete({
-    cacheObj: cacheObj,
     maxResults: 10,
     loadingString: VuFind.translate('loading') + '...',
     handler: function vufindACHandler(input, cb) {
@@ -285,15 +301,7 @@ function setupAutocomplete() {
   });
   // Update autocomplete on type change
   $('#searchForm_type').change(function searchTypeChange() {
-    for (var i in cacheObj) {
-      if (cacheObj.hasOwnProperty(i)) {
-        for (var j in cacheObj[i]) {
-          if (cacheObj[i].hasOwnProperty(j)) {
-            delete cacheObj[i][j];
-          }
-        }
-      }
-    }
+    searchbox.autocomplete().clearCache();
   });
 }
 

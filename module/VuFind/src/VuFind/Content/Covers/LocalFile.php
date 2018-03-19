@@ -144,7 +144,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
                 foreach ([$val, strtoupper($val), ucwords($val)] as $finalVal) {
                     $checkFile = str_replace('%anyimage%', $finalVal, $fileName);
                     if (file_exists($checkFile)) {
-                         return $checkFile;
+                        return $checkFile;
                     }
                 }
             }

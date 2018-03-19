@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Content\Reviews;
+
 use ZendService\Amazon\Amazon;
 
 /**

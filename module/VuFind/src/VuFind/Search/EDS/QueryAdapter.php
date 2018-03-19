@@ -29,8 +29,8 @@
 namespace VuFind\Search\EDS;
 
 use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
+use VuFindSearch\Query\QueryGroup;
 use Zend\StdLib\Parameters;
 
 /**
@@ -76,7 +76,7 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
     protected static function displayAdvanced(AbstractQuery $query, $translate,
         $showName
     ) {
-            $output = '';
+        $output = '';
         //There should only ever be 1 group with EDS queries.
         $all = [];
         foreach ($query->getQueries() as $search) {

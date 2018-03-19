@@ -412,7 +412,7 @@ class Oracle
             // For building the sql
             $columns[]      = $column;
             // Dates are special
-            if (count($tmp) > 0 && !is_null($datum)) {
+            if (count($tmp) > 0 && null !== $datum) {
                 $values[] = "TO_DATE(:$column, '" . join(":", $tmp) . "')";
             } else {
                 $values[] = ":$column";

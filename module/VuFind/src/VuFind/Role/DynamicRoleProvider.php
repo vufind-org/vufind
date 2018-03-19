@@ -26,8 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Role;
-use ZfcRbac\Role\RoleProviderInterface;
+
 use Rbac\Role\Role;
+use ZfcRbac\Role\RoleProviderInterface;
 
 /**
  * VuFind dynamic role provider.
@@ -183,7 +184,7 @@ class DynamicRoleProvider implements RoleProviderInterface
             $currentRoles = $providerObj->getPermissions($options);
             if ($roles === null) {
                 $roles = $currentRoles;
-            } else if ($mode == 'ANY') {
+            } elseif ($mode == 'ANY') {
                 $roles = array_merge($roles, $currentRoles);
             } else {
                 $roles = array_intersect($roles, $currentRoles);

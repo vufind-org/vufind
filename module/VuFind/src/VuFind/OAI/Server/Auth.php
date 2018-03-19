@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\OAI\Server;
+
 use VuFind\OAI\Server as Base;
 
 /**

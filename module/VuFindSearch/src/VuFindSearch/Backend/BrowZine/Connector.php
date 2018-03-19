@@ -27,6 +27,7 @@
  * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\BrowZine;
+
 use Zend\Http\Client as HttpClient;
 
 /**

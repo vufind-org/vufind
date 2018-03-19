@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
 namespace VuFind\Controller;
+
 use Zend\Config\Config;
 
 /**
@@ -57,7 +58,7 @@ class ChannelsController extends AbstractBase
                 $provider->configureSearchParams($params);
             }
         };
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
         $results = $runner->run([], $searchClassId, $callback);
 
         $channels = [];
@@ -90,7 +91,7 @@ class ChannelsController extends AbstractBase
         ) {
             $parts = [implode(',', $providerIds), $searchClassId, $token];
             $cacheKey = 'homeChannels-' . md5(implode('-', $parts));
-            $cache = $this->serviceLocator->get('VuFind\CacheManager')
+            $cache = $this->serviceLocator->get('VuFind\Cache\Manager')
                 ->getCache('object');
         } else {
             $cacheKey = false;
@@ -142,7 +143,7 @@ class ChannelsController extends AbstractBase
     {
         $view = $this->createViewModel();
 
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
 
         // Send both GET and POST variables to search class:
         $request = $this->getRequest()->getQuery()->toArray()
@@ -220,7 +221,7 @@ class ChannelsController extends AbstractBase
 
         // Load the service, and configure appropriately:
         $provider = $this->serviceLocator
-            ->get('VuFind\ChannelProviderPluginManager')->get($serviceName);
+            ->get('VuFind\ChannelProvider\PluginManager')->get($serviceName);
         $provider->setProviderId($providerId);
         $provider->setOptions($options);
         return $provider;

@@ -191,7 +191,7 @@ class HierarchyTree extends AbstractBase
     public function searchActive()
     {
         $config = $this->getConfig();
-        return (!isset($config->Hierarchy->search) || $config->Hierarchy->search);
+        return !isset($config->Hierarchy->search) || $config->Hierarchy->search;
     }
 
     /**

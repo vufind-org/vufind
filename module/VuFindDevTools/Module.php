@@ -26,8 +26,6 @@
  * @link     https://vufind.org/wiki/development
  */
 namespace VuFindDevTools;
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
 
 /**
  * VuFind Developer Tools module.

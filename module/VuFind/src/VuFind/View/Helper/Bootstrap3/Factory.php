@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Bootstrap3;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -50,8 +51,8 @@ class Factory
      */
     public static function getFlashmessages(ServiceManager $sm)
     {
-        $messenger = $sm->getServiceLocator()->get('ControllerPluginManager')
-            ->get('FlashMessenger');
+        $messenger = $sm->get('ControllerPluginManager')
+            ->get('Zend\Mvc\Plugin\FlashMessenger\FlashMessenger');
         return new Flashmessages($messenger);
     }
 
@@ -64,7 +65,7 @@ class Factory
      */
     public static function getLayoutClass(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $sidebarOnLeft = !isset($config->Site->sidebarOnLeft)
             ? false : $config->Site->sidebarOnLeft;
         $mirror = !isset($config->Site->mirrorSidebarInRTL)
@@ -74,7 +75,7 @@ class Factory
         // The right-to-left setting is injected into the layout by the Bootstrapper;
         // pull it back out here to avoid duplicate effort, then use it to apply
         // the mirror setting appropriately.
-        $layout = $sm->getServiceLocator()->get('viewmanager')->getViewModel();
+        $layout = $sm->get('ViewManager')->getViewModel();
         if ($layout->rtl && $mirror) {
             $sidebarOnLeft = !$sidebarOnLeft;
         }
@@ -91,8 +92,8 @@ class Factory
     public static function getRecaptcha(ServiceManager $sm)
     {
         return new Recaptcha(
-            $sm->getServiceLocator()->get('VuFind\Recaptcha'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Service\ReCaptcha'),
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 }

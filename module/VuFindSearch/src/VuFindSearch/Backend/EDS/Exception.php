@@ -60,7 +60,6 @@ class EbscoEdsApiException extends \VuFindSearch\Backend\Exception\BackendExcept
         } else {
             parent::__construct($apiErrorMessage);
         }
-
     }
 
     /**

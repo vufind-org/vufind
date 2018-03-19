@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Solr;
-use VuFind\Db\Table\ChangeTracker, VuFind\Search\BackendManager;
+
+use VuFind\Db\Table\ChangeTracker;
+use VuFind\Search\BackendManager;
 use VuFind\Solr\Writer;
 
 /**

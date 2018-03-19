@@ -26,8 +26,6 @@
  * @link     https://vufind.org/wiki/development
  */
 namespace VuFindApi;
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
 
 /**
  * VuFind Api module.

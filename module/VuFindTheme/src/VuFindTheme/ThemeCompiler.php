@@ -122,7 +122,7 @@ class ThemeCompiler extends AbstractThemeUtility
                 // Call this function recursively to deal with the helpers
                 // sub-array:
                 $dest[$key] = $this
-                    ->mergeConfig($value, isset($dest[$key]) ? $dest[$key] : []);
+                    ->mergeConfig($value, $dest[$key] ?? []);
                 break;
             case 'mixins':
                 // Omit mixin settings entirely
@@ -132,7 +132,7 @@ class ThemeCompiler extends AbstractThemeUtility
                 // trump new incoming ones:
                 if (!isset($dest[$key])) {
                     $dest[$key] = $value;
-                } else if (is_array($dest[$key])) {
+                } elseif (is_array($dest[$key])) {
                     $dest[$key] = array_merge($value, $dest[$key]);
                 }
                 break;

@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
+
 use VuFind\Db\Row\RowGateway;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Expression;
@@ -150,7 +151,7 @@ class Tags extends Gateway
             );
             if ($fuzzy) {
                 $select->where->literal('lower(tags.tag) like lower(?)', [$q]);
-            } else if (!$this->caseSensitive) {
+            } elseif (!$this->caseSensitive) {
                 $select->where->literal('lower(tags.tag) = lower(?)', [$q]);
             } else {
                 $select->where->equalTo('tags.tag', $q);
@@ -240,7 +241,7 @@ class Tags extends Gateway
 
                 if ($sort == 'count') {
                     $select->order(['cnt DESC', new Expression('lower(tags.tag)')]);
-                } else if ($sort == 'tag') {
+                } elseif ($sort == 'tag') {
                     $select->order([new Expression('lower(tags.tag)')]);
                 }
 
@@ -249,9 +250,9 @@ class Tags extends Gateway
                 }
                 if ($list === true) {
                     $select->where->isNotNull('rt.list_id');
-                } else if ($list === false) {
+                } elseif ($list === false) {
                     $select->where->isNull('rt.list_id');
-                } else if (null !== $list) {
+                } elseif (null !== $list) {
                     $select->where->equalTo('rt.list_id', $list);
                 }
                 if (null !== $user) {

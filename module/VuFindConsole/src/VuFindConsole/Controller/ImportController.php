@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
-use VuFind\XSLT\Importer, Zend\Console\Console;
+
+use VuFind\XSLT\Importer;
+use Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools
@@ -138,7 +140,7 @@ class ImportController extends AbstractBase
         $testMode = $request->getParam('test-only') ? true : false;
         $index = $request->getParam('index', 'SolrWeb');
 
-        $configLoader = $this->serviceLocator->get('VuFind\Config');
+        $configLoader = $this->serviceLocator->get('VuFind\Config\PluginManager');
         $crawlConfig = $configLoader->get('webcrawl');
 
         // Get the time we started indexing -- we'll delete records older than this

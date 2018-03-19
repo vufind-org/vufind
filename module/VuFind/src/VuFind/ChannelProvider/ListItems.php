@@ -26,8 +26,10 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ChannelProvider;
+
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Search\Base\Params, VuFind\Search\Base\Results;
+use VuFind\Search\Base\Params;
+use VuFind\Search\Base\Results;
 use Zend\Mvc\Controller\Plugin\Url;
 use Zend\Stdlib\Parameters;
 
@@ -113,11 +115,10 @@ class ListItems extends AbstractChannelProvider
      */
     public function setOptions(array $options)
     {
-        $this->ids = isset($options['ids']) ? $options['ids'] : [];
+        $this->ids = $options['ids'] ?? [];
         $this->displayPublicLists = isset($options['displayPublicLists'])
             ? (bool)$options['displayPublicLists'] : true;
-        $this->initialListsToDisplay = isset($options['initialListsToDisplay'])
-            ? $options['initialListsToDisplay'] : 2;
+        $this->initialListsToDisplay = $options['initialListsToDisplay'] ?? 2;
     }
 
     /**

@@ -28,11 +28,11 @@
  */
 namespace VuFindTest\Search\Primo;
 
-use VuFindSearch\ParamBag;
+use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFindSearch\Backend\Primo\Backend;
 use VuFindSearch\Backend\Primo\Connector;
 
-use VuFind\Search\Primo\InjectOnCampusListener;
+use VuFindSearch\ParamBag;
 use VuFindTest\Unit\TestCase;
 use Zend\EventManager\Event;
 

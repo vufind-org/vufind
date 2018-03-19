@@ -26,8 +26,10 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use VuFind\Cover\Router as CoverRouter;
-use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
+use Zend\View\Exception\RuntimeException;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Record driver view helper
@@ -103,7 +105,7 @@ class Record extends AbstractHelper
     public function renderTemplate($name, $context = null)
     {
         // Set default context if none provided:
-        if (is_null($context)) {
+        if (null === $context) {
             $context = ['driver' => $this->driver];
         }
 
@@ -559,9 +561,9 @@ class Record extends AbstractHelper
             return false;
         }
 
-        switch($context) {
-        case "core" :
-        case "results" :
+        switch ($context) {
+        case "core":
+        case "results":
             $key = 'showIn' . ucwords(strtolower($context));
             break;
         default:
@@ -645,8 +647,7 @@ class Record extends AbstractHelper
 
             // Build URL from route/query details if missing:
             if (!isset($link['url'])) {
-                $routeParams = isset($link['routeParams'])
-                    ? $link['routeParams'] : [];
+                $routeParams = $link['routeParams'] ?? [];
 
                 $link['url'] = $serverUrlHelper(
                     $urlHelper($link['route'], $routeParams)

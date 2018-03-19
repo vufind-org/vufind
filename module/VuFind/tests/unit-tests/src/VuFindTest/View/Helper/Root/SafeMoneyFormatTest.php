@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
+
 use VuFind\View\Helper\Root\SafeMoneyFormat;
 
 /**
@@ -37,7 +38,7 @@ use VuFind\View\Helper\Root\SafeMoneyFormat;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SafeMoneyFormatTest extends \PHPUnit_Framework_TestCase
+class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Locale (for restoration after testing)

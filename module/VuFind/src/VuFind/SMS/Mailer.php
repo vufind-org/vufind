@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\SMS;
+
 use VuFind\Exception\Mail as MailException;
 
 /**
@@ -93,7 +94,7 @@ class Mailer extends AbstractBase
 
         // Load default "from" address:
         $this->defaultFrom
-            = isset($options['defaultFrom']) ? $options['defaultFrom'] : '';
+            = $options['defaultFrom'] ?? '';
 
         // Make sure mailer dependency has been injected:
         if (!isset($options['mailer'])

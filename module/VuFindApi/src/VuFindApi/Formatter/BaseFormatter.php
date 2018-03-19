@@ -61,7 +61,7 @@ class BaseFormatter
                 || $value === null || $value === ''
             ) {
                 unset($array[$key]);
-            } else if (is_bool($value) || $value === 'true' || $value === 'false') {
+            } elseif (is_bool($value) || $value === 'true' || $value === 'false') {
                 $array[$key] = $value === true || $value === 'true' ? 1 : 0;
             }
         }

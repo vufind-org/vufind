@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Favorites;
-use Zend\ServiceManager\ServiceLocatorInterface;
+
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Favorites service
@@ -39,22 +41,26 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  *
  * @codeCoverageIgnore
  */
-class FavoritesServiceFactory implements \Zend\ServiceManager\FactoryInterface
+class FavoritesServiceFactory implements FactoryInterface
 {
     /**
      * Create service
      *
-     * @param ServiceLocatorInterface $sm Service manager
+     * @param ContainerInterface $sm      Service manager
+     * @param string             $name    Requested service name (unused)
+     * @param array              $options Extra options (unused)
      *
-     * @return mixed
+     * @return FavoritesService
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function createService(ServiceLocatorInterface $sm)
+    public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $tableManager = $sm->get('VuFind\DbTablePluginManager');
+        $tableManager = $sm->get('VuFind\Db\Table\PluginManager');
         return new FavoritesService(
             $tableManager->get('userlist'),
             $tableManager->get('resource'),
-            $sm->get('VuFind\RecordCache')
+            $sm->get('VuFind\Record\Cache')
         );
     }
 }

@@ -28,15 +28,15 @@
  */
 namespace VuFindTest\Backend\LibGuides;
 
+use InvalidArgumentException;
 use VuFindSearch\Backend\LibGuides\Backend;
 use VuFindSearch\Backend\LibGuides\Connector;
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
 use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use InvalidArgumentException;
+use Zend\Http\Client\Adapter\Test as TestAdapter;
+use Zend\Http\Client as HttpClient;
 
 /**
  * Unit tests for LibGuides backend.

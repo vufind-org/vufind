@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
+
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**

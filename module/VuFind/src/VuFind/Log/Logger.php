@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Log;
+
 use Zend\Log\Logger as BaseLogger;
 
 /**
@@ -82,7 +83,7 @@ class Logger extends BaseLogger
                 $writer->write(
                     [
                         'timestamp'    => $timestamp,
-                        'priority'     => (int) $priority,
+                        'priority'     => (int)$priority,
                         'priorityName' => $this->priorities[$priority],
                         'message'      => $message,
                         'extra'        => $extra

@@ -26,7 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Exception\Auth as AuthException;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -114,7 +114,7 @@ class AjaxController extends AbstractBase
         // Process recommendations -- for now, we assume Solr-based search objects,
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
-        $rm = $this->serviceLocator->get('VuFind\RecommendPluginManager');
+        $rm = $this->serviceLocator->get('VuFind\Recommend\PluginManager');
         $module = $rm->get($this->params()->fromQuery('mod'));
         $module->setConfig($this->params()->fromQuery('params'));
         $results = $this->getResultsManager()->get('Solr');
@@ -147,7 +147,7 @@ class AjaxController extends AbstractBase
     {
         static $hideHoldings = false;
         if ($hideHoldings === false) {
-            $logic = $this->serviceLocator->get('VuFind\ILSHoldLogic');
+            $logic = $this->serviceLocator->get('VuFind\ILS\Logic\Holds');
             $hideHoldings = $logic->getSuppressedLocations();
         }
 
@@ -287,10 +287,10 @@ class AjaxController extends AbstractBase
             } else {
                 return $this->translate($transPrefix . $list[0], [], $list[0]);
             }
-        } else if (count($list) == 0) {
+        } elseif (count($list) == 0) {
             // Empty list?  Return a blank string:
             return '';
-        } else if ($mode == 'all') {
+        } elseif ($mode == 'all') {
             // Translate values if necessary:
             if ($transPrefix) {
                 $transList = [];
@@ -488,16 +488,14 @@ class AjaxController extends AbstractBase
                 $locationCallnumbers, $callnumberSetting, 'Multiple Call Numbers'
             );
             $locationInfo = [
-                'availability' =>
-                    isset($details['available']) ? $details['available'] : false,
+                'availability' => $details['available'] ?? false,
                 'location' => htmlentities(
                     $this->translate('location_' . $location, [], $location),
                     ENT_COMPAT, 'UTF-8'
                 ),
                 'callnumbers' =>
                     htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
-                'status_unknown' => isset($details['status_unknown'])
-                    ? $details['status_unknown'] : false,
+                'status_unknown' => $details['status_unknown'] ?? false,
                 'callnumber_handler' => $callnumberHandler
             ];
             $locationList[] = $locationInfo;
@@ -555,7 +553,7 @@ class AjaxController extends AbstractBase
         }
         $result = $checked = [];
         foreach ($ids as $i => $id) {
-            $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
+            $source = $sources[$i] ?? DEFAULT_SEARCH_BACKEND;
             $selector = $source . '|' . $id;
 
             // We don't want to bother checking the same ID more than once, so
@@ -610,7 +608,7 @@ class AjaxController extends AbstractBase
             }
             $response->setContent(json_encode($output));
             return $response;
-        } else if ($this->outputMode == 'plaintext') {
+        } elseif ($this->outputMode == 'plaintext') {
             $headers->addHeaderLine('Content-type', 'text/plain');
             $response->setContent($data ? $status . " $data" : $status);
             return $response;
@@ -634,61 +632,6 @@ class AjaxController extends AbstractBase
         self::$php_errors[] = "ERROR [$errno] - " . $errstr . "<br />\n"
             . " Occurred in " . $errfile . " on line " . $errline . ".";
         return true;
-    }
-
-    /**
-     * Generate the "salt" used in the salt'ed login request.
-     *
-     * @return string
-     */
-    protected function generateSalt()
-    {
-        return str_replace(
-            '.', '', $this->getRequest()->getServer()->get('REMOTE_ADDR')
-        );
-    }
-
-    /**
-     * Send the "salt" to be used in the salt'ed login request.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function getSaltAjax()
-    {
-        return $this->output($this->generateSalt(), self::STATUS_OK);
-    }
-
-    /**
-     * Login with post'ed username and encrypted password.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function loginAjax()
-    {
-        // Fetch Salt
-        $salt = $this->generateSalt();
-
-        // HexDecode Password
-        $password = pack('H*', $this->params()->fromPost('password'));
-
-        // Decrypt Password
-        $password = base64_decode(\VuFind\Crypt\RC4::encrypt($salt, $password));
-
-        // Update the request with the decrypted password:
-        $this->getRequest()->getPost()->set('password', $password);
-
-        // Authenticate the user:
-        try {
-            $this->getAuthManager()->login($this->getRequest());
-        } catch (AuthException $e) {
-            return $this->output(
-                $this->translate($e->getMessage()),
-                self::STATUS_ERROR,
-                401
-            );
-        }
-
-        return $this->output(true, self::STATUS_OK);
     }
 
     /**
@@ -790,7 +733,7 @@ class AjaxController extends AbstractBase
         $config = $this->serviceLocator->get('Config');
 
         $recordTabPlugin = $this->serviceLocator
-            ->get('VuFind\RecordTabPluginManager');
+            ->get('VuFind\RecordTab\PluginManager');
         $details = $recordTabPlugin
             ->getTabDetailsForRecord(
                 $driver,
@@ -799,7 +742,7 @@ class AjaxController extends AbstractBase
                 'Information'
             );
 
-        $rtpm = $this->serviceLocator->get('VuFind\RecordTabPluginManager');
+        $rtpm = $this->serviceLocator->get('VuFind\RecordTab\PluginManager');
         $html = $this->getViewRenderer()
             ->render(
                 "record/ajaxview-" . $viewtype . ".phtml",
@@ -847,7 +790,7 @@ class AjaxController extends AbstractBase
             $facets[$field]['removalURL']
                 = $results->getUrlQuery()->removeFacet(
                     $field,
-                    isset($filters[$field][0]) ? $filters[$field][0] : null
+                    $filters[$field][0] ?? null
                 )->getParams(false);
         }
         return $this->output($facets, self::STATUS_OK);
@@ -921,11 +864,8 @@ class AjaxController extends AbstractBase
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $query = $this->getRequest()->getQuery();
-        $autocompleteManager = $this->serviceLocator
-            ->get('VuFind\AutocompletePluginManager');
-        return $this->output(
-            $autocompleteManager->getSuggestions($query), self::STATUS_OK
-        );
+        $suggester = $this->serviceLocator->get('VuFind\Autocomplete\Suggester');
+        return $this->output($suggester->getSuggestions($query), self::STATUS_OK);
     }
 
     /**
@@ -1124,34 +1064,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Process an export request
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function exportFavoritesAjax()
-    {
-        $format = $this->params()->fromPost('format');
-        $export = $this->serviceLocator->get('VuFind\Export');
-        $url = $export->getBulkUrl(
-            $this->getViewRenderer(), $format,
-            $this->params()->fromPost('ids', [])
-        );
-        $html = $this->getViewRenderer()->render(
-            'ajax/export-favorites.phtml',
-            ['url' => $url, 'format' => $format]
-        );
-        return $this->output(
-            [
-                'result' => $this->translate('Done'),
-                'result_additional' => $html,
-                'needs_redirect' => $export->needsRedirect($format),
-                'export_type' => $export->getBulkExportType($format),
-                'result_url' => $url
-            ], self::STATUS_OK
-        );
-    }
-
-    /**
      * Fetch Links from resolver given an OpenURL and format as HTML
      * and output the HTML content in JSON object.
      *
@@ -1168,7 +1080,7 @@ class AjaxController extends AbstractBase
         $resolverType = isset($config->OpenURL->resolver)
             ? $config->OpenURL->resolver : 'other';
         $pluginManager = $this->serviceLocator
-            ->get('VuFind\ResolverDriverPluginManager');
+            ->get('VuFind\Resolver\Driver\PluginManager');
         if (!$pluginManager->has($resolverType)) {
             return $this->output(
                 $this->translate("Could not load driver for $resolverType"),
@@ -1187,7 +1099,7 @@ class AjaxController extends AbstractBase
         // Sort the returned links into categories based on service type:
         $electronic = $print = $services = [];
         foreach ($result as $link) {
-            switch (isset($link['service_type']) ? $link['service_type'] : '') {
+            switch ($link['service_type'] ?? '') {
             case 'getHolding':
                 $print[] = $link;
                 break;
@@ -1241,7 +1153,7 @@ class AjaxController extends AbstractBase
     protected function keepAliveAjax()
     {
         // Request ID from session to mark it active
-        $this->serviceLocator->get('VuFind\SessionManager')->getId();
+        $this->serviceLocator->get('Zend\Session\SessionManager')->getId();
         return $this->output(true, self::STATUS_OK);
     }
 
@@ -1386,7 +1298,7 @@ class AjaxController extends AbstractBase
         $facetList = $facets[$facet]['data']['list'];
 
         $facetHelper = $this->serviceLocator
-            ->get('VuFind\HierarchicalFacetHelper');
+            ->get('VuFind\Search\Solr\HierarchicalFacetHelper');
         if (!empty($sort)) {
             $facetHelper->sortFacetList($facetList, $sort == 'top');
         }
@@ -1443,7 +1355,7 @@ class AjaxController extends AbstractBase
         }
 
         // This may be called frequently, don't leave sessions dangling
-        $this->serviceLocator->get('VuFind\SessionManager')->destroy();
+        $this->serviceLocator->get('Zend\Session\SessionManager')->destroy();
 
         return $this->output('', self::STATUS_OK);
     }
@@ -1455,7 +1367,7 @@ class AjaxController extends AbstractBase
      */
     protected function getResultsManager()
     {
-        return $this->serviceLocator->get('VuFind\SearchResultsPluginManager');
+        return $this->serviceLocator->get('VuFind\Search\Results\PluginManager');
     }
 
     /**

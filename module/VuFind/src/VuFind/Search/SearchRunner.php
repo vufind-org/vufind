@@ -26,9 +26,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search;
+
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventManager;
+use Zend\EventManager\EventManagerInterface;
 use Zend\Stdlib\Parameters;
 
 /**

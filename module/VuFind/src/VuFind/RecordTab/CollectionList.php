@@ -26,8 +26,10 @@
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
-use VuFind\Recommend\PluginManager as RecommendManager,
-    VuFind\Search\RecommendListener, VuFind\Search\SearchRunner;
+
+use VuFind\Recommend\PluginManager as RecommendManager;
+use VuFind\Search\RecommendListener;
+use VuFind\Search\SearchRunner;
 
 /**
  * Collection list tab

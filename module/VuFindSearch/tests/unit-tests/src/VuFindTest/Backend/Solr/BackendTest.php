@@ -28,15 +28,15 @@
  */
 namespace VuFindTest\Backend\Solr;
 
+use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\HandlerMap;
+
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-
 use Zend\Http\Response;
-use PHPUnit_Framework_TestCase;
-use InvalidArgumentException;
 
 /**
  * Unit tests for SOLR backend.
@@ -47,7 +47,7 @@ use InvalidArgumentException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class BackendTest extends PHPUnit_Framework_TestCase
+class BackendTest extends TestCase
 {
     /**
      * Test retrieving a record.

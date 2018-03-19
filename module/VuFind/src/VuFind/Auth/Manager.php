@@ -26,10 +26,14 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Auth;
-use VuFind\Cookie\CookieManager,
-    VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
-    VuFind\Exception\Auth as AuthException,
-    Zend\Config\Config, Zend\Session\SessionManager, Zend\Validator\Csrf;
+
+use VuFind\Cookie\CookieManager;
+use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Table\User as UserTable;
+use VuFind\Exception\Auth as AuthException;
+use Zend\Config\Config;
+use Zend\Session\SessionManager;
+use Zend\Validator\Csrf;
 
 /**
  * Wrapper class for handling logged-in user in session.
@@ -426,7 +430,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
                     ->select(['id' => $this->session->userId]);
                 $this->currentUser = count($results) < 1
                     ? false : $results->current();
-            } else if (isset($this->session->userDetails)) {
+            } elseif (isset($this->session->userDetails)) {
                 // privacy mode
                 $results = $this->userTable->createRow();
                 $results->exchangeArray($this->session->userDetails);
@@ -614,6 +618,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
             );
         }
     }
+
     /**
      * Validate the credentials in the provided request, but do not change the state
      * of the current logged-in user. Return true for valid credentials, false

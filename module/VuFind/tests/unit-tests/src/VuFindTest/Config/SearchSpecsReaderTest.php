@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Config;
-use VuFind\Config\Locator, VuFind\Config\SearchSpecsReader;
+
+use VuFind\Config\Locator;
+use VuFind\Config\SearchSpecsReader;
 
 /**
  * Config SearchSpecsReader Test Class
@@ -92,7 +94,7 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
     {
         // The searchspecs.yaml file should define author dismax fields (among many
         // other things).
-        $reader = $this->getServiceManager()->get('VuFind\SearchSpecsReader');
+        $reader = $this->getServiceManager()->get('VuFind\Config\SearchSpecsReader');
         $specs = $reader->get('searchspecs.yaml');
         $this->assertTrue(
             isset($specs['Author']['DismaxFields'])
@@ -107,7 +109,7 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testMissingFileRead()
     {
-        $reader = $this->getServiceManager()->get('VuFind\SearchSpecsReader');
+        $reader = $this->getServiceManager()->get('VuFind\Config\SearchSpecsReader');
         $specs = $reader->get('notreallyasearchspecs.yaml');
         $this->assertEquals([], $specs);
     }

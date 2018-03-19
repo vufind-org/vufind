@@ -27,12 +27,13 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\ILS\Driver;
-use VuFind\ILS\Driver\DAIA;
-
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Response as HttpResponse;
 
 use InvalidArgumentException;
+
+use VuFind\ILS\Driver\DAIA;
+use Zend\Http\Client\Adapter\Test as TestAdapter;
+
+use Zend\Http\Response as HttpResponse;
 
 /**
  * ILS driver test
@@ -136,9 +137,11 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Constructor
+     * Standard setup method.
+     *
+     * @return void
      */
-    public function __construct()
+    public function setUp()
     {
         $this->driver = $this->createConnector();
     }

@@ -1,12 +1,16 @@
 .facet-group {
   display: block;
   margin-bottom: 1rem;
+  padding-left: 0;
 
   .facet,
   .title {
     display: block;
     padding: 8px 15px;
     line-height: 1.5rem;
+    width: 100%;
+    text-align: left;
+    background-color: transparent;
 
     .badge,
     .status {
@@ -86,7 +90,6 @@
 
 .active-filters .facet,
 .facet-group .active {
-  padding-right: .65rem;
   background-color: $brand-primary;
   color: #fff;
 

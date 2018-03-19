@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\ILS\Driver;
+
 use VuFind\ILS\Driver\Koha;
 
 /**
@@ -40,9 +41,11 @@ use VuFind\ILS\Driver\Koha;
 class KohaTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     /**
-     * Constructor
+     * Standard setup method.
+     *
+     * @return void
      */
-    public function __construct()
+    public function setUp()
     {
         $this->driver = new Koha(new \VuFind\Date\Converter());
     }

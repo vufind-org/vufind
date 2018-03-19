@@ -39,7 +39,7 @@ namespace VuFind\Log\Writer;
 class Mail extends \Zend\Log\Writer\Mail
 {
     use VerbosityTrait;
-    
+
     /**
      * Write a message to the log.
      *

@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\Solr\Json\Response;
 
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
-use PHPUnit_Framework_TestCase as TestCase;
 
 /**
  * Unit tests for terms information.

@@ -2,12 +2,17 @@
 /*exported loadMapSelection */
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
 
-function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams, showSelection, resultsCoords, popupTitle) {
+function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams, showSelection, resultsCoords, popupTitle, basemap) {
   var init = true;
   var pTitle = popupTitle + '<button class="close">&times;</button>';
   var srcProj = 'EPSG:4326';
   var dstProj = 'EPSG:900913';
-  var osm = new ol.layer.Tile({source: new ol.source.OSM()});
+  var basemapLayer = new ol.layer.Tile({
+    source: new ol.source.XYZ({
+      url: basemap[0],
+      attributions: basemap[1]
+    })
+  });
   var searchboxSource = new ol.source.Vector();
   var searchboxStyle = new ol.style.Style({
     fill: new ol.style.Fill({
@@ -88,7 +93,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
       }),
       target: 'geo_search_map',
       projection: dstProj,
-      layers: [osm, searchboxLayer, clusterLayer],
+      layers: [basemapLayer, searchboxLayer, clusterLayer],
       view: new ol.View({
         center: [0, 0],
         zoom: 1

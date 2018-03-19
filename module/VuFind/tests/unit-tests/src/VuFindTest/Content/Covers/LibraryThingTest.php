@@ -27,7 +27,9 @@
  * @link     https://vufind.org
  */
 namespace VuFindTest\Content\Covers;
-use VuFindCode\ISBN, VuFind\Content\Covers\LibraryThing;
+
+use VuFind\Content\Covers\LibraryThing;
+use VuFindCode\ISBN;
 
 /**
  * Unit tests for LibraryThing cover loader.
@@ -38,7 +40,7 @@ use VuFindCode\ISBN, VuFind\Content\Covers\LibraryThing;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class LibraryThingTest extends \PHPUnit_Framework_TestCase
+class LibraryThingTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test cover loading

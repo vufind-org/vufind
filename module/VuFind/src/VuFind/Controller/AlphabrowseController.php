@@ -29,6 +29,7 @@
 namespace VuFind\Controller;
 
 use VuFindSearch\ParamBag;
+
 /**
  * AlphabrowseController Class
  *
@@ -86,12 +87,12 @@ class AlphabrowseController extends AbstractBase
         // Load remaining config parameters
         $rows_before = isset($config->AlphaBrowse->rows_before)
             && is_numeric($config->AlphaBrowse->rows_before)
-            ? (int) $config->AlphaBrowse->rows_before : 0;
+            ? (int)$config->AlphaBrowse->rows_before : 0;
         $highlighting = isset($config->AlphaBrowse->highlighting)
             ? $config->AlphaBrowse->highlighting : false;
         $limit  = isset($config->AlphaBrowse->page_size)
             && is_numeric($config->AlphaBrowse->page_size)
-            ? (int) $config->AlphaBrowse->page_size : 20;
+            ? (int)$config->AlphaBrowse->page_size : 20;
 
         // Connect to Solr:
         $db = $this->serviceLocator->get('VuFind\Search\BackendManager')

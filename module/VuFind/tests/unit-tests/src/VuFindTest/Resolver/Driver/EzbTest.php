@@ -27,12 +27,13 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Resolver\Driver;
-use VuFind\Resolver\Driver\Ezb;
-
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Response as HttpResponse;
 
 use InvalidArgumentException;
+
+use VuFind\Resolver\Driver\Ezb;
+use Zend\Http\Client\Adapter\Test as TestAdapter;
+
+use Zend\Http\Response as HttpResponse;
 
 /**
  * Ezb resolver driver test

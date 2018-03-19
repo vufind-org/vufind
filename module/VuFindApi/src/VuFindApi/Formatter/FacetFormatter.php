@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindApi\Formatter;
+
 use VuFind\Search\Base\Results;
 
 /**
@@ -53,7 +54,7 @@ class FacetFormatter extends BaseFormatter
             foreach ($request['facetFilter'] as $filter) {
                 list($facetField, $regex) = explode(':', $filter, 2);
                 $regex = trim($regex);
-                if (substr($regex, 0, 1)  == '"') {
+                if (substr($regex, 0, 1) == '"') {
                     $regex = substr($regex, 1);
                 }
                 if (substr($regex, -1, 1) == '"') {

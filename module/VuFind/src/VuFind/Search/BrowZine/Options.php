@@ -38,6 +38,8 @@ namespace VuFind\Search\BrowZine;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Search\Options\ViewOptionsTrait;
+
     /**
      * Constructor
      *
@@ -47,6 +49,10 @@ class Options extends \VuFind\Search\Base\Options
     {
         $this->facetsIni = $this->searchIni = 'BrowZine';
         parent::__construct($configLoader);
+
+        // Set up views
+        $searchSettings = $configLoader->get($this->searchIni);
+        $this->initViewOptions($searchSettings);
     }
 
     /**

@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development
  */
 namespace VuFindTheme;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -66,15 +67,15 @@ class Module
             'factories' => [
                 'VuFindTheme\MixinGenerator' =>
                     'VuFindTheme\Module::getMixinGenerator',
+                'VuFindTheme\Mobile' =>
+                    'Zend\ServiceManager\Factory\InvokableFactory',
+                'VuFindTheme\ResourceContainer' =>
+                    'Zend\ServiceManager\Factory\InvokableFactory',
                 'VuFindTheme\ThemeCompiler' =>
                     'VuFindTheme\Module::getThemeCompiler',
                 'VuFindTheme\ThemeGenerator' =>
                     'VuFindTheme\Module::getThemeGenerator',
                 'VuFindTheme\ThemeInfo' => 'VuFindTheme\Module::getThemeInfo',
-            ],
-            'invokables' => [
-                'VuFindTheme\Mobile' => 'VuFindTheme\Mobile',
-                'VuFindTheme\ResourceContainer' => 'VuFindTheme\ResourceContainer',
             ],
         ];
     }
@@ -88,14 +89,20 @@ class Module
     {
         return [
             'factories' => [
-                'headlink' => 'VuFindTheme\View\Helper\Factory::getHeadLink',
-                'headscript' => 'VuFindTheme\View\Helper\Factory::getHeadScript',
-                'headthemeresources' =>
+                'VuFindTheme\View\Helper\HeadThemeResources' =>
                     'VuFindTheme\View\Helper\Factory::getHeadThemeResources',
-                'imagelink' => 'VuFindTheme\View\Helper\Factory::getImageLink',
-                'inlinescript' =>
+                'VuFindTheme\View\Helper\ImageLink' =>
+                    'VuFindTheme\View\Helper\Factory::getImageLink',
+                'Zend\View\Helper\HeadLink' =>
+                    'VuFindTheme\View\Helper\Factory::getHeadLink',
+                'Zend\View\Helper\HeadScript' =>
+                    'VuFindTheme\View\Helper\Factory::getHeadScript',
+                'Zend\View\Helper\InlineScript' =>
                     'VuFindTheme\View\Helper\Factory::getInlineScript',
-                'mobileurl' => 'VuFindTheme\View\Helper\Factory::getMobileUrl',
+            ],
+            'aliases' => [
+                'headThemeResources' => 'VuFindTheme\View\Helper\HeadThemeResources',
+                'imageLink' => 'VuFindTheme\View\Helper\ImageLink',
             ],
         ];
     }

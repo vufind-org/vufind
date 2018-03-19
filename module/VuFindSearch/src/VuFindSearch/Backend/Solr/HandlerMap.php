@@ -28,11 +28,11 @@
  */
 namespace VuFindSearch\Backend\Solr;
 
-use VuFindSearch\ParamBag;
-use VuFindSearch\Backend\AbstractHandlerMap;
-
 use InvalidArgumentException;
 use RuntimeException;
+
+use VuFindSearch\Backend\AbstractHandlerMap;
+use VuFindSearch\ParamBag;
 
 /**
  * SOLR backend handler map.

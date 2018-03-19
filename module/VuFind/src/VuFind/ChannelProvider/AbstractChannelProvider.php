@@ -1,6 +1,6 @@
 <?php
 /**
- * Facet-driven channel provider.
+ * Abstract base class for channel providers.
  *
  * PHP version 5
  *
@@ -26,11 +26,12 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ChannelProvider;
+
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Search\Base\Params;
 
 /**
- * Facet-driven channel provider.
+ * Abstract base class for channel providers.
  *
  * @category VuFind
  * @package  Channels

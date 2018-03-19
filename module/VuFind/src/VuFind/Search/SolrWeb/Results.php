@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\SolrWeb;
+
 use VuFind\Record\Loader;
 use VuFindSearch\Service as SearchService;
 

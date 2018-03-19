@@ -27,10 +27,12 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Unit;
-use Behat\Mink\Driver\Selenium2Driver, Behat\Mink\Session,
-    Behat\Mink\Element\Element,
-    VuFind\Config\Locator as ConfigLocator,
-    VuFind\Config\Writer as ConfigWriter;
+
+use Behat\Mink\Driver\Selenium2Driver;
+use Behat\Mink\Element\Element;
+use Behat\Mink\Session;
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\Writer as ConfigWriter;
 
 /**
  * Abstract base class for PHPUnit test cases using Mink.
@@ -239,6 +241,36 @@ abstract class MinkTestCase extends DbTestCase
         $result = $page->find('css', $selector);
         $this->assertTrue(is_object($result));
         return $result;
+    }
+
+    /**
+     * Set a value within an element selected via CSS; retry if set fails
+     * due to browser bugs.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param string  $value    Value to set
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return mixed
+     */
+    protected function findCssAndSetValue(Element $page, $selector, $value,
+        $timeout = 1000, $retries = 6
+    ) {
+        $field = $this->findCss($page, $selector, $timeout);
+
+        // Workaround for Chromedriver bug; sometimes setting a value
+        // doesn't work on the first try.
+        for ($i = 0; $i < $retries; $i++) {
+            $field->setValue($value);
+            // Did it work? If so, we're done and can leave....
+            if ($field->getValue() === $value) {
+                return;
+            }
+        }
+
+        throw new \Exception('Failed to set value after ' . $retries . ' attempts.');
     }
 
     /**

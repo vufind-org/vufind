@@ -27,8 +27,8 @@
  */
 namespace VuFindSearch\Backend\Pazpar2;
 
-use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\Exception\HttpErrorException;
+use VuFindSearch\ParamBag;
 
 use Zend\Http\Request;
 
@@ -122,7 +122,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         }
 
         // Don't change input when manipulating parameters:
-        $params = (null === $data) ? new ParamBag() : clone($data);
+        $params = (null === $data) ? new ParamBag() : clone $data;
 
         // Add session and command:
         if ($this->session) {

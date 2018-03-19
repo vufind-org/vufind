@@ -223,5 +223,4 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     {
         return count($this->records);
     }
-
 }

@@ -30,11 +30,11 @@
  */
 namespace VuFindSearch\Backend\Primo;
 
+use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
 
-use VuFindSearch\ParamBag;
+use VuFindSearch\Query\QueryGroup;
 
 /**
  * Primo Central QueryBuilder.

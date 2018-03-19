@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development
  */
 namespace VuFindConsole;
+
 use Zend\Console\Adapter\AdapterInterface as Console;
 
 /**
@@ -98,6 +99,7 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
         return [
             'compile theme' => 'Flatten a theme hierarchy for improved performance',
             'generate dynamicroute' => 'Add a dynamic route',
+            'generate extendclass' => 'Subclass a service, w/ lookup by class name',
             'generate extendservice' => 'Override a service with a new child class',
             'generate nontabrecordaction' => 'Add routes for non-tab record action',
             'generate recordroute' => 'Add a record route',

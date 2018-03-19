@@ -26,9 +26,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Summon;
-use SerialsSolutions_Summon_Query as SummonQuery,
-    VuFind\Solr\Utils as SolrUtils,
-    VuFindSearch\ParamBag;
+
+use SerialsSolutions_Summon_Query as SummonQuery;
+use VuFind\Solr\Utils as SolrUtils;
+use VuFindSearch\ParamBag;
 
 /**
  * Summon Search Parameters
@@ -224,12 +225,12 @@ class Params extends \VuFind\Search\Base\Params
             // if not, override them with defaults.
             $parts = explode(',', $facet);
             $facetName = $parts[0];
-            $bestDefaultFacetLimit = isset($fieldSpecificLimits->$facetName)
-                ? $fieldSpecificLimits->$facetName : $defaultFacetLimit;
+            $bestDefaultFacetLimit
+                = $fieldSpecificLimits->$facetName ?? $defaultFacetLimit;
             $defaultMode = ($this->getFacetOperator($facet) == 'OR') ? 'or' : 'and';
-            $facetMode = isset($parts[1]) ? $parts[1] : $defaultMode;
-            $facetPage = isset($parts[2]) ? $parts[2] : 1;
-            $facetLimit = isset($parts[3]) ? $parts[3] : $bestDefaultFacetLimit;
+            $facetMode = $parts[1] ?? $defaultMode;
+            $facetPage = $parts[2] ?? 1;
+            $facetLimit = $parts[3] ?? $bestDefaultFacetLimit;
             $facetParams = "{$facetMode},{$facetPage},{$facetLimit}";
             $finalFacets[] = "{$facetName},{$facetParams}";
         }
@@ -260,34 +261,33 @@ class Params extends \VuFind\Search\Base\Params
                         $params->set(
                             'holdings', strtolower(trim($safeValue)) == 'true'
                         );
-                    } else if ($filt['field'] == 'queryExpansion') {
+                    } elseif ($filt['field'] == 'queryExpansion') {
                         // Special case -- "query expansion" is a separate parameter
                         // from other facets.
                         $params->set(
                             'expand', strtolower(trim($safeValue)) == 'true'
                         );
-                    } else if ($filt['field'] == 'openAccessFilter') {
+                    } elseif ($filt['field'] == 'openAccessFilter') {
                         // Special case -- "open access filter" is a separate
                         // parameter from other facets.
                         $params->set(
                             'openAccessFilter',
                             strtolower(trim($safeValue)) == 'true'
                         );
-                    } else if ($filt['field'] == 'excludeNewspapers') {
+                    } elseif ($filt['field'] == 'excludeNewspapers') {
                         // Special case -- support a checkbox for excluding
                         // newspapers:
                         $params
                             ->add('filters', "ContentType,Newspaper Article,true");
-                    } else if ($range = SolrUtils::parseRange($filt['value'])) {
+                    } elseif ($range = SolrUtils::parseRange($filt['value'])) {
                         // Special case -- range query (translate [x TO y] syntax):
                         $from = SummonQuery::escapeParam($range['from']);
                         $to = SummonQuery::escapeParam($range['to']);
                         $params
                             ->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
-                    } else if ($filt['operator'] == 'OR') {
+                    } elseif ($filt['operator'] == 'OR') {
                         // Special case -- OR facets:
-                        $orFacets[$filt['field']] = isset($orFacets[$filt['field']])
-                            ? $orFacets[$filt['field']] : [];
+                        $orFacets[$filt['field']] = $orFacets[$filt['field']] ?? [];
                         $orFacets[$filt['field']][] = $safeValue;
                     } else {
                         // Standard case:
@@ -330,7 +330,7 @@ class Params extends \VuFind\Search\Base\Params
         if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
             // Simple case: [X TO Y]
             $filter['displayText'] = $matches[1] . '-' . $matches[2];
-        } else if (preg_match($caseInsensitiveRegex, $value, $matches)) {
+        } elseif (preg_match($caseInsensitiveRegex, $value, $matches)) {
             // Case insensitive case: [x TO y] OR [X TO Y]; convert
             // only if values in both ranges match up!
             if (strtolower($matches[3]) == strtolower($matches[1])

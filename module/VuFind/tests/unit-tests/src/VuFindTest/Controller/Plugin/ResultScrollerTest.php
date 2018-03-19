@@ -357,7 +357,8 @@ class ResultScrollerTest extends TestCase
      *
      * @return ResultScroller
      */
-    protected function getMockResultScroller($results) {
+    protected function getMockResultScroller($results)
+    {
         $mockManager = $this->getMockBuilder('VuFind\Search\Results\PluginManager')
             ->disableOriginalConstructor()->getMock();
         return new ResultScrollerMock($mockManager, $results);

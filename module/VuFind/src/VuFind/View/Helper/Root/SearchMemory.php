@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\Search\Memory, Zend\View\Helper\AbstractHelper;
+
+use VuFind\Search\Memory;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * View helper for remembering recent user searches/parameters.

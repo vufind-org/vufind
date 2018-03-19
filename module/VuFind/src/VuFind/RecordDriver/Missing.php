@@ -38,7 +38,7 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class Missing extends SolrDefault
+class Missing extends DefaultRecord
 {
     /**
      * Constructor

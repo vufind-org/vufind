@@ -26,9 +26,10 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
-use VuFind\I18n\ExtendedIniNormalizer,
-    VuFind\I18n\Translator\Loader\ExtendedIniReader,
-    Zend\Console\Console;
+
+use VuFind\I18n\ExtendedIniNormalizer;
+use VuFind\I18n\Translator\Loader\ExtendedIniReader;
+use Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools for dealing with language files
@@ -278,7 +279,7 @@ class LanguageController extends AbstractBase
         $normalizer = new ExtendedIniNormalizer();
         if (is_dir($target)) {
             $normalizer->normalizeDirectory($target);
-        } else if (is_file($target)) {
+        } elseif (is_file($target)) {
             $normalizer->normalizeFile($target);
         } else {
             Console::writeLine("{$target} does not exist.");

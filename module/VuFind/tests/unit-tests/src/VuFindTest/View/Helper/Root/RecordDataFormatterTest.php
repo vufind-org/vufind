@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
+
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 
@@ -41,26 +42,6 @@ use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
     /**
-     * Setup test case.
-     *
-     * Mark test skipped if short_open_tag is not enabled. The partial
-     * uses short open tags. This directive is PHP_INI_PERDIR,
-     * i.e. can only be changed via php.ini or a per-directory
-     * equivalent. The test will fail if the test is run on
-     * a system with short_open_tag disabled in the system-wide php
-     * ini-file.
-     *
-     * @return void
-     */
-    protected function setup()
-    {
-        parent::setup();
-        if (!ini_get('short_open_tag')) {
-            $this->markTestSkipped('Test requires short_open_tag to be enabled');
-        }
-    }
-
-    /**
      * Get view helpers needed by test.
      *
      * @return array
@@ -69,7 +50,10 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
     {
         $context = new \VuFind\View\Helper\Root\Context();
         return [
-            'auth' => new \VuFind\View\Helper\Root\Auth($this->getMockBuilder('VuFind\Auth\Manager')->disableOriginalConstructor()->getMock()),
+            'auth' => new \VuFind\View\Helper\Root\Auth(
+                $this->getMockBuilder('VuFind\Auth\Manager')->disableOriginalConstructor()->getMock(),
+                $this->getMockBuilder('VuFind\Auth\ILSAuthenticator')->disableOriginalConstructor()->getMock()
+            ),
             'context' => $context,
             'openUrl' => new \VuFind\View\Helper\Root\OpenUrl($context, [], $this->getMockBuilder('VuFind\Resolver\Driver\PluginManager')->disableOriginalConstructor()->getMock()),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
@@ -92,8 +76,11 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
     protected function getDriver($overrides = [])
     {
         // "Mock out" tag functionality to avoid database access:
+        $methods = [
+            'getBuilding', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags'
+        ];
         $record = $this->getMockBuilder('VuFind\RecordDriver\SolrDefault')
-            ->setMethods(['getBuilding', 'getContainerTitle', 'getTags'])
+            ->setMethods($methods)
             ->getMock();
         $record->expects($this->any())->method('getTags')
             ->will($this->returnValue([]));
@@ -103,6 +90,15 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             ->will($this->returnValue(0));
         $record->expects($this->any())->method('getContainerTitle')
             ->will($this->returnValue('0'));
+        // Expect only one call to getDeduplicatedAuthors to confirm that caching
+        // works correctly (we need this data more than once, but should only pull
+        // it from the driver once).
+        $authors = [
+            'primary' => ['Vico, Giambattista, 1668-1744.' => []],
+            'secondary' => ['Pandolfi, Claudia.' => []],
+        ];
+        $record->expects($this->once())->method('getDeduplicatedAuthors')
+            ->will($this->returnValue($authors));
 
         // Load record data from fixture file:
         $fixture = json_decode(
@@ -126,17 +122,19 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
     {
         // Build the formatter:
         $factory = new RecordDataFormatterFactory();
-        $formatter = $factory->__invoke();
+        $formatter = $factory->__invoke(
+            $this->getServiceManager(), RecordDataFormatter::class
+        );
 
         // Create a view object with a set of helpers:
         $helpers = $this->getViewHelpers();
         $view = $this->getPhpRenderer($helpers);
 
         // Mock out the router to avoid errors:
-        $match = new \Zend\Mvc\Router\RouteMatch([]);
+        $match = new \Zend\Router\RouteMatch([]);
         $match->setMatchedRouteName('foo');
         $view->plugin('url')
-            ->setRouter($this->createMock('Zend\Mvc\Router\RouteStackInterface'))
+            ->setRouter($this->createMock('Zend\Router\RouteStackInterface'))
             ->setRouteMatch($match);
 
         // Inject the view object into all of the helpers:

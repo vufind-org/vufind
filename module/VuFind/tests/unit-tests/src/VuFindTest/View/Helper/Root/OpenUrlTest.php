@@ -27,7 +27,9 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
-use VuFind\View\Helper\Root\OpenUrl, Zend\Config\Config, InvalidArgumentException;
+
+use VuFind\View\Helper\Root\OpenUrl;
+use Zend\Config\Config;
 
 /**
  * OpenUrl Test Class
@@ -296,7 +298,7 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
             $mockContext = $this->getMockContext();
         }
         $mockPm = $this->getMockBuilder('VuFind\Resolver\Driver\PluginManager')
-            ->getMock();
+            ->disableOriginalConstructor()->getMock();
         $openUrl = new OpenUrl($mockContext, $rules, $mockPm, new Config($config));
         $openUrl->setView($this->getPhpRenderer());
         return $openUrl;

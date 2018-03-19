@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search;
+
 use VuFind\Search\Base\Options;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
@@ -148,7 +149,7 @@ class UrlQueryHelper
                     }
                 }
             }
-        } else if ($this->queryObject instanceof Query) {
+        } elseif ($this->queryObject instanceof Query) {
             $search = $this->queryObject->getString();
             if (!empty($search)) {
                 $this->urlParams[$this->getBasicSearchParam()] = $search;
@@ -243,7 +244,7 @@ class UrlQueryHelper
      */
     public function replaceTerm($from, $to)
     {
-        $query = clone($this->queryObject);
+        $query = clone $this->queryObject;
         $query->replaceTerm($from, $to);
         return new static($this->urlParams, $query, $this->config);
     }
@@ -370,7 +371,7 @@ class UrlQueryHelper
         // Account for operators:
         if ($operator == 'NOT') {
             $field = '-' . $field;
-        } else if ($operator == 'OR') {
+        } elseif ($operator == 'OR') {
             $field = '~' . $field;
         }
 
@@ -452,7 +453,7 @@ class UrlQueryHelper
      */
     public function setHandler($handler)
     {
-        $query = clone($this->queryObject);
+        $query = clone $this->queryObject;
         // We can only set the handler on basic queries:
         if ($query instanceof Query) {
             $query->setHandler($handler);
@@ -551,7 +552,7 @@ class UrlQueryHelper
      */
     protected function filtered($field, $value, $filter)
     {
-        return (isset($filter[$field]) && preg_match($filter[$field], $value));
+        return isset($filter[$field]) && preg_match($filter[$field], $value);
     }
 
     /**

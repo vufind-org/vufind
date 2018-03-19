@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\I18n;
+
 use Zend\I18n\Translator\TextDomain;
 
 /**
@@ -54,7 +55,7 @@ class ExtendedIniNormalizer
             $full = $dir . '/' . $file;
             if ($file != '.' && $file != '..' && is_dir($full)) {
                 $this->normalizeDirectory($full);
-            } else if (substr($file, -4) == '.ini') {
+            } elseif (substr($file, -4) == '.ini') {
                 $this->normalizeFile($full);
             }
         }
