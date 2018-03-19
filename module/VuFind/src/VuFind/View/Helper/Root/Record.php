@@ -421,7 +421,7 @@ class Record extends AbstractHelper
         $id = $this->driver->getSourceIdentifier() . '|'
             . $this->driver->getUniqueId();
         $context
-            = ['id' => $id, 'count' => $number, 'prefix' => $idPrefix];
+            = ['id' => $id, 'number' => $number, 'prefix' => $idPrefix];
         if ($formAttr) {
             $context['formAttr'] = $formAttr;
         }
