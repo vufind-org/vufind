@@ -10,7 +10,7 @@
     <div class="form-group">
         <label class="col-sm-3 control-label" for="ar-book"><?= $this->transEsc('Book Request') ?>*</label>
         <div class="col-sm-9">
-            <textarea id="ar-book" name="book" class="form-control" onkeyup="AcquisitionRequest.checkFields()" required></textarea>
+            <textarea id="ar-book" name="book" class="form-control" onkeyup="AcquisitionRequest.checkFields()" required><?=($this->driver != null) ? 'PPN ' . $this->driver->getRecordId() . ': ' . $this->driver->getTitle() : ''?></textarea>
         </div>
     </div>
 

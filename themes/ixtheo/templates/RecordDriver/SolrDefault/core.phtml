@@ -150,18 +150,6 @@
           <td><? foreach ($langs as $lang): ?><?= $this->transEsc($lang)?><br/><? endforeach; ?></td>
         </tr>
       <? endif; ?>
-
-      <tr>
-        <? if (!$this->driver->suppressDisplayByFormat()): ?>
-          <th><?=$this->transEsc('Check Availability')?>: </th>
-            <? $isbns = $this->driver->getISBNs(); if (!empty($isbns)): ?>
-              <td><a href="http://openurlgw.hbz-nrw.de/gw?isbn=<?=$isbns[0]?>">HBZ Gateway</a></td>
-            <? else: ?>
-              <td><a href="http://openurlgw.hbz-nrw.de/gw?title=<?=urlencode($this->driver->getTitle())?>">HBZ Gateway</a></td>
-            <? endif; ?>
-        <? endif; ?>
-      </tr>
-
       <?=$this->render('RecordDriver/SolrDefault/JOP.phtml'); ?>
       <?=$this->render('RecordDriver/SolrDefault/PDA.phtml'); ?>
 
@@ -174,6 +162,9 @@
           </tr>
         <? endif; ?>
       <? endif; ?>
+      <?=$this->render('RecordDriver/SolrDefault/HBZ.phtml'); ?>
+      <?=$this->render('RecordDriver/SolrDefault/JOP.phtml'); ?>
+      <?=$this->render('RecordDriver/SolrDefault/PDA.phtml'); ?>
 
       <? if ($can_use_tad && $this->driver->workIsTADCandidate()): ?>
         <tr>
