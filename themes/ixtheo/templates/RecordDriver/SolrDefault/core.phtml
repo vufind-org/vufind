@@ -150,8 +150,6 @@
           <td><? foreach ($langs as $lang): ?><?= $this->transEsc($lang)?><br/><? endforeach; ?></td>
         </tr>
       <? endif; ?>
-      <?=$this->render('RecordDriver/SolrDefault/JOP.phtml'); ?>
-      <?=$this->render('RecordDriver/SolrDefault/PDA.phtml'); ?>
 
       <? if (!$this->driver->suppressDisplayByFormat()): ?>
         <? $subito_url = $this->driver->getSubitoURL('IXTHEO'); ?>
