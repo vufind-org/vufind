@@ -147,7 +147,7 @@ class GeneratorTools
     protected function getFactoryFromContainer(ContainerInterface $container, $class)
     {
         $factories = $this->getAllFactoriesFromContainer($container);
-        return isset($factories[$class]) ? $factories[$class] : null;
+        return $factories[$class] ?? null;
     }
 
     /**

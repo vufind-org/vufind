@@ -488,16 +488,14 @@ class AjaxController extends AbstractBase
                 $locationCallnumbers, $callnumberSetting, 'Multiple Call Numbers'
             );
             $locationInfo = [
-                'availability' =>
-                    isset($details['available']) ? $details['available'] : false,
+                'availability' => $details['available'] ?? false,
                 'location' => htmlentities(
                     $this->translate('location_' . $location, [], $location),
                     ENT_COMPAT, 'UTF-8'
                 ),
                 'callnumbers' =>
                     htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
-                'status_unknown' => isset($details['status_unknown'])
-                    ? $details['status_unknown'] : false,
+                'status_unknown' => $details['status_unknown'] ?? false,
                 'callnumber_handler' => $callnumberHandler
             ];
             $locationList[] = $locationInfo;
@@ -555,7 +553,7 @@ class AjaxController extends AbstractBase
         }
         $result = $checked = [];
         foreach ($ids as $i => $id) {
-            $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
+            $source = $sources[$i] ?? DEFAULT_SEARCH_BACKEND;
             $selector = $source . '|' . $id;
 
             // We don't want to bother checking the same ID more than once, so
@@ -792,7 +790,7 @@ class AjaxController extends AbstractBase
             $facets[$field]['removalURL']
                 = $results->getUrlQuery()->removeFacet(
                     $field,
-                    isset($filters[$field][0]) ? $filters[$field][0] : null
+                    $filters[$field][0] ?? null
                 )->getParams(false);
         }
         return $this->output($facets, self::STATUS_OK);
@@ -1101,7 +1099,7 @@ class AjaxController extends AbstractBase
         // Sort the returned links into categories based on service type:
         $electronic = $print = $services = [];
         foreach ($result as $link) {
-            switch (isset($link['service_type']) ? $link['service_type'] : '') {
+            switch ($link['service_type'] ?? '') {
             case 'getHolding':
                 $print[] = $link;
                 break;

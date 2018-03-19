@@ -1,10 +1,10 @@
 <?php
 /**
- * HMAC hash generator
+ * Config view helper
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2007.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,56 +20,52 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Crypt
- * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @package  View_Helpers
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Crypt;
+namespace VuFind\View\Helper\Root;
+
+use VuFind\Config\PluginManager;
 
 /**
- * HMAC hash generator wrapper
+ * Config view helper
  *
  * @category VuFind
- * @package  Crypt
- * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @package  View_Helpers
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HMAC
+class Config extends \Zend\View\Helper\AbstractHelper
 {
     /**
-     * Hash key
+     * Configuration plugin manager
      *
-     * @var string
+     * @var PluginManager
      */
-    protected $hashKey;
+    protected $configLoader;
 
     /**
      * Constructor
      *
-     * @param string $key Hash key
+     * @param Helper $helper Capabilities helper
      */
-    public function __construct($key)
+    public function __construct(PluginManager $configLoader)
     {
-        $this->hashKey = $key;
+        $this->configLoader = $configLoader;
     }
 
     /**
-     * Accepts $keysToHash, a list of array keys, and $keyValueArray, a keyed array
+     * Get the specified configuration.
      *
-     * @param array $keysToHash    A list of keys to hash
-     * @param array $keyValueArray A keyed array
+     * @param string $config Name of configuration
      *
-     * @return string A hash_hmac string using md5
+     * @return \Zend\Config\Config
      */
-    public function generate($keysToHash, $keyValueArray)
+    public function get($config)
     {
-        $str = '';
-        foreach ($keysToHash as $key) {
-            $value = $keyValueArray[$key] ?? '';
-            $str .= $key . '=' . $value . '|';
-        }
-        return hash_hmac('md5', $str, $this->hashKey);
+        return $this->configLoader->get($config);
     }
 }

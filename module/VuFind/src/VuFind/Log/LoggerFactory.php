@@ -59,7 +59,7 @@ class LoggerFactory implements FactoryInterface
     ) {
         $parts = explode(':', $config);
         $table_name = $parts[0];
-        $error_types = isset($parts[1]) ? $parts[1] : '';
+        $error_types = $parts[1] ?? '';
 
         $columnMapping = [
             'priority' => 'priority',
@@ -93,7 +93,7 @@ class LoggerFactory implements FactoryInterface
         // general mailer:
         $parts = explode(':', $config->Logging->email);
         $email = $parts[0];
-        $error_types = isset($parts[1]) ? $parts[1] : '';
+        $error_types = $parts[1] ?? '';
 
         // use smtp
         $mailer = $container->get('VuFind\Mailer\Mailer');
@@ -120,7 +120,7 @@ class LoggerFactory implements FactoryInterface
     {
         $parts = explode(':', $config);
         $file = $parts[0];
-        $error_types = isset($parts[1]) ? $parts[1] : '';
+        $error_types = $parts[1] ?? '';
 
         // Make Writers
         $filters = explode(',', $error_types);
@@ -268,7 +268,7 @@ class LoggerFactory implements FactoryInterface
         foreach ($filters as $filter) {
             $parts = explode('-', $filter);
             $priority = $parts[0];
-            $verbosity = isset($parts[1]) ? $parts[1] : false;
+            $verbosity = $parts[1] ?? false;
 
             // VuFind's configuration provides four priority options, each
             // combining two of the standard Zend levels.

@@ -37,7 +37,7 @@ JS;
     </div>
   <?php else: ?>
     <?php $keys = is_array($this->carriers) ? array_keys($this->carriers) : []; ?>
-    <input type="hidden" name="provider" value="<?=isset($keys[0]) ? $keys[0] : ''?>" />
+    <input type="hidden" name="provider" value="<?=$keys[0] ?? ''?>" />
   <?php endif; ?>
   <?=$this->recaptcha()->html($this->useRecaptcha) ?>
   <div class="form-group">

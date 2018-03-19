@@ -243,7 +243,7 @@ class Results extends \VuFind\Search\Base\Results
         $fieldFacets = $this->responseFacets->getFieldFacets();
         $translatedFacets = $this->getOptions()->getTranslatedFacets();
         foreach (array_keys($filter) as $field) {
-            $data = isset($fieldFacets[$field]) ? $fieldFacets[$field] : [];
+            $data = $fieldFacets[$field] ?? [];
             // Skip empty arrays:
             if (count($data) < 1) {
                 continue;

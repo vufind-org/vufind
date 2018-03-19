@@ -194,9 +194,8 @@ class CombinedController extends AbstractSearch
         && intval($config['Layout']['columns']) <= count($combinedResults)
             ? intval($config['Layout']['columns'])
             : count($combinedResults);
-        $placement = isset($config['Layout']['stack_placement'])
-            ? $config['Layout']['stack_placement']
-            : 'distributed';
+        $placement = $config['Layout']['stack_placement']
+            ?? 'distributed';
         if (!in_array($placement, ['distributed', 'left', 'right'])) {
             $placement = 'distributed';
         }
@@ -279,7 +278,7 @@ class CombinedController extends AbstractSearch
     {
         // Apply limit setting, if any:
         $query = $this->getRequest()->getQuery();
-        $query->limit = isset($settings['limit']) ? $settings['limit'] : null;
+        $query->limit = $settings['limit'] ?? null;
 
         // Apply filters, if any:
         $query->filter = isset($settings['filter'])
