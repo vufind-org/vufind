@@ -144,8 +144,14 @@ class CPU extends BaseHandler
                 }
             }
             if (!empty($fine['title'])) {
+                // Get rid of characters that cannot be converted to ISO-8859-1 since
+                // CPU apparently can't handle them properly.
+                $title = iconv(
+                    'ISO-8859-1', 'UTF-8',
+                    iconv('UTF-8', 'ISO-8859-1//IGNORE', $fine['title'])
+                );
                 $fineDesc .= ' ('
-                    . substr($fine['title'], 0, 100 - 4 - strlen($fineDesc))
+                    . substr($title, 0, 100 - 4 - strlen($fineDesc))
                 . ')';
             }
             $code = isset($productCodeMappings[$fineType])
