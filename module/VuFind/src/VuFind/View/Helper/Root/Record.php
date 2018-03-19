@@ -413,6 +413,7 @@ class Record extends AbstractHelper
      *
      * @param string $idPrefix Prefix for checkbox HTML ids
      * @param string $formAttr ID of form for [form] attribute
+     * @param int    $number   Result number (for label of checkbox)
      *
      * @return string
      */
