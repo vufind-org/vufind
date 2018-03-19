@@ -97,4 +97,11 @@ class SolrMarc extends SolrDefault
     public function workIsTADCandidate() {
         return ($this->isArticle() || $this->isArticleCollection()) && $this->isPrintedWork() && $this->isAvailableInTubingenUniversityLibrary();
     }
+
+    public function suppressDisplayByFormat() {
+        if (in_array("Weblog", $this->getFormats()))
+            return true;
+
+        return false;
+    }
 }

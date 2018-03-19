@@ -151,19 +151,18 @@
         </tr>
       <? endif; ?>
 
+      <? if (!$this->driver->suppressDisplayByFormat()): ?>
+        <? $subito_url = $this->driver->getSubitoURL('IXTHEO'); ?>
+        <? if (!empty($subito_url)): ?>
+          <tr>
+            <th><?=$this->transEsc('Subito Delivery Service');?>: </th>
+	    <td><a target="_blank" href="<?=$subito_url?>"><?=$this->transEsc("Order now");?>.</a></td>
+          </tr>
+        <? endif; ?>
+      <? endif; ?>
       <?=$this->render('RecordDriver/SolrDefault/HBZ.phtml'); ?>
       <?=$this->render('RecordDriver/SolrDefault/JOP.phtml'); ?>
       <?=$this->render('RecordDriver/SolrDefault/PDA.phtml'); ?>
-
-      <?
-        $subito_url = $this->driver->getSubitoURL('IXTHEO');
-        if (!empty($subito_url)):
-      ?>
-        <tr>
-          <th><?=$this->transEsc('Subito Delivery Service');?>: </th>
-	  <td><a target="_blank" href="<?=$subito_url?>"><?=$this->transEsc("Order now");?>.</a></td>
-        </tr>
-       <? endif; ?>
 
       <? if ($can_use_tad && $this->driver->workIsTADCandidate()): ?>
         <tr>
