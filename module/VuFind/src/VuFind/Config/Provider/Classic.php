@@ -27,8 +27,9 @@
  */
 namespace VuFind\Config\Provider;
 
-use Zend\ConfigAggregator\ArrayProvider;
-use Zend\ConfigAggregator\ConfigAggregator;
+use VuFind\Config\Filter\FlatIni;
+use VuFind\Config\Filter\ParentConfig;
+use VuFind\Config\Filter\ParentYaml;
 
 /**
  * VuFind Configuration Main Provider
@@ -41,25 +42,18 @@ use Zend\ConfigAggregator\ConfigAggregator;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Main
+class Classic
 {
-    const CORE_DIR = APPLICATION_PATH . '/config/vufind';
-    const LOCAL_DIR = LOCAL_OVERRIDE_DIR . '/config/vufind';
-
     /**
-     * @var string
+     * Base directories to look for configuration files
+     *
+     * @var array
      */
-    protected $coreDir;
+    protected $baseDirs;
 
-    /**
-     * @var string
-     */
-    protected $localDir;
-
-    public function __construct($corePath = '', $localPath = '')
+    public function __construct(...$baseDirs)
     {
-        $this->coreDir = $corePath ?: self::CORE_DIR;
-        $this->localDir = $localPath ?: self::LOCAL_DIR;
+        $this->baseDirs = $baseDirs;
     }
 
     /**
@@ -70,24 +64,44 @@ class Main
      */
     public function __invoke() : array
     {
-        $iniGlob = "**/*.ini";
-        $iniFlags = Base::FLAG_FLAT_INI | Base::FLAG_PARENT_CONFIG;
+        $list = array_map([$this, 'load'], $this->baseDirs);
+        $result = array_replace_recursive(...$list);
+        return $result;
+    }
 
-        $yamlGlob = "**/*.y{,a}ml";
-        $yamlFlags = Base::FLAG_PARENT_YAML;
-
-        $jsonGlob = "**/*.json";
-
-        $list = array_map('call_user_func', [
-            new ArrayProvider([ConfigAggregator::ENABLE_CACHE => true]),
-            new Base($this->coreDir, $iniGlob, $iniFlags),
-            new Base($this->localDir, $iniGlob, $iniFlags),
-            new Base($this->coreDir, $yamlGlob, $yamlFlags),
-            new Base($this->localDir, $yamlGlob, $yamlFlags),
-            new Base($this->coreDir, $jsonGlob),
-            new Base($this->localDir, $jsonGlob),
+    protected function load($baseDir)
+    {
+        return array_replace_recursive(...[
+            $this->loadIni($baseDir),
+            $this->loadJson($baseDir),
+            $this->loadYaml($baseDir)
         ]);
+    }
 
-        return array_replace_recursive(...$list);
+    protected function loadIni(string $baseDir)
+    {
+        $pattern = "**/*.ini";
+        $flatIniFilter = new FlatIni;
+        $parentConfigFilter = new ParentConfig;
+        $provider = new Base($baseDir, $pattern);
+        $provider->getFilterChain()->attach($flatIniFilter, 20000);
+        $provider->getFilterChain()->attach($parentConfigFilter, 0);
+        return $provider();
+    }
+
+    protected function loadYaml($baseDir)
+    {
+        $pattern = "**/*.yaml";
+        $parentYamlFilter = new ParentYaml;
+        $provider = new Base($baseDir, $pattern);
+        $provider->getFilterChain()->attach($parentYamlFilter, 0);
+        return $provider();
+    }
+
+    protected function loadJson($baseDir)
+    {
+        $pattern = "**/*.json";
+        $provider = new Base($baseDir, $pattern);
+        return $provider();
     }
 }

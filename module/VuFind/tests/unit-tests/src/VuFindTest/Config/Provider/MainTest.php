@@ -29,7 +29,7 @@
 namespace VuFindTest\Config\Provider;
 
 use VuFind\Config\Manager;
-use VuFind\Config\Provider\Main;
+use VuFind\Config\Provider\Classic;
 
 /**
  * Main Provider Test Class
@@ -48,12 +48,12 @@ class MainTest extends \VuFindTest\Unit\TestCase
 
     public function setUp()
     {
-        Manager::getManager();
+        Manager::getInstance();
     }
 
     public function test()
     {
-        $data = (new Main(self::CORE_PATH, self::LOCAL_PATH))();
+        $data = (new Classic(self::CORE_PATH, self::LOCAL_PATH))();
         $this->assertEquals('aStringNow', $data['json']['list']);
     }
 }

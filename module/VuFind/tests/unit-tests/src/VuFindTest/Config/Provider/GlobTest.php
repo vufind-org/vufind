@@ -28,7 +28,7 @@
 namespace VuFindTest\Config\Provider;
 
 use VuFind\Config\Manager;
-use VuFind\Config\Provider\Glob;
+use VuFind\Config\Provider\Base;
 
 /**
  * Glob Provider Test Class
@@ -47,12 +47,12 @@ class GlobTest extends \VuFindTest\Unit\TestCase
 
     public function setUp()
     {
-        Manager::getManager();
+        Manager::getInstance();
     }
 
     public function test()
     {
-        $data = (new Glob(self::BASE, self::PATTERN))();
+        $data = (new Base(self::BASE, self::PATTERN))();
         $value = $data['core']['ini']['first']['key'] ?? null;
         $this->assertEquals('value', $value);
         $value = $data['core']['yaml']['first']['%weired;Key$\\'];

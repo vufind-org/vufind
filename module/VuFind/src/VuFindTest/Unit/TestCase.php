@@ -3,9 +3,10 @@
 /**
  * Abstract base class for PHPUnit test cases.
  *
- * PHP version 5
+ * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) 2010 Villanova University,
+ *               2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +24,7 @@
  * @category VuFind
  * @package  Tests
  * @author   David Maus <maus@hab.de>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -34,6 +36,7 @@ namespace VuFindTest\Unit;
  * @category VuFind
  * @package  Tests
  * @author   David Maus <maus@hab.de>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -181,9 +184,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $this->serviceManager->setService(
                 'VuFind\RecordDriver\PluginManager', $recordDriverFactory
             );
-            $configManager = \VuFind\Config\Manager::getInstance();
+            $configManager = $this->getConfigManager();
             $this->serviceManager
-                ->setService('VuFind\Config\Manager', $configManager);
+                ->setService(\VuFind\Config\Manager::class, $configManager);
             $this->serviceManager->setService(
                 'VuFind\Config\SearchSpecsReader',
                 new \VuFind\Config\SearchSpecsReader($configManager)
@@ -243,5 +246,14 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         // We'll assume that if the CI Solr PID is present, then CI is active:
         return file_exists(__DIR__ . '/../../../../../local/vufindtest.pid');
+    }
+
+    protected function getConfigManager() : \VuFind\Config\Manager
+    {
+        return new \VuFind\Config\Manager(...[
+            APPLICATION_PATH . '/config/config.php',
+            LOCAL_CACHE_DIR ?: APPLICATION_PATH . '/data/cache',
+            false
+        ]);
     }
 }

@@ -46,7 +46,7 @@ class BaseTest extends \VuFindTest\Unit\TestCase
 
     public function setUp()
     {
-        Manager::getManager();
+        Manager::getInstance();
     }
 
     public function testLocalIni()

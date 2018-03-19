@@ -127,7 +127,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function setUp()
     {
-        $this->manager = Manager::getInstance();
+        $serviceManager = $this->getServiceManager();
+        $this->manager = $serviceManager->get('VuFind\Config\Manager');
     }
 
     /**
@@ -149,8 +150,6 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testBasicRead()
     {
-        // This should retrieve config.ini, which should have "Library Catalog"
-        // set as the default system title.
         $config = $this->getConfig('config');
         $this->assertEquals('Library Catalog', $config->Site->title);
     }

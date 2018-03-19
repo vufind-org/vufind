@@ -45,21 +45,33 @@ use Zend\Config\Reader\Yaml as YamlReader;
  */
 class Manager
 {
-    const CACHE_PATH = CONFIG_CACHE_DIR . '/managed-config-cache.php';
-
-    /**
-     * Static reference to this
-     *
-     * @var Manager
-     */
-    protected static $manager;
 
     /**
      * Reference to the used INI reader
      *
      * @var IniReader
      */
-    protected $iniReader;
+    public static $iniReader;
+
+    /**
+     * @var bool
+     */
+    protected $useCache;
+
+    /**
+     * @var string
+     */
+    protected $configPath;
+
+    /**
+     * @var string
+     */
+    protected $entireConfigPath;
+
+    /**
+     * @var string
+     */
+    protected $managedConfigPath;
 
     /**
      * Contains the entire aggregated configuration data to be loaded and looked
@@ -74,25 +86,24 @@ class Manager
      */
     protected $managedConfig;
 
-    /**
-     * Enables to statically get the manager instance in providers.
-     *
-     * @return Manager
-     */
-    public static function getManager(): Manager
-    {
-        // see constructor for registration of custom readers etc.
-        return static::$manager ?: static::$manager = new static;
-    }
+    public function __construct(
+        string $configPath,
+        string $cacheDir,
+        bool $useCache
+    ) {
+        $this->configPath = realpath($configPath);
+        $this->entireConfigPath = "$cacheDir/entire.php";
+        $this->managedConfigPath = "$cacheDir/managed.php";
+        $this->useCache = $useCache;
 
-    /**
-     * Gets the registered reader for INI configuration files.
-     *
-     * @return IniReader
-     */
-    public static function getIniReader(): IniReader
-    {
-        return static::getManager()->iniReader;
+        static::$iniReader = new IniReader;
+        $yamlReader = new YamlReader([YamlParser::class, 'parse']);
+        Factory::registerReader('ini', static::$iniReader);
+        Factory::registerReader('yaml', $yamlReader);
+
+        if (!$useCache) {
+            $this->reset();
+        }
     }
 
     /**
@@ -133,7 +144,7 @@ class Manager
         // flag the data as «loaded» for this path
         $this->setAt($managedConfig, true, 'demanded', ...$path);
         // write sparse configuration to cache file
-        Factory::toFile(static::CACHE_PATH, $managedConfig);
+        Factory::toFile($this->managedConfigPath, $managedConfig);
         // finally return the configuration data
         return $data;
     }
@@ -145,27 +156,12 @@ class Manager
     {
         $this->managedConfig = $this->entireConfig = null;
 
-        if (file_exists(CONFIG_CACHE_PATH)) {
-            unlink(CONFIG_CACHE_PATH);
+        if (file_exists($this->entireConfigPath)) {
+            unlink($this->entireConfigPath);
         }
 
-        if (file_exists(static::CACHE_PATH)) {
-            unlink(static::CACHE_PATH);
-        }
-
-    }
-
-    protected function __construct()
-    {
-        // register custom readers
-        $this->iniReader = new IniReader;
-        $yamlReader = new YamlReader([YamlParser::class, 'parse']);
-        Factory::registerReader('ini', $this->iniReader);
-        Factory::registerReader('yaml', $yamlReader);
-
-        // delete the cache files if caching is disabled
-        if (!CONFIG_CACHE_ENABLED) {
-            $this->reset();
+        if (file_exists($this->managedConfigPath)) {
+            unlink($this->managedConfigPath);
         }
     }
 
@@ -239,8 +235,8 @@ class Manager
      */
     protected function loadManagedConfig(): Config
     {
-        $data = CONFIG_CACHE_ENABLED && file_exists(static::CACHE_PATH)
-            ? Factory::fromFile(static::CACHE_PATH)
+        $data = $this->useCache && file_exists($this->managedConfigPath)
+            ? Factory::fromFile($this->managedConfigPath)
             : ['demanded' => [], 'content' => []];
         return $this->managedConfig = new Config($data, true);
     }
@@ -262,7 +258,8 @@ class Manager
      */
     protected function loadEntireConfig(): Config
     {
-        $data = (require CONFIG_PATH)->getMergedConfig();
+        $getAggregtor = require $this->configPath;
+        $data = $getAggregtor($this->entireConfigPath)->getMergedConfig();
         return $this->entireConfig = new Config($data, true);
     }
 }

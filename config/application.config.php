@@ -51,17 +51,8 @@ if (!is_dir($cacheDir)) {
     mkdir($cacheDir);
 }
 
-defined('CONFIG_PATH') || define('CONFIG_PATH', __DIR__ . '/config.php');
-
-defined('CONFIG_CACHE_DIR') || define('CONFIG_CACHE_DIR', $cacheDir);
-
-defined('CONFIG_CACHE_PATH')
-|| define('CONFIG_CACHE_PATH', CONFIG_CACHE_DIR . '/config-cache.php');
-
 // Enable caching unless in dev mode or running tests:
-defined('CONFIG_CACHE_ENABLED')
-|| define('CONFIG_CACHE_ENABLED', getenv('VUFIND_CONFIG_CACHE_ENABLED')
-    ?? APPLICATION_ENV != 'development' && !defined('VUFIND_PHPUNIT_RUNNING'));
+$useCache = APPLICATION_ENV != 'development' && !defined('VUFIND_PHPUNIT_RUNNING');
 
 // Build configuration:
 return [
@@ -70,10 +61,10 @@ return [
         'config_glob_paths'    => [
             'config/autoload/{,*.}{global,local}.php',
         ],
-        'config_cache_enabled' => CONFIG_CACHE_ENABLED,
-        'module_map_cache_enabled' => CONFIG_CACHE_ENABLED,
+        'config_cache_enabled' => $useCache,
+        'module_map_cache_enabled' => $useCache,
         'check_dependencies' => (APPLICATION_ENV == 'development'),
-        'cache_dir'            => CONFIG_CACHE_DIR,
+        'cache_dir'            => $cacheDir,
         'module_paths' => [
             './module',
             './vendor',

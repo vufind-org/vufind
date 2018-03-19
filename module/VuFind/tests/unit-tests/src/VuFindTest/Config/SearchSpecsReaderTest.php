@@ -126,7 +126,7 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
         \Zend\Config\Factory::registerReader('yaml', new \Zend\Config\Reader\Yaml([
             \Symfony\Component\Yaml\Yaml::class, 'parse'
         ]));
-        $data = (new \VuFind\Config\Provider\Glob('*.yaml', $base))();
+        $data = (new \VuFind\Config\Provider\Base('*.yaml', $base))();
 
         // $reader = new SearchSpecsReader();
         // $core = __DIR__ . '/../../../../fixtures/configs/yaml/core.yaml';
