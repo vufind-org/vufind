@@ -152,26 +152,28 @@
       <? endif; ?>
 
       <tr>
-        <th><?=$this->transEsc('Check Availability')?>: </th>
-          <? $isbns = $this->driver->getISBNs(); if (!empty($isbns)): ?>
-            <td><a href="http://openurlgw.hbz-nrw.de/gw?isbn=<?=$isbns[0]?>">HBZ Gateway</a></td>
-          <? else: ?>
-            <td><a href="http://openurlgw.hbz-nrw.de/gw?title=<?=urlencode($this->driver->getTitle())?>">HBZ Gateway</a></td>
-          <? endif; ?>
+        <? if (!$this->driver->suppressDisplayByFormat()): ?>
+          <th><?=$this->transEsc('Check Availability')?>: </th>
+            <? $isbns = $this->driver->getISBNs(); if (!empty($isbns)): ?>
+              <td><a href="http://openurlgw.hbz-nrw.de/gw?isbn=<?=$isbns[0]?>">HBZ Gateway</a></td>
+            <? else: ?>
+              <td><a href="http://openurlgw.hbz-nrw.de/gw?title=<?=urlencode($this->driver->getTitle())?>">HBZ Gateway</a></td>
+            <? endif; ?>
+        <? endif; ?>
       </tr>
 
       <?=$this->render('RecordDriver/SolrDefault/JOP.phtml'); ?>
-
       <?=$this->render('RecordDriver/SolrDefault/PDA.phtml'); ?>
-      <?
-        $subito_url = $this->driver->getSubitoURL('IXTHEO');
-        if (!empty($subito_url)):
-      ?>
-        <tr>
-          <th><?=$this->transEsc('Subito Delivery Service');?>: </th>
-	  <td><a target="_blank" href="<?=$subito_url?>"><?=$this->transEsc("Order now");?>.</a></td>
-        </tr>
-       <? endif; ?>
+
+      <? if (!$this->driver->suppressDisplayByFormat()): ?>
+        <? $subito_url = $this->driver->getSubitoURL('IXTHEO'); ?>
+        <? if (!empty($subito_url)): ?>
+          <tr>
+            <th><?=$this->transEsc('Subito Delivery Service');?>: </th>
+	    <td><a target="_blank" href="<?=$subito_url?>"><?=$this->transEsc("Order now");?>.</a></td>
+          </tr>
+        <? endif; ?>
+      <? endif; ?>
 
       <? if ($can_use_tad && $this->driver->workIsTADCandidate()): ?>
         <tr>
