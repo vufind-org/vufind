@@ -1360,13 +1360,16 @@ class MyResearchController extends AbstractBase
             // Attempt to look up and inject title:
             try {
                 if (!isset($row['id']) || empty($row['id'])) {
-                    throw new \Exception();
-                }
-                $source = $row['source'] ?? DEFAULT_SEARCH_BACKEND;
-                $row['driver'] = $this->serviceLocator
-                    ->get('VuFind\Record\Loader')->load($row['id'], $source);
-                if (empty($row['title'])) {
-                    $row['title'] = $row['driver']->getShortTitle();
+                    if (!isset($row['title'])) {
+                        $row['title'] = null;
+                    }
+                } else {
+                    $source = $row['source'] ?? DEFAULT_SEARCH_BACKEND;
+                    $row['driver'] = $this->serviceLocator
+                        ->get('VuFind\Record\Loader')->load($row['id'], $source);
+                    if (empty($row['title'])) {
+                        $row['title'] = $row['driver']->getShortTitle();
+                    }
                 }
             } catch (\Exception $e) {
                 if (!isset($row['title'])) {
