@@ -386,8 +386,7 @@ class MyResearchController extends AbstractBase
      */
     public function profileAction()
     {
-        $user = $this->getUser();
-        if (!$user) {
+        if (!($user = $this->getUser())) {
             return $this->forceLogin();
         }
 
