@@ -5,9 +5,6 @@
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
 
-    // Only display home library form if we have multiple pickup locations:
-    $showHomeLibForm = (isset($this->pickup) && count($this->pickup) > 1);
-
     // Template for use by the renderArray helper:
     $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
 ?>
@@ -16,17 +13,15 @@
   <?=$this->flashmessages();?>
 
   <table class="table table-striped">
-    <?php
-      echo $this->renderArray(
-        $arrTemplate, $this->user,
-        [
-          $this->transEsc('First Name') => 'firstname',
-          $this->transEsc('Last Name') => 'lastname',
-          $this->transEsc('Email') => 'email',
-        ]
-      );
-    ?>
-    <?php if ($showHomeLibForm): ?>
+    <?=$this->renderArray(
+      $arrTemplate, $this->user,
+      [
+        $this->transEsc('First Name') => 'firstname',
+        $this->transEsc('Last Name') => 'lastname',
+        $this->transEsc('Email') => 'email',
+      ]
+    )?>
+    <?php if (count($this->pickup ?? []) > 1): // Skip form if only one location: ?>
       <tr><th><?=$this->transEsc('Preferred Library')?>:</th>
       <?php
         $selected = (isset($this->profile['home_library']) && $this->profile['home_library'] != "")
@@ -57,31 +52,22 @@
       <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
     </p>
     <table class="table table-striped">
-      <?php
-        echo $this->renderArray(
-          $arrTemplate, $this->profile,
-          [
-            $this->transEsc('First Name') => 'firstname',
-            $this->transEsc('Last Name') => 'lastname'
-          ]
-        );
-      ?>
-      <?php
-        echo $this->renderArray(
-          $arrTemplate, $this->profile,
-          [
-            $this->transEsc('Address') . ' 1' => 'address1',
-            $this->transEsc('Address') . ' 2' => 'address2',
-            $this->transEsc('Zip') => 'zip',
-            $this->transEsc('City') => 'city',
-            $this->transEsc('Country') => 'country',
-            $this->transEsc('Phone Number') => 'phone',
-            $this->transEsc('Mobile Number') => 'mobile_phone',
-            $this->transEsc('Group') => 'group',
-            $this->transEsc('Expires') => 'expiration_date'
-          ]
-        );
-      ?>
+      <?=$this->renderArray(
+        $arrTemplate, $this->profile,
+        [
+          $this->transEsc('First Name') => 'firstname',
+          $this->transEsc('Last Name') => 'lastname',
+          $this->transEsc('Address') . ' 1' => 'address1',
+          $this->transEsc('Address') . ' 2' => 'address2',
+          $this->transEsc('Zip') => 'zip',
+          $this->transEsc('City') => 'city',
+          $this->transEsc('Country') => 'country',
+          $this->transEsc('Phone Number') => 'phone',
+          $this->transEsc('Mobile Number') => 'mobile_phone',
+          $this->transEsc('Group') => 'group',
+          $this->transEsc('Expires') => 'expiration_date'
+        ]
+      )?>
     </table>
   <?php else: ?>
     <?=$this->partial($this->patronLoginView);?>
