@@ -41,9 +41,11 @@
   </table>
 
   <?php if ($this->auth()->getManager()->supportsPasswordChange()): ?>
-    <a class="btn btn-default" href="<?=$this->url('myresearch-changepassword') ?>">
-      <i class="fa fa-fw fa-lock" aria-hidden="true"></i> <?=$this->transEsc('Change Password') ?>
-    </a>
+    <p>
+      <a class="btn btn-default" href="<?=$this->url('myresearch-changepassword') ?>">
+        <i class="fa fa-fw fa-lock" aria-hidden="true"></i> <?=$this->transEsc('Change Password') ?>
+      </a>
+    </p>
   <?php endif; ?>
 
   <?php if (is_array($this->profile)): ?>
@@ -69,7 +71,7 @@
         ]
       )?>
     </table>
-  <?php else: ?>
+  <?php elseif ('ils-none' !== $this->ils()->getOfflineMode()): ?>
     <?=$this->partial($this->patronLoginView);?>
   <?php endif; ?>
 </div>
