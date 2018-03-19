@@ -25,7 +25,7 @@
     <?php if (count($this->pickup ?? []) > 1): // Skip form if only one location: ?>
       <tr><th><?=$this->transEsc('Preferred Library')?>:</th>
       <?php
-        $selected = (isset($this->profile['home_library']) && $this->profile['home_library'] != "")
+        $selected = (strlen($this->profile['home_library'] ?? '') > 0)
             ? $this->profile['home_library'] : $this->defaultPickupLocation
       ?>
       <td>
