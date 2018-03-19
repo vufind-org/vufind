@@ -191,10 +191,9 @@ finna.record = (function finnaRecord() {
         $('html, body').animate({scrollTop: accordion.offset().top - 64}, 150);
       }
 
-      $(this).tab('show');
       if ($recordTabs.find('.' + tabid + '-tab').length > 0) {
         $recordTabs.find('.' + tabid + '-tab').addClass('active');
-        if ($(this).parent().hasClass('initiallyActive')) {
+        if (accordion.hasClass('initiallyActive')) {
           removeHashFromLocation();
         } else {
           window.location.hash = tabid;
