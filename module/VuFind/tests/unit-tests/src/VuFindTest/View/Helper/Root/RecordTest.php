@@ -273,17 +273,17 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     {
         $context = $this->getMockContext();
         $context->expects($this->at(1))->method('renderInContext')
-            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(['id' => 'Solr|000105196', 'count' => 0, 'prefix' => 'bar', 'formAttr' => 'foo']))
+            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(['id' => 'Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo']))
             ->will($this->returnValue('success'));
         $context->expects($this->at(2))->method('renderInContext')
-            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(['id' => 'Solr|000105196', 'count' => 1, 'prefix' => 'bar', 'formAttr' => 'foo']))
+            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(['id' => 'Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo']))
             ->will($this->returnValue('success'));
         $record = $this->getRecord(
             $this->loadRecordFixture('testbug1.json'), [], $context
         );
         // We run the test twice to ensure that checkbox incrementing works properly:
-        $this->assertEquals('success', $record->getCheckbox('bar', 'foo'));
-        $this->assertEquals('success', $record->getCheckbox('bar', 'foo'));
+        $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 1));
+        $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 2));
     }
 
     /**
