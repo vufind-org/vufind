@@ -43,6 +43,8 @@ class Search extends \VuFind\View\Helper\Bootstrap3\Search
      *
      * @param array $checkboxFilters Checkbox filters
      * @param array $filterList      Other filters
+     *
+     * @return int
      */
     public function getFilterCount($checkboxFilters, $filterList)
     {
