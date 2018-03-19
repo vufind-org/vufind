@@ -278,11 +278,6 @@ finna.layout = (function finnaLayout() {
   }
 
   function initMobileNarrowSearch() {
-    var filterAmount = $('.checkboxFilter input[checked]').length + $('.list-group.filters .list-group-item.active').length;
-    if (filterAmount > 0) {
-      $('.mobile-navigation .sidebar-navigation .active-filters  .active-filter-count').text(filterAmount);
-      $('.mobile-navigation .sidebar-navigation .active-filters').removeClass('hidden');
-    }
     $('.mobile-navigation .sidebar-navigation, .sidebar h4').unbind('click').click(function onClickMobileNav(e) {
       if ($(e.target).attr('class') !== 'fa fa-info-big') {
         $('.sidebar').toggleClass('open');
@@ -887,11 +882,6 @@ finna.layout = (function finnaLayout() {
   }
 
   function initFiltersToggle () {
-    $('.finna-filters').each(function calcFilterAmount() {
-      var filterAmount = $(this).find('.filters-bar .filter-value').length;
-      $(this).find('.filters-toggle .active-filter-count').text(' (' + filterAmount + ')');
-    });
-
     $('.filters-toggle').click(function filterToggleClicked(e){
       var finnaFilters = $(e.target).closest('.finna-filters');
       var filtersBar = finnaFilters.find('.filters-bar');
@@ -901,7 +891,6 @@ finna.layout = (function finnaLayout() {
       } else {
         filtersBar.addClass('hidden');
         finnaFilters.find('.fa-arrow-up').removeClass('fa-arrow-up').addClass('fa-arrow-down');
-
       }
     });
   }
