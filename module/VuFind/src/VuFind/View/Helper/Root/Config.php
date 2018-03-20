@@ -68,4 +68,14 @@ class Config extends \Zend\View\Helper\AbstractHelper
     {
         return $this->configLoader->get($config);
     }
+
+    /**
+     * Is non-Javascript support enabled?
+     *
+     * @return bool
+     */
+    public function nonJavascriptSupportEnabled()
+    {
+        return $this->get('config')->Site->nonJavascriptSupportEnabled ?? false;
+    }
 }
