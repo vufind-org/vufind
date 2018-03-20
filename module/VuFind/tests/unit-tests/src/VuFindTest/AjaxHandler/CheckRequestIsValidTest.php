@@ -104,4 +104,69 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
             $handler->handleRequest($this->getParamsHelper())
         );
     }
+
+    /**
+     * Generic support function for successful request tests.
+     *
+     * @return void
+     */
+    protected function runSuccessfulTest($ilsMethod, $requestType = null)
+    {
+        $ilsAuth = $this->getMockService(
+            'VuFind\Auth\ILSAuthenticator', ['storedCatalogLogin']
+        );
+        $ilsAuth->expects($this->once())->method('storedCatalogLogin')
+            ->will($this->returnValue([3]));
+        $ils = $this
+            ->getMockService('VuFind\ILS\Connection', [$ilsMethod]);
+        $ils->expects($this->once())->method($ilsMethod)
+            ->with($this->equalTo(1), $this->equalTo(2), $this->equalTo([3]))
+            ->will($this->returnValue(true));
+        $handler = $this->getHandler(null, $ils, $ilsAuth, $this->getMockUser());
+        $params = ['id' => 1, 'data' => 2, 'requestType' => $requestType];
+        return $handler->handleRequest($this->getParamsHelper($params));
+    }
+
+    /**
+     * Test a successful hold response.
+     *
+     * @return void
+     */
+    public function testHoldResponse()
+    {
+        $this->assertEquals(
+            [['status' => true, 'msg' => 'request_place_text'], 'OK'],
+            $this->runSuccessfulTest('checkRequestIsValid')
+        );
+    }
+
+    /**
+     * Test a successful ILL response.
+     *
+     * @return void
+     */
+    public function testILLResponse()
+    {
+        $this->assertEquals(
+            [['status' => true, 'msg' => 'ill_request_place_text'], 'OK'],
+            $this->runSuccessfulTest('checkILLRequestIsValid', 'ILLRequest')
+        );
+    }
+
+    /**
+     * Test a successful storage retrieval response.
+     *
+     * @return void
+     */
+    public function testStorageResponse()
+    {
+        $this->assertEquals(
+            [
+                ['status' => true, 'msg' => 'storage_retrieval_request_place_text'],
+                'OK'
+            ], $this->runSuccessfulTest(
+                'checkStorageRetrievalRequestIsValid', 'StorageRetrievalRequest'
+            )
+        );
+    }
 }
