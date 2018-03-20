@@ -106,13 +106,11 @@
   margin-top: 2px;
   margin-right: 4px;
 }
-.jstree-facet .jstree-container-ul {
-  padding: 0;
-  & > li.active,
-  & > li.active a.jstree-anchor {
-    background-color: #265680;
-    color: #fff;
-  }
+.jstree-facet .jstree-container-ul { padding: 0; }
+.jstree-facet .active,
+.jstree-facet .active a.jstree-anchor {
+  background-color: @list-group-active-bg;
+  color: #fff;
 }
 li.jstree-facet,
 li.jstree-node { list-style: none; }
