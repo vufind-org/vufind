@@ -27,10 +27,10 @@
       <li<?php if ($page != $this->current): ?>>
         <?php $newParams = $this->params; $newParams['page'] = $page; ?>
         <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
-            <?php echo $page; ?>
+            <?=$page?>
         </a>
       <?php else: ?>
-         class="active"> <span><?php echo $page; ?></span>
+         class="active"> <span><?=$page?></span>
       <?php endif; ?>
       </li>
     <?php endforeach; ?>
