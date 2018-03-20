@@ -3,7 +3,8 @@
 <? if ($this->title || $this->translateTitle): ?><h2 class="feed-header"><?= $this->translateTitle ? $this->transEsc($this->translateTitle) : $this->title; ?></h2><? endif; ?>
 <? if (isset($this->description)): ?><p class="additional-description"><?= $this->translate($this->description)?></p><? endif; ?>
   <ul>
-    <? foreach($this->items as $item): ?>
+    <? $items = isset($this->visualItems) ? array_splice($this->items, 0, $this->visualItems) : $this->items; ?>
+    <? foreach($items as $item): ?>
     <li>
       <? if (isset($item['date'])): ?><span class="date"><?= $item['date']; ?></span> <? endif; ?>
       <? if (!isset($this->linkText) && isset($item['link'])):?>
