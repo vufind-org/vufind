@@ -113,13 +113,12 @@ class InjectHighlightingListener
                 if (!isset($hl[0]) || $hl[0] != 'false') {
                     $this->active = true;
                     $params->set('hl', 'true');
-                    $params->set('hl.fl', $this->fieldList);
                     $params->set('hl.simple.pre', '{{{{START_HILITE}}}}');
                     $params->set('hl.simple.post', '{{{{END_HILITE}}}}');
 
                     // Turn on hl.q generation in query builder:
                     $this->backend->getQueryBuilder()
-                        ->setCreateHighlightingQuery(true);
+                        ->setFieldsToHighlight($this->fieldList);
                 }
             }
         }

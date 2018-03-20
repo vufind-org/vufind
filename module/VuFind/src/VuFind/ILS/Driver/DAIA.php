@@ -51,6 +51,7 @@ use Zend\Log\LoggerAwareInterface as LoggerAwareInterface;
 class DAIA extends AbstractBase implements
     HttpServiceAwareInterface, LoggerAwareInterface
 {
+    use CacheTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -272,7 +273,7 @@ class DAIA extends AbstractBase implements
             // extract the DAIA document for the current id from the
             // HTTPRequest's result
             $doc = $this->extractDaiaDoc($id, $rawResult);
-            if (!is_null($doc)) {
+            if (null !== $doc) {
                 // parse the extracted DAIA document and return the status info
                 $data = $this->parseDaiaDoc($id, $doc);
                 // cache the status information
@@ -335,7 +336,7 @@ class DAIA extends AbstractBase implements
                         // it is assumed that each DAIA document has a unique URI,
                         // so get the document with the corresponding id
                         $doc = $this->extractDaiaDoc($id, $rawResult);
-                        if (!is_null($doc)) {
+                        if (null !== $doc) {
                             // a document with the corresponding id exists, which
                             // means we got status information for that record
                             $data = $this->parseDaiaDoc($id, $doc);
@@ -355,7 +356,7 @@ class DAIA extends AbstractBase implements
                         // extract the DAIA document for the current id from the
                         // HTTPRequest's result
                         $doc = $this->extractDaiaDoc($id, $rawResult);
-                        if (!is_null($doc)) {
+                        if (null !== $doc) {
                             // parse the extracted DAIA document and save the status
                             // info
                             $data = $this->parseDaiaDoc($id, $doc);
@@ -750,7 +751,7 @@ class DAIA extends AbstractBase implements
                 $result_item['item_id'] = $item['id'];
                 // custom DAIA field used in getHoldLink()
                 $result_item['ilslink']
-                    = (isset($item['href']) ? $item['href'] : $doc_href);
+                    = ($item['href'] ?? $doc_href);
                 // count items
                 $number++;
                 $result_item['number'] = $this->getItemNumber($item, $number);
@@ -1133,8 +1134,7 @@ class DAIA extends AbstractBase implements
      */
     protected function getItemDepartmentLink($item)
     {
-        return isset($item['department']['href'])
-            ? $item['department']['href'] : false;
+        return $item['department']['href'] ?? false;
     }
 
     /**

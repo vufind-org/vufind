@@ -1,4 +1,4 @@
-<?
+<?php
   // Set page title.
   $this->headTitle($this->translate('Save'));
 
@@ -12,44 +12,44 @@
   <input type="hidden" name="submit" value="1" />
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
-  <? if (!empty($this->containingLists)): ?>
+  <?php if (!empty($this->containingLists)): ?>
     <p><?=$this->transEsc('This item is already part of the following list/lists') ?>:
-    <? foreach ($this->containingLists as $i => $list): ?>
-      <a href="<?=$this->url('userList', ['id' => $list['id']]) ?>" data-lightbox-ignore><?=$this->escapeHtml($list['title'])?></a><? if($i < count($this->containingLists) - 1): ?>, <? endif; ?>
-    <? endforeach; ?>
+    <?php foreach ($this->containingLists as $i => $list): ?>
+      <a href="<?=$this->url('userList', ['id' => $list['id']]) ?>" data-lightbox-ignore><?=$this->escapeHtml($list['title'])?></a><?php if($i < count($this->containingLists) - 1): ?>, <?php endif; ?>
+    <?php endforeach; ?>
     </p><hr/>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <?/* Only display the list drop-down if the user has lists that do not contain
+  <?php /* Only display the list drop-down if the user has lists that do not contain
   this item OR if they have no lists at all and need to create a default list */?>
-  <? $showLists = (!empty($this->nonContainingLists) || (empty($this->containingLists) && empty($this->nonContainingLists))); ?>
+  <?php $showLists = (!empty($this->nonContainingLists) || (empty($this->containingLists) && empty($this->nonContainingLists))); ?>
 
   <div class="form-group">
-    <? if ($showLists): ?>
+    <?php if ($showLists): ?>
       <label class="control-label" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
-    <? endif; ?>
-    <? if ($showLists): ?>
+    <?php endif; ?>
+    <?php if ($showLists): ?>
       <select class="form-control" id="save_list" name="list">
-      <? if ($this->nonContainingLists): ?>
-        <? foreach ($this->nonContainingLists as $list): ?>
-          <option value="<?=$list['id'] ?>"<? if ($list['id'] == $this->userList()->lastUsed()): ?> selected="selected"<? endif; ?>><?=$this->escapeHtml($list['title'])?></option>
-        <? endforeach; ?>
-      <? else: ?>
+      <?php if ($this->nonContainingLists): ?>
+        <?php foreach ($this->nonContainingLists as $list): ?>
+          <option value="<?=$list['id'] ?>"<?php if ($list['id'] == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>><?=$this->escapeHtml($list['title'])?></option>
+        <?php endforeach; ?>
+      <?php else: ?>
         <option value=""><?=$this->transEsc('My Favorites') ?></option>
-      <? endif; ?>
+      <?php endif; ?>
       </select>
-    <? endif; ?>
+    <?php endif; ?>
     <a class="btn btn-link" id="make-list" href="<?=$this->url('editList', ['id' => 'NEW'])?>?recordId=<?=urlencode($this->driver->getUniqueId())?>&amp;recordSource=<?=urlencode($this->driver->getSourceIdentifier())?>"><?=$showLists ? $this->transEsc('or create a new list') : $this->transEsc('Create a List'); ?></a>
   </div>
 
-  <? if ($showLists): ?>
-    <? if ($this->usertags()->getMode() !== 'disabled'): ?>
+  <?php if ($showLists): ?>
+    <?php if ($this->usertags()->getMode() !== 'disabled'): ?>
       <div class="form-group">
         <label class="control-label" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
         <input class="form-control" id="add_mytags" type="text" name="mytags" value=""/>
         <span class="help-block"><?=$this->transEsc("add_tag_note") ?></span>
       </div>
-    <? endif; ?>
+    <?php endif; ?>
     <div class="form-group">
       <label class="control-label" for="add_notes"><?=$this->transEsc('Add a Note') ?></label>
       <textarea class="form-control" id="add_notes" name="notes" rows="3"></textarea>
@@ -57,5 +57,5 @@
     <div class="form-group">
       <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save') ?>"/>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
 </form>

@@ -986,7 +986,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     $tag  = $subfield['tag'];
                     $sort = explode('.', $subfield['data']);
                     $sort_rule  = $sort[0];
-                    $sort_order = isset($sort[1]) ? $sort[1] : 0;
+                    $sort_order = $sort[1] ?? 0;
                     $sort_order = sprintf("%05d", $sort_order);
                 } else {
                     // Everything else goes in the data bucket
@@ -1874,14 +1874,14 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     protected function httpRequest($url, $postParams = null, $rawPost = null)
     {
-        $method = (is_null($postParams) && is_null($rawPost)) ? 'GET' : 'POST';
+        $method = (null === $postParams && null === $rawPost) ? 'GET' : 'POST';
 
         try {
             $client = $this->httpService->createClient($url);
             if (is_array($postParams)) {
                 $client->setParameterPost($postParams);
             }
-            if (!is_null($rawPost)) {
+            if (null !== $rawPost) {
                 $client->setRawBody($rawPost);
                 $client->setEncType('application/x-www-form-urlencoded');
             }

@@ -136,7 +136,10 @@ class MyResearchController extends AbstractBase
 
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->isLoggedIn()) {
-            $this->setFollowupUrlToReferer();
+            // Allow bypassing of post-login redirect
+            if ($this->params()->fromQuery('redirect', true)) {
+                $this->setFollowupUrlToReferer();
+            }
             return $this->forwardTo('MyResearch', 'Login');
         }
         // Logged in?  Forward user to followup action
@@ -326,7 +329,7 @@ class MyResearchController extends AbstractBase
     protected function setSavedFlagSecurely($searchId, $saved, $userId)
     {
         $searchTable = $this->getTable('Search');
-        $sessId = $this->serviceLocator->get('VuFind\SessionManager')->getId();
+        $sessId = $this->serviceLocator->get('Zend\Session\SessionManager')->getId();
         $row = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
         if (empty($row)) {
             throw new ForbiddenException('Access denied.');
@@ -344,7 +347,7 @@ class MyResearchController extends AbstractBase
     public function savesearchAction()
     {
         // Fail if saved searches are disabled.
-        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\Config\AccountCapabilities');
         if ($check->getSavedSearchSetting() === 'disabled') {
             throw new ForbiddenException('Saved searches disabled.');
         }
@@ -496,7 +499,7 @@ class MyResearchController extends AbstractBase
             : $this->url()->fromRoute('userList', ['id' => $listID]);
 
         // Fail if we have nothing to delete:
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
@@ -603,7 +606,7 @@ class MyResearchController extends AbstractBase
         }
         $this->flashMessenger()->addMessage('edit_list_success', 'success');
 
-        $newUrl = is_null($listID)
+        $newUrl = null === $listID
             ? $this->url()->fromRoute('myresearch-favorites')
             : $this->url()->fromRoute('userList', ['id' => $listID]);
         return $this->redirect()->toUrl($newUrl);
@@ -739,7 +742,7 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, we just need to display the favorites:
         try {
-            $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+            $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
@@ -749,7 +752,7 @@ class MyResearchController extends AbstractBase
 
             // Set up listener for recommendations:
             $rManager = $this->serviceLocator
-                ->get('VuFind\RecommendPluginManager');
+                ->get('VuFind\Recommend\PluginManager');
             $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
                 $listener = new RecommendListener($rManager, $searchId);
                 $listener->setConfig(
@@ -937,10 +940,9 @@ class MyResearchController extends AbstractBase
      */
     protected function getDriverForILSRecord($current)
     {
-        $id = isset($current['id']) ? $current['id'] : null;
-        $source = isset($current['source'])
-            ? $current['source'] : DEFAULT_SEARCH_BACKEND;
-        $record = $this->serviceLocator->get('VuFind\RecordLoader')
+        $id = $current['id'] ?? null;
+        $source = $current['source'] ?? DEFAULT_SEARCH_BACKEND;
+        $record = $this->serviceLocator->get('VuFind\Record\Loader')
             ->load($id, $source, true);
         $record->setExtraDetail('ils_details', $current);
         return $record;
@@ -1245,9 +1247,8 @@ class MyResearchController extends AbstractBase
             $limit = min([$functionConfig['max_results'], $limit]);
         } elseif (isset($functionConfig['page_size'])) {
             if (!in_array($limit, $functionConfig['page_size'])) {
-                $limit = isset($functionConfig['default_page_size'])
-                    ? $functionConfig['default_page_size']
-                    : $functionConfig['page_size'][0];
+                $limit = $functionConfig['default_page_size']
+                    ?? $functionConfig['page_size'][0];
             }
         } else {
             $ilsPaging = false;
@@ -1358,20 +1359,20 @@ class MyResearchController extends AbstractBase
         foreach ($result as $row) {
             // Attempt to look up and inject title:
             try {
-                if (!isset($row['id']) || empty($row['id'])) {
-                    throw new \Exception();
-                }
-                $source = isset($row['source'])
-                    ? $row['source'] : DEFAULT_SEARCH_BACKEND;
-                $row['driver'] = $this->serviceLocator
-                    ->get('VuFind\RecordLoader')->load($row['id'], $source);
-                if (empty($row['title'])) {
-                    $row['title'] = $row['driver']->getShortTitle();
+                if (strlen($row['id'] ?? '') > 0) {
+                    $source = $row['source'] ?? DEFAULT_SEARCH_BACKEND;
+                    $row['driver'] = $this->serviceLocator
+                        ->get('VuFind\Record\Loader')->load($row['id'], $source);
+                    if (empty($row['title'])) {
+                        $row['title'] = $row['driver']->getShortTitle();
+                    }
                 }
             } catch (\Exception $e) {
-                if (!isset($row['title'])) {
-                    $row['title'] = null;
-                }
+                // Ignore record loading exceptions...
+            }
+            // In case we skipped or failed record loading, make sure title is set.
+            if (!isset($row['title'])) {
+                $row['title'] = null;
             }
             $fines[] = $row;
         }
@@ -1470,7 +1471,7 @@ class MyResearchController extends AbstractBase
                                 . $user->verify_hash . '&auth_method=' . $method
                         ]
                     );
-                    $this->serviceLocator->get('VuFind\Mailer')->send(
+                    $this->serviceLocator->get('VuFind\Mailer\Mailer')->send(
                         $user->email,
                         $config->Site->email,
                         $this->translate('recovery_email_subject'),

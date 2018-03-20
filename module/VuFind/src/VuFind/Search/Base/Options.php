@@ -636,7 +636,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function spellcheckEnabled($bool = null)
     {
-        if (!is_null($bool)) {
+        if (null !== $bool) {
             $this->spellcheck = $bool;
         }
         return $this->spellcheck;

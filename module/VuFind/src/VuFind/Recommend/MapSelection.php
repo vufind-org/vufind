@@ -38,8 +38,18 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class MapSelection implements \VuFind\Recommend\RecommendInterface
+class MapSelection implements \VuFind\Recommend\RecommendInterface,
+    \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
+    /**
+     * Basemap configuration parameters
+     *
+     * @var array
+     */
+    protected $basemapOptions = [];
+
     /**
      * Default coordinates. Order is WENS
      *
@@ -141,15 +151,18 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
-     * @param \VuFind\Search\BackendManager $solr         Search interface
+     * @param \VuFind\Config\PluginManager  $configLoader   Configuration loader
+     * @param \VuFind\Search\BackendManager $solr           Search interface
+     * @param array                         $basemapOptions Basemap Options
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader, $solr)
-    {
+    public function __construct(\VuFind\Config\PluginManager $configLoader, $solr,
+        $basemapOptions
+    ) {
         $this->configLoader = $configLoader;
         $this->solr = $solr;
         $this->queryBuilder = $solr->getQueryBuilder();
         $this->solrConnector = $solr->getConnector();
+        $this->basemapOptions = $basemapOptions;
     }
 
     /**
@@ -196,6 +209,19 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      */
     public function init($params, $request)
     {
+    }
+
+    /**
+     * Get the basemap configuration settings.
+     *
+     * @return array
+     */
+    public function getBasemap()
+    {
+        return [
+            $this->basemapOptions['basemap_url'],
+            $this->basemapOptions['basemap_attribution']
+        ];
     }
 
     /**
@@ -322,6 +348,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             $params->set('rows', '10000000'); // set to return all results
             $response = json_decode($this->solrConnector->search($params));
             foreach ($response->response->docs as $current) {
+                if (!isset($current->title)) {
+                    $current->title = $this->translate('Title not available');
+                }
                 $result[] = [
                     $current->id, $current->{$this->geoField}, $current->title
                 ];
@@ -575,7 +604,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             foreach ($idCoords[1] as $coord) {
                 $recId = $idCoords[0];
                 $rawCoordIds[] = $recId;
-                $title = $idCoords[2];
+                $title = mb_convert_encoding($idCoords[2], 'UTF-8');
                 $centerPoint = $this->createGeoFeature(
                     $recId, $coord, $title, $bboxCoords
                 );

@@ -1,10 +1,11 @@
-<? if ($this->recommend->getSearchResultCoordinates()) :?>
-<?
+<?php if ($this->recommend->getSearchResultCoordinates()) :?>
+<?php
   $this->headScript()->appendFile('vendor/ol/ol.js');
   $this->headScript()->appendFile('map_selection.js');
   $this->headLink()->appendStylesheet('vendor/ol/ol.css');
 
   $resultsCoords = $this->recommend->getMapResultCoordinates();
+  $basemap = $this->recommend->getBasemap();
   $baseUrl = $this->url('home');
   $geoField = $this->recommend->getGeoField();
   $urlpath = $this->url('search-results');
@@ -19,7 +20,7 @@
   $searchParams = $this->recommend->getSearchParams();
   $params = [json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
     json_encode($baseUrl), json_encode($searchParams), json_encode($showSelection),
-    json_encode($resultsCoords), json_encode($popupTitle)];
+    json_encode($resultsCoords), json_encode($popupTitle), json_encode($basemap)];
   $jsParams = implode(', ', $params);
   $jsLoad = "loadMapSelection(" . $jsParams . ");";
   $addSearchOption = <<<EOF
@@ -34,10 +35,10 @@ EOF;
       <div id="popup"></div>
     </div>
   </div>
-  <? if ($showSelection) :?>
+  <?php if ($showSelection) :?>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET');?>
-  <? else: ?>
+  <?php else: ?>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $addSearchOption, 'SET');?>
-  <? endif; ?>
+  <?php endif; ?>
 </div>
-<? endif; ?>
+<?php endif; ?>

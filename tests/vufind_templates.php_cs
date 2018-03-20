@@ -15,10 +15,12 @@ $rules = [
     'concat_space' => ['spacing' => 'one'],
     'elseif' => true,
     'encoding' => true,
-    //'full_opening_tag' => true, // using full tags is best practice, but it detracts from readability; we should discuss
+    'ereg_to_preg' => true,
+    'full_opening_tag' => true,
     'function_declaration' => true,
     'function_typehint_space' => true,
     'indentation_type' => true,
+    'is_null' => true,
     'line_ending' => true,
     'lowercase_cast' => true,
     'lowercase_constants' => true,
@@ -48,6 +50,7 @@ $rules = [
     'no_useless_return' => true,
     'no_whitespace_before_comma_in_array' => true,
     'no_whitespace_in_blank_line' => true,
+    'non_printable_character' => true,
     'ordered_imports' => true,
     'phpdoc_no_access' => true,
     'single_blank_line_at_eof' => true,
@@ -59,6 +62,7 @@ $rules = [
     'switch_case_semicolon_to_colon' => true,
     'switch_case_space' => true,
     //'ternary_operator_spaces' => true, // disabled due to bug in php-cs-fixer 2.7.1
+    'ternary_to_null_coalescing' => true,
     'visibility_required' => true,
 ];
 
@@ -69,5 +73,6 @@ if (!is_dir($cacheDir)) {
 
 return PhpCsFixer\Config::create()
     ->setCacheFile($cacheDir . '/.template.cache')
+    ->setRiskyAllowed(true)
     ->setRules($rules)
     ->setFinder($finder);

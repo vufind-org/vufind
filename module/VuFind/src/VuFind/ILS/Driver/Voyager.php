@@ -488,9 +488,7 @@ class Voyager extends AbstractBase
                     'reserve' => $row['ON_RESERVE'],
                     'callnumber' => $row['CALLNUMBER'],
                     'item_sort_seq' => $row['ITEM_SEQUENCE_NUMBER'],
-                    'sort_seq' => isset($row['SORT_SEQ'])
-                        ? $row['SORT_SEQ']
-                        : PHP_INT_MAX
+                    'sort_seq' => $row['SORT_SEQ'] ?? PHP_INT_MAX
                 ];
             } else {
                 $statusFound = in_array(
@@ -607,8 +605,10 @@ class Voyager extends AbstractBase
     public function getStatuses($idList)
     {
         $status = [];
-        foreach ($idList as $id) {
-            $status[] = $this->getStatus($id);
+        if (is_array($idList)) {
+            foreach ($idList as $id) {
+                $status[] = $this->getStatus($id);
+            }
         }
         return $status;
     }
@@ -773,8 +773,7 @@ EOT;
 
             // Concat wrapped rows (MARC data more than 300 bytes gets split
             // into multiple rows)
-            $rowId = isset($row['ITEM_ID'])
-                ? $row['ITEM_ID'] : 'MFHD' . $row['MFHD_ID'];
+            $rowId = $row['ITEM_ID'] ?? 'MFHD' . $row['MFHD_ID'];
             if (isset($data[$rowId][$number])) {
                 // We don't want to concatenate the same MARC information to
                 // itself over and over due to a record with multiple status
@@ -1017,9 +1016,7 @@ EOT;
             'use_unknown_message' =>
                 in_array('No information available', $sqlRow['STATUS_ARRAY']),
             'item_sort_seq' => $sqlRow['ITEM_SEQUENCE_NUMBER'],
-            'sort_seq' => isset($sqlRow['SORT_SEQ'])
-                ? $sqlRow['SORT_SEQ']
-                : PHP_INT_MAX
+            'sort_seq' => $sqlRow['SORT_SEQ'] ?? PHP_INT_MAX
         ];
     }
 
@@ -1074,8 +1071,7 @@ EOT;
                     );
                 }
 
-                $requests_placed = isset($row['HOLDS_PLACED'])
-                    ? $row['HOLDS_PLACED'] : 0;
+                $requests_placed = $row['HOLDS_PLACED'] ?? 0;
                 if (isset($row['RECALLS_PLACED'])) {
                     $requests_placed += $row['RECALLS_PLACED'];
                 }
@@ -1271,16 +1267,16 @@ EOT;
             // For some reason barcode is not unique, so evaluate all resulting
             // rows just to be safe
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $primary = !is_null($row['LOGIN'])
+                $primary = null !== $row['LOGIN']
                     ? mb_strtolower(utf8_encode($row['LOGIN']), 'UTF-8')
                     : null;
-                $fallback = $fallback_login_field && is_null($row['LOGIN'])
+                $fallback = $fallback_login_field && null === $row['LOGIN']
                     ? mb_strtolower(utf8_encode($row['FALLBACK_LOGIN']), 'UTF-8')
                     : null;
 
-                if ((!is_null($primary) && ($primary == $compareLogin
+                if ((null !== $primary && ($primary == $compareLogin
                     || $primary == $this->sanitizePIN($compareLogin)))
-                    || ($fallback_login_field && is_null($primary)
+                    || ($fallback_login_field && null === $primary
                     && $fallback == $compareLogin)
                 ) {
                     return [
@@ -1359,8 +1355,10 @@ EOT;
             "ITEM.ITEM_ID = ITEM_STATUS.ITEM_ID",
             "ITEM_STATUS.ITEM_STATUS = ITEM_STATUS_TYPE.ITEM_STATUS_TYPE",
             "ITEM.ITEM_ID = ITEM_BARCODE.ITEM_ID(+)",
+            "(ITEM_BARCODE.BARCODE_STATUS IS NULL OR " .
             "ITEM_BARCODE.BARCODE_STATUS IN (SELECT BARCODE_STATUS_TYPE FROM " .
-            "$this->dbName.ITEM_BARCODE_STATUS WHERE BARCODE_STATUS_DESC = 'Active')"
+            "$this->dbName.ITEM_BARCODE_STATUS " .
+            " WHERE BARCODE_STATUS_DESC = 'Active'))"
         ];
 
         // Order

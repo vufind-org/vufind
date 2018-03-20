@@ -28,7 +28,7 @@
  */
 namespace VuFindTest;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Feature\RandomInterface;

@@ -167,8 +167,7 @@ class Params extends \VuFind\Search\Base\Params
                     $q = $field . ':"' . addcslashes($value, '"\\') . '"';
                 }
                 if ($orFacet) {
-                    $orFilters[$field] = isset($orFilters[$field])
-                        ? $orFilters[$field] : [];
+                    $orFilters[$field] = $orFilters[$field] ?? [];
                     $orFilters[$field][] = $q;
                 } else {
                     $filterQuery[] = $q;
@@ -548,9 +547,12 @@ class Params extends \VuFind\Search\Base\Params
         // Sort
         $sort = $this->getSort();
         if ($sort) {
-            // If we have an empty search with relevance sort, see if there is
-            // an override configured:
-            if ($sort == 'relevance' && $this->getQuery()->getAllTerms() == ''
+            // If we have an empty search with relevance sort as the primary sort
+            // field, see if there is an override configured:
+            $sortFields = explode(',', $sort);
+            $allTerms = trim($this->getQuery()->getAllTerms());
+            if ('relevance' === $sortFields[0]
+                && ('' === $allTerms || '*:*' === $allTerms)
                 && ($relOv = $this->getOptions()->getEmptySearchRelevanceOverride())
             ) {
                 $sort = $relOv;
@@ -628,9 +630,7 @@ class Params extends \VuFind\Search\Base\Params
             }
         } elseif ($this->facetHelper && in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely
-            $separator = isset($hierarchicalFacetSeparators[$field])
-                ? $hierarchicalFacetSeparators[$field]
-                : '/';
+            $separator = $hierarchicalFacetSeparators[$field] ?? '/';
             $filter['displayText'] = $this->facetHelper->formatDisplayText(
                 $filter['displayText'], true, $separator
             );

@@ -99,24 +99,26 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
      * Test the template display
      *
      * @return void
+     *
+     * @expectedException Zend\View\Exception\RuntimeException
      */
     public function testTemplateDisplay()
     {
         // Template does not exist, expect an exception, though
-        $this->setExpectedException('Zend\View\Exception\RuntimeException');
-
-        $mockPmd = $this->getMockPmd([
+        $mockPmd = $this->getMockPmd(
+            [
                 'deniedTemplateBehavior' => [
                     'action' => 'showTemplate',
                     'value' => 'record/displayLogicTest',
                     'params' => [],
                 ],
-            ]);
+            ]
+        );
 
         $helper = new Permission($this->getMockPm(false), $mockPmd);
         $helper->setView($this->getMockView());
 
-        $displayBlock = $helper->getAlternateContent('permissionDeniedTemplate');
+        $helper->getAlternateContent('permissionDeniedTemplate');
     }
 
     /**
