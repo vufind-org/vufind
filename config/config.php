@@ -1,6 +1,6 @@
 <?php
 /**
- * VuFind configuration aggregator
+ * VuFind configuration aggregation
  *
  * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *

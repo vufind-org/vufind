@@ -2,14 +2,15 @@
 
 namespace VuFind\Config\Provider;
 
-class Standard
+class Standard extends Classic
 {
-    public function __invoke()
+    public function __construct()
     {
-        $dirs = [APPLICATION_PATH . '/config/vufind'];
+        $pattern = '/config/vufind/**/*.{ini,yaml,json}';
+        $patterns[] = APPLICATION_PATH . $pattern;
         if (LOCAL_OVERRIDE_DIR) {
-            $dirs[] = LOCAL_OVERRIDE_DIR . '/config/vufind';
+            $patterns[] = LOCAL_OVERRIDE_DIR . $pattern;
         }
-        return (new Classic(...$dirs))();
+        parent::__construct($patterns);
     }
 }

@@ -1,8 +1,2 @@
 '@parent_yaml': module/VuFind/tests/fixtures/configs/example/core/yaml.yaml
-
-firstSection:
-  '%weired;Key$\': false
-
-secondList:
-  - nestedObject: { int: 5 }
-  - anotherNestedObject: nowString
+key: 43

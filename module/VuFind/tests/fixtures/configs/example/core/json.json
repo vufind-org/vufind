@@ -1,8 +1,5 @@
 {
-    "hash": {
-        "key": "value",
-        "bool": true,
-        "num": 2
-    },
-    "list": ["first", "second", "third"]
+    "a": {
+        "b": true
+    }
 }

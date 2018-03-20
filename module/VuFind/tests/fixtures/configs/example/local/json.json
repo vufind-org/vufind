@@ -1,6 +1,5 @@
 {
-    "hash": {
-        "bool": false
-    },
-    "list": "aStringNow"
+    "a": {
+        "b": false
+    }
 }

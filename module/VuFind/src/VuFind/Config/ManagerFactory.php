@@ -22,6 +22,7 @@ class ManagerFactory implements FactoryInterface
         array $options = null
     ): Manager {
 
+        Factory::init();
         $applicationConfig = $container->get('ApplicationConfig');
         $moduleListenerOptions = $applicationConfig['module_listener_options'];
 

@@ -28,11 +28,7 @@
 
 namespace VuFind\Config;
 
-use Symfony\Component\Yaml\Yaml as YamlParser;
 use Zend\Config\Config;
-use Zend\Config\Factory;
-use Zend\Config\Reader\Ini as IniReader;
-use Zend\Config\Reader\Yaml as YamlReader;
 
 /**
  * VuFind Configuration Manager
@@ -45,14 +41,6 @@ use Zend\Config\Reader\Yaml as YamlReader;
  */
 class Manager
 {
-
-    /**
-     * Reference to the used INI reader
-     *
-     * @var IniReader
-     */
-    public static $iniReader;
-
     /**
      * @var bool
      */
@@ -83,6 +71,8 @@ class Manager
 
     /**
      * Contains only the demanded configuration
+     *
+     * @var Config
      */
     protected $managedConfig;
 
@@ -95,11 +85,6 @@ class Manager
         $this->entireConfigPath = "$cacheDir/entire.php";
         $this->managedConfigPath = "$cacheDir/managed.php";
         $this->useCache = $useCache;
-
-        static::$iniReader = new IniReader;
-        $yamlReader = new YamlReader([YamlParser::class, 'parse']);
-        Factory::registerReader('ini', static::$iniReader);
-        Factory::registerReader('yaml', $yamlReader);
 
         if (!$useCache) {
             $this->reset();

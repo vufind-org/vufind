@@ -1,45 +1,51 @@
 <?php
 
-namespace VuFind\Config\Filter;
+namespace VuFind\Config\Provider\Filter;
 
-use VuFind\Config\Provider\Base;
+use VuFind\Config\Factory;
 use Zend\Config\Config;
-use Zend\EventManager\Filter\FilterIterator;
+use Zend\EventManager\Filter\FilterIterator as Chain;
 
-class ParentConfig
+class ParentIni
 {
-    public function __invoke(
-        Base $ctx,
-        array $args,
-        FilterIterator $chain
-    ): array {
-        list($path, $data) = $args;
-        $data = $this->mergeParentConfig($ctx, $path, $data);
-        return $chain->isEmpty() ? $data
-            : $chain->next($ctx, [$path, $data], $chain);
+    public function __invoke($provider, array $items, Chain $chain): array
+    {
+        $result = array_map([$this, 'process'], $items);
+        return $chain->isEmpty() ? $result
+            : $chain->next($provider, $result, $chain);
+    }
+
+    protected function process(array $item)
+    {
+        if ($item['ext'] !== 'ini') {
+            return $item;
+        }
+        $data = $this->mergeParent($item['path'], $item['data']);
+        return array_merge($item, compact('data'));
     }
 
     /**
-     * Merges a parent configuration declared with «Parent_Config» and
-     * associated directives.
+     * Recursively merges parent configurations declared with «Parent_Config»
+     * and associated directives.
      *
-     * @param array $childData
+     * @param array  $childData
      * @param string $childPath
      *
      * @return array
      */
-    protected function mergeParentConfig(
-        Base $ctx,
-        string $childPath,
-        array $childData
-    ): array {
+    protected function mergeParent(string $childPath, array $childData): array
+    {
         $child = new Config($childData, true);
         $settings = $child->Parent_Config ?: new Config([]);
         $parentPath = $settings->relative_path
             ? dirname($childPath) . '/' . $settings->relative_path
             : $settings->path;
 
-        $parent = new Config($parentPath ? $ctx->loadFile($parentPath) : [], true);
+        if (!$parentPath) {
+            return $childData;
+        }
+
+        $parent = new Config(Factory::fromFile($parentPath), true);
 
         $overrideSections = $settings->override_full_sections;
         $overrideSections = $overrideSections
@@ -81,6 +87,6 @@ class ParentConfig
                 }
             }
         }
-        return $parent->toArray();
+        return $this->mergeParent($parentPath, $parent->toArray());
     }
 }
