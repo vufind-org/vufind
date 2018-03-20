@@ -32,9 +32,9 @@
       </a>
     <?php endif; ?>
     <?php if ($this->ils()->checkFunction('ILLRequests', $capabilityParams)): ?>
-    <a href="<?=$this->url('myresearch-illrequests')?>"<?=$this->active == 'ILLRequests' ? ' class="active"' : ''?>>
-      <i class="fa fa-fw fa-exchange" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?>
-    </a>
+      <a href="<?=$this->url('myresearch-illrequests')?>"<?=$this->active == 'ILLRequests' ? ' class="active"' : ''?>>
+        <i class="fa fa-fw fa-exchange" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?>
+      </a>
     <?php endif; ?>
     <?php if ($this->ils()->checkCapability('getMyFines', $capabilityParams)): ?>
       <a href="<?=$this->url('myresearch-fines')?>"<?=$this->active == 'fines' ? ' class="active"' : ''?>>
