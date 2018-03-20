@@ -219,7 +219,11 @@ header {
 .sidebar .checkbox-filter,
 .sidebar > h4 { margin-left: 1rem; }
 
-.jstree-facet .main .fa-check { margin-top: 3px; }
+.jstree-facet {
+  .main .fa-check { margin-top: 3px; }
+  .jstree-icon::before { margin-top: 2px; }
+}
+
 @media (min-width: 768px) and (max-width: 991px) {
   .sidebar .facet {
     flex-flow: wrap;

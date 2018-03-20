@@ -38,10 +38,13 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
       } else {
         $i.addClass('fa-square-o').attr('aria-hidden', 'true');
       }
+      $i.appendTo($item);
+      $item.append(' ');
     } else if (this.isApplied) {
       $i.addClass('fa-check pull-right').attr('title', VuFind.translate('Selected'));
+      $i.appendTo($item);
+      $item.append(' ');
     }
-    $i.appendTo($item);
 
     $item.append(this.displayText);
     $item.appendTo($html);
