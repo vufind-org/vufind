@@ -77,6 +77,8 @@ class CacheController extends \VuFind\Controller\AbstractBase
      */
     public function fileAction()
     {
+        $this->disableSessionWrites();
+
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $filename = $this->params()->fromRoute('file');
