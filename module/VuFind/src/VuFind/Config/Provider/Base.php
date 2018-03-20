@@ -31,7 +31,7 @@ namespace VuFind\Config\Provider;
 use Zend\EventManager\FilterChain;
 
 /**
- * VuFind Base Configuration Provider
+ * VuFind Configuration Base Provider
  *
  * @category VuFind
  * @package  Config
