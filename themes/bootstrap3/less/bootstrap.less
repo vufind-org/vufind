@@ -303,18 +303,22 @@ div.holding-details {
     display: flex;
 
     .holding-field {
-        flex: 0 1 auto;
+        flex: 0 1 0;
         padding-left: 0.5rem;
         padding-right: 0.5rem;
     }
 
     .holding-field.barcode,
-    .holding-field.availability,
     .holding-field.place-hold,
     .holding-field.storage-retrieval,
     .holding-field.ill-request,
     .holding-field.recall {
-        flex: 1 1 auto;
+        flex: 1 1 0;
+        min-width: 9em;
+    }
+
+    .holding-field.availability{
+        flex: 2 1 0;
     }
 
     .due-date:before {
