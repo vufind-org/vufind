@@ -410,38 +410,39 @@ class MyResearchController extends AbstractBase
      */
     public function profileAction()
     {
-        // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
-            return $patron;
-        }
-
-        // User must be logged in at this point, so we can assume this is non-false:
-        $user = $this->getUser();
-
-        // Process home library parameter (if present):
-        $homeLibrary = $this->params()->fromPost('home_library', false);
-        if (!empty($homeLibrary)) {
-            $user->changeHomeLibrary($homeLibrary);
-            $this->getAuthManager()->updateSession($user);
-            $this->flashMessenger()->addMessage('profile_update', 'success');
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
         }
 
         // Begin building view object:
-        $view = $this->createViewModel();
+        $view = $this->createViewModel(['user' => $user]);
 
-        // Obtain user information from ILS:
-        $catalog = $this->getILS();
-        $this->addAccountBlocksToFlashMessenger($catalog, $patron);
-        $profile = $catalog->getMyProfile($patron);
-        $profile['home_library'] = $user->home_library;
-        $view->profile = $profile;
-        try {
-            $view->pickup = $catalog->getPickUpLocations($patron);
-            $view->defaultPickupLocation
-                = $catalog->getDefaultPickUpLocation($patron);
-        } catch (\Exception $e) {
-            // Do nothing; if we're unable to load information about pickup
-            // locations, they are not supported and we should ignore them.
+        $patron = $this->catalogLogin();
+        if (is_array($patron)) {
+            // Process home library parameter (if present):
+            $homeLibrary = $this->params()->fromPost('home_library', false);
+            if (!empty($homeLibrary)) {
+                $user->changeHomeLibrary($homeLibrary);
+                $this->getAuthManager()->updateSession($user);
+                $this->flashMessenger()->addMessage('profile_update', 'success');
+            }
+
+            // Obtain user information from ILS:
+            $catalog = $this->getILS();
+            $this->addAccountBlocksToFlashMessenger($catalog, $patron);
+            $profile = $catalog->getMyProfile($patron);
+            $profile['home_library'] = $user->home_library;
+            $view->profile = $profile;
+            try {
+                $view->pickup = $catalog->getPickUpLocations($patron);
+                $view->defaultPickupLocation
+                    = $catalog->getDefaultPickUpLocation($patron);
+            } catch (\Exception $e) {
+                // Do nothing; if we're unable to load information about pickup
+                // locations, they are not supported and we should ignore them.
+            }
+        } else {
+            $view->patronLoginView = $patron;
         }
 
         $config = $this->getConfig();
