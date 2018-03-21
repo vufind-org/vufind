@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Abstract base class for PHPUnit test cases.
  *
@@ -28,7 +27,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-
 namespace VuFindTest\Unit;
 
 use Interop\Container\ContainerInterface;
