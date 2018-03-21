@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Config;
 
+use PHPUnit\Framework\TestCase;
 use VuFind\Config\Factory;
 use VuFind\Config\Provider;
-use PHPUnit\Framework\TestCase;
 use Zend\EventManager\FilterChain;
 
 /**

@@ -27,7 +27,6 @@
  */
 namespace VuFind\Config\Provider;
 
-use VuFind\Config\Provider\Filter;
 /**
  * VuFind Configuration Classic Provider
  *

@@ -21,13 +21,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
-use Zend\ConfigAggregator\ConfigAggregator;
 use VuFind\Config\Provider\Standard as Provider;
+use Zend\ConfigAggregator\ConfigAggregator;
 
 return function ($cachePath) {
     return new ConfigAggregator([
         new Provider
     ], $cachePath);
 };
-
-

@@ -54,12 +54,16 @@ class ManagerTest extends TestCase
     protected $manager;
 
     /**
+     * Set-up method
+     *
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function setUp()
     {
-        /** @var ContainerInterface|MockObject $container */
+        /**
+         * @var ContainerInterface|MockObject $container
+         */
         $container = $this->createMock(ContainerInterface::class);
         $this->manager = (new ManagerFactory)($container, Manager::class, [
             'aggregatorPath' => static::BASE_PATH . '/config.php',

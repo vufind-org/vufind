@@ -65,7 +65,7 @@ class PluginManager extends AbstractPluginManager
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
-        $this->manager = $container->get('VuFind\Config\Manager');;
+        $this->manager = $container->get('VuFind\Config\Manager');
     }
 
     /**

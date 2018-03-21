@@ -25,7 +25,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
-
 namespace VuFind\Config;
 
 use Zend\Config\Config;
@@ -48,7 +47,6 @@ class Manager
      * @var Config
      */
     protected $aggregatedConfig;
-
 
     /**
      * Path to the PHP file which {@see \Zend\ConfigAggregator\ConfigAggregator}
@@ -79,7 +77,6 @@ class Manager
      * @var string
      */
     protected $demandedConfigPath;
-
 
     /**
      * Flag specifying whether the cached configuration data should be used.

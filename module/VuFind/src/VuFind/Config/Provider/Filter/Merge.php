@@ -28,6 +28,7 @@
 namespace VuFind\Config\Provider\Filter;
 
 use Zend\EventManager\Filter\FilterIterator as Chain;
+
 /**
  * VuFind Configuration Provider Merge Filter
  *

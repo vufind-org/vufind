@@ -30,6 +30,7 @@ namespace VuFind\Config\Provider\Filter;
 use VuFind\Config\Factory;
 use Zend\Config\Config;
 use Zend\EventManager\Filter\FilterIterator as Chain;
+
 /**
  * VuFind Configuration Provider ParentIni Filter
  *

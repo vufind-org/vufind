@@ -29,6 +29,7 @@ namespace VuFind\Config\Provider\Filter;
 
 use VuFind\Config\Factory;
 use Zend\EventManager\Filter\FilterIterator as Chain;
+
 /**
  * VuFind Configuration Provider ParentYaml Filter
  *

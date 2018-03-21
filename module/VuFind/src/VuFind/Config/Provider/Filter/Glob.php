@@ -29,6 +29,7 @@ namespace VuFind\Config\Provider\Filter;
 
 use Webmozart\Glob\Glob as Globber;
 use Zend\EventManager\Filter\FilterIterator as Chain;
+
 /**
  * VuFind Configuration Provider Glob Filter
  *

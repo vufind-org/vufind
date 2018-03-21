@@ -27,8 +27,8 @@
  */
 namespace VuFind\Config\Provider;
 
-use VuFind\Config\Provider\Filter;
 use Zend\ConfigAggregator\ConfigAggregator;
+
 /**
  * VuFind Configuration Basic Provider
  *

@@ -25,7 +25,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
-
 namespace VuFind\Config;
 
 use Interop\Container\ContainerInterface;
@@ -67,7 +66,7 @@ class ManagerFactory implements FactoryInterface
         Factory::init();
         $options = array_replace(static::DEFAULTS, $options ?? []);
         if (!is_dir($options['cacheDir'])) {
-            mkdir($options['cacheDir'], 0700, true);
+            mkdir($options['cacheDir'], 0755, true);
         }
         return new $requestedName(...array_values($options));
     }

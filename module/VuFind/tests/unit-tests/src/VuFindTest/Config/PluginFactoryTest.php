@@ -27,7 +27,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-
 namespace VuFindTest\Config;
 
 use Interop\Container\ContainerInterface;
@@ -134,6 +133,8 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Set-up method
+     *
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */

@@ -262,7 +262,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getConfigManager(): \VuFind\Config\Manager
     {
-        /** @var ContainerInterface|MockObject $container */
+        /**
+         * @var ContainerInterface|MockObject $container
+         */
         $container = $this->createMock(ContainerInterface::class);
         $factory = new \VuFind\Config\ManagerFactory;
         return $factory($container, \VuFind\Config\Manager::class);

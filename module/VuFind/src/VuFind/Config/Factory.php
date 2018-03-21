@@ -1,10 +1,9 @@
 <?php
-
 namespace VuFind\Config;
 
+use Symfony\Component\Yaml\Yaml as YamlParser;
 use Zend\Config\Factory as Base;
 use Zend\Config\Reader\Ini as IniReader;
-use Symfony\Component\Yaml\Yaml as YamlParser;
 use Zend\Config\Reader\Yaml as YamlReader;
 
 class Factory extends Base
