@@ -114,7 +114,7 @@ class GetFacetData extends AbstractBase
 
         return $this->formatResponse(
             $this->facetHelper->buildFacetArray(
-                $facet, $facetList, $this->results->getUrlQuery()
+                $facet, $facetList, $this->results->getUrlQuery(), false
             )
         );
     }
