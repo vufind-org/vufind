@@ -2,7 +2,7 @@
 /**
  * VuFind Config Manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) 2010 Villanova University,
  *               2018 Leipzig University Library <info@ub.uni-leipzig.de>
@@ -31,7 +31,7 @@ namespace VuFind\Config;
 
 use Interop\Container\ContainerInterface;
 use Zend\Config\Config;
-use Zend\ServiceManager\AbstractPluginManager as Base;
+use Zend\ServiceManager\AbstractPluginManager;
 
 /**
  * VuFind Configuration Plugin Manager
@@ -47,7 +47,7 @@ use Zend\ServiceManager\AbstractPluginManager as Base;
  * @link       https://vufind.org/wiki/development Wiki
  * @deprecated File deprecated since X.0.0
  */
-class PluginManager extends Base
+class PluginManager extends AbstractPluginManager
 {
     /**
      * @var Manager

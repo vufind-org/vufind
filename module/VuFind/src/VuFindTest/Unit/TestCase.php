@@ -30,6 +30,9 @@
  */
 namespace VuFindTest\Unit;
 
+use Interop\Container\ContainerInterface;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
+
 /**
  * Abstract base class for PHPUnit test cases.
  *
@@ -139,6 +142,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      * Get a service manager.
      *
      * @return \Zend\ServiceManager\ServiceManager
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function getServiceManager()
     {
@@ -184,12 +189,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $this->serviceManager->setService(
                 'VuFind\RecordDriver\PluginManager', $recordDriverFactory
             );
-            $configManager = $this->getConfigManager();
-            $this->serviceManager
-                ->setService(\VuFind\Config\Manager::class, $configManager);
             $this->serviceManager->setService(
                 'VuFind\Config\SearchSpecsReader',
-                new \VuFind\Config\SearchSpecsReader($configManager)
+                new \VuFind\Config\SearchSpecsReader()
             );
             $this->serviceManager->setService(
                 'VuFind\Log\Logger', $this->createMock('VuFind\Log\Logger')
@@ -198,10 +200,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                 'VuFindHttp\HttpService', new \VuFindHttp\HttpService()
             );
             $this->setupSearchService();
-            $cfg = ['abstract_factories' => ['VuFind\Config\PluginFactory']];
+
+            $this->serviceManager->setService(\VuFind\Config\Manager::class,
+                $this->getConfigManager());
+
             $this->serviceManager->setService(
                 'VuFind\Config\PluginManager',
-                new \VuFind\Config\PluginManager($this->serviceManager, $cfg)
+                new \VuFind\Config\PluginManager($this->serviceManager)
             );
             $this->serviceManager->setService(
                 'SharedEventManager', new \Zend\EventManager\SharedEventManager()
@@ -248,12 +253,16 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         return file_exists(__DIR__ . '/../../../../../local/vufindtest.pid');
     }
 
-    protected function getConfigManager() : \VuFind\Config\Manager
+    /**
+     * @return \VuFind\Config\Manager
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    protected function getConfigManager(): \VuFind\Config\Manager
     {
-        return new \VuFind\Config\Manager(...[
-            APPLICATION_PATH . '/config/config.php',
-            LOCAL_CACHE_DIR ?: APPLICATION_PATH . '/data/cache',
-            false
-        ]);
+        /** @var ContainerInterface|MockObject $container */
+        $container = $this->createMock(ContainerInterface::class);
+        $factory = new \VuFind\Config\ManagerFactory;
+        return $factory($container, \VuFind\Config\Manager::class);
     }
 }

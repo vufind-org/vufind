@@ -25,10 +25,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
+
 /**
  * VuFind Configuration Manager Factory
  *
@@ -40,6 +42,14 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  */
 class ManagerFactory implements FactoryInterface
 {
+    const DEFAULTS
+        = [
+            'aggregatorPath' => APPLICATION_PATH . '/config/config.php',
+            'cacheDir'       => LOCAL_CACHE_DIR ? LOCAL_CACHE_DIR . '/config'
+                : APPLICATION_PATH . '/data/cache/config',
+            'useCache'       => true
+        ];
+
     /**
      * @param ContainerInterface $container
      * @param string             $requestedName
@@ -54,15 +64,11 @@ class ManagerFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ): Manager {
-
         Factory::init();
-        $applicationConfig = $container->get('ApplicationConfig');
-        $moduleListenerOptions = $applicationConfig['module_listener_options'];
-
-        return new $requestedName(...[
-            APPLICATION_PATH . '/config/config.php',
-            $moduleListenerOptions['cache_dir'],
-            $moduleListenerOptions['config_cache_enabled']
-        ]);
+        $options = array_replace(static::DEFAULTS, $options ?? []);
+        if (!is_dir($options['cacheDir'])) {
+            mkdir($options['cacheDir'], 0700, true);
+        }
+        return new $requestedName(...array_values($options));
     }
 }

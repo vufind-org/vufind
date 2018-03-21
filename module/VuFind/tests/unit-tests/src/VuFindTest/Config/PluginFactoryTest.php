@@ -2,9 +2,10 @@
 /**
  * Config Factory Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) 2010 Villanova University,
+ *               2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,13 +23,20 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Config;
 
+use Interop\Container\ContainerInterface;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use VuFind\Config\Locator;
 use VuFind\Config\Manager;
+use VuFind\Config\ManagerFactory;
+use VuFind\Config\PluginFactory;
+use Zend\Config\Config;
 
 /**
  * Config Factory Test Class
@@ -37,6 +45,7 @@ use VuFind\Config\Manager;
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Hallberg <challber@villanova.edu>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -59,9 +68,14 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
     /**
      * Plugin factory instance.
      *
-     * @var \VuFind\Config\PluginFactory
+     * @var PluginFactory
      */
     protected $factory;
+
+    /**
+     * @var ContainerInterface|MockObject
+     */
+    protected $container;
 
     /**
      * Standard setup method.
@@ -71,7 +85,8 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
     public static function setUpBeforeClass()
     {
         // Create test files:
-        $parentPath = Locator::getLocalConfigPath('unit-test-parent.ini', null, true);
+        $parentPath = Locator::getLocalConfigPath('unit-test-parent.ini', null,
+            true);
         $parent = "[Section1]\n"
             . "a=1\nb=2\nc=3\n"
             . "[Section2]\n"
@@ -80,7 +95,8 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
             . "g=7\nh=8\ni=9\n"
             . "[Section4]\n"
             . "j[] = 1\nj[] = 2\nk[a] = 1\nk[b] = 2\n";
-        $childPath = Locator::getLocalConfigPath('unit-test-child.ini', null, true);
+        $childPath = Locator::getLocalConfigPath('unit-test-child.ini', null,
+            true);
         $child = "[Section1]\n"
             . "j=10\nk=11\nl=12\n"
             . "[Section2]\n"
@@ -90,7 +106,8 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
             . "[Parent_Config]\n"
             . "path=\"{$parentPath}\"\n"
             . "override_full_sections=Section1\n";
-        $child2Path = Locator::getLocalConfigPath('unit-test-child2.ini', null, true);
+        $child2Path = Locator::getLocalConfigPath('unit-test-child2.ini', null,
+            true);
         $child2 = "[Section1]\n"
             . "j=10\nk=11\nl=12\n"
             . "[Section2]\n"
@@ -117,13 +134,17 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Standard setup method.
-     *
-     * @return void
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function setUp()
     {
-        $this->factory = new \VuFind\Config\PluginFactory();
+        $this->factory = new PluginFactory;
+        $this->container = $this->createMock(ContainerInterface::class);
+        $manager = (new ManagerFactory)($this->container, Manager::class);
+        $this->container->method('get')
+            ->with($this->equalTo(Manager::class))
+            ->willReturn($manager);
     }
 
     /**
@@ -131,13 +152,11 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      *
      * @param string $name Configuration to load
      *
-     * @return \Zend\Config\Config
+     * @return Config
      */
-    protected function getConfig($name)
+    protected function getConfig($name): Config
     {
-        $container = $this->createMock('Interop\Container\ContainerInterface');
-        $container->method('get')->willReturn(Manager::getInstance());
-        return $this->factory->__invoke($container, $name);
+        return ($this->factory)($this->container, $name);
     }
 
     /**
@@ -162,7 +181,8 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
     {
         // This should retrieve sms.ini, which should include a Carriers array.
         $config = $this->getConfig('sms');
-        $this->assertTrue(isset($config->Carriers) && count($config->Carriers) > 0);
+        $this->assertTrue(isset($config->Carriers)
+            && count($config->Carriers) > 0);
     }
 
     /**
@@ -253,7 +273,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException Zend\Config\Exception\RuntimeException
+     * @expectedException \Zend\Config\Exception\RuntimeException
      */
     public function testReadOnlyConfig()
     {

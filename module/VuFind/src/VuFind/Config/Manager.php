@@ -64,7 +64,7 @@ class Manager
      *
      * @var string
      */
-    protected $configAggregatorPath;
+    protected $aggregatorPath;
 
     /**
      * Contains only the demanded configuration data.
@@ -91,29 +91,30 @@ class Manager
     /**
      * Manager constructor.
      *
-     * @param string $configAggregatorPath {@see Manager::$configAggregatorPath}
+     * @param string $aggregatorPath       {@see Manager::$aggregatorPath}
      * @param string $cacheDir             Base directory of
      *                                     {@see Manager::$aggregatedConfigPath} and
      *                                     {@see Manager::$demandedConfigPath}
      * @param bool   $useCache             {@see Manager::$useCache}
      */
     public function __construct(
-        string $configAggregatorPath,
+        string $aggregatorPath,
         string $cacheDir,
         bool $useCache
     ) {
-        $this->configAggregatorPath = realpath($configAggregatorPath);
+        $cacheDir = realpath($cacheDir);
+        $this->aggregatorPath = realpath($aggregatorPath);
         $this->aggregatedConfigPath = "$cacheDir/aggregated.config.php";
         $this->demandedConfigPath = "$cacheDir/demanded.config.php";
         $this->useCache = $useCache;
-
         if (!$useCache) {
             $this->reset();
         }
     }
 
     /**
-     * Gets the configuration section at the specfied path.
+     * Gets the configuration section at the specified path or an empty
+     * configuration in case the path does not exist.
      *
      * @param string $path Path expression using forward slashes to separate
      *                     sections.
@@ -122,7 +123,8 @@ class Manager
      */
     public function getConfig(string $path = '/'): Config
     {
-        return new Config($this->getValue($path)->toArray());
+        $config = $this->getValue($path) ?? new Config([]);
+        return new Config($config->toArray());
     }
 
     /**
@@ -211,17 +213,18 @@ class Manager
     }
 
     /**
-     * Gets a configuration value at the specified path.
+     * Gets a configuration value at the specified path or null in case the
+     * specified does not exist.
      *
      * @param Config $config
      * @param array  $path
      *
-     * @return mixed
+     * @return mixed|null
      */
     protected function getAt(Config $config, ...$path)
     {
         $head = $config->{array_shift($path)};
-        return $path ? $this->getAt($head, ...$path) : $head;
+        return $path ? $this->getAt($head ?? new Config([]), ...$path) : $head;
     }
 
     /**
@@ -264,7 +267,7 @@ class Manager
      */
     protected function loadAggregatedConfig(): Config
     {
-        $getAggregator = require $this->configAggregatorPath;
+        $getAggregator = require $this->aggregatorPath;
         $data = $getAggregator($this->aggregatedConfigPath)->getMergedConfig();
         return $this->aggregatedConfig = new Config($data, true);
     }

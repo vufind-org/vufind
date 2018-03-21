@@ -27,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config;
 
 use Interop\Container\ContainerInterface;
@@ -73,10 +74,11 @@ class PluginFactory implements AbstractFactoryInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
-        $manager = $container->get('VuFind\Config\Manager');
-        return $manager->getConfig($requestedName);
+        return $container->get(Manager::class)->getConfig($requestedName);
     }
 }

@@ -121,31 +121,22 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testYamlLoad()
     {
-        // construct manager with custom aggregator and providers
-        $base = __DIR__ . '/../../../../fixtures/configs/yaml/';
-        \Zend\Config\Factory::registerReader('yaml', new \Zend\Config\Reader\Yaml([
-            \Symfony\Component\Yaml\Yaml::class, 'parse'
-        ]));
-        $data = (new \VuFind\Config\Provider\Base('*.yaml', $base))();
-
-        // $reader = new SearchSpecsReader();
-        // $core = __DIR__ . '/../../../../fixtures/configs/yaml/core.yaml';
-        // $local = __DIR__ . '/../../../../fixtures/configs/yaml/local.yaml';
+        $reader = new SearchSpecsReader();
+        $core = __DIR__ . '/../../../../fixtures/configs/yaml/core.yaml';
+        $local = __DIR__ . '/../../../../fixtures/configs/yaml/local.yaml';
         $this->assertEquals(
             [
                 'top' => ['foo' => 'bar'],
                 'bottom' => ['goo' => 'gar'],
             ],
-            $data['core']
-            // $this->callMethod($reader, 'getFromPaths', [$core])
+            $this->callMethod($reader, 'getFromPaths', [$core])
         );
         $this->assertEquals(
             [
                 'top' => ['foo' => 'xyzzy'],
                 'middle' => ['moo' => 'cow'],
             ],
-            $data['local']
-            // $this->callMethod($reader, 'getFromPaths', [$local])
+            $this->callMethod($reader, 'getFromPaths', [$local])
         );
     }
 

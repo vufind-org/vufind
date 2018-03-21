@@ -1,11 +1,10 @@
 <?php
 /**
- * Config Factory Test Class
+ * VuFind Configuration Manager Test Class
  *
  * PHP version 7
  *
- * Copyright (C) 2010 Villanova University,
- *               2018 Leipzig University Library <info@ub.uni-leipzig.de>
+ * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,256 +22,140 @@
  *
  * @category VuFind
  * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Config;
 
-use VuFind\Config\Locator;
+use Interop\Container\ContainerInterface;
+use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use VuFind\Config\Manager;
+use VuFind\Config\ManagerFactory;
+use Zend\Config\Config;
 
 /**
- * Config Factory Test Class
+ * VuFind Configuration Manager Test Class
  *
  * @category VuFind
  * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ManagerTest extends \VuFindTest\Unit\TestCase
+class ManagerTest extends TestCase
 {
-    /**
-     * Flag -- did writing config files fail?
-     *
-     * @var bool
-     */
-    protected static $writeFailed = false;
+    const BASE_PATH = __DIR__ . '/../../../../fixtures/configs/example';
 
     /**
-     * Array of files to clean up after test.
-     *
-     * @var array
-     */
-    protected static $filesToDelete = [];
-
-    /**
-     * Plugin factory instance.
-     *
      * @var Manager
      */
     protected $manager;
 
     /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public static function setUpBeforeClass()
-    {
-        // Create test files:
-        $parentPath = Locator::getLocalConfigPath('unit-test-parent.ini', null, true);
-        $parent = "[Section1]\n"
-            . "a=1\nb=2\nc=3\n"
-            . "[Section2]\n"
-            . "d=4\ne=5\nf=6\n"
-            . "[Section3]\n"
-            . "g=7\nh=8\ni=9\n"
-            . "[Section4]\n"
-            . "j[] = 1\nj[] = 2\nk[a] = 1\nk[b] = 2\n";
-        $childPath = Locator::getLocalConfigPath('unit-test-child.ini', null, true);
-        $child = "[Section1]\n"
-            . "j=10\nk=11\nl=12\n"
-            . "[Section2]\n"
-            . "m=13\nn=14\no=15\n"
-            . "[Section4]\n"
-            . "j[] = 3\nk[c] = 3\n"
-            . "[Parent_Config]\n"
-            . "path=\"{$parentPath}\"\n"
-            . "override_full_sections=Section1\n";
-        $child2Path = Locator::getLocalConfigPath('unit-test-child2.ini', null, true);
-        $child2 = "[Section1]\n"
-            . "j=10\nk=11\nl=12\n"
-            . "[Section2]\n"
-            . "m=13\nn=14\no=15\n"
-            . "[Section4]\n"
-            . "j[] = 3\nk[c] = 3\n"
-            . "[Parent_Config]\n"
-            . "path=\"{$parentPath}\"\n"
-            . "override_full_sections=Section1\n"
-            . "merge_array_settings=true\n";
-
-        // Fail if we are unable to write files:
-        if (null === $parentPath || null === $childPath || null === $child2Path
-            || !file_put_contents($parentPath, $parent)
-            || !file_put_contents($childPath, $child)
-            || !file_put_contents($child2Path, $child2)
-        ) {
-            self::$writeFailed = true;
-            return;
-        }
-
-        // Mark for cleanup:
-        self::$filesToDelete = [$parentPath, $childPath, $child2Path];
-    }
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function setUp()
     {
-        $serviceManager = $this->getServiceManager();
-        $this->manager = $serviceManager->get('VuFind\Config\Manager');
+        /** @var ContainerInterface|MockObject $container */
+        $container = $this->createMock(ContainerInterface::class);
+        $this->manager = (new ManagerFactory)($container, Manager::class, [
+            'aggregatorPath' => static::BASE_PATH . '/config.php',
+            'useCache' => false
+        ]);
     }
 
-    /**
-     * Wrapper around manager
-     *
-     * @param string $path Relative to configuration file without extension
-     *
-     * @return \Zend\Config\Config
-     */
-    protected function getConfig($path)
+    public function testBasic()
+    {
+        $this->assertArraySubset([
+            'u' => 'w',
+            'y' => 'z'
+        ], $this->getValue('basic/nested/yaml')->toArray());
+
+        $this->assertArraySubset([
+            'a' => 2,
+            'b' => [
+                'c' => 1,
+                'd' => 0
+            ]
+        ], $this->getValue('basic/ini/S')->toArray());
+
+        $this->assertArraySubset([
+            'key'            => 43,
+            '%weired;Key$\\' => true
+        ], $this->getValue('basic/yaml')->toArray());
+
+        $this->assertArrayHasKey('@parent_yaml',
+            $this->getValue('basic/yaml')->toArray());
+
+        $this->assertArraySubset([
+            'ini'  => [
+                'T' => [
+                    'x' => 'z',
+                    'a' => 'b',
+                    'c' => 'd'
+                ],
+            ],
+            'json' => [
+                'u' => 'v',
+                'x' => 'y'
+            ],
+            'yaml' => [
+                'u' => 'w',
+                'y' => 'z'
+            ]
+        ], $this->getConfig('basic/nested')->toArray());
+    }
+
+    public function testClassic()
+    {
+        $this->assertEquals('w', $this->getValue('classic/nested/yaml/u'));
+
+        $this->assertArrayNotHasKey('y',
+            $this->getValue('classic/nested/yaml')->toArray());
+
+        $this->assertArraySubset([
+            'key'            => 43,
+            '%weired;Key$\\' => true
+        ], $this->getValue('classic/yaml')->toArray());
+
+        $this->assertArrayNotHasKey('@parent_yaml',
+            $this->getValue('classic/yaml')->toArray());
+
+        $this->assertArraySubset([
+            'a'   => 2,
+            'b.c' => 1,
+            'b.d' => 0
+        ], $this->getValue('classic/ini/S')->toArray());
+
+        $this->assertArraySubset([
+            'ini'  => [
+                'T' => [
+                    'x' => 'z',
+                    'a' => 'b'
+                ],
+            ],
+            'json' => [
+                'x' => 'y'
+            ],
+            'yaml' => [
+                'u' => 'w'
+            ]
+        ], $this->getConfig('classic/nested')->toArray());
+
+        $this->assertArrayNotHasKey('c',
+            $this->getConfig('classic/nested/ini/T')->toArray());
+    }
+
+    protected function getConfig($path = null): Config
     {
         return $this->manager->getConfig($path);
     }
 
-    /**
-     * Test basic config.ini loading.
-     *
-     * @return void
-     */
-    public function testBasicRead()
+    protected function getValue($path = null)
     {
-        $config = $this->getConfig('config');
-        $this->assertEquals('Library Catalog', $config->Site->title);
-    }
-
-    /**
-     * Test loading of a custom .ini file.
-     *
-     * @return void
-     */
-    public function testCustomRead()
-    {
-        // This should retrieve sms.ini, which should include a Carriers array.
-        $config = $this->getConfig('sms');
-        $this->assertTrue(isset($config->Carriers) && count($config->Carriers) > 0);
-    }
-
-    /**
-     * Test inheritance features.
-     *
-     * @return void
-     */
-    public function testInheritance()
-    {
-        if (self::$writeFailed) {
-            $this->markTestSkipped('Could not write test configurations.');
-        }
-
-        // Make sure load succeeds:
-        $config = $this->getConfig('unit-test-child');
-        $this->assertTrue(is_object($config));
-
-        // Make sure Section 1 was overridden; values from parent should not be
-        // present.
-        $this->assertTrue(!isset($config->Section1->a));
-        $this->assertEquals('10', $config->Section1->j);
-
-        // Make sure Section 2 was merged; values from parent and child should
-        // both be present.
-        $this->assertEquals('4', $config->Section2->d);
-        $this->assertEquals('13', $config->Section2->m);
-
-        // Make sure Section 3 was inherited; values from parent should exist.
-        $this->assertEquals('7', $config->Section3->g);
-
-        // Make sure Section 4 arrays were overwritten.
-        $this->assertEquals([3], $config->Section4->j->toArray());
-        $this->assertEquals(['c' => 3], $config->Section4->k->toArray());
-    }
-
-    /**
-     * Test inheritance features with array merging turned on.
-     *
-     * @return void
-     */
-    public function testInheritanceWithArrayMerging()
-    {
-        if (self::$writeFailed) {
-            $this->markTestSkipped('Could not write test configurations.');
-        }
-
-        // Make sure load succeeds:
-        $config = $this->getConfig('unit-test-child2');
-        $this->assertTrue(is_object($config));
-
-        // Make sure Section 1 was overridden; values from parent should not be
-        // present.
-        $this->assertTrue(!isset($config->Section1->a));
-        $this->assertEquals('10', $config->Section1->j);
-
-        // Make sure Section 2 was merged; values from parent and child should
-        // both be present.
-        $this->assertEquals('4', $config->Section2->d);
-        $this->assertEquals('13', $config->Section2->m);
-
-        // Make sure Section 3 was inherited; values from parent should exist.
-        $this->assertEquals('7', $config->Section3->g);
-
-        // Make sure Section 4 arrays were overwritten.
-        $this->assertEquals([1, 2, 3], $config->Section4->j->toArray());
-        $this->assertEquals(
-            ['a' => 1, 'b' => 2, 'c' => 3], $config->Section4->k->toArray()
-        );
-    }
-
-    /**
-     * Test that the plugin factory omits the Parent_Config section from the
-     * merged configuration.
-     *
-     * @void
-     */
-    public function testParentConfigOmission()
-    {
-        if (self::$writeFailed) {
-            $this->markTestSkipped('Could not write test configurations.');
-        }
-        $config = $this->getConfig('unit-test-child');
-        $this->assertFalse(isset($config->Parent_Config));
-    }
-
-    /**
-     * Test configuration is read-only.
-     *
-     * @return void
-     *
-     * @expectedException \Zend\Config\Exception\RuntimeException
-     */
-    public function testReadOnlyConfig()
-    {
-        if (self::$writeFailed) {
-            $this->markTestSkipped('Could not write test configurations.');
-        }
-        $config = $this->getConfig('unit-test-parent');
-        $config->Section1->z = 'bad';
-    }
-
-    /**
-     * Standard teardown method.
-     *
-     * @return void
-     */
-    public static function tearDownAfterClass()
-    {
-        // Clean up test files:
-        array_map('unlink', self::$filesToDelete);
+        return $this->manager->getValue($path);
     }
 }

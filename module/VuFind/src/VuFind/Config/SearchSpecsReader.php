@@ -4,8 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) 2010 Villanova University,
- *               2018 Leipzig University Library <info@ub.uni-leipzig.de>
+ * Copyright (C) Villanova University 2010.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,7 +22,6 @@
  * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -32,17 +30,22 @@ namespace VuFind\Config;
 /**
  * VuFind SearchSpecs Configuration Reader
  *
- * Please use {@see \VuFind\Config\Manager} instead as this class
- * only exists for backwards compatibility.
- *
- * @category   VuFind
- * @package    Config
- * @author     Demian Katz <demian.katz@villanova.edu>
- * @author     Sebastian Kehr <kehr@ub.uni-leipzig.de>
- * @license    http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link       https://vufind.org Main Site
- * @deprecated File deprecated since X.0.0
+ * @category VuFind
+ * @package  Config
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Site
  */
 class SearchSpecsReader extends YamlReader
 {
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
+     */
+    public function __construct(\VuFind\Cache\Manager $cacheManager = null)
+    {
+        parent::__construct($cacheManager);
+        $this->cacheName = 'searchspecs';
+    }
 }
