@@ -59,7 +59,7 @@ class Context extends AbstractHelper
 
         $oldVars = [];
         foreach ($vars as $k => $v) {
-            $oldVars[$k] = isset($view->$k) ? $view->$k : null;
+            $oldVars[$k] = $view->$k ?? null;
             $view->$k = $v;
         }
         return $oldVars;

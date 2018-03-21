@@ -250,8 +250,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     protected function getMockTranslator($translations)
     {
         $callback = function ($str, $domain) use ($translations) {
-            return isset($translations[$domain][$str])
-                ? $translations[$domain][$str] : $str;
+            return $translations[$domain][$str] ?? $str;
         };
         $translator = $this->createMock('Zend\I18n\Translator\TranslatorInterface');
         $translator->expects($this->any())->method('translate')

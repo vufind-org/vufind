@@ -100,7 +100,7 @@ class Loader
             $parts = explode(':', trim($provider));
             $provider = $parts[0];
             if (!empty($provider)) {
-                $key = isset($parts[1]) ? $parts[1] : '';
+                $key = $parts[1] ?? '';
                 try {
                     $plugin = $this->loader->get($provider);
                     $results[$provider] = $plugin->loadByIsbn($key, $isbnObj);

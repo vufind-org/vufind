@@ -5,7 +5,7 @@
   <h4 class="tag"><?=$this->transEsc($sideFacetSet['tags']['label'])?></h4>
   <ul class="list-group">
   <?php $filterList = $results->getParams()->getFilterList(true);
-     $tagFilterList = isset($filterList[$sideFacetSet['tags']['label']]) ? $filterList[$sideFacetSet['tags']['label']] : null; ?>
+     $tagFilterList = $filterList[$sideFacetSet['tags']['label']] ?? null; ?>
     <?php if (!empty($tagFilterList)): ?>
       <?php $field = $sideFacetSet['tags']['label']; ?>
       <?php foreach ($tagFilterList as $filter): ?>

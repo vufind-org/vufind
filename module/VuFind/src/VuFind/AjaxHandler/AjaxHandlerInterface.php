@@ -1,10 +1,10 @@
 <?php
 /**
- * ILS driver test
+ * AJAX handler interface
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,33 +20,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Tests
+ * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFindTest\ILS\Driver;
+namespace VuFind\AjaxHandler;
 
-use VuFind\ILS\Driver\ClaviusSQL;
+use Zend\Mvc\Controller\Plugin\Params;
 
 /**
- * ILS driver test
+ * AJAX handler interface
  *
  * @category VuFind
- * @package  Tests
+ * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class ClaviusSQLTest extends \VuFindTest\Unit\ILSDriverTestCase
+interface AjaxHandlerInterface
 {
+    // define some status constants
+    const STATUS_OK = 'OK';                  // good
+    const STATUS_ERROR = 'ERROR';            // bad
+    const STATUS_NEED_AUTH = 'NEED_AUTH';    // must login first
+
     /**
-     * Standard setup method.
+     * Handle a request.
      *
-     * @return void
+     * @param Params $params Parameter helper from controller
+     *
+     * @return array [response data, internal status code, HTTP status code]
      */
-    public function setUp()
-    {
-        $this->driver = new ClaviusSQL();
-    }
+    public function handleRequest(Params $params);
 }

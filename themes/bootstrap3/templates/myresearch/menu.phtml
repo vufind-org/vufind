@@ -32,9 +32,9 @@
       </a>
     <?php endif; ?>
     <?php if ($this->ils()->checkFunction('ILLRequests', $capabilityParams)): ?>
-    <a href="<?=$this->url('myresearch-illrequests')?>"<?=$this->active == 'ILLRequests' ? ' class="active"' : ''?>>
-      <i class="fa fa-fw fa-exchange" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?>
-    </a>
+      <a href="<?=$this->url('myresearch-illrequests')?>"<?=$this->active == 'ILLRequests' ? ' class="active"' : ''?>>
+        <i class="fa fa-fw fa-exchange" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?>
+      </a>
     <?php endif; ?>
     <?php if ($this->ils()->checkCapability('getMyFines', $capabilityParams)): ?>
       <a href="<?=$this->url('myresearch-fines')?>"<?=$this->active == 'fines' ? ' class="active"' : ''?>>
@@ -63,14 +63,6 @@
     </a>
   <?php endif; ?>
 </div>
-<?php if ($user && $this->auth()->getManager()->supportsPasswordChange()): ?>
-  <h4><?=$this->transEsc('Preferences')?></h4>
-  <div class="myresearch-menu">
-    <a href="<?=$this->url('myresearch-changepassword') ?>"<?=$this->active == 'newpassword' ? ' class="active"' : ''?>>
-      <i class="fa fa-fw fa-lock" aria-hidden="true"></i> <?=$this->transEsc('Change Password') ?>
-    </a>
-  </div>
-<?php endif; ?>
 <?php if ($user && $this->userlist()->getMode() !== 'disabled'): ?>
   <h4><?=$this->transEsc('Your Lists')?></h4>
   <div class="myresearch-menu">

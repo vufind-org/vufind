@@ -122,8 +122,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
         }
         if (is_array($options)) {
             $this->siteId = $options['siteId'];
-            $this->searchPrefix = isset($options['searchPrefix'])
-                ? $options['searchPrefix'] : '';
+            $this->searchPrefix = $options['searchPrefix'] ?? '';
         } else {
             $this->siteId = $options;
         }

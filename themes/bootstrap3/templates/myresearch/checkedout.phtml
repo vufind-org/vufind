@@ -45,7 +45,7 @@
     <?php foreach ($hiddenTransactions as $ilsDetails): ?>
       <?php if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
         <?php $renewDetails = $this->renewResult[$ilsDetails['item_id']]; ?>
-        <?php $prefix = isset($ilsDetails['title']) ? $ilsDetails['title'] : $ilsDetails['item_id']; ?>
+        <?php $prefix = $ilsDetails['title'] ?? $ilsDetails['item_id']; ?>
         <?php if (isset($renewDetails['success']) && $renewDetails['success']): ?>
           <div class="alert alert-success"><?=$this->escapeHtml($prefix . ': ') . $this->transEsc('renew_success')?></div>
         <?php else: ?>
