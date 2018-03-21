@@ -28,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Unit;
 
 use Interop\Container\ContainerInterface;
@@ -120,7 +121,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $config = [
             'factories' => [
-                'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
+                'Solr'     => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
                 'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
             ]
         ];
@@ -201,15 +202,18 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             );
             $this->setupSearchService();
 
-            $this->serviceManager->setService(\VuFind\Config\Manager::class,
-                $this->getConfigManager());
+            $this->serviceManager->setService(
+                \VuFind\Config\Manager::class,
+                $this->getConfigManager()
+            );
 
             $this->serviceManager->setService(
                 'VuFind\Config\PluginManager',
                 new \VuFind\Config\PluginManager($this->serviceManager)
             );
             $this->serviceManager->setService(
-                'SharedEventManager', new \Zend\EventManager\SharedEventManager()
+                'SharedEventManager',
+                new \Zend\EventManager\SharedEventManager()
             );
             $this->serviceManager->setService(
                 'VuFind\Record\Loader', new \VuFind\Record\Loader(
@@ -263,6 +267,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected function getConfigManager(): \VuFind\Config\Manager
     {
         /**
+         * Container mock
+         *
          * @var ContainerInterface|MockObject $container
          */
         $container = $this->createMock(ContainerInterface::class);
