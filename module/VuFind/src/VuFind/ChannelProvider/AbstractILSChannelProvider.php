@@ -104,10 +104,8 @@ abstract class AbstractILSChannelProvider extends AbstractChannelProvider
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = isset($options['channelSize'])
-            ? $options['channelSize'] : 20;
-        $this->maxAge = isset($options['maxAge'])
-            ? $options['maxAge'] : 30;
+        $this->channelSize = $options['channelSize'] ?? 20;
+        $this->maxAge = $options['maxAge'] ?? 30;
     }
 
     /**
