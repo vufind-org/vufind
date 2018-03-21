@@ -1,10 +1,10 @@
-<? foreach ($this->driver->getSummary() as $summary): ?>
+<?php foreach ($this->driver->getSummary() as $summary): ?>
   <?=$this->escapeHtml($summary) ?><br />
-<? endforeach; ?>
-<? $isbn = $this->driver->getCleanISBN(); ?>
-<? foreach ($this->summaries($isbn) as $provider => $content): ?>
-  <? foreach ($content as $summary): ?>
-    <? $htmlContent = substr($summary, 0, 1) == '<' && substr($summary, -1) == '>'; ?>
+<?php endforeach; ?>
+<?php $isbn = $this->driver->getCleanISBN(); ?>
+<?php foreach ($this->summaries($isbn) as $provider => $content): ?>
+  <?php foreach ($content as $summary): ?>
+    <?php $htmlContent = substr($summary, 0, 1) == '<' && substr($summary, -1) == '>'; ?>
     <?=$htmlContent ? $summary : ($this->escapeHtml($summary) . '<br />')?>
-  <? endforeach; ?>
-<? endforeach; ?>
+  <?php endforeach; ?>
+<?php endforeach; ?>

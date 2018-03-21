@@ -104,7 +104,7 @@ class DOI implements RecommendInterface
     {
         $query = $results->getParams()->getDisplayQuery();
         preg_match('|10\.[^\s/]{4,}/[^\s]{1,}|', $query, $matches);
-        $this->match = isset($matches[0]) ? $matches[0] : null;
+        $this->match = $matches[0] ?? null;
         $this->exact = (null !== $this->match) && ($this->match === $query);
     }
 

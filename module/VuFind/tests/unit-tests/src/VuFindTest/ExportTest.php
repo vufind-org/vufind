@@ -39,7 +39,7 @@ use Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExportTest extends \PHPUnit_Framework_TestCase
+class ExportTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test bulk options using legacy (deprecated) configuration.

@@ -27,6 +27,7 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Exception\ILS as ILSException;
 use Zend\View\Exception\RuntimeException;
 
 /**
@@ -152,7 +153,11 @@ class Auth extends \Zend\View\Helper\AbstractHelper
      */
     public function getILSPatron()
     {
-        return $this->ilsAuthenticator->storedCatalogLogin();
+        try {
+            return $this->ilsAuthenticator->storedCatalogLogin();
+        } catch (ILSException $e) {
+            return false;
+        }
     }
 
     /**

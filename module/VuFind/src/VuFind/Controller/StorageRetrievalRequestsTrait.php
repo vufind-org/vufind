@@ -149,8 +149,7 @@ trait StorageRetrievalRequestsTrait
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => $defaultRequired,
-                'helpText' => isset($checkRequests['helpText'])
-                    ? $checkRequests['helpText'] : null
+                'helpText' => $checkRequests['helpText'] ?? null
             ]
         );
         $view->setTemplate('record/storageretrievalrequest');

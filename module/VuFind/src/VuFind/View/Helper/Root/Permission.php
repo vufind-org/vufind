@@ -115,7 +115,7 @@ class Permission extends AbstractHelper
         $displayLogic = $this->permissionDeniedManager
             ->getDeniedTemplateBehavior($context);
 
-        switch (isset($displayLogic['action']) ? $displayLogic['action'] : '') {
+        switch ($displayLogic['action'] ?? '') {
         case 'showMessage':
             return $this->view->transEsc($displayLogic['value']);
         case 'showTemplate':

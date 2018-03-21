@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Backend\Solr\Document;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 
@@ -41,7 +41,7 @@ use VuFindSearch\Backend\Solr\Document\UpdateDocument;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class UpdateDocumentTest extends PHPUnit_Framework_TestCase
+class UpdateDocumentTest extends TestCase
 {
     /**
      * Test creation of XML document.

@@ -1,16 +1,16 @@
-<? $this->treeContext = 'Collection'; ?>
+<?php $this->treeContext = 'Collection'; ?>
 
 <div class="collection-hierarchytree">
   <div class="tree-panel">
     <?=$this->render('RecordTab/hierarchytree.phtml')?>
   </div>
   <div id="tree-preview">
-    <? if (($collectionRecord = $this->tab->getActiveRecord()) !== false): ?>
-      <? if ($collectionRecord === null): ?>
+    <?php if (($collectionRecord = $this->tab->getActiveRecord()) !== false): ?>
+      <?php if ($collectionRecord === null): ?>
         <?=$this->render('collection/collection-record-error.phtml')?>
-      <? else: ?>
+      <?php else: ?>
         <?=html_entity_decode($this->record($collectionRecord)->getCollectionBriefRecord())?>
-      <? endif; ?>
-    <? endif; ?>
+      <?php endif; ?>
+    <?php endif; ?>
   </div>
 </div>

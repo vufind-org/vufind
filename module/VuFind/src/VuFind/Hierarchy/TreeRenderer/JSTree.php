@@ -104,8 +104,7 @@ class JSTree extends AbstractBase
             $hierarchies = [];
             foreach ($inHierarchies as $hierarchyTopID) {
                 if ($this->getDataSource()->supports($hierarchyTopID)) {
-                    $hierarchies[$hierarchyTopID] = isset($inHierarchiesTitle[$i])
-                        ? $inHierarchiesTitle[$i] : '';
+                    $hierarchies[$hierarchyTopID] = $inHierarchiesTitle[$i] ?? '';
                 }
                 $i++;
             }
