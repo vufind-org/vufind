@@ -118,9 +118,16 @@ class LoggerFactory implements FactoryInterface
      */
     protected function addFileWriters(Logger $logger, $config)
     {
-        $parts = explode(':', $config);
-        $file = $parts[0];
-        $error_types = $parts[1] ?? '';
+        // Make sure to use only the last ‘:’ after second character to avoid trouble
+        // with Windows drive letters (e.g. "c:\something\logfile:error-5")
+        $pos = strrpos($config, ':', 2);
+        if ($pos > 0) {
+            $file = substr($config, 0, $pos);
+            $error_types = substr($config, $pos + 1);
+        } else {
+            $file = $config;
+            $error_types = '';
+        }
 
         // Make Writers
         $filters = explode(',', $error_types);
