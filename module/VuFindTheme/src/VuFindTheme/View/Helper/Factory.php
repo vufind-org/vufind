@@ -49,7 +49,7 @@ class Factory
      *
      * @return string|bool
      */
-    public static function getPipelineConfig(ServiceManager $sm)
+    protected static function getPipelineConfig(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $default = false;

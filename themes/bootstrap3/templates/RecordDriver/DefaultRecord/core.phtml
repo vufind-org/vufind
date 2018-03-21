@@ -1,68 +1,68 @@
 <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
-  <?
+  <?php
     $QRCode = $this->record($this->driver)->getQRCode("core");
     $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium', $this->record($this->driver)->getThumbnail('large'));
     $cover = $coverDetails['html'];
     $preview = $this->record($this->driver)->getPreviews();
   ?>
-  <? if ($QRCode || $cover || $preview): ?>
+  <?php if ($QRCode || $cover || $preview): ?>
     <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?> img-col">
-      <? /* Display thumbnail if appropriate: */ ?>
-      <? if($cover): ?>
+      <?php /* Display thumbnail if appropriate: */ ?>
+      <?php if($cover): ?>
         <?=$cover?>
-      <? endif; ?>
+      <?php endif; ?>
 
-      <? /* Display qrcode if appropriate: */ ?>
-      <? if($QRCode): ?>
+      <?php /* Display qrcode if appropriate: */ ?>
+      <?php if($QRCode): ?>
         <span class="hidden-xs">
           <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
         </span>
-      <? endif; ?>
+      <?php endif; ?>
 
-      <? // if you have a preview tab but want to move or remove the preview link
+      <?php // if you have a preview tab but want to move or remove the preview link
          // from this area of the record view, this can be split into
          // getPreviewData() (should stay here) and
          // getPreviewLink() (can go in your desired tab) ?>
-      <? if ($preview): ?>
+      <?php if ($preview): ?>
         <div class="record-previews">
           <?=$preview?>
         </div>
-      <? endif; ?>
+      <?php endif; ?>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
   <div class="media-body">
 
     <h3 property="name"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
 
-    <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
-    <? if ($summary): ?>
+    <?php $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
+    <?php if ($summary): ?>
       <p><?=$this->truncate($summary, 300)?></p>
 
-      <? if(strlen($summary) > 300): ?>
+      <?php if(strlen($summary) > 300): ?>
         <p><a href='<?=$this->recordLink()->getTabUrl($this->driver, 'Description')?>#tabnav'><?=$this->transEsc('Full description')?></a></p>
-      <? endif; ?>
-    <? endif; ?>
+      <?php endif; ?>
+    <?php endif; ?>
 
-    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-      <? /* Display the lists that this record is saved to */ ?>
+    <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <?php /* Display the lists that this record is saved to */ ?>
       <div class="savedLists">
         <strong><?=$this->transEsc("Saved in")?>:</strong>
       </div>
-    <? endif; ?>
+    <?php endif; ?>
 
-    <? /* Display Main Details */ ?>
-    <?
+    <?php /* Display Main Details */ ?>
+    <?php
       $formatter = $this->recordDataFormatter();
       $coreFields = $formatter->getData($driver, $formatter->getDefaults('core'));
     ?>
-    <? if (!empty($coreFields)): ?>
+    <?php if (!empty($coreFields)): ?>
       <table class="table table-striped">
         <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
-        <? foreach ($coreFields as $key => $current): ?>
+        <?php foreach ($coreFields as $key => $current): ?>
           <tr><th><?=$this->transEsc($key)?>:</th><td><?=$current['value']?></td></tr>
-        <? endforeach; ?>
+        <?php endforeach; ?>
       </table>
-    <? endif; ?>
-    <? /* End Main Details */ ?>
+    <?php endif; ?>
+    <?php /* End Main Details */ ?>
   </div>
 </div>

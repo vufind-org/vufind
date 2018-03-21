@@ -1,11 +1,10 @@
 <?php
-
 /**
- * Unit tests for LibGuides record collection factory.
+ * Config view helper
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,51 +20,62 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFindTest\Backend\LibGuides\Response;
+namespace VuFind\View\Helper\Root;
 
-use PHPUnit\Framework\TestCase;
-use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
+use VuFind\Config\PluginManager;
 
 /**
- * Unit tests for LibGuides record collection factory.
+ * Config view helper
  *
  * @category VuFind
- * @package  Search
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class RecordCollectionFactoryTest extends TestCase
+class Config extends \Zend\View\Helper\AbstractHelper
 {
     /**
-     * Test that the factory creates a collection.
+     * Configuration plugin manager
      *
-     * @return void
+     * @var PluginManager
      */
-    public function testFactory()
+    protected $configLoader;
+
+    /**
+     * Constructor
+     *
+     * @param Helper $helper Capabilities helper
+     */
+    public function __construct(PluginManager $configLoader)
     {
-        $resp = ['documents' => [[], [], []]];
-        $fact = new RecordCollectionFactory();
-        $coll = $fact->factory($resp);
-        $this->assertEquals(3, count($coll));
+        $this->configLoader = $configLoader;
     }
 
     /**
-     * Test invalid input.
+     * Get the specified configuration.
      *
-     * @return void
+     * @param string $config Name of configuration
      *
-     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Unexpected type of value: Expected array, got string
+     * @return \Zend\Config\Config
      */
-    public function testInvalidInput()
+    public function get($config)
     {
-        $fact = new RecordCollectionFactory();
-        $coll = $fact->factory('garbage');
+        return $this->configLoader->get($config);
+    }
+
+    /**
+     * Is non-Javascript support enabled?
+     *
+     * @return bool
+     */
+    public function nonJavascriptSupportEnabled()
+    {
+        return $this->get('config')->Site->nonJavascriptSupportEnabled ?? false;
     }
 }

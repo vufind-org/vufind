@@ -105,7 +105,7 @@ trait UserCreationTrait
         foreach ($defaults as $field => $default) {
             $this->findCssAndSetValue(
                 $page, '#account_' . $field,
-                isset($overrides[$field]) ? $overrides[$field] : $default
+                $overrides[$field] ?? $default
             );
         }
     }

@@ -81,7 +81,7 @@ class SwitchType implements RecommendInterface
     {
         $params = explode(':', $settings);
         $this->newHandler = !empty($params[0]) ? $params[0] : 'AllFields';
-        $this->newHandlerName = isset($params[1]) ? $params[1] : 'All Fields';
+        $this->newHandlerName = $params[1] ?? 'All Fields';
     }
 
     /**

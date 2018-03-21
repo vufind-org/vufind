@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Backend\BrowZine\Response;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\BrowZine\Response\RecordCollection;
 
 /**
@@ -40,7 +40,7 @@ use VuFindSearch\Backend\BrowZine\Response\RecordCollection;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordCollectionTest extends PHPUnit_Framework_TestCase
+class RecordCollectionTest extends TestCase
 {
     /**
      * Test defaults when given empty data.

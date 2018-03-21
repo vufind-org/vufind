@@ -1,7 +1,7 @@
-<? if (!empty($this->expanderList)): ?>
+<?php if (!empty($this->expanderList)): ?>
   <fieldset class="eds">
     <legend><?=$this->transEsc('eds_modes_and_expanders')?></legend>
-    <? foreach ($this->expanderList as $field => $expander):
+    <?php foreach ($this->expanderList as $field => $expander):
       $value = $expander['Value'] ?>
       <div class="checkbox">
         <label for="expand_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>">
@@ -9,35 +9,35 @@
           <?=$this->transEsc('eds_expander_' . $value, [], $expander['Label'])?>
         </label>
       </div>
-    <? endforeach; ?>
+    <?php endforeach; ?>
 
-    <label for="searchMode_<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc('Search Mode')?></label>
+    <label for="searchModes"><?=$this->transEsc('Search Mode')?></label>
     <select id="searchMode_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" class="form-control">
-      <? foreach ($this->searchModes as $field => $searchMode):
+      <?php foreach ($this->searchModes as $field => $searchMode):
         $value = $searchMode['Value'] ?>
         <option <?=(isset($searchMode['selected']) && $searchMode['selected'])?'selected="selected"':''?> value="SEARCHMODE:<?=$this->escapeHtmlAttr($value)?>">
           <?= /* 'Label' comes from API and is always in English; try to translate structured value before using it: */ $this->transEsc('eds_mode_' . $value, [], $searchMode['Label']) ?>
         </option>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </select>
   </fieldset>
-<? endif; ?>
+<?php endif; ?>
 
-<? if (!empty($this->limiterList)): ?>
+<?php if (!empty($this->limiterList)): ?>
   <fieldset class="eds">
     <legend><?=$this->transEsc('Limit To')?></legend>
-    <? foreach ($this->limiterList as $field => $facet): ?>
-      <? switch($facet['Type']){
+    <?php foreach ($this->limiterList as $field => $facet): ?>
+      <?php switch($facet['Type']){
           case 'multiselectvalue': ?>
             <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>"><?=$this->transEsc($facet['Label'])?></label><br/>
             <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10" class="form-control">
-              <? foreach ($facet['LimiterValues'] as $id => $facetValue): ?>
-                <? $value = $facetValue['Value']; ?>
+              <?php foreach ($facet['LimiterValues'] as $id => $facetValue): ?>
+                <?php $value = $facetValue['Value']; ?>
                 <option value="<?='LIMIT|' . $this->escapeHtmlAttr($field . ':' . $facetValue['Value'])?>"<?=(isset($facetValue['selected']) && $facetValue['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($facetValue['Value'])?></option>
-              <? endforeach; ?>
+              <?php endforeach; ?>
             </select>
             <!-- <br/> -->
-            <? break;
+            <?php break;
           case 'select':
             $value = $facet['LimiterValues'][0]['Value'] ?>
             <div class="checkbox">
@@ -46,33 +46,33 @@
                 <?=$this->transEsc('eds_limiter_' . $field, [], $facet['Label'])?>
               </label>
             </div>
-            <? break;
+            <?php break;
           case 'text': ?>
             <!-- not implemented -->
-            <? break;
+            <?php break;
           case 'numeric':?>
             <!-- not implemented -->
-            <? break;
+            <?php break;
           case 'numericrange':?>
             <!-- not implemented -->
-            <? break;
+            <?php break;
           case 'ymrange': ?>
             <!-- not implemented -->
-            <? break;
+            <?php break;
           case 'yrange': ?>
             <!-- not implemented -->
-            <? break;
+            <?php break;
           case 'historicalrange':?>
             <!-- not implemented -->
-            <? break;
+            <?php break;
           case 'singleselectvalue':?>
             <!-- not implemented -->
-            <? break;
+            <?php break;
         } ?>
-    <? endforeach; ?>
+    <?php endforeach; ?>
   </fieldset>
-<? endif; ?>
-<? if (isset($this->dateRangeLimit)): ?>
+<?php endif; ?>
+<?php if (isset($this->dateRangeLimit)): ?>
   <fieldset class="eds">
     <legend><?=$this->transEsc('adv_search_year')?></legend>
     <input type="hidden" name="daterange[]" value="PublicationDate"/>
@@ -89,7 +89,7 @@
       <div class="slider-container">
         <input type="text" id="PublicationDateSlider">
       </div>
-      <?
+      <?php
         $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
         $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
         $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
@@ -125,4 +125,4 @@ JS;
     ?>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
   </fieldset>
-<? endif; ?>
+<?php endif; ?>

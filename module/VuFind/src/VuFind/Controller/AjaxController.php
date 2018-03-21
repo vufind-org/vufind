@@ -27,7 +27,6 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Auth as AuthException;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -489,16 +488,14 @@ class AjaxController extends AbstractBase
                 $locationCallnumbers, $callnumberSetting, 'Multiple Call Numbers'
             );
             $locationInfo = [
-                'availability' =>
-                    isset($details['available']) ? $details['available'] : false,
+                'availability' => $details['available'] ?? false,
                 'location' => htmlentities(
                     $this->translate('location_' . $location, [], $location),
                     ENT_COMPAT, 'UTF-8'
                 ),
                 'callnumbers' =>
                     htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
-                'status_unknown' => isset($details['status_unknown'])
-                    ? $details['status_unknown'] : false,
+                'status_unknown' => $details['status_unknown'] ?? false,
                 'callnumber_handler' => $callnumberHandler
             ];
             $locationList[] = $locationInfo;
@@ -556,7 +553,7 @@ class AjaxController extends AbstractBase
         }
         $result = $checked = [];
         foreach ($ids as $i => $id) {
-            $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
+            $source = $sources[$i] ?? DEFAULT_SEARCH_BACKEND;
             $selector = $source . '|' . $id;
 
             // We don't want to bother checking the same ID more than once, so
@@ -635,61 +632,6 @@ class AjaxController extends AbstractBase
         self::$php_errors[] = "ERROR [$errno] - " . $errstr . "<br />\n"
             . " Occurred in " . $errfile . " on line " . $errline . ".";
         return true;
-    }
-
-    /**
-     * Generate the "salt" used in the salt'ed login request.
-     *
-     * @return string
-     */
-    protected function generateSalt()
-    {
-        return str_replace(
-            '.', '', $this->getRequest()->getServer()->get('REMOTE_ADDR')
-        );
-    }
-
-    /**
-     * Send the "salt" to be used in the salt'ed login request.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function getSaltAjax()
-    {
-        return $this->output($this->generateSalt(), self::STATUS_OK);
-    }
-
-    /**
-     * Login with post'ed username and encrypted password.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function loginAjax()
-    {
-        // Fetch Salt
-        $salt = $this->generateSalt();
-
-        // HexDecode Password
-        $password = pack('H*', $this->params()->fromPost('password'));
-
-        // Decrypt Password
-        $password = base64_decode(\VuFind\Crypt\RC4::encrypt($salt, $password));
-
-        // Update the request with the decrypted password:
-        $this->getRequest()->getPost()->set('password', $password);
-
-        // Authenticate the user:
-        try {
-            $this->getAuthManager()->login($this->getRequest());
-        } catch (AuthException $e) {
-            return $this->output(
-                $this->translate($e->getMessage()),
-                self::STATUS_ERROR,
-                401
-            );
-        }
-
-        return $this->output(true, self::STATUS_OK);
     }
 
     /**
@@ -848,7 +790,7 @@ class AjaxController extends AbstractBase
             $facets[$field]['removalURL']
                 = $results->getUrlQuery()->removeFacet(
                     $field,
-                    isset($filters[$field][0]) ? $filters[$field][0] : null
+                    $filters[$field][0] ?? null
                 )->getParams(false);
         }
         return $this->output($facets, self::STATUS_OK);
@@ -1157,7 +1099,7 @@ class AjaxController extends AbstractBase
         // Sort the returned links into categories based on service type:
         $electronic = $print = $services = [];
         foreach ($result as $link) {
-            switch (isset($link['service_type']) ? $link['service_type'] : '') {
+            switch ($link['service_type'] ?? '') {
             case 'getHolding':
                 $print[] = $link;
                 break;
