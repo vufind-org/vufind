@@ -1,6 +1,6 @@
 <?php
 /**
- * "Trending items" channel provider.
+ * "Trending ILS items" channel provider.
  *
  * PHP version 5
  *
@@ -28,7 +28,7 @@
 namespace VuFind\ChannelProvider;
 
 /**
- * "Trending items" channel provider.
+ * "Trending ILS items" channel provider.
  *
  * @category VuFind
  * @package  Channels
@@ -36,7 +36,7 @@ namespace VuFind\ChannelProvider;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TrendingItems extends AbstractILSChannelProvider
+class TrendingILSItems extends AbstractILSChannelProvider
 {
     /**
      * Channel title (will be run through translator).
