@@ -2,6 +2,8 @@
 
 namespace TueFind\View\Helper\TueFind;
 
+use Zend\ServiceManager\ServiceManager;
+
 /**
  * General View Helper for TueFind, containing miscellaneous functions
  */
@@ -9,6 +11,12 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
               implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
+    protected $sm;
+
+    public function __construct(ServiceManager $sm) {
+        $this->sm = $sm;
+    }
 
     /**
      * Check if a facet value is equal to '[Unassigned]' or its translation
@@ -18,6 +26,16 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      */
     function isUnassigned($value) {
         return ($value == '[Unassigned]') || ($value == $this->translate('[Unassigned]'));
+    }
+
+    /**
+     * Get name of the current controller
+     * (If no Controller is found in URL, returns default value 'index')
+     *
+     * @return string
+     */
+    function getControllerName() {
+        return $this->sm->getServiceLocator()->get('application')->getMvcEvent()->getRouteMatch()->getParam('controller', 'index');
     }
 
     /**
