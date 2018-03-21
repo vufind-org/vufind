@@ -94,7 +94,7 @@ class Xml extends AbstractBase
             // otherwise, we can just collect flat values.
             if ($this->sort) {
                 $positions = $this->getHierarchyPositionsInParents($current);
-                $sequence = isset($positions[$parentID]) ? $positions[$parentID] : 0;
+                $sequence = $positions[$parentID] ?? 0;
                 $parts[] = [$sequence, $childNode];
             } else {
                 $parts[] = $childNode;

@@ -3,7 +3,7 @@
     <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./", 'filter' => "/^{$this->title}:.*/"])?>
     <input type="hidden" name="<?=$this->escapeHtmlAttr($this->facet['type'])?>range[]" value="<?=$this->escapeHtmlAttr($this->title)?>"/>
     <div class="date-fields">
-      <? $extraInputAttribs = ($this->facet['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
+      <?php $extraInputAttribs = ($this->facet['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
       <div class="date-from">
         <label for="<?=$this->escapeHtmlAttr($this->title)?>from">
           <?=$this->transEsc('date_from')?>:
@@ -17,16 +17,16 @@
         <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($this->title)?>to" id="<?=$this->escapeHtmlAttr($this->title)?>to" value="<?=isset($this->facet['values'][1])?$this->escapeHtmlAttr($this->facet['values'][1]):''?>" <?=$extraInputAttribs?>/>
       </div>
     </div>
-    <? if ($this->facet['type'] == 'date'): ?>
+    <?php if ($this->facet['type'] == 'date'): ?>
       <div class="slider-container"><input type="text" class="hidden" id="<?=$this->escapeHtmlAttr($this->title)?><?=$this->escapeHtml($this->facet['type'])?>Slider"/></div>
-    <? endif; ?>
+    <?php endif; ?>
     <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Set')?>"/>
   </form>
 </div>
-<? if ($this->facet['type'] == 'date'): ?>
-  <? $this->headScript()->appendFile('vendor/bootstrap-slider.min.js'); ?>
-  <? $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css'); ?>
-  <?
+<?php if ($this->facet['type'] == 'date'): ?>
+  <?php $this->headScript()->appendFile('vendor/bootstrap-slider.min.js'); ?>
+  <?php $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css'); ?>
+  <?php
     $min = !empty($this->facet['values'][0]) ? min($this->facet['values'][0], 1400) : 1400;
     $future = date('Y', time() + 31536000); // next year
     $max = !empty($this->facet['values'][1]) ? max($future, $this->facet['values'][1]) : $future;
@@ -66,4 +66,4 @@ $('#{$this->escapeHtmlAttr($this->title)}from, #{$this->escapeHtmlAttr($this->ti
 JS;
   ?>
   <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-<? endif; ?>
+<?php endif; ?>

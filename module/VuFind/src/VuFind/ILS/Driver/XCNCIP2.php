@@ -896,10 +896,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         return [
             'firstname' => (string)$first[0],
             'lastname' => (string)$last[0],
-            'address1' => isset($address[0]) ? $address[0] : '',
-            'address2' => (isset($address[1]) ? $address[1] : '') .
+            'address1' => $address[0] ?? '',
+            'address2' => ($address[1] ?? '') .
                 (isset($address[2]) ? ', ' . $address[2] : ''),
-            'zip' => isset($address[3]) ? $address[3] : '',
+            'zip' => $address[3] ?? '',
             'phone' => '',  // TODO: phone number support
             'group' => ''
         ];

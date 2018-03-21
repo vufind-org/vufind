@@ -1,4 +1,4 @@
-<?
+<?php
     // Set page title.
     $this->headTitle($this->translate('Description') . ': ' . $this->driver->getBreadcrumb());
 
@@ -7,11 +7,11 @@
 ?>
 <table class="table table-striped">
   <caption class="sr-only"><?=$this->transEsc('Description')?></caption>
-  <? if (!empty($mainFields)): ?>
-    <? foreach ($mainFields as $key => $current): ?>
+  <?php if (!empty($mainFields)): ?>
+    <?php foreach ($mainFields as $key => $current): ?>
       <tr><th><?=$this->transEsc($key)?>:</th><td><?=$current['value']?></td></tr>
-    <? endforeach; ?>
-  <? else: ?>
+    <?php endforeach; ?>
+  <?php else: ?>
     <tr><td><?=$this->transEsc('no_description')?></td></tr>
-  <? endif; ?>
+  <?php endif; ?>
 </table>

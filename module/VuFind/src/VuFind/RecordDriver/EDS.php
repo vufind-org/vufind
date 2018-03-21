@@ -199,8 +199,8 @@ class EDS extends DefaultRecord
         if (isset($this->fields['Items']) && !empty($this->fields['Items'])) {
             foreach ($this->fields['Items'] as $item) {
                 $items[] = [
-                    'Label' => isset($item['Label']) ? $item['Label'] : '',
-                    'Group' => isset($item['Group']) ? $item['Group'] : '',
+                    'Label' => $item['Label'] ?? '',
+                    'Group' => $item['Group'] ?? '',
                     'Data'  => isset($item['Data'])
                         ? $this->toHTML($item['Data'], $item['Group']) : ''
                 ];

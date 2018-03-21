@@ -645,8 +645,8 @@ class AbstractSearch extends AbstractBase
     protected function processAdvancedCheckboxes($params, $savedSearch = false)
     {
         // Set defaults for missing parameters:
-        $config = isset($params[0]) ? $params[0] : 'facets';
-        $section = isset($params[1]) ? $params[1] : 'CheckboxFacets';
+        $config = $params[0] ?? 'facets';
+        $section = $params[1] ?? 'CheckboxFacets';
 
         // Load config file:
         $config = $this->serviceLocator->get('VuFind\Config\PluginManager')

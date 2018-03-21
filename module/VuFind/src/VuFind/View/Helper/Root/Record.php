@@ -648,8 +648,7 @@ class Record extends AbstractHelper
 
             // Build URL from route/query details if missing:
             if (!isset($link['url'])) {
-                $routeParams = isset($link['routeParams'])
-                    ? $link['routeParams'] : [];
+                $routeParams = $link['routeParams'] ?? [];
 
                 $link['url'] = $serverUrlHelper(
                     $urlHelper($link['route'], $routeParams)

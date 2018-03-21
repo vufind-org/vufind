@@ -1,20 +1,20 @@
-<? $mapType = $this->tab->getMapType(); ?>
-<? if (isset($mapType) && (($mapType == 'openlayers') || ($mapType == 'leaflet'))) : ?>
-  <? if ($mapType == 'openlayers') :?>
-     <?
+<?php $mapType = $this->tab->getMapType(); ?>
+<?php if (isset($mapType) && (($mapType == 'openlayers') || ($mapType == 'leaflet'))) : ?>
+  <?php if ($mapType == 'openlayers') :?>
+     <?php
        $this->headScript()->appendFile('vendor/ol/ol.js');
        $this->headScript()->appendFile('map_tab_ol.js');
        $this->headLink()->appendStylesheet('vendor/ol/ol.css');
      ?>
-  <? elseif ($mapType == 'leaflet') : ?>
-     <?
+  <?php elseif ($mapType == 'leaflet') : ?>
+     <?php
        $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
        $this->headScript()->appendFile('vendor/leaflet/leaflet.latlng-graticule.js');
        $this->headScript()->appendFile('map_tab_leaflet.js');
        $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.css');
      ?>
-  <? endif; ?>
-  <?
+  <?php endif; ?>
+  <?php
     $mapTabData = $this->tab->getMapTabData($mapType);
     $mapGraticule = $this->tab->getMapGraticule();
     $basemap = $this->tab->getBasemap();
@@ -25,10 +25,11 @@
     } elseif ($mapType == 'leaflet') {
       $params = [json_encode($mapTabData), json_encode($mapGraticule), json_encode($basemap)];
     }
-  $jsParams = implode(', ', $params);
-  $jsLoad = "loadMapTab(" . $jsParams . ");"; ?>
+    $jsParams = implode(', ', $params);
+    $jsLoad = "loadMapTab(" . $jsParams . ");";
+  ?>
   <div id="wrap" style="width: inherit; height: 479px">
     <div id="map-canvas" style="width: 100%; height: 100%"><div id="popup"></div></div>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET');?>
   </div>
-<? endif; ?>
+<?php endif; ?>

@@ -174,7 +174,7 @@ class VuFindSitemap extends VuFind
         preg_match_all(
             '/<meta name="useCount" content="([^"]*)"/ms', $html, $matches
         );
-        $useCount = isset($matches[1][0]) ? $matches[1][0] : 1;
+        $useCount = $matches[1][0] ?? 1;
 
         return [
             'category' => $categories,

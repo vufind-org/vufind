@@ -1,5 +1,5 @@
-<? if ($this->recommend->getSearchResultCoordinates()) :?>
-<?
+<?php if ($this->recommend->getSearchResultCoordinates()) :?>
+<?php
   $geoPlatform = $this->recommend->getGeoPlatform();
   //Include files based on geoPlatform configuration
   if ($geoPlatform == 'openlayers') {
@@ -63,10 +63,10 @@ EOF;
       <div id="popup"></div>
     </div>
   </div>
-  <? if ($showSelection) :?>
+  <?php if ($showSelection) :?>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET');?>
-  <? else: ?>
+  <?php else: ?>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $addSearchOption, 'SET');?>
-  <? endif; ?>
+  <?php endif; ?>
 </div>
-<? endif; ?>
+<?php endif; ?>

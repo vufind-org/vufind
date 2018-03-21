@@ -46,7 +46,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'aleph' => 'VuFind\ILS\Driver\Aleph',
         'amicus' => 'VuFind\ILS\Driver\Amicus',
-        'claviussql' => 'VuFind\ILS\Driver\ClaviusSQL',
         'daia' => 'VuFind\ILS\Driver\DAIA',
         'demo' => 'VuFind\ILS\Driver\Demo',
         'evergreen' => 'VuFind\ILS\Driver\Evergreen',
@@ -80,8 +79,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         'VuFind\ILS\Driver\Aleph' => 'VuFind\ILS\Driver\AlephFactory',
         'VuFind\ILS\Driver\Amicus' => 'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\ILS\Driver\ClaviusSQL' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\ILS\Driver\DAIA' =>
             'VuFind\ILS\Driver\DriverWithDateConverterFactory',
         'VuFind\ILS\Driver\Demo' => 'VuFind\ILS\Driver\DemoFactory',

@@ -262,8 +262,7 @@ class Map extends AbstractBase
                     $coordmatch = implode('', explode(' ', $val));
                     /* See if coordinate string matches lookup
                         table coordinates and if so return label */
-                    $labelname = isset($label_lookup[$coordmatch])
-                        ? $label_lookup[$coordmatch] : '';
+                    $labelname = $label_lookup[$coordmatch] ?? '';
                     array_push($labels, $labelname);
                 }
             }
