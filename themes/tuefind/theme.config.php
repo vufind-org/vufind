@@ -4,9 +4,7 @@ return [
     'helpers' => [
         'factories' => [
             'helptext' => 'TueFind\View\Helper\Root\Factory::getHelpText',
-        ],
-        'invokables' => [
-            'tuefind' => 'TueFind\View\Helper\TueFind\TueFind',
+            'tuefind' => 'TueFind\View\Helper\TueFind\Factory::getTueFind',
         ],
     ],
     'css' => [
