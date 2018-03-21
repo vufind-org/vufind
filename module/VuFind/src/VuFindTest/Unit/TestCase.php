@@ -254,6 +254,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Creates a configuration manager instance.
+     *
      * @return \VuFind\Config\Manager
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
