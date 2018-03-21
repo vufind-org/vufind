@@ -165,6 +165,8 @@ header {
   .facet-group {
     margin-left: 1rem;
     margin-right: 1rem;
+    background-color: @sidebar-item-bg;
+    color: @sidebar-item-color;
   }
   /* Collapsed arrows */
   .facet-group .title {
@@ -182,10 +184,6 @@ header {
   .active-filters .title::after,
   #advSearchForm & .title:after { content: none; } // No arrow on active filter title
 
-  .facet {
-    background-color: @sidebar-item-bg;
-    color: @sidebar-item-color;
-  }
   a.facet:hover,
   .facet.checkbox:hover { background-color: @sidebar-item-hover-bg; }
 
@@ -193,6 +191,7 @@ header {
   .facet.active:hover,
   .active-filters .facet,
   .active-filters .facet:hover,
+  .active .jstree-anchor,
   .jstree-facet .jstree-container-ul > .active {
     border-color: @sidebar-active-bg;
     background-color: @sidebar-active-bg;
