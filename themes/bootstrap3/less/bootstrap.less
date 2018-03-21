@@ -303,7 +303,8 @@ div.holding-details {
     display: flex;
 
     .holding-field {
-        flex: 0 1 0;
+        flex: 1 1 0;
+        min-width: 9em;
         padding-left: 0.5rem;
         padding-right: 0.5rem;
     }
@@ -324,6 +325,10 @@ div.holding-details {
     .due-date:before {
         content: "\2013";
         padding-right: 0.3em;
+    }
+
+    .due-date {
+        white-space: nowrap;
     }
 }
 
