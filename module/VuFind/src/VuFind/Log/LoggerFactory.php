@@ -118,7 +118,7 @@ class LoggerFactory implements FactoryInterface
      */
     protected function addFileWriters(Logger $logger, $config)
     {
-        // Make sure to use only the last ‘:’ after second character to avoid trouble
+        // Make sure to use only the last ':' after second character to avoid trouble
         // with Windows drive letters (e.g. "c:\something\logfile:error-5")
         $pos = strrpos($config, ':', 2);
         if ($pos > 0) {
