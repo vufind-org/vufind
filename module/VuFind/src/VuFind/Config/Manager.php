@@ -42,48 +42,69 @@ use Zend\Config\Config;
 class Manager
 {
     /**
+     * Contains the all aggregated configuration data loaded and looked up only
+     * in case a look-up on the already demanded configuration data has failed.
+     *
+     * @var Config
+     */
+    protected $aggregatedConfig;
+
+
+    /**
+     * Path to the PHP file which {@see \Zend\ConfigAggregator\ConfigAggregator}
+     * will use for caching the aggregated configuration.
+     *
+     * @var string
+     */
+    protected $aggregatedConfigPath;
+
+    /**
+     * Path to PHP file returning a {@see \Closure} creating an instance
+     * of {@see \Zend\ConfigAggregator\ConfigAggregator} when called.
+     *
+     * @var string
+     */
+    protected $configAggregatorPath;
+
+    /**
+     * Contains only the demanded configuration data.
+     *
+     * @var Config
+     */
+    protected $demandedConfig;
+
+    /**
+     * Path to PHP file used for caching the demanded configuraton data.
+     *
+     * @var string
+     */
+    protected $demandedConfigPath;
+
+
+    /**
+     * Flag specifying whether the cached configuration data should be used.
+     *
      * @var bool
      */
     protected $useCache;
 
     /**
-     * @var string
-     */
-    protected $configPath;
-
-    /**
-     * @var string
-     */
-    protected $entireConfigPath;
-
-    /**
-     * @var string
-     */
-    protected $managedConfigPath;
-
-    /**
-     * Contains the entire aggregated configuration data to be loaded and looked
-     * up only in case a look-up on the sparse configuration failed.
+     * Manager constructor.
      *
-     * @var Config
+     * @param string $configAggregatorPath {@see Manager::$configAggregatorPath}
+     * @param string $cacheDir             Base directory of
+     *                                     {@see Manager::$aggregatedConfigPath} and
+     *                                     {@see Manager::$demandedConfigPath}
+     * @param bool   $useCache             {@see Manager::$useCache}
      */
-    protected $entireConfig;
-
-    /**
-     * Contains only the demanded configuration
-     *
-     * @var Config
-     */
-    protected $managedConfig;
-
     public function __construct(
-        string $configPath,
+        string $configAggregatorPath,
         string $cacheDir,
         bool $useCache
     ) {
-        $this->configPath = realpath($configPath);
-        $this->entireConfigPath = "$cacheDir/entire.php";
-        $this->managedConfigPath = "$cacheDir/managed.php";
+        $this->configAggregatorPath = realpath($configAggregatorPath);
+        $this->aggregatedConfigPath = "$cacheDir/aggregated.config.php";
+        $this->demandedConfigPath = "$cacheDir/demanded.config.php";
         $this->useCache = $useCache;
 
         if (!$useCache) {
@@ -94,7 +115,8 @@ class Manager
     /**
      * Gets the configuration section at the specfied path.
      *
-     * @param string $path
+     * @param string $path Path expression using forward slashes to separate
+     *                     sections.
      *
      * @return Config
      */
@@ -106,30 +128,29 @@ class Manager
     /**
      * Gets the configuration value at the specified path.
      *
-     * @param string $path
+     * @param string $path Path expression using forward slashes to separate
+     *                     sections
      *
-     * @return mixed
+     * @return mixed The value
      */
     public function getValue(string $path = '/')
     {
         // normalize path into an array of segments
         $path = ($path = trim($path, '/')) ? explode('/', $path) : [];
-
-        $managedConfig = $this->getManagedConfig();
-
-        // return the configuration if already loaded
-        if ($this->trueOn($managedConfig, 'demanded', ...$path)) {
-            return $this->getAt($managedConfig, 'content', ...$path);
+        // get the already demanded configuration data
+        $demandedConfig = $this->getDemandedConfig();
+        // if the given path was already demanded return the corresponding data
+        if ($this->trueOn($demandedConfig, 'demanded', ...$path)) {
+            return $this->getAt($demandedConfig, 'content', ...$path);
         }
-
-        // otherwise look-up the entire configuration
-        $data = $this->getAt($this->getEntireConfig(), ...$path);
-        // store the data in the sparse configuration
-        $this->setAt($managedConfig, $data, 'content', ...$path);
-        // flag the data as «loaded» for this path
-        $this->setAt($managedConfig, true, 'demanded', ...$path);
-        // write sparse configuration to cache file
-        Factory::toFile($this->managedConfigPath, $managedConfig);
+        // otherwise look-up the aggregated configuration,
+        $data = $this->getAt($this->getAggregatedConfig(), ...$path);
+        // then store the data in the demanded configuration object,
+        $this->setAt($demandedConfig, $data, 'content', ...$path);
+        // then flag the data as «demanded» for the specified path,
+        $this->setAt($demandedConfig, true, 'demanded', ...$path);
+        // then cache the demanded configuration
+        Factory::toFile($this->demandedConfigPath, $demandedConfig);
         // finally return the configuration data
         return $data;
     }
@@ -139,14 +160,14 @@ class Manager
      */
     public function reset()
     {
-        $this->managedConfig = $this->entireConfig = null;
+        $this->demandedConfig = $this->aggregatedConfig = null;
 
-        if (file_exists($this->entireConfigPath)) {
-            unlink($this->entireConfigPath);
+        if (file_exists($this->aggregatedConfigPath)) {
+            unlink($this->aggregatedConfigPath);
         }
 
-        if (file_exists($this->managedConfigPath)) {
-            unlink($this->managedConfigPath);
+        if (file_exists($this->demandedConfigPath)) {
+            unlink($this->demandedConfigPath);
         }
     }
 
@@ -208,9 +229,9 @@ class Manager
      *
      * @return Config
      */
-    protected function getManagedConfig(): Config
+    protected function getDemandedConfig(): Config
     {
-        return $this->managedConfig ?: $this->loadManagedConfig();
+        return $this->demandedConfig ?: $this->loadDemandedConfig();
     }
 
     /**
@@ -218,33 +239,33 @@ class Manager
      *
      * @return Config
      */
-    protected function loadManagedConfig(): Config
+    protected function loadDemandedConfig(): Config
     {
-        $data = $this->useCache && file_exists($this->managedConfigPath)
-            ? Factory::fromFile($this->managedConfigPath)
+        $data = $this->useCache && file_exists($this->demandedConfigPath)
+            ? Factory::fromFile($this->demandedConfigPath)
             : ['demanded' => [], 'content' => []];
-        return $this->managedConfig = new Config($data, true);
+        return $this->demandedConfig = new Config($data, true);
     }
 
     /**
-     * Gets the entire configuration.
+     * Get the aggregated configuration.
      *
      * @return Config
      */
-    protected function getEntireConfig(): Config
+    protected function getAggregatedConfig(): Config
     {
-        return $this->entireConfig ?: $this->loadEntireConfig();
+        return $this->aggregatedConfig ?: $this->loadAggregatedConfig();
     }
 
     /**
-     * Loads the entire configuration.
+     * Load the aggregated configuration.
      *
      * @return Config
      */
-    protected function loadEntireConfig(): Config
+    protected function loadAggregatedConfig(): Config
     {
-        $getAggregtor = require $this->configPath;
-        $data = $getAggregtor($this->entireConfigPath)->getMergedConfig();
-        return $this->entireConfig = new Config($data, true);
+        $getAggregator = require $this->configAggregatorPath;
+        $data = $getAggregator($this->aggregatedConfigPath)->getMergedConfig();
+        return $this->aggregatedConfig = new Config($data, true);
     }
 }
