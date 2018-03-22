@@ -9,12 +9,15 @@
   $urls = $this->record($this->driver)->getLinkDetails();
   if (!empty($urls)){
       $videoUrls = [];
+      $audioUrls = [];
       $otherUrls = [];
       foreach ($urls as $url){
           if (!empty($url['videoSources']) || !empty($url['embed']) && $url['embed'] == 'video' || $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe'){
-              array_push($videoUrls, $url);
+            array_push($videoUrls, $url);
+          } elseif (!empty($url['embed']) && $url['embed'] == 'audio') {
+            array_push($audioUrls, $url);
           } else {
-              array_push($otherUrls, $url);
+            array_push($otherUrls, $url);
           }
       }
   }
@@ -23,22 +26,6 @@
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   ob_start(); ?>
   <div class="media-<?=$thumbnailAlignment ?>">
-    <? if (!empty($videoUrls)): ?>
-        <? foreach ($videoUrls as $url): ?>
-            <? $description = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
-            <? $desc = $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe' ? $this->translate('format_Video') : $description; ?>
-        <div class="video-link-container">
-          <a class="videourl fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"
-              <? if (!empty($url['videoSources'])): ?> data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<? endif; ?>
-              <?= $this->recordLink()->getEmbeddedVideo($url['url']) ?>
-              <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
-          >
-            <div class="video-icon"><i class="fa fa-play-circle"></i></div>
-            <div class="video-desc"><?=$this->escapeHtml($desc)?></div>
-          </a>
-        </div>
-        <? endforeach; ?>
-    <? endif; ?>
 
     <div class="image-information">
       <div class="cover-wrapper">
@@ -58,6 +45,27 @@
          // getPreviewLink() (can go in your desired tab) ?>
       <?=$this->record($this->driver)->getPreviews()?>
     </div>
+
+    <? if (!empty($videoUrls)): ?>
+        <? foreach ($videoUrls as $url): ?>
+            <? $description = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
+            <? $desc = $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe' ? $this->translate('format_Video') : $description; ?>
+        <div class="video-link-container">
+          <a class="videourl fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"
+              <? if (!empty($url['videoSources'])): ?> data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<? endif; ?>
+              <?= $this->recordLink()->getEmbeddedVideo($url['url']) ?>
+              <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
+          >
+            <div class="video-icon"><i class="fa fa-play-circle"></i></div>
+            <div class="video-desc"><?=$this->escapeHtml($desc)?></div>
+          </a>
+        </div>
+        <? endforeach; ?>
+    <? endif; ?>
+    
+    <? if (!empty($audioUrls)): ?>
+      <?= $this->partial('RecordDriver/SolrDefault/record-audio-player.phtml', ['audioUrls' => $audioUrls]) ?>
+    <? endif; ?>
 
     <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr'): ?>
       <div class="organisation-menu">
