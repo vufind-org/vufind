@@ -32,11 +32,12 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * VuFind YAML Configuration Reader
  *
- * @category VuFind
- * @package  Config
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @category   VuFind
+ * @package    Config
+ * @author     Demian Katz <demian.katz@villanova.edu>
+ * @license    http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link       https://vufind.org Main Site
+ * @deprecated Deprecated since X.0.0
  */
 class YamlReader
 {
@@ -96,7 +97,7 @@ class YamlReader
      *
      * @param string $defaultFile Full path to file containing default YAML
      * @param string $customFile  Full path to file containing local customizations
-     * (may be null if no local file exists).
+     *                            (may be null if no local file exists).
      *
      * @return array
      */
@@ -129,10 +130,10 @@ class YamlReader
      * Process a YAML file (and its parent, if necessary).
      *
      * @param string $file          YAML file to load (will evaluate to empty array
-     * if file does not exist).
+     *                              if file does not exist).
      * @param string $defaultParent Parent YAML file from which $file should
-     * inherit (unless overridden by a specific directive in $file). None by
-     * default.
+     *                              inherit (unless overridden by a specific directive in $file). None by
+     *                              default.
      *
      * @return array
      */

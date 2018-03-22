@@ -44,21 +44,23 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * @author     Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license    http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link       https://vufind.org/wiki/development Wiki
- * @deprecated File deprecated since X.0.0
+ * @deprecated Deprecated since X.0.0
  */
 class PluginManagerFactory implements FactoryInterface
 {
     /**
-     * @param ContainerInterface $container Service manager
+     * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
-     * @param array|null         $options Extra options (optional)
+     * @param array|null         $options       Extra options (optional)
      *
      * @return object|PluginManager
      * @throws \Exception
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {

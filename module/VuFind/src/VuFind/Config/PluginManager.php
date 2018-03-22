@@ -45,7 +45,7 @@ use Zend\ServiceManager\AbstractPluginManager;
  * @author     Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license    http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link       https://vufind.org/wiki/development Wiki
- * @deprecated File deprecated since X.0.0
+ * @deprecated Deprecated since X.0.0
  */
 class PluginManager extends AbstractPluginManager
 {
