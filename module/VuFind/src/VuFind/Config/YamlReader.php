@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Config;
 
 use Symfony\Component\Yaml\Yaml;
@@ -108,10 +109,10 @@ class YamlReader
             ? $this->cacheManager->getCache($this->cacheName) : false;
 
         // Generate cache key:
-        $cacheKey = basename($defaultFile) . '-'
-            . (file_exists($defaultFile) ? filemtime($defaultFile) : 0);
+        $cacheKey = basename($defaultFile).'-'
+            .(file_exists($defaultFile) ? filemtime($defaultFile) : 0);
         if (!empty($customFile)) {
-            $cacheKey .= '-local-' . filemtime($customFile);
+            $cacheKey .= '-local-'.filemtime($customFile);
         }
         $cacheKey = md5($cacheKey);
 
@@ -132,8 +133,8 @@ class YamlReader
      * @param string $file          YAML file to load (will evaluate to empty array
      *                              if file does not exist).
      * @param string $defaultParent Parent YAML file from which $file should
-     *                              inherit (unless overridden by a specific directive in $file). None by
-     *                              default.
+     *                              inherit (unless overridden by a specific
+     *                              directive in $file). None by default.
      *
      * @return array
      */
@@ -152,7 +153,8 @@ class YamlReader
 
         // Now load in missing sections from parent, if applicable:
         if (null !== $defaultParent) {
-            foreach ($this->parseYaml($defaultParent) as $section => $contents) {
+            $parentYaml = $this->parseYaml($defaultParent);
+            foreach ($parentYaml as $section => $contents) {
                 if (!isset($results[$section])) {
                     $results[$section] = $contents;
                 }

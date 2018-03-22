@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config\Provider;
 
 use Zend\ConfigAggregator\ConfigAggregator;
@@ -40,6 +41,11 @@ use Zend\ConfigAggregator\ConfigAggregator;
  */
 class Basic extends Base
 {
+    /**
+     * Basic constructor.
+     *
+     * @param array $patterns List of glob patterns.
+     */
     public function __construct(array $patterns)
     {
         parent::__construct($patterns);
@@ -49,9 +55,15 @@ class Basic extends Base
         $this->attach(new Filter\Merge, 1000000);
     }
 
+    /**
+     * Invokes this configuration provider.
+     *
+     * @return array
+     */
     public function __invoke(): array
     {
         $cacheOpts = [ConfigAggregator::ENABLE_CACHE => true];
+
         return array_replace($cacheOpts, parent::__invoke());
     }
 }

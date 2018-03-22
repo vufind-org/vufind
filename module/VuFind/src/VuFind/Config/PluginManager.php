@@ -27,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config;
 
 use Interop\Container\ContainerInterface;
@@ -50,6 +51,8 @@ use Zend\ServiceManager\AbstractPluginManager;
 class PluginManager extends AbstractPluginManager
 {
     /**
+     * The wrapped configuration manager.
+     *
      * @var Manager
      */
     protected $manager;
@@ -57,7 +60,7 @@ class PluginManager extends AbstractPluginManager
     /**
      * PluginManager constructor.
      *
-     * @param ContainerInterface $container
+     * @param ContainerInterface $container Container
      *
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -69,12 +72,14 @@ class PluginManager extends AbstractPluginManager
     }
 
     /**
-     * @param string     $name
-     * @param array|null $options
+     * Access configuration data by path.
+     *
+     * @param string     $name    Configuration path.
+     * @param array|null $options Unused options.
      *
      * @return Config
      */
-    public function get($name, array $options = null) : Config
+    public function get($name, array $options = null): Config
     {
         return $this->manager->getConfig($name);
     }
@@ -83,21 +88,24 @@ class PluginManager extends AbstractPluginManager
      * Validate the plugin
      *
      * @param mixed $plugin Plugin to validate
+     *
+     * @return void
      */
     public function validate($plugin)
     {
     }
 
     /**
-     * Reload a configuration
+     * Reload configuration and access data by path. See {@see PluginManager::get()}
      *
-     * @param string $name
+     * @param string $name {@see PluginManager::get()}
      *
      * @return \Zend\Config\Config
      */
     public function reload($name)
     {
         $this->manager->reset();
+
         return $this->get($name);
     }
 }

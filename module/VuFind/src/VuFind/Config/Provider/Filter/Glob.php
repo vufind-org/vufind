@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config\Provider\Filter;
 
 use Webmozart\Glob\Glob as Globber;
@@ -41,19 +42,40 @@ use Zend\EventManager\Filter\FilterIterator as Chain;
  */
 class Glob
 {
-    public function __invoke($provider, array $patterns = [], Chain $chain)
+    /**
+     * Invokes this filter.
+     *
+     * @param mixed $context  Reference to filter context.
+     * @param array $patterns List of glob patterns to be processed.
+     * @param Chain $chain    The remaining filter chain.
+     *
+     * @return array
+     */
+    public function __invoke($context, array $patterns, Chain $chain)
     {
         $result = array_merge(...array_map([$this, 'load'], $patterns));
+
         return $chain->isEmpty() ? $result
-            : $chain->next($provider, $result, $chain);
+            : $chain->next($context, $result, $chain);
     }
 
+    /**
+     * Loads a single glob pattern.
+     *
+     * @param string $pattern The glob pattern to be loaded.
+     *
+     * @return array
+     */
     public function load(string $pattern)
     {
         $base = Globber::getBasePath($pattern);
-        return array_map(function ($path) use ($pattern, $base) {
-            $ext = pathinfo($path, PATHINFO_EXTENSION);
-            return compact('base', 'ext', 'path', 'pattern');
-        }, Globber::glob($pattern));
+
+        return array_map(
+            function ($path) use ($pattern, $base) {
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
+
+                return compact('base', 'ext', 'path', 'pattern');
+            }, Globber::glob($pattern)
+        );
     }
 }

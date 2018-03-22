@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config;
 
 use Zend\Config\Config;
@@ -88,11 +89,13 @@ class Manager
     /**
      * Manager constructor.
      *
-     * @param string $aggregatorPath       {@see Manager::$aggregatorPath}
-     * @param string $cacheDir             Base directory of
-     *                                     {@see Manager::$aggregatedConfigPath} and
-     *                                     {@see Manager::$demandedConfigPath}
-     * @param bool   $useCache             {@see Manager::$useCache}
+     * @param string $aggregatorPath {@see Manager::$aggregatorPath}
+     * @param string $cacheDir       Base directory of
+     *                               {@see
+     *                               Manager::$aggregatedConfigPath}
+     *                               and {@see
+     *                               Manager::$demandedConfigPath}
+     * @param bool   $useCache       {@see Manager::$useCache}
      */
     public function __construct(
         string $aggregatorPath,
@@ -121,6 +124,7 @@ class Manager
     public function getConfig(string $path = '/'): Config
     {
         $config = $this->getValue($path) ?? new Config([]);
+
         return new Config($config->toArray());
     }
 
@@ -150,12 +154,15 @@ class Manager
         $this->setAt($demandedConfig, true, 'demanded', ...$path);
         // then cache the demanded configuration
         Factory::toFile($this->demandedConfigPath, $demandedConfig);
+
         // finally return the configuration data
         return $data;
     }
 
     /**
      * Deletes cached configuration files and resets the manager accordingly.
+     *
+     * @return void
      */
     public function reset()
     {
@@ -171,16 +178,18 @@ class Manager
     }
 
     /**
-     * Checks if some value on the given path strictly equals true.
+     * Checks if some nested configuration value reachable on a given path
+     * strictly equals true.
      *
-     * @param Config $config
-     * @param array  $path
+     * @param Config $config  The configuration object to check.
+     * @param array  ...$path The path to check.
      *
      * @return bool
      */
     protected function trueOn(Config $config, ...$path): bool
     {
         $head = $config->{array_shift($path)};
+
         return $head instanceof Config ?
             $this->trueOn($head, ...$path) : $head === true;
     }
@@ -189,9 +198,9 @@ class Manager
      * Sets a configuration value at the specified path recursively creating
      * a nested configuration for each non-existing intermediate path segment.
      *
-     * @param Config $config
-     * @param mixed  $value
-     * @param array  ...$path
+     * @param Config $config  The configuration object to be mutated.
+     * @param mixed  $value   The value to be set.
+     * @param array  ...$path The path within the configuration to be altered.
      *
      * @return Config
      */
@@ -210,17 +219,18 @@ class Manager
     }
 
     /**
-     * Gets a configuration value at the specified path or null in case the
-     * specified does not exist.
+     * Gets a nested configuration value reachable via a given path.
      *
-     * @param Config $config
-     * @param array  $path
+     * @param Config $config  The configuration object to look up.
+     * @param array  ...$path The path to the nested value.
      *
-     * @return mixed|null
+     * @return mixed|null The value reachable at the given path or null
+     *                    in case the path does not exist.
      */
     protected function getAt(Config $config, ...$path)
     {
         $head = $config->{array_shift($path)};
+
         return $path ? $this->getAt($head ?? new Config([]), ...$path) : $head;
     }
 
@@ -244,6 +254,7 @@ class Manager
         $data = $this->useCache && file_exists($this->demandedConfigPath)
             ? Factory::fromFile($this->demandedConfigPath)
             : ['demanded' => [], 'content' => []];
+
         return $this->demandedConfig = new Config($data, true);
     }
 
@@ -264,8 +275,9 @@ class Manager
      */
     protected function loadAggregatedConfig(): Config
     {
-        $getAggregator = require $this->aggregatorPath;
+        $getAggregator = include $this->aggregatorPath;
         $data = $getAggregator($this->aggregatedConfigPath)->getMergedConfig();
+
         return $this->aggregatedConfig = new Config($data, true);
     }
 }

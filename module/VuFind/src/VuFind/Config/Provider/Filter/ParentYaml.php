@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config\Provider\Filter;
 
 use VuFind\Config\Factory;
@@ -41,22 +42,49 @@ use Zend\EventManager\Filter\FilterIterator as Chain;
  */
 class ParentYaml
 {
-    public function __invoke($provider, array $items, Chain $chain): array
+    /**
+     * Invokes this filter.
+     *
+     * @param mixed $context Reference to filter context.
+     * @param array $items   List of items to be filtered.
+     * @param Chain $chain   The remaining filter chain.
+     *
+     * @return array
+     */
+    public function __invoke($context, array $items, Chain $chain): array
     {
         $result = array_map([$this, 'process'], $items);
+
         return $chain->isEmpty() ? $result
-            : $chain->next($provider, $result, $chain);
+            : $chain->next($context, $result, $chain);
     }
 
+    /**
+     * Processes a single item.
+     *
+     * @param array $item The item to be processed.
+     *
+     * @return array
+     */
     protected function process(array $item): array
     {
         if ($item['ext'] !== 'yaml') {
             return $item;
         }
         $data = $this->mergeParent($item['data']);
+
         return array_merge($item, compact('data'));
     }
 
+    /**
+     * Recursively merges in parent configuration data declared with
+     * <code>@parent_yaml</code> directives.
+     *
+     * @param array $child The processed configuration data optionally
+     *                     containing a <code>@parent_yaml</code> directive.
+     *
+     * @return array
+     */
     protected function mergeParent(array $child)
     {
         if (!isset($child['@parent_yaml'])) {
@@ -64,6 +92,7 @@ class ParentYaml
         }
         $parent = Factory::fromFile($child['@parent_yaml']);
         unset($child['@parent_yaml']);
+
         return $this->mergeParent(array_replace($parent, $child));
     }
 }

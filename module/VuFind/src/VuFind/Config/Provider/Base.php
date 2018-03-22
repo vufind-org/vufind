@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config\Provider;
 
 use Zend\EventManager\FilterChain;
@@ -47,6 +48,11 @@ class Base extends FilterChain
      */
     protected $seed;
 
+    /**
+     * Base constructor.
+     *
+     * @param array $seed {@ee Base::$seed}
+     */
     public function __construct(array $seed)
     {
         parent::__construct();

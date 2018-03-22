@@ -2,7 +2,8 @@
 /**
  * VuFind Configuration Provider ParentIni Filter
  *
- * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
+ * Copyright (C) 2010 Villanova University,
+ *               2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
  * PHP version 7
  *
@@ -21,10 +22,12 @@
  *
  * @category VuFind
  * @package  Config
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config\Provider\Filter;
 
 use VuFind\Config\Factory;
@@ -36,34 +39,55 @@ use Zend\EventManager\Filter\FilterIterator as Chain;
  *
  * @category VuFind
  * @package  Config
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 class ParentIni
 {
-    public function __invoke($provider, array $items, Chain $chain): array
+    /**
+     * Invokes this filter.
+     *
+     * @param mixed $context Reference to filter context.
+     * @param array $items   List of items to be filtered.
+     * @param Chain $chain   The remaining filter chain.
+     *
+     * @return array
+     */
+    public function __invoke($context, array $items, Chain $chain): array
     {
         $result = array_map([$this, 'process'], $items);
+
         return $chain->isEmpty() ? $result
-            : $chain->next($provider, $result, $chain);
+            : $chain->next($context, $result, $chain);
     }
 
+    /**
+     * Processes a single item.
+     *
+     * @param array $item The item to be processed.
+     *
+     * @return array
+     */
     protected function process(array $item)
     {
         if ($item['ext'] !== 'ini') {
             return $item;
         }
         $data = $this->mergeParent($item['path'], $item['data']);
+
         return array_merge($item, compact('data'));
     }
 
     /**
-     * Recursively merges parent configurations declared with «Parent_Config»
-     * and associated directives.
+     * Recursively merges in parent configuration data declared with
+     * <code>Parent_Config</code> and associated directives.
      *
-     * @param array  $childData
-     * @param string $childPath
+     * @param string $childPath The path to the processed configuration data.
+     * @param array  $childData The processed configuration data optionally
+     *                          containing a <code>Parent_Config</code>
+     *                          directive.
      *
      * @return array
      */
@@ -72,7 +96,7 @@ class ParentIni
         $child = new Config($childData, true);
         $settings = $child->Parent_Config ?: new Config([]);
         $parentPath = $settings->relative_path
-            ? dirname($childPath) . '/' . $settings->relative_path
+            ? dirname($childPath).'/'.$settings->relative_path
             : $settings->path;
 
         if (!$parentPath) {
@@ -121,6 +145,7 @@ class ParentIni
                 }
             }
         }
+
         return $this->mergeParent($parentPath, $parent->toArray());
     }
 }

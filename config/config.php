@@ -2,6 +2,8 @@
 /**
  * VuFind configuration aggregation
  *
+ * PHP version 7
+ *
  * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,6 +19,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc. 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
+ * @category VuFind
+ * @package  Config
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
@@ -25,7 +29,9 @@ use VuFind\Config\Provider\Standard as Provider;
 use Zend\ConfigAggregator\ConfigAggregator;
 
 return function ($cachePath) {
-    return new ConfigAggregator([
+    return new ConfigAggregator(
+        [
         new Provider
-    ], $cachePath);
+        ], $cachePath
+    );
 };

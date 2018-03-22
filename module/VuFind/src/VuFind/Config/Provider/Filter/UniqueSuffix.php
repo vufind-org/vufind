@@ -40,15 +40,31 @@ use Zend\EventManager\Filter\FilterIterator as Chain;
  */
 class UniqueSuffix
 {
-    public function __invoke($provider, array $items, Chain $chain)
+    /**
+     * Invokes this filter.
+     *
+     * @param mixed $context Reference to filter context.
+     * @param array $items   List of items to be filtered.
+     * @param Chain $chain   The remaining filter chain.
+     *
+     * @return array
+     */
+    public function __invoke($context, array $items, Chain $chain)
     {
-        $suffixes = array_map([$this, 'getSuffix'], $items);
+        $suffixes = array_map([$this, 'stripBase'], $items);
         $result = array_values(array_combine($suffixes, $items));
         return $chain->isEmpty() ? $result
-            : $chain->next($provider, $result, $chain);
+            : $chain->next($context, $result, $chain);
     }
 
-    protected function getSuffix(array $item)
+    /**
+     * Gets the items path having its base being stripped off.
+     *
+     * @param array $item The processed items.
+     *
+     * @return mixed
+     */
+    protected function stripBase(array $item)
     {
         $baseLen = strlen($item['base']) + 1;
         return substr_replace($item['path'], '', 0, $baseLen);

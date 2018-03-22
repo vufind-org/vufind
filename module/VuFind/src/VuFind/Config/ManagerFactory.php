@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config;
 
 use Interop\Container\ContainerInterface;
@@ -43,16 +44,19 @@ class ManagerFactory implements FactoryInterface
 {
     const DEFAULTS
         = [
-            'aggregatorPath' => APPLICATION_PATH . '/config/config.php',
-            'cacheDir'       => LOCAL_CACHE_DIR ? LOCAL_CACHE_DIR . '/config'
-                : APPLICATION_PATH . '/data/cache/config',
-            'useCache'       => true
+            'aggregatorPath' => APPLICATION_PATH.'/config/config.php',
+            'cacheDir'       => LOCAL_CACHE_DIR ? LOCAL_CACHE_DIR.'/config'
+                : APPLICATION_PATH.'/data/cache/config',
+            'useCache'       => true,
         ];
 
     /**
-     * @param ContainerInterface $container
-     * @param string             $requestedName
-     * @param array|null         $options
+     * Creates a {@see Manager} instance.
+     *
+     * @param ContainerInterface $container     The service container.
+     * @param string             $requestedName The requested name.
+     * @param array|null         $options       Options passed to
+     *                                          {@see Manager::__construct()}
      *
      * @return Manager
      * @throws \Psr\Container\ContainerExceptionInterface
@@ -68,6 +72,7 @@ class ManagerFactory implements FactoryInterface
         if (!is_dir($options['cacheDir'])) {
             mkdir($options['cacheDir'], 0755, true);
         }
+
         return new $requestedName(...array_values($options));
     }
 }

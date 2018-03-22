@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config\Provider;
 
 /**
@@ -38,6 +39,12 @@ namespace VuFind\Config\Provider;
  */
 class Classic extends Basic
 {
+    /**
+     * Classic constructor.
+     *
+     * @param array $patterns List of glob patterns for looking up
+     *                        configuration files.
+     */
     public function __construct(array $patterns)
     {
         parent::__construct($patterns);

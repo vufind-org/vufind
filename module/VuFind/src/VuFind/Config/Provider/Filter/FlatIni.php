@@ -41,12 +41,21 @@ use Zend\EventManager\Filter\FilterIterator as Chain;
  */
 class FlatIni
 {
-    public function __invoke($provider, array $items, Chain $chain): array
+    /**
+     * Invokes this filter.
+     *
+     * @param mixed $context Reference to filter context.
+     * @param array $items   List of items to be processed.
+     * @param Chain $chain   The remaining filter chain.
+     *
+     * @return array
+     */
+    public function __invoke($context, array $items, Chain $chain): array
     {
         $iniReader = Factory::getIniReader();
         $separator = $iniReader->getNestSeparator();
         $iniReader->setNestSeparator(chr(0));
-        $result = $chain->next($provider, $items, $chain);
+        $result = $chain->next($context, $items, $chain);
         $iniReader->setNestSeparator($separator);
         return $result;
     }

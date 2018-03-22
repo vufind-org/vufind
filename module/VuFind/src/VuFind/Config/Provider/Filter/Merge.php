@@ -40,11 +40,20 @@ use Zend\EventManager\Filter\FilterIterator as Chain;
  */
 class Merge
 {
-    public function __invoke($provider, array $items, Chain $chain)
+    /**
+     * Invokes this filter.
+     *
+     * @param mixed $context Reference to filter context.
+     * @param array $items   List of items to be processed.
+     * @param Chain $chain   The remaining filter chain.
+     *
+     * @return array
+     */
+    public function __invoke($context, array $items, Chain $chain)
     {
         $data = array_column($items, 'data');
         $result = array_replace_recursive(...$data);
         return $chain->isEmpty() ? $result
-            : $chain->next($provider, $result, $chain);
+            : $chain->next($context, $result, $chain);
     }
 }

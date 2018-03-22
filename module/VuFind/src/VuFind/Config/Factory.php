@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config;
 
 use Symfony\Component\Yaml\Yaml as YamlParser;
@@ -44,10 +45,17 @@ use Zend\Config\Reader\Yaml as YamlReader;
 class Factory extends Base
 {
     /**
+     * A reference to the reader used for INI configuration files.
+     *
      * @var IniReader
      */
     protected static $iniReader;
 
+    /**
+     * Initializes the factory.
+     *
+     * @return void
+     */
     public static function init()
     {
         static::$iniReader = new IniReader;
@@ -56,6 +64,11 @@ class Factory extends Base
         static::registerReader('yaml', $yamlReader);
     }
 
+    /**
+     * Get the reference to {@see Factory::$iniReader}.
+     *
+     * @return IniReader
+     */
     public static function getIniReader(): IniReader
     {
         return static::$iniReader;

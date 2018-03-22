@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config\Provider\Filter;
 
 use Zend\EventManager\Filter\FilterIterator as Chain;
@@ -40,13 +41,30 @@ use Zend\EventManager\Filter\FilterIterator as Chain;
  */
 class Nest
 {
-    public function __invoke($provider, array $items, Chain $chain): array
+    /**
+     * Invokes this filter.
+     *
+     * @param mixed $context Reference to filter context.
+     * @param array $items   List of items to be processed.
+     * @param Chain $chain   The remaining filter chain.
+     *
+     * @return array
+     */
+    public function __invoke($context, array $items, Chain $chain): array
     {
         $result = array_map([$this, 'nest'], $items);
+
         return $chain->isEmpty() ? $result
-            : $chain->next($provider, $result, $chain);
+            : $chain->next($context, $result, $chain);
     }
 
+    /**
+     * Nests the items data according to its relative path w.r.t. its base path.
+     *
+     * @param array $item The item to be processed.
+     *
+     * @return array
+     */
     protected function nest(array $item)
     {
         $baseLen = strlen($item['base']) + 1;
@@ -56,6 +74,7 @@ class Nest
         foreach (array_reverse(explode('/', $path)) as $key) {
             $item['data'] = [$key => $item['data']];
         }
+
         return $item;
     }
 }

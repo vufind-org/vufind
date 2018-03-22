@@ -38,6 +38,9 @@ namespace VuFind\Config\Provider;
  */
 class Standard extends Classic
 {
+    /**
+     * Standard constructor.
+     */
     public function __construct()
     {
         $pattern = '/config/vufind/**/*.{ini,yaml,json}';

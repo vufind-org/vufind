@@ -49,6 +49,8 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 class PluginManagerFactory implements FactoryInterface
 {
     /**
+     * Creates a {@see PluginManager} instance.
+     *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
      * @param array|null         $options       Extra options (optional)

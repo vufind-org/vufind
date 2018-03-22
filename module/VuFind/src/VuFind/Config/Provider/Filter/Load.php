@@ -41,13 +41,29 @@ use Zend\EventManager\Filter\FilterIterator as Chain;
  */
 class Load
 {
-    public function __invoke($provider, array $items, Chain $chain): array
+    /**
+     * Invokes this filter.
+     *
+     * @param mixed $context Reference to filter context.
+     * @param array $items   List of items to be processed.
+     * @param Chain $chain   The remaining filter chain.
+     *
+     * @return array
+     */
+    public function __invoke($context, array $items, Chain $chain): array
     {
         $result = array_map([$this, 'load'], $items);
         return $chain->isEmpty() ? $result
-            : $chain->next($provider, $result, $chain);
+            : $chain->next($context, $result, $chain);
     }
 
+    /**
+     * Loads an item.
+     *
+     * @param array $item The item to be loaded.
+     *
+     * @return array
+     */
     protected function load(array $item): array
     {
         $data = Factory::fromFile($item['path']);
