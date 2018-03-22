@@ -128,19 +128,32 @@ finna.layout = (function finnaLayout() {
         if (self.hasClass('wide')) { // generate different truncate styles according to class
           self.after('<div class="more-link wide"><i class="fa fa-handle-open"></i></div><div class="less-link wide"> <i class="fa fa-handle-close"></i></div>');
         } else {
+          self.before('<div class="less-link-top">' + VuFind.translate('show_less') + ' <i class="fa fa-arrow-up"></i></div>');
           self.after('<div class="more-link">' + VuFind.translate('show_more') + ' <i class="fa fa-arrow-down"></i></div><div class="less-link">' + VuFind.translate('show_less') + ' <i class="fa fa-arrow-up"></i></div>');
         }
+        $('.less-link-top').hide();
         $('.less-link').hide();
 
         self.nextAll('.more-link').first().click(function onClickMoreLink(/*event*/) {
           $(this).hide();
           $(this).next('.less-link').show();
           $(this).prev('.truncate-field').css('height', 'auto');
+          if (self.height() > (rowHeight[index] * 30)) {
+            $(this).siblings('.less-link-top').show();
+          }
           notifyTruncateChange(self);
         });
 
+        self.prevAll('.less-link-top').first().click(function onClickLessLink(/*event*/) {
+          $(this).hide();
+          $(this).siblings('.less-link').hide();
+          $(this).siblings('.more-link').show();
+          $(this).nextAll('.truncate-field').first().css('height', truncation[index] - 1 + 'px');
+          notifyTruncateChange(self);
+        });
         self.nextAll('.less-link').first().click(function onClickLessLink(/*event*/) {
           $(this).hide();
+          $(this).siblings('.less-link-top').hide();
           $(this).prev('.more-link').show();
           $(this).prevAll('.truncate-field').first().css('height', truncation[index] - 1 + 'px');
           notifyTruncateChange(self);
