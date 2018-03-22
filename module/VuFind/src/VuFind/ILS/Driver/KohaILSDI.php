@@ -1927,6 +1927,46 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * changePassword
+     *
+     * This method changes patron's password
+     *
+     * @param $patron The patron array from patronLogin
+     * @param $oldPassword
+     * @param $newPassword
+     *
+     * @return array  An associative array with keys:
+     *      success - boolean, true if change was made
+     *      status  - string, A status message - subject to translation
+     */
+
+   public function changePassword($detail)
+    {
+        if (!$this->db) {
+            $this->initDb();
+        }
+        $sql = "UPDATE borrowers SET password = ? WHERE borrowernumber = ?";
+        $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $max = mb_strlen($keyspace, '8bit') - 1;
+        $salt = '';
+        for ($i = 0; $i < 16; ++$i) { // 16 is length of salt
+            $salt .= $keyspace[random_int(0, $max)];
+        }
+        $salt = base64_encode($salt);
+        $newPassword_hashed = crypt($detail['newPassword'], '$2a$08$'.$salt);
+        try {
+            $stmt = $this->db->prepare($sql);
+            $result = $stmt->execute([ $newPassword_hashed, $detail['patron']['id'] ]);
+        } catch (Exception $e) {
+            return [ 'success' => false, 'status' => $e->getMessage() ];
+        }
+        return [ 
+            'success' => $result,
+            'status' => $result ? 'Password was succesfully changed' : 'Password was not changed'
+        ];
+    }
+
+    /**
      * Convert a database date to a displayable date.
      *
      * @param string $date Date to convert
