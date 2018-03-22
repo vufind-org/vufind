@@ -27,7 +27,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
-
 namespace VuFind\Config\Provider\Filter;
 
 use VuFind\Config\Factory;
@@ -96,7 +95,7 @@ class ParentIni
         $child = new Config($childData, true);
         $settings = $child->Parent_Config ?: new Config([]);
         $parentPath = $settings->relative_path
-            ? dirname($childPath).'/'.$settings->relative_path
+            ? dirname($childPath) . '/' . $settings->relative_path
             : $settings->path;
 
         if (!$parentPath) {

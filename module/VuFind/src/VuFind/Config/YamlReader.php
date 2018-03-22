@@ -25,7 +25,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-
 namespace VuFind\Config;
 
 use Symfony\Component\Yaml\Yaml;
@@ -109,10 +108,10 @@ class YamlReader
             ? $this->cacheManager->getCache($this->cacheName) : false;
 
         // Generate cache key:
-        $cacheKey = basename($defaultFile).'-'
-            .(file_exists($defaultFile) ? filemtime($defaultFile) : 0);
+        $cacheKey = basename($defaultFile) . '-'
+            . (file_exists($defaultFile) ? filemtime($defaultFile) : 0);
         if (!empty($customFile)) {
-            $cacheKey .= '-local-'.filemtime($customFile);
+            $cacheKey .= '-local-' . filemtime($customFile);
         }
         $cacheKey = md5($cacheKey);
 

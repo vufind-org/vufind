@@ -25,7 +25,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org/wiki/development Wiki
  */
-
 namespace VuFind\Config;
 
 use Interop\Container\ContainerInterface;
@@ -44,9 +43,9 @@ class ManagerFactory implements FactoryInterface
 {
     const DEFAULTS
         = [
-            'aggregatorPath' => APPLICATION_PATH.'/config/config.php',
-            'cacheDir'       => LOCAL_CACHE_DIR ? LOCAL_CACHE_DIR.'/config'
-                : APPLICATION_PATH.'/data/cache/config',
+            'aggregatorPath' => APPLICATION_PATH . '/config/config.php',
+            'cacheDir'       => LOCAL_CACHE_DIR ? LOCAL_CACHE_DIR . '/config'
+                : APPLICATION_PATH . '/data/cache/config',
             'useCache'       => true,
         ];
 
