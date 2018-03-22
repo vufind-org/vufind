@@ -1821,7 +1821,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             }
         }
 
-        $loans = $this->objectToArray($result->$functionResult->loans->loan);
+        $loans = isset($result->$functionResult->loans->loan)
+            ? $this->objectToArray($result->$functionResult->loans->loan)
+            : [];
 
         foreach ($loans as $loan) {
             $id = $loan->id;
