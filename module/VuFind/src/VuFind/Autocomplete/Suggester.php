@@ -134,6 +134,11 @@ class Suggester
             $handler->addFilters($hiddenFilters);
         }
 
+        // if the handler needs the complete request, pass it on
+        if (is_callable([$handler, 'setRequest'])) {
+            $handler->setRequest($request);
+        }
+
         return (isset($handler) && is_object($handler))
             ? array_values($handler->getSuggestions($query)) : [];
     }
