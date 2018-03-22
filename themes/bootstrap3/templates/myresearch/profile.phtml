@@ -12,14 +12,13 @@
   <h2><?=$this->transEsc('Your Profile')?></h2>
   <?=$this->flashmessages();?>
 
-  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
-
   <table class="table table-striped">
     <?=$this->renderArray(
-      $arrTemplate, $this->profile,
+      $arrTemplate, $this->user,
       [
         $this->transEsc('First Name') => 'firstname',
-        $this->transEsc('Last Name') => 'lastname'
+        $this->transEsc('Last Name') => 'lastname',
+        $this->transEsc('Email') => 'email',
       ]
     )?>
     <?php if (count($this->pickup ?? []) > 1): // Skip form if only one location: ?>
@@ -39,21 +38,42 @@
         </form>
       </td>
     <?php endif; ?>
-    <?=$this->renderArray(
-      $arrTemplate, $this->profile,
-      [
-        $this->transEsc('Address') . ' 1' => 'address1',
-        $this->transEsc('Address') . ' 2' => 'address2',
-        $this->transEsc('Zip') => 'zip',
-        $this->transEsc('City') => 'city',
-        $this->transEsc('Country') => 'country',
-        $this->transEsc('Phone Number') => 'phone',
-        $this->transEsc('Mobile Number') => 'mobile_phone',
-        $this->transEsc('Group') => 'group',
-        $this->transEsc('Expires') => 'expiration_date'
-      ]
-    )?>
   </table>
+
+  <?php if ($this->auth()->getManager()->supportsPasswordChange()): ?>
+    <p>
+      <a class="btn btn-default" href="<?=$this->url('myresearch-changepassword') ?>">
+        <i class="fa fa-fw fa-lock" aria-hidden="true"></i> <?=$this->transEsc('Change Password') ?>
+      </a>
+    </p>
+  <?php endif; ?>
+
+  <?php if (is_array($this->profile)): ?>
+    <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+    <p>
+      <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->user]); ?>
+    </p>
+    <table class="table table-striped">
+      <?=$this->renderArray(
+        $arrTemplate, $this->profile,
+        [
+          $this->transEsc('First Name') => 'firstname',
+          $this->transEsc('Last Name') => 'lastname',
+          $this->transEsc('Address') . ' 1' => 'address1',
+          $this->transEsc('Address') . ' 2' => 'address2',
+          $this->transEsc('Zip') => 'zip',
+          $this->transEsc('City') => 'city',
+          $this->transEsc('Country') => 'country',
+          $this->transEsc('Phone Number') => 'phone',
+          $this->transEsc('Mobile Number') => 'mobile_phone',
+          $this->transEsc('Group') => 'group',
+          $this->transEsc('Expires') => 'expiration_date'
+        ]
+      )?>
+    </table>
+  <?php elseif ('ils-none' !== $this->ils()->getOfflineMode()): ?>
+    <?=$this->partial($this->patronLoginView);?>
+  <?php endif; ?>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">
