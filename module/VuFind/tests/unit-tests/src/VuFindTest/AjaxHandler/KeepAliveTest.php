@@ -1,6 +1,6 @@
 <?php
 /**
- * ChoiceAuth test class.
+ * KeepAlive test class.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use VuFind\AjaxHandler\KeepAlive;
 use VuFind\AjaxHandler\KeepAliveFactory;
 
 /**
- * ChoiceAuth test class.
+ * KeepAlive test class.
  *
  * @category VuFind
  * @package  Tests
