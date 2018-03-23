@@ -105,6 +105,37 @@
         margin-top: 20px;
     }
 }
+.record-holdings-url-table {
+    margin: 20px 0px;
+    border: 1px solid @gray-lighter;
+    border-top: none;
+    @media print {
+        border-top: 1px solid @gray-lighter;
+    }
+    & .headers {
+        display: flex;
+        width: 100%;
+        padding: 0 15px;
+        background: @brand-primary;
+        color: @body-bg;
+        vertical-align: middle;
+    }
+    .holdings-urls {
+        display: block;
+        padding: 10px 15px;
+    }
+    .holdings-url-link {
+        display: block;
+    }
+    & .holdings-url-title {
+        .h4;
+        font-weight: 500;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        margin-right: 15px;
+        display: inline-block;
+    }
+}
 .record-holdings-table {
     margin: 20px 0px;
     border: 1px solid @gray-lighter;
@@ -112,7 +143,6 @@
     @media print {
         border-top: 1px solid @gray-lighter;
     }
-
     h5{
         padding-left: 15px;
     }

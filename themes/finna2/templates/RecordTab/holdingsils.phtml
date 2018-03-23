@@ -85,14 +85,21 @@
 <? endif; ?>
 
 <? if (!empty($urls) || $openUrlActive): ?>
-  <h3><?=$this->transEsc("Internet")?></h3>
-  <? if (!empty($urls)): ?>
-    <? foreach ($urls as $current): ?>
-      <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="_blank"><?=$this->transEsc('default::link_' . $current['desc'], null, $current['desc'])?></a><br/>
-    <? endforeach; ?>
-  <? endif; ?>
-  <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
+<div class="table record-holdings-url-table">
+  <div class="headers">
+    <span class="holdings-url-title"><?=$this->transEsc("Links")?></span>
+  </div>
+  <div class="holdings-urls">
+    <? if (!empty($urls)): ?>
+      <? foreach ($urls as $current): ?>
+        <a class="holdings-url-link" href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="_blank"><i class="fa fa-external-link"></i> <?=$this->transEsc('default::link_' . $current['desc'], null, $current['desc'])?></a>
+      <? endforeach; ?>
+    <? endif; ?>
+    <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
+  </div>
+</div> 
 <? endif; ?>
+
 <? if ($holdsAllowed): ?>
   <div class="place-hold-wrapper text-right hidden-print">
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn(), 'label' => 'Library Card']); ?>
