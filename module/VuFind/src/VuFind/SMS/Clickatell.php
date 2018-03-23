@@ -2,7 +2,7 @@
 /**
  * Class for text messaging via Clickatell's HTTP API
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2009.
  *
