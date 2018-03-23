@@ -34,10 +34,14 @@
   <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
   <? if($QRCode): ?>
   <li class="dropdown">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="<?=$this->escapeHtmlAttr($QRCode);?>" rel="nofollow"><i class="fa fa-qr-code" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('QR Code') ?></span></a>
-      <ul class="dropdown-menu" role="menu">
-        <li class="text-center"><img src="<?=$this->escapeHtmlAttr($QRCode);?>" alt="<?=$this->transEsc('QR Code')?>" class="qrcode"/></li>
-      </ul>
+    <a class="dropdown-toggle finnaQrcodeLinkRecord" data-toggle="dropdown" href="<?=$this->escapeHtmlAttr($QRCode);?>" rel="nofollow"><i class="fa fa-qr-code" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('QR Code') ?></span></a>
+    <ul class="dropdown-menu" role="menu">
+      <li class="text-center">
+        <script type="text/template" class="qrCodeImgTag">
+          <img src="<?=$this->escapeHtmlAttr($QRCode);?>" alt="<?=$this->transEsc('QR Code')?>" class="qrcode"/>
+        </script>
+      </li>
+    </ul>
   </li>
   <? endif; ?>
   <li>
