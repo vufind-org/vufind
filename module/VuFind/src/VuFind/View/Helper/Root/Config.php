@@ -48,9 +48,9 @@ class Config extends \Zend\View\Helper\AbstractHelper
     protected $configLoader;
 
     /**
-     * Constructor
+     * Config constructor.
      *
-     * @param Helper $helper Capabilities helper
+     * @param PluginManager $configLoader Configuration loader
      */
     public function __construct(PluginManager $configLoader)
     {
