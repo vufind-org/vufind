@@ -350,6 +350,7 @@ VuFind.register('lightbox', function Lightbox() {
       if (VuFind.lightbox.refreshOnClose) {
         VuFind.refreshPage();
       }
+      this.setAttribute('aria-hidden', true);
       _emit('VuFind.lightbox.closing');
     });
     _modal.on('hidden.bs.modal', function lightboxHidden() {
@@ -359,7 +360,7 @@ VuFind.register('lightbox', function Lightbox() {
 
     VuFind.modal = function modalShortcut(cmd) {
       if (cmd === 'show') {
-        _modal.modal($.extend({ show: true }, _modalParams));
+        _modal.modal($.extend({ show: true }, _modalParams)).attr('aria-hidden', false);
       } else {
         _modal.modal(cmd);
       }
