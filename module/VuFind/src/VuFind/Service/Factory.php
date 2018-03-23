@@ -2,7 +2,7 @@
 /**
  * Factory for various top-level VuFind services.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2014.
  *
