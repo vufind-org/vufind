@@ -28,7 +28,7 @@
 namespace VuFind\Controller;
 
 /**
- * Generates qrcodes
+ * Generates barcodes
  *
  * @category VuFind
  * @package  Controller
