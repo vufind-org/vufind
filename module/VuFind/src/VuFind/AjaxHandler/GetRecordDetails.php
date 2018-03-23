@@ -28,7 +28,7 @@
 namespace VuFind\AjaxHandler;
 
 use VuFind\Record\Loader;
-use VuFind\RecordTab\PluginManager;
+use VuFind\RecordTab\PluginManager as TabManager;
 use Zend\Http\PhpEnvironment\Request;
 use Zend\Mvc\Controller\Plugin\Params;
 use Zend\View\Renderer\RendererInterface;
@@ -70,7 +70,7 @@ class GetRecordDetails extends AbstractBase
     /**
      * Record tab plugin manager
      *
-     * @var PluginManager
+     * @var TabManager
      */
     protected $pluginManager;
 
@@ -87,11 +87,11 @@ class GetRecordDetails extends AbstractBase
      * @param array             $config   ZF configuration
      * @param Request           $request  HTTP request
      * @param Loader            $loader   Record loader
-     * @param PluginManager     $pm       RecordTab plugin manager
+     * @param TabManager        $pm       RecordTab plugin manager
      * @param RendererInterface $renderer Renderer
      */
     public function __construct(array $config, Request $request, Loader $loader,
-        PluginManager $pm, RendererInterface $renderer
+        TabManager $pm, RendererInterface $renderer
     ) {
         $this->config = $config;
         $this->request = $request;
