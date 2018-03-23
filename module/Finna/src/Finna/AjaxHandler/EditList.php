@@ -72,9 +72,9 @@ class EditList extends \VuFind\AjaxHandler\AbstractBase
     /**
      * Constructor
      *
-     * @param UserList         $userList  UserList database table
-     * @param User|bool        $user      Logged in user (or false)
-     * @param bool             $enabled   Are lists enabled?
+     * @param UserList  $userList UserList database table
+     * @param User|bool $user     Logged in user (or false)
+     * @param bool      $enabled  Are lists enabled?
      */
     public function __construct(UserList $userList, $user, $enabled = true)
     {

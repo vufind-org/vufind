@@ -89,6 +89,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
     /**
      * Constructor
      *
+     * @param SessionSettings         $ss       Session settings
      * @param RecommendPluginManager  $rpm      Recommend plugin manager
      * @param SearchRunner            $sr       Search runner
      * @param HierarchicalFacetHelper $fh       Facet helper
