@@ -14,7 +14,6 @@
   }
 }
 
-.template-name-view .collectionlist-tab .finna-filters,
 .finna-filters {
   color: @filterContent-text-color;
   padding: 5px 0 5px 0;
@@ -39,14 +38,15 @@
       margin: 4px;
     }
   }
-
   .checkbox {
     display: inline;
-    padding-left: 0px;
-    padding-right: 20px;
+    padding-left: 0;
+    padding-right: 0;
+    @media (min-width: @screen-sm-min){
+      padding-right: 20px;
+    }
   }
   .retain-filters {
-    display: inline-block;
     float: left;
     @media (max-width: @screen-xs-max){
       float: right;
@@ -66,63 +66,12 @@
   display: inline-block;
 }
 
-@media (max-width: @screen-sm){
-  .filters-title, .filter-value {
-    font-size: 80%;
-  }
-  .filters-toggle, .retain-filters {
-    font-size: 90%;
-  }
-  .finna-filters .retain-filters .checkbox label:before {
-    font-size: 15px;
-  }
-}
-
 .template-name-view .finna-filters {
-  padding: 5px 0 5px 0;
-  & .checkbox label {
-    display: inline-block;
-    padding: 7px;
-    margin: 5px;
-  }
-  & .filters-term {
-    font-size: 0.8em
-  }
   & .filter-value {
-    padding: 5px 10px;
-    margin: 5px;
-    font-weight: 600;
     background: @gray-ultralight;
     color: @text-color;
-    border-radius: @border-radius-large;
-    white-space: nowrap;
-    display: inline-block;
-    & a {
-      color: @body-bg;
-      margin: 4px;
-    }
-  }
-
-  .checkbox {
-    display: inline;
-    padding-left: 0px;
-    padding-right: 20px;
-  }
-  .retain-filters {
-    float: left;
-    @media (max-width: @screen-sm){
-      float: right;
-      .checkbox label {
-        margin: 0;
-        padding: 0;
-      }
-    }
-  }
-  .filters {
-    padding-top: 5px;
   }
 }
-
 
 .filters-toggle-bar {
   line-height: 40px;
@@ -136,5 +85,17 @@
       vertical-align: middle;
       margin-top: -5px;
     }
+  }
+}
+
+@media (max-width: @screen-sm){
+  .filters-title, .filter-value {
+    font-size: 80%;
+  }
+  .filters-toggle, .retain-filters {
+    font-size: 90%;
+  }
+  .finna-filters .retain-filters .checkbox label:before {
+    font-size: 15px;
   }
 }
