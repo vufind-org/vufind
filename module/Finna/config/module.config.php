@@ -161,7 +161,7 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'Finna\Controller\AjaxController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
             'Finna\Controller\BarcodeController' => 'VuFind\Controller\AbstractBaseFactory',
             'Finna\Controller\BrowseController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'Finna\Controller\CacheController' => 'Finna\Controller\CacheControllerFactory',
@@ -243,7 +243,6 @@ $config = [
         'factories' => [
             'Finna\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
             'Finna\Auth\Manager' => 'VuFind\Auth\ManagerFactory',
-            'Finna\Autocomplete\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'Finna\Cache\Manager' => 'VuFind\Cache\ManagerFactory',
             'Finna\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',
             'Finna\Config\SearchSpecsReader' => 'VuFind\Config\YamlReaderFactory',
@@ -264,7 +263,6 @@ $config = [
         'aliases' => [
             'VuFind\Auth\Manager' => 'Finna\Auth\Manager',
             'VuFind\Auth\ILSAuthenticator' => 'Finna\Auth\ILSAuthenticator',
-            'VuFind\Autocomplete\PluginManager' => 'Finna\Autocomplete\PluginManager',
             'VuFind\Cache\Manager' => 'Finna\Cache\Manager',
             'VuFind\Config\PluginManager' => 'Finna\Config\PluginManager',
             'VuFind\Config\SearchSpecsReader' => 'Finna\Config\SearchSpecsReader',
@@ -284,6 +282,24 @@ $config = [
     // unrelated to specific Zend Framework 2 components).
     'vufind' => [
         'plugin_managers' => [
+            'ajaxhandler' => [
+                'factories' => [
+                    'Finna\AjaxHandler\AddToList' =>
+                        'Finna\AjaxHandler\AddToListFactory',
+                    'Finna\AjaxHandler\EditList' =>
+                        'Finna\AjaxHandler\EditListFactory',
+                    'Finna\AjaxHandler\GetUserLists' =>
+                        'Finna\AjaxHandler\GetUserListsFactory',
+                    'Finna\AjaxHandler\GetSideFacets' =>
+                        'Finna\AjaxHandler\GetSideFacetsFactory',
+                ],
+                'aliases' => [
+                    'addToList' => 'Finna\AjaxHandler\AddToList',
+                    'editList' => 'Finna\AjaxHandler\EditList',
+                    'getMyLists' => 'Finna\AjaxHandler\GetUserLists',
+                    'getSideFacets' => 'Finna\AjaxHandler\GetSideFacets',
+                ]
+            ],
             'auth' => [
                 'factories' => [
                     'ils' => 'Finna\Auth\Factory::getILS',
@@ -293,7 +309,10 @@ $config = [
             ],
             'autocomplete' => [
                 'factories' => [
-                    'solr' => 'Finna\Autocomplete\Factory::getSolr'
+                    'Finna\Autocomplete\Solr' => 'Finna\Autocomplete\SolrFactory',
+                ],
+                'aliases' => [
+                    'VuFind\Autocomplete\Solr' => 'Finna\Autocomplete\Solr',
                 ]
             ],
             'db_row' => [
@@ -318,7 +337,7 @@ $config = [
                     'VuFind\Db\Row\User' => 'Finna\Db\Row\User',
                     'VuFind\Db\Row\UserList' => 'Finna\Db\Row\UserList',
 
-                    // Alias Table classes to work without a row class counterpart
+                    // Aliases for table classes without a row class counterpart
                     'Finna\Db\Row\Comments' => 'VuFind\Db\Row\Comments',
                     'Finna\Db\Row\Session' => 'VuFind\Db\Row\Session',
                     'Finna\Db\Row\UserResource' => 'VuFind\Db\Row\UserResource',
@@ -350,7 +369,6 @@ $config = [
                 'aliases' => [
                     'VuFind\Db\Table\Comments' => 'Finna\Db\Table\Comments',
                     'VuFind\Db\Table\Resource' => 'Finna\Db\Table\Resource',
-                    'VuFind\Db\Table\ResourceTags' => 'Finna\Db\Table\ResourceTags',
                     'VuFind\Db\Table\Search' => 'Finna\Db\Table\Search',
                     'VuFind\Db\Table\Session' => 'Finna\Db\Table\Session',
                     'VuFind\Db\Table\User' => 'Finna\Db\Table\User',
@@ -445,7 +463,7 @@ $config = [
             'search_results' => [
                 'factories' => [
                     'Finna\Search\Combined\Results' => 'VuFind\Search\Results\ResultsFactory',
-                    'Finna\Search\Favorites\Results' => 'VuFind\Search\Favorites\ResultsFactory',
+                    'Finna\Search\Favorites\Results' => 'Finna\Search\Favorites\ResultsFactory',
                     'Finna\Search\Primo\Results' => 'VuFind\Search\Results\ResultsFactory',
                     'Finna\Search\Solr\Results' => 'VuFind\Search\Solr\ResultsFactory',
                 ],

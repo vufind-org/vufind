@@ -59,7 +59,7 @@ finna.myList = (function finnaMyList() {
       data: {'params': listParams}
     })
       .done(function onEditListDone(data/*, status, jqXHR*/) {
-        if (type !== 'add-list' && spinner) {
+        if (spinner) {
           toggleSpinner(spinner, false);
         }
         if (callback != null) {
@@ -69,6 +69,7 @@ finna.myList = (function finnaMyList() {
       })
       .fail(function onEditListFail() {
         toggleErrorMessage(true);
+        toggleSpinner(spinner, false);
         save = false;
       });
   }
@@ -147,6 +148,8 @@ finna.myList = (function finnaMyList() {
   function refreshLists(/*data*/) {
     toggleErrorMessage(false);
 
+    var spinner = $('.add-new-list .fa');
+    toggleSpinner(spinner, true);
     $.ajax({
       type: 'POST',
       dataType: 'json',
@@ -154,10 +157,12 @@ finna.myList = (function finnaMyList() {
       data: {'active': getActiveListId()}
     })
       .done(function onGetMyListsDone(data) {
+        toggleSpinner(spinner, false);
         $('.mylist-bar').html(data.data);
         initEditComponents();
       })
       .fail(function onGetMyListsDone() {
+        toggleSpinner(spinner, false);
         toggleErrorMessage(true);
       });
   }
