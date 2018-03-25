@@ -297,7 +297,6 @@ class Map extends AbstractBase
             if (isset($this->mapLabels)) {
                 $mapLabel = $mapDisplayLabels[$key];
             }
-<<<<<<< HEAD
             array_push(
                 $mapTabData, [
                     $geoCoords[$key][0], $geoCoords[$key][1],
@@ -305,25 +304,6 @@ class Map extends AbstractBase
                     $mapLabel, $mapCoords
                     ]
             );
-=======
-            if ($mapType == 'openlayers') {
-                array_push(
-                    $mapTabData, [
-                        $geoCoords[$key][0], $geoCoords[$key][1],
-                        $geoCoords[$key][2], $geoCoords[$key][3],
-                        $geoCoords[$key][4], $mapLabel, $mapCoords
-                       ]
-                );
-            } elseif ($mapType == 'leaflet') {
-                array_push(
-                    $mapTabData, [
-                        $geoCoords[$key][0], $geoCoords[$key][1],
-                        $geoCoords[$key][2], $geoCoords[$key][3],
-                        $mapLabel, $mapCoords
-                       ]
-                );
-            }
->>>>>>> 8f5e2c55626c952bbafeff45e1a635da2c282223
         }
         return $mapTabData;
     }
