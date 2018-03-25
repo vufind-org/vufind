@@ -2,27 +2,20 @@
 <?
   $geoPlatform = $this->recommend->getGeoPlatform();
   //Include files based on geoPlatform configuration
-  if ($geoPlatform == 'openlayers') {
-    $this->headScript()->appendFile('vendor/ol/ol.js');
-    $this->headScript()->appendFile('map_selection.js');
-    $this->headLink()->appendStylesheet('vendor/ol/ol.css');
-  } elseif ($geoPlatform == 'leaflet') {
-    $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
-    $this->headScript()->appendFile('vendor/leaflet/leaflet.draw.js');
-    $this->headScript()->appendFile('vendor/leaflet/leaflet.markercluster.js');
-    $this->headScript()->appendFile('map_selection_leaflet.js');
-    $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.css');
-    $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.draw.css');
-    $this->headLink()->appendStylesheet('vendor/leaflet/MarkerCluster.css');
-    $this->headLink()->appendStylesheet('vendor/leaflet/MarkerCluster.Default.css');
-    $this->headLink()->appendStylesheet('geofeatures.css');
-  }
+  $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
+  $this->headScript()->appendFile('vendor/leaflet/leaflet.draw.js');
+  $this->headScript()->appendFile('vendor/leaflet/leaflet.markercluster.js');
+  $this->headScript()->appendFile('map_selection_leaflet.js');
+  $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.css');
+  $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.draw.css');
+  $this->headLink()->appendStylesheet('vendor/leaflet/MarkerCluster.css');
+  $this->headLink()->appendStylesheet('vendor/leaflet/MarkerCluster.Default.css');
+  $this->headLink()->appendStylesheet('geofeatures.css');
 
   // Call methods based on geoPlatform configuration
   $basemap = $this->recommend->getBasemap();
   $geoField = $this->recommend->getGeoField();
   $height = $this->recommend->getHeight();
-  $popupTitle = $this->transEsc('map_results_label');
   $showSelection = true;
   $baseUrl = $this->url('home');
   $urlpath = $this->url('search-results');
@@ -33,21 +26,12 @@
     $coordinates = $this->recommend->getDefaultCoordinates();
     $showSelection = false;
   }
-
-  if ($geoPlatform == 'openlayers') {
-    $helpTopic = 'geosearch';
-    $resultsCoords = $this->recommend->getMapResultCoordinates();
-    $popupTitle = $this->transEsc('map_results_label');
-    $params = [json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
-      json_encode($baseUrl), json_encode($searchParams), json_encode($showSelection),
-      json_encode($resultsCoords), json_encode($popupTitle), json_encode($basemap)];
-  } elseif ($geoPlatform == 'leaflet') {
-    $helpTopic = 'geosearch_leaflet';
-    $resultsCoords = $this->recommend->getLeafletMapResultCoordinates();
-    $params = [json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
-      json_encode($baseUrl), json_encode($searchParams), json_encode($showSelection),
-      json_encode($resultsCoords), json_encode($basemap)];
-  }
+  $helpTopic = 'geosearch_leaflet';
+  $resultsCoords = $this->recommend->getMapResultCoordinates();
+  $params = [json_encode($geoField), json_encode($coordinates),
+    json_encode($urlpath), json_encode($baseUrl),
+    json_encode($searchParams), json_encode($showSelection),
+    json_encode($resultsCoords), json_encode($basemap)];
 
   $jsParams = implode(', ', $params);
   $jsLoad = "loadMapSelection(" . $jsParams . ");";
@@ -59,9 +43,7 @@ EOF;
   <div id="geo_search" style="display: none;">
     <button id="draw_box"><?=$this->transEsc('Draw Search Box')?></button>
     <span class="geo_maphelp">&nbsp;<a href="<?=$this->url('help-home')?>?topic=geosearch" data-lightbox class="help-link"><?=$this->transEsc('Need Help?')?></a></span>
-    <div id="geo_search_map" style="height: <?=$height?>px;">
-      <div id="popup"></div>
-    </div>
+    <div id="geo_search_map" style="height: <?=$height?>px;"></div>
   </div>
   <? if ($showSelection) :?>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET');?>

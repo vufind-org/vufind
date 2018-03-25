@@ -113,7 +113,6 @@ class MapSelectionConfig
         }
         // Add map platform configuration to options array
         $options['geoPlatform'] = $mapPlatform['geoPlatform'];
-
         return $options;
     }
 

@@ -223,7 +223,8 @@ class Factory
                 $config->get('geofeatures')
                     ->MapSelection->default_coordinates
             )
-              ? $config->MapSelection->default_coordinates : false;
+              ? $config->get('geofeatures')
+                  ->MapSelection->default_coordinates : false;
         }
         return new GeoCoords($coords);
     }

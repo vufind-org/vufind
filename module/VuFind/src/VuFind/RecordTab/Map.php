@@ -79,7 +79,7 @@ class Map extends AbstractBase
      * Constructor
      *
      * @param string $mapType        Map provider
-     * (valid options: 'openlayers' or 'leaflet'
+     * (valid options: 'leaflet'
      * null to disable this feature)
      * @param array  $basemapOptions basemap settings
      * @param array  $mapTabOptions  MapTab settings
@@ -88,7 +88,7 @@ class Map extends AbstractBase
         $mapTabOptions = []
     ) {
         $mapType = trim(strtolower($mapType));
-        if ($mapType == 'openlayers' || $mapType == 'leaflet') {
+        if ($mapType == 'leaflet') {
             $this->mapType = trim(strtolower($mapType));
             $legalOptions = ['displayCoords', 'mapLabels', 'graticule'];
             foreach ($legalOptions as $option) {
@@ -159,7 +159,7 @@ class Map extends AbstractBase
      */
     public function isActive()
     {
-        if ($this->mapType == 'openlayers' || $this->mapType == 'leaflet') {
+        if ($this->mapType == 'leaflet') {
             $geocoords = $this->getRecordDriver()->tryMethod('getGeoLocation');
             return !empty($geocoords);
         }
@@ -186,14 +186,8 @@ class Map extends AbstractBase
                 $lonE = (float)$match[2];
                 $latN = (float)$match[3];
                 $latS = (float)$match[4];
-                // Display as point or polygon?
-                if (($lonE == $lonW) && ($latN == $latS)) {
-                    $shape = 2;
-                } else {
-                    $shape = 4;
-                }
-                // Coordinates ordered for ol3 display as WSEN
-                array_push($coordarray, [$lonW, $latS, $lonE, $latN, $shape]);
+                // Coordinates ordered for display as WSEN
+                array_push($coordarray, [$lonW, $latS, $lonE, $latN]);
             }
         }
         return $coordarray;
@@ -304,25 +298,14 @@ class Map extends AbstractBase
             if (isset($this->mapLabels)) {
                 $mapLabel = $mapDisplayLabels[$key];
             }
-            if ($mapType == 'openlayers') {
-                array_push(
-                    $mapTabData, [
-                        $geoCoords[$key][0], $geoCoords[$key][1],
-                        $geoCoords[$key][2], $geoCoords[$key][3],
-                        $geoCoords[$key][4], $mapLabel, $mapCoords
-                       ]
-                );
-            } elseif ($mapType == 'leaflet') {
-                array_push(
-                    $mapTabData, [
-                        $geoCoords[$key][0], $geoCoords[$key][1],
-                        $geoCoords[$key][2], $geoCoords[$key][3],
-                        $mapLabel, $mapCoords
-                       ]
-                );
-            } 
+            array_push(
+                $mapTabData, [
+                    $geoCoords[$key][0], $geoCoords[$key][1],
+                    $geoCoords[$key][2], $geoCoords[$key][3],
+                    $mapLabel, $mapCoords
+                    ]
+            );
         }
         return $mapTabData;
     }
-
 }
