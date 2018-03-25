@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Backend\Summon\Response;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
 
 /**
@@ -40,7 +40,7 @@ use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
+class RecordCollectionFactoryTest extends TestCase
 {
     /**
      * Test constructor exceptions.

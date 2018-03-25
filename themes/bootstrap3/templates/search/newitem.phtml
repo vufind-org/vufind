@@ -1,4 +1,4 @@
-<?
+<?php
     // Set up page title:
     $this->headTitle($this->translate('New Item Search'));
 
@@ -9,30 +9,30 @@
     $offlineMode = $this->ils()->getOfflineMode();
 ?>
 <h2><?=$this->transEsc('Find New Items')?></h2>
-<? if ($offlineMode == "ils-offline"): ?>
+<?php if ($offlineMode == "ils-offline"): ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message'])?>
-<? endif; ?>
+<?php endif; ?>
 <form method="get" class="form-search-newitem">
   <div class="form-group">
     <label class="control-label"><?=$this->transEsc('Range')?>:</label>
     <div class="btn-group" data-toggle="buttons">
-      <? foreach ($this->ranges as $key => $range): ?>
-        <label class="btn btn-primary<? if($key == 0): ?> active<? endif ?>">
+      <?php foreach ($this->ranges as $key => $range): ?>
+        <label class="btn btn-primary<?php if($key == 0): ?> active<?php endif ?>">
           <input type="radio" name="range" id="newitem_range_<?=$this->escapeHtmlAttr($key)?>" value="<?=$this->escapeHtmlAttr($range)?>"<?=($key == 0) ? ' checked="checked"' : ''?>/>
           <?=($range == 1) ? $this->transEsc('Yesterday') : $this->transEsc('past_days', ['%%range%%' => $this->escapeHtml($range)])?>
         </label>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </div>
   </div>
-  <? if (is_array($this->fundList) && !empty($this->fundList)): ?>
+  <?php if (is_array($this->fundList) && !empty($this->fundList)): ?>
     <div class="form-group">
       <label class="control-label" for="newitem_department"><?=$this->transEsc('Department')?>:</label>
       <select id="newitem_department" name="department" size="10" class="form-control">
-      <? foreach ($this->fundList as $fundId => $fund): ?>
+      <?php foreach ($this->fundList as $fundId => $fund): ?>
         <option value="<?=$this->escapeHtmlAttr($fundId)?>"><?=$this->transEsc($fund)?></option>
-      <? endforeach; ?>
+      <?php endforeach; ?>
       </select>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
   <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
 </form>

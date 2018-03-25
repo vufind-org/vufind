@@ -217,6 +217,9 @@ class Initializer
     {
         // Load standard configuration options:
         $standardTheme = $this->config->theme;
+        if (Console::isConsole()) {
+            return $standardTheme;
+        }
         $mobileTheme = $this->mobile->enabled()
             ? $this->config->mobile_theme : false;
 

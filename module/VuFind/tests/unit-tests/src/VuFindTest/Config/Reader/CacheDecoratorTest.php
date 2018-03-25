@@ -39,7 +39,7 @@ use VuFind\Config\Reader\CacheDecorator;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class CacheDecoratorTest extends \PHPUnit_Framework_TestCase
+class CacheDecoratorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Read config from while, new file.

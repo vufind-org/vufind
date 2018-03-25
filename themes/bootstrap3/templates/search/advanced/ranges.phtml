@@ -1,7 +1,7 @@
-<? if (isset($this->ranges) && !empty($this->ranges)): ?>
-  <? $params = $this->searchParams($this->searchClassId); $params->activateAllFacets(); ?>
-  <? foreach ($this->ranges as $current): $escField = $this->escapeHtmlAttr($current['field']); ?>
-    <? $extraInputAttribs = ($current['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
+<?php if (isset($this->ranges) && !empty($this->ranges)): ?>
+  <?php $params = $this->searchParams($this->searchClassId); $params->activateAllFacets(); ?>
+  <?php foreach ($this->ranges as $current): $escField = $this->escapeHtmlAttr($current['field']); ?>
+    <?php $extraInputAttribs = ($current['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
     <fieldset class="range">
       <legend><?=$this->transEsc($params->getFacetLabel($current['field']))?></legend>
       <input type="hidden" name="<?=$this->escapeHtmlAttr($current['type'])?>range[]" value="<?=$escField?>"/>
@@ -15,11 +15,11 @@
           <input type="text" name="<?=$escField?>to" id="<?=$escField?>to" value="<?=isset($current['values'][1])?$this->escapeHtmlAttr($current['values'][1]):''?>" class="form-control" <?=$extraInputAttribs?>/>
         </div>
       </div>
-      <? if ($current['type'] == 'date'): ?>
+      <?php if ($current['type'] == 'date'): ?>
         <div class="slider-container">
           <input type="text" id="<?=$escField?><?=$this->escapeHtmlAttr($current['type'])?>Slider">
         </div>
-        <?
+        <?php
           $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
           $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
           $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
@@ -67,7 +67,7 @@ $('#{$escField}from, #{$escField}to').change(function () {
 JS;
         ?>
         <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-      <? endif; ?>
+      <?php endif; ?>
     </fieldset>
-  <? endforeach; ?>
-<? endif; ?>
+  <?php endforeach; ?>
+<?php endif; ?>

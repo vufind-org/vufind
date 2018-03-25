@@ -69,7 +69,7 @@ class Libraryh3lp implements RecommendInterface
         $this->chatId = $params[0] === 'user'
             ? $params[1] . '@libraryh3lp.com'           // user
             : $params[1] . '@chat.libraryh3lp.com';     // queue
-        $this->skin = isset($params[2]) ? $params[2] : 11977;
+        $this->skin = $params[2] ?? 11977;
     }
 
     /**

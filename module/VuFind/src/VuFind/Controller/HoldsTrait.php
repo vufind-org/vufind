@@ -192,8 +192,7 @@ trait HoldsTrait
                 'requestGroups' => $requestGroups,
                 'defaultRequestGroup' => $defaultRequestGroup,
                 'requestGroupNeeded' => $requestGroupNeeded,
-                'helpText' => isset($checkHolds['helpText'])
-                    ? $checkHolds['helpText'] : null
+                'helpText' => $checkHolds['helpText'] ?? null
             ]
         );
         $view->setTemplate('record/hold');

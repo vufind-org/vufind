@@ -1,5 +1,5 @@
-<? if ($this->recommend->getSearchResultCoordinates()) :?>
-<?
+<?php if ($this->recommend->getSearchResultCoordinates()) :?>
+<?php
   $geoPlatform = $this->recommend->getGeoPlatform();
   //Include files based on geoPlatform configuration
   $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
@@ -45,10 +45,10 @@ EOF;
     <span class="geo_maphelp">&nbsp;<a href="<?=$this->url('help-home')?>?topic=geosearch" data-lightbox class="help-link"><?=$this->transEsc('Need Help?')?></a></span>
     <div id="geo_search_map" style="height: <?=$height?>px;"></div>
   </div>
-  <? if ($showSelection) :?>
+  <?php if ($showSelection) :?>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET');?>
-  <? else: ?>
+  <?php else: ?>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $addSearchOption, 'SET');?>
-  <? endif; ?>
+  <?php endif; ?>
 </div>
-<? endif; ?>
+<?php endif; ?>

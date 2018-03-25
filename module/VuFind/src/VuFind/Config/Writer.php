@@ -103,7 +103,7 @@ class Writer
             // Separate comments from content:
             $parts = explode(';', trim($line), 2);
             $content = trim($parts[0]);
-            $comment = isset($parts[1]) ? $parts[1] : '';
+            $comment = $parts[1] ?? '';
 
             // Is this a section heading?
             if (preg_match('/^\[(.+)\]$/', trim($content), $matches)) {

@@ -41,7 +41,7 @@ use Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ContentCafeTest extends \PHPUnit_Framework_TestCase
+class ContentCafeTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test cover loading
