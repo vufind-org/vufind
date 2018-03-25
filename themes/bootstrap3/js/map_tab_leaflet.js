@@ -15,7 +15,7 @@ function loadMapTab(mapData, mapGraticule, basemap) {
       shadowSize: [41, 41]
     }
   });
- //NOTE: These are hardcoded for now but will need to be genericized
+  //NOTE: These are hardcoded for now but will need to be genericized
   var redIcon = new displayIcon({
     iconUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/marker-icon-2x-red.png',
     shadowUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
@@ -100,10 +100,10 @@ function loadMapTab(mapData, mapGraticule, basemap) {
       L.latlngGraticule({
         showLabel: true,
         zoomInterval: [
-             {start: 2, end: 3, interval: 30},
-             {start: 4, end: 4, interval: 10},
-             {start: 5, end: 7, interval: 5},
-             {start: 8, end: 10, interval: 1}
+          {start: 2, end: 3, interval: 30},
+          {start: 4, end: 4, interval: 10},
+          {start: 5, end: 7, interval: 5},
+          {start: 8, end: 10, interval: 1}
         ]
       }).addTo(mapTab);
     }

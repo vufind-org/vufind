@@ -156,8 +156,8 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
     } else {
       rcType = "rectangle";
       rcFeature = new L.RectangleClusterable([
-         [rc_south, rc_west],
-         [rc_north, rc_east]
+        [rc_south, rc_west],
+        [rc_north, rc_east]
       ], {recID: recID, recType: rcType, recStatus: rcStatus, recPopup: popupContent, color: '#910a0a' });
     }
     rcFeature.bindPopup(popup);
@@ -283,8 +283,8 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
           mRect.bindPopup(L.popup().setContent(layer.options.rmPopup));
           var mrBounds = mRect.getBounds();
           clickedBounds.push([
-              [mrBounds.getSouthWest().lat, mrBounds.getSouthWest().lng],
-              [mrBounds.getNorthEast().lat, mrBounds.getNorthEast().lng]
+            [mrBounds.getSouthWest().lat, mrBounds.getSouthWest().lng],
+            [mrBounds.getNorthEast().lat, mrBounds.getNorthEast().lng]
           ]);
           mapSearch.addLayer(mRect);
         }
