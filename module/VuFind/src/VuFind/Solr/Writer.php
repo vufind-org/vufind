@@ -2,7 +2,7 @@
 /**
  * Solr Writer service
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Demian Katz 2013.
  *

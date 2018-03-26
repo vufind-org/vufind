@@ -2,7 +2,7 @@
 /**
  * Template for ZF2 module for storing local overrides.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
