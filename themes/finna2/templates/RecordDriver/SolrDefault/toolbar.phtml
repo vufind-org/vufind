@@ -1,10 +1,7 @@
 <!-- START of: finna - RecordDriver/SolrDefault/toolbar.phtml -->
 <?
   if ($this->driver->tryMethod('socialMediaSharingAllowed') !== false) {
-      $addThis = $this->addThis();
-      if (!empty($addThis)) {
-        $this->headScript()->appendFile('https://s7.addthis.com/js/250/addthis_widget.js?pub=' . urlencode($addThis));
-      }
+      $shareUrl = $this->serverUrl($this->recordLink()->getUrl($this->driver));
   }
 
   // Set up some variables for convenience:
@@ -47,15 +44,8 @@
   <li>
       <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
   </li>
-  <? if (!empty($addThis)): ?>
-    <li class="addthis-share-buttons">
-      <div class="addthis_toolbox addthis_default_style">
-        <a class="addthis_button_facebook" title="Facebook"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-        <a class="addthis_button_twitter" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-        <a class="addthis_button_pinterest_share" title="Pinterest"><i class="fa fa-pinterest" aria-hidden="true"></i></a>
-        <!-- <a class="addthis_button_google_plusone_share"><i class="fa fa-google-plus" aria-hidden="true"></i></a> -->
-      </div>
-    </li>
+  <? if (!empty($shareUrl)): ?>
+    <?=$this->partial('record/share-buttons.phtml', ['shareUrl' => $shareUrl, 'title' => $this->driver->getFullTitle()]);?>
   <? endif; ?>
   </ul>
 </div>

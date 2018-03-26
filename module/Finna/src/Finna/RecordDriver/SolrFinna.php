@@ -685,7 +685,7 @@ trait SolrFinna
     }
 
     /**
-     * Is social media sharing allowed (i.e. AddThis Tool).
+     * Is social media sharing allowed
      *
      * @return boolean
      */
