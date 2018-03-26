@@ -85,7 +85,7 @@ class MapSelectionConfig
      */
     public function getMapSelectionOptions()
     {
-        $options =[];
+        $options = [];
         $validFields = ['default_coordinates', 'height'];
 
         // First check legacy location:
