@@ -92,8 +92,11 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
     protected function getDriver($overrides = [])
     {
         // "Mock out" tag functionality to avoid database access:
+        $methods = [
+            'getBuilding', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags'
+        ];
         $record = $this->getMockBuilder('VuFind\RecordDriver\SolrDefault')
-            ->setMethods(['getBuilding', 'getContainerTitle', 'getTags'])
+            ->setMethods($methods)
             ->getMock();
         $record->expects($this->any())->method('getTags')
             ->will($this->returnValue([]));
@@ -103,6 +106,15 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             ->will($this->returnValue(0));
         $record->expects($this->any())->method('getContainerTitle')
             ->will($this->returnValue('0'));
+        // Expect only one call to getDeduplicatedAuthors to confirm that caching
+        // works correctly (we need this data more than once, but should only pull
+        // it from the driver once).
+        $authors = [
+            'primary' => ['Vico, Giambattista, 1668-1744.' => []],
+            'secondary' => ['Pandolfi, Claudia.' => []],
+        ];
+        $record->expects($this->once())->method('getDeduplicatedAuthors')
+            ->will($this->returnValue($authors));
 
         // Load record data from fixture file:
         $fixture = json_decode(
