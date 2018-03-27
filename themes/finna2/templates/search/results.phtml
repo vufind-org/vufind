@@ -152,11 +152,12 @@
     <?=$this->flashmessages()?>
     <? if ($recordTotal > 0): ?>
       <div class="search-controls">
-          <? if (!$browse): ?>
             <div class="control-container text-right hidden-print">
+            <? if (!$browse): ?>
                 <?=$this->render('search/controls/view.phtml')?>
                 <?=$this->render('search/controls/sort.phtml')?>
                 <?=$this->render('search/controls/limit.phtml')?>
+            <? endif; ?>
             </div>
               <? $resultsStr = $this->translate(
                   $browse ? 'browse_extended_' . ucfirst($browse) . '_html' : 'showing_results_of_html',
@@ -169,9 +170,6 @@
             <div class="pagination-container">
                 <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results, 'label' => $resultsStr])?>
             </div>
-          <? else: ?>
-              <? $resultsStr = ''; ?>
-          <? endif; ?>
           <? $this->layout()->srmessage = strip_tags($resultsStr); ?>
       </div>
     <? endif; ?>
@@ -267,5 +265,7 @@
 </div>
 <? // Re-open the container div closed above: ?>
 <div class="container">
+
+<!-- END of: finna - search/results.phtml -->
 
 <!-- END of: finna - search/results.phtml -->
