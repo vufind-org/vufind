@@ -77,13 +77,11 @@
           </ul>
         </li>
         <? endif; ?>
-      </ul>
 
-      <? if ($template = $this->content()->findTemplateForLng("content/Additions/header-navibar")): ?>
-      <ul role="menubar" class="nav navbar-nav">
-        <?=$this->render($template)?>
+        <? if ($template = $this->content()->findTemplateForLng("content/Additions/header-navibar")): ?>
+          <?=$this->render($template)?>
+        <? endif; ?>
       </ul>
-      <? endif; ?>
 
       <ul role="menubar" class="nav navbar-nav lang">
         <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
