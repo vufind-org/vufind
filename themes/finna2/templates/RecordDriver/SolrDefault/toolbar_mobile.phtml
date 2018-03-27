@@ -51,7 +51,7 @@
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" rel="nofollow"><i class="fa fa-bookmark"></i><span class="hidden-xs"> <?=$this->transEsc('Share') ?></span></a>
         <ul class="dropdown-menu" role="menu">
           <? if (!empty($shareUrl)): ?>
-            <?=$this->partial('record/share-buttons.phtml', ['shareUrl' => $shareUrl, 'title' => $this->driver->getFullTitle()]);?>
+            <?=$this->partial('record/share-buttons.phtml', ['shareUrl' => $shareUrl, 'title' => $this->driver->tryMethod('getTitle', [], '')]);?>
             <? // Fetch correct image link and metadata here for Facebook, Twitter and Pinterest ?>
             <!--
             <meta property="og:title" content="<?=$this->escapeHtml($this->driver->getShortTitle()); ?>" />

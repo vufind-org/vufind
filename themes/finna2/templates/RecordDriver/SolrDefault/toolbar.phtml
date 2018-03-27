@@ -45,7 +45,7 @@
       <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
   </li>
   <? if (!empty($shareUrl)): ?>
-    <?=$this->partial('record/share-buttons.phtml', ['shareUrl' => $shareUrl, 'title' => $this->driver->getFullTitle()]);?>
+    <?=$this->partial('record/share-buttons.phtml', ['shareUrl' => $shareUrl, 'title' => $this->driver->tryMethod('getTitle', [], '')]);?>
   <? endif; ?>
   </ul>
 </div>
