@@ -2,7 +2,7 @@
 /**
  * Hold Logic Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -121,10 +121,8 @@ class Holds
         foreach ($holdings as $groupKey => $items) {
             $retVal[$groupKey] = [
                 'items' => $items,
-                'location' => isset($items[0]['location'])
-                    ? $items[0]['location'] : '',
-                'locationhref' => isset($items[0]['locationhref'])
-                    ? $items[0]['locationhref'] : ''
+                'location' => $items[0]['location'] ?? '',
+                'locationhref' => $items[0]['locationhref'] ?? ''
             ];
             // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
@@ -523,8 +521,7 @@ class Holds
         // Build Params
         return [
             'action' => $action, 'record' => $details['id'],
-            'source' => isset($details['source'])
-                ? $details['source'] : DEFAULT_SEARCH_BACKEND,
+            'source' => $details['source'] ?? DEFAULT_SEARCH_BACKEND,
             'query' => $queryString, 'anchor' => "#tabnav"
         ];
     }

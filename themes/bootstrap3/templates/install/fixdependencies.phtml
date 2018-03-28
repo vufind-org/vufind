@@ -1,4 +1,4 @@
-<?
+<?php
     // Set page title.
     $this->headTitle($this->translate('auto_configure_title'));
 
@@ -9,4 +9,4 @@
 
 <?=$this->flashmessages()?>
 
-<? if ($this->problems == 0): ?><p><?=$this->transEsc('No dependency problems found') ?>.</p><? endif; ?>
+<?php if ($this->problems == 0): ?><p><?=$this->transEsc('No dependency problems found') ?>.</p><?php endif; ?>

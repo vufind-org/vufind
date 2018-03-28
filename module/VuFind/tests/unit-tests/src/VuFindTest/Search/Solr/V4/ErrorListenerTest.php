@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR 3.x error listener.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Search\Solr\V4;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 use RuntimeException;
 

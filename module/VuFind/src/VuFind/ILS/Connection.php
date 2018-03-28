@@ -5,7 +5,7 @@
  * This wrapper works with a driver class to pass information from the ILS to
  * VuFind.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -338,7 +338,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 $response['consortium'] = $functionConfig['consortium'];
             }
         } else {
-            $id = isset($params['id']) ? $params['id'] : null;
+            $id = $params['id'] ?? null;
             if ($this->checkCapability('getHoldLink', [$id, []])) {
                 $response = ['function' => "getHoldLink"];
             }
@@ -487,7 +487,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             } else {
                 $cancelParams = [
                     $params ?: [],
-                    isset($params['patron']) ? $params['patron'] : null
+                    $params['patron'] ?? null
                 ];
                 $check2 = $this->checkCapability(
                     'getCancelStorageRetrievalRequestLink', $cancelParams
@@ -573,7 +573,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             } else {
                 $cancelParams = [
                     $params ?: [],
-                    isset($params['patron']) ? $params['patron'] : null
+                    $params['patron'] ?? null
                 ];
                 $check2 = $this->checkCapability(
                     'getCancelILLRequestLink', $cancelParams
@@ -646,7 +646,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         if (is_array($helpText)) {
             $lang = $this->getTranslatorLocale();
-            return isset($helpText[$lang]) ? $helpText[$lang] : '';
+            return $helpText[$lang] ?? '';
         }
         return $helpText;
     }

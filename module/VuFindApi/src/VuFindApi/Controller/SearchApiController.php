@@ -2,7 +2,7 @@
 /**
  * Search API Controller
  *
- * PHP Version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -261,7 +261,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                 function ($runner, $params, $searchId) use (
                     $hierarchicalFacets, $request, $requestedFields
                 ) {
-                    foreach (isset($request['facet']) ? $request['facet'] : []
+                    foreach ($request['facet'] ?? []
                        as $facet
                     ) {
                         if (!isset($hierarchicalFacets[$facet])) {
@@ -269,7 +269,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                         }
                     }
                     if ($requestedFields) {
-                        $limit = isset($request['limit']) ? $request['limit'] : 20;
+                        $limit = $request['limit'] ?? 20;
                         $params->setLimit($limit);
                     } else {
                         $params->setLimit(0);
@@ -297,7 +297,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             $response['records'] = $records;
         }
 
-        $requestedFacets = isset($request['facet']) ? $request['facet'] : [];
+        $requestedFacets = $request['facet'] ?? [];
         $hierarchicalFacetData = $this->getHierarchicalFacetData(
             array_intersect($requestedFacets, $hierarchicalFacets)
         );

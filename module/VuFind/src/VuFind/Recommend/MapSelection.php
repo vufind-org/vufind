@@ -2,7 +2,7 @@
 /**
  * MapSelection Recommendations Module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -38,8 +38,11 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class MapSelection implements \VuFind\Recommend\RecommendInterface
+class MapSelection implements \VuFind\Recommend\RecommendInterface,
+    \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Basemap configuration parameters
      *
@@ -345,6 +348,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             $params->set('rows', '10000000'); // set to return all results
             $response = json_decode($this->solrConnector->search($params));
             foreach ($response->response->docs as $current) {
+                if (!isset($current->title)) {
+                    $current->title = $this->translate('Title not available');
+                }
                 $result[] = [
                     $current->id, $current->{$this->geoField}, $current->title
                 ];
@@ -598,7 +604,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             foreach ($idCoords[1] as $coord) {
                 $recId = $idCoords[0];
                 $rawCoordIds[] = $recId;
-                $title = $idCoords[2];
+                $title = mb_convert_encoding($idCoords[2], 'UTF-8');
                 $centerPoint = $this->createGeoFeature(
                     $recId, $coord, $title, $bboxCoords
                 );

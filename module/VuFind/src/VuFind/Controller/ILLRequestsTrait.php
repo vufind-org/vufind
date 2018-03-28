@@ -2,7 +2,7 @@
 /**
  * ILL trait (for subclasses of AbstractRecord)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -153,8 +153,7 @@ trait ILLRequestsTrait
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => $defaultRequired,
-                'helpText' => isset($checkRequests['helpText'])
-                    ? $checkRequests['helpText'] : null
+                'helpText' => $checkRequests['helpText'] ?? null
             ]
         );
         $view->setTemplate('record/illrequest');

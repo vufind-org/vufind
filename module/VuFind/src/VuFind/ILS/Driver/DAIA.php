@@ -5,7 +5,7 @@
  * Based on the proof-of-concept-driver by Till Kinstler, GBV.
  * Relaunch of the daia driver developed by Oliver Goldschmidt.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Jochen Lienhard 2014.
  *
@@ -751,7 +751,7 @@ class DAIA extends AbstractBase implements
                 $result_item['item_id'] = $item['id'];
                 // custom DAIA field used in getHoldLink()
                 $result_item['ilslink']
-                    = (isset($item['href']) ? $item['href'] : $doc_href);
+                    = ($item['href'] ?? $doc_href);
                 // count items
                 $number++;
                 $result_item['number'] = $this->getItemNumber($item, $number);
@@ -1134,8 +1134,7 @@ class DAIA extends AbstractBase implements
      */
     protected function getItemDepartmentLink($item)
     {
-        return isset($item['department']['href'])
-            ? $item['department']['href'] : false;
+        return $item['department']['href'] ?? false;
     }
 
     /**

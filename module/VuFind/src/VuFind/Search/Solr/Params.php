@@ -2,7 +2,7 @@
 /**
  * Solr aspect of the Search Multi-class (Params)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -167,8 +167,7 @@ class Params extends \VuFind\Search\Base\Params
                     $q = $field . ':"' . addcslashes($value, '"\\') . '"';
                 }
                 if ($orFacet) {
-                    $orFilters[$field] = isset($orFilters[$field])
-                        ? $orFilters[$field] : [];
+                    $orFilters[$field] = $orFilters[$field] ?? [];
                     $orFilters[$field][] = $q;
                 } else {
                     $filterQuery[] = $q;
@@ -631,9 +630,7 @@ class Params extends \VuFind\Search\Base\Params
             }
         } elseif ($this->facetHelper && in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely
-            $separator = isset($hierarchicalFacetSeparators[$field])
-                ? $hierarchicalFacetSeparators[$field]
-                : '/';
+            $separator = $hierarchicalFacetSeparators[$field] ?? '/';
             $filter['displayText'] = $this->facetHelper->formatDisplayText(
                 $filter['displayText'], true, $separator
             );

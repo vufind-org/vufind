@@ -1,8 +1,8 @@
 <?php
 /**
- * Facet-driven channel provider.
+ * Abstract base class for channel providers.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -31,7 +31,7 @@ use VuFind\Cover\Router as CoverRouter;
 use VuFind\Search\Base\Params;
 
 /**
- * Facet-driven channel provider.
+ * Abstract base class for channel providers.
  *
  * @category VuFind
  * @package  Channels

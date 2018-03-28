@@ -3,7 +3,7 @@
 /**
  * Summon backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -266,7 +266,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
         $params = $params->getArrayCopy();
 
         // Extract the query:
-        $query = isset($params['query'][0]) ? $params['query'][0] : null;
+        $query = $params['query'][0] ?? null;
         unset($params['query']);
 
         // Convert the options:

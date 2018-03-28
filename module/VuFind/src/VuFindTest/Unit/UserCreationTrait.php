@@ -4,7 +4,7 @@
  * Trait with utility methods for user creation/management. Assumes that it
  * will be applied to a subclass of DbTestCase.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -105,7 +105,7 @@ trait UserCreationTrait
         foreach ($defaults as $field => $default) {
             $this->findCssAndSetValue(
                 $page, '#account_' . $field,
-                isset($overrides[$field]) ? $overrides[$field] : $default
+                $overrides[$field] ?? $default
             );
         }
     }

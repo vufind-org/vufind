@@ -1,10 +1,10 @@
 <?php
 /**
- * ILS driver test
+ * KeepAlive test class.
  *
- * PHP version 5
+ * PHP version 7
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,12 +25,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-namespace VuFindTest\ILS\Driver;
+namespace VuFindTest\AjaxHandler;
 
-use VuFind\ILS\Driver\ClaviusSQL;
+use VuFind\AjaxHandler\KeepAlive;
+use VuFind\AjaxHandler\KeepAliveFactory;
 
 /**
- * ILS driver test
+ * KeepAlive test class.
  *
  * @category VuFind
  * @package  Tests
@@ -38,13 +39,22 @@ use VuFind\ILS\Driver\ClaviusSQL;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ClaviusSQLTest extends \VuFindTest\Unit\ILSDriverTestCase
+class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTest
 {
     /**
-     * Constructor
+     * Test the AJAX handler's basic response.
+     *
+     * @return void
      */
-    public function __construct()
+    public function testResponse()
     {
-        $this->driver = new ClaviusSQL();
+        $sm = $this->getMockService('Zend\Session\SessionManager', ['getId']);
+        $sm->expects($this->once())->method('getId');
+        $container = new \Zend\ServiceManager\ServiceManager();
+        $container->setService('Zend\Session\SessionManager', $sm);
+        $factory = new KeepAliveFactory();
+        $handler = $factory($container, KeepAlive::class);
+        $params = new \Zend\Mvc\Controller\Plugin\Params();
+        $this->assertEquals([true, 'OK'], $handler->handleRequest($params));
     }
 }

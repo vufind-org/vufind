@@ -2,7 +2,7 @@
 /**
  * Hierarchy Tree Data Source (XML File)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -56,8 +56,7 @@ class XMLFile extends AbstractBase
     {
         if (null === $this->basePath) {
             $settings = $this->getHierarchyDriver()->getTreeSettings();
-            $this->basePath = isset($settings['XMLFileDir'])
-                ? $settings['XMLFileDir'] : '';
+            $this->basePath = $settings['XMLFileDir'] ?? '';
         }
         return $this->basePath;
     }

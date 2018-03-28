@@ -8,7 +8,7 @@
  * API documentation is available at
  * http://www.zeitschriftendatenbank.de/services/schnittstellen/journals-online-print
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Markus Fischer, info@flyingfischer.ch
  *

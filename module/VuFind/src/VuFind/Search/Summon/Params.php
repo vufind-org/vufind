@@ -2,7 +2,7 @@
 /**
  * Summon Search Parameters
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -225,12 +225,12 @@ class Params extends \VuFind\Search\Base\Params
             // if not, override them with defaults.
             $parts = explode(',', $facet);
             $facetName = $parts[0];
-            $bestDefaultFacetLimit = isset($fieldSpecificLimits->$facetName)
-                ? $fieldSpecificLimits->$facetName : $defaultFacetLimit;
+            $bestDefaultFacetLimit
+                = $fieldSpecificLimits->$facetName ?? $defaultFacetLimit;
             $defaultMode = ($this->getFacetOperator($facet) == 'OR') ? 'or' : 'and';
-            $facetMode = isset($parts[1]) ? $parts[1] : $defaultMode;
-            $facetPage = isset($parts[2]) ? $parts[2] : 1;
-            $facetLimit = isset($parts[3]) ? $parts[3] : $bestDefaultFacetLimit;
+            $facetMode = $parts[1] ?? $defaultMode;
+            $facetPage = $parts[2] ?? 1;
+            $facetLimit = $parts[3] ?? $bestDefaultFacetLimit;
             $facetParams = "{$facetMode},{$facetPage},{$facetLimit}";
             $finalFacets[] = "{$facetName},{$facetParams}";
         }
@@ -287,8 +287,7 @@ class Params extends \VuFind\Search\Base\Params
                             ->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
                     } elseif ($filt['operator'] == 'OR') {
                         // Special case -- OR facets:
-                        $orFacets[$filt['field']] = isset($orFacets[$filt['field']])
-                            ? $orFacets[$filt['field']] : [];
+                        $orFacets[$filt['field']] = $orFacets[$filt['field']] ?? [];
                         $orFacets[$filt['field']][] = $safeValue;
                     } else {
                         // Standard case:

@@ -2,7 +2,7 @@
 /**
  * EDS API Options
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -500,8 +500,7 @@ class Options extends \VuFind\Search\Base\Options
                                 $limiter['LimiterValues']
                             )
                             : [['Value' => $val]],
-                        'DefaultOn' => isset($limiter['DefaultOn'])
-                            ? $limiter['DefaultOn'] : 'n',
+                        'DefaultOn' => $limiter['DefaultOn'] ?? 'n',
                     ];
                 }
             }

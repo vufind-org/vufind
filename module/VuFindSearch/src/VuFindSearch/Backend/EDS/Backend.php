@@ -2,7 +2,7 @@
 /**
  * EDS API Backend
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -422,10 +422,8 @@ class Backend extends AbstractBackend
         }
         $authTokenData = $this->cache->getItem('edsAuthenticationToken');
         if (isset($authTokenData)) {
-            $currentToken =  isset($authTokenData['token'])
-                ? $authTokenData['token'] : '';
-            $expirationTime = isset($authTokenData['expiration'])
-                ? $authTokenData['expiration'] : 0;
+            $currentToken =  $authTokenData['token'] ?? '';
+            $expirationTime = $authTokenData['expiration'] ?? 0;
             $this->debugPrint(
                 'Cached Authentication data: '
                 . "$currentToken, expiration time: $expirationTime"

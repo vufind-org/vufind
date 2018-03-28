@@ -2,7 +2,7 @@
 /**
  * ILS support for MARC and other types of records.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015.

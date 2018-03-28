@@ -2,7 +2,7 @@
 /**
  * MyResearch Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -386,38 +386,39 @@ class MyResearchController extends AbstractBase
      */
     public function profileAction()
     {
-        // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
-            return $patron;
-        }
-
-        // User must be logged in at this point, so we can assume this is non-false:
-        $user = $this->getUser();
-
-        // Process home library parameter (if present):
-        $homeLibrary = $this->params()->fromPost('home_library', false);
-        if (!empty($homeLibrary)) {
-            $user->changeHomeLibrary($homeLibrary);
-            $this->getAuthManager()->updateSession($user);
-            $this->flashMessenger()->addMessage('profile_update', 'success');
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
         }
 
         // Begin building view object:
-        $view = $this->createViewModel();
+        $view = $this->createViewModel(['user' => $user]);
 
-        // Obtain user information from ILS:
-        $catalog = $this->getILS();
-        $this->addAccountBlocksToFlashMessenger($catalog, $patron);
-        $profile = $catalog->getMyProfile($patron);
-        $profile['home_library'] = $user->home_library;
-        $view->profile = $profile;
-        try {
-            $view->pickup = $catalog->getPickUpLocations($patron);
-            $view->defaultPickupLocation
-                = $catalog->getDefaultPickUpLocation($patron);
-        } catch (\Exception $e) {
-            // Do nothing; if we're unable to load information about pickup
-            // locations, they are not supported and we should ignore them.
+        $patron = $this->catalogLogin();
+        if (is_array($patron)) {
+            // Process home library parameter (if present):
+            $homeLibrary = $this->params()->fromPost('home_library', false);
+            if (!empty($homeLibrary)) {
+                $user->changeHomeLibrary($homeLibrary);
+                $this->getAuthManager()->updateSession($user);
+                $this->flashMessenger()->addMessage('profile_update', 'success');
+            }
+
+            // Obtain user information from ILS:
+            $catalog = $this->getILS();
+            $this->addAccountBlocksToFlashMessenger($catalog, $patron);
+            $profile = $catalog->getMyProfile($patron);
+            $profile['home_library'] = $user->home_library;
+            $view->profile = $profile;
+            try {
+                $view->pickup = $catalog->getPickUpLocations($patron);
+                $view->defaultPickupLocation
+                    = $catalog->getDefaultPickUpLocation($patron);
+            } catch (\Exception $e) {
+                // Do nothing; if we're unable to load information about pickup
+                // locations, they are not supported and we should ignore them.
+            }
+        } else {
+            $view->patronLoginView = $patron;
         }
 
         $config = $this->getConfig();
@@ -944,9 +945,8 @@ class MyResearchController extends AbstractBase
      */
     protected function getDriverForILSRecord($current)
     {
-        $id = isset($current['id']) ? $current['id'] : null;
-        $source = isset($current['source'])
-            ? $current['source'] : DEFAULT_SEARCH_BACKEND;
+        $id = $current['id'] ?? null;
+        $source = $current['source'] ?? DEFAULT_SEARCH_BACKEND;
         $record = $this->serviceLocator->get('VuFind\Record\Loader')
             ->load($id, $source, true);
         $record->setExtraDetail('ils_details', $current);
@@ -1252,9 +1252,8 @@ class MyResearchController extends AbstractBase
             $limit = min([$functionConfig['max_results'], $limit]);
         } elseif (isset($functionConfig['page_size'])) {
             if (!in_array($limit, $functionConfig['page_size'])) {
-                $limit = isset($functionConfig['default_page_size'])
-                    ? $functionConfig['default_page_size']
-                    : $functionConfig['page_size'][0];
+                $limit = $functionConfig['default_page_size']
+                    ?? $functionConfig['page_size'][0];
             }
         } else {
             $ilsPaging = false;
@@ -1365,20 +1364,20 @@ class MyResearchController extends AbstractBase
         foreach ($result as $row) {
             // Attempt to look up and inject title:
             try {
-                if (!isset($row['id']) || empty($row['id'])) {
-                    throw new \Exception();
-                }
-                $source = isset($row['source'])
-                    ? $row['source'] : DEFAULT_SEARCH_BACKEND;
-                $row['driver'] = $this->serviceLocator
-                    ->get('VuFind\Record\Loader')->load($row['id'], $source);
-                if (empty($row['title'])) {
-                    $row['title'] = $row['driver']->getShortTitle();
+                if (strlen($row['id'] ?? '') > 0) {
+                    $source = $row['source'] ?? DEFAULT_SEARCH_BACKEND;
+                    $row['driver'] = $this->serviceLocator
+                        ->get('VuFind\Record\Loader')->load($row['id'], $source);
+                    if (empty($row['title'])) {
+                        $row['title'] = $row['driver']->getShortTitle();
+                    }
                 }
             } catch (\Exception $e) {
-                if (!isset($row['title'])) {
-                    $row['title'] = null;
-                }
+                // Ignore record loading exceptions...
+            }
+            // In case we skipped or failed record loading, make sure title is set.
+            if (!isset($row['title'])) {
+                $row['title'] = null;
             }
             $fines[] = $row;
         }

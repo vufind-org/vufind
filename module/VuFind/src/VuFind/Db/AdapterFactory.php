@@ -2,7 +2,7 @@
 /**
  * Database utility class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -146,7 +146,7 @@ class AdapterFactory
     ) {
         list($type, $details) = explode('://', $connectionString);
         preg_match('/(.+)@([^@]+)\/(.+)/', $details, $matches);
-        $credentials = isset($matches[1]) ? $matches[1] : null;
+        $credentials = $matches[1] ?? null;
         if (isset($matches[2])) {
             if (strpos($matches[2], ':') !== false) {
                 list($host, $port) = explode(':', $matches[2]);
@@ -154,7 +154,7 @@ class AdapterFactory
                 $host = $matches[2];
             }
         }
-        $dbName = isset($matches[3]) ? $matches[3] : null;
+        $dbName = $matches[3] ?? null;
         if (strstr($credentials, ':')) {
             list($username, $password) = explode(':', $credentials, 2);
         } else {
@@ -167,7 +167,7 @@ class AdapterFactory
         // Set up default options:
         $options = [
             'driver' => $this->getDriverName($type),
-            'hostname' => isset($host) ? $host : null,
+            'hostname' => $host ?? null,
             'username' => $username,
             'password' => $password,
             'database' => $dbName

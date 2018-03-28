@@ -2,7 +2,7 @@
 /**
  * Holds trait (for subclasses of AbstractRecord)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -192,8 +192,7 @@ trait HoldsTrait
                 'requestGroups' => $requestGroups,
                 'defaultRequestGroup' => $defaultRequestGroup,
                 'requestGroupNeeded' => $requestGroupNeeded,
-                'helpText' => isset($checkHolds['helpText'])
-                    ? $checkHolds['helpText'] : null
+                'helpText' => $checkHolds['helpText'] ?? null
             ]
         );
         $view->setTemplate('record/hold');

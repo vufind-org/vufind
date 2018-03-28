@@ -2,7 +2,7 @@
 /**
  * Class for accessing OCLC WorldCat search API
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Andrew Nagy 2008.
  *

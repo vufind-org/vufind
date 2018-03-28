@@ -2,7 +2,7 @@
 /**
  * Hierarchy Tree Renderer for the JS_Tree plugin
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -104,8 +104,7 @@ class JSTree extends AbstractBase
             $hierarchies = [];
             foreach ($inHierarchies as $hierarchyTopID) {
                 if ($this->getDataSource()->supports($hierarchyTopID)) {
-                    $hierarchies[$hierarchyTopID] = isset($inHierarchiesTitle[$i])
-                        ? $inHierarchiesTitle[$i] : '';
+                    $hierarchies[$hierarchyTopID] = $inHierarchiesTitle[$i] ?? '';
                 }
                 $i++;
             }

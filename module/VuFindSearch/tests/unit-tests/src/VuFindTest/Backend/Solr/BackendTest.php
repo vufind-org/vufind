@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -29,7 +29,7 @@
 namespace VuFindTest\Backend\Solr;
 
 use InvalidArgumentException;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\HandlerMap;
@@ -47,7 +47,7 @@ use Zend\Http\Response;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class BackendTest extends PHPUnit_Framework_TestCase
+class BackendTest extends TestCase
 {
     /**
      * Test retrieving a record.

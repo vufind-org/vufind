@@ -2,7 +2,7 @@
 /**
  * KohaILSDI ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Alex Sassmannshausen, PTFS Europe 2014.
  *
@@ -668,7 +668,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     {
         $patron             = $holdDetails['patron'];
         $patron_id          = $patron['id'];
-        $request_location   = isset($patron['ip']) ? $patron['ip'] : "127.0.0.1";
+        $request_location   = $patron['ip'] ?? "127.0.0.1";
         $bib_id             = $holdDetails['id'];
         $item_id            = $holdDetails['item_id'];
         $pickup_location    = !empty($holdDetails['pickUpLocation'])
@@ -1169,7 +1169,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     'balance'    => $row['balance'],
                     'createdate' => $this->displayDate($row['createdat']),
                     'duedate'    => $this->displayDate($row['duedate']),
-                    'id'         => isset($row['id']) ? $row['id'] : -1,
+                    'id'         => $row['id'] ?? -1,
                 ];
             }
             return $transactionLst;

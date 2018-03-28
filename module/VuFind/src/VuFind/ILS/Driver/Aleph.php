@@ -2,7 +2,7 @@
 /**
  * Aleph ILS driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) UB/FU Berlin
  *

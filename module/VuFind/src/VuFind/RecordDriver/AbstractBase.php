@@ -2,7 +2,7 @@
 /**
  * Abstract base record model.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -319,7 +319,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         foreach ($types as $current) {
             $parts = explode(':', $current);
             $type = $parts[0];
-            $params = isset($parts[1]) ? $parts[1] : null;
+            $params = $parts[1] ?? null;
             if ($factory->has($type)) {
                 $plugin = $factory->get($type);
                 $plugin->init($params, $this);
