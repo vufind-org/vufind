@@ -1,15 +1,15 @@
 <h2><?=$this->transEsc('delete_account_title') ?></h2>
 <?=$this->flashmessages();?>
-<? if ($this->accountDeleted): ?>
+<?php if ($this->accountDeleted): ?>
   <div id="delete-account-success">
     <p><?=$this->translate('delete_account_success_message'); ?></p>
-    <?
-    // Logout redirect with inline script to make it lightbox compatible
-    $script = "setTimeout(function() { window.location = '{$this->redirectUrl}'; }, 3000);";
+    <?php
+      // Logout redirect with inline script to make it lightbox compatible
+      $script = "setTimeout(function() { window.location = '{$this->redirectUrl}'; }, 3000);";
     ?>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
   </div>
-<? else: ?>
+<?php else: ?>
   <form id="delete-account" method="post" action="<?=$this->url('myresearch-deleteaccount') ?>" name="deleteAccount">
     <h3><?=$this->transEsc('delete_account_confirm'); ?></h3>
     <p><?=$this->translate('delete_account_description_html'); ?></p>
@@ -17,4 +17,4 @@
     <input id="delete-account-cancel" class="btn btn-primary" type="submit" name="reset" data-dismiss="modal" value="<?=$this->transEsc('confirm_dialog_no'); ?>"/>
     <input id="delete-account-submit" class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('confirm_dialog_yes'); ?>"/>
   </form>
-<? endif; ?>
+<?php endif; ?>
