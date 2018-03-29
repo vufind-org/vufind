@@ -7,10 +7,13 @@
         <td>
           <?php
             // prepare URL params
+            $vufind_lang = $this->driver->getServiceLocator()->get('Vufind\Translator')->getLocale();
+            $jop_lang = $vufind_lang == 'de' ? 'de' : 'en';
             $genre                  = in_array('Article', $formats) ? "article" : "journal";
             $url_params             = array('sid'       => 'bib:tueb',
                                             'issn'      => $issn,
-                                            'genre'     => $genre);
+                                            'genre'     => $genre,
+                                            'lang'      => $jop_lang);
             if ($genre == "article") {
                 $volume             = $this->escapeHtml($this->driver->getVolume());
                 if (!empty($volume))
