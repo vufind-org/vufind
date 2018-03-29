@@ -266,8 +266,8 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
                                                     'renew_item_requested'
                                                 );
                                         } else {
-                                            $transaction['message'] =
-                                                $this->translate(
+                                            $transaction['message']
+                                                = $this->translate(
                                                     'renew_item_requested'
                                                 );
                                         }
