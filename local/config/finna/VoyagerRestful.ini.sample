@@ -37,6 +37,9 @@ http_timeout = 60
 ;login_password_blacklist[] = "0000"
 ;login_password_blacklist[] = "1234"
 
+; Whether to check for holds when a loan cannot be renewed. Defaults to true.
+;check_loan_holds = false
+
 ; These settings affect the Fund list used as a limiter in the "new items" module:
 [Funds]
 ; Uncomment this line to turn off the fund list entirely.
