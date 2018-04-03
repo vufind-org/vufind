@@ -612,6 +612,11 @@ finna.layout = (function finnaLayout() {
             var results = buildFacetNodes(facetData, currentPath, allowExclude, excludeTitle, true);
             treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
               treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
+              treeNode.find('a.exclude').click(function excludeLinkClick(e) {
+                window.location = this.href;
+                e.preventDefault();
+                return false;
+              });
             });
             treeNode.jstree({
               'core': {

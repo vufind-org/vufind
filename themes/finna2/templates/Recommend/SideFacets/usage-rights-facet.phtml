@@ -1,6 +1,6 @@
 <!-- START of: finna2 - Recommend/SideFacets/usage-rights-facet.phtml -->
 <? $usageOptions = []; ?>
-<? foreach($cluster['list'] as $i => $thisFacet): ?>
+<? foreach ($cluster['list'] as $i => $thisFacet): ?>
   <?
     $usageOptions[$thisFacet['value']] = $thisFacet;
     ob_start();
@@ -17,20 +17,14 @@
   <? else: ?>
     <? $addURL = $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator']); ?>
     <? if ($allowExclude): ?>
-      <div class="list-group-item facet<?=$thisFacet['operator'] ?>">
-    <? else: ?>
-      <a href="<?=$addURL ?>" class="list-group-item facet<?=$thisFacet['operator'] ?>">
+      <div class="list-group-item facet facet<?=$thisFacet['operator'] ?> excludable">
+        <a class="exclude" href="<?=$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times" aria-hidden="true"></i></a>
     <? endif; ?>
     <span class="badge">
       <?=$this->localizedNumber($thisFacet['count'])?>
-      <? if ($allowExclude): ?>
-        <a href="<?=$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times" aria-hidden="true"></i></a>
-      <? endif; ?>
     </span>
-    <? if ($allowExclude): ?>
-      <a href="<?=$addURL ?>">
-    <? endif; ?>
-    <? if($thisFacet['operator'] == 'OR'): ?>
+    <a class="text" href="<?=$addURL ?>" class="list-group-item facet<?=$thisFacet['operator'] ?>">
+    <? if ($thisFacet['operator'] == 'OR'): ?>
       <i class="fa fa-square-o" aria-hidden="true"></i>
     <? endif; ?>
     <?=$this->transEsc($thisFacet['value'] . '_facet')?>
@@ -47,14 +41,14 @@
 
 <?=!empty($usageOptions['usage_A']) ? $usageOptions['usage_A']['html'] : ''?>
 <? if (!empty($usageOptions['usage_B']) || !empty($usageOptions['usage_D'])): ?>
-  <div class="usage-right-group">
+  <div class="usage-right-group<? if ($allowExclude): ?> usage-rights-excludable<? endif ?>">
     <span><?=$this->transEsc('usage_title_derivates')?></span>
     <?=!empty($usageOptions['usage_D']) ? $usageOptions['usage_D']['html'] : '' ?>
     <?=!empty($usageOptions['usage_B']) ? $usageOptions['usage_B']['html'] : '' ?>
   </div>
 <? endif; ?>
 <? if (!empty($usageOptions['usage_E']) || !empty($usageOptions['usage_C'])): ?>
-  <div class="usage-right-group">
+  <div class="usage-right-group<? if ($allowExclude): ?> usage-rights-excludable<? endif ?>">
     <span><?=$this->transEsc('usage_title_no_derivates')?></span>
     <?=!empty($usageOptions['usage_E']) ? $usageOptions['usage_E']['html'] : '' ?>
     <?=!empty($usageOptions['usage_C']) ? $usageOptions['usage_C']['html'] : '' ?>

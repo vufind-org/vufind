@@ -1401,7 +1401,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                     }
 
                     $facetList = $facetHelper->buildFacetArray(
-                        $facet, $facetList, $results->getUrlQuery()
+                        $facet, $facetList, $results->getUrlQuery(), false
                     );
 
                     if (!empty($facetConfig->FacetFilters->$facet)
