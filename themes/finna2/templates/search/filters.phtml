@@ -24,9 +24,9 @@
         <span class="filters-title"><?=$this->transEsc($field)?>:</span>
         <? foreach ($data as $index => $value): ?>
           <? $operatorChar = ($value['operator'] == 'NOT') ? '-' : ($value['operator'] == 'OR' ? '~' : ''); ?>
-          <span class="filters-term"><? if ($value['operator'] == 'NOT') echo $this->transEsc('NOT'); if ($value['operator'] == 'OR' && $index > 0) echo $this->transEsc('OR'); ?></span>
+          <span class="filters-term filters-<?=$this->escapeHtmlAttr(strtolower($value['operator']))?>"><? if ($value['operator'] == 'NOT') echo $this->transEsc('NOT'); if ($value['operator'] == 'OR' && $index > 0) echo $this->transEsc('OR'); ?></span>
           <? $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator']) : '';?>
-          <span class="filter-value">
+          <span class="filter-value filters-<?=$this->escapeHtmlAttr(strtolower($value['operator']))?>">
             <? // Always handle online_boolean and free_online_boolean even if not configured ?>
             <? if ('unrecognized_facet_label' === $field && in_array($value['field'], ['online_boolean', 'free_online_boolean'])): ?>
               <?=$this->translate('online_boolean' === $value['field'] ? 'online_material_facet_html' : 'free_online_material_facet_html') ?>
