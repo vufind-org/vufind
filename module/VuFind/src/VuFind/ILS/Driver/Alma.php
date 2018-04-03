@@ -64,13 +64,21 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     protected $dateConverter;
 
     /**
+     * Configuration loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configLoader;
+    
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter)
+    public function __construct(\VuFind\Date\Converter $dateConverter, \VuFind\Config\PluginManager $configLoader)
     {
         $this->dateConverter = $dateConverter;
+        $this->configLoader = $configLoader;
     }
 
     /**
@@ -93,31 +101,90 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
     /**
      * Make an HTTP request against Alma
-     *
-     * @param string $path   Path to retrieve from API (excluding base URL/API key)
-     * @param string $params Additional GET params
-     *
-     * @return \SimpleXMLElement
+     * 
+     * @param string $path              Path to retrieve from API (excluding base URL/API key)
+     * @param array $paramsGet          Additional GET params
+     * @param array $paramsPost         Additional POST params
+     * @param string $method            GET or POST. Default is GET.
+     * @param string $rawBody           Request body.
+     * @param Headers|array $headers    Add headers to the call.
+     * 
+     * @throws ILSException
+     * @return NULL|SimpleXMLElement
      */
-    protected function makeRequest($path, $params = [])
+    protected function makeRequest($path, $paramsGet = [], $paramsPost = [], $method = 'GET', $rawBody = null, $headers = null)
     {
-        // TODO: Support requests of different methods
-        if (!isset($params['apiKey'])) {
-            $params['apiKey'] = $this->apiKey;
+        // Set some variables
+        $result = null;
+        $statusCode = null;
+        $returnValue = null;
+        
+        try {
+            // Set API key if it is not already available in the GET params
+            if (!isset($paramsGet['apiKey'])) {
+                $paramsGet['apiKey'] = $this->apiKey;
+            }
+            
+            // Create the API URL
+            $url = strpos($path, '://') === false ? $this->baseUrl . $path : $path;
+            
+            // Create client with API URL
+            $client = $this->httpService->createClient($url);
+            
+            // Set method
+            $client->setMethod($method);
+
+            // Set other GET parameters
+            if ($method == 'GET') {
+                $client->setParameterGet($paramsGet);
+            }
+            
+            // Set POST parameters
+            if ($method == 'POST') {
+                $client->setParameterPost($paramsPost);
+                $client->setParameterGet(['apiKey' => $paramsGet['apiKey']]); // Always set API key as GET parameter
+            }
+            
+            // Set body if applicable
+            if (isset($rawBody)) {
+                $client->setRawBody($rawBody);
+            }
+            
+            // Set headers if applicable
+            if (isset($headers)) {
+                $client->setHeaders($headers);
+            }
+            
+            // Execute HTTP call
+            $result = $client->send();
+        } catch (\Exception $e) {
+            throw new ILSException($e->getMessage());
         }
-        $url = strpos($path, '://') === false ? $this->baseUrl . $path : $path;
-        $client = $this->httpService->createClient($url);
-        $client->setParameterGet($params);
-        $result = $client->send();
+        
+        // Get the HTTP status code
+        $statusCode = $result->getStatusCode();
+        
+        // Check for error
+        if ($result->isServerError()) {
+            throw new ILSException('HTTP error code: '.$statusCode);
+        }
+        
         if ($result->isSuccess()) {
-            return simplexml_load_string($result->getBody());
+            $answer = $result->getBody();
+            $answer = str_replace('xmlns=', 'ns=', $answer);
+            $xml = simplexml_load_string($answer);
+            
+            if (!$xml && $result->isServerError()) {
+                throw new ILSException("XML is not valid or HTTP error, URL: $url, HTTP status code: $statusCode");
+            }
+            
+            $returnValue = $xml;
         } else {
-            // TODO: Throw an error
-            error_log($client->getUri());
-            error_log(print_r($params, true));
-            error_log($result->getBody());
+            error_log('[ALMA] Call to: '.$client->getUri().'. GET params: '.var_export($paramsGet, true).'. POST params: '.var_export($paramsPost, true).'. Result body: '.$result->getBody().'. HTTP status code: '.$statusCode);
+            throw new ILSException('HTTP error code: '.$statusCode);
         }
-        return null;
+
+        return $returnValue;
     }
 
     /**
@@ -222,6 +289,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param string $locationCode          The location code of the holding to be checked
      * @param array $requestableConfig      An array of fulfillment units and associated patron groups and their request policy from Alma.ini (see section [Requestable])
      * @param array $patron                 An array with the patron details (username and password)
+     * 
      * @return boolean                      true if the the patron is allowed to place requests on holdings of this fulfillment unit, false otherwise.
      * @author Michael Birkner
      */
@@ -250,6 +318,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Check for request blocks.
      * @param array $patron   The patron array with username and password
+     * 
      * @return array|boolean    An array of block messages or false if there are no blocks
      * @author  Michael Birkner
      */
@@ -261,6 +330,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * Check for account blocks in Alma and cache them.
      * 
      * @param array $patron     The patron array with username and password
+     * 
      * @return array|boolean    An array of block messages or false if there are no blocks
      * @author Michael Birkner
      */
@@ -307,6 +377,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * 
      * @param string $locationCode      A location code, e. g. "SCI"
      * @param array $fulfillmentUnits   An array of fulfillment units with all its locations.
+     * 
      * @return string|NULL              Null if the location was not found or a string specifying the fulfillment unit of the location that was found.
      * @author Michael Birkner
      */
@@ -320,33 +391,133 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
     
     /**
+     * Create a user in Alma via API call
+     * 
+     * @param array $formParams         The data from the "create new account" form
+     * @throws \VuFind\Exception\Auth
+     * 
+     * @return NULL|SimpleXMLElement
+     * @author Michael Birkner
+     */
+    public function createAlmaUser($formParams) {        
+        
+        // Get config for creating new Alma users from Alma.ini
+        $newUserConfig = $this->config['NewUser'];
+        
+        // Check if config params are all set
+        $configParams = [
+            'recordType', 'userGroup', 'preferredLanguage', 
+            'accountType', 'status', 'emailType', 'idType'
+        ];
+        foreach ($configParams as $configParam) {
+            if (!isset($newUserConfig[$configParam]) || empty(trim($newUserConfig[$configParam]))) {
+                $errorMessage = 'Configuration "'.$configParam.'" is not set in Alma.ini in the [NewUser] section!';
+                error_log('[ALMA]: '.$errorMessage);
+                throw new \VuFind\Exception\Auth($errorMessage);
+            }
+        }
+        
+        // Calculate expiry date based on config in Alma.ini
+        $dateNow = new \DateTime('now');
+        $expiryDate = null;
+        if (isset($newUserConfig['expiryDate']) && !empty(trim($newUserConfig['expiryDate']))) {
+            try {
+                $expiryDate = $dateNow->add(new \DateInterval($newUserConfig['expiryDate']));
+            } catch(\Exception $exception) {
+                $errorMessage = 'Configuration "expiryDate" in Alma.ini (see [NewUser] section) has the wrong format!';
+                error_log('[ALMA]: '.$errorMessage);
+                throw new \VuFind\Exception\Auth($errorMessage);
+            }
+        } else {
+            $expiryDate = $dateNow->add(new \DateInterval('P1Y'));
+        }
+        $expiryDateXml = ($expiryDate != null) ? '<expiry_date>'.$expiryDate->format('Y-m-d').'Z</expiry_date>' : '';
+        
+        // Calculate purge date based on config in Alma.ini
+        $purgeDate = null;
+        if (isset($newUserConfig['purgeDate']) && !empty(trim($newUserConfig['purgeDate']))) {
+            try {
+                $purgeDate = $dateNow->add(new \DateInterval($newUserConfig['purgeDate']));
+            } catch(\Exception $exception) {
+                $errorMessage = 'Configuration "purgeDate" in Alma.ini (see [NewUser] section) has the wrong format!';
+                error_log('[ALMA]: '.$errorMessage);
+                throw new \VuFind\Exception\Auth($errorMessage);
+            }
+        }
+        $purgeDateXml = ($purgeDate != null) ? '<purge_date>'.$purgeDate->format('Y-m-d').'Z</purge_date>' : '';
+        
+        
+        // Create user XML for Alma API
+        $userXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        .'<user>'
+        .'<record_type>'.$this->config['NewUser']['recordType'].'</record_type>'
+        .'<first_name>'.$formParams['firstname'].'</first_name>'
+        .'<last_name>'.$formParams['lastname'].'</last_name>'
+        .'<user_group>'.$this->config['NewUser']['userGroup'].'</user_group>'
+        .'<preferred_language>'.$this->config['NewUser']['preferredLanguage'].'</preferred_language>'
+        .$expiryDateXml
+        .$purgeDateXml
+        .'<account_type>'.$this->config['NewUser']['accountType'].'</account_type>'
+        .'<status>'.$this->config['NewUser']['status'].'</status>'
+        .'<contact_info>'
+        .'<emails>'
+        .'<email preferred="true">'
+        .'<email_address>'.$formParams['email'].'</email_address>'
+        .'<email_types>'
+        .'<email_type>'.$this->config['NewUser']['emailType'].'</email_type>'
+        .'</email_types>'
+        .'</email>'
+        .'</emails>'
+        .'</contact_info>'
+        .'<user_identifiers>'
+        .'<user_identifier>'
+        .'<id_type>'.$this->config['NewUser']['idType'].'</id_type>'
+        .'<value>'.$formParams['username'].'</value>'
+        .'</user_identifier>'
+        .'</user_identifiers>'
+        .'</user>';
+
+        // Remove whitespaces from XML
+        $userXml = preg_replace("/\n/i", "", $userXml);
+        $userXml = preg_replace("/>\s*</i", "><", $userXml);
+
+        // Create user in Alma
+        $almaAnswer = $this->makeRequest('/users', array(), array(), 'POST', $userXml, ['Content-Type' => 'application/xml']);
+        
+        // Return the XML from Alma on success. On error, an exception is thrown in makeRequest
+        return $almaAnswer;
+    }
+    
+    /**
      * Patron Login
-     *
+     * 
      * This is responsible for authenticating a patron against the catalog.
-     *
-     * @param string $barcode  The patron barcode
-     * @param string $password The patron password
-     *
-     * @throws ILSException
-     * @return mixed           Associative array of patron info on successful login,
-     * null on unsuccessful login.
+     * 
+     * @param string $barcode   The patrons barcode.
+     * @param string $password  The patrons password.
+     * 
+     * @return string[]|NULL
      */
     public function patronLogin($barcode, $password)
     {
-        $client = $this->httpService->createClient(
-            $this->baseUrl . '/users/' . $barcode
-            . '?apiKey=' . urlencode($this->apiKey)
-            . '&op=auth&password=' . urlencode(trim($password))
-        );
-        $client->setMethod(\Zend\Http\Request::METHOD_POST);
-        $response = $client->send();
-        // Test once we have POST access
-        if ($response->isSuccess()) {
+        // Create array of get parameters for API call
+        $getParams = [
+            'user_id_type' => 'all_unique',
+            'view' => 'brief',
+            'expand' => 'none'
+        ];
+        
+        // Check for patron in Alma
+        $response = $this->makeRequest('/users/'.urlencode($barcode), $getParams);        
+                
+        // Test once we have access
+        if ($response != null) {
             return [
                 'cat_username' => trim($barcode),
                 'cat_password' => trim($password)
             ];
         }
+        
         return null;
     }
 
