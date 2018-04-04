@@ -1,7 +1,10 @@
 @import "vendor/bootstrap/bootstrap";   //Bootstrap v3.3.7
 @import "finna-variables";
 
-//importing finna extensions
+// Import bootstrap3 components
+@import "../../bootstrap3/less/components/js-tree";
+
+// Import Finna extensions
 @import "finna/accordion";
 @import "finna/advanced-search";
 @import "finna/autocomplete";
@@ -58,6 +61,7 @@
 @import "finna/filters";
 @import "finna/mobile-toolbar";
 @import "finna/mobile-table";
+@import "finna/audio-player";
 
 ::-ms-clear {
     display: none;
@@ -288,7 +292,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         display: none !important;
     }
 }
-.less-link i {
+.less-link i, .less-link-top i {
     padding-top: 2px;
     vertical-align: middle;
 }

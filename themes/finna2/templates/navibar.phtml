@@ -11,7 +11,8 @@
   </div>
   <? if (!isset($this->layout()->renderingError)): ?>
     <div class="collapse navbar-collapse" id="header-collapse">
-      <ul role="menubar" class="nav navbar-nav">
+      
+      <ul role="menubar" class="nav navbar-nav navbar-main">
         <? foreach ($this->navibar()->getMenuItems($this->layout()->userLang) as $key => $val): ?>
         <? if (count($val['items']) > 1): ?>
         <li role="menuitem" class="dropdown" id="<?= $val['label'] ?>">
@@ -41,7 +42,7 @@
         <? else:
           $itemVal = $val['items'][0];
           if (!($itemUrl = $this->navibar()->getMenuItemUrl($itemVal))) {
-             continue;
+            continue;
           }
           $url = $itemUrl['url'];
           $target = isset($itemUrl['target']) ? $itemUrl['target'] : null;
@@ -50,8 +51,7 @@
         <li><a<?= $target ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?= $url ?>"><i class="fa fa-nav-<?=$label ?>" aria-hidden="true"></i><?= $this->transEsc($label) ?></a></li>
         <? endif; ?>
         <? endforeach; ?>
-      </ul>
-      <ul role="menubar" class="nav navbar-nav">
+
         <? $cart = $this->cart(); if ($cart->isActive()): ?>
           <li id="cartSummary" role="menuitem">
             <a id="cartItems" data-lightbox title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>"><i class="fa fa-suitcase" aria-hidden="true"></i> <strong><?=count($cart->getItems())?></strong> <span class="sr-only"><?=$this->transEsc('items')?></span></a>
@@ -66,36 +66,34 @@
 
         <? if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
         <li role="presentation" class="dropdown">
-            <form method="post" name="themeForm" id="themeForm">
-              <input type="hidden" name="ui"/>
-            </form>
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Theme")?> <b class="caret"></b></a>
-            <ul role="menu" class="dropdown-menu">
-              <? foreach ($this->layout()->themeOptions as $current): ?>
-                <li role="menuitem"<?=$current['selected'] ? ' class="active"' : ''?>><a href="#" onClick="document.themeForm.ui.value='<?=$this->escapeHtmlAttr($current['name'])?>';document.themeForm.submit()"><?=$this->transEsc($current['desc'])?></a></li>
-              <? endforeach; ?>
-            </ul>
-          </li>
+          <form method="post" name="themeForm" id="themeForm">
+            <input type="hidden" name="ui"/>
+          </form>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Theme")?> <b class="caret"></b></a>
+          <ul role="menu" class="dropdown-menu">
+            <? foreach ($this->layout()->themeOptions as $current): ?>
+              <li role="menuitem"<?=$current['selected'] ? ' class="active"' : ''?>><a href="#" onClick="document.themeForm.ui.value='<?=$this->escapeHtmlAttr($current['name'])?>';document.themeForm.submit()"><?=$this->transEsc($current['desc'])?></a></li>
+            <? endforeach; ?>
+          </ul>
+        </li>
+        <? endif; ?>
+
+        <? if ($template = $this->content()->findTemplateForLng("content/Additions/header-navibar")): ?>
+          <?=$this->render($template)?>
         <? endif; ?>
       </ul>
 
-      <? if ($template = $this->content()->findTemplateForLng("content/Additions/header-navibar")): ?>
-      <ul role="menubar" class="nav navbar-nav">
-        <?=$this->render($template)?>
-      </ul>
-      <? endif; ?>
-
       <ul role="menubar" class="nav navbar-nav lang">
         <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
-            <? $i = 1;?>
-            <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
-                <? if ($this->layout()->userLang != $langCode): ?>
+          <? $i = 1;?>
+          <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+            <? if ($this->layout()->userLang != $langCode): ?>
               <li role="menuitem" class="lang">
                 <a class="preserve-anchor" href="<?=$this->escapeHtmlAttr($this->navibar()->getLanguageUrl($langCode))?>"><?=$this->displayLanguageOption($langName)?></a>
               </li>
-                    <? $i++; ?>
-                <? endif ?>
-            <? endforeach; ?>
+              <? $i++; ?>
+            <? endif ?>
+          <? endforeach; ?>
         <? endif; ?>
       </ul>
 

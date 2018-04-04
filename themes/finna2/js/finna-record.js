@@ -151,6 +151,14 @@ finna.record = (function finnaRecord() {
     });
   }
 
+  function initAudioAccordion() {
+    $('.audio-accordion .audio-item-wrapper').first().addClass('active');
+    $('.audio-accordion .audio-title-wrapper').click(function audioAccordionClicker() {
+      $('.audio-accordion .audio-item-wrapper.active').removeClass('active');
+      $(this).parent().addClass('active');
+    });
+  }
+
   function applyRecordAccordionHash() {
     var newTab = typeof window.location.hash !== 'undefined'
       ? window.location.hash.toLowerCase() : '';
@@ -191,10 +199,9 @@ finna.record = (function finnaRecord() {
         $('html, body').animate({scrollTop: accordion.offset().top - 64}, 150);
       }
 
-      $(this).tab('show');
       if ($recordTabs.find('.' + tabid + '-tab').length > 0) {
         $recordTabs.find('.' + tabid + '-tab').addClass('active');
-        if ($(this).parent().hasClass('initiallyActive')) {
+        if (accordion.hasClass('initiallyActive')) {
           removeHashFromLocation();
         } else {
           window.location.hash = tabid;
@@ -226,6 +233,7 @@ finna.record = (function finnaRecord() {
     initRecordNaviHashUpdate();
     initRecordAccordions();
     applyRecordAccordionHash();
+    initAudioAccordion();
     $(window).on('hashchange', applyRecordAccordionHash);
     loadSimilarRecords();
   }

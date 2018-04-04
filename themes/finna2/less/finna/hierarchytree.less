@@ -1,15 +1,11 @@
-/* jsTree arrows */
+/* Hierarchy tree */
 .hierarchy-tree {
   .jstree-ocl:before {
-    font-family:'icomoon';
-    float:left;
-    speak:none;
-    font-weight:normal;
-    font-style:normal;
-    text-decoration:inherit;
-    cursor:pointer;
-    padding:0;
-    width:10px;
+    font-family: 'icomoon';
+    @media (max-width: @screen-sm-max) {
+      font-size: 1.35em;
+      margin-top: -4px;
+    }
   }
   .jstree-open > .jstree-ocl:before {
     content: "\e027";
@@ -21,75 +17,48 @@
     content:"";
   }
   .jstree-icon {
-    color:#000;
-    width: 20px;
-  }
-  .jstree-anchor {
-    white-space:nowrap;
-    padding:2px 5px;
-  }
-  .jstree-container-ul, .jstree-children {
-    padding-left:16px;
-  }
-  .jstree-initial-node {
-    display:none;
-  }
-  .jstree-clicked {
-    color:@list-group-active-color;
-    background-color:@list-group-active-bg;
-    .jstree-icon {
-      color:#FFF;
-    }
-  }
-}
-#hierarchyTreeHolder {
-  overflow-x: hidden;
-  margin-bottom: 20px;
-  & .jstree-container-ul {
-    padding-left: 0px;
-  }
-  & .hierarchy-tree .jstree-icon {
     color: @gray-light;
+    width: 20px;
     margin-right: 5px;
     font-size: 1.15em;
   }
-  & .hierarchy-tree .jstree-clicked {
+  .jstree-anchor {
+    white-space: nowrap;
+    padding: 2px 5px;
+  }
+  .jstree-container-ul, .jstree-children {
+    padding-left: 8px;
+  }
+  .jstree-clicked {
     color: @link-color;
     font-weight: bold;
     background: @gray-lighter;
     padding: 5px;
     border-radius: 4px;
-  }
-  & .jstree-container-ul {
-    background: none;
-
-    & > li.jstree-node .jstree-children li {
-      @media (min-width: @screen-sm-min) {
-        padding-bottom: 0px;
-        padding-top: 0px;
-      }
+    margin-left: 4px;
+    .jstree-icon {
+      color: #FFF;
     }
-    & .jstree-node {
-      background: none;
+  }
+
+  .jstree-initial-node {
+    display: none;
+  }
+  .jstree-container-ul {
+    .jstree-node {
+      font-size: 1em;
       overflow: hidden;
       white-space: nowrap;
       display: block;
       text-overflow: ellipsis;
-      font-size: 1em;
-    }
-    & > li.jstree-node {
-      padding: 0px;
-    }
-    & .jstree-ocl {
-      @media (max-width: @screen-sm-max) {
-        font-size: 1.35em;
-        vertical-align: middle;
-      }
-    }
-    & .jstree-leaf > .jstree-ocl {
-      margin-right: 8px;
+      padding-left: 10px;
     }
   }
+}
+
+#hierarchyTreeHolder {
+  overflow-x: hidden;
+  margin-bottom: 20px;
 }
 
 .back-to-up {

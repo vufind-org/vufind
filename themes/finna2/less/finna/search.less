@@ -79,7 +79,7 @@ mark, .highlight {
     display: block;
   }
   & .list-view {
-    & .more-link, & .less-link {
+    & .more-link, & .less-link,  & .less-link-top {
       padding-bottom: 0;
     }
   }
@@ -88,6 +88,9 @@ mark, .highlight {
     display: table;
     table-layout: fixed;
     width: 100%;
+    @media(max-width: @screen-sm) {
+      display: block;
+    }
   }
   .media-body {
     width: auto;

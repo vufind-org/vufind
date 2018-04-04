@@ -1,9 +1,9 @@
 <!-- START of: finna - search/filters.phtml -->
 <? $hasDefaultsApplied = $params->hasDefaultsApplied() ?>
-
+<? $filterCount = $this->search()->getFilterCount($checkboxFilters, $filterList); ?>
 <? ob_start(); ?>
   <? foreach ($checkboxFilters as $filter): ?>
-    <? if($filter['selected']): ?>
+    <? if ($filter['selected']): ?>
       <span class="filter-value">
         <? $removeLink = isset($urlQuery) ? $urlQuery->removeFilter($filter['filter']) : ''; ?>
         <?=$this->translate($filter['desc']) ?>
@@ -12,7 +12,7 @@
     <? endif ?>
   <? endforeach; ?>
 
-  <? foreach ($filterList  as $field => $data): ?>
+  <? foreach ($filterList as $field => $data): ?>
     <? if (is_callable([$params, 'isGeographicFilter']) && $params->isGeographicFilter($data)): ?>
       <span class="filter-value">
         <? $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($data[0]['field'], $data[0]['value'], $data[0]['operator']) : '';?>
@@ -24,9 +24,9 @@
         <span class="filters-title"><?=$this->transEsc($field)?>:</span>
         <? foreach ($data as $index => $value): ?>
           <? $operatorChar = ($value['operator'] == 'NOT') ? '-' : ($value['operator'] == 'OR' ? '~' : ''); ?>
-          <span class="filters-term"><? if ($value['operator'] == 'NOT') echo $this->transEsc('NOT'); if ($value['operator'] == 'OR' && $index > 0) echo $this->transEsc('OR'); ?></span>
+          <span class="filters-term filters-<?=$this->escapeHtmlAttr(strtolower($value['operator']))?>"><? if ($value['operator'] == 'NOT') echo $this->transEsc('NOT'); if ($value['operator'] == 'OR' && $index > 0) echo $this->transEsc('OR'); ?></span>
           <? $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator']) : '';?>
-          <span class="filter-value">
+          <span class="filter-value filters-<?=$this->escapeHtmlAttr(strtolower($value['operator']))?>">
             <? // Always handle online_boolean and free_online_boolean even if not configured ?>
             <? if ('unrecognized_facet_label' === $field && in_array($value['field'], ['online_boolean', 'free_online_boolean'])): ?>
               <?=$this->translate('online_boolean' === $value['field'] ? 'online_material_facet_html' : 'free_online_material_facet_html') ?>
@@ -62,7 +62,10 @@
 <!-- Mobile view -->
 <div class="finna-filters visible-xs">
   <div class="filters-toggle-bar">
-    <div class="filters-toggle"><?=$this->transEsc("show_filters")?><span class="active-filter-count"></span><i class="fa fa-arrow-down"></i></div>
+    <div class="filters-toggle">
+      <?=$this->transEsc("show_filters")?>
+      <span class="active-filter-count">(<?=$filterCount?>)</span><i class="fa fa-arrow-down"></i>
+    </div>
     <? if (!isset($isCollectionTab) || !$isCollectionTab): ?>
       <div class="retain-filters">
         <? $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() || !$defaultSortApplied ? ' checked="checked"' : ''; ?>

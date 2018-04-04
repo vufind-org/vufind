@@ -682,7 +682,7 @@ table .iconlabel {
     font-family: FontAwesome;
 }
 .nav-pills {
-    & > li.addthis-share-buttons, li.whatsapp {
+    & > li.share-buttons, li.whatsapp {
         float: right;
         & .fa {
             display: block;
@@ -706,42 +706,39 @@ table .iconlabel {
     border: 2px solid #64d448;
     color: #fff;
 }
-/* Addthis icons for sharing styling */
-.addthis-share-buttons {
-    margin-right: 5px !important;
-}
-.addthis_toolbox.addthis_default_style {
-    display: inline-block;
+/* Styling of share buttons */
+.nav-pills .share-buttons-toolbox {
+    font-size: 0px;
+    margin-bottom: 10px;
+    a {
+        padding: 0;
+    }
+    i {
+        color: #fff;
+        font-size: 15px;
+        margin-left: 5px;
 
-}
-.addthis_default_style .at300b {
-    padding: 0px !important;
-}
-.addthis_toolbox.addthis_default_style i {
-    color: #fff;
-    font-size: 15px;
-    margin-left: 5px;
-
-}
-.addthis_toolbox.addthis_default_style i.fa-facebook {
-    background: #3a5795;
-    border: 2px solid #3a5795;
-    color: #fff;
-}
-.addthis_toolbox.addthis_default_style i.fa-pinterest {
-    background: #cb2027;
-    border: 2px solid #cb2027;
-    color: #fff;
-}
-.addthis_toolbox.addthis_default_style i.fa-twitter {
-    background: #00aced;
-    border: 2px solid #00aced;
-    color: #fff;
-}
-.addthis_toolbox.addthis_default_style i.fa-google-plus {
-    background: #d34836;
-    border: 2px solid #d34836;
-    color: #fff;
+        &.fa-facebook {
+            background: #3a5795;
+            border: 2px solid #3a5795;
+            color: #fff;
+        }
+        &.fa-pinterest {
+            background: #cb2027;
+            border: 2px solid #cb2027;
+            color: #fff;
+        }
+        &.fa-twitter {
+            background: #00aced;
+            border: 2px solid #00aced;
+            color: #fff;
+        }
+        &.fa-google-plus {
+            background: #d34836;
+            border: 2px solid #d34836;
+            color: #fff;
+        }
+    }
 }
 
 /* Image gallery popup icons */

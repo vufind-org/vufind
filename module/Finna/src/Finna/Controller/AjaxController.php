@@ -744,6 +744,10 @@ class AjaxController extends \VuFind\Controller\AjaxController
             $feed['linkTarget'] = $config->linkTarget;
         }
 
+        if (isset($config->visualItems)) {
+            $feed['visualItems'] = $config->visualItems;
+        }
+
         $template = $type == 'list' ? 'list' : 'carousel';
         $html = $this->getViewRenderer()->partial(
             "ajax/feed-$template.phtml", $feed

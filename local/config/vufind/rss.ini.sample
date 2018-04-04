@@ -10,7 +10,11 @@
 
 ;; Optional settings:
 
-; items = <items> Number of newest items to read from the feed. By default, all items are shown.
+; items = <items> Number of newest items to read from the feed. By default all items are shown.
+; visualItems = <visualItems> Number of items to show in carousel/list. Only relevant if
+; linkTo = "content-page" is set, to limit the number of items displayed in the
+; carousel/list while displaying up to <items> items in the content page. If not set,
+; up to <items> items are displayed.
 ; title = "[rss|<translation-key>]" Feed title:
 ;    'rss' = Use <title> element from feed
 ;    '<translation-key>' = Use local translation

@@ -63,10 +63,9 @@
   <div>
     <?=$this->record($this->driver)->getToolbar()?>
   </div>
-
-  <div>
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+  <div class="record-main mainbody left">
     <?=$this->flashmessages()?>
     <h2 class="collection-title"><?=$this->driver->getTitle();?></h2>
     <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
@@ -93,6 +92,22 @@
       </table>
     <? endif; ?>
     <?/* End Main Details */?>
+  </div>
+  <? ob_start(); ?>
+    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr'): ?>
+      <div class="organisation-menu">
+          <?=$this->render('record/record-organisation-menu.phtml') ?>
+      </div>
+    <? endif; ?>
+    <? foreach ($this->related()->getList($this->driver) as $current): ?>
+        <?=$this->related()->render($current)?>
+    <? endforeach; ?>
+  <? $sidebar = ob_get_contents(); ?>
+  <? ob_end_clean(); ?>
+  <div class="sidebar right smaller-image-sidebar hidden-xs hidden-sm">
+    <? if ($sidebar):?>
+        <?=$sidebar ?>
+    <? endif; ?>
   </div>
 
   <div class="clearfix hidden-lg hidden-md"></div>

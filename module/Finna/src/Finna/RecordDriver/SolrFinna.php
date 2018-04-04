@@ -455,8 +455,10 @@ trait SolrFinna
         if (!isset($this->fields['online_urls_str_mv'])) {
             return [];
         }
-        return $raw ? $this->fields['online_urls_str_mv'] : $this->mergeURLArray(
-            $this->fields['online_urls_str_mv'], true
+        return $raw ? $this->fields['online_urls_str_mv'] : $this->checkForAudioUrls(
+            $this->mergeURLArray(
+                $this->fields['online_urls_str_mv'], true
+            )
         );
     }
 
@@ -683,7 +685,7 @@ trait SolrFinna
     }
 
     /**
-     * Is social media sharing allowed (i.e. AddThis Tool).
+     * Is social media sharing allowed
      *
      * @return boolean
      */
@@ -876,6 +878,28 @@ trait SolrFinna
             }
         }
         return false;
+    }
+
+    /**
+     * Checks if any of the URLs contains an audio file and updates
+     * the url array acoordingly
+     *
+     * @param array $urls URLs to be checked for audio files
+     *
+     * @return array URL array with added audio and codec tag where
+     * appropriate
+     */
+    protected function checkForAudioUrls($urls)
+    {
+        $newUrls = [];
+        foreach ($urls as $url) {
+            if (preg_match('/^http(s)?:\/\/.*\.(mp3|wav)$/', $url['url'], $match)) {
+                $url['embed'] = 'audio';
+                $url['codec'] = $match[2];
+            }
+            $newUrls[] = $url;
+        }
+        return $newUrls;
     }
 
     /**

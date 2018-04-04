@@ -10,16 +10,33 @@
 
   if (!empty($urls)){
     $videoUrls = [];
+    $audioUrls = [];
     $otherUrls = [];
     foreach ($urls as $url) {
       $renderedURLs[] = $url['url'];
       if (!empty($url['videoSources']) || !empty($url['embed']) && $url['embed'] == 'video' || $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe'){
         array_push($videoUrls, $url);
-      }
-      else {
+      } elseif (!empty($url['embed']) && $url['embed'] == 'audio') {
+        array_push($audioUrls, $url);
+      } else {
         array_push($otherUrls, $url);
       }
     }
+  }
+
+  if (!empty($onlineURLs)) {
+    if (empty($audioUrls)) {
+      $audioUrls = [];
+    }
+    $tempUrlArray = [];
+    foreach ($onlineURLs as $url) {
+      if (!empty($url['embed']) && $url['embed'] == 'audio') {
+        array_push($audioUrls, $url);
+      } else {
+        array_push($tempUrlArray, $url);
+      }
+    }
+    $onlineURLs = $tempUrlArray;
   }
 
   $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
@@ -32,23 +49,6 @@
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   ob_start(); ?>
   <div class="media-<?=$thumbnailAlignment ?>">
-
-    <? if (!empty($videoUrls)): ?>
-        <? foreach ($videoUrls as $url): ?>
-          <? $description = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
-          <? $desc = $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe' ? $this->translate('format_Video') : $description; ?>
-          <div class="video-link-container">
-            <a class="videourl fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"
-                <? if (!empty($url['videoSources'])): ?> data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<? endif; ?>
-                <?= $this->recordLink()->getEmbeddedVideo($url['url']) ?>
-                <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
-            >
-              <div class="video-icon"><i class="fa fa-play-circle"></i></div>
-              <div class="video-desc"><?=$this->escapeHtml($desc)?></div>
-            </a>
-          </div>
-        <? endforeach; ?>
-    <? endif; ?>
 
     <div class="image-information">
       <div class="cover-wrapper">
@@ -68,6 +68,27 @@
          // getPreviewLink() (can go in your desired tab) ?>
       <?=$this->record($this->driver)->getPreviews()?>
     </div>
+
+    <? if (!empty($videoUrls)): ?>
+        <? foreach ($videoUrls as $url): ?>
+          <? $description = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
+          <? $desc = $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe' ? $this->translate('format_Video') : $description; ?>
+          <div class="video-link-container">
+            <a class="videourl fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"
+                <? if (!empty($url['videoSources'])): ?> data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<? endif; ?>
+                <?= $this->recordLink()->getEmbeddedVideo($url['url']) ?>
+                <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
+            >
+              <div class="video-icon"><i class="fa fa-play-circle"></i></div>
+              <div class="video-desc"><?=$this->escapeHtml($desc)?></div>
+            </a>
+          </div>
+        <? endforeach; ?>
+    <? endif; ?>
+    
+    <? if (!empty($audioUrls)): ?>
+      <?= $this->partial('RecordDriver/SolrDefault/record-audio-player.phtml', ['audioUrls' => $audioUrls]) ?>
+    <? endif; ?>
 
     <div class="record-rating text-left">
       <div class="rating-stars">
@@ -151,35 +172,7 @@
       </div>
     <? endif; ?>
     <div class="record-authors">
-     <? $containerTitle = $this->driver->getContainerTitle(); ?>
-     <? $hostRecords = $this->driver->tryMethod('getHostRecords'); ?>
-     <? if ($containerTitle || $hostRecords): ?>
-       <div class="recordContainerReference">
-         <?
-           $containerSource = $this->driver->getSourceIdentifier();
-           $containerID = $this->driver->getContainerRecordID();
-         ?>
-         <div class="truncate-field">
-           <?=$this->transEsc('Published in')?>
-           <? if ($hostRecords): ?>
-             <? foreach ($hostRecords as $i => $hostRecord): ?>
-               <?=$i > 0 ? '<br/>' : ''?>
-               <? if ($hostRecord['id'] || $hostRecord['title']): ?>
-                 <? // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
-                 <? $link = $hostRecord['id'] ? $this->escapeHtmlAttr($this->url('record') . urlencode($hostRecord['id'])) : $this->record($this->driver)->getLink('title', $hostRecord['title']); ?>
-                 <a href="<?=$link?>"><?=$hostRecord['title']?></a>
-               <? endif; ?>
-               <?=$this->escapeHtml($hostRecord['reference']); ?>
-             <? endforeach; ?>
-           <? else: ?>
-             <? $link = $containerID ? $this->escapeHtmlAttr($this->url('record') . urlencode($containerID)) : $this->record($this->driver)->getLink('title', $containerTitle); ?>
-             <a href="<?=$link?>"><?=$this->escapeHtml($containerTitle)?></a>
-             <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
-           <? endif; ?>
-         </div>
-       </div>
-     <? endif; ?>
-     <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
+    <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
        <div class="recordFormat">
          <?=$this->record($this->driver)->getFormatList()?><br/>
        </div>
@@ -200,6 +193,35 @@
            <? endif; ?>
          <? endforeach; ?>
        </div>
+     <? $containerTitle = $this->driver->getContainerTitle(); ?>
+     <? $hostRecords = $this->driver->tryMethod('getHostRecords'); ?>
+     <? if ($containerTitle || $hostRecords): ?>
+       <div class="recordContainerReference">
+         <?
+           $containerSource = $this->driver->getSourceIdentifier();
+           $containerID = $this->driver->getContainerRecordID();
+         ?>
+         <div class="truncate-field">
+           <span class="recordPublished"><?=$this->transEsc('Published in')?>: </span>
+           <? if ($hostRecords): ?>
+             <? foreach ($hostRecords as $i => $hostRecord): ?>
+               <?=$i > 0 ? '<br/>' : ''?>
+               <? if ($hostRecord['id'] || $hostRecord['title']): ?>
+                 <? // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
+                 <? $link = $hostRecord['id'] ? $this->escapeHtmlAttr($this->url('record') . urlencode($hostRecord['id'])) : $this->record($this->driver)->getLink('title', $hostRecord['title']); ?>
+                 <a href="<?=$link?>"><?=$hostRecord['title']?></a>
+               <? endif; ?>
+               <?=$this->escapeHtml($hostRecord['reference']); ?>
+             <? endforeach; ?>
+           <? else: ?>
+             <? $link = $containerID ? $this->escapeHtmlAttr($this->url('record') . urlencode($containerID)) : $this->record($this->driver)->getLink('title', $containerTitle); ?>
+             <a href="<?=$link?>"><?=$this->escapeHtml($containerTitle)?></a>
+             <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
+           <? endif; ?>
+         </div>
+       </div>
+     <? endif; ?>
+
        <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
          <span class="recordPublications">
            <? foreach ($publications as $field): ?>

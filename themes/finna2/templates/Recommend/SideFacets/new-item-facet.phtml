@@ -9,9 +9,9 @@ $newItemValues = [
 ?>
 <? foreach ($newItemValues as $newItemValue): ?>
     <? $addURL = $results->getUrlQuery()->replaceFacet($title, "[NOW-$newItemValue/DAY TO *]"); ?>
-    <a href="<?=$addURL ?>" class="list-group-item facetAND"><?=$this->transEsc('new_items_' . strtolower($newItemValue), null, $newItemValue)?></a>
+    <a href="<?=$addURL ?>" class="facet list-group-item facetAND"><?=$this->transEsc('new_items_' . strtolower($newItemValue), null, $newItemValue)?></a>
 <? endforeach; ?>
-<div class="list-group-item">
+<div class="facet list-group-item">
     <form name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter" class="form-inline">
         <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./", 'filter' => "/^{$title}:.*/"])?>
         <label for="<?=$this->escapeHtmlAttr($title)?>from"><?=$this->transEsc('new_items_from')?></label>

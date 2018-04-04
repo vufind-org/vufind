@@ -128,19 +128,32 @@ finna.layout = (function finnaLayout() {
         if (self.hasClass('wide')) { // generate different truncate styles according to class
           self.after('<div class="more-link wide"><i class="fa fa-handle-open"></i></div><div class="less-link wide"> <i class="fa fa-handle-close"></i></div>');
         } else {
+          self.before('<div class="less-link-top">' + VuFind.translate('show_less') + ' <i class="fa fa-arrow-up"></i></div>');
           self.after('<div class="more-link">' + VuFind.translate('show_more') + ' <i class="fa fa-arrow-down"></i></div><div class="less-link">' + VuFind.translate('show_less') + ' <i class="fa fa-arrow-up"></i></div>');
         }
+        $('.less-link-top').hide();
         $('.less-link').hide();
 
         self.nextAll('.more-link').first().click(function onClickMoreLink(/*event*/) {
           $(this).hide();
           $(this).next('.less-link').show();
           $(this).prev('.truncate-field').css('height', 'auto');
+          if (self.height() > (rowHeight[index] * 30)) {
+            $(this).siblings('.less-link-top').show();
+          }
           notifyTruncateChange(self);
         });
 
+        self.prevAll('.less-link-top').first().click(function onClickLessLink(/*event*/) {
+          $(this).hide();
+          $(this).siblings('.less-link').hide();
+          $(this).siblings('.more-link').show();
+          $(this).nextAll('.truncate-field').first().css('height', truncation[index] - 1 + 'px');
+          notifyTruncateChange(self);
+        });
         self.nextAll('.less-link').first().click(function onClickLessLink(/*event*/) {
           $(this).hide();
+          $(this).siblings('.less-link-top').hide();
           $(this).prev('.more-link').show();
           $(this).prevAll('.truncate-field').first().css('height', truncation[index] - 1 + 'px');
           notifyTruncateChange(self);
@@ -278,11 +291,6 @@ finna.layout = (function finnaLayout() {
   }
 
   function initMobileNarrowSearch() {
-    var filterAmount = $('.checkboxFilter input[checked]').length + $('.list-group.filters .list-group-item.active').length;
-    if (filterAmount > 0) {
-      $('.mobile-navigation .sidebar-navigation .active-filters  .active-filter-count').text(filterAmount);
-      $('.mobile-navigation .sidebar-navigation .active-filters').removeClass('hidden');
-    }
     $('.mobile-navigation .sidebar-navigation, .sidebar h4').unbind('click').click(function onClickMobileNav(e) {
       if ($(e.target).attr('class') !== 'fa fa-info-big') {
         $('.sidebar').toggleClass('open');
@@ -604,6 +612,11 @@ finna.layout = (function finnaLayout() {
             var results = buildFacetNodes(facetData, currentPath, allowExclude, excludeTitle, true);
             treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
               treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
+              treeNode.find('a.exclude').click(function excludeLinkClick(e) {
+                window.location = this.href;
+                e.preventDefault();
+                return false;
+              });
             });
             treeNode.jstree({
               'core': {
@@ -887,11 +900,6 @@ finna.layout = (function finnaLayout() {
   }
 
   function initFiltersToggle () {
-    $('.finna-filters').each(function calcFilterAmount() {
-      var filterAmount = $(this).find('.filters-bar .filter-value').length;
-      $(this).find('.filters-toggle .active-filter-count').text(' (' + filterAmount + ')');
-    });
-
     $('.filters-toggle').click(function filterToggleClicked(e){
       var finnaFilters = $(e.target).closest('.finna-filters');
       var filtersBar = finnaFilters.find('.filters-bar');
@@ -901,7 +909,6 @@ finna.layout = (function finnaLayout() {
       } else {
         filtersBar.addClass('hidden');
         finnaFilters.find('.fa-arrow-up').removeClass('fa-arrow-up').addClass('fa-arrow-down');
-
       }
     });
   }

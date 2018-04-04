@@ -1,10 +1,7 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/toolbar_mobile.phtml -->
 <?
   if ($this->driver->tryMethod('socialMediaSharingAllowed') !== false) {
-    $addThis = $this->addThis();
-    if (!empty($addThis)) {
-      $this->headScript()->appendFile('https://s7.addthis.com/js/250/addthis_widget.js?pub=' . urlencode($addThis));
-    }
+    $shareUrl = $this->serverUrl($this->recordLink()->getUrl($this->driver));
   }
 
   // Set up some variables for convenience:
@@ -53,14 +50,8 @@
       <li class="dropdown dropup">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" rel="nofollow"><i class="fa fa-bookmark"></i><span class="hidden-xs"> <?=$this->transEsc('Share') ?></span></a>
         <ul class="dropdown-menu" role="menu">
-          <? if (!empty($addThis)): ?>
-          <li class="addthis-share-buttons">
-            <div class="addthis_toolbox addthis_default_style">
-              <a class="addthis_button_facebook"><i class="fa fa-facebook"></i><span class="sr-only">Facebook</span></a>
-              <a class="addthis_button_twitter"><i class="fa fa-twitter"></i><span class="sr-only">Twitter</span></a>
-              <a class="addthis_button_pinterest_share"><i class="fa fa-pinterest"></i><span class="sr-only">Pinterest</span></a>
-              <!-- <a class="addthis_button_google_plusone_share"><i class="fa fa-google-plus"></i></a> -->
-            </div>
+          <? if (!empty($shareUrl)): ?>
+            <?=$this->partial('record/share-buttons.phtml', ['shareUrl' => $shareUrl, 'title' => $this->driver->tryMethod('getTitle', [], '')]);?>
             <? // Fetch correct image link and metadata here for Facebook, Twitter and Pinterest ?>
             <!--
             <meta property="og:title" content="<?=$this->escapeHtml($this->driver->getShortTitle()); ?>" />

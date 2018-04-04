@@ -158,9 +158,11 @@
               $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
               ?>
               <div class="<?= $combinedView ? 'hidden' : '' ?> hidden-xs">
-                <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="finnaQrcodeLink" title="<?=$this->transEsc('qrcode_show')?>"><i class="fa fa-qr-code"></i></a>
+                <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="finnaQrcodeLink" title="<?=$this->transEsc('qrcode_show')?>" rel="nofollow"><i class="fa fa-qr-code"></i></a>
                 <div class="qrcode hidden">
-                  <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+                  <script type="text/template" class="qrCodeImgTag">
+                    <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+                  </script>
                 </div>
               </div>
             <? endif; ?>

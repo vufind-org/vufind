@@ -184,6 +184,152 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
     }
 
     /**
+     * Get Patron Transactions
+     *
+     * This is responsible for retrieving all transactions (i.e. checked out items)
+     * by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @throws ILSException
+     * @return mixed        Array of the patron's transactions on success.
+     */
+    public function getMyTransactions($patron)
+    {
+        // Get local loans from the database so that we can get more details
+        // than available via the API.
+        $transactions = parent::getMyTransactions($patron);
+
+        // Get remote loans and renewability for local loans via the API
+
+        // Build Hierarchy
+        $hierarchy = [
+            'patron' =>  $patron['id'],
+            'circulationActions' => 'loans'
+        ];
+
+        // Add Required Params
+        $params = [
+            'patron_homedb' => $this->ws_patronHomeUbId,
+            'view' => 'full'
+        ];
+
+        $results = $this->makeRequest($hierarchy, $params);
+
+        if ($results === false) {
+            throw new ILSException('System error fetching loans');
+        }
+
+        $replyCode = (string)$results->{'reply-code'};
+        if ($replyCode != 0 && $replyCode != 8) {
+            throw new ILSException('System error fetching loans');
+        }
+        if (isset($results->loans->institution)) {
+            foreach ($results->loans->institution as $institution) {
+                foreach ($institution->loan as $loan) {
+                    if ($this->isLocalInst((string)$institution->attributes()->id)) {
+                        // Take only renewability for local loans, other information
+                        // we have already
+                        $renewable = (string)$loan->attributes()->canRenew == 'Y';
+
+                        $checkHolds
+                            = !isset($this->config['Catalog']['check_loan_holds'])
+                                || $this->config['Catalog']['check_loan_holds'];
+                        foreach ($transactions as &$transaction) {
+                            if (!isset($transaction['institution_id'])
+                                && $transaction['item_id'] == (string)$loan->itemId
+                            ) {
+                                $transaction['renewable'] = $renewable;
+
+                                if ($checkHolds) {
+                                    $itemRes = $this->makeRequest(
+                                        ['item' => $transaction['item_id']], []
+                                    );
+                                    $requested = false;
+                                    if (isset($itemRes->item->itemData)) {
+                                        foreach ($itemRes->item->itemData as $item) {
+                                            $name = (string)$item->attributes()
+                                                ->name;
+                                            if (('recallsPlaced' === $name
+                                                || 'holdsPlaced' === $name)
+                                                && (int)$item > 0
+                                            ) {
+                                                $requested = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if ($requested) {
+                                        if (!empty($transaction['message'])) {
+                                            $transaction['message'] .= ' - '
+                                                . $this->translate(
+                                                    'renew_item_requested'
+                                                );
+                                        } else {
+                                            $transaction['message']
+                                                = $this->translate(
+                                                    'renew_item_requested'
+                                                );
+                                        }
+                                    }
+                                }
+
+                                break;
+                            }
+                        }
+                        continue;
+                    }
+
+                    $dueStatus = false;
+                    $now = time();
+                    $dueTimeStamp = strtotime((string)$loan->dueDate);
+                    if ($dueTimeStamp !== false && is_numeric($dueTimeStamp)) {
+                        if ($now > $dueTimeStamp) {
+                            $dueStatus = 'overdue';
+                        } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
+                            $dueStatus = 'due';
+                        }
+                    }
+
+                    try {
+                        $dueDate = $this->dateFormat->convertToDisplayDate(
+                            'Y-m-d H:i', (string)$loan->dueDate
+                        );
+                    } catch (DateException $e) {
+                        // If we can't parse out the date, use the raw string:
+                        $dueDate = (string)$loan->dueDate;
+                    }
+
+                    try {
+                        $dueTime = $this->dateFormat->convertToDisplayTime(
+                            'Y-m-d H:i', (string)$loan->dueDate
+                        );
+                    } catch (DateException $e) {
+                        // If we can't parse out the time, just ignore it:
+                        $dueTime = false;
+                    }
+
+                    $transactions[] = [
+                        // This is bogus, but we need something..
+                        'id' => (string)$institution->attributes()->id . '_' .
+                                (string)$loan->itemId,
+                        'item_id' => (string)$loan->itemId,
+                        'duedate' => $dueDate,
+                        'dueTime' => $dueTime,
+                        'dueStatus' => $dueStatus,
+                        'title' => (string)$loan->title,
+                        'renewable' => (string)$loan->attributes()->canRenew == 'Y',
+                        'institution_id' => (string)$institution->attributes()->id,
+                        'institution_name' => (string)$loan->dbName,
+                        'institution_dbkey' => (string)$loan->dbKey,
+                    ];
+                }
+            }
+        }
+        return $transactions;
+    }
+
+    /**
      * Check Account Blocks
      *
      * Checks if a user has any blocks against their account which may prevent them

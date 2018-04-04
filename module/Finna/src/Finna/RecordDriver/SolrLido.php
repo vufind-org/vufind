@@ -803,6 +803,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 $urls[] = $url;
             }
         }
+        $urls = $this->checkForAudioUrls($urls);
         return $urls;
     }
 
@@ -838,7 +839,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Is social media sharing allowed (i.e. AddThis Tool).
+     * Is social media sharing allowed
      *
      * @return boolean
      */

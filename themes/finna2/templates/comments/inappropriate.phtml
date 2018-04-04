@@ -7,9 +7,10 @@
   <div class="form-group">
     <p><?=$this->transEsc('Select') ?>:</p>
     <ul>
-      <? for ($i = 1; $i <= 5; $i++): ?>
+      <? $reasons = [1, 2, 3, 4, 6, 5]; ?>
+      <? foreach ($reasons as $i): ?>
       <li><label for="inapp<?=$i?>"><input id="inapp<?=$i?>" type="radio" name="reason" <?= $i == 1 ? 'checked="checked"' : ''?> value="<?=$this->escapeHtmlAttr($this->translate('inappropriate_reason_' . $i))?>" /> <?=$this->translate('inappropriate_reason_' . $i)?></label></li>
-      <? endfor; ?>
+      <? endforeach; ?>
     </ul>
   </div>
   <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEsc('Submit')?>" />

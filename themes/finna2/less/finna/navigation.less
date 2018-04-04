@@ -54,6 +54,7 @@
 
 .navbar-nav>li.lang>a {
   line-height: @line-height-computed;
+  margin: 0;
 }
 
 .navbar-nav>li.lang {
@@ -252,9 +253,14 @@
   > li > a {
     padding-top: @navbar-padding-vertical;
     padding-bottom: @navbar-padding-vertical;
-    line-height: @navbar-height;
+    line-height: @navbar-height / 2;
+    margin-top: @navbar-height / 4;
+    margin-bottom: @navbar-height / 4;
     font-size: @navbar-font-size;
     font-weight: @navbar-font-weight;
+    @media (min-width:@screen-md-min) {
+      margin-bottom: 0;
+    }
   }
   &.language:not(.lang-1):before {
     color: @navbar-default-link-color;
@@ -264,7 +270,6 @@
     }
     height: ((@navbar-height) - 24);
     margin-top: ((@navbar-height - (@navbar-height - 24)) / 2);
-    float: left;
   }
   &.lang-1 {
     margin-left: 10px;
@@ -342,8 +347,14 @@
 
   // Uncollapse the nav
   @media (min-width: @grid-float-breakpoint) {
-    float: left;
+    flex-grow: 1;
+    flex-shrink: 1;
+    float: initial;
     margin: 0;
+
+    &.navbar-main {
+      margin-bottom: @navbar-height / 4;
+    }
   }
 
   .btn {
@@ -373,6 +384,8 @@
   line-height: @navbar-height;
   top: 0px;
   right: 15px;
+  flex-grow: 0;
+  flex-shrink: 0;
   & .dropdown-menu > li > a {
     white-space: normal;
   }
@@ -572,9 +585,11 @@
     }
     .navbar-collapse {
       flex: 1;
+      display: flex !important; // Needed to override bootstrap defaults
     }
     .navbar-nav.lang {
-      float: right;
+      flex-grow: 0;
+      flex-shrink: 0;
     }
   }
 }

@@ -221,7 +221,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
                     }
 
                     $facetList = $this->facetHelper->buildFacetArray(
-                        $facet, $facetList, $results->getUrlQuery()
+                        $facet, $facetList, $results->getUrlQuery(), false
                     );
 
                     if (!empty($this->facetConfig->FacetFilters->$facet)

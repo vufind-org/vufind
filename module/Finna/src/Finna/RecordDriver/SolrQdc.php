@@ -259,6 +259,7 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
                 $urls[] = $url;
             }
         }
+        $urls = $this->checkForAudioUrls($urls);
         return $urls;
     }
 }

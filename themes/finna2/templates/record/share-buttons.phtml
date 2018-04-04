@@ -1,0 +1,9 @@
+<?php // keep old addthis classes as they may have been used to hide these buttons ?>
+<li class="share-buttons addthis-share-buttons">
+  <div class="share-buttons-toolbox addthis_toolbox addthis_default_style">
+    <a class="share-button-facebook" title="Facebook" href="https://www.facebook.com/sharer.php?u=<?=urlencode($shareUrl)?>&amp;title=<?=urlencode($title)?>" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+    <a class="share-button-twitter" title="Twitter" href="https://twitter.com/share?url=<?=urlencode($shareUrl)?>&amp;text=<?=urlencode($title)?>" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+    <a class="share-button-pinterest" title="Pinterest" href="https://pinterest.com/pin/create/bookmarklet/?url=<?=urlencode($shareUrl)?>&amp;is_video=0&amp;description=<?=urlencode($title)?>" target="_blank"><i class="fa fa-pinterest" aria-hidden="true"></i></a>
+    <!--<a class="share-button-google-plus" title="Google+" href="https://plus.google.com/share?url=<?=urlencode($shareUrl)?>" target="_blank"><i class="fa fa-google-plus" aria-hidden="true"></i></a>-->
+  </div>
+</li>

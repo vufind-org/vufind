@@ -8,7 +8,8 @@
   <? if ($this->title || $this->translateTitle): ?><h2 class="carousel-header"><?= $this->translateTitle ? $this->transEsc($this->translateTitle) : $this->title; ?></h2><? endif; ?>
   <? if (isset($this->description)): ?><p class="additional-description"><?= $this->translate($this->description)?></p><? endif; ?>
   <div class="carousel-feed">
-    <? foreach($this->items as $item): ?>
+    <? $items = isset($this->visualItems) ? array_splice($this->items, 0, $this->visualItems) : $this->items; ?>
+    <? foreach($items as $item): ?>
     <div>
       <? if ($clickableElement && isset($item['link'])):?><a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?>><? endif; ?>
       <? if (isset($item['title'])): ?>

@@ -39,6 +39,28 @@ namespace Finna\View\Helper\Root;
 class Search extends \VuFind\View\Helper\Bootstrap3\Search
 {
     /**
+     * Get number of active filters
+     *
+     * @param array $checkboxFilters Checkbox filters
+     * @param array $filterList      Other filters
+     *
+     * @return int
+     */
+    public function getFilterCount($checkboxFilters, $filterList)
+    {
+        $result = 0;
+        foreach ($checkboxFilters as $filter) {
+            if ($filter['selected']) {
+                ++$result;
+            }
+        }
+        foreach ($filterList as $filter) {
+            $result += count($filter);
+        }
+        return $result;
+    }
+
+    /**
      * Support function to display spelling suggestions.
      *
      * @param string                          $msg     HTML to display at the top of

@@ -1,0 +1,25 @@
+<!-- START of: finna - RecordDriver/SolrDefault/record-audio-player.phtml -->
+<div class="audio-accordion">
+<? foreach ($audioUrls as $url): ?>
+  <div class="audio-item-wrapper">
+    <div class="audio-title-wrapper">
+      <div class="audio-title">
+      <? if (!empty($url['desc'])): ?>
+        <strong><?= $this->escapeHtml($this->translate('link_' . $url['desc'], null, $url['desc'])); ?></strong>
+      <? else: ?>
+        <strong><?=$this->transEsc('format_Sound') ?></strong>
+      <? endif ?>
+      </div>
+    </div>
+    <div class="audio-accordion-item">
+      <div class="audio-player-wrapper">
+        <audio class="video-js vjs-default-skin" controls preload="auto" data-setup='{}'>
+          <source src="<?= $url['url'] ?>" type="audio/<?= $url['codec'] ?>"/>
+        </audio>
+      </div>
+      <div class="open-link"><a target="_blank" href="<?=$url['url'] ?>"><i class="fa fa-download"></i> <?=$this->transEsc('Download recording') ?></a></div>
+    </div>
+  </div>
+<? endforeach; ?>
+</div>
+<!-- END of: finna - RecordDriver/SolrDefault/record-audio-player.phtml -->

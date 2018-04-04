@@ -29,7 +29,7 @@
     .media-right { padding-left: 20px; }
   }
 
-  & .nav>li a {
+  & .nav>li:not(.share-buttons) a {
     color: @action-link-color;
     font-size: 1em;
     font-weight: 600;
@@ -41,7 +41,7 @@
     & i {
       color: tint(@action-link-color, 22%);
       padding-left: 3px;
-      padding-right: 3px;    
+      padding-right: 3px;
     }
   }
 
@@ -113,6 +113,10 @@
   @media (max-width: @screen-sm) {
     margin-bottom: 20px;
   }
+}
+
+.record-image-container {
+  margin-bottom: 20px;
 }
 
 .no-image-layout {
@@ -220,7 +224,22 @@
 }
 .record-authors, .record-title-alt-script {
   .date-and-year();
+  margin-top: 6px;
 }
+
+.record-authors .recordContainerReference {
+  padding-bottom: 1em;
+  padding-top: 1em;
+  a {
+    font-size: 1.2em;
+    text-decoration: underline;
+    font-weight: 700;
+  }
+  .recordPublished {
+    font-weight: 700;
+  }
+}
+
 .record-details {
   & th {
     width: 30%;
@@ -388,7 +407,7 @@
   & a:hover {
     text-decoration: none;
   }
-  & > li:not(.addthis-share-buttons):not(.whatsapp) {
+  & > li:not(.share-buttons):not(.whatsapp) {
     margin: 10px;
     float: left;
     // Links rendered as pills
@@ -406,6 +425,12 @@
     min-width: 150px;
   }
 }
-.nav-pills .addthis-share-buttons a {
+.nav-pills .share-buttons a {
   display: inline-block;
+}
+.share-buttons {
+    margin-right: 5px;
+}
+.share-buttons-toolbox {
+    display: inline-block;
 }

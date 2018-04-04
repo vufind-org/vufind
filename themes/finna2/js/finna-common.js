@@ -66,6 +66,16 @@ finna.common = (function finnaCommon() {
       holder.toggleClass('hidden');
       return false;
     });
+
+    $('a.finnaQrcodeLinkRecord').click(function qrcodeToggleRecord() {
+      var holder = $(this).parent().find('li');
+      if (holder.find('img').length === 0) {
+        // We need to insert the QRCode image
+        var template = holder.find('.qrCodeImgTag').html();
+        holder.html(template);
+      }
+      return true;
+    });
   }
 
   var my = {

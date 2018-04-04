@@ -125,7 +125,7 @@ class Primo extends \VuFind\RecordDriver\Primo
      */
     protected function getSupportedCitationFormats()
     {
-        return ['APA', 'Chicago', 'MLA'];
+        return ['APA', 'Chicago', 'MLA', 'Harvard'];
     }
 
     /**

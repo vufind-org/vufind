@@ -62,6 +62,7 @@
      );
   }
 
+  $filterCount = 0;
   if (!$browse && !empty($params->getFilterList(false))){
       // Clone the params object to prevent its manipulation from affecting main facet functionality
       $params = clone $this->params;
@@ -73,8 +74,9 @@
       $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
       $options = $this->searchOptions($this->searchClassId);
       $defaultSortApplied = !isset($params) || $lastSort == $options->getDefaultSortByHandler($params->getSearchHandler());
-      // Set up filters
 
+      // Set up filters
+      $filterCount = $this->search()->getFilterCount($checkboxFilters, $filterList);
       $this->layout()->finnaFilters = $this->context($this)->renderInContext(
           'search/filters.phtml',
           [
@@ -150,11 +152,12 @@
     <?=$this->flashmessages()?>
     <? if ($recordTotal > 0): ?>
       <div class="search-controls">
-          <? if (!$browse): ?>
             <div class="control-container text-right hidden-print">
+            <? if (!$browse): ?>
                 <?=$this->render('search/controls/view.phtml')?>
                 <?=$this->render('search/controls/sort.phtml')?>
                 <?=$this->render('search/controls/limit.phtml')?>
+            <? endif; ?>
             </div>
               <? $resultsStr = $this->translate(
                   $browse ? 'browse_extended_' . ucfirst($browse) . '_html' : 'showing_results_of_html',
@@ -167,9 +170,6 @@
             <div class="pagination-container">
                 <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results, 'label' => $resultsStr])?>
             </div>
-          <? else: ?>
-              <? $resultsStr = ''; ?>
-          <? endif; ?>
           <? $this->layout()->srmessage = strip_tags($resultsStr); ?>
       </div>
     <? endif; ?>
@@ -253,10 +253,19 @@
 <? endif; ?>
 <div class="mobile-navigation visible-xs hidden-print">
   <ul>
-    <li class="sidebar-navigation"><i class="fa fa-arrow-up"></i> <?=$this->transEsc('Narrow Search')?> <span class="active-filters hidden"><?=$this->transEsc('Active filters')?>: <span class='active-filter-count'></span></span></li>
+    <li class="sidebar-navigation">
+      <i class="fa fa-arrow-up"></i> <?=$this->transEsc('Narrow Search')?>
+      <? if ($filterCount > 0): ?>
+        <span class="active-filters">
+          <?=$this->transEsc('Active filters')?>: <span class="active-filter-count"><?=$filterCount?></span>
+        </span>
+      <? endif; ?>
+    </li>
   </ul>
 </div>
 <? // Re-open the container div closed above: ?>
 <div class="container">
+
+<!-- END of: finna - search/results.phtml -->
 
 <!-- END of: finna - search/results.phtml -->
