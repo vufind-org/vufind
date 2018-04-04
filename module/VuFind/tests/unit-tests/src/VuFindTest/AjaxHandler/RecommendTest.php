@@ -1,6 +1,6 @@
 <?php
 /**
- * KeepAlive test class.
+ * Recommend test class.
  *
  * PHP version 7
  *
@@ -27,11 +27,10 @@
  */
 namespace VuFindTest\AjaxHandler;
 
-use VuFind\AjaxHandler\KeepAlive;
-use VuFind\AjaxHandler\KeepAliveFactory;
+use VuFind\AjaxHandler\Recommend;
 
 /**
- * KeepAlive test class.
+ * Recommend test class.
  *
  * @category VuFind
  * @package  Tests
@@ -39,7 +38,7 @@ use VuFind\AjaxHandler\KeepAliveFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTest
+class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTest
 {
     /**
      * Test the AJAX handler's basic response.
@@ -48,13 +47,21 @@ class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     public function testResponse()
     {
-        $sm = $this->getMockService('Zend\Session\SessionManager', ['getId']);
-        $sm->expects($this->once())->method('getId');
-        $container = new \Zend\ServiceManager\ServiceManager();
-        $container->setService('Zend\Session\SessionManager', $sm);
-        $factory = new KeepAliveFactory();
-        $handler = $factory($container, KeepAlive::class);
-        $params = new \Zend\Mvc\Controller\Plugin\Params();
-        $this->assertEquals([true, 'OK'], $handler->handleRequest($params));
+        $ss = $this->getMockService('VuFind\Session\Settings', ['disableWrite']);
+        $ss->expects($this->once())->method('disableWrite');
+        $mockPlugin = $this->getMockService('VuFind\Recommend\RecommendInterface');
+        $rm = $this->getMockService('VuFind\Recommend\PluginManager', ['get']);
+        $rm->expects($this->once())->method('get')->with($this->equalTo('foo'))
+            ->will($this->returnValue($mockPlugin));
+        $r = $this->getMockService('VuFind\Search\Solr\Results');
+        $viewHelper = $this->getMockService('VuFind\View\Helper\Root\Recommend');
+        $view = $this
+            ->getMockService('Zend\View\Renderer\PhpRenderer', ['plugin']);
+        $view->expects($this->once())->method('plugin')
+            ->with($this->equalTo('recommend'))
+            ->will($this->returnValue($viewHelper));
+        $handler = new Recommend($ss, $rm, $r, $view);
+        $params = $this->getParamsHelper(['mod' => 'foo']);
+        $this->assertEquals([null, 'OK'], $handler->handleRequest($params));
     }
 }

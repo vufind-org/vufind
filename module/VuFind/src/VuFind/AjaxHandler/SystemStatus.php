@@ -28,7 +28,7 @@
 namespace VuFind\AjaxHandler;
 
 use VuFind\Db\Table\Session;
-use VuFind\Search\Results\PluginManager;
+use VuFind\Search\Results\PluginManager as ResultsManager;
 use Zend\Config\Config;
 use Zend\Mvc\Controller\Plugin\Params;
 use Zend\Session\SessionManager;
@@ -64,7 +64,7 @@ class SystemStatus extends AbstractBase
     /**
      * Results manager
      *
-     * @var PluginManager
+     * @var ResultsManager
      */
     protected $resultsManager;
 
@@ -79,11 +79,11 @@ class SystemStatus extends AbstractBase
      * Constructor
      *
      * @param SessionManager $sm     Session manager
-     * @param PluginManager  $rm     Results manager
+     * @param ResultsManager $rm     Results manager
      * @param Config         $config Top-level VuFind configuration (config.ini)
      * @param Session        $table  Session database table
      */
-    public function __construct(SessionManager $sm, PluginManager $rm,
+    public function __construct(SessionManager $sm, ResultsManager $rm,
         Config $config, Session $table
     ) {
         $this->sessionManager = $sm;
