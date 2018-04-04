@@ -103,4 +103,16 @@ class Missing extends DefaultRecord
         $title = parent::getShortTitle();
         return empty($title) ? $this->determineMissingTitle() : $title;
     }
+
+    /**
+     * Return the unique identifier of this record within the index;
+     * useful for retrieving additional information (like tags and user
+     * comments) from the external MySQL database.
+     *
+     * @return string Unique identifier.
+     */
+    public function getUniqueID()
+    {
+        return '';
+    }
 }

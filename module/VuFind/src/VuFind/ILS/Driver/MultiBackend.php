@@ -883,7 +883,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
     public function getCancelHoldDetails($holdDetails)
     {
         $source = $this->getSource(
-            $holdDetails['id'] ? $holdDetails['id'] : $holdDetails['item_id']
+            $holdDetails['id'] ?? $holdDetails['item_id']
         );
         $driver = $this->getDriver($source);
         if ($driver) {
