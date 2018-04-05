@@ -65,11 +65,25 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     protected $geoField = 'long_lat';
 
     /**
+     * Which type of mapping interface should be used?
+     *
+     * @var string
+     */
+    protected $geoPlatform;
+
+    /**
      * Height of search map pane
      *
      * @var string
      */
     protected $height;
+
+    /**
+     * Map Selection configuration options
+     *
+     * @var array
+     */
+    protected $mapSelectionOptions = [];
 
     /**
      * Selected coordinates
@@ -105,13 +119,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
      * @var array
      */
     protected $bboxSearchCoords = [];
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
 
     /**
      * Solr search loader
@@ -151,18 +158,17 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager  $configLoader   Configuration loader
-     * @param \VuFind\Search\BackendManager $solr           Search interface
-     * @param array                         $basemapOptions Basemap Options
+     * @param \VuFind\Search\BackendManager $solr                Search interface
+     * @param array                         $basemapOptions      Basemap Options
+     * @param array                         $mapSelectionOptions Map Options
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader, $solr,
-        $basemapOptions
-    ) {
-        $this->configLoader = $configLoader;
+    public function __construct($solr, $basemapOptions, $mapSelectionOptions)
+    {
         $this->solr = $solr;
         $this->queryBuilder = $solr->getQueryBuilder();
         $this->solrConnector = $solr->getConnector();
         $this->basemapOptions = $basemapOptions;
+        $this->mapSelectionOptions = $mapSelectionOptions;
     }
 
     /**
@@ -176,21 +182,16 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
      */
     public function setConfig($settings)
     {
-        $settings = explode(':', $settings);
-        $mainSection = empty($settings[0]) ? 'MapSelection' : $settings[0];
-        $iniFile = empty($settings[1]) ? 'searches' : $settings[1];
-        $config = $this->configLoader->get($iniFile);
-        if (isset($config->$mainSection)) {
-            $entries = $config->$mainSection;
-            if (isset($entries->default_coordinates)) {
-                $this->defaultCoordinates = explode(
-                    ',', $entries->default_coordinates
-                );
-            }
-            if (isset($entries->height)) {
-                $this->height = $entries->height;
-            }
-        }
+        $basemapOptions = $this->basemapOptions;
+        $mapSelectionOptions = $this->mapSelectionOptions;
+        $this->geoPlatform = $mapSelectionOptions['geoPlatform'];
+        $this->defaultCoordinates = explode(
+            ',',
+            $mapSelectionOptions['default_coordinates']
+        );
+        $this->height = $mapSelectionOptions['height'];
+        $this->basemapUrl = $basemapOptions['basemap_url'];
+        $this->basemapAttribution = $basemapOptions['basemap_attribution'];
     }
 
     /**
@@ -209,19 +210,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
      */
     public function init($params, $request)
     {
-    }
-
-    /**
-     * Get the basemap configuration settings.
-     *
-     * @return array
-     */
-    public function getBasemap()
-    {
-        return [
-            $this->basemapOptions['basemap_url'],
-            $this->basemapOptions['basemap_attribution']
-        ];
     }
 
     /**
@@ -296,6 +284,31 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     }
 
     /**
+     * Get the basemap configuration settings.
+     *
+     * @return array
+     */
+    public function getBasemap()
+    {
+        return [
+            $this->basemapOptions['basemap_url'],
+            $this->basemapOptions['basemap_attribution']
+        ];
+    }
+
+    /**
+     * Get GeoPlatform
+     *
+     * Return mapping platform to use
+     *
+     * @return string
+     */
+    public function getGeoPlatform()
+    {
+        return $this->geoPlatform;
+    }
+
+    /**
      * GetHeight
      *
      * Return height of map in pixels
@@ -360,287 +373,32 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     }
 
     /**
-     * Convert coordinates to 360 degree grid
-     *
-     * @param array $coordinates coordinates for conversion
-     *
-     * @return array
-     */
-    public function coordinatesToGrid($coordinates)
-    {
-        $gridCoords = [];
-        list($coordW, $coordE, $coordN, $coordS) = $coordinates;
-        if ($coordE == (float)-0) {
-            $coordE = (float)0;
-        }
-        // Convert coordinates to 360 degree grid
-        if ($coordE < $coordW && $coordE < 0) {
-            $coordE = 360 + $coordE;
-        }
-        if ($coordW < 0 && $coordW >= -180) {
-            $coordW = 360 + $coordW;
-            $coordE = 360 + $coordE;
-        }
-        $gridCoords = [$coordW, $coordE, $coordN, $coordS];
-        return $gridCoords;
-    }
-
-    /**
-     * Convert coordinates to longitude latitude grid
-     *
-     * @param array $centerPt coordinates for conversion
-     *
-     * @return array
-     */
-    public function centerToLongLat($centerPt)
-    {
-        $LongLatCoords = [];
-        list($coordWE, $coordSN) = $centerPt;
-        // convert coordinate to 180 degree grid
-        if ($coordWE > 180) {
-            $coordWE = $coordWE - 360;
-        }
-        $LongLatCoords = [$coordWE, $coordSN];
-        return $LongLatCoords;
-    }
-
-    /**
-     * Calculated the center of search box and coordinate overlap
-     *
-     * @param array $bboxCoords  search box coordinates
-     * @param array $coordinates coordinates for conversion
-     *
-     * @return array
-     */
-    public function getCenterFromBboxCoordIntersect($bboxCoords, $coordinates)
-    {
-        $centerCoordBbox = [];
-        list($bboxW, $bboxE, $bboxN, $bboxS) = $bboxCoords;
-        list($coordW, $coordE, $coordN, $coordS) = $coordinates;
-        $bboxLon = range(floor($bboxW), ceil($bboxE));
-        $bboxLat = range(floor($bboxS), ceil($bboxN));
-        $coordLon = range(floor($coordW), ceil($coordE));
-        $coordLat = range(floor($coordS), ceil($coordN));
-        $cbLon = array_intersect($coordLon, $bboxLon);
-        $cbLat = array_intersect($coordLat, $bboxLat);
-        $centerCoordBbox = [
-            min($cbLon), max($cbLon), min($cbLat), max($cbLat)
-        ];
-        return $centerCoordBbox;
-    }
-
-    /**
-     * Check to see if coordinate and bbox intersect
-     *
-     * @param array $bboxCoords searchbox coordinates
-     * @param array $coordinate result record coordinates
-     *
-     * @return bool
-     */
-    public function coordBboxIntersect($bboxCoords, $coordinate)
-    {
-        $coordIntersect = false;
-        list($bboxW, $bboxE, $bboxN, $bboxS) = $bboxCoords;
-        list($coordW, $coordE, $coordN, $coordS) = $coordinate;
-        //Does coordinate fall within search box
-        if ((($coordW >= $bboxW && $coordW <= $bboxE)
-            || ($coordE >= $bboxW && $coordE <= $bboxE))
-            && (($coordS >= $bboxS && $coordS <= $bboxN)
-            || ($coordN >= $bboxS && $coordN <= $bboxN))
-        ) {
-            $coordIntersect = true;
-        }
-        // Does searchbox fall within coordinate
-        if ((($bboxW >= $coordW && $bboxW <= $coordE)
-            || ($bboxE >= $coordW && $bboxE <= $coordE))
-            && (($bboxS >= $coordS && $bboxS <= $coordN)
-            || ($bboxN >= $coordS && $bboxN <= $coordN))
-        ) {
-            $coordIntersect = true;
-        }
-        // Does searchbox span coordinate
-        if ((($coordE >= $bboxW && $coordE <= $bboxE)
-            && ($coordW >= $bboxW && $coordW <= $bboxE))
-            && ($coordN > $bboxN && $coordS < $bboxS)
-        ) {
-            $coordIntersect = true;
-        }
-        // Does coordinate span searchbox
-        if (($coordW < $bboxW && $coordE > $bboxE)
-            && (($coordS >= $bboxS && $coordS <= $bboxN)
-            && ($coordN >= $bboxS && $coordN <= $bboxN))
-        ) {
-            $coordIntersect = true;
-        }
-        return $coordIntersect;
-    }
-
-    /**
-     * Calculate center point of coordinate set
-     *
-     * @param array $coordinate centerPoint coordinate
-     *
-     * @return array
-     */
-    public function calculateCenterPoint($coordinate)
-    {
-        $centerCoord = [];
-        list($coordW, $coordE, $coordN, $coordS) = $coordinate;
-        // Calculate center point
-        $centerWE = (($coordW - $coordE) / 2) + $coordE;
-        $centerSN = (($coordN - $coordS) / 2) + $coordS;
-        // Return WENS coordinates even though W=E and N=S
-        $centerCoord = [$centerWE, $centerWE, $centerSN, $centerSN];
-        return $centerCoord;
-    }
-
-    /**
-     * Create array of geo features that are in search box
-     *
-     * Return search results record data
-     *
-     * @param string $recordId    record ID
-     * @param string $recordCoord record coordinates
-     * @param string $title       record title
-     * @param array  $bboxCoords  search box coordinates
-     *
-     * @return array
-     */
-    public function createGeoFeature($recordId, $recordCoord, $title, $bboxCoords)
-    {
-        $recId = $recordId;
-        $recCoord = $recordCoord;
-        $recTitle = $title;
-        list($bboxW, $bboxE, $bboxN, $bboxS) = $bboxCoords;
-        $centerData = [];
-        $match = [];
-        if (preg_match('/ENVELOPE\((.*),(.*),(.*),(.*)\)/', $recCoord, $match)) {
-            // Convert coordinates to 360 degree grid
-            $floats = array_map('floatval', $match);
-            $matchCoords = [$floats[1], $floats[2], $floats[3], $floats[4]];
-            $gridCoords = $this->coordinatesToGrid($matchCoords);
-            list($coordW, $coordE, $coordN, $coordS) = $gridCoords;
-
-            // Adjust coordinates on grid if necessary based on search box
-            if ($bboxW > 180 && ($coordW > 0 && $coordW < 180)) {
-                $coordW = 360 + $coordW;
-                $coordE = 360 + $coordE;
-            }
-            if ($bboxE > 180 && ($coordE > 0 && $coordE < 180)) {
-                $coordE = 360 + $coordE;
-            }
-            //Does coordinate fall within search box
-            if ($this->coordBboxIntersect(
-                $bboxCoords, [$coordW, $coordE, $coordN, $coordS]
-            )
-            ) {
-                // Calculate center point
-                $centerPt = $this->calculateCenterPoint(
-                    [$coordW, $coordE, $coordN, $coordS]
-                );
-                // Does center point intersect search box?
-                if ($this->coordBboxIntersect($bboxCoords, $centerPt)) {
-                    // Convert center point to long lat cooridnate
-                    $ctrLongLat = $this->centerToLongLat(
-                        [$centerPt[0], $centerPt[2]]
-                    );
-                    $centerData = [
-                        $recId, $ctrLongLat[0], $ctrLongLat[1], $recTitle
-                    ];
-                } else {
-                    // Recalculate center point
-                    $centerCoordBbox = $this->getCenterFromBboxCoordIntersect(
-                        [$bboxW, $bboxE, $bboxN, $bboxS],
-                        [$coordW, $coordE, $coordN, $coordS]
-                    );
-                    // Calculate new center point
-                    $newCtr = $this->calculateCenterPoint($centerCoordBbox);
-                    // Does new center point intersect search box?
-                    if ($this->coordBboxIntersect($bboxCoords, $newCtr)) {
-                        // Convert new center point to long lat cooridnate
-                        $ctrLongLat = $this->centerToLongLat(
-                            [$newCtr[0], $newCtr[2]]
-                        );
-                        $centerData = [
-                            $recId, $ctrLongLat[0], $ctrLongLat[1], $recTitle
-                        ];
-                    } else {
-                        // Make center point center of search box
-                        $bboxCtr = $this->calculateCenterPoint(
-                            [$bboxW, $bboxE, $bboxN, $bboxS]
-                        );
-                        $ctrLongLat = $this->centerToLongLat(
-                            [$bboxCtr[0],$bboxCtr[2]]
-                        );
-                        $centerData = [
-                            $recId, $ctrLongLat[0], $ctrLongLat[1], $recTitle
-                        ];
-                    }
-                }
-            }
-        }
-        return $centerData;
-    }
-
-    /**
      * Process search result record coordinate values
-     *
-     * Return search results record coordinates and process for
-     * display on search map.
+     * for Leaflet mapping platform.
      *
      * @return array
      */
     public function getMapResultCoordinates()
     {
-        $centerCoords = [];
-        $rawCoordIds = [];
-        $centerCoordIds = [];
-        // Both coordinate variables are in WENS order //
+        $results = [];
         $rawCoords = $this->getSearchResultCoordinates();
-        // Convert bbox coords to 360 grid  //
-        $bboxCoords = $this->coordinatesToGrid($this->bboxSearchCoords);
-        list($bboxW, $bboxE, $bboxN, $bboxS) = $bboxCoords;
         foreach ($rawCoords as $idCoords) {
             foreach ($idCoords[1] as $coord) {
+                $recCoords = [];
                 $recId = $idCoords[0];
-                $rawCoordIds[] = $recId;
-                $title = mb_convert_encoding($idCoords[2], 'UTF-8');
-                $centerPoint = $this->createGeoFeature(
-                    $recId, $coord, $title, $bboxCoords
-                );
-                if ($centerPoint) {
-                    $centerCoordIds[] = $centerPoint[0];
-                    $centerCoords[] = $centerPoint;
-                    break;
+                $title = $idCoords[2];
+                // convert title to UTF-8
+                $title = mb_convert_encoding($title, 'UTF-8');
+                $patternStr = '/ENVELOPE\((.*),(.*),(.*),(.*)\)/';
+                if (preg_match($patternStr, $coord, $match)) {
+                    $floats = array_map('floatval', $match);
+                    $recCoords = [$floats[1], $floats[2], $floats[3], $floats[4]];
                 }
+                $results[] = [$recId, $title, $recCoords[0],
+                    $recCoords[1], $recCoords[2], $recCoords[3]
+                ];
             }
         }
-        //Solr search includes close-by geo features
-        //Check and add these if there are any
-        $addIds = array_merge(
-            array_diff($rawCoordIds, $centerCoordIds),
-            array_diff($centerCoordIds, $rawCoordIds)
-        );
-        //Remove duplicate ids
-        $addIds = array_unique($addIds);
-        if (count($addIds) > 0) {
-            $bboxCenter = $this->calculateCenterPoint(
-                [$bboxW, $bboxE, $bboxN, $bboxS]
-            );
-            $centerLongLat = $this->centerToLongLat([$bboxCenter[0],$bboxCenter[2]]);
-            foreach ($addIds as $coordId) {
-                foreach ($rawCoords as $idCoords) {
-                    if ($coordId == $idCoords[0]) {
-                        $title = $idCoords[2];
-                        $centerCoords[] = [$coordId,
-                            $centerLongLat[0],
-                            $centerLongLat[1],
-                            $title
-                        ];
-                    }
-                }
-            }
-        }
-        return $centerCoords;
+        return $results;
     }
 }

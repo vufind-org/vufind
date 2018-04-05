@@ -69,40 +69,35 @@ class Map extends AbstractBase
     protected $graticule = false;
 
     /**
-     * Basemap URL
+     * Basemap settings
      *
-     * @var string
+     * @var array
      */
-    protected $basemapUrl;
-
-    /**
-     * Basemap attribution
-     *
-     * @var string
-     */
-    protected $basemapAttribution;
+    protected $basemapOptions = [];
 
     /**
      * Constructor
      *
-     * @param string $mapType Map provider (valid options: 'openlayers';
+     * @param string $mapType        Map provider
+     * (valid options: 'leaflet'
      * null to disable this feature)
-     * @param array  $options Additional settings
+     * @param array  $basemapOptions basemap settings
+     * @param array  $mapTabOptions  MapTab settings
      */
-    public function __construct($mapType = null, $options = [])
-    {
-        switch (trim(strtolower($mapType))) {
-        case 'openlayers':
+    public function __construct($mapType = null, $basemapOptions = [],
+        $mapTabOptions = []
+    ) {
+        $mapType = trim(strtolower($mapType));
+        if ($mapType == 'leaflet') {
             $this->mapType = trim(strtolower($mapType));
-            $legalOptions = ['displayCoords', 'mapLabels', 'graticule',
-                'basemap_url', 'basemap_attribution'
-            ];
+            $legalOptions = ['displayCoords', 'mapLabels', 'graticule'];
             foreach ($legalOptions as $option) {
-                if (isset($options[$option])) {
-                    $this->$option = $options[$option];
+                if (isset($mapTabOptions[$option])) {
+                    $this->$option = $mapTabOptions[$option];
                 }
             }
-            break;
+            $this->basemapOptions[0] = $basemapOptions['basemap_url'];
+            $this->basemapOptions[1] = $basemapOptions['basemap_attribution'];
         }
     }
 
@@ -154,10 +149,7 @@ class Map extends AbstractBase
      */
     public function getBasemap()
     {
-        $basemapParams = [];
-        $basemapParams[0] = $this->basemap_url;
-        $basemapParams[1] = $this->basemap_attribution;
-        return $basemapParams;
+        return $this->basemapOptions;
     }
 
     /**
@@ -167,7 +159,7 @@ class Map extends AbstractBase
      */
     public function isActive()
     {
-        if ($this->mapType == 'openlayers') {
+        if ($this->mapType == 'leaflet') {
             $geocoords = $this->getRecordDriver()->tryMethod('getGeoLocation');
             return !empty($geocoords);
         }
@@ -194,14 +186,8 @@ class Map extends AbstractBase
                 $lonE = (float)$match[2];
                 $latN = (float)$match[3];
                 $latS = (float)$match[4];
-                // Display as point or polygon?
-                if (($lonE == $lonW) && ($latN == $latS)) {
-                    $shape = 2;
-                } else {
-                    $shape = 4;
-                }
-                // Coordinates ordered for ol3 display as WSEN
-                array_push($coordarray, [$lonW, $latS, $lonE, $latN, $shape]);
+                // Coordinates ordered for display as WSEN
+                array_push($coordarray, [$lonW, $latS, $lonE, $latN]);
             }
         }
         return $coordarray;
@@ -281,10 +267,13 @@ class Map extends AbstractBase
     /**
      * Construct the map coordinates and labels array.
      *
+     * @param string $mapType geoPlatform parameter from geofeatures.ini
+     *
      * @return array
      */
-    public function getMapTabData()
+    public function getMapTabData($mapType)
     {
+        $mapType = trim(strtolower($mapType));
         $geoCoords = $this->getGeoLocationCoords();
         if (empty($geoCoords)) {
             return [];
@@ -312,7 +301,7 @@ class Map extends AbstractBase
                 $mapTabData, [
                     $geoCoords[$key][0], $geoCoords[$key][1],
                     $geoCoords[$key][2], $geoCoords[$key][3],
-                    $geoCoords[$key][4], $mapLabel, $mapCoords
+                    $mapLabel, $mapCoords
                     ]
             );
         }

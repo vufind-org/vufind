@@ -1,26 +1,38 @@
 <?php if ($this->recommend->getSearchResultCoordinates()) :?>
 <?php
-  $this->headScript()->appendFile('vendor/ol/ol.js');
-  $this->headScript()->appendFile('map_selection.js');
-  $this->headLink()->appendStylesheet('vendor/ol/ol.css');
+  $geoPlatform = $this->recommend->getGeoPlatform();
+  //Include files based on geoPlatform configuration
+  $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
+  $this->headScript()->appendFile('vendor/leaflet/leaflet.draw.js');
+  $this->headScript()->appendFile('vendor/leaflet/leaflet.markercluster.js');
+  $this->headScript()->appendFile('map_selection_leaflet.js');
+  $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.css');
+  $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.draw.css');
+  $this->headLink()->appendStylesheet('vendor/leaflet/MarkerCluster.css');
+  $this->headLink()->appendStylesheet('vendor/leaflet/MarkerCluster.Default.css');
+  $this->headLink()->appendStylesheet('geofeatures.css');
 
-  $resultsCoords = $this->recommend->getMapResultCoordinates();
+  // Call methods based on geoPlatform configuration
   $basemap = $this->recommend->getBasemap();
-  $baseUrl = $this->url('home');
   $geoField = $this->recommend->getGeoField();
-  $urlpath = $this->url('search-results');
-  $coordinates = $this->recommend->getSelectedCoordinates();
+  $height = $this->recommend->getHeight();
   $showSelection = true;
-  $popupTitle = $this->transEsc('map_results_label');
+  $baseUrl = $this->url('home');
+  $urlpath = $this->url('search-results');
+  $searchParams = $this->recommend->getSearchParams();
+  $coordinates = $this->recommend->getSelectedCoordinates();
+
   if ($coordinates == null) {
     $coordinates = $this->recommend->getDefaultCoordinates();
     $showSelection = false;
   }
-  $height = $this->recommend->getHeight();
-  $searchParams = $this->recommend->getSearchParams();
-  $params = [json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
-    json_encode($baseUrl), json_encode($searchParams), json_encode($showSelection),
-    json_encode($resultsCoords), json_encode($popupTitle), json_encode($basemap)];
+  $helpTopic = 'geosearch_leaflet';
+  $resultsCoords = $this->recommend->getMapResultCoordinates();
+  $params = [json_encode($geoField), json_encode($coordinates),
+    json_encode($urlpath), json_encode($baseUrl),
+    json_encode($searchParams), json_encode($showSelection),
+    json_encode($resultsCoords), json_encode($basemap)];
+
   $jsParams = implode(', ', $params);
   $jsLoad = "loadMapSelection(" . $jsParams . ");";
   $addSearchOption = <<<EOF
@@ -31,9 +43,7 @@ EOF;
   <div id="geo_search" style="display: none;">
     <button id="draw_box"><?=$this->transEsc('Draw Search Box')?></button>
     <span class="geo_maphelp">&nbsp;<a href="<?=$this->url('help-home')?>?topic=geosearch" data-lightbox class="help-link"><?=$this->transEsc('Need Help?')?></a></span>
-    <div id="geo_search_map" style="height: <?=$height?>px;">
-      <div id="popup"></div>
-    </div>
+    <div id="geo_search_map" style="height: <?=$height?>px;"></div>
   </div>
   <?php if ($showSelection) :?>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET');?>
