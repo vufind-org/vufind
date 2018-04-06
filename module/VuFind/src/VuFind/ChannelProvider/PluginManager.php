@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'alphabrowse' => 'VuFind\ChannelProvider\AlphaBrowse',
         'facets' => 'VuFind\ChannelProvider\Facets',
         'listitems' => 'VuFind\ChannelProvider\ListItems',
+        'newilsitems' => 'VuFind\ChannelProvider\NewILSItems',
         'random' => 'VuFind\ChannelProvider\Random',
         'recentlyreturned' => 'VuFind\ChannelProvider\RecentlyReturned',
         'similaritems' => 'VuFind\ChannelProvider\SimilarItems',
@@ -65,6 +66,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\ChannelProvider\Factory::getFacets',
         'VuFind\ChannelProvider\ListItems' =>
             'VuFind\ChannelProvider\Factory::getListItems',
+        'VuFind\ChannelProvider\NewILSItems' =>
+            'VuFind\ChannelProvider\AbstractILSChannelProviderFactory',
         'VuFind\ChannelProvider\Random' =>
             'VuFind\ChannelProvider\Factory::getRandom',
         'VuFind\ChannelProvider\RecentlyReturned' =>
