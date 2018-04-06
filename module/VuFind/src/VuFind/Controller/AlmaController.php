@@ -27,13 +27,12 @@
  */
 namespace VuFind\Controller;
 
-use \VuFind\Controller\AbstractBase;
 use \ZfcRbac\Service\AuthorizationServiceAwareInterface;
 use \ZfcRbac\Service\AuthorizationServiceAwareTrait;
 use \Zend\ServiceManager\ServiceLocatorInterface;
 use \Zend\Http\Response as HttpResponse;
-use \Zend\Http\Request as HttpRequest;
-use \Zend\Mail as Mail;
+//use \Zend\Http\Request as HttpRequest;
+//use \Zend\Mail as Mail;
 
 
 class AlmaController extends AbstractBase implements AuthorizationServiceAwareInterface {
@@ -56,9 +55,70 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
     }
     
     public function webhookAction() {
+        // Request from external
+        $request = $this->getRequest();
+        
+        // Get request method (GET, POST, ...)
+        $requestMethod = $request->getMethod();
+        
+        // Get request body if method is POST and is not empty
+        $requestBodyJson = ($request->getContent() != null && !empty($request->getContent()) && $requestMethod == 'POST') ? json_decode($request->getContent()) : null;
+        
+        // Get webhook action
+        $webhookAction = (isset($requestBodyJson->action)) ? $requestBodyJson->action: null;
+        
+        // Perform webhook action
+        switch ($webhookAction) {
+            case 'USER':
+                return $this->webhookUser($requestBodyJson);
+            case 'NOTIFICATION':
+                return $this->webhookNotification();
+            case 'JOB_END':
+                return $this->webhookJobEnd();
+            default:
+                return $this->webhookChallenge();
+                break;
+        }  
+    }
+    
+    protected function webhookUser($requestBodyJson) {
         $returnArray = [];
-        $returnArray[] = 'Test Alma Webhook';
+        $returnArray[] = 'Test Alma Webhook - USER.';        
         $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
+        
+        $this->httpHeaders->addHeaderLine('Content-type', 'application/json');
+        $this->httpResponse->setStatusCode(200); // Set HTTP status code to Bad Request (400)
+        $this->httpResponse->setContent($returnJson);
+        return $this->httpResponse;
+    }
+    
+    protected function webhookNotification() {
+        $returnArray = [];
+        $returnArray[] = 'Test Alma Webhook - NOTIFICATION.';
+        $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
+        
+        $this->httpHeaders->addHeaderLine('Content-type', 'application/json');
+        $this->httpResponse->setStatusCode(200); // Set HTTP status code to Bad Request (400)
+        $this->httpResponse->setContent($returnJson);
+        return $this->httpResponse;
+    }
+    
+    protected function webhookJobEnd() {
+        $returnArray = [];
+        $returnArray[] = 'Test Alma Webhook - JOB END.';
+        $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
+        
+        $this->httpHeaders->addHeaderLine('Content-type', 'application/json');
+        $this->httpResponse->setStatusCode(200); // Set HTTP status code to Bad Request (400)
+        $this->httpResponse->setContent($returnJson);
+        return $this->httpResponse;
+    }
+    
+    protected function webhookChallenge() {
+        $returnArray = [];
+        $returnArray[] = 'Test Alma Webhook - CHALLENGE.';
+        $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
+        
         $this->httpHeaders->addHeaderLine('Content-type', 'application/json');
         $this->httpResponse->setStatusCode(200); // Set HTTP status code to Bad Request (400)
         $this->httpResponse->setContent($returnJson);
