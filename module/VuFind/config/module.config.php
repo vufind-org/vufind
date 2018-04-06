@@ -105,7 +105,7 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'VuFind\Controller\AjaxController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
             'VuFind\Controller\AlphabrowseController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -280,6 +280,7 @@ $config = [
         'allow_override' => true,
         'factories' => [
             'ProxyManager\Configuration' => 'VuFind\Service\Factory::getProxyConfig',
+            'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
             'VuFind\Auth\Manager' => 'VuFind\Auth\ManagerFactory',
             'VuFind\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -352,6 +353,7 @@ $config = [
             'Zend\Db\Adapter\Adapter' => 'VuFind\Service\Factory::getDbAdapter',
             'Zend\Mvc\I18n\Translator' => 'VuFind\Service\Factory::getTranslator',
             'Zend\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
+            'Zend\Validator\Csrf' => 'VuFind\Service\CsrfValidatorFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -458,6 +460,7 @@ $config = [
         // This section contains service manager configurations for all VuFind
         // pluggable components:
         'plugin_managers' => [
+            'ajaxhandler' => [ /* see VuFind\AjaxHandler\PluginManager for defaults */ ],
             'auth' => [ /* see VuFind\Auth\PluginManager for defaults */ ],
             'autocomplete' => [ /* see VuFind\Autocomplete\PluginManager for defaults */ ],
             'channelprovider' => [ /* see VuFind\ChannelProvider\PluginManager for defaults */ ],
@@ -650,10 +653,10 @@ $staticRoutes = [
     'LibraryCards/Home', 'LibraryCards/SelectCard',
     'LibraryCards/DeleteCard',
     'MyResearch/Account', 'MyResearch/ChangePassword', 'MyResearch/CheckedOut',
-    'MyResearch/Delete', 'MyResearch/DeleteList', 'MyResearch/Edit',
-    'MyResearch/Email', 'MyResearch/Favorites', 'MyResearch/Fines',
-    'MyResearch/HistoricLoans', 'MyResearch/Holds', 'MyResearch/Home',
-    'MyResearch/ILLRequests', 'MyResearch/Logout',
+    'MyResearch/Delete', 'MyResearch/DeleteAccount', 'MyResearch/DeleteList',
+    'MyResearch/Edit', 'MyResearch/Email', 'MyResearch/Favorites',
+    'MyResearch/Fines', 'MyResearch/HistoricLoans', 'MyResearch/Holds',
+    'MyResearch/Home', 'MyResearch/ILLRequests', 'MyResearch/Logout',
     'MyResearch/NewPassword', 'MyResearch/Profile',
     'MyResearch/Recover', 'MyResearch/SaveSearch',
     'MyResearch/StorageRetrievalRequests', 'MyResearch/UserLogin',

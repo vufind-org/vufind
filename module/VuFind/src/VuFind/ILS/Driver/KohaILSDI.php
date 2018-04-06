@@ -2,7 +2,7 @@
 /**
  * KohaILSDI ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Alex Sassmannshausen, PTFS Europe 2014.
  *

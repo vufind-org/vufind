@@ -2,7 +2,7 @@
 /**
  * III Sierra REST API driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016-2017.
  *
@@ -381,7 +381,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         $result = $this->makeRequest(
             ['v3', 'patrons', $patronId],
-            [],
+            ['fields' => 'names,emails'],
             'GET',
             ['cat_username' => $username, 'cat_password' => $password]
         );
@@ -401,7 +401,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             'lastname' => $lastname,
             'cat_username' => $username,
             'cat_password' => $password,
-            'email' => '',
+            'email' => !empty($result['emails']) ? $result['emails'][0] : '',
             'major' => null,
             'college' => null
         ];

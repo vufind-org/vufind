@@ -2,7 +2,7 @@
 /**
  * Combined Search Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -40,6 +40,8 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  */
 class CombinedController extends AbstractSearch
 {
+    use AjaxResponseTrait;
+
     /**
      * Constructor
      *
@@ -94,13 +96,6 @@ class CombinedController extends AbstractSearch
         $this->adjustQueryForSettings($settings);
         $settings['view'] = $this->forwardTo($controller, $action);
 
-        // Send response:
-        $response = $this->getResponse();
-        $headers = $response->getHeaders();
-        $headers->addHeaderLine('Content-type', 'text/html');
-        $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');
-        $headers->addHeaderLine('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
-
         // Should we suppress content due to emptiness?
         if (isset($settings['hide_if_empty']) && $settings['hide_if_empty']
             && $settings['view']->results->getResultTotal() == 0
@@ -127,8 +122,7 @@ class CombinedController extends AbstractSearch
                 $viewParams
             );
         }
-        $response->setContent($html);
-        return $response;
+        return $this->getAjaxResponse('text/html', $html);
     }
 
     /**
@@ -215,8 +209,7 @@ class CombinedController extends AbstractSearch
                 'results' => $results,
                 'supportsCart' => $supportsCart,
                 'supportsCartOptions' => $supportsCartOptions,
-                'showBulkOptions' => isset($settings->Site->showBulkOptions)
-                    && $settings->Site->showBulkOptions
+                'showBulkOptions' => $settings->Site->showBulkOptions ?? false
             ]
         );
     }
