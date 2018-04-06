@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) 2007 Villanova University 2007,
+ * Copyright (C) Villanova University 2007,
  *               2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -123,7 +123,7 @@ class Manager
      *
      * @param string      $name      Name of the requested cache.
      * @param string|null $namespace Optional namespace to use. Defaults to the
-     *                               value of {@see $name}.
+     * value of {@see $name}.
      *
      * @return StorageInterface
      * @throws \Exception
