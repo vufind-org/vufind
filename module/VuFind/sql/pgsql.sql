@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS "comments";
 
 CREATE TABLE comments (
 id SERIAL,
-user_id int NOT NULL DEFAULT '0',
+user_id int DEFAULT NULL,
 resource_id int NOT NULL DEFAULT '0',
 comment text NOT NULL,
 created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -289,7 +289,7 @@ CREATE INDEX user_card_user_id_idx ON user_card (user_id);
 -- Constraints for table comments
 --
 ALTER TABLE comments
-ADD CONSTRAINT comments_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE,
+ADD CONSTRAINT comments_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE SET NULL,
 ADD CONSTRAINT comments_ibfk_2 FOREIGN KEY (resource_id) REFERENCES resource (id) ON DELETE CASCADE;
 
 
