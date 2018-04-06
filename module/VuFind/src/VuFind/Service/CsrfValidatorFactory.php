@@ -68,11 +68,10 @@ class CsrfValidatorFactory implements FactoryInterface
         }
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
         $sessionManager = $container->get('Zend\Session\SessionManager');
-        return new \Zend\Validator\Csrf(
+        return new $requestedName(
             [
                 'session' => new \Zend\Session\Container('csrf', $sessionManager),
-                'salt' => isset($config->Security->HMACkey)
-                    ? $config->Security->HMACkey : 'VuFindCsrfSalt'
+                'salt' => $config->Security->HMACkey ?? 'VuFindCsrfSalt'
             ]
         );
     }
