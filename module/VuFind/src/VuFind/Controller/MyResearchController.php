@@ -1694,8 +1694,7 @@ class MyResearchController extends AbstractBase
     public function deleteAccountAction()
     {
         // Force login:
-        $user = $this->getUser();
-        if (!$user) {
+        if (!($user = $this->getUser())) {
             return $this->forceLogin();
         }
 
@@ -1704,8 +1703,7 @@ class MyResearchController extends AbstractBase
             throw new \VuFind\Exception\BadRequest();
         }
 
-        $view = $this->createViewModel();
-        $view->accountDeleted = false;
+        $view = $this->createViewModel(['accountDeleted' => false]);
         if ($this->formWasSubmitted('submit')) {
             $csrf = $this->serviceLocator->get('Zend\Validator\Csrf');
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
@@ -1713,11 +1711,9 @@ class MyResearchController extends AbstractBase
                     'error_inconsistent_parameters'
                 );
             }
-
-            $deleteComments
-                = !isset($config->Authentication->delete_comments_with_user)
-                    || $config->Authentication->delete_comments_with_user;
-            $user->delete($deleteComments);
+            $user->delete(
+                $config->Authentication->delete_comments_with_user ?? true
+            );
             $view->accountDeleted = true;
             $view->redirectUrl = $this->getAuthManager()->logout(
                 $this->getServerUrl('home')
