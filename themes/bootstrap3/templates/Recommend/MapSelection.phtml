@@ -1,8 +1,7 @@
 <?php if ($this->recommend->getSearchResultCoordinates()) :?>
 <?php
   $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
-//  $this->headScript()->appendFile('vendor/leaflet/leaflet.draw.js');
-  $this->headScript()->appendFile('leaflet_draw_intl.js');
+  $this->headScript()->appendFile('vendor/leaflet/leaflet.draw.js');
   $this->headScript()->appendFile('vendor/leaflet/leaflet.markercluster.js');
   $this->headScript()->appendFile('map_selection_leaflet.js');
   $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.css');
@@ -48,4 +47,9 @@ EOF;
     <?php echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $addSearchOption, 'SET');?>
     <?php endif; ?>
 </div>
+<script type="text/javascript">
+<?php // Overwrite leaflet.draw.js tooltips with international translations // ?>
+  L.drawLocal.draw.handlers.rectangle.tooltip.start = "<?=$this->translate('draw_searchbox_start');?>";
+  L.drawLocal.draw.handlers.simpleshape.tooltip.end = "<?=$this->translate('draw_searchbox_end');?>";
+</script>
 <?php endif; ?>
