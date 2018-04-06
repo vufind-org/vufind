@@ -49,7 +49,7 @@ EOF;
 </div>
 <script type="text/javascript">
 <?php // Overwrite leaflet.draw.js tooltips with international translations // ?>
-  L.drawLocal.draw.handlers.rectangle.tooltip.start = "<?=$this->translate('draw_searchbox_start');?>";
-  L.drawLocal.draw.handlers.simpleshape.tooltip.end = "<?=$this->translate('draw_searchbox_end');?>";
+  L.drawLocal.draw.handlers.rectangle.tooltip.start = "<?php echo $this->translate('draw_searchbox_start');?>";
+  L.drawLocal.draw.handlers.simpleshape.tooltip.end = "<?php echo $this->translate('draw_searchbox_end');?>";
 </script>
 <?php endif; ?>
