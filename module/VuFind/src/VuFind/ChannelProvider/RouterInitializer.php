@@ -1,8 +1,8 @@
 <?php
 /**
- * Factory for channel providers relying on the ILS.
+ * Channel Provider Router Initializer
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -28,10 +28,10 @@
 namespace VuFind\ChannelProvider;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Zend\ServiceManager\Initializer\InitializerInterface;
 
 /**
- * Factory for channel providers relying on the ILS.
+ * Channel Provider Router Initializer
  *
  * @category VuFind
  * @package  Channels
@@ -39,31 +39,22 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractILSChannelProviderFactory implements FactoryInterface
+class RouterInitializer implements InitializerInterface
 {
     /**
-     * Create an object
+     * Given an instance and a Service Manager, initialize the instance.
      *
-     * @param ContainerInterface $container     Service manager
-     * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
+     * @param ContainerInterface $container Service manager
+     * @param object             $instance  Instance to initialize
      *
      * @return object
-     *
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
-     * @throws ContainerException if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
-        array $options = null
-    ) {
-        if ($options !== null) {
-            throw new \Exception('Unexpected options sent to factory!');
+    public function __invoke(ContainerInterface $container, $instance)
+    {
+        if ($instance instanceof AbstractChannelProvider) {
+            $instance->setCoverRouter($container->get('VuFind\Cover\Router'));
+            $instance->setRecordRouter($container->get('VuFind\Record\Router'));
         }
-        return new $requestedName(
-            $container->get('VuFindSearch\Service'),
-            $container->get('VuFind\ILS\Connection')
-        );
+        return $instance;
     }
 }
