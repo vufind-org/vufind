@@ -34,6 +34,7 @@ use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Search\RecommendListener;
 use Zend\Stdlib\Parameters;
+use Zend\Validator\Csrf;
 use Zend\View\Model\ViewModel;
 
 /**
@@ -1703,7 +1704,16 @@ class MyResearchController extends AbstractBase
 
         $view = $this->createViewModel(['accountDeleted' => false]);
         if ($this->formWasSubmitted('submit')) {
-            $csrf = $this->serviceLocator->get('Zend\Validator\Csrf');
+            // Set up CSRF:
+            $sessionManager = $this->serviceLocator->get('VuFind\SessionManager');
+            $csrf = new Csrf(
+                [
+                    'session'
+                        => new \Zend\Session\Container('csrf', $sessionManager),
+                    'salt' => isset($config->Security->HMACkey)
+                        ? $config->Security->HMACkey : 'VuFindCsrfSalt',
+                ]
+            );
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
                     'error_inconsistent_parameters'
