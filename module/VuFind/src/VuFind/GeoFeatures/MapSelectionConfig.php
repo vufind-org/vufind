@@ -2,7 +2,7 @@
 /**
  * MapSelection Configuration Module
  *
- * PHP version 7 
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
