@@ -1,10 +1,10 @@
 <?php
 /**
- * Map Tab Configuration Module
+ * Abstract Configuration Module
  *
- * PHP version 7
+ * PHP version 7 
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,6 +27,8 @@
  */
 namespace VuFind\GeoFeatures;
 
+use Zend\Config\Config;
+
 /**
  * MapTab Configuration Class
  *
@@ -36,55 +38,43 @@ namespace VuFind\GeoFeatures;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-class MapTabConfig extends AbstractConfig
+class AbstractConfig
 {
     /**
-     * Display Map Tab?
+     * Configuration loader
      *
-     * @var bool
+     * @var \VuFind\Config\PluginManager
      */
-    protected $recordMap = false;
+    protected $configLoader;
 
     /**
-     * Should we display coordinates as part of labels?
+     * Constructor
      *
-     * @var bool
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
      */
-    protected $displayCoords = false;
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    {
+        $this->configLoader = $configLoader;
+    }
 
     /**
-     * Where should map labels be read from?
+     * Convert a config object to an options array; return empty array if
+     * configuration is missing or incomplete.
      *
-     * @var string
-     */
-    protected $mapLabels = null;
-
-    /**
-     * Display graticule / map lat long grid?
-     *
-     * @var bool
-     */
-    protected $graticule = false;
-
-    /**
-     * Get the map tab configuration settings.
+     * @param string $configName   Name of config file to read
+     * @param string $section      Name of section to read
+     * @param array  $validOptions List of valid fields to read
      *
      * @return array
      */
-    public function getMapTabOptions()
+    protected function getOptions($configName, $section, $validOptions)
     {
-        $validFields = ['displayCoords', 'mapLabels', 'graticule', 'recordMap'];
+        $config = $this->configLoader->get($configName);
         $options = [];
-        // Check geofeatures.ini
-        $options = $this->getOptions('geofeatures', 'MapTab', $validFields);
-        // Check legacy configuration
-        if (empty($options)) {
-            $options = $this->getOptions('config', 'Content', $validFields);
-        }
-        if (empty($options)) {
-            // use defaults
-            foreach ($validFields as $field) {
-                $options[$field] = $this->$field;
+        $fields = $validOptions;
+        foreach ($fields as $field) {
+            if (isset($config->$section->$field)) {
+                $options[$field] = $config->$section->$field;
             }
         }
         return $options;

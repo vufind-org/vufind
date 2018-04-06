@@ -180,13 +180,13 @@ class Factory
         // get Map Tab config options
         $mapTabConfig = $sm->get('VuFind\GeoFeatures\MapTabConfig');
         $mapTabOptions = $mapTabConfig->getMapTabOptions($sm);
-        $mapType = $mapTabOptions['geoPlatform'];
+        $mapTabDisplay = $mapTabOptions['recordMap'];
 
         // add basemap options
         $basemapConfig = $sm->get('VuFind\GeoFeatures\BasemapConfig');
         $basemapOptions = $basemapConfig->getBasemap('MapTab');
 
-        return new Map($mapType, $basemapOptions, $mapTabOptions);
+        return new Map($mapTabDisplay, $basemapOptions, $mapTabOptions);
     }
 
     /**

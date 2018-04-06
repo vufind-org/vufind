@@ -41,11 +41,11 @@ namespace VuFind\RecordTab;
 class Map extends AbstractBase
 {
     /**
-     * What type of map interface should be used?
+     * Should Map Tab be displayed?
      *
-     * @var string
+     * @var bool
      */
-    protected $mapType = null;
+    protected $mapTabDisplay = false;
 
     /**
      * Should we display coordinates as part of labels?
@@ -78,18 +78,15 @@ class Map extends AbstractBase
     /**
      * Constructor
      *
-     * @param string $mapType        Map provider
-     * (valid options: 'leaflet'
-     * null to disable this feature)
-     * @param array  $basemapOptions basemap settings
-     * @param array  $mapTabOptions  MapTab settings
+     * @param bool  $mapTabDisplay  Display Map
+     * @param array $basemapOptions basemap settings
+     * @param array $mapTabOptions  MapTab settings
      */
-    public function __construct($mapType = null, $basemapOptions = [],
+    public function __construct($mapTabDisplay = false, $basemapOptions = [],
         $mapTabOptions = []
     ) {
-        $mapType = trim(strtolower($mapType));
-        if ($mapType == 'leaflet') {
-            $this->mapType = trim(strtolower($mapType));
+        if ($mapTabDisplay) {
+            $this->mapTabDisplay = $mapTabDisplay;
             $legalOptions = ['displayCoords', 'mapLabels', 'graticule'];
             foreach ($legalOptions as $option) {
                 if (isset($mapTabOptions[$option])) {
@@ -123,16 +120,6 @@ class Map extends AbstractBase
     }
 
     /**
-     * Get the map type for determining template to use.
-     *
-     * @return string
-     */
-    public function getMapType()
-    {
-        return $this->mapType;
-    }
-
-    /**
      * Get the map graticule setting.
      *
      * @return string
@@ -159,7 +146,7 @@ class Map extends AbstractBase
      */
     public function isActive()
     {
-        if ($this->mapType == 'leaflet') {
+        if ($this->mapTabDisplay) {
             $geocoords = $this->getRecordDriver()->tryMethod('getGeoLocation');
             return !empty($geocoords);
         }
@@ -267,13 +254,10 @@ class Map extends AbstractBase
     /**
      * Construct the map coordinates and labels array.
      *
-     * @param string $mapType geoPlatform parameter from geofeatures.ini
-     *
      * @return array
      */
-    public function getMapTabData($mapType)
+    public function getMapTabData()
     {
-        $mapType = trim(strtolower($mapType));
         $geoCoords = $this->getGeoLocationCoords();
         if (empty($geoCoords)) {
             return [];

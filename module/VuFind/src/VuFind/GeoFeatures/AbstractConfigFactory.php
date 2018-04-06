@@ -1,9 +1,9 @@
 <?php
 
 /**
- * GeoFeatures Map Tab Factory Class
+ * GeoFeatures Abstract Configuration Factory Class
  *
- * PHP version 5
+ * PHP version 7 
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -32,7 +32,7 @@ use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * GeoFeatures MapTab Config Factory Class
+ * GeoFeatures Abstract Config Factory Class
  *
  * @category VuFind
  * @package  GeoFeatures
@@ -42,7 +42,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  *
  * @codeCoverageIgnore
  */
-class MapTabConfigFactory implements FactoryInterface
+class AbstractConfigFactory implements FactoryInterface
 {
     /**
      * Create an object

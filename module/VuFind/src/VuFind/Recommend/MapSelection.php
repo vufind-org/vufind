@@ -65,13 +65,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     protected $geoField = 'long_lat';
 
     /**
-     * Which type of mapping interface should be used?
-     *
-     * @var string
-     */
-    protected $geoPlatform;
-
-    /**
      * Height of search map pane
      *
      * @var string
@@ -184,7 +177,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     {
         $basemapOptions = $this->basemapOptions;
         $mapSelectionOptions = $this->mapSelectionOptions;
-        $this->geoPlatform = $mapSelectionOptions['geoPlatform'];
         $this->defaultCoordinates = explode(
             ',',
             $mapSelectionOptions['default_coordinates']
@@ -294,18 +286,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
             $this->basemapOptions['basemap_url'],
             $this->basemapOptions['basemap_attribution']
         ];
-    }
-
-    /**
-     * Get GeoPlatform
-     *
-     * Return mapping platform to use
-     *
-     * @return string
-     */
-    public function getGeoPlatform()
-    {
-        return $this->geoPlatform;
     }
 
     /**

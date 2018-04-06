@@ -1,11 +1,9 @@
-<?php $mapType = $this->tab->getMapType();?>
-<?php if (isset($mapType) && ($mapType == 'leaflet')) : ?>
-    <?php
+<?php
     $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
     $this->headScript()->appendFile('vendor/leaflet/leaflet.latlng-graticule.js');
     $this->headScript()->appendFile('map_tab_leaflet.js');
     $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.css');
-    $mapTabData = $this->tab->getMapTabData($mapType);
+    $mapTabData = $this->tab->getMapTabData();
     $mapGraticule = $this->tab->getMapGraticule();
     $basemap = $this->tab->getBasemap();
     $params = [json_encode($mapTabData),
@@ -13,13 +11,12 @@
     ];
     $jsParams = implode(', ', $params);
     $jsLoad = "loadMapTab(" . $jsParams . ");";
-    ?>
-   <div id="wrap" style="width: inherit; height: 479px">
-     <div id="map-canvas" style="width: 100%; height: 100%"></div>
+?>
+<div id="wrap" style="width: inherit; height: 479px">
+  <div id="map-canvas" style="width: 100%; height: 100%"></div>
         <?php echo $this->inlineScript(
             \Zend\View\Helper\HeadScript::SCRIPT,
             $jsLoad, 'SET'
         );
         ?>
-   </div>
-<?php endif; ?>
+</div>
