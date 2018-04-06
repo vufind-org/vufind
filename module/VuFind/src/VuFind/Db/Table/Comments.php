@@ -77,7 +77,8 @@ class Comments extends Gateway
             $select->columns(['*']);
             $select->join(
                 ['u' => 'user'], 'u.id = comments.user_id',
-                ['firstname', 'lastname']
+                ['firstname', 'lastname'],
+                $select::JOIN_LEFT
             );
             $select->where->equalTo('comments.resource_id', $resource->id);
             $select->order('comments.created');
@@ -115,6 +116,18 @@ class Comments extends Gateway
         // If we got this far, everything is okay:
         $row->delete();
         return true;
+    }
+
+    /**
+     * Deletes all comments by a user.
+     *
+     * @param \VuFind\Db\Row\User $user User object
+     *
+     * @return void
+     */
+    public function deleteByUser($user)
+    {
+        $this->delete(['user_id' => $user->id]);
     }
 
     /**
