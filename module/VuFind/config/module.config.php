@@ -353,6 +353,7 @@ $config = [
             'Zend\Db\Adapter\Adapter' => 'VuFind\Service\Factory::getDbAdapter',
             'Zend\Mvc\I18n\Translator' => 'VuFind\Service\Factory::getTranslator',
             'Zend\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
+            'Zend\Validator\Csrf' => 'VuFind\Service\CsrfValidatorFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
