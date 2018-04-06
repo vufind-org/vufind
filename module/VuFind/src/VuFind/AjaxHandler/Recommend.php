@@ -2,7 +2,7 @@
 /**
  * Load a recommendation module via AJAX.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -27,7 +27,7 @@
  */
 namespace VuFind\AjaxHandler;
 
-use VuFind\Recommend\PluginManager;
+use VuFind\Recommend\PluginManager as RecommendManager;
 use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings as SessionSettings;
 use Zend\Mvc\Controller\Plugin\Params;
@@ -48,7 +48,7 @@ class Recommend extends AbstractBase
     /**
      * Recommendation plugin manager
      *
-     * @var PluginManager
+     * @var RecommendManager
      */
     protected $pluginManager;
 
@@ -70,11 +70,11 @@ class Recommend extends AbstractBase
      * Constructor
      *
      * @param SessionSettings   $ss       Session settings
-     * @param PluginManager     $pm       Recommendation plugin manager
+     * @param RecommendManager  $pm       Recommendation plugin manager
      * @param Results           $results  Solr results object
      * @param RendererInterface $renderer View renderer
      */
-    public function __construct(SessionSettings $ss, PluginManager $pm,
+    public function __construct(SessionSettings $ss, RecommendManager $pm,
         Results $results, RendererInterface $renderer
     ) {
         $this->sessionSettings = $ss;

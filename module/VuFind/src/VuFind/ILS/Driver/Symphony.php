@@ -2,7 +2,7 @@
 /**
  * Symphony Web Services (symws) ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -1369,18 +1369,12 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 foreach ($fees as $fee) {
                     $fineList[] = [
                         'amount' => $fee->amount->_ * 100,
-                        'checkout' =>
-                            isset($fee->feeItemInfo->checkoutDate) ?
-                            $fee->feeItemInfo->checkoutDate : null,
+                        'checkout' => $fee->feeItemInfo->checkoutDate ?? null,
                         'fine' => $fee->billReasonDescription,
                         'balance' => $fee->amountOutstanding->_ * 100,
-                        'createdate' =>
-                            isset($fee->dateBilled) ? $fee->dateBilled : null,
-                        'duedate' =>
-                            isset($fee->feeItemInfo->dueDate) ?
-                            $fee->feeItemInfo->dueDate : null,
-                        'id' => isset($fee->feeItemInfo->titleKey) ?
-                            $fee->feeItemInfo->titleKey : null
+                        'createdate' => $fee->dateBilled ?? null,
+                        'duedate' => $fee->feeItemInfo->dueDate ?? null,
+                        'id' => $fee->feeItemInfo->titleKey ?? null
                     ];
                 }
             }

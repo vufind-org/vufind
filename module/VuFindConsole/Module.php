@@ -2,7 +2,7 @@
 /**
  * ZF2 module definition for the VuFind console module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *

@@ -2,7 +2,7 @@
 /**
  * Factory for EBSCO Integration Toolkit (EIT) backends.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Julia Bauder 2013.
  *
