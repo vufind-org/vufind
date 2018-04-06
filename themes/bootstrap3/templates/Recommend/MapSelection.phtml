@@ -1,7 +1,8 @@
 <?php if ($this->recommend->getSearchResultCoordinates()) :?>
 <?php
   $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
-  $this->headScript()->appendFile('vendor/leaflet/leaflet.draw.js');
+//  $this->headScript()->appendFile('vendor/leaflet/leaflet.draw.js');
+  $this->headScript()->appendFile('leaflet_draw_intl.js');
   $this->headScript()->appendFile('vendor/leaflet/leaflet.markercluster.js');
   $this->headScript()->appendFile('map_selection_leaflet.js');
   $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.css');
