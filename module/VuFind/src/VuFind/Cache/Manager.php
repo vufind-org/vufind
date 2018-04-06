@@ -135,7 +135,7 @@ class Manager
 
         if (!isset($this->caches[$key])) {
             if (!isset($this->cacheSettings[$name])) {
-                throw new \Exception('Requested unknown cache: ' . $key);
+                throw new \Exception('Requested unknown cache: ' . $name);
             }
             // Special case for "no-cache" caches:
             if ($this->cacheSettings[$name] === false) {
