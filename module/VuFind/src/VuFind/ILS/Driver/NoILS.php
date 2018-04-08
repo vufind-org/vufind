@@ -280,6 +280,12 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      */
     public function hasHoldings($id)
     {
+        // If the ILS is disabled, there will never be holdings:
+        if ($this->getOfflineMode() == 'ils-none') {
+            return false;
+        }
+
+        // If the ILS is offline, we should if we can look up details:
         $useHoldings = $this->config['settings']['useHoldings'] ?? '';
 
         // "none" will be processed differently in the config depending
