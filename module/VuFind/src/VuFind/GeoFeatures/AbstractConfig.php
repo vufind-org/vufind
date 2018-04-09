@@ -71,8 +71,7 @@ class AbstractConfig
     {
         $config = $this->configLoader->get($configName);
         $options = [];
-        $fields = $validOptions;
-        foreach ($fields as $field) {
+        foreach ($validOptions as $field) {
             if (isset($config->$section->$field)) {
                 $options[$field] = $config->$section->$field;
             }
