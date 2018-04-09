@@ -179,7 +179,7 @@ class Factory
     {
         // get Map Tab config options
         $mapTabConfig = $sm->get('VuFind\GeoFeatures\MapTabConfig');
-        $mapTabOptions = $mapTabConfig->getMapTabOptions($sm);
+        $mapTabOptions = $mapTabConfig->getMapTabOptions();
         $mapTabDisplay = $mapTabOptions['recordMap'];
 
         // add basemap options
