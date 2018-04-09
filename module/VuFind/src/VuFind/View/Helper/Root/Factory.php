@@ -274,13 +274,10 @@ class Factory
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $url = isset($config->Piwik->url) ? $config->Piwik->url : false;
         $options = [
-            'siteId' => isset($config->Piwik->site_id) ? $config->Piwik->site_id : 1,
-            'searchPrefix' => isset($config->Piwik->searchPrefix)
-                ? $config->Piwik->searchPrefix : null
+            'siteId' => $config->Piwik->site_id ?? 1,
+            'searchPrefix' => $config->Piwik->searchPrefix ?? null
         ];
-        $customVars = isset($config->Piwik->custom_variables)
-            ? $config->Piwik->custom_variables
-            : false;
+        $customVars = $config->Piwik->custom_variables ?? false;
         $request = $sm->get('Request');
         $router = $sm->get('Router');
         return new Piwik($url, $options, $customVars, $router, $request);

@@ -40,13 +40,19 @@
     <?php endif; ?>
   </table>
 
-  <?php if ($this->auth()->getManager()->supportsPasswordChange()): ?>
-    <p>
+  <div id="account-actions">
+    <?php if ($this->auth()->getManager()->supportsPasswordChange()): ?>
       <a class="btn btn-default" href="<?=$this->url('myresearch-changepassword') ?>">
         <i class="fa fa-fw fa-lock" aria-hidden="true"></i> <?=$this->transEsc('Change Password') ?>
       </a>
-    </p>
-  <?php endif; ?>
+    <?php endif; ?>
+
+    <?php if ($this->accountDeletion): ?>
+      <a class="btn btn-default" href="<?=$this->url('myresearch-deleteaccount') ?>" data-lightbox>
+        <i class="fa fa-times"></i> <?=$this->transEsc('delete_account_title') ?>
+      </a>
+    <?php endif; ?>
+  </div>
 
   <?php if (is_array($this->profile)): ?>
     <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
