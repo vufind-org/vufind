@@ -12,7 +12,6 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
   var drawnItems;
   var basemapLayer = new L.TileLayer(basemap[0], {attribution: basemap[1]});
   var mapSearch;
-console.log(VuFind.path + '/themes/bootstrap/css/vendor/leaflet/images/marker-icon-2x-red.png'); 
   // Define styles for icons and clusters
   var searchIcon = L.Icon.extend({
     options: {
