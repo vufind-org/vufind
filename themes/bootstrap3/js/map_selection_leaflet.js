@@ -1,4 +1,4 @@
-/*global L */
+/*global L, VuFind */
 /*exported loadMapSelection */
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
 
@@ -12,7 +12,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
   var drawnItems;
   var basemapLayer = new L.TileLayer(basemap[0], {attribution: basemap[1]});
   var mapSearch;
- 
+console.log(VuFind.path + '/themes/bootstrap/css/vendor/leaflet/images/marker-icon-2x-red.png'); 
   // Define styles for icons and clusters
   var searchIcon = L.Icon.extend({
     options: {
@@ -25,23 +25,23 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
   
   // Red will be used for search results display
   var redIcon = new searchIcon({
-    iconUrl: 'vendor/leaflet/images/marker-icon-2x-red.png',
-    shadowUrl: 'vendor/leaflet/images/marker-shadow.png'
+    iconUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-icon-2x-red.png',
+    shadowUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
   });
   
   var redRectIcon = new searchIcon({
-    iconUrl: 'vendor/leaflet/images/rectangle-icon-2x-red.png',
-    shadowUrl: 'vendor/leaflet/images/marker-shadow.png'
+    iconUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/rectangle-icon-2x-red.png',
+    shadowUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
   });
 
   // Blue will be used when a user selects a geofeature
   var blueIcon = new searchIcon({
-    iconUrl: 'vendor/leaflet/images/marker-icon-2x-blue.png',
-    shadowUrl: 'vendor/leaflet/images/marker-shadow.png'
+    iconUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-icon-2x-blue.png',
+    shadowUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
   });
   var blueRectIcon = new searchIcon({
-    iconUrl: 'vendor/leaflet/images/rectangle-icon-2x-blue.png',
-    shadowUrl: 'vendor/leaflet/images/marker-shadow.png'
+    iconUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/rectangle-icon-2x-blue.png',
+    shadowUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
   });
 
   

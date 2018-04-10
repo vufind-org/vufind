@@ -1,4 +1,4 @@
-/*global L */
+/*global L, VuFind */
 /*exported loadMapTab */
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
 
@@ -16,8 +16,8 @@ function loadMapTab(mapData, mapGraticule, basemap) {
     }
   });
   var redIcon = new displayIcon({
-    iconUrl: 'vendor/leaflet/images/marker-icon-2x-red.png',
-    shadowUrl: 'vendor/leaflet/images/marker-shadow.png'
+    iconUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-icon-2x-red.png',
+    shadowUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
   });
 
   $('#map-canvas').show();
