@@ -128,6 +128,17 @@ class MyResearchController extends AbstractBase
             try {
                 if (!$this->getAuthManager()->isLoggedIn()) {
                     $this->getAuthManager()->login($this->getRequest());
+                    // Return early to avoid unnecessary processing if we are being
+                    // called from login lightbox
+                    $layout = $this->getRequest()->getQuery('layout', 'no');
+                    if ($this->params()->fromPost('processLogin')
+                        && ($layout === 'lightbox'
+                        || 'layout/lightbox' == $this->layout()->getTemplate())
+                    ) {
+                        $response = $this->getResponse();
+                        $response->setStatusCode(205);
+                        return $response;
+                    }
                 }
             } catch (AuthException $e) {
                 $this->processAuthenticationException($e);
