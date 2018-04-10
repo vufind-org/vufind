@@ -126,11 +126,9 @@ class PaytrailE2
     /**
      * Constructor
      *
-     * @param string $merchantId  Merchant ID
-     * @param string $secret      Merchant secret
-     * @param string $currency    Currency
-     * @param string $locale      Locale
-     * @param string $orderNumber Order number
+     * @param string $merchantId Merchant ID
+     * @param string $secret     Merchant secret
+     * @param string $locale     Locale
      */
     public function __construct($merchantId, $secret, $locale)
     {
@@ -149,6 +147,8 @@ class PaytrailE2
      * @param string $successUrl Success URL
      * @param string $cancelUrl  Cancel/failure URL
      * @param string $notifyUrl  Notification URL
+     *
+     * @return void
      */
     public function setUrls($successUrl, $cancelUrl, $notifyUrl)
     {
@@ -187,7 +187,7 @@ class PaytrailE2
     /**
      * Set payment description displayed to the user
      *
-     * @var string $description Description
+     * @param string $description Description
      *
      * @return void
      */
@@ -316,6 +316,8 @@ class PaytrailE2
      * @param int    $timeStamp   Timestamp
      * @param string $status      Payment status
      * @param string $authCode    Returned authentication code
+     *
+     * @return bool
      */
     public function validateRequest($orderNumber, $paymentId, $timeStamp, $status,
         $authCode
