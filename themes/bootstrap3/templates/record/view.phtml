@@ -73,8 +73,8 @@
           <?php foreach ($this->tabs as $tab => $obj): ?>
             <?php // add current tab to breadcrumbs if applicable:
               $desc = $obj->getDescription();
-              $tabClass = preg_replace("/\W/", "-", $tab);
-              $tab_classes = [ "navTab-$tabClass" ];
+              $tabClass = preg_replace("/\W/", "-", strtolower($tab));
+              $tab_classes = [ "record-tab", $tabClass ];
               if (0 === strcasecmp($this->activeTab, $tab)) {
                 if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
                   $tab_classes[] = 'active';
@@ -87,7 +87,7 @@
               if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
             ?>
             <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-              <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>><?=$this->transEsc($desc)?></a>
+              <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>><?=$this->transEsc($desc)?></a>
             </li>
           <?php endforeach; ?>
         </ul>
