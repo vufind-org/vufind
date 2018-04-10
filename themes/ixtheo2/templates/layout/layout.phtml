@@ -130,6 +130,8 @@ JS;
 
       <!-- include Google Fonts -->
       <link href="https://fonts.googleapis.com/css?family=Open+Sans|Lato|Roboto" rel="stylesheet">
+
+      <?=$this->headScript(); ?>
   </head>
 
 <!-- Begin Body -->
@@ -160,7 +162,7 @@ JS;
           && !empty($this->layout()->breadcrumbs)
           && $this->layout()->breadcrumbs !== false
         ): ?>
-          <div class="breadcrumb-wrapper hidden-print">
+          <div class="container breadcrumb-wrapper hidden-print">
             <? if(is_array($this->layout()->breadcrumbs)): ?>
               <? if(count($this->layout()->breadcrumbs) > 1): ?>
                 <?=$this->render('breadcrumbs/multi.phtml', array(
@@ -179,15 +181,15 @@ JS;
             <? endif; ?>
           </div>
         <? endif; ?>
-      </div>
     </header>
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 px-0 pt-5 pb-5 justify-content-center">
                 <div role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>">
-                  <div id="content" class="">
+                  <? $content_wrap = ($this->tuefind()->getControllerName() != 'index'); ?>
+                  <?= $content_wrap ? '<div id="content" class="container">' : ''?>
                     <?=$this->layout()->content ?>
-                  </div>
+                  <?= $content_wrap ? '</div>' : ''?>
                 </div>
             </div>
         </div>
@@ -211,9 +213,18 @@ JS;
             <i class="fa fa-chevron-up"> </i>
         </button>
     </footer>
+    <!-- MODAL IN CASE WE NEED ONE -->
+    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <div class="modal-body"><?=$this->transEsc('Loading') ?>...</div>
+        </div>
+      </div>
+    </div>
+    <div class="offcanvas-toggle" data-toggle="offcanvas"><i class="fa" title="<?=$this->transEsc('sidebar_expand') ?>"></i></div>
+    <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
-    <!-- Bottom Scripts -->
-    <?=$this->headScript(); ?>
   </body>
 </html>

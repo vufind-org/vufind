@@ -8,13 +8,13 @@
 *************************************/
 ?>
 
-<div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-12">
+<div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>">
   <div class="row">
     <div>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
     </div>
-    <div class="col-sm-11 col-xs-7 middle">
+    <div class="col-xs-10 col-sm-11">
       <div>
         <? if ($this->userlist()->getMode() !== 'disabled'): ?>
           <? /* Saved lists */ ?>
@@ -205,7 +205,7 @@
       <? /* Remove separator needed for long title view */ ?>
       <?=str_replace(' | ', '', $label)?>
     </div>
-    <div class="col-xs-1 right hidden-print">
+    <div class="col-xs-2 col-sm-1 hidden-print">
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Add to favorites */ ?>
         <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>">
