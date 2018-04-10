@@ -67,9 +67,7 @@ class MapSelectionConfig extends AbstractConfig
             // Check legacy configuration
             $options = $this->getOptions('searches', 'MapSelection', $validFields);
         }
-        if (empty($options)) {
-            return $this->getDefaultOptions();
-        }
-        return $options;
+        // Fill in any missing defaults:
+        return $options + $this->getDefaultOptions();
     }
 }

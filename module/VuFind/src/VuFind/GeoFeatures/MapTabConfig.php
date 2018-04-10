@@ -68,9 +68,7 @@ class MapTabConfig extends AbstractConfig
         if (empty($options)) {
             $options = $this->getOptions('config', 'Content', $validFields);
         }
-        if (empty($options)) {
-            return $this->getDefaultOptions();
-        }
-        return $options;
+        // Fill in any missing defaults:
+        return $options + $this->getDefaultOptions();
     }
 }

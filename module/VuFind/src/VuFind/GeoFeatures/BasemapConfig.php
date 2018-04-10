@@ -80,10 +80,8 @@ class BasemapConfig extends AbstractConfig
             // Check geofeatures [Basemap]
             $options = $this->getOptions('geofeatures', 'Basemap', $validFields);
         }
-        if (empty($options)) {
-            return $this->getDefaultOptions();
-        }
-        return $options;
+        // Fill in any missing defaults:
+        return $options + $this->getDefaultOptions();
     }
 
     /**
