@@ -167,7 +167,9 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
       if (searchboxFeature.getBounds().intersects(rcFeature.getBounds())) {
         // add center point to layer
         var rectCtr = rcFeature.getBounds().getCenter();
-        var rmPopupContent = '<article class="geoItem"><a href="' + homeURL + 'Record/' + recID + '">' + recTitle + '</a><br><em>'+VuFind.translate('rectangle_center_message')+'</em></article>';
+        var rmPopupContent = '<article class="geoItem"><a href="' + homeURL
+          + 'Record/' + recID + '">' + recTitle + '</a><br><em>'
+          + VuFind.translate('rectangle_center_message') + '</em></article>';
         var rmPopup = L.popup().setContent(rmPopupContent);
         var rectMarker = L.marker(rectCtr, {
           recID: recID,
