@@ -286,8 +286,12 @@ $config = [
                 'factories' => [
                     'Finna\AjaxHandler\AddToList' =>
                         'Finna\AjaxHandler\AddToListFactory',
+                    'Finna\AjaxHandler\ChangePickupLocation' =>
+                        'Finna\AjaxHandler\ChangePickupLocationFactory',
                     'Finna\AjaxHandler\EditList' =>
                         'Finna\AjaxHandler\EditListFactory',
+                    'Finna\AjaxHandler\EditListResource' =>
+                        'Finna\AjaxHandler\EditListResourceFactory',
                     'Finna\AjaxHandler\GetUserLists' =>
                         'Finna\AjaxHandler\GetUserListsFactory',
                     'Finna\AjaxHandler\GetSideFacets' =>
@@ -295,7 +299,9 @@ $config = [
                 ],
                 'aliases' => [
                     'addToList' => 'Finna\AjaxHandler\AddToList',
+                    'changePickupLocation' => 'Finna\AjaxHandler\ChangePickupLocation',
                     'editList' => 'Finna\AjaxHandler\EditList',
+                    'editListResource' => 'Finna\AjaxHandler\EditListResource',
                     'getMyLists' => 'Finna\AjaxHandler\GetUserLists',
                     'getSideFacets' => 'Finna\AjaxHandler\GetSideFacets',
                 ]
@@ -640,9 +646,14 @@ $config = [
     'zfc_rbac' => [
         'vufind_permission_provider_manager' => [
             'factories' => [
-                'authenticationStrategy' => 'Finna\Role\PermissionProvider\Factory::getAuthenticationStrategy',
-                'ipRange' => 'Finna\Role\PermissionProvider\Factory::getIpRange'
+                'Finna\Role\PermissionProvider\AuthenticationStrategy' => 'Finna\Role\PermissionProvider\Factory::getAuthenticationStrategy',
+                'Finna\Role\PermissionProvider\IpRange' => 'Finna\Role\PermissionProvider\Factory::getIpRange'
             ],
+            'aliases' => [
+                'authenticationStrategy' => 'Finna\Role\PermissionProvider\AuthenticationStrategy',
+
+                'VuFind\Role\PermissionProvider\IpRange' => 'Finna\Role\PermissionProvider\IpRange',
+            ]
         ],
     ],
 
