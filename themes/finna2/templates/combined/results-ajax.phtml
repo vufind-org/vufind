@@ -1,7 +1,7 @@
 <!-- START of: finna - combined/results-ajax.phtml -->
 <?
     // Make sure OpenURL support is loaded
-    $this->headScript()->appendFile("openurl.js");
+    $this->headScript()->appendFile("openurl.js", '');
 
     $view = $currentSearch['view'];
     $results = $view->results;

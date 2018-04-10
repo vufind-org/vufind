@@ -11,7 +11,7 @@
 
   if ($deduplicated): ?>
     <div class="dedupInformation">
-      <select class="dedup-select form-control" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
+      <select class="dedup-select form-control" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>" aria-label="<?=$this->transEsc('select_dedup_organisation');?>">
         <? foreach ($dedupData as $source => $current): ?>
           <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>"<? if ($recordSource === $source): ?> selected="selected"<? endif; ?>><?=$this->transEsc("source_$source", null, $source) ?></option>
         <? endforeach; ?>

@@ -30,17 +30,17 @@
       // IE-specific stylesheet
       $this->headLink()->appendStylesheet('ie9-and-lower.css', 'screen', 'lte IE 9');
       $this->headLink()->appendStylesheet('ie8-and-lower.css', 'screen', 'lt IE 9');
-      $this->headScript()->appendFile('vendor/classList.js', 'text/javascript', ['conditional' => 'lte IE 9']);
-      $this->headScript()->appendFile('vendor/html5shiv.js', 'text/javascript', ['conditional' => 'lt IE 9']);
-      $this->headScript()->appendFile('vendor/respond.js', 'text/javascript', ['conditional' => 'lt IE 9']);
-      $this->headScript()->appendFile("vendor/jquery.waitforimages.min.js");
-      $this->headScript()->appendFile("vendor/masonry.pkgd.min.js");
+      $this->headScript()->appendFile('vendor/classList.js', '', ['conditional' => 'lte IE 9']);
+      $this->headScript()->appendFile('vendor/html5shiv.js', '', ['conditional' => 'lt IE 9']);
+      $this->headScript()->appendFile('vendor/respond.js', '', ['conditional' => 'lt IE 9']);
+      $this->headScript()->appendFile("vendor/jquery.waitforimages.min.js", '');
+      $this->headScript()->appendFile("vendor/masonry.pkgd.min.js", '');
       $finnaSurvey
         = in_array($this->layout()->templateDir, ['search', 'record'])
         && $this->finnaSurvey()->isEnabled();
 
       if ($finnaSurvey) {
-        $this->headScript()->appendFile('finna-survey.js');
+        $this->headScript()->appendFile('finna-survey.js', '');
       }
     ?>
     <?=$this->headLink()?>
@@ -51,6 +51,7 @@
          "path = '" . rtrim($this->url('home'), '/') . "';"
          . "module = '" . $this->layout()->templateDir . "';"
          . "action = '" . $this->layout()->templateName . "';"
+        ,''
       );
 
       if (!isset($this->renderingError)) {
@@ -113,7 +114,9 @@
             'street_search_reversegeocode_unavailable' => 'street_search_reversegeocode_unavailable',
             'street_search_searching_for' => 'street_search_searching_for',
             'street_search_coordinates_found' => 'street_search_coordinates_found',
-            'street_search_coordinates_found_accuracy_bad' => 'street_search_coordinates_found_accuracy_bad'
+            'street_search_coordinates_found_accuracy_bad' => 'street_search_coordinates_found_accuracy_bad',
+            'Prev' => 'Prev',
+            'Next' => 'Next'
           ]
         );
         // Add libphonenumber.js strings
@@ -131,12 +134,13 @@
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
-          $this->headScript()->appendFile("vendor/cookies.js");
-          $this->headScript()->appendFile("cart.js");
+          $this->headScript()->appendFile("vendor/cookies.js", '');
+          $this->headScript()->appendFile("cart.js", '');
           $domain = $cart->getCookieDomain();
           if (!empty($domain)) {
             $this->headScript()->appendScript(
               'VuFind.cart.setDomain("' . $domain . '");'
+              , ''
             );
           }
           $this->jsTranslations()->addStrings(
@@ -186,20 +190,21 @@
         }
 
         $this->headScript()->appendScript(
-           'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
+          'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
+          , ''
         );
       }
 
       // Session keep-alive
       if ($this->KeepAlive()) {
           $this->headScript()->appendScript('var keepAliveInterval = '
-            . $this->KeepAlive());
-          $this->headScript()->appendFile("keep_alive.js");
+            . $this->KeepAlive(), '');
+          $this->headScript()->appendFile("keep_alive.js", '');
       }
     ?>
     <?
     if ($this->scriptSrc('custom.js')) {
-       $this->headScript()->appendFile('custom.js');
+       $this->headScript()->appendFile('custom.js', '');
     }
     ?>
     <?
@@ -211,7 +216,7 @@ VuFind.path = '{$root}';
 VuFind.defaultSearchBackend = '{$dsb}';
 VuFind.addTranslations({$translations});
 JS;
-      $this->headScript()->appendScript($setupJS);
+      $this->headScript()->appendScript($setupJS, '');
     ?>
     <?=$this->headScript()?>
     <? if ($template = $this->content()->findTemplateForLng("content/Additions/general-post-head")): ?>

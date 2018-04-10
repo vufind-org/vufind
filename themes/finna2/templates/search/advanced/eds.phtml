@@ -67,7 +67,7 @@
     </div>
       <?
         $current = $this->daterange;
-        $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
+        $this->headScript()->appendFile('vendor/bootstrap-slider.min.js', '');
         $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
         $min = $current['ticks'][0];
         $max = end($current['ticks']);

@@ -172,7 +172,7 @@ finna.layout = (function finnaLayout() {
         $(this).empty();
       })
       img.attr('src', placeholder.data('src'));
-      img.attr('alt', '');
+      img.attr('alt', VuFind.translate('Thumbnail'));
       placeholder.parent().removeClass('truncate-change');
       placeholder.replaceWith(img);
     }
