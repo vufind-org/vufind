@@ -25,23 +25,23 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
   
   // Red will be used for search results display
   var redIcon = new searchIcon({
-    iconUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/marker-icon-2x-red.png',
-    shadowUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
+    iconUrl: 'vendor/leaflet/images/marker-icon-2x-red.png',
+    shadowUrl: 'vendor/leaflet/images/marker-shadow.png'
   });
   
   var redRectIcon = new searchIcon({
-    iconUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/rectangle-icon-2x-red.png',
-    shadowUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
+    iconUrl: 'vendor/leaflet/images/rectangle-icon-2x-red.png',
+    shadowUrl: 'vendor/leaflet/images/marker-shadow.png'
   });
 
   // Blue will be used when a user selects a geofeature
   var blueIcon = new searchIcon({
-    iconUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/marker-icon-2x-blue.png',
-    shadowUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
+    iconUrl: 'vendor/leaflet/images/marker-icon-2x-blue.png',
+    shadowUrl: 'vendor/leaflet/images/marker-shadow.png'
   });
   var blueRectIcon = new searchIcon({
-    iconUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/rectangle-icon-2x-blue.png',
-    shadowUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
+    iconUrl: 'vendor/leaflet/images/rectangle-icon-2x-blue.png',
+    shadowUrl: 'vendor/leaflet/images/marker-shadow.png'
   });
 
   

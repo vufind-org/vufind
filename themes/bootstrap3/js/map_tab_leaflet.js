@@ -15,10 +15,9 @@ function loadMapTab(mapData, mapGraticule, basemap) {
       shadowSize: [41, 41]
     }
   });
-  //NOTE: These are hardcoded for now but will need to be genericized
   var redIcon = new displayIcon({
-    iconUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/marker-icon-2x-red.png',
-    shadowUrl: '/vufind/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
+    iconUrl: 'vendor/leaflet/images/marker-icon-2x-red.png',
+    shadowUrl: 'vendor/leaflet/images/marker-shadow.png'
   });
 
   $('#map-canvas').show();
