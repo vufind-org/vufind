@@ -1,5 +1,10 @@
 <?php if ($this->recommend->getSearchResultCoordinates()) :?>
   <?php
+    // Add translation strings
+    $this->jsTranslations()->addStrings([
+      'rectangle_center_message' => 'rectangle_center_message',
+    ]);
+
     $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
     $this->headScript()->appendFile('vendor/leaflet/leaflet.draw.js');
     $this->headScript()->appendFile('vendor/leaflet/leaflet.markercluster.js');
