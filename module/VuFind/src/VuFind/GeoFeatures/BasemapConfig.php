@@ -39,28 +39,26 @@ namespace VuFind\GeoFeatures;
 class BasemapConfig extends AbstractConfig
 {
     /**
-     * Basemap tileserver URL
-     * Default is the wikimedia osm-intl map
-     *
-     * @var string
-     */
-    protected $basemap_url = "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png";
-
-    /**
-     * Basemap attribution
-     *
-     * @var string
-     */
-    protected $basemap_attribution = '<a href="https://wikimediafoundation.org/wiki/
-        Maps_Terms_of_Use">Wikimedia</a> | © <a href="https://www.openstreetmap.org/
-        copyright">OpenStreetMap</a>';
-
-    /**
      * Request origin
      *
      * @var string
      */
     protected $requestOrigin;
+
+    /**
+     * Set default options
+     *
+     * @return array
+     */
+    protected function getDefaultOptions()
+    {
+        return [
+            'basemap_url' => 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
+            'basemap_attribution' => '<a href="https://wikimediafoundation.org/wiki/
+        Maps_Terms_of_Use">Wikimedia</a> | © <a href="https://www.openstreetmap.org/
+        copyright">OpenStreetMap</a>'
+        ];
+    }
 
     /**
      * Get the basemap configuration settings.
@@ -83,10 +81,7 @@ class BasemapConfig extends AbstractConfig
             $options = $this->getOptions('geofeatures', 'Basemap', $validFields);
         }
         if (empty($options)) {
-            // use defaults
-            foreach ($validFields as $field) {
-                $options[$field] = $this->$field;
-            }
+            return $this->getDefaultOptions();
         }
         return $options;
     }

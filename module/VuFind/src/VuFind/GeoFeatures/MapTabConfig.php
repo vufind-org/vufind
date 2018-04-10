@@ -39,32 +39,19 @@ namespace VuFind\GeoFeatures;
 class MapTabConfig extends AbstractConfig
 {
     /**
-     * Display Map Tab?
+     * Set default options
      *
-     * @var bool
+     * @return array
      */
-    protected $recordMap = false;
-
-    /**
-     * Should we display coordinates as part of labels?
-     *
-     * @var bool
-     */
-    protected $displayCoords = false;
-
-    /**
-     * Where should map labels be read from?
-     *
-     * @var string
-     */
-    protected $mapLabels = null;
-
-    /**
-     * Display graticule / map lat long grid?
-     *
-     * @var bool
-     */
-    protected $graticule = false;
+    protected function getDefaultOptions()
+    {
+        return [
+            'recordMap' => 'false',
+            'displayCoords' => 'false',
+            'mapLabels' => null,
+            'graticule' => 'false'
+        ];
+    }
 
     /**
      * Get the map tab configuration settings.
@@ -82,10 +69,7 @@ class MapTabConfig extends AbstractConfig
             $options = $this->getOptions('config', 'Content', $validFields);
         }
         if (empty($options)) {
-            // use defaults
-            foreach ($validFields as $field) {
-                $options[$field] = $this->$field;
-            }
+            return $this->getDefaultOptions();
         }
         return $options;
     }

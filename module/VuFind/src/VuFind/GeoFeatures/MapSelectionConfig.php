@@ -39,18 +39,17 @@ namespace VuFind\GeoFeatures;
 class MapSelectionConfig extends AbstractConfig
 {
     /**
-     * Default coordinates. Order is WENS
+     * Set default options
      *
-     * @var string
+     * @return array
      */
-    protected $defaultCoords = "-95, 30, 72, 15";
-
-    /**
-     * Height of search map pane
-     *
-     * @var string
-     */
-    protected $height = 320;
+    protected function getDefaultOptions()
+    {
+        return [
+            'default_coordinates' => '-95, 30, 72, 15',
+            'height' => '320'
+        ];
+    }
 
     /**
      * Get the map tab configuration settings.
@@ -69,10 +68,7 @@ class MapSelectionConfig extends AbstractConfig
             $options = $this->getOptions('searches', 'MapSelection', $validFields);
         }
         if (empty($options)) {
-            // use defaults
-            foreach ($validFields as $field) {
-                $options[$field] = $this->$field;
-            }
+            return $this->getDefaultOptions();
         }
         return $options;
     }
