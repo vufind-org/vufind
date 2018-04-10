@@ -52,9 +52,7 @@ class Factory
     public static function getAddThis(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        return new AddThis(
-            isset($config->AddThis->key) ? $config->AddThis->key : false
-        );
+        return new AddThis($config->AddThis->key ?? false);
     }
 
     /**
@@ -188,8 +186,7 @@ class Factory
     public static function getFeedback(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $enabled = isset($config->Feedback->tab_enabled)
-            ? $config->Feedback->tab_enabled : false;
+        $enabled = $config->Feedback->tab_enabled ?? false;
         return new Feedback($enabled);
     }
 
@@ -232,10 +229,8 @@ class Factory
     public static function getGoogleAnalytics(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $key = isset($config->GoogleAnalytics->apiKey)
-            ? $config->GoogleAnalytics->apiKey : false;
-        $universal = isset($config->GoogleAnalytics->universal)
-            ? $config->GoogleAnalytics->universal : false;
+        $key = $config->GoogleAnalytics->apiKey ?? false;
+        $universal = $config->GoogleAnalytics->universal ?? false;
         return new GoogleAnalytics($key, $universal);
     }
 
@@ -265,7 +260,7 @@ class Factory
     public static function getPiwik(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $url = isset($config->Piwik->url) ? $config->Piwik->url : false;
+        $url = $config->Piwik->url ?? false;
         $options = [
             'siteId' => $config->Piwik->site_id ?? 1,
             'searchPrefix' => $config->Piwik->searchPrefix ?? null
@@ -343,9 +338,7 @@ class Factory
     public static function getKeepAlive(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        return new KeepAlive(
-            isset($config->Session->keepAlive) ? $config->Session->keepAlive : 0
-        );
+        return new KeepAlive($config->Session->keepAlive ?? 0);
     }
 
     /**
@@ -371,7 +364,7 @@ class Factory
             $helpers->get('context'),
             $openUrlRules,
             $resolverPluginManager,
-            isset($config->OpenURL) ? $config->OpenURL : null
+            $config->OpenURL ?? null
         );
     }
 
@@ -470,8 +463,7 @@ class Factory
     public static function getSafeMoneyFormat(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $defaultCurrency = isset($config->Site->defaultCurrency)
-            ? $config->Site->defaultCurrency : null;
+        $defaultCurrency = $config->Site->defaultCurrency ?? null;
         return new SafeMoneyFormat($defaultCurrency);
     }
 
@@ -488,8 +480,7 @@ class Factory
         $mainConfig = $config->get('config');
         $searchboxConfig = $config->get('searchbox')->toArray();
         $includeAlphaOptions
-            = isset($searchboxConfig['General']['includeAlphaBrowse'])
-            && $searchboxConfig['General']['includeAlphaBrowse'];
+            = $searchboxConfig['General']['includeAlphaBrowse'] ?? false;
         return new SearchBox(
             $sm->get('VuFind\Search\Options\PluginManager'),
             $searchboxConfig,
@@ -582,9 +573,7 @@ class Factory
     public static function getSyndeticsPlus(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        return new SyndeticsPlus(
-            isset($config->Syndetics) ? $config->Syndetics : null
-        );
+        return new SyndeticsPlus($config->Syndetics ?? null);
     }
 
     /**
@@ -597,9 +586,7 @@ class Factory
     public static function getSystemEmail(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        return new SystemEmail(
-            isset($config->Site->email) ? $config->Site->email : ''
-        );
+        return new SystemEmail($config->Site->email ?? '');
     }
 
     /**
