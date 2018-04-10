@@ -198,7 +198,7 @@ class Factory
 
         // get MapSelection options
         $mapSelectionConfig = $sm->get('VuFind\GeoFeatures\MapSelectionConfig');
-        $mapSelectionOptions = $mapSelectionConfig->getMapSelectionOptions($sm);
+        $mapSelectionOptions = $mapSelectionConfig->getMapSelectionOptions();
 
         return new MapSelection($solr, $basemapOptions, $mapSelectionOptions);
     }
