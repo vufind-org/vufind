@@ -25,7 +25,7 @@
         <button class="btn btn-primary" id="<?=$this->idPrefix?>delete_list_items_<?=!is_null($this->list) ? $this->escapeHtmlAttr($this->list->id) : ''?>" type="submit" name="delete" value="<?=$this->transEsc('Delete')?>" title="<?=$this->transEsc('delete_selected')?>" disabled<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>><?=$this->transEsc('Delete')?></button>
       <? endif; ?>
         <? if ($lists): ?>
-        <select id="add-to-list" class="btn btn-primary form-control" autocomplete="off" disabled<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>>
+        <select id="add-to-list" class="btn btn-primary form-control" autocomplete="off" aria-label="<?= $this->translate('Add to List'); ?>" disabled<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>>
           <option value=""><?= $this->translate('Add to List'); ?>&hellip;</option>
           <? foreach ($lists as $l): ?>
           <? if ($list && $list->id == $l->id) { continue; } ?>
