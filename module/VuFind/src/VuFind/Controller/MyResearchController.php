@@ -48,6 +48,30 @@ use Zend\View\Model\ViewModel;
 class MyResearchController extends AbstractBase
 {
     /**
+     * Are we currently in a lightbox context?
+     *
+     * @return bool
+     */
+    protected function inLightbox()
+    {
+        return $this->getRequest()->getQuery('layout', 'no') === 'lightbox'
+            || 'layout/lightbox' == $this->layout()->getTemplate();
+    }
+
+    /**
+     * Construct an HTTP 205 (refresh) response. Useful for reporting success
+     * in the lightbox without actually rendering content.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getRefreshResponse()
+    {
+        $response = $this->getResponse();
+        $response->setStatusCode(205);
+        return $response;
+    }
+
+    /**
      * Process an authentication error.
      *
      * @param AuthException $e Exception to process.
@@ -130,14 +154,10 @@ class MyResearchController extends AbstractBase
                     $this->getAuthManager()->login($this->getRequest());
                     // Return early to avoid unnecessary processing if we are being
                     // called from login lightbox
-                    $layout = $this->getRequest()->getQuery('layout', 'no');
                     if ($this->params()->fromPost('processLogin')
-                        && ($layout === 'lightbox'
-                        || 'layout/lightbox' == $this->layout()->getTemplate())
+                        && $this->inLightbox()
                     ) {
-                        $response = $this->getResponse();
-                        $response->setStatusCode(205);
-                        return $response;
+                        return $this->getRefreshResponse();
                     }
                 }
             } catch (AuthException $e) {
@@ -269,15 +289,9 @@ class MyResearchController extends AbstractBase
     {
         // Don't log in if already logged in!
         if ($this->getAuthManager()->isLoggedIn()) {
-            // inLightbox (only instance)
-            if ($this->getRequest()->getQuery('layout', 'no') === 'lightbox'
-                || 'layout/lightbox' == $this->layout()->getTemplate()
-            ) {
-                $response = $this->getResponse();
-                $response->setStatusCode(205);
-                return $response;
-            }
-            return $this->redirect()->toRoute('home');
+            return $this->inLightbox()  // different behavior for lightbox context
+                ? $this->getRefreshResponse()
+                : $this->redirect()->toRoute('home');
         }
         $this->clearFollowupUrl();
         $this->setFollowupUrlToReferer();
