@@ -216,11 +216,9 @@ class Factory
      */
     public static function getGeoCoords(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config\PluginManager');
-        $coords = $config->get('geofeatures')->MapSelection->default_coordinates
-            ?? $config->get('searches')->MapSelection->default_coordinates
-            ?? false;
-        return new GeoCoords($coords);
+        $config = $sm->get('VuFind\GeoFeatures\MapSelectionConfig')
+            ->getMapSelectionOptions();
+        return new GeoCoords($config['default_coordinates']);
     }
 
     /**
