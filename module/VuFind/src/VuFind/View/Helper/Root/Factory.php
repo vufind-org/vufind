@@ -217,15 +217,9 @@ class Factory
     public static function getGeoCoords(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config\PluginManager');
-        $coords = $config->get('searches')->MapSelection->default_coordinates;
-        if (empty($coords)) {
-            $coords = isset(
-                $config->get('geofeatures')
-                    ->MapSelection->default_coordinates
-            )
-              ? $config->get('geofeatures')
-                  ->MapSelection->default_coordinates : false;
-        }
+        $coords = $config->get('geofeatures')->MapSelection->default_coordinates
+            ?? $config->get('searches')->MapSelection->default_coordinates
+            ?? false;
         return new GeoCoords($coords);
     }
 
