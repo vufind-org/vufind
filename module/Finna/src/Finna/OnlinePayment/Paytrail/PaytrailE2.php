@@ -110,6 +110,13 @@ class PaytrailE2
     protected $paymentDescription = '';
 
     /**
+     * Merchant description
+     *
+     * @var string
+     */
+    protected $merchantDescription = '';
+
+    /**
      * Total amount to pay in cents. Mutually exclusive with $products.
      *
      * @var int
@@ -191,9 +198,23 @@ class PaytrailE2
      *
      * @return void
      */
-    public function setDescription($description)
+    public function setPaymentDescription($description)
     {
         $this->paymentDescription = preg_replace(
+            '/[^\pL-0-9- "\', ()\[\]{}*+\-_,.]+/u', ' ', $description
+        );
+    }
+
+    /**
+     * Set payment description displayed in the merchant UI
+     *
+     * @param string $description Description
+     *
+     * @return void
+     */
+    public function setMerchantDescription($description)
+    {
+        $this->merchantDescription = preg_replace(
             '/[^\pL-0-9- "\', ()\[\]{}*+\-_,.]+/u', ' ', $description
         );
     }
@@ -277,6 +298,10 @@ class PaytrailE2
 
         if (!empty($this->paymentDescription)) {
             $request['MSG_UI_PAYMENT_METHOD'] = $this->paymentDescription;
+        }
+
+        if (!empty($this->merchantDescription)) {
+            $request['MSG_UI_MERCHANT_PANEL'] = $this->merchantDescription;
         }
 
         if (null !== $this->totalAmount) {
