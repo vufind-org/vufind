@@ -275,7 +275,9 @@
       <a class="btn btn-primary" href="<?=$this->url('myresearch-export') ?>"><i class="fa fa-arrow-down"></i> <?=$this->transEsc('export_favorites') ?></a>
       <a class="btn btn-primary" href="<?=$this->url('myresearch-import') ?>"  data-lightbox><i class="fa fa-arrow-up"></i> <?=$this->transEsc('import_favorites') ?> </a>
     </span>
-    <a class="btn btn-primary" href="<?=$this->url('myresearch-deleteaccount') ?>" data-lightbox><i class="fa fa-times"></i> <?=$this->transEsc('delete_account_title') ?></a>
+    <?php if ($this->accountDeletion): ?>
+      <a class="btn btn-primary" href="<?=$this->url('myresearch-deleteaccount') ?>" data-lightbox><i class="fa fa-times"></i> <?=$this->transEsc('delete_account_title') ?></a>
+    <?php endif; ?>
   </div>
 </div>
 

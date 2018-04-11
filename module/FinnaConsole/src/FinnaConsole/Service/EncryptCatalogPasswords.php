@@ -91,11 +91,7 @@ class EncryptCatalogPasswords extends AbstractService
             return false;
         }
 
-        $callback = function ($select) {
-            $select->where->notLike('username', 'deleted:%');
-        };
-
-        $users = $this->table->select($callback);
+        $users = $this->table->select();
         $count = 0;
         $usersChanged = 0;
         $cardsChanged = 0;

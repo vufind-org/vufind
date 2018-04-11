@@ -104,16 +104,6 @@ $config = [
                     ]
                 ],
             ],
-            'myresearch-deleteaccount' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
-                'options' => [
-                    'route'    => '/MyResearch/DeleteAccount',
-                    'defaults' => [
-                        'controller' => 'MyResearch',
-                        'action'     => 'DeleteAccount',
-                    ]
-                ],
-            ],
             'myresearch-unsubscribe' => [
                 'type' => 'Zend\Mvc\Router\Http\Literal',
                 'options' => [

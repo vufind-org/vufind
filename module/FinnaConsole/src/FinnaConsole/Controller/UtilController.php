@@ -112,7 +112,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     }
 
     /**
-     * Anonymizes all the expired user accounts.
+     * Delete expired user accounts.
      *
      * @return \Zend\Console\Response
      */

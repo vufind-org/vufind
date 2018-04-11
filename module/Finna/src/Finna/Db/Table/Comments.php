@@ -188,7 +188,8 @@ class Comments extends \VuFind\Db\Table\Comments
             $select->columns(['*']);
             $select->join(
                 ['u' => 'user'], 'u.id = comments.user_id',
-                ['firstname', 'lastname', 'email']
+                ['firstname', 'lastname', 'email'],
+                $select::JOIN_LEFT
             );
             $select->join(
                 ['cr' => 'finna_comments_record'], 'comments.id = cr.comment_id', []

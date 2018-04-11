@@ -102,7 +102,7 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
             'util encrypt_catalog_passwords' => 'Encrypt ILS passwords in database',
             'util expire_finna_cache'
                 => 'Remove expires Finna cache entries from database',
-            'util expire_users' => 'Anonymize expired user accounts',
+            'util expire_users' => 'Delete expired user accounts',
             'util online_payment_monitor' => 'Process unregistered online payments',
             'util scheduled_alerts' => 'Send scheduled alerts',
             'util update_search_hashes' => 'Update search hashes',

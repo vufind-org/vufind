@@ -340,6 +340,13 @@ maximum_password_length = 32
 ; Exclude the listed ILS drivers from the authentication API
 ;exclude_api_targets = ils3,ils4
 
+; Allow a user to delete their account. Default is false.
+account_deletion = true
+; Whether comments added by a user are deleted when they remove their account.
+; Default is true.
+delete_comments_with_user = false
+
+
 [ChoiceAuth]
 choice_order = Database,Shibboleth,MultiILS
 
