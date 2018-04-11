@@ -153,9 +153,10 @@ class MyResearchController extends AbstractBase
                 if (!$this->getAuthManager()->isLoggedIn()) {
                     $this->getAuthManager()->login($this->getRequest());
                     // Return early to avoid unnecessary processing if we are being
-                    // called from login lightbox
+                    // called from login lightbox and don't have a followup action.
                     if ($this->params()->fromPost('processLogin')
                         && $this->inLightbox()
+                        && empty($this->getFollowupUrl())
                     ) {
                         return $this->getRefreshResponse();
                     }
