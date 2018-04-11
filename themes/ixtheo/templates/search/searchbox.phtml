@@ -57,34 +57,6 @@
         <button type="submit" class="btn btn-primary search-button"><i class="fa fa-search"></i> <?=$this->transEsc("Find")?></button>
       </div>
     </div>
-    <script>
-       $(function(){
-           showKb = function(layout, rtl) {
-               var kb = $('#searchForm_lookfor').keyboard(
-                         { display: {'accept' : '<?=$this->transEsc("Accept") . ':' . $this->transEsc("Accept")?>',
-                                     'enter'  : '<?=$this->transEsc("Enter") . ':' . $this->transEsc("Enter")?>'}
-                                                          }).getkeyboard();
-               kb.options.layout = layout;
-               kb.options.rtl = rtl;
-               kb.redraw();
-               // Make sure we do open the keyboard again on focus the standard search field
-               $.extend($.keyboard.keyaction, {
-                   accept : function(base) {
-                       base.close(true);
-                       kb.destroy();
-                       return false;
-                   },
-                   enter : function(base) {
-                       if (base.el.nodeName === "INPUT") {
-                           base.close(true);
-                           kb.destroy();
-                           return false;
-                       }
-                   }
-               });
-           };
-       });
-   </script>
     <? if ($advSearch): ?>
       <ul class="nav nav-pills">
           <li>
@@ -117,17 +89,10 @@
                   <?=$this->transEsc('Virtual Keyboard')?> <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-                <li id="virtual-keyboard-greek" role="button" class="text-center"><?=$this->transEsc('Greek')?></li>
-                <li id="virtual-keyboard-hebrew" role="button" class="text-center"><?=$this->transEsc('Hebrew')?></li>
-                <script>
-                  $(function() {
-                      $('#virtual-keyboard-greek').off().click(function() {
-                         showKb('el', false);
-                      });
-                      $('#virtual-keyboard-hebrew').off().click(function() {
-                         showKb('he', true);
-                      });
-                   });
+                <li role="button" class="text-center virtual-keyboard-greek"><?=$this->transEsc('Greek')?></li>
+                <li role="button" class="text-center virtual-keyboard-hebrew"><?=$this->transEsc('Hebrew')?></li>
+                <script>$(triggerVirtualKeyboard('<?=$this->transEsc("Accept") . ':' . $this->transEsc("Accept")?>',
+                                                 '<?=$this->transEsc("Enter") . ':' . $this->transEsc("Enter")?>'));
                 </script>
             </ul>
           </li>
