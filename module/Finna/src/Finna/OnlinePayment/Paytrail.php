@@ -119,10 +119,12 @@ class Paytrail extends BaseHandler
         $module->setCurrency($currency);
 
         if (!empty($this->config->paymentDescription)) {
-            $module->setPaymentDescription($this->config->paymentDescription);
+            $module->setMerchantDescription(
+                $this->config->paymentDescription . " - $patronId"
+            );
+        } else {
+            $module->setMerchantDescription($description);
         }
-
-        $module->setMerchantDescription($patronId);
 
         if (!isset($this->config->productCode)
             && !isset($this->config->transactionFeeProductCode)
