@@ -11,7 +11,7 @@
     }
     $largeImg = isset($img['urls']['large']) && is_string($img['urls']['large']);
   ?>
-  <a href="<?= $this->escapeHtmlAttr(isset($img['urls']['large']) ? $img['urls']['large'] : $img['urls']['medium']) ?>" class="image-popup image-popup-navi<?=(($type === 'list' || $type === 'list grid') && $ind > 4) ? ' hide' : '' ?><?= $type === 'record' ? ' truncate-change' : ''?> hidden-print" data-img-index="<?=$ind ?>"><?=$content ?></a>
+  <a href="<?= $this->escapeHtmlAttr($img['urls']['medium']) ?>" class="image-popup image-popup-navi<?=(($type === 'list' || $type === 'list grid') && $ind > 4) ? ' hide' : '' ?><?= $type === 'record' ? ' truncate-change' : ''?> hidden-print" data-img-index="<?=$ind ?>"><?=$content ?></a>
   <? if ($largeImg): ?>
     <a href="<?=$this->escapeHtmlAttr(isset($img['urls']['large']) ? $img['urls']['large'] : $img['urls']['medium']) ?>" class="hide"><?=$content ?></a>
   <? endif; ?>
