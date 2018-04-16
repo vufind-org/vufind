@@ -51,7 +51,9 @@ use Zend\Log\LoggerAwareInterface as LoggerAwareInterface;
 class DAIA extends AbstractBase implements
     HttpServiceAwareInterface, LoggerAwareInterface
 {
-    use CacheTrait;
+    use CacheTrait {
+        getCacheKey as protected getBaseCacheKey;
+    }
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -208,7 +210,7 @@ class DAIA extends AbstractBase implements
      */
     protected function getCacheKey($suffix = null)
     {
-        return parent::getCacheKey(md5($this->baseURL) . $suffix);
+        return $this->getBaseCacheKey(md5($this->baseUrl) . $suffix);
     }
 
     /**
