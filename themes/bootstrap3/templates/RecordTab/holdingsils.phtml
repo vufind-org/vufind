@@ -94,9 +94,9 @@
           <?php
             $templateParameters = [
                 // AJAX Check record?
-                "check" => isset($row['check']) && $row['check'],
-                "checkStorageRetrievalRequest" => isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest'],
-                "checkILLRequest" => isset($row['checkILLRequest']) && $row['checkILLRequest'],
+                "check" => $row['check'] ?? false,
+                "checkStorageRetrievalRequest" => $row['checkStorageRetrievalRequest'] ?? false,
+                "checkILLRequest" => $row['checkILLRequest'] ?? false,
                 "holding" => $row
             ];
 
