@@ -74,7 +74,7 @@
             <?php // add current tab to breadcrumbs if applicable:
               $desc = $obj->getDescription();
               $tabName = preg_replace("/\W/", "-", strtolower($tab));
-              $tabClasses = [ 'record-tab' ];
+              $tabClasses = [ 'record-tab', $tabName ];
               if (0 === strcasecmp($this->activeTab, $tab)) {
                 if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
                   $tabClasses[] = 'active';
