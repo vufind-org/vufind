@@ -51,7 +51,7 @@ class HoldingsILS extends AbstractBase
      * @param string
      */
     protected $template;
-    
+
     /**
      * Constructor
      *
@@ -113,8 +113,8 @@ class HoldingsILS extends AbstractBase
      *
      * @return string
      */
-   public function getTemplate()
-   {
-       return $this->template;
-   }
+    public function getTemplate()
+    {
+        return $this->template;
+    }
 }
