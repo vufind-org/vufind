@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GeoFeatures Basemap Config Factory Class
+ * GeoFeatures Abstract Configuration Factory Class
  *
  * PHP version 7
  *
@@ -32,7 +32,7 @@ use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * GeoFeatures Basemap Config Factory Class
+ * GeoFeatures Abstract Config Factory Class
  *
  * @category VuFind
  * @package  GeoFeatures
@@ -42,7 +42,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  *
  * @codeCoverageIgnore
  */
-class BasemapConfigFactory implements FactoryInterface
+class AbstractConfigFactory implements FactoryInterface
 {
     /**
      * Create an object
