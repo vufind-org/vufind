@@ -20,6 +20,6 @@ return [
         'vendor/jquery-ui.min.js',
         'vendor/jquery.keyboard.js',
         'vendor/keyboard-layouts-greywyvern.js',
-        'virtualkeyboard.js',
+        'virtualkeyboard.js'
     ],
 ];

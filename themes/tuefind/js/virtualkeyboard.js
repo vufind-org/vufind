@@ -7,11 +7,12 @@ function triggerVirtualKeyboard(accept, enter) {
     });
 }
 
+
 function showKb(layout, rtl, accept, enter) {
         var accept_label =  accept + ':' + accept;
         var enter_label =  enter + ':' + enter;
-        var kb = $('#searchForm_lookfor').keyboard(
-                  { position :  { of : $(window),
+        var kb = $('.searchForm_lookfor:visible').keyboard(
+                  { position :  { of : null,
                                   my : 'center top',
                                   at : 'center top',
                                   // used when "usePreview" is false
@@ -20,10 +21,8 @@ function showKb(layout, rtl, accept, enter) {
                                 },
                     display:    { 'accept' : accept_label,
                                   'enter'  : enter_label},
-                    reposition: true,
-                    autoAccept: true,
+                    autoAccept: false,
                     usePreview: false,
-                    initialFocus: true,
                   }).getkeyboard();
         kb.options.layout = layout;
         kb.options.rtl = rtl;
