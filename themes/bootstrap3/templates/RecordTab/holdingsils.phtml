@@ -102,7 +102,7 @@
 
             try {
                 echo $this->context($this)->renderInContext(
-                    'RecordTab/holdingsils/' . $this->tab->holdingsTemplate . '.phtml',
+                    'RecordTab/holdingsils/' . $this->tab->getTemplate() . '.phtml',
                     $templateParameters
                 );
 
