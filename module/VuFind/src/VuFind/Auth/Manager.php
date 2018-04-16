@@ -124,10 +124,11 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      * @param SessionManager $sessionManager Session manager
      * @param PluginManager  $pm             Authentication plugin manager
      * @param CookieManager  $cookieManager  Cookie manager
+     * @param Csrf           $csrf           CSRF validator
      */
     public function __construct(Config $config, UserTable $userTable,
         SessionManager $sessionManager, PluginManager $pm,
-        CookieManager $cookieManager
+        CookieManager $cookieManager, Csrf $csrf
     ) {
         // Store dependencies:
         $this->config = $config;
@@ -135,18 +136,10 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         $this->sessionManager = $sessionManager;
         $this->pluginManager = $pm;
         $this->cookieManager = $cookieManager;
+        $this->csrf = $csrf;
 
         // Set up session:
         $this->session = new \Zend\Session\Container('Account', $sessionManager);
-
-        // Set up CSRF:
-        $this->csrf = new Csrf(
-            [
-                'session' => new \Zend\Session\Container('csrf', $sessionManager),
-                'salt' => isset($this->config->Security->HMACkey)
-                    ? $this->config->Security->HMACkey : 'VuFindCsrfSalt',
-            ]
-        );
 
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):

@@ -413,16 +413,16 @@ class Record extends AbstractHelper
      *
      * @param string $idPrefix Prefix for checkbox HTML ids
      * @param string $formAttr ID of form for [form] attribute
+     * @param int    $number   Result number (for label of checkbox)
      *
      * @return string
      */
-    public function getCheckbox($idPrefix = '', $formAttr = false)
+    public function getCheckbox($idPrefix = '', $formAttr = false, $number = null)
     {
-        static $checkboxCount = 0;
         $id = $this->driver->getSourceIdentifier() . '|'
             . $this->driver->getUniqueId();
         $context
-            = ['id' => $id, 'count' => $checkboxCount++, 'prefix' => $idPrefix];
+            = ['id' => $id, 'number' => $number, 'prefix' => $idPrefix];
         if ($formAttr) {
             $context['formAttr'] = $formAttr;
         }

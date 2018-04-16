@@ -551,9 +551,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                 return $user;
             }
 
-            throw new ILSException(
-                'Unable to login patron ' . $patron['id']
-            );
+            throw new ILSException('Unable to login patron ' . $username);
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
             throw new ILSException($e->getMessage());
