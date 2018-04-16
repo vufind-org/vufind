@@ -251,7 +251,7 @@ function backgroundLoadTab(tabid) {
 }
 
 function applyRecordTabHash() {
-  var activeTab = $('.record-tabs li.active a').attr('class');
+  var activeTab = $('.record-tabs li.active').attr('data-tab');
   var $initiallyActiveTab = $('.record-tabs li.initiallyActive a');
   var newTab = typeof window.location.hash !== 'undefined'
     ? window.location.hash.toLowerCase() : '';
@@ -273,7 +273,7 @@ function recordDocReady() {
     if ($li.hasClass('active')) {
       return true;
     }
-    var tabid = this.className;
+    var tabid = $li.attr('data-tab');
     var $top = $(this).closest('.record-tabs');
     // if we're flagged to skip AJAX for this tab, we need special behavior:
     if ($li.hasClass('noajax')) {

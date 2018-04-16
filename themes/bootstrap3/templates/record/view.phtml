@@ -73,8 +73,8 @@
           <?php foreach ($this->tabs as $tab => $obj): ?>
             <?php // add current tab to breadcrumbs if applicable:
               $desc = $obj->getDescription();
-              $tabNameAsClass = preg_replace("/\W/", "-", strtolower($tab));
-              $tabClasses = [ 'record-tab', $tabNameAsClass ];
+              $tabName = preg_replace("/\W/", "-", strtolower($tab));
+              $tabClasses = [ 'record-tab' ];
               if (0 === strcasecmp($this->activeTab, $tab)) {
                 if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
                   $tabClasses[] = 'active';
@@ -86,7 +86,7 @@
               if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
               if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
             ?>
-            <li class="<?=implode(' ', $tabClasses)?>">
+            <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>">
               <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>><?=$this->transEsc($desc)?></a>
             </li>
           <?php endforeach; ?>
