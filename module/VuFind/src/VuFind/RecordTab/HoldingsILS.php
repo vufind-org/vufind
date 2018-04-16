@@ -46,17 +46,23 @@ class HoldingsILS extends AbstractBase
     protected $catalog;
 
     /**
+     * Name of template to use for rendering holdings.
+     *
+     * @param string
+     */
+    protected $template;
+    
+    /**
      * Constructor
      *
-     * @param \VuFind\ILS\Connection|bool $catalog ILS connection to use to check
+     * @param \VuFind\ILS\Connection|bool $catalog  ILS connection to use to check
      * for holdings before displaying the tab; set to null if no check is needed
-     * @param string                      $holdingsTemplate Holdings
-     * template to use
+     * @param string                      $template Holdings template to use
      */
-    public function __construct($catalog, $holdingsTemplate = null)
+    public function __construct($catalog, $template = null)
     {
         $this->catalog = $catalog;
-        $this->holdingsTemplate = $holdingsTemplate ?? 'standard';
+        $this->template = $template ?? 'standard';
     }
 
     /**
@@ -101,4 +107,14 @@ class HoldingsILS extends AbstractBase
         }
         return true;
     }
+
+    /**
+     * Get name of template for rendering holdings.
+     *
+     * @return string
+     */
+   public function getTemplate()
+   {
+       return $this->template;
+   }
 }
