@@ -172,23 +172,16 @@ class Factory
      */
     public static function getMap(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $mapType = isset($config->Content->recordMap)
-            ? $config->Content->recordMap : null;
-        $options = [];
-        $optionFields = ['displayCoords', 'mapLabels', 'graticule'];
-        foreach ($optionFields as $field) {
-            if (isset($config->Content->$field)) {
-                $options[$field] = $config->Content->$field;
-            }
-        }
+        // get Map Tab config options
+        $mapTabConfig = $sm->get('VuFind\GeoFeatures\MapTabConfig');
+        $mapTabOptions = $mapTabConfig->getMapTabOptions();
+        $mapTabDisplay = $mapTabOptions['recordMap'];
+
         // add basemap options
         $basemapConfig = $sm->get('VuFind\GeoFeatures\BasemapConfig');
         $basemapOptions = $basemapConfig->getBasemap('MapTab');
-        $options['basemap_url'] = $basemapOptions['basemap_url'];
-        $options['basemap_attribution'] = $basemapOptions['basemap_attribution'];
 
-        return new Map($mapType, $options);
+        return new Map($mapTabDisplay, $basemapOptions, $mapTabOptions);
     }
 
     /**
