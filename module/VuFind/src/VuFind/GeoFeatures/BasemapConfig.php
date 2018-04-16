@@ -46,6 +46,13 @@ class BasemapConfig extends AbstractConfig
     protected $requestOrigin;
 
     /**
+     * Valid options to retrieve from configuration
+     *
+     * @var string[]
+     */
+    protected $options = ['basemap_url', 'basemap_attribution'];
+
+    /**
      * Set default options
      *
      * @return array
@@ -54,9 +61,9 @@ class BasemapConfig extends AbstractConfig
     {
         return [
             'basemap_url' => 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
-            'basemap_attribution' => '<a href="https://wikimediafoundation.org/wiki/
-        Maps_Terms_of_Use">Wikimedia</a> | © <a href="https://www.openstreetmap.org/
-        copyright">OpenStreetMap</a>'
+            'basemap_attribution' => '<a href="https://wikimediafoundation.org/'
+                . 'wiki/Maps_Terms_of_Use">Wikimedia</a> | &copy; <a '
+                . 'href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         ];
     }
 
@@ -69,16 +76,15 @@ class BasemapConfig extends AbstractConfig
      */
     public function getBasemap($origin)
     {
-        $validFields = ['basemap_url', 'basemap_attribution'];
         $options = [];
         if ($origin == 'MapSelection') {
-            $options = $this->getMapSelectionBasemap($validFields);
+            $options = $this->getMapSelectionBasemap();
         } elseif ($origin == 'MapTab') {
-            $options = $this->getMapTabBasemap($validFields);
+            $options = $this->getMapTabBasemap();
         }
+        // Fail over to geofeatures.ini [Basemap] if no other settings found:
         if (empty($options)) {
-            // Check geofeatures [Basemap]
-            $options = $this->getOptions('geofeatures', 'Basemap', $validFields);
+            $options = $this->getOptions('geofeatures', 'Basemap', $this->options);
         }
         // Fill in any missing defaults:
         return $options + $this->getDefaultOptions();
@@ -87,38 +93,32 @@ class BasemapConfig extends AbstractConfig
     /**
      * Get the basemap configuration settings for MapSelection.
      *
-     * @param array $validFields Configuration parameters
-     *
      * @return array
      */
-    protected function getMapSelectionBasemap($validFields)
+    protected function getMapSelectionBasemap()
     {
         // Check geofeatures.ini [MapSelection]
-        $options = $this->getOptions('geofeatures', 'MapSelection', $validFields);
+        $options = $this->getOptions('geofeatures', 'MapSelection', $this->options);
 
-        if (empty($options)) {
-            // Check legacy configuration
-            $options = $this->getOptions('searches', 'MapSelection', $validFields);
-        }
-        return $options;
+        // Fail over to legacy configuration if empty
+        return empty($options)
+            ? $this->getOptions('searches', 'MapSelection', $this->options)
+            : $options;
     }
 
     /**
      * Get the basemap configuration settings for MapTab.
      *
-     * @param array $validFields Configuration parameters
-     *
      * @return array
      */
-    protected function getMapTabBasemap($validFields)
+    protected function getMapTabBasemap()
     {
         // Check geofeatures.ini [MapTab]
-        $options = $this->getOptions('geofeatures', 'MapTab', $validFields);
+        $options = $this->getOptions('geofeatures', 'MapTab', $this->options);
 
-        if (empty($options)) {
-            // Check legacy configuration
-            $options = $this->getOptions('config', 'Content', $validFields);
-        }
-        return $options;
+        // Fail over to legacy configuration if empty
+        return empty($options)
+            ? $this->getOptions('config', 'Content', $this->options)
+            : $options;
     }
 }
