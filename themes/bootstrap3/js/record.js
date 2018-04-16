@@ -260,7 +260,7 @@ function applyRecordTabHash() {
   if (newTab.length <= 1 || newTab === '#tabnav') {
     $initiallyActiveTab.click();
   } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
-    $('.' + newTab.substr(1)).click();
+    $('.' + newTab.substr(1) + ' a').click();
   }
 }
 
