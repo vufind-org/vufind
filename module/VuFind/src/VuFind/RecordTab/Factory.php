@@ -147,10 +147,10 @@ class Factory
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $catalog = ($config->Site->hideHoldingsTabWhenEmpty ?? false)
             ? $sm->get('VuFind\ILS\Connection') : null;
-        $holdingsTemplate
-            = (string)($config->Site->holdingsTemplate ?? 'standard');
-
-        return new HoldingsILS($catalog, $holdingsTemplate);
+        return new HoldingsILS(
+            $catalog,
+            (string)($config->Site->holdingsTemplate ?? 'standard')
+        );
     }
 
     /**
