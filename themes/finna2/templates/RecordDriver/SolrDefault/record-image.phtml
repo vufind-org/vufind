@@ -43,9 +43,10 @@
             $rights = $image['rights'];
           ?>
           <? if (isset($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
-          <div class="open-link"><a target="_blank" href="<?=$originalImage ?>" download="<?=$originalImage ?>">
+          <div class="open-link">
+            <a target="_blank" href="<?=$this->escapeHtmlAttr($originalImage) ?>" download="<?=$this->escapeHtmlAttr($originalImage) ?>">
               <i aria-hidden="true" class="fa fa-download"></i>
-              <span><?=$this->transEsc('Show image in new window') ?></span>
+              <span><?=$this->transEsc('Download the image') ?></span>
             </a>
             <span class="image-dimensions"></span>
           </div>
