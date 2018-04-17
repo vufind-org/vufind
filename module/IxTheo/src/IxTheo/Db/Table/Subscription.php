@@ -34,7 +34,7 @@ class Subscription extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Table\
         $row = $this->createRow();
         $row->id = $userId;
         $row->journal_control_number = $recordId;
-        $row->max_last_modification_time = date('Y-m-d H:i:s');
+        $row->max_last_modification_time = date('Y-m-d 00:00:00');
         return $row;
     }
 

@@ -126,7 +126,7 @@ class Solr implements AutocompleteInterface
         $this->sortField = (isset($params[2]) && !empty($params[2])) ?
             $params[2] : null;
         $this->filters = [];
-        if (count($params > 3)) {
+        if (count($params) > 3) {
             for ($x = 3; $x < count($params); $x += 2) {
                 if (isset($params[$x + 1])) {
                     $this->filters[] = $params[$x] . ':' . $params[$x + 1];
