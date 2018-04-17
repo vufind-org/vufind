@@ -682,6 +682,10 @@ recordMap = openlayers
 ;mapLabels = file:geosearch_test_lookup.txt
 ;displayCoords = true
 
+; Enables zoom for images in the image popup, only applies to records using the large image 
+; layout. Disabled by default.
+; enableImagePopupZoom = true
+
 [QRCode]
 ; This setting controls the image to display when no qrcode is available.
 ; The path is relative to the base of your theme directory.

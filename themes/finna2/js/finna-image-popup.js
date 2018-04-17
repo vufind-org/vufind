@@ -148,6 +148,38 @@ finna.imagePopup = (function finnaImagePopup() {
             $('.imagepopup-holder .image img').one('load', function onLoadImg() {
               $('.imagepopup-holder .image').addClass('loaded');
               initDimensions();
+              $('.imagepopup-zoom-container').addClass('inactive');
+              $(".zoom-in").click(function initPanzoom() {
+                $(".zoom-in").unbind();
+                $('.imagepopup-zoom-container').removeClass('inactive');
+                var $panZoomImage = $('.imagepopup-holder .image img');
+                $panZoomImage.attr('src', $('.imagepopup-holder .original-image-url').attr('href'));
+                $panZoomImage.addClass('panzoom-image');
+                $panZoomImage.panzoom({
+                  contain: 'invert',
+                  minScale: 1,
+                  maxScale: 5,
+                  increment: 0.3,
+                  exponential: false,
+                  $reset: $(".zoom-reset")
+                }).panzoom("zoom");
+                $panZoomImage.parent().on('mousewheel.focal', function mouseWheelZoom( e ) {
+                  e.preventDefault();
+                  var delta = e.delta || e.originalEvent.wheelDelta;
+                  var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+                  $panZoomImage.panzoom('zoom', zoomOut, {
+                    increment: 0.1,
+                    animate: false,
+                    focal: e
+                  });
+                });
+                $(".zoom-in").click(function zoomIn() {
+                  $panZoomImage.panzoom("zoom");
+                });
+                $(".zoom-out").click(function zoomOut() {
+                  $panZoomImage.panzoom("zoom", true);
+                });
+              });
             }).each(function triggerImageLoad() {
               if (this.complete) {
                 $(this).load();

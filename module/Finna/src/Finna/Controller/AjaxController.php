@@ -1008,6 +1008,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     public function getImagePopupAjax()
     {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $headers->addHeaderLine('Content-type', 'text/html');
@@ -1057,6 +1058,9 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 $view->listUser = $user;
             }
         }
+
+        $view->enableImagePopupZoom = isset($config->Content->enableImagePopupZoom)
+            ? $config->Content->enableImagePopupZoom : false;
 
         return $view;
     }
