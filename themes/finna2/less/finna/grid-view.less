@@ -7,7 +7,10 @@
 .grid.result {
   float: left;
   width: 50%;
-
+  border-bottom: none;
+  @media (max-width: @screen-xs) {
+    width: 100%;
+  }
   .grid-checkbox {
     min-width: 0;
   }
@@ -18,20 +21,23 @@
     white-space: normal;
   }
   .grid-result {
-    width: 100%;
+    width:100%;
+  }
+  &#result0 {
+    border-top: none;
   }
 }
 .grid-large-break,
 .grid-small-break { clear: both; }
 @media (min-width: 992px) {
-  .grid.result{ width: 25%; }
+  .grid.result{ width: 33%; }
   .grid-small-break { display: none; }
 }
 
 .result-view-grid {
   .grid:not(.recordcovers) {
     padding: 0px 5px 10px;
-    margin-bottom: 10px;
+    margin-bottom: 0px;
     &:focus {
       outline: none;
     }
@@ -43,24 +49,16 @@
       top: ~"-moz-calc(100% - 22px)";
       top: ~"calc(100% - 22px)";
       overflow: hidden;
-      max-height: 43px;
-      transition: all .2s ease-in-out;
+      max-height: 200px;
+      min-height: 50px;
       z-index: 10;
-      box-shadow: 0px 20px 24px -15px #000;
-      .opacity(0);
-      background: #fff;
-      transition: opacity .2s linear;
+      background: transparent;
     }
     & .dateyeartype p {
       margin-bottom: 0px;
     }
     & .grid-image {
       overflow: hidden;
-    }
-    &:hover .grid-title {
-      max-height: 200px;
-      .opacity(1);
-      min-height: 50px;
     }
     & a.title {
       font-size: 1.15em;
@@ -118,7 +116,10 @@
       }
     }
     &.no-image {
-      & .recordcover-holder:before {
+      .grid-body {
+        position: relative;
+      }
+      .recordcover-holder:before {
         color: @gray-light;
         content: attr(data-format);
         position: absolute;
@@ -127,7 +128,7 @@
         left:0;
         width: 100%;
       }
-      & .recordcover-holder:after {
+      .recordcover-holder:after {
         color: #BFBFBF;
         content: attr(data-noimage);
         position: absolute;
@@ -137,10 +138,10 @@
         text-transform: uppercase;
         letter-spacing: 1px;
       }
-      & .recordcover-holder {
+      .recordcover-holder {
         background: #f5f5f5;
       }
-      & .iconlabel:before {
+      .iconlabel:before {
         color: @gray-mid-light;
         top: 40%;
       }
@@ -150,19 +151,16 @@
     & .grid.no-image  {
       & .grid-title {
         max-height: 43px;
-        background: none;
+        max-height: 200px;
         box-shadow: 0px 0px 0px;
         opacity: 1;
-        top: ~"-webkit-calc(100% - 65px)";
-        top: ~"-moz-calc(100% - 65px)";
-        top: ~"calc(100% - 65px)";
-        transition: background .1s linear;
         padding-top: 6px;
         padding-bottom: 6px;
-        margin-top: -60px;
-        @media(max-width: @screen-sm){
-          margin-top: -100px;
-        }
+        position: absolute;
+        top: initial;
+        bottom: 0;
+        margin: 0;
+        background: #fff;
       }
       & .dateyeartype {
         margin-top: -4px;
@@ -170,25 +168,18 @@
           margin-bottom: 0px;
         }
       }
-      &:hover {
-        & .grid-title {
-          background: rgba(255,255,255,0.8);
-          box-shadow: 0px 20px 20px -16px #000;
-          max-height: 200px;
-        }
-      }
     }
+  }
+  .record-image-container {
+    margin-bottom: 0;
   }
 }
 .result-view-grid.touch-device {
   & .grid {
-    margin-bottom: 60px;
-    padding-bottom: 20px;
     & .grid-title {
       .opacity(.9);
       position: relative;
-      transition: max-height .2s ease-in, box-shadow .2s ease-in;
-      max-height: 70px;
+      max-height: 200px;
       top: 100%;
       box-shadow: none;
       padding: 10px;
@@ -204,10 +195,6 @@
       & p {
         margin-bottom: 0;
       }
-    }
-    &:hover .grid-title {
-      max-height: 200px;
-      box-shadow: 0px 20px 20px -16px #000;
     }
   }
 }

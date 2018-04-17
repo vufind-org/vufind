@@ -731,7 +731,8 @@ finna.layout = (function finnaLayout() {
           fitWidth: false,
           itemSelector: '.result.grid',
           columnWidth: '.result.grid',
-          isResizeBound: 'true'
+          isResizeBound: 'true',
+          horizontalOrder: 'true'
         });
       });
     }
