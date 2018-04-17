@@ -88,7 +88,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\ILS\Driver\Demo' => 'VuFind\ILS\Driver\DemoFactory',
         'VuFind\ILS\Driver\Evergreen' =>
             'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\ILS\Driver\Folio' => 'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\ILS\Driver\Folio' => 'VuFind\ILS\Driver\FolioFactory',
         'VuFind\ILS\Driver\Horizon' =>
             'VuFind\ILS\Driver\DriverWithDateConverterFactory',
         'VuFind\ILS\Driver\HorizonXMLAPI' =>

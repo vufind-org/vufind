@@ -54,6 +54,34 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     protected $token = null;
 
     /**
+     * Factory function for constructing the SessionContainer.
+     *
+     * @var Callable
+     */
+    protected $sessionFactory;
+
+    /**
+     * Session cache
+     *
+     * @var \Zend\Session\Container
+     */
+    protected $sessionCache;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter  Date converter object
+     * @param Callable               $sessionFactory Factory function returning
+     * SessionContainer object
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter,
+        $sessionFactory
+    ) {
+        $this->dateConverter = $dateConverter;
+        $this->sessionFactory = $sessionFactory;
+    }
+
+    /**
      * (From AbstractAPI) Allow default corrections to all requests
      *
      * Add X-Okapi headers and Content-Type to every request
@@ -91,9 +119,12 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
             'password' => $this->config['API']['password'],
         ];
         $response = $this->makeRequest('POST', '/authn/login', json_encode($auth));
+        if ($response->getStatusCode() >= 400) {
+            throw new ILSException($response->getBody());
+        }
         $this->token = $response->getHeaders()->get('X-Okapi-Token')
             ->getFieldValue();
-        // TODO: Save auth token in SESSION
+        $this->sessionCache->folio_token = $this->token;
     }
 
     /**
@@ -122,8 +153,11 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      */
     public function init()
     {
-        // TODO: Retrieve auth token in SESSION
-        error_log('init', $this->token);
+        $factory = $this->sessionFactory;
+        $this->sessionCache = $factory($this->config['API']['tenant']);
+        if ($this->sessionCache->folio_token ?? false) {
+            $this->token = $this->sessionCache->folio_token;
+        }
         if ($this->token == null) {
             $this->renewTenantToken();
         } else {
