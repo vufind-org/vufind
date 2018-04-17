@@ -5,7 +5,7 @@
  * PHP Version 5
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -24,12 +24,14 @@
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Kalle Pyykkönen <kalle.pyykkonen@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 namespace Finna\Controller;
 
 use Finna\Cover\Loader;
+use VuFindCode\ISBN;
 
 /**
  * Generates record images.
@@ -38,6 +40,7 @@ use Finna\Cover\Loader;
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Kalle Pyykkönen <kalle.pyykkonen@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -148,6 +151,14 @@ class CoverController extends \VuFind\Controller\CoverController
                 $this->serviceLocator->get('VuFind\Http')->createClient(),
                 $cacheDir
             );
+            // Cover image configuration for current datasource
+            $recordId = $this->params()->fromQuery('recordid');
+            $datasourceId = strtok($recordId, '.');
+            $datasourceCovers
+                = isset($this->getConfig('datasources')->$datasourceId->coverimages)
+                    ? $this->getConfig('datasources')->$datasourceId->coverimages
+                        : null;
+            $this->loader->setDatasourceConfig($datasourceCovers);
             \VuFind\ServiceManager\Initializer::initInstance(
                 $this->loader, $this->serviceLocator
             );
