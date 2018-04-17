@@ -92,24 +92,16 @@
     <?php if (isset($row['barcode']) && $row['barcode'] != ""): ?>
       <tr vocab="http://schema.org/" typeof="Offer">
           <?php
-            $templateParameters = [
-                // AJAX Check record?
-                "check" => $row['check'] ?? false,
-                "checkStorageRetrievalRequest" => $row['checkStorageRetrievalRequest'] ?? false,
-                "checkILLRequest" => $row['checkILLRequest'] ?? false,
-                "holding" => $row
-            ];
-
             try {
                 echo $this->context($this)->renderInContext(
                     'RecordTab/holdingsils/' . $this->tab->getTemplate() . '.phtml',
-                    $templateParameters
+                    ['holding' => $row]
                 );
 
             } catch (Exception $e) {
                 echo $this->context($this)->renderInContext(
                     'RecordTab/holdingsils/standard.phtml',
-                    $templateParameters
+                    ['holding' => $row]
                 );
             }
           ?>
