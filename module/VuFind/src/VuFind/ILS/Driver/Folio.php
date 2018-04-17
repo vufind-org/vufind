@@ -267,24 +267,30 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     public function getHolding($recordId, array $patronLogin = null)
     {
         $record = $this->getItem($recordId);
-        /*
-        $holding = $this->makeRequest(
+        $holdingResponse = $this->makeRequest(
             'GET',
-            '/holdings-storage/holdings/' . $record['holdingsRecordId']
+            '/holdings-storage/holdings/' . $record->holdingsRecordId
         );
+        $holding = json_decode($holdingResponse->getBody());
+        /*
         $instance = $this->makeRequest(
             'GET',
-            '/inventory/instances/' . $holding['instanceId']
+            '/inventory/instances/' . $holding->instanceId
         );
         */
-        return [
+        $location = $record->permenantLocation->name
+            ?? ($holding->electronicLocation->uri ? "Electronic" : null);
+        $locationhref = $holding->electronicLocation->uri ?? null;
+        return [[
             'id' => $recordId,
-            'availability' => $record['status']['name'] == 'Available',
-            'status' => $record['status']['name'],
-            'location' => $record['permenantLocation']['name'],
-            'barcode' => $record['barcode'],
-            'notes' => $record['notes'],
-        ];
+            'availability' => $record->status->name == 'Available',
+            'status' => $record->status->name,
+            'location' => $location,
+            'locationhref' => $locationhref,
+            'barcode' => $record->barcode ?? '',
+            'callnumber' => $holding->callNumber,
+            'notes' => $record->notes ?? '',
+        ]];
     }
 
     /**
