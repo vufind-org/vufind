@@ -8,7 +8,7 @@ function triggerVirtualKeyboard(accept, enter) {
 }
 
 
-function showKb(layout, rtl, accept, enter) {
+function showKb(layout, right_to_left, accept, enter) {
         var accept_label =  accept + ':' + accept;
         var enter_label =  enter + ':' + enter;
         var kb = $('.searchForm_lookfor:visible').keyboard(
@@ -25,7 +25,7 @@ function showKb(layout, rtl, accept, enter) {
                     usePreview: false,
                   }).getkeyboard();
         kb.options.layout = layout;
-        kb.options.rtl = rtl;
+        kb.options.rtl = right_to_left;
         kb.redraw();
         // Make sure we do open the keyboard again on focus the standard search field
         $.extend($.keyboard.keyaction, {
@@ -43,4 +43,3 @@ function showKb(layout, rtl, accept, enter) {
         }
     });
 }
-
