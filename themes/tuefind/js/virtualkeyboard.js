@@ -43,4 +43,3 @@ function showKb(layout, right_to_left, accept, enter) {
         }
     });
 }
-
