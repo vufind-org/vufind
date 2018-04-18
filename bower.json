@@ -18,9 +18,20 @@
     "options":  {
       "includePackageNameInInstallPath": false
     },
-    "path": "themes/bootstrap3/js/vendor",
+    "base": "themes/bootstrap3",
+    "path": {
+      "css": "css/vendor",
+      "js": "js/vendor",
+      "less": "less/vendor"
+    },
     "sources": {
-      "bootstrap": "bower_components/bootstrap/dist/bootstrap.min.js",
+      "bootstrap": {
+        "mapping": [
+          {"bower_components/bootstrap/dist/js/bootstrap.min.js": "bootstrap.min.js"},
+          {"bower_components/bootstrap/dist/css/bootstrap.min.css": "bootstrap.min.css"},
+          {"bower_components/bootstrap/less/**": "bootstrap"}
+        ]
+      },
       "bootstrap-validator": "bower_components/bootstrap-validator/dist/validator.min.js",
       "jquery": "bower_components/jquery/dist/jquery.min.js",
       "jquery.dotdotdot": "bower_components/jquery.dotdotdot/src/jquery.dotdotdot.min.js"
