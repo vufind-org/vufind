@@ -49,7 +49,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'listitems' => 'VuFind\ChannelProvider\ListItems',
         'newilsitems' => 'VuFind\ChannelProvider\NewILSItems',
         'random' => 'VuFind\ChannelProvider\Random',
+        'recentlyreturned' => 'VuFind\ChannelProvider\RecentlyReturned',
         'similaritems' => 'VuFind\ChannelProvider\SimilarItems',
+        'trendingilsitems' => 'VuFind\ChannelProvider\TrendingILSItems',
     ];
 
     /**
@@ -68,8 +70,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\ChannelProvider\AbstractILSChannelProviderFactory',
         'VuFind\ChannelProvider\Random' =>
             'VuFind\ChannelProvider\Factory::getRandom',
+        'VuFind\ChannelProvider\RecentlyReturned' =>
+            'VuFind\ChannelProvider\AbstractILSChannelProviderFactory',
         'VuFind\ChannelProvider\SimilarItems' =>
             'VuFind\ChannelProvider\Factory::getSimilarItems',
+        'VuFind\ChannelProvider\TrendingILSItems' =>
+            'VuFind\ChannelProvider\AbstractILSChannelProviderFactory',
     ];
 
     /**
