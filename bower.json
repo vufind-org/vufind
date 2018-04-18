@@ -1,0 +1,29 @@
+{
+  "name": "vufind",
+  "description": "Discovery tool w/ JS dependencies",
+  "main": "",
+  "authors": [
+    "Demian Katz <demian.katz@villanova.edu>"
+  ],
+  "license": "GPLv2",
+  "homepage": "https://vufind.org",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "3.3.7",
+    "bootstrap-validator": "0.10.2",
+    "jquery": "2.1.1",
+    "jquery.dotdotdot": "1.8.1"
+  },
+  "install": {
+    "options":  {
+      "includePackageNameInInstallPath": false
+    },
+    "path": "themes/bootstrap3/js/vendor",
+    "sources": {
+      "bootstrap": "bower_components/bootstrap/dist/bootstrap.min.js",
+      "bootstrap-validator": "bower_components/bootstrap-validator/dist/validator.min.js",
+      "jquery": "bower_components/jquery/dist/jquery.min.js",
+      "jquery.dotdotdot": "bower_components/jquery.dotdotdot/src/jquery.dotdotdot.min.js"
+    }
+  }
+}
