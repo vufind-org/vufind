@@ -1,7 +1,5 @@
 {
   "name": "vufind",
-  "description": "Discovery tool w/ JS dependencies",
-  "main": "",
   "authors": [
     "Demian Katz <demian.katz@villanova.edu>"
   ],
@@ -11,6 +9,7 @@
   "dependencies": {
     "bootstrap": "3.3.7",
     "bootstrap-validator": "0.10.2",
+    "flot": "0.8.3",
     "jquery": "2.1.1",
     "jquery.dotdotdot": "1.8.1"
   },
@@ -33,6 +32,15 @@
         ]
       },
       "bootstrap-validator": "bower_components/bootstrap-validator/dist/validator.min.js",
+      "flot": {
+        "mapping": [
+          {"bower_components/flot/excanvas.min.js": "flot/excanvas.min.js"},
+          {"bower_components/flot/jquery.flot.min.js": "flot/jquery.flot.min.js"},
+          {"bower_components/flot/jquery.flot.resize.min.js": "flot/jquery.flot.resize.min.js"},
+          {"bower_components/flot/jquery.flot.selection.min.js": "flot/jquery.flot.selection.min.js"},
+          {"bower_components/flot/LICENSE.txt": "themes/bootstrap3/js/vendor/flot/LICENSE.txt"}
+        ]
+      },
       "jquery": "bower_components/jquery/dist/jquery.min.js",
       "jquery.dotdotdot": "bower_components/jquery.dotdotdot/src/jquery.dotdotdot.min.js"
     }
