@@ -1123,7 +1123,18 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $cookieName = 'organisationInfoId';
         $cookieManager = $this->serviceLocator->get('VuFind\CookieManager');
         $cookie = $cookieManager->get($cookieName);
-
+        $params['orgType'] = 'library';
+        $museumSource = [
+            'museo', 'museum', 'kansallisgalleria', 'ateneum', 'musee',
+            'nationalgalleri', 'gallery'
+        ];
+        foreach ($museumSource as $source) {
+            $checkName = $this->translate("source_" . strtolower($parent));
+            if (stripos($checkName, $source)) {
+                $params['orgType'] = 'museum';
+                break;
+            }
+        }
         $action = $params['action'];
         $buildings = isset($params['buildings'])
             ? explode(',', $params['buildings']) : null;
@@ -1163,7 +1174,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $service = $this->serviceLocator->get('Finna\OrganisationInfo');
         try {
-            $response = $service->query($parent, $params, $buildings);
+            $response = $service->query($parent, $params, $buildings, $action);
         } catch (\Exception $e) {
             return $this->handleError(
                 'getOrganisationInfo: '

@@ -20,7 +20,8 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
         var cnt = 0;
         $.each(response.list, function countItem(ind, obj) {
           organisationList[obj.id] = obj;
-          if (obj.type === 'library' || obj.type === 'other') {
+          if (obj.type === 'library' || obj.type === 'other'
+            || obj.type === 'museum') {
             cnt++;
           }
         });
@@ -270,7 +271,7 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
     finna.feed.init(contactHolder);
 
     holder.find('.office-quick-information .service-title').text(data.name);
-    if ('address' in data) {
+    if ('address' in data && !data.details.museum) {
       holder.find('.office-links.address').html(data.address);
       var address = holder.find('.address-contact');
       address.show().find('> p').html(data.address);
@@ -279,12 +280,18 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
       var email = data.email;
       holder.find('.email').attr('href', 'mailto:' + email).show();
       holder.find('.email span.email').text(email.replace('@', '(at)'));
-
-      holder.find('.email-contact').show();
+      if (!data.details.museum) {
+        holder.find('.email-contact').show();
+      }
     }
+
     if ('homepage' in data) {
       holder.find('.office-website > a').attr('href', data.homepage);
       holder.find('.office-website').show();
+    }
+
+    if (data.details.museum) {
+      holder.find('.contact-info-header').hide();
     }
 
     if ('routeUrl' in data) {
@@ -314,7 +321,6 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
     }
 
     var openToday = false;
-
     if ('schedules' in data.openTimes) {
       $.each(data.openTimes.schedules, function handleSchedule(ind, obj) {
         if ('today' in obj && 'times' in obj && obj.times.length) {
@@ -352,6 +358,14 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
       img.hide();
     }
 
+    if (data.details.museum) {
+      holder.find('.extra-image').attr('src', data.details.pictures[1].url);
+      holder.find('.extra-image-2').attr('src', data.details.pictures[2].url);
+    } else {
+      holder.find('.extra-image').hide();
+      holder.find('.extra-image-2').hide();
+    }
+
     if ('buildingYear' in data.details) {
       var year = holder.find('.building-year');
       year.find('> span').text(data.details.buildingYear);
@@ -363,7 +377,11 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
       phones.find('> p').html(data.details.phone);
       phones.show();
     }
-
+    if ('contactInfo' in data.details) {
+      var contactInfo = holder.find('.phone-numbers');
+      contactInfo.find('> p').html(data.details.contactInfo);
+      contactInfo.show();
+    }
 
     $('.office-quick-information').show();
     $('.office-information').show();

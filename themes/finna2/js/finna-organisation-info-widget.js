@@ -171,7 +171,7 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
       updateWeekNum(week);
     }
     updatePrevBtn(response);
-
+    updateNextBtn(response);
     var schedulesHolder = holder.find('.schedules .opening-times-week');
     schedulesHolder.find('> div').not('.template').remove();
 
@@ -309,7 +309,7 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
     }
 
     updatePrevBtn(response);
-
+    updateNextBtn(response);
     if ('phone' in response) {
       holder.find('.phone').attr('data-original-title', response.phone).show();
     }
@@ -361,6 +361,16 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
       prevBtn.unbind('click').fadeTo(200, 0);
     } else {
       prevBtn.fadeTo(200, 1);
+      attachWeekNaviListener();
+    }
+  }
+
+  function updateNextBtn(response) {
+    var nextBtn = holder.find('.week-navi.next-week');
+    if (response.openTimes.museum === true) {
+      nextBtn.unbind('click').fadeTo(200, 0);
+    } else {
+      nextBtn.fadeTo(200, 1);
       attachWeekNaviListener();
     }
   }
