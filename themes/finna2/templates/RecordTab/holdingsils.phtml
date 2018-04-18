@@ -97,7 +97,7 @@
     <? endif; ?>
     <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
   </div>
-</div> 
+</div>
 <? endif; ?>
 
 <? if ($holdsAllowed): ?>
@@ -306,8 +306,17 @@
     ?>
     <div vocab="http://schema.org/" typeof="Offer" class="copy-details <?=$holdingsDetails?>">
       <? if (isset($row['branch']) && isset($row['department'])): ?>
+        <?
+          $parts = [
+            '<span class="branch">' . $this->escapeHtml($row['branch']) . '</span>',
+            '<span class="department">' . $this->escapeHtml($row['department']) . '</span>'
+          ];
+          if (!empty($row['callnumber']) && count($callnumbers) > 1) {
+            $parts[] = '<span class="callnumber">' . $this->escapeHtml($row['callnumber']) . '</span>';
+          }
+        ?>
         <div class="copy-title">
-          <span class="branch"><?=$row['branch']?></span><span class="department">, <?=$row['department']?></span>
+          <?=implode(', ', $parts);?>
         </div>
       <? else: ?>
         <div class="copy-title">
