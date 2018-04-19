@@ -158,8 +158,8 @@ finna.imagePopup = (function finnaImagePopup() {
                 $panZoomImage.panzoom({
                   contain: 'invert',
                   minScale: 1,
-                  maxScale: 5,
-                  increment: 0.3,
+                  maxScale: 15,
+                  increment: 1,
                   exponential: false,
                   $reset: $(".zoom-reset")
                 }).panzoom("zoom");
