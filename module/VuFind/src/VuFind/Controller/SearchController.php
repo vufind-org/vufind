@@ -51,8 +51,9 @@ class SearchController extends AbstractSearch
         $view = parent::advancedAction();
 
         // Set up facet information:
-        $facets = $this->serviceLocator->get('VuFind\FacetCache\Solr')
-            ->getAdvancedList();
+        $facets = $this->serviceLocator
+            ->get('VuFind\Search\FacetCache\PluginManager')->get('Solr')
+            ->getList('Advanced');
         $view->facetList = $this->processAdvancedFacets($facets, $view->saved);
         $specialFacets = $this->parseSpecialFacetsSetting(
             $view->options->getSpecialAdvancedFacets()
@@ -268,11 +269,12 @@ class SearchController extends AbstractSearch
      */
     public function homeAction()
     {
-        $facetCache = $this->serviceLocator->get('VuFind\FacetCache\Solr');
+        $facetCache = $this->serviceLocator
+            ->get('VuFind\Search\FacetCache\PluginManager')->get('Solr');
         return $this->createViewModel(
             [
                 'results' => $facetCache->getResults(),
-                'facetList' => $facetCache->getHomePageList(),
+                'facetList' => $facetCache->getList('HomePage'),
                 'hierarchicalFacets' => $this->getHierarchicalFacets(),
                 'hierarchicalFacetSortOptions'
                     => $this->getHierarchicalFacetSortSettings()

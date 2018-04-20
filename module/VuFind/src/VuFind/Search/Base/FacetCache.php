@@ -1,6 +1,6 @@
 <?php
 /**
- * Solr FacetCache.
+ * Abstract Base FacetCache.
  *
  * PHP version 7
  *
@@ -20,26 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  FacetCache
+ * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\FacetCache;
+namespace VuFind\Search\Base;
 
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Search\Solr\Results;
 
 /**
  * Solr FacetCache Factory.
  *
  * @category VuFind
- * @package  FacetCache
+ * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Solr
+abstract class FacetCache
 {
     /**
      * Cache manager
@@ -77,61 +76,14 @@ class Solr
     }
 
     /**
-     * Return a Search Results object containing requested facet information.  This
-     * data may come from the cache.
-     *
-     * @param string $initMethod Name of params method to use to request facets
-     *
-     * @return array
-     */
-    protected function getFacetResults($initMethod)
-    {
-        // Check if we have facet results cached, and build them if we don't.
-        $cache = $this->cacheManager->getCache('object', 'solr-facets');
-        $params = $this->results->getParams();
-        $hiddenFiltersHash = md5(json_encode($params->getHiddenFilters()));
-        $cacheName = "{$initMethod}-{$hiddenFiltersHash}-{$this->language}";
-        if (!($list = $cache->getItem($cacheName))) {
-            $params->$initMethod();
-
-            // Avoid a backend request if there are no facets configured by the given
-            // init method.
-            if (!empty($params->getFacetConfig())) {
-                // We only care about facet lists, so don't get any results (this
-                // helps prevent problems with serialized File_MARC objects in the
-                // cache):
-                $params->setLimit(0);
-                $list = $this->results->getFacetList();
-            } else {
-                $list = [];
-            }
-            $cache->setItem($cacheName, $list);
-        }
-
-        return $list;
-    }
-
-    /**
      * Return a Search Results object containing advanced facet information.  This
      * data may come from the cache.
      *
-     * @return array
-     */
-    public function getAdvancedList()
-    {
-        return $this->getFacetResults('initAdvancedFacets');
-    }
-
-    /**
-     * Return a Search Results object containing homepage facet information.  This
-     * data may come from the cache.
+     * @param string $context Context of list to retrieve ('Advanced' or 'HomePage')
      *
      * @return array
      */
-    public function getHomePageList()
-    {
-        return $this->getFacetResults('initHomePageFacets');
-    }
+    abstract public function getList($context = 'Advanced');
 
     /**
      * Get results object used to retrieve facets.

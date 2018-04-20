@@ -20,12 +20,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  FacetCache
+ * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\FacetCache;
+namespace VuFind\Search\Solr;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
@@ -34,12 +34,12 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * Solr FacetCache Factory.
  *
  * @category VuFind
- * @package  FacetCache
+ * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SolrFactory implements FactoryInterface
+class FacetCacheFactory implements FactoryInterface
 {
     /**
      * Create a results object with hidden filters pre-populated.
