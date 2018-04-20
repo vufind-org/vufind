@@ -182,6 +182,7 @@ class AuthorityRecommend implements RecommendInterface
         };
         return $normalize($a) == $normalize($b);
     }
+
     /**
      * Add main headings from records that match search terms on use_for/see_also.
      *
