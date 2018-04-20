@@ -144,6 +144,110 @@ class AuthorityRecommend implements RecommendInterface
     }
 
     /**
+     * Perform a search of the authority index.
+     *
+     * @param array $params Array of request parameters.
+     *
+     * @return array
+     */
+    protected function performSearch($params)
+    {
+        // Initialise and process search (ignore Solr errors -- no reason to fail
+        // just because search syntax is not compatible with Authority core):
+        try {
+            $authResults = $this->resultsManager->get('SolrAuth');
+            $authParams = $authResults->getParams();
+            $authParams->initFromRequest(new Parameters($params));
+            foreach ($this->filters as $filter) {
+                $authParams->addHiddenFilter($filter);
+            }
+            return $authResults->getResults();
+        } catch (RequestErrorException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Return true if $a and $b are similar enough to represent the same heading.
+     *
+     * @param string $a First string to compare
+     * @param string $b Second string to compare
+     *
+     * @return bool
+     */
+    protected function fuzzyCompare($a, $b)
+    {
+        $normalize = function ($str) {
+            return trim(strtolower(preg_replace('/\W/', '', $str)));
+        };
+        return $normalize($a) == $normalize($b);
+    }
+    /**
+     * Add main headings from records that match search terms on use_for/see_also.
+     *
+     * @return void
+     */
+    protected function addUseForHeadings()
+    {
+        // Build an advanced search request that prevents Solr from retrieving
+        // records that would already have been retrieved by a search of the biblio
+        // core, i.e. it only returns results where $lookfor IS found in in the
+        // "Heading" search and IS NOT found in the "MainHeading" search defined
+        // in authsearchspecs.yaml.
+        $params = [
+            'join' => 'AND',
+            'bool0' => ['AND'],
+            'lookfor0' => [$this->lookfor],
+            'type0' => ['Heading'],
+            'bool1' => ['NOT'],
+            'lookfor1' => [$this->lookfor],
+            'type1' => ['MainHeading']
+        ];
+
+        // loop through records and assign id and headings to separate arrays defined
+        // above
+        foreach ($this->performSearch($params) as $result) {
+            // Extract relevant details:
+            $recordArray = [
+                'id' => $result->getUniqueID(),
+                'heading' => $result->getBreadcrumb()
+            ];
+
+            // check for duplicates before adding record to recordSet
+            if (!$this->inArrayR($recordArray['heading'], $this->recommendations)) {
+                array_push($this->recommendations, $recordArray);
+            }
+        }
+    }
+
+    /**
+     * Add "see also" headings from records that match search terms on main heading.
+     *
+     * @return void
+     */
+    protected function addSeeAlsoReferences()
+    {
+        // Build a simple "MainHeading" search.
+        $params = [
+            'lookfor' => [$this->lookfor],
+            'type' => ['MainHeading']
+        ];
+
+        // loop through records and assign id and headings to separate arrays defined
+        // above
+        foreach ($this->performSearch($params) as $result) {
+            foreach ($result->getSeeAlso() as $seeAlso) {
+                // check for duplicates before adding record to recordSet
+                if (!$this->fuzzyCompare($seeAlso, $this->lookfor)
+                    && !$this->inArrayR($seeAlso, $this->recommendations)
+                ) {
+                    array_push($this->recommendations, ['heading' => $seeAlso]);
+                }
+            }
+        }
+    }
+
+    /**
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
@@ -168,53 +272,11 @@ class AuthorityRecommend implements RecommendInterface
             return;
         }
 
-        // Build an advanced search request that prevents Solr from retrieving
-        // records that would already have been retrieved by a search of the biblio
-        // core, i.e. it only returns results where $lookfor IS found in in the
-        // "Heading" search and IS NOT found in the "MainHeading" search defined
-        // in authsearchspecs.yaml.
-        $request = new Parameters(
-            [
-                'join' => 'AND',
-                'bool0' => ['AND'],
-                'lookfor0' => [$this->lookfor],
-                'type0' => ['Heading'],
-                'bool1' => ['NOT'],
-                'lookfor1' => [$this->lookfor],
-                'type1' => ['MainHeading']
-            ]
-        );
+        // see if we can add main headings matching use_for/see_also fields...
+        $this->addUseForHeadings();
 
-        // Initialise and process search (ignore Solr errors -- no reason to fail
-        // just because search syntax is not compatible with Authority core):
-        try {
-            $authResults = $this->resultsManager->get('SolrAuth');
-            $authParams = $authResults->getParams();
-            $authParams->initFromRequest($request);
-            foreach ($this->filters as $filter) {
-                $authParams->addHiddenFilter($filter);
-            }
-            $results = $authResults->getResults();
-        } catch (RequestErrorException $e) {
-            return;
-        }
-
-        // loop through records and assign id and headings to separate arrays defined
-        // above
-        foreach ($results as $result) {
-            // Extract relevant details:
-            $recordArray = [
-                'id' => $result->getUniqueID(),
-                'heading' => $result->getBreadcrumb()
-            ];
-
-            // check for duplicates before adding record to recordSet
-            if (!$this->inArrayR($recordArray['heading'], $this->recommendations)) {
-                array_push($this->recommendations, $recordArray);
-            } else {
-                continue;
-            }
-        }
+        // see if we can add see-also references associated with main headings...
+        $this->addSeeAlsoReferences();
     }
 
     /**
@@ -248,12 +310,8 @@ class AuthorityRecommend implements RecommendInterface
     protected function inArrayR($needle, $haystack)
     {
         foreach ($haystack as $v) {
-            if ($needle == $v) {
+            if ($needle == $v || (is_array($v) && $this->inArrayR($needle, $v))) {
                 return true;
-            } elseif (is_array($v)) {
-                if ($this->inArrayR($needle, $v)) {
-                    return true;
-                }
             }
         }
         return false;
