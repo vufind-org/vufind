@@ -487,6 +487,7 @@ $config = [
             'related' => [ /* See VuFind\Related\PluginManager for defaults */ ],
             'resolver_driver' => [ /* See VuFind\Resolver\Driver\PluginManager for defaults */ ],
             'search_backend' => [ /* See VuFind\Search\BackendRegistry for defaults */ ],
+            'search_facetcache' => [ /* See VuFind\Search\FacetCache\PluginManager for defaults */ ],
             'search_options' => [ /* See VuFind\Search\Options\PluginManager for defaults */ ],
             'search_params' => [ /* See VuFind\Search\Params\PluginManager for defaults */ ],
             'search_results' => [ /* See VuFind\Search\Results\PluginManager for defaults */ ],
