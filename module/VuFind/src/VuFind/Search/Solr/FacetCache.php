@@ -60,8 +60,7 @@ class FacetCache extends \VuFind\Search\Base\FacetCache
             // init method.
             if (!empty($params->getFacetConfig())) {
                 // We only care about facet lists, so don't get any results (this
-                // helps prevent problems with serialized File_MARC objects in the
-                // cache):
+                // improves performance):
                 $params->setLimit(0);
                 $list = $this->results->getFacetList();
             } else {
