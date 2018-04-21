@@ -90,20 +90,20 @@
   <?php endforeach; endif; ?>
   <?php foreach ($holding['items'] as $row): ?>
     <?php if (isset($row['barcode']) && $row['barcode'] != ""): ?>
-          <?php
-            try {
-                echo $this->context($this)->renderInContext(
-                    'RecordTab/holdingsils/' . $this->tab->getTemplate() . '.phtml',
-                    ['holding' => $row]
-                );
+      <?php
+        try {
+            echo $this->context($this)->renderInContext(
+                'RecordTab/holdingsils/' . $this->tab->getTemplate() . '.phtml',
+                ['holding' => $row]
+            );
 
-            } catch (Exception $e) {
-                echo $this->context($this)->renderInContext(
-                    'RecordTab/holdingsils/standard.phtml',
-                    ['holding' => $row]
-                );
-            }
-          ?>
+        } catch (Exception $e) {
+            echo $this->context($this)->renderInContext(
+                'RecordTab/holdingsils/standard.phtml',
+                ['holding' => $row]
+            );
+        }
+      ?>
     <?php endif; ?>
   <?php endforeach; ?>
   <?php if (!empty($holding['purchase_history'])): ?>
