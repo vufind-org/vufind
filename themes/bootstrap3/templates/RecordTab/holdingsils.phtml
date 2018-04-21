@@ -90,7 +90,6 @@
   <?php endforeach; endif; ?>
   <?php foreach ($holding['items'] as $row): ?>
     <?php if (isset($row['barcode']) && $row['barcode'] != ""): ?>
-      <tr vocab="http://schema.org/" typeof="Offer">
           <?php
             try {
                 echo $this->context($this)->renderInContext(
@@ -105,7 +104,6 @@
                 );
             }
           ?>
-        </tr>
     <?php endif; ?>
   <?php endforeach; ?>
   <?php if (!empty($holding['purchase_history'])): ?>
