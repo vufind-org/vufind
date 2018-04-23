@@ -28,7 +28,7 @@
 namespace VuFind\Search\Summon;
 
 /**
- * Summon FacetCache Factory.
+ * Summon FacetCache.
  *
  * @category VuFind
  * @package  Search_Summon

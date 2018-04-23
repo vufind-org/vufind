@@ -28,7 +28,7 @@
 namespace VuFind\Search\Solr;
 
 /**
- * Solr FacetCache Factory.
+ * Solr FacetCache.
  *
  * @category VuFind
  * @package  Search_Solr
