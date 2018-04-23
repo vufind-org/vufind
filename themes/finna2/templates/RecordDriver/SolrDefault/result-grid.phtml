@@ -30,14 +30,14 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
         <?= $this->record($this->driver)->getTitleHtml(50); ?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
       </a>
       <div class="dateyeartype">
-        <? $summAuthor = $this->driver->getPrimaryAuthor(); 
+        <? $summAuthor = $this->driver->getPrimaryAuthor();
         if (!empty($summAuthor)): ?>
           <? $authorForSearch = $this->driver->tryMethod('getPrimaryAuthorForSearch'); ?>
           <div class="truncate-field" data-rows="1">
             <p><?=$this->escapeHtml($summAuthor) ?></p>
           </div>
         <? else: ?>
-          <? $authors = $this->driver->tryMethod('getNonPresenterAuthors'); 
+          <? $authors = $this->driver->tryMethod('getNonPresenterAuthors');
           if (!empty($authors)): ?>
             <div class="truncate-field" data-rows="1">
               <p>
@@ -68,7 +68,7 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
             $parentLink = $this->record($this->driver)->getLink('journaltitle', str_replace(['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $journalTitle));
           }
           ?>
-          <? $ref = $this->driver->getContainerReference(); 
+          <? $ref = $this->driver->getContainerReference();
           if (!empty($ref)): ?>
             <?=$this->escapeHtml($ref); ?>
           <? else: ?>
