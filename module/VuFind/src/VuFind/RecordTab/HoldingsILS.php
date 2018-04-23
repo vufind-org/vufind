@@ -27,6 +27,8 @@
  */
 namespace VuFind\RecordTab;
 
+use VuFind\ILS\Connection;
+
 /**
  * Holdings (ILS) tab
  *
@@ -41,7 +43,7 @@ class HoldingsILS extends AbstractBase
     /**
      * ILS connection (or null if not applicable)
      *
-     * @param \VuFind\ILS\Connection
+     * @param Connection
      */
     protected $catalog;
 
@@ -59,7 +61,7 @@ class HoldingsILS extends AbstractBase
      * for holdings before displaying the tab; set to null if no check is needed
      * @param string                      $template Holdings template to use
      */
-    public function __construct($catalog, $template = null)
+    public function __construct(Connection $catalog = null, $template = null)
     {
         $this->catalog = $catalog;
         $this->template = $template ?? 'standard';
