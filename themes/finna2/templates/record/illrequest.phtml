@@ -104,7 +104,7 @@
   <? if (in_array("acceptTerms", $this->extraFields)): ?>
     <div class="form-group">
       <input id="acceptTerms" type="checkbox" name="gatheredDetails[acceptTerms]">
-      <label for="acceptTerms" class="control-label"><?=$this->transEsc(empty($this->acceptTermsText) ? "accept_request_terms" : $this->acceptTermsText)?></label>
+      <label for="acceptTerms" class="control-label"><?=$this->transEsc(empty($this->acceptTermsText) ? "accept_request_terms_html" : $this->acceptTermsText)?></label>
     </div>
   <? endif; ?>
 
