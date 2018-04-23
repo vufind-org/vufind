@@ -1,6 +1,6 @@
 <?php
 
-namespace IxTheo\Controller;
+namespace TueFind\Controller;
 use Zend\Mail\Address;
 
 class FeedbackController extends \VuFind\Controller\FeedbackController
@@ -32,14 +32,14 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
                 ->get('config');
             $feedback = isset($config->Feedback) ? $config->Feedback : null;
             $site = isset($config->Site) ? $config->Site : null;
-            $recipient_email = isset($site->email)
+            $recipient_email = isset($site->email)                  // use Site email (local overrides)
                 ? $site->email : null;
             $recipient_name = isset($feedback->recipient_name)
                 ? $feedback->recipient_name : 'Your Library';
             $email_subject = isset($feedback->email_subject)
                 ? $feedback->email_subject : 'VuFind Feedback';
-            $sender_email = isset($feedback->sender_email)
-                ? $feedback->sender_email : 'noreply@vufind.org';
+            $sender_email = isset($site->email_from)                // use Site email_from (local_overrides)
+                ? $site->email_from : 'noreply@vufind.org';
             $sender_name = isset($feedback->sender_name)
                 ? $feedback->sender_name : 'VuFind Feedback';
             if ($recipient_email == null) {
