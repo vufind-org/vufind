@@ -88,7 +88,6 @@ $config = [
         'factories' => [
             'alphabrowse' => 'IxTheo\Controller\Factory::getAlphabrowseController',
             'browse' => 'IxTheo\Controller\Factory::getBrowseController',
-            'feedback' => 'IxTheo\Controller\Factory::getFeedbackController',
             'KeywordChainSearch' => 'IxTheo\Controller\Factory::getKeywordChainSearchController',
             'MyResearch' => 'IxTheo\Controller\Factory::getMyResearchController',
             'record' => 'IxTheo\Controller\Factory::getRecordController',
