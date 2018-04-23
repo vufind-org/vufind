@@ -19,6 +19,7 @@ return [
         'tuefind.js',
         'vendor/jquery-ui.min.js',
         'vendor/jquery.keyboard.js',
-        'vendor/keyboard-layouts-greywyvern.js'
+        'vendor/keyboard-layouts-greywyvern.js',
+        'virtualkeyboard.js'
     ],
 ];
