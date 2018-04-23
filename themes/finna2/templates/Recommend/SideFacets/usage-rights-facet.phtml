@@ -19,6 +19,8 @@
     <? if ($allowExclude): ?>
       <div class="list-group-item facet facet<?=$thisFacet['operator'] ?> excludable">
         <a class="exclude" href="<?=$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times" aria-hidden="true"></i></a>
+    <? else: ?>
+      <div class="list-group-item facet">
     <? endif; ?>
     <span class="badge">
       <?=$this->localizedNumber($thisFacet['count'])?>
@@ -33,6 +35,7 @@
       </div>
     <? else: ?>
       </a>
+      </div>
     <? endif; ?>
   <? endif; ?>
   <? $usageOptions[$thisFacet['value']]['html'] = ob_get_contents(); ?>
