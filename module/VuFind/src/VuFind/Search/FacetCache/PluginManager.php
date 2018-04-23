@@ -45,6 +45,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'solr' => 'VuFind\Search\Solr\FacetCache',
+        'summon' => 'VuFind\Search\Summon\FacetCache',
     ];
 
     /**
@@ -54,6 +55,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         'VuFind\Search\Solr\FacetCache' => 'VuFind\Search\Solr\FacetCacheFactory',
+        'VuFind\Search\Summon\FacetCache' =>
+            'VuFind\Search\Summon\FacetCacheFactory',
     ];
 
     /**

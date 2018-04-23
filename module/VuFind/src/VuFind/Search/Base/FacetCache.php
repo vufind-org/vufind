@@ -28,6 +28,7 @@
 namespace VuFind\Search\Base;
 
 use VuFind\Cache\Manager as CacheManager;
+use Zend\Config\Config;
 
 /**
  * Solr FacetCache Factory.
@@ -62,6 +63,13 @@ abstract class FacetCache
     protected $results;
 
     /**
+     * Configuration
+     *
+     * @var Config
+     */
+    protected $config = null;
+
+    /**
      * Constructor
      *
      * @param Results      $r        Search results object
@@ -76,8 +84,7 @@ abstract class FacetCache
     }
 
     /**
-     * Return a Search Results object containing advanced facet information.  This
-     * data may come from the cache.
+     * Return facet information. This data may come from the cache.
      *
      * @param string $context Context of list to retrieve ('Advanced' or 'HomePage')
      *
@@ -93,5 +100,17 @@ abstract class FacetCache
     public function getResults()
     {
         return $this->results;
+    }
+
+    /**
+     * Set a configuration object.
+     *
+     * @param Config $config Configuration
+     *
+     * @return void
+     */
+    public function setConfig(Config $config)
+    {
+        $this->config = $config;
     }
 }
