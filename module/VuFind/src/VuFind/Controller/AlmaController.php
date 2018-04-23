@@ -48,10 +48,13 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
     protected $httpResponse;
     protected $httpHeaders;
     
+    protected $configAlma;
+    
     public function __construct(ServiceLocatorInterface $sm) {
         parent::__construct($sm);
         $this->httpResponse = new HttpResponse();
         $this->httpHeaders = $this->httpResponse->getHeaders();
+        $this->configAlma = $sm->get('VuFind\Config\PluginManager')->get('Alma');
     }
     
     public function webhookAction() {
@@ -82,6 +85,37 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
     }
     
     protected function webhookUser($requestBodyJson) {
+        
+        // Get method from webhook (e. g. "create" for "new user")
+        $method = (isset($requestBodyJson->webhook_user->method)) ? $requestBodyJson->webhook_user->method : null;
+        
+        // Get primary ID
+        $primaryId = (isset($requestBodyJson->webhook_user->user->primary_id)) ? $requestBodyJson->webhook_user->user->primary_id : null;
+        
+        
+        if ($method == 'CREATE' || $method == 'UPDATE') {
+            // Get username (could also be the barcode)
+            $username = null;
+            $userIdentifiers = (isset($requestBodyJson->webhook_user->user->user_identifier)) ? $requestBodyJson->webhook_user->user->user_identifier : null;
+            $idTypeConfig = ($this->configAlma->NewUser->idType != null && isset($this->configAlma->NewUser->idType)) ? $this->configAlma->NewUser->idType : null;
+            
+            if ($idTypeConfig == null) {
+                return $this->createJsonResponse('The setting "NewUser" -> "idType" is empty in Alma.ini.', 500);
+            }
+            
+            foreach ($userIdentifiers as $userIdentifier) {
+                $idTypeHook = (isset($userIdentifier->id_type->value)) ? $userIdentifier->id_type->value : null;
+                if ($idTypeHook != null && $idTypeHook == $idTypeConfig && $username == null) {
+                    $username = (isset($userIdentifier->value)) ? $userIdentifier->value : null;
+                }
+            }
+            
+            // TEST
+            return $this->createJsonResponse('Test Alma Webhook - USER CREATE. $idTypeConfig: '.$idTypeConfig, 200);
+        }
+        
+        
+        /*
         $returnArray = [];
         $returnArray[] = 'Test Alma Webhook - USER.';        
         $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
@@ -90,6 +124,7 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
         $this->httpResponse->setStatusCode(200); // Set HTTP status code to Bad Request (400)
         $this->httpResponse->setContent($returnJson);
         return $this->httpResponse;
+        */
     }
     
     protected function webhookNotification() {
@@ -115,12 +150,40 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
     }
     
     protected function webhookChallenge() {
-        $returnArray = [];
-        $returnArray[] = 'Test Alma Webhook - CHALLENGE.';
-        $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
         
+        // Get challenge string from the get parameter that Alma sends us. We need to return this string in the return message.
+        $secret = $this->params()->fromQuery('challenge');
+        
+        // Create the return array
+        $returnArray = [];
+        
+        if ($secret != null && !empty(trim($secret)) && isset($secret)) {
+            $returnArray['challenge'] = $secret;
+            // Set HTTP status code to "OK" (200)
+            $this->httpResponse->setStatusCode(200);
+        } else {
+            $returnArray['error'] = 'GET parameter "challenge" is empty, not set or not available when receiving webhook challenge from Alma.';
+            // Set HTTP status code to "Bad Request" (400)
+            $this->httpResponse->setStatusCode(400);
+        }
+        
+        // Remove null from array
+        $returnArray = array_filter($returnArray);
+        
+        // Create return JSON value and set it to the response
+        $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
         $this->httpHeaders->addHeaderLine('Content-type', 'application/json');
-        $this->httpResponse->setStatusCode(200); // Set HTTP status code to Bad Request (400)
+        $this->httpResponse->setContent($returnJson);
+
+        return $this->httpResponse;
+    }
+    
+    protected function createJsonResponse($text, $httpStatusCode) {
+        $returnArray = [];
+        $returnArray[] = $text;
+        $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
+        $this->httpHeaders->addHeaderLine('Content-type', 'application/json');
+        $this->httpResponse->setStatusCode($httpStatusCode);
         $this->httpResponse->setContent($returnJson);
         return $this->httpResponse;
     }
