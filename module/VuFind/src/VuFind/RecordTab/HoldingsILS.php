@@ -27,6 +27,8 @@
  */
 namespace VuFind\RecordTab;
 
+use VuFind\ILS\Connection;
+
 /**
  * Holdings (ILS) tab
  *
@@ -41,19 +43,28 @@ class HoldingsILS extends AbstractBase
     /**
      * ILS connection (or null if not applicable)
      *
-     * @param \VuFind\ILS\Connection
+     * @param Connection
      */
     protected $catalog;
 
     /**
+     * Name of template to use for rendering holdings.
+     *
+     * @param string
+     */
+    protected $template;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\ILS\Connection|bool $catalog ILS connection to use to check
+     * @param \VuFind\ILS\Connection|bool $catalog  ILS connection to use to check
      * for holdings before displaying the tab; set to null if no check is needed
+     * @param string                      $template Holdings template to use
      */
-    public function __construct(\VuFind\ILS\Connection $catalog = null)
+    public function __construct(Connection $catalog = null, $template = null)
     {
         $this->catalog = $catalog;
+        $this->template = $template ?? 'standard';
     }
 
     /**
@@ -97,5 +108,15 @@ class HoldingsILS extends AbstractBase
             return $this->catalog->hasHoldings($this->driver->getUniqueID());
         }
         return true;
+    }
+
+    /**
+     * Get name of template for rendering holdings.
+     *
+     * @return string
+     */
+    public function getTemplate()
+    {
+        return $this->template;
     }
 }
