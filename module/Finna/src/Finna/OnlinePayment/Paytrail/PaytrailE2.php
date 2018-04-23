@@ -117,6 +117,20 @@ class PaytrailE2
     protected $merchantDescription = '';
 
     /**
+     * Payer's first name
+     *
+     * @var string
+     */
+    protected $firstName = '';
+
+    /**
+     * Payer's last name
+     *
+     * @var string
+     */
+    protected $lastName = '';
+
+    /**
      * Total amount to pay in cents. Mutually exclusive with $products.
      *
      * @var int
@@ -220,6 +234,40 @@ class PaytrailE2
     }
 
     /**
+     * Set payer's first name
+     *
+     * @param string $name First name
+     *
+     * @return void
+     */
+    public function setFirstName($name)
+    {
+        $this->firstName = mb_substr(
+            preg_replace(
+                '/[^\pL-0-9- "\',()\[\]{}*\/+\-_,.:&!?@#$£=*;~]+/u', ' ', $name
+            ),
+            0, 64, 'UTF-8'
+        );
+    }
+
+    /**
+     * Set payer's last name
+     *
+     * @param string $name Last name
+     *
+     * @return void
+     */
+    public function setLastName($name)
+    {
+        $this->lastName = mb_substr(
+            preg_replace(
+                '/[^\pL-0-9- "\',()\[\]{}*\/+\-_,.:&!?@#$£=*;~]+/u', ' ', $name
+            ),
+            0, 64, 'UTF-8'
+        );
+    }
+
+    /**
      * Set total amount to pay
      *
      * @param int $amount Amount in cents
@@ -302,6 +350,14 @@ class PaytrailE2
 
         if (!empty($this->merchantDescription)) {
             $request['MSG_UI_MERCHANT_PANEL'] = $this->merchantDescription;
+        }
+
+        if (!empty($this->firstName)) {
+            $request['PAYER_PERSON_FIRSTNAME'] = $this->firstName;
+        }
+
+        if (!empty($this->lastName)) {
+            $request['PAYER_PERSON_LASTNAME'] = $this->lastName;
         }
 
         if (null !== $this->totalAmount) {

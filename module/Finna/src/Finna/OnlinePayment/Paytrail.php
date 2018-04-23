@@ -126,6 +126,28 @@ class Paytrail extends BaseHandler
             $module->setMerchantDescription($description);
         }
 
+        $lastname = trim($user->lastname);
+        if (!empty($user->firstname)) {
+            $module->setFirstName(trim($user->firstname));
+        } else {
+            // We don't have both names separately, try to extract first name from
+            // last name.
+            if (strpos($lastname, ',') > 0) {
+                // Lastname, Firstname
+                list($lastname, $firstname) = explode(',', $lastname, 2);
+            } else {
+                // First Middle Last
+                if (preg_match('/^(.*) (.*?)$/', $lastname, $matches)) {
+                    $firstname = $matches[1];
+                    $lastname = $matches[2];
+                }
+            }
+            $lastname = trim($lastname);
+            $firstname = trim($firstname);
+            $module->setFirstName(empty($firstname) ? 'ei tietoa' : $firstname);
+        }
+        $module->setLastName(empty($lastname) ? 'ei tietoa' : $lastname);
+
         if (!isset($this->config->productCode)
             && !isset($this->config->transactionFeeProductCode)
             && !isset($this->config->productCodeMappings)
