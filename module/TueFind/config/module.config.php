@@ -4,6 +4,7 @@ namespace TueFind\Module\Config;
 $config = [
     'controllers' => [
         'factories' => [
+            'feedback' => 'TueFind\Controller\Factory::getFeedbackController',
             'pdaproxy' => 'TueFind\Controller\Factory::getPDAProxyController',
             'proxy' => 'TueFind\Controller\Factory::getProxyController',
         ],
