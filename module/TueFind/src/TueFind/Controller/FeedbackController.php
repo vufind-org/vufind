@@ -39,7 +39,7 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             $email_subject = isset($feedback->email_subject)
                 ? $feedback->email_subject : 'VuFind Feedback';
             $sender_email = isset($site->email_from)                // use Site email_from (local_overrides)
-                ? $feedback->email_from : 'noreply@vufind.org';
+                ? $site->email_from : 'noreply@vufind.org';
             $sender_name = isset($feedback->sender_name)
                 ? $feedback->sender_name : 'VuFind Feedback';
             if ($recipient_email == null) {
