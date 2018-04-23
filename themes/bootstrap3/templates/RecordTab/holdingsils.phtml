@@ -118,10 +118,10 @@
 
 <?php $history = $this->driver->getRealTimeHistory(); ?>
 <?php if (is_array($history) && !empty($history)): ?>
-<h3><?=$this->transEsc("Most Recent Received Issues")?></h3>
-<table class="table table-striped">
-  <?php foreach ($history as $row): ?>
-    <tr><td><?=$this->escapeHtml($row['issue'])?></td></tr>
-  <?php endforeach; ?>
-</table>
+  <h3><?=$this->transEsc("Most Recent Received Issues")?></h3>
+  <table class="table table-striped">
+    <?php foreach ($history as $row): ?>
+      <tr><td><?=$this->escapeHtml($row['issue'])?></td></tr>
+    <?php endforeach; ?>
+  </table>
 <?php endif; ?>
