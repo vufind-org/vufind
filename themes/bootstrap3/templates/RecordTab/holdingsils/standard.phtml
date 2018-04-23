@@ -1,4 +1,4 @@
-<?php if (isset($holding['barcode']) && $holding['barcode'] != ""): ?>
+<?php if (strlen($holding['barcode'] ?? '') > 0): ?>
   <?php
     $check = $holding['check'] ?? false;
     $checkStorageRetrievalRequest = $holding['checkStorageRetrievalRequest'] ?? false;
