@@ -351,6 +351,61 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
+     * Initialize facet settings for the specified configuration sections.
+     *
+     * @param string $facetList     Config section containing fields to activate
+     * @param string $facetSettings Config section containing related settings
+     * @param string $cfgFile       Name of configuration to load
+     *
+     * @return bool                 True if facets set, false if no settings found
+     */
+    protected function initFacetList($facetList, $facetSettings, $cfgFile = 'facets')
+    {
+        $config = $this->configLoader->get($cfgFile);
+        // Special case -- when most settings are in Results_Settings, the limits
+        // can be found in Facet_Settings.
+        $limitSection = ($facetSettings === 'Results_Settings')
+            ? 'Facet_Settings' : $facetSettings;
+        $this->initFacetLimitsFromConfig($config->$limitSection ?? null);
+        return parent::initFacetList($facetList, $facetSettings, $cfgFile);
+    }
+
+    /**
+     * Initialize facet settings for the advanced search screen.
+     *
+     * @return void
+     */
+    public function initAdvancedFacets()
+    {
+        $this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings', 'Summon');
+    }
+
+    /**
+     * Initialize facet settings for the home page.
+     *
+     * @return void
+     */
+    public function initHomePageFacets()
+    {
+        // Load Advanced settings if HomePage settings are missing (legacy support):
+        $homeSuccess = $this
+            ->initFacetList('HomePage_Facets', 'HomePage_Facet_Settings', 'Summon');
+        if (!$homeSuccess) {
+            $this->initAdvancedFacets();
+        }
+    }
+
+    /**
+     * Initialize facet settings for the standard search screen.
+     *
+     * @return void
+     */
+    public function initBasicFacets()
+    {
+        $this->initFacetList('Facets', 'Results_Settings', 'Summon');
+    }
+
+    /**
      * Load all available facet settings.  This is mainly useful for showing
      * appropriate labels when an existing search has multiple filters associated
      * with it.
@@ -363,8 +418,17 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function activateAllFacets($preferredSection = false)
     {
-        $this->initFacetList('Facets', 'Results_Settings', 'Summon');
-        $this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings', 'Summon');
+        // Based on preference, change the order of initialization to make sure
+        // that preferred facet labels come in last.
+        if ($preferredSection == 'Advanced') {
+            $this->initHomePageFacets();
+            $this->initBasicFacets();
+            $this->initAdvancedFacets();
+        } else {
+            $this->initHomePageFacets();
+            $this->initAdvancedFacets();
+            $this->initBasicFacets();
+        }
         $this->initCheckboxFacets('CheckboxFacets', 'Summon');
     }
 }
