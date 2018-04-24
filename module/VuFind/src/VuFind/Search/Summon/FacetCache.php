@@ -59,7 +59,7 @@ class FacetCache extends \VuFind\Search\Base\FacetCache
                     explode(',', $this->config->Advanced_Facet_Settings->orFacets)
                 ) : [];
             foreach ($facetsToShow as $facet => $label) {
-                $useOr = (($orFields[0] ?? '') == '*') 
+                $useOr = (($orFields[0] ?? '') == '*')
                     || in_array($facet, $orFields);
                 $params->addFacet(
                     $facet . ',or,1,' . $limit, $label, $useOr

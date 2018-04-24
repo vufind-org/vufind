@@ -76,9 +76,8 @@ class FacetCacheFactory implements FactoryInterface
         $results = $this->getResults($container);
         $cacheManager = $container->get('VuFind\Cache\Manager');
         $language = $container->get('Zend\Mvc\I18n\Translator')->getLocale();
-        $obj = new $requestedName($results, $cacheManager, $language);
         $config = $container->get('VuFind\Config\PluginManager')->get('Summon');
-        $obj->setConfig($config);
+        $obj = new $requestedName($results, $cacheManager, $language, $config);
         return $obj;
     }
 }

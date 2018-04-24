@@ -76,11 +76,13 @@ abstract class FacetCache
      * @param CacheManager $cm       Cache manager
      * @param string       $language Active UI language
      */
-    public function __construct(Results $r, CacheManager $cm, $language = 'en')
-    {
+    public function __construct(Results $r, CacheManager $cm, $language = 'en',
+        Config $config = null
+    ) {
         $this->results = $r;
         $this->cacheManager = $cm;
         $this->language = $language;
+        $this->config = $config;
     }
 
     /**
@@ -100,17 +102,5 @@ abstract class FacetCache
     public function getResults()
     {
         return $this->results;
-    }
-
-    /**
-     * Set a configuration object.
-     *
-     * @param Config $config Configuration
-     *
-     * @return void
-     */
-    public function setConfig(Config $config)
-    {
-        $this->config = $config;
     }
 }
