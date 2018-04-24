@@ -28,7 +28,6 @@
 namespace VuFind\Search\Base;
 
 use VuFind\Cache\Manager as CacheManager;
-use Zend\Config\Config;
 
 /**
  * Solr FacetCache Factory.
