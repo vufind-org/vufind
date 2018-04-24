@@ -61,7 +61,7 @@ trait FacetLimitTrait
      *
      * @return void
      */
-    protected function initFacetLimitsFromConfig(Config $config)
+    protected function initFacetLimitsFromConfig(Config $config = null)
     {
         if (is_numeric($config->facet_limit ?? null)) {
             $this->setFacetLimit($config->facet_limit);
