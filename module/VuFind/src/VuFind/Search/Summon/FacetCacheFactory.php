@@ -41,7 +41,7 @@ use Interop\Container\ContainerInterface;
 class FacetCacheFactory extends \VuFind\Search\Base\FacetCacheFactory
 {
     /**
-     * Create a results object with hidden filters pre-populated.
+     * Create a results object.
      *
      * @param ContainerInterface $container Service manager
      *
