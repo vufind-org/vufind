@@ -1,10 +1,8 @@
 <?php
 return [
-    'extends' => 'tuefind',
-    'css' => [
-        'compiled.css',
-    ],
+    'extends' => 'tuefind2',
+    'favicon' => 'ixtheo-favicon.ico',
     'js' => [
         'scripts.js',
-    ]
+    ],
 ];

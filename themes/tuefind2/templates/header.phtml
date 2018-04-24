@@ -1,0 +1,138 @@
+<!--<div class="container-fluid bg-white">-->
+    <div class="row">
+        <div class="col-12">
+            <? $account = $this->auth()->getManager(); ?>
+
+            <!-- Begin section Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light justify-content-between">
+
+                <!-- Logo -->
+                <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>"><img src="<?=$this->imageLink('logo.png') ?>" class="logo-img " /></a>
+
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="sr-only">Toggle navigation</span>
+                    <i class="fa fa-bars" aria-hidden="true"></i>
+                </button>
+
+                <? if (!isset($this->layout()->renderingError)): ?>
+                <div class="collapse navbar-collapse" id="header-collapse">
+                    <nav>
+                        <ul class="nav navbar-nav navbar-right flip ml-auto">
+
+                            <!-- Images for supporters   -->
+
+                            <!-- Begin section Main Menu -->
+                            <!-- Home -->
+                            <li class="nav-item active">
+                                <a class="nav-link" href="<?=$this->url('home')?>" >
+                                    <i class="fa fa-home" aria-hidden="true"> </i>
+                                    <?=$this->transEsc('Home');?>
+                                </a>
+                            </li>
+
+                            <!-- About -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-toggle="dropdown"  href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-info-circle"> </i>
+                                    <?=$this->transEsc('About');?> <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="/Impressum"><?=$this->transEsc('Impressum');?></a></li>
+                                    <li><a class="dropdown-item" href="/press"><?=$this->transEsc('Press');?></a></li>
+                                    <li><a class="dropdown-item" href="/team"><?=$this->transEsc('Team');?></a></li>
+                                    <li><a class="dropdown-item" href="/supporters"><?=$this->transEsc('Supporters');?></a></li>
+                                </ul>
+                            </li>
+
+                            <!-- Begin Help dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" href="#" role="button" aria-haspopup="true"
+                                   aria-expanded="false">
+                                    <i class="fa fa-question-circle"> </i> Help<span class="caret"></span></a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="/Typography"> Typography</a></li>
+                                    <? if ($this->feedback()->tabEnabled()): ?>
+                                        <li><a id="feedbackLink" class="modal-link" href="<?= $this->url('feedback-home') ?>
+                                            <i class="fa fa-envelope"></i> <?= $this->transEsc("Feedback") ?></a></li>
+                                    <? endif; ?>
+
+                                    <? $cart = $this->cart();
+                                    if ($cart->isActive()): ?>
+                                        <li id="cartSummary" class="nav-item">
+                                            <a id="cartItems" class="nav-link" title="<?= $this->transEsc('View Book Bag') ?>"
+                                               href="<?= $this->url('cart-home') ?>"><i class="fa fa-suitcase"></i>
+                                                <strong><?= count($cart->getItems()) ?></strong> <?= $this->transEsc('items') ?><?= $cart->isFull() ? ' (' . $this->transEsc('bookbag_full') . ')' : '' ?>
+                                            </a>
+                                        </li>
+                                    <? endif; ?>
+                                </ul>
+                            </li>
+                            <!-- End Help dropdown -->
+
+                            <!-- Begin section user account -->
+                            <? if (is_object($account) && $account->loginEnabled()): //FIXME: hide login/logout if unavailable ?>
+                                <li class="nav-item logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
+                                    <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>" class="nav-link" title="<?=$this->transEsc("Your Account")?>"><i class="fa fa-home"></i> <?=$this->transEsc("Your Account")?></a>
+                                </li>
+                                <li class="nav-item logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
+                                    <a href="<?=$this->url('myresearch-logout')?>" class="nav-link" title="<?=$this->transEsc("Log Out")?>"><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></a>
+                                </li>
+                                <li id="nav-item loginOptions"<? if($account->isLoggedIn()): ?> class="hidden"<? endif ?>>
+                                    <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+                                        <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Institutional Login")?></a>
+                                    <? else: ?>
+                                        <a href="<?=$this->url('myresearch-userlogin')?>" class="nav-link" data-lightbox title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a>
+                                    <? endif; ?>
+                                </li>
+                            <? endif; ?>
+                            <!-- End section user account -->
+
+                            <!-- Begin section language   -->
+                            <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
+                            <li class="nav-item dropdown">
+                                <form method="post" name="langForm" id="langForm">
+                                    <input type="hidden" name="mylang"/>
+                                </form>
+                                <a href="#" class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-globe" aria-hidden="true"></i>
+                                    <?=$this->transEsc("Language")?> <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" >
+                                    <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+                                        <li>
+                                            <a class="dropdown-item <? if ($this->layout()->userLang == $langCode) {
+                                            echo 'active'; } ?>" href="#" onClick="document.langForm.mylang.value='<?=$langCode?>';document.langForm.submit()">
+                                            <?=$this->displayLanguageOption($langName)?>
+                                            </a>
+                                        </li>
+                                    <? endforeach; ?>
+                                </ul>
+                            </li>
+                            <? endif; ?>
+                            <!-- End section language  -->
+
+                        <!-- End section Main Menu -->
+                        </ul>
+                    </nav>
+                </div>
+            <? endif; ?>
+            <!-- End section Navbar -->
+        </nav>
+    </div><!-- close col's -->
+</div><!-- close row -->
+<!--</div>--><!-- close container -->
+
+<!--  Begin seachbox -->
+<?=$this->layout()->searchbox ?>
+<!--  End seachbox -->
+
+<!-- Begin header image -->
+<? //Set up the header image. It comes up instead of the search box.
+   //Accepts:
+   //1. false; nothing will be displayed, this is default.
+   //2. A string; the header image in the string will be displayed. JavaScript will not applied.
+if(isset($this->layout()->headerImage)) {
+    echo '<img src="'.$this->imageLink($this->layout()->headerImage).'" class="img-fluid header-image" alt="header image"/>';
+}
+?>
+<!-- End header image -->
