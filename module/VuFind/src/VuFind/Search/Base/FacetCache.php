@@ -75,6 +75,7 @@ abstract class FacetCache
      * @param Results      $r        Search results object
      * @param CacheManager $cm       Cache manager
      * @param string       $language Active UI language
+     * @param Config       $config   Configuration object (optional)
      */
     public function __construct(Results $r, CacheManager $cm, $language = 'en',
         Config $config = null
