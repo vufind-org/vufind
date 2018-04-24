@@ -234,12 +234,10 @@ class Params extends \VuFind\Search\Base\Params
             // if not, override them with defaults.
             $parts = explode(',', $facet);
             $facetName = $parts[0];
-            $defaultFacetLimit = $this->facetLimitByField->$facetName
-                ?? $this->facetLimit;
             $defaultMode = ($this->getFacetOperator($facet) == 'OR') ? 'or' : 'and';
             $facetMode = $parts[1] ?? $defaultMode;
             $facetPage = $parts[2] ?? 1;
-            $facetLimit = $parts[3] ?? $defaultFacetLimit;
+            $facetLimit = $parts[3] ?? $this->getFacetLimitForField($facetName);
             $facetParams = "{$facetMode},{$facetPage},{$facetLimit}";
             $finalFacets[] = "{$facetName},{$facetParams}";
         }

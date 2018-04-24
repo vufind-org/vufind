@@ -94,4 +94,16 @@ trait FacetLimitTrait
     {
         $this->facetLimitByField = $new;
     }
+
+    /**
+     * Get the facet limit for the specified field.
+     *
+     * @param string $field Field to look up
+     *
+     * @return int
+     */
+    protected function getFacetLimitForField($field)
+    {
+        return $this->facetLimitByField[$field] ?? $this->facetLimit;
+    }
 }
