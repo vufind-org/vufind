@@ -84,7 +84,6 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Return rendered text (or null if nothing to render).
      *
-     * @param string       $method  Rendering method to call
      * @param RecordDriver $driver  Record driver object
      * @param string       $field   Field being rendered (i.e. default label)
      * @param mixed        $data    Data to render
@@ -92,9 +91,21 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @return string
      */
-    protected function render($method, $driver, $field, $data, $options)
+    protected function render($driver, $field, $data, $options)
     {
-        // If the value evaluates false, we should double-check our zero handling.
+        // Check whether the data is worth rendering.
+        if (!$this->allowValue($data, $options)) {
+            return null;
+        }
+
+        // Determine the rendering method to use, and bail out if it's illegal:
+        $method = empty($options['renderType'])
+            ? 'renderSimple' : 'render' . $options['renderType'];
+        if (!is_callable([$this, $method])) {
+            return null;
+        }
+
+        // If the value evaluates false, we should double-check our zero handling:
         $value = $this->$method($driver, $data, $options);
         if (!$this->allowValue($value, $options)) {
             return null;
@@ -118,29 +129,17 @@ class RecordDataFormatter extends AbstractHelper
      */
     public function getData(RecordDriver $driver, array $spec)
     {
-        $result = [];
-
         // Sort the spec into order by position:
         uasort($spec, [$this, 'specSortCallback']);
 
         // Apply the spec:
+        $result = [];
         foreach ($spec as $field => $current) {
-            // Extract the relevant data from the driver.
+            // Extract the relevant data from the driver and try to render it.
             $data = $this->extractData($driver, $current);
-            if ($this->allowValue($data, $current)) {
-                // Determine the rendering method to use with the second element
-                // of the current spec.
-                $renderMethod = empty($current['renderType'])
-                    ? 'renderSimple' : 'render' . $current['renderType'];
-
-                // Add the rendered data to the return value if it is non-empty:
-                if (is_callable([$this, $renderMethod])) {
-                    $value = $this
-                        ->render($renderMethod, $driver, $field, $data, $current);
-                    if ($value !== null) {
-                        $result[] = $value;
-                    }
-                }
+            $value = $this->render($driver, $field, $data, $current);
+            if ($value !== null) {
+                $result[] = $value;
             }
         }
         return $result;
