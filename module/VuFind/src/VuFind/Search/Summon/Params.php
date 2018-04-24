@@ -377,7 +377,15 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function initAdvancedFacets()
     {
-        $this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings', 'Summon');
+        $success = $this
+            ->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings', 'Summon');
+        // If no configuration was found, set up defaults instead:
+        if (!$success) {
+            $defaults = ['Language' => 'Language', 'ContentType' => 'Format'];
+            foreach ($defaults as $key => $value) {
+                $this->addFacet($key, $value);
+            }
+        }
     }
 
     /**
