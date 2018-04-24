@@ -63,27 +63,68 @@ abstract class FacetCache
     protected $results;
 
     /**
-     * Configuration
-     *
-     * @var Config
-     */
-    protected $config = null;
-
-    /**
      * Constructor
      *
      * @param Results      $r        Search results object
      * @param CacheManager $cm       Cache manager
      * @param string       $language Active UI language
-     * @param Config       $config   Configuration object (optional)
      */
-    public function __construct(Results $r, CacheManager $cm, $language = 'en',
-        Config $config = null
-    ) {
+    public function __construct(Results $r, CacheManager $cm, $language = 'en')
+    {
         $this->results = $r;
         $this->cacheManager = $cm;
         $this->language = $language;
-        $this->config = $config;
+    }
+
+    /**
+     * Get the namespace to use for caching facets.
+     *
+     * @return string
+     */
+    abstract protected function getCacheNamespace();
+
+    /**
+     * Get the cache key for the provided method.
+     *
+     * @param string $initMethod Name of params method to use to request facets
+     *
+     * @return string
+     */
+    protected function getCacheKey($initMethod)
+    {
+        return $initMethod . '-' . $this->language;
+    }
+
+    /**
+     * Perform the actual facet lookup.
+     *
+     * @param string $initMethod Name of params method to use to request facets
+     *
+     * @return array
+     */
+    protected function getFacetResults($initMethod)
+    {
+        // Check if we have facet results cached, and build them if we don't.
+        $cache = $this->cacheManager->getCache('object', $this->getCacheNamespace());
+        $cacheKey = $this->getCacheKey($initMethod);
+        if (!($list = $cache->getItem($cacheKey))) {
+            $params = $this->results->getParams();
+            $params->$initMethod();
+
+            // Avoid a backend request if there are no facets configured by the given
+            // init method.
+            if (!empty($params->getFacetConfig())) {
+                // We only care about facet lists, so don't get any results (this
+                // improves performance):
+                $params->setLimit(0);
+                $list = $this->results->getFacetList();
+            } else {
+                $list = [];
+            }
+            $cache->setItem($cacheKey, $list);
+        }
+
+        return $list;
     }
 
     /**
@@ -93,7 +134,14 @@ abstract class FacetCache
      *
      * @return array
      */
-    abstract public function getList($context = 'Advanced');
+    public function getList($context = 'Advanced')
+    {
+        if (!in_array($context, ['Advanced', 'HomePage'])) {
+            throw new \Exception('Invalid context: ' . $context);
+        }
+        // For now, all contexts are handled the same way.
+        return $this->getFacetResults('init' . $context . 'Facets');
+    }
 
     /**
      * Get results object used to retrieve facets.

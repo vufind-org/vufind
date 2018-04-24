@@ -28,7 +28,6 @@
 namespace VuFind\Search\Summon;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Summon FacetCache Factory.
@@ -39,7 +38,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class FacetCacheFactory implements FactoryInterface
+class FacetCacheFactory extends \VuFind\Search\Base\FacetCacheFactory
 {
     /**
      * Create a results object with hidden filters pre-populated.
@@ -51,33 +50,5 @@ class FacetCacheFactory implements FactoryInterface
     protected function getResults(ContainerInterface $container)
     {
         return $container->get('VuFind\Search\Results\PluginManager')->get('Summon');
-    }
-
-    /**
-     * Create an object
-     *
-     * @param ContainerInterface $container     Service manager
-     * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
-     *
-     * @return object
-     *
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
-     * @throws ContainerException if any other error occurs
-     */
-    public function __invoke(ContainerInterface $container, $requestedName,
-        array $options = null
-    ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
-        }
-        $results = $this->getResults($container);
-        $cacheManager = $container->get('VuFind\Cache\Manager');
-        $language = $container->get('Zend\Mvc\I18n\Translator')->getLocale();
-        $config = $container->get('VuFind\Config\PluginManager')->get('Summon');
-        $obj = new $requestedName($results, $cacheManager, $language, $config);
-        return $obj;
     }
 }

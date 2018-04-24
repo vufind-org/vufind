@@ -381,6 +381,21 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
+     * Initialize facet settings for the home page.
+     *
+     * @return void
+     */
+    public function initHomePageFacets()
+    {
+        // Load Advanced settings if HomePage settings are missing (legacy support):
+        $homeSuccess = $this
+            ->initFacetList('HomePage_Facets', 'HomePage_Facet_Settings', 'Summon');
+        if (!$homeSuccess) {
+            $this->initAdvancedFacets();
+        }
+    }
+
+    /**
      * Initialize facet settings for the standard search screen.
      *
      * @return void
@@ -406,9 +421,11 @@ class Params extends \VuFind\Search\Base\Params
         // Based on preference, change the order of initialization to make sure
         // that preferred facet labels come in last.
         if ($preferredSection == 'Advanced') {
+            $this->initHomePageFacets();
             $this->initBasicFacets();
             $this->initAdvancedFacets();
         } else {
+            $this->initHomePageFacets();
             $this->initAdvancedFacets();
             $this->initBasicFacets();
         }

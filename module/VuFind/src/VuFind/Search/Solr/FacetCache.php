@@ -39,50 +39,26 @@ namespace VuFind\Search\Solr;
 class FacetCache extends \VuFind\Search\Base\FacetCache
 {
     /**
-     * Perform the actual facet lookup.
+     * Get the namespace to use for caching facets.
      *
-     * @param string $initMethod Name of params method to use to request facets
-     *
-     * @return array
+     * @return string
      */
-    protected function getFacetResults($initMethod)
+    protected function getCacheNamespace()
     {
-        // Check if we have facet results cached, and build them if we don't.
-        $cache = $this->cacheManager->getCache('object', 'solr-facets');
-        $params = $this->results->getParams();
-        $hiddenFiltersHash = md5(json_encode($params->getHiddenFilters()));
-        $cacheName = "{$initMethod}-{$hiddenFiltersHash}-{$this->language}";
-        if (!($list = $cache->getItem($cacheName))) {
-            $params->$initMethod();
-
-            // Avoid a backend request if there are no facets configured by the given
-            // init method.
-            if (!empty($params->getFacetConfig())) {
-                // We only care about facet lists, so don't get any results (this
-                // improves performance):
-                $params->setLimit(0);
-                $list = $this->results->getFacetList();
-            } else {
-                $list = [];
-            }
-            $cache->setItem($cacheName, $list);
-        }
-
-        return $list;
+        return 'solr-facets';
     }
 
     /**
-     * Return facet information. This data may come from the cache.
+     * Get the cache key for the provided method.
      *
-     * @param string $context Context of list to retrieve ('Advanced' or 'HomePage')
+     * @param string $initMethod Name of params method to use to request facets
      *
-     * @return array
+     * @return string
      */
-    public function getList($context = 'Advanced')
+    protected function getCacheKey($initMethod)
     {
-        if (!in_array($context, ['Advanced', 'HomePage'])) {
-            throw new \Exception('Invalid context: ' . $context);
-        }
-        return $this->getFacetResults('init' . $context . 'Facets');
+        $params = $this->results->getParams();
+        $hiddenFiltersHash = md5(json_encode($params->getHiddenFilters()));
+        return $hiddenFiltersHash . '-' . parent::getCacheKey($initMethod);
     }
 }
