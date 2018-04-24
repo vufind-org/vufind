@@ -89,7 +89,7 @@ class RecordDataFormatter extends AbstractHelper
      * @param mixed        $data    Data to render
      * @param array        $options Rendering options
      *
-     * @return string
+     * @return array
      */
     protected function render($driver, $field, $data, $options)
     {
@@ -111,12 +111,18 @@ class RecordDataFormatter extends AbstractHelper
             return null;
         }
 
+        // Special case: if we received an array rather than a string, we should
+        // return it as-is (it probably came from renderMulti()).
+        if (is_array($value)) {
+            return $value;
+        }
+
         // Allow dynamic label override:
         $label = is_callable($options['labelFunction'] ?? null)
             ? call_user_func($options['labelFunction'], $data, $driver)
             : $field;
         $context = $options['context'] ?? [];
-        return compact('label', 'value', 'context');
+        return [compact('label', 'value', 'context')];
     }
 
     /**
@@ -139,7 +145,7 @@ class RecordDataFormatter extends AbstractHelper
             $data = $this->extractData($driver, $current);
             $value = $this->render($driver, $field, $data, $current);
             if ($value !== null) {
-                $result[] = $value;
+                $result = array_merge($result, $value);
             }
         }
         return $result;
@@ -223,6 +229,38 @@ class RecordDataFormatter extends AbstractHelper
         }
 
         return $data;
+    }
+
+    /**
+     * Render multiple lines for a single set of data.
+     *
+     * @param RecordDriver $driver  Reoord driver object.
+     * @param mixed        $data    Data to render
+     * @param array        $options Rendering options.
+     *
+     * @return array
+     */
+    protected function renderMulti(RecordDriver $driver, $data,
+        array $options
+    ) {
+        // Make sure we have a callback for sorting the $data into groups...
+        $callback = $options['multiFunction'] ?? null;
+        if (!is_callable($callback)) {
+            throw new \Exception('Invalid multiFunction callback.');
+        }
+
+        // Adjust the options array so we can use it to call the standard
+        // render function on the grouped data....
+        $newOptions = ['renderType' => $options['multiRenderType'] ?? 'Simple']
+            + $options;
+
+        // Collect the results:
+        $results = [];
+        foreach ($callback($data, $driver) as $label => $values) {
+            $next = $this->render($driver, $label, $values, $newOptions);
+            $results = array_merge($results, $next);
+        }
+        return $results;
     }
 
     /**
