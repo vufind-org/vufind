@@ -198,7 +198,11 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
     {
         // Get local loans from the database so that we can get more details
         // than available via the API.
-        $transactions = parent::getMyTransactions($patron);
+        // Skip VuFind\ILS\Driver\VoyagerRestful since it's replicated here.
+        $transactions = call_user_func(
+            [get_parent_class(get_parent_class($this)), 'getMyTransactions'],
+            $patron
+        );
 
         // Get remote loans and renewability for local loans via the API
 
@@ -241,7 +245,7 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
                             ) {
                                 $transaction['renewable'] = $renewable;
 
-                                if ($checkHolds) {
+                                if (!$renewable && $checkHolds) {
                                     $itemRes = $this->makeRequest(
                                         ['item' => $transaction['item_id']], []
                                     );
