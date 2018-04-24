@@ -64,6 +64,51 @@ class RecordDataFormatter extends AbstractHelper
     }
 
     /**
+     * Should we allow a value? (Performs zero checking on a value that
+     * evaluates to empty).
+     *
+     * @param mixed $value   Data to check for zero value.
+     * @param array $options Rendering options.
+     *
+     * @return bool
+     */
+    protected function allowValue($value, $options)
+    {
+        if (!empty($value)) {
+            return true;
+        }
+        $allowZero = $options['allowZero'] ?? true;
+        return $allowZero && ($value === 0 || $value === '0');
+    }
+
+    /**
+     * Return rendered text (or null if nothing to render).
+     *
+     * @param string       $method  Rendering method to call
+     * @param RecordDriver $driver  Record driver object
+     * @param string       $field   Field being rendered (i.e. default label)
+     * @param mixed        $data    Data to render
+     * @param array        $options Rendering options
+     *
+     * @return string
+     */
+    protected function render($method, $driver, $field, $data, $options)
+    {
+        // If the value evaluates false, we should double-check our zero handling.
+        $value = $this->$method($driver, $data, $options);
+        if (!$this->allowValue($value, $options)) {
+            return null;
+        }
+
+        // Allow dynamic label override:
+        $label = is_callable($options['labelFunction'] ?? null)
+            ? call_user_func($options['labelFunction'], $data, $driver)
+            : $field;
+        $context = $options['context'] ?? [];
+        return compact('label', 'value', 'context');
+    }
+
+    /**
      * Create formatted key/value data based on a record driver and field spec.
      *
      * @param RecordDriver $driver Record driver object.
@@ -82,8 +127,7 @@ class RecordDataFormatter extends AbstractHelper
         foreach ($spec as $field => $current) {
             // Extract the relevant data from the driver.
             $data = $this->extractData($driver, $current);
-            $allowZero = $current['allowZero'] ?? true;
-            if (!empty($data) || ($allowZero && ($data === 0 || $data === '0'))) {
+            if ($this->allowValue($data, $current)) {
                 // Determine the rendering method to use with the second element
                 // of the current spec.
                 $renderMethod = empty($current['renderType'])
@@ -91,19 +135,11 @@ class RecordDataFormatter extends AbstractHelper
 
                 // Add the rendered data to the return value if it is non-empty:
                 if (is_callable([$this, $renderMethod])) {
-                    $text = $this->$renderMethod($driver, $data, $current);
-                    if (!$text && (!$allowZero || ($text !== 0 && $text !== '0'))) {
-                        continue;
+                    $value = $this
+                        ->render($renderMethod, $driver, $field, $data, $current);
+                    if ($value !== null) {
+                        $result[] = $value;
                     }
-                    // Allow dynamic label override:
-                    $label = is_callable($current['labelFunction'] ?? null)
-                        ? call_user_func($current['labelFunction'], $data, $driver)
-                        : $field;
-                    $result[] = [
-                        'label' => $label,
-                        'value' => $text,
-                        'context' => $current['context'] ?? [],
-                    ];
                 }
             }
         }
