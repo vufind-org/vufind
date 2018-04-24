@@ -248,7 +248,6 @@ class AccountExpirationReminders extends AbstractService
 
         $users = $this->table->select(
             function (Select $select) use ($limitDate) {
-                $select->where->notLike('username', 'deleted:%');
                 $select->where->lessThan('finna_last_login', $limitDate);
                 $select->where->notEqualTo(
                     'finna_last_login',
