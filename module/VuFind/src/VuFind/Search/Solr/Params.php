@@ -40,19 +40,7 @@ use VuFindSearch\ParamBag;
  */
 class Params extends \VuFind\Search\Base\Params
 {
-    /**
-     * Default facet result limit
-     *
-     * @var int
-     */
-    protected $facetLimit = 30;
-
-    /**
-     * Per-field facet result limit
-     *
-     * @var array
-     */
-    protected $facetLimitByField = [];
+    use \VuFind\Search\Params\FacetLimitTrait;
 
     /**
      * Offset for facet results
@@ -111,21 +99,12 @@ class Params extends \VuFind\Search\Base\Params
 
         // Use basic facet limit by default, if set:
         $config = $configLoader->get($options->getFacetsIni());
-        if (isset($config->Results_Settings->facet_limit)
-            && is_numeric($config->Results_Settings->facet_limit)
-        ) {
-            $this->setFacetLimit($config->Results_Settings->facet_limit);
-        }
+        $this->initFacetLimitsFromConfig($config->Results_Settings ?? null);
         if (isset($config->LegacyFields)) {
             $this->facetAliases = $config->LegacyFields->toArray();
         }
         if (isset($config->ExtraFacetLabels)) {
             $this->extraFacetLabels = $config->ExtraFacetLabels->toArray();
-        }
-        if (isset($config->Results_Settings->facet_limit_by_field)) {
-            foreach ($config->Results_Settings->facet_limit_by_field as $k => $v) {
-                $this->facetLimitByField[$k] = $v;
-            }
         }
         if (isset($config->Results_Settings->sorted_by_index)
             && count($config->Results_Settings->sorted_by_index) > 0
@@ -240,30 +219,6 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set Facet Limit
-     *
-     * @param int $l the new limit value
-     *
-     * @return void
-     */
-    public function setFacetLimit($l)
-    {
-        $this->facetLimit = $l;
-    }
-
-    /**
-     * Set Facet Limit by Field
-     *
-     * @param array $new Associative array of $field name => $limit
-     *
-     * @return void
-     */
-    public function setFacetLimitByField(array $new)
-    {
-        $this->facetLimitByField = $new;
-    }
-
-    /**
      * Set Facet Offset
      *
      * @param int $o the new offset value
@@ -322,12 +277,8 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function initFacetList($facetList, $facetSettings, $cfgFile = 'facets')
     {
-        $config = $this->configLoader->get('facets');
-        if (isset($config->$facetSettings->facet_limit)
-            && is_numeric($config->$facetSettings->facet_limit)
-        ) {
-            $this->setFacetLimit($config->$facetSettings->facet_limit);
-        }
+        $config = $this->configLoader->get($cfgFile);
+        $this->initFacetLimitsFromConfig($config->$facetSettings ?? null);
         return parent::initFacetList($facetList, $facetSettings, $cfgFile);
     }
 
