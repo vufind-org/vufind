@@ -102,7 +102,8 @@ class RecordDataFormatter extends AbstractHelper
                     }
                     // Allow dynamic label override:
                     $label = is_callable($current['labelFunction'] ?? null)
-                        ? call_user_func($current['labelFunction'], $data) : $field;
+                        ? call_user_func($current['labelFunction'], $data, $driver)
+                        : $field;
                     $result[$label] = [
                         'value' => $text,
                         'context' => $current['context'] ?? [],
