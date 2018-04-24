@@ -104,7 +104,8 @@ class RecordDataFormatter extends AbstractHelper
                     $label = is_callable($current['labelFunction'] ?? null)
                         ? call_user_func($current['labelFunction'], $data, $driver)
                         : $field;
-                    $result[$label] = [
+                    $result[] = [
+                        'label' => $label,
                         'value' => $text,
                         'context' => $current['context'] ?? [],
                     ];

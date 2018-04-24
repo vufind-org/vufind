@@ -147,6 +147,39 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
     }
 
     /**
+     * Find a result in the results array.
+     *
+     * @param string $needle   Result to look up.
+     * @param array  $haystack Result set.
+     *
+     * @return mixed
+     */
+    protected function findResult($needle, $haystack)
+    {
+        foreach ($haystack as $current) {
+            if ($current['label'] == $needle) {
+                return $current;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Extract labels from a results array.
+     *
+     * @param array $results Results to process.
+     *
+     * @return array
+     */
+    protected function getLabels($results)
+    {
+        $callback = function ($c) {
+            return $c['label'];
+        };
+        return array_map($callback, $results);
+    }
+
+    /**
      * Test citation generation
      *
      * @return void
@@ -178,20 +211,29 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
         $results = $formatter->getData($driver, $spec);
 
         // Check for expected array keys
-        $this->assertEquals(array_keys($expected), array_keys($results));
+        $this->assertEquals(array_keys($expected), $this->getLabels($results));
 
         // Check for expected text (with markup stripped)
         foreach ($expected as $key => $value) {
             $this->assertEquals(
                 $value,
-                trim(preg_replace('/\s+/', ' ', strip_tags($results[$key]['value'])))
+                trim(
+                    preg_replace(
+                        '/\s+/', ' ',
+                        strip_tags($this->findResult($key, $results)['value'])
+                    )
+                )
             );
         }
 
         // Check for exact markup in representative example:
-        $this->assertEquals('Italian<br />Latin', $results['Language']['value']);
+        $this->assertEquals(
+            'Italian<br />Latin', $this->findResult('Language', $results)['value']
+        );
 
         // Check for context in Building:
-        $this->assertEquals(['foo' => 1], $results['Building']['context']);
+        $this->assertEquals(
+            ['foo' => 1], $this->findResult('Building', $results)['context']
+        );
     }
 }
