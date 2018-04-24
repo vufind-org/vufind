@@ -43,7 +43,6 @@
     <field name="is_probably_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_subscribable" type="boolean" indexed="false" stored="true" multiValued="false"/>
-    <field name="issue_sort" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="ixtheo_notation" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="ixtheo_notation_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="key_word_chain_bag" type="text" indexed="true" stored="true" multiValued="true" />
@@ -89,7 +88,6 @@
     <field name="reviews" type="text" indexed="false" stored="true" multiValued="true"/>
     <field name="reviewed_records" type="text" indexed="false" stored="true" multiValued="true"/>
     <field name="rs" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="start_page" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="title_keywords" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_all" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_synonyms" type="text" indexed="true" stored="true" multiValued="true"/>
