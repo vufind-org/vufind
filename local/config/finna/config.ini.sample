@@ -443,6 +443,10 @@ user_email_in_to = false
 ; will be sent based on user_email_in_from and default_from above, with the email
 ; setting from the [Site] section used as a last resort.
 disable_from = false
+; From field override. Setting this allows keeping the "from" field in email forms
+; but will only use it as a reply-to address. The address defined here is used as the
+; actual "from" address.
+;override_from = "no-reply@myuniversity.edu"
 
 ; This section needs to be changed to match your database connection information
 [Database]
@@ -682,7 +686,7 @@ recordMap = openlayers
 ;mapLabels = file:geosearch_test_lookup.txt
 ;displayCoords = true
 
-; Enables zoom for images in the image popup, only applies to records using the large image 
+; Enables zoom for images in the image popup, only applies to records using the large image
 ; layout. Disabled by default.
 ; enableImagePopupZoom = true
 
