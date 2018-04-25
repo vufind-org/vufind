@@ -58,8 +58,11 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @return int
      */
-    public function specSortCallback($a, $b)
+    protected function sortCallback($a, $b)
     {
+        if ($a['pos'] == $b['pos']) {
+            return ($a['label'] ?? '') <=> ($b['label'] ?? '');
+        }
         return ($a['pos'] ?? 0) <=> ($b['pos'] ?? 0);
     }
 
@@ -122,7 +125,8 @@ class RecordDataFormatter extends AbstractHelper
             ? call_user_func($options['labelFunction'], $data, $driver)
             : $field;
         $context = $options['context'] ?? [];
-        return [compact('label', 'value', 'context')];
+        $pos = $options['pos'] ?? 0;
+        return [compact('label', 'value', 'context', 'pos')];
     }
 
     /**
@@ -135,9 +139,6 @@ class RecordDataFormatter extends AbstractHelper
      */
     public function getData(RecordDriver $driver, array $spec)
     {
-        // Sort the spec into order by position:
-        uasort($spec, [$this, 'specSortCallback']);
-
         // Apply the spec:
         $result = [];
         foreach ($spec as $field => $current) {
@@ -148,6 +149,8 @@ class RecordDataFormatter extends AbstractHelper
                 $result = array_merge($result, $value);
             }
         }
+        // Sort the result:
+        usort($result, [$this, 'sortCallback']);
         return $result;
     }
 
