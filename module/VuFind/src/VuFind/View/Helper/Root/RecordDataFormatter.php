@@ -64,8 +64,8 @@ class RecordDataFormatter extends AbstractHelper
     }
 
     /**
-     * Should we allow a value? (Performs zero checking on a value that
-     * evaluates to empty).
+     * Should we allow a value? (Always accepts non-empty values; for empty
+     * values, allows zero when configured to do so).
      *
      * @param mixed $value   Data to check for zero value.
      * @param array $options Rendering options.
@@ -256,9 +256,12 @@ class RecordDataFormatter extends AbstractHelper
 
         // Collect the results:
         $results = [];
-        foreach ($callback($data, $driver) as $label => $values) {
+        $input = $callback($data, $driver);
+        foreach (is_array($input) ? $input : [] as $label => $values) {
             $next = $this->render($driver, $label, $values, $newOptions);
-            $results = array_merge($results, $next);
+            if (is_array($next)) {
+                $results = array_merge($results, $next);
+            }
         }
         return $results;
     }

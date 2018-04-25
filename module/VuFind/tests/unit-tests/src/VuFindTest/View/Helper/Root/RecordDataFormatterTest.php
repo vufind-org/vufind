@@ -203,6 +203,40 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
                 ];
             }
         ];
+        $spec['MultiEmptyArrayTest'] = [
+            'dataMethod' => 'getFormats',
+            'renderType' => 'Multi',
+            'pos' => 2000,
+            'multiFunction' => function () {
+                return [];
+            }
+        ];
+        $spec['MultiNullTest'] = [
+            'dataMethod' => 'getFormats',
+            'renderType' => 'Multi',
+            'pos' => 2000,
+            'multiFunction' => function () {
+                return null;
+            }
+        ];
+        $spec['MultiNullInArrayWithZeroTest'] = [
+            'dataMethod' => 'getFormats',
+            'renderType' => 'Multi',
+            'pos' => 2000,
+            'allowZero' => false,
+            'multiFunction' => function () {
+                return ['Null' => null, 'ZeroBlocked' => 0];
+            }
+        ];
+        $spec['MultiNullInArrayWithZeroAllowedTest'] = [
+            'dataMethod' => 'getFormats',
+            'renderType' => 'Multi',
+            'pos' => 2000,
+            'allowZero' => true,
+            'multiFunction' => function () {
+                return ['Null' => null, 'ZeroAllowed' => 0];
+            }
+        ];
 
         $expected = [
             'Building' => 'prefix_0',
@@ -219,6 +253,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             'Subjects' => 'Naples (Kingdom) History Spanish rule, 1442-1707 Sources',
             'Online Access' => 'http://fictional.com/sample/url',
             'Tags' => 'Add Tag No Tags, Be the first to tag this record!',
+            'ZeroAllowed' => 0,
         ];
         $driver = $this->getDriver();
         $results = $formatter->getData($driver, $spec);
