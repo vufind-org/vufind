@@ -18,6 +18,10 @@
   $noJsSupport = $this->config()->nonJavascriptSupportEnabled();
 
   $this->layout()->breadcrumbs = false;
+
+  foreach ($blocks ?? [] as $block) {
+    echo $this->contentBlock($block);
+  }
 ?>
 
 <div class="searchHomeContent">
