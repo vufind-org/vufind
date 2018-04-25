@@ -37,7 +37,7 @@ $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->s
 
             <div class="col-12 mx-auto">
 
-                <?=$this->render('search/searchbox-title');?>
+                <?=$this->render('search/searchbox/title');?>
 
                 <!-- Begin warnings -->
                 <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
@@ -113,59 +113,7 @@ $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->s
                             </div>
 
                             <? if ($advSearch): ?>
-                                <ul class="nav nav-pills">
-
-                                    <li>
-                                        <a href="<?= $this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $hiddenFilterParams) ?>"
-                                           class="btn btn-link" role="button"
-                                           rel="nofollow"><?= $this->transEsc("Advanced Search") ?></a>
-                                    </li>
-
-                                    <li class="dropdown">
-                                        <a class="btn btn-light dropdown-toggle"
-                                                type="button"
-                                                id="dropdownMenuButton"
-                                                data-toggle="dropdown"
-                                                aria-haspopup="true"
-                                                aria-expanded="false">
-                                            <?= $this->transEsc('Browse') ?>
-                                            <span class="caret"></span>
-                                        </a>
-
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <li><a class="dropdown-item" href="<?= $this->url('keywordchainsearch-home') ?>"><?= $this->transEsc('Browse Keywordchains') ?></a></li>
-                                            <li><a class="dropdown-item" href="<?= $this->url('browse-home') ?>"><?= $this->transEsc('Browse the Catalog') ?></a></li>
-                                            <li><a class="dropdown-item" href="<?= $this->url('alphabrowse-home') ?>"><?= $this->transEsc('Browse Alphabetically') ?></a></li>
-                                        </ul>
-                                    </li>
-
-                                    <li class="dropdown">
-                                        <a class="btn btn-light dropdown-toggle"
-                                                type="button"
-                                                id="dropdownMenuButton"
-                                                data-toggle="dropdown"
-                                                aria-haspopup="true"
-                                                aria-expanded="false">
-                                            <?= $this->transEsc('Need Help?') ?> <span class="caret"></span>
-                                        </a>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item help-link"
-                                               href="<?= $this->url('help-home') ?>?topic=search"
-                                               data-lightbox
-                                               title="<?= $this->transEsc('Search Tips') ?>"><?= $this->transEsc('Search Tips') ?></a></li>
-                                        </ul>
-                                    </li>
-
-                                    <li>
-                                        <a href="<?=$this->url('search-newitem')?>"
-                                           class="btn btn-light" role="button"
-                                           rel="nofollow"><?=$this->transEsc('New Items')?></a>
-                                    </li>
-
-                                    <?=$this->render('search/searchbox-pills');?>
-
-                                </ul>
-
+                                <?=$this->render('search/searchbox/pills');?>
                             <? endif; ?>
 
                             <? $shards = $options->getShards();
@@ -237,7 +185,7 @@ $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->s
                         <script type="text/javascript">$(".searchForm_lookfor:visible").focus()</script>
 
                         <? //optional extension template, e.g. for RelBib ?>
-                        <?=$this->render('search/searchbox-extensions');?>
+                        <?=$this->render('search/searchbox/extensions');?>
 
                     <? endif; ?>
 
