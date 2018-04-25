@@ -259,7 +259,7 @@ class RecordDataFormatter extends AbstractHelper
         $input = $callback($data, $driver);
         foreach (is_array($input) ? $input : [] as $label => $values) {
             $next = $this->render($driver, $label, $values, $newOptions);
-            if (is_array($next)) {
+            if ($next !== null) {
                 $results = array_merge($results, $next);
             }
         }
