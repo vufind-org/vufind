@@ -85,13 +85,13 @@ abstract class FacetCache
     /**
      * Get the cache key for the provided method.
      *
-     * @param string $initMethod Name of params method to use to request facets
-     *
      * @return string
      */
-    protected function getCacheKey($initMethod)
+    protected function getCacheKey()
     {
-        return $initMethod . '-' . $this->language;
+        $params = $this->results->getParams();
+        $settings = [$params->getFacetConfig(), $params->getHiddenFilters()];
+        return $this->language . md5(print_r($settings, true));
     }
 
     /**
@@ -105,11 +105,13 @@ abstract class FacetCache
     {
         // Check if we have facet results cached, and build them if we don't.
         $cache = $this->cacheManager->getCache('object', $this->getCacheNamespace());
-        $cacheKey = $this->getCacheKey($initMethod);
-        if (!($list = $cache->getItem($cacheKey))) {
-            $params = $this->results->getParams();
-            $params->$initMethod();
+        $params = $this->results->getParams();
 
+        // Note that we need to initialize the parameters BEFORE generating the
+        // cache key to ensure that the key is based on the proper settings.
+        $params->$initMethod();
+        $cacheKey = $this->getCacheKey();
+        if (!($list = $cache->getItem($cacheKey))) {
             // Avoid a backend request if there are no facets configured by the given
             // init method.
             if (!empty($params->getFacetConfig())) {

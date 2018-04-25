@@ -47,18 +47,4 @@ class FacetCache extends \VuFind\Search\Base\FacetCache
     {
         return 'solr-facets';
     }
-
-    /**
-     * Get the cache key for the provided method.
-     *
-     * @param string $initMethod Name of params method to use to request facets
-     *
-     * @return string
-     */
-    protected function getCacheKey($initMethod)
-    {
-        $params = $this->results->getParams();
-        $hiddenFiltersHash = md5(json_encode($params->getHiddenFilters()));
-        return $hiddenFiltersHash . '-' . parent::getCacheKey($initMethod);
-    }
 }
