@@ -60,12 +60,7 @@ class RecordDataFormatter extends AbstractHelper
      */
     public function specSortCallback($a, $b)
     {
-        $posA = $a['pos'] ?? 0;
-        $posB = $b['pos'] ?? 0;
-        if ($posA === $posB) {
-            return 0;
-        }
-        return $posA < $posB ? -1 : 1;
+        return ($a['pos'] ?? 0) <=> ($b['pos'] ?? 0);
     }
 
     /**
@@ -102,7 +97,8 @@ class RecordDataFormatter extends AbstractHelper
                     }
                     // Allow dynamic label override:
                     $label = is_callable($current['labelFunction'] ?? null)
-                        ? call_user_func($current['labelFunction'], $data) : $field;
+                        ? call_user_func($current['labelFunction'], $data, $driver)
+                        : $field;
                     $result[$label] = [
                         'value' => $text,
                         'context' => $current['context'] ?? [],
