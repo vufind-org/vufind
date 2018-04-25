@@ -18,10 +18,6 @@
   $noJsSupport = $this->config()->nonJavascriptSupportEnabled();
 
   $this->layout()->breadcrumbs = false;
-
-  foreach ($blocks ?? [] as $block) {
-    echo $this->contentBlock($block);
-  }
 ?>
 
 <div class="searchHomeContent">
@@ -45,6 +41,8 @@ JS;
   <?=$this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => true])?>
   <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$("#searchForm_lookfor").focus();', 'SET'); ?>
 </div>
+
+<?=implode('', array_map([$this, 'contentBlock'], $blocks ?? []))?>
 
 <?php if (!empty($facetList)): ?>
   <div class="search-home-facets">
