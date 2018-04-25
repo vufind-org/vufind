@@ -57,7 +57,7 @@ class ContentBlock extends AbstractHelper
 
         // Get the current plugin's class name, then start a loop in case we need
         // to use a parent class' name to find the appropriate template.
-        $className = get_class($recommend);
+        $className = get_class($block);
         $resolver = $this->getView()->resolver();
         while (true) {
             // Guess the template name for the current class:
@@ -76,7 +76,7 @@ class ContentBlock extends AbstractHelper
                     // No more parent classes left to try?  Throw an exception!
                     throw new RuntimeException(
                         'Cannot find template for ContentBlock class: ' .
-                        get_class($recommend)
+                        get_class($block)
                     );
                 }
             }
