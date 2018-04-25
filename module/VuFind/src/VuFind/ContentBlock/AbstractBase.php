@@ -1,10 +1,10 @@
 <?php
 /**
- * BrowZine Controller
+ * Abstract base content block.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2017.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,44 +20,50 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
+ * @package  ContentBlock
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-namespace VuFind\Controller;
-
-use Zend\ServiceManager\ServiceLocatorInterface;
+namespace VuFind\ContentBlock;
 
 /**
- * BrowZine Controller
+ * Abstract base content block.
  *
  * @category VuFind
- * @package  Controller
+ * @package  ContentBlock
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class BrowZineController extends AbstractSearch
+class AbstractBase implements ContentBlockInterface
 {
     /**
-     * Constructor
+     * Configuration
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @var string
      */
-    public function __construct(ServiceLocatorInterface $sm)
+    protected $config = '';
+
+    /**
+     * Store the configuration of the content block.
+     *
+     * @param string $settings Settings from searches.ini.
+     *
+     * @return void
+     */
+    public function setConfig($settings)
     {
-        $this->searchClassId = 'BrowZine';
-        parent::__construct($sm);
+        $this->config = $settings;
     }
 
     /**
-     * Search action -- call standard results action
+     * Called before rendering the block.
      *
-     * @return mixed
+     * @return void
      */
-    public function searchAction()
+    public function process()
     {
-        return $this->resultsAction();
+        // Do nothing by default.
     }
 }

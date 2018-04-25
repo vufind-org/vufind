@@ -65,17 +65,6 @@ class WorldcatController extends AbstractSearch
     }
 
     /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        // Set up default parameters:
-        return $this->createViewModel();
-    }
-
-    /**
      * Search action -- call standard results action
      *
      * @return mixed

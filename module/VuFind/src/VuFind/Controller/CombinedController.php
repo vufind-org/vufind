@@ -54,16 +54,6 @@ class CombinedController extends AbstractSearch
     }
 
     /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        return $this->createViewModel();
-    }
-
-    /**
      * Single result action (used for AJAX)
      *
      * @return mixed

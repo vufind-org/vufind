@@ -95,10 +95,8 @@ class AuthorController extends AbstractSearch
         // If an author was requested, forward to the results page; otherwise,
         // display the search form:
         $author = $this->params()->fromQuery('author');
-        if (!empty($author)) {
-            return $this->forwardTo('Author', 'Results');
-        }
-        return $this->createViewModel();
+        return !empty($author)
+            ? $this->forwardTo('Author', 'Results') : parent::homeAction();
     }
 
     /**

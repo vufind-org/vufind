@@ -1,10 +1,10 @@
 <?php
 /**
- * BrowZine Controller
+ * Content block interface
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2017.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,44 +20,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
+ * @package  ContentBlock
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-namespace VuFind\Controller;
-
-use Zend\ServiceManager\ServiceLocatorInterface;
+namespace VuFind\ContentBlock;
 
 /**
- * BrowZine Controller
+ * Content block interface
  *
  * @category VuFind
- * @package  Controller
+ * @package  ContentBlock
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class BrowZineController extends AbstractSearch
+interface ContentBlockInterface
 {
     /**
-     * Constructor
+     * Store the configuration of the content block.
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @param string $settings Settings from searches.ini.
+     *
+     * @return void
      */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        $this->searchClassId = 'BrowZine';
-        parent::__construct($sm);
-    }
+    public function setConfig($settings);
 
     /**
-     * Search action -- call standard results action
+     * Called before rendering the block.
      *
-     * @return mixed
+     * @return void
      */
-    public function searchAction()
-    {
-        return $this->resultsAction();
-    }
+    public function process();
 }
