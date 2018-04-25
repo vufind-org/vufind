@@ -198,13 +198,19 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             'pos' => 1000,
             'multiFunction' => function ($data) {
                 return [
-                    'Multi Data' => $data,
-                    'Multi Count' => count($data),
+                    [
+                        'label' => 'Multi Data',
+                        'values' => $data,
+                    ],
+                    [
+                        'label' => 'Multi Count',
+                        'values' => count($data),
+                    ],
                 ];
             }
         ];
         $spec['MultiEmptyArrayTest'] = [
-            'dataMethod' => 'getFormats',
+            'dataMethod' => true,
             'renderType' => 'Multi',
             'pos' => 2000,
             'multiFunction' => function () {
@@ -212,7 +218,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             }
         ];
         $spec['MultiNullTest'] = [
-            'dataMethod' => 'getFormats',
+            'dataMethod' => true,
             'renderType' => 'Multi',
             'pos' => 2000,
             'multiFunction' => function () {
@@ -220,21 +226,63 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             }
         ];
         $spec['MultiNullInArrayWithZeroTest'] = [
-            'dataMethod' => 'getFormats',
+            'dataMethod' => true,
             'renderType' => 'Multi',
             'pos' => 2000,
             'allowZero' => false,
             'multiFunction' => function () {
-                return ['Null' => null, 'ZeroBlocked' => 0];
+                return [
+                    [
+                        'label' => 'Null',
+                        'values' => null,
+                    ],
+                    [
+                        'label' => 'ZeroBlocked',
+                        'values' => 0,
+                    ]
+                ];
             }
         ];
         $spec['MultiNullInArrayWithZeroAllowedTest'] = [
-            'dataMethod' => 'getFormats',
+            'dataMethod' => true,
             'renderType' => 'Multi',
             'pos' => 2000,
             'allowZero' => true,
             'multiFunction' => function () {
-                return ['Null' => null, 'ZeroAllowed' => 0];
+                return [
+                    [
+                        'label' => 'Null',
+                        'values' => null,
+                    ],
+                    [
+                        'label' => 'ZeroAllowed',
+                        'values' => 0,
+                    ]
+                ];
+            }
+        ];
+        $spec['MultiWithSortPos'] = [
+            'dataMethod' => true,
+            'renderType' => 'Multi',
+            'pos' => 0,
+            'multiFunction' => function () {
+                return [
+                    [
+                        'label' => 'b',
+                        'values' => 'b',
+                        'options' => ['pos' => 3000]
+                    ],
+                    [
+                        'label' => 'a',
+                        'values' => 'a',
+                        'options' => ['pos' => 3000]
+                    ],
+                    [
+                        'label' => 'c',
+                        'values' => 'c',
+                        'options' => ['pos' => 2999]
+                    ],
+                ];
             }
         ];
 
@@ -254,6 +302,9 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             'Online Access' => 'http://fictional.com/sample/url',
             'Tags' => 'Add Tag No Tags, Be the first to tag this record!',
             'ZeroAllowed' => 0,
+            'c' => 'c',
+            'a' => 'a',
+            'b' => 'b',
         ];
         $driver = $this->getDriver();
         $results = $formatter->getData($driver, $spec);

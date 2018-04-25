@@ -254,14 +254,17 @@ class RecordDataFormatter extends AbstractHelper
 
         // Adjust the options array so we can use it to call the standard
         // render function on the grouped data....
-        $newOptions = ['renderType' => $options['multiRenderType'] ?? 'Simple']
+        $defaultOptions = ['renderType' => $options['multiRenderType'] ?? 'Simple']
             + $options;
 
         // Collect the results:
         $results = [];
         $input = $callback($data, $driver);
-        foreach (is_array($input) ? $input : [] as $label => $values) {
-            $next = $this->render($driver, $label, $values, $newOptions);
+        foreach (is_array($input) ? $input : [] as $current) {
+            $label = $current['label'] ?? '';
+            $values = $current['values'] ?? null;
+            $currentOptions = ($current['options'] ?? []) + $defaultOptions;
+            $next = $this->render($driver, $label, $values, $currentOptions);
             if ($next !== null) {
                 $results = array_merge($results, $next);
             }
