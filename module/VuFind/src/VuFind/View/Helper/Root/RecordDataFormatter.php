@@ -259,7 +259,7 @@ class RecordDataFormatter extends AbstractHelper
 
         // Collect the results:
         $results = [];
-        $input = $callback($data, $driver);
+        $input = $callback($data, $options, $driver);
         foreach (is_array($input) ? $input : [] as $current) {
             $label = $current['label'] ?? '';
             $values = $current['values'] ?? null;
