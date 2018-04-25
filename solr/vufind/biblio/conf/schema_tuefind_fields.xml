@@ -13,4 +13,6 @@
     <field name="volume" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="year" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="is_open_access" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="issue_sort" type="long" indexed="true" stored="true" multiValued="false"/>
+    <field name="start_page" type="long" indexed="true" stored="true" multiValued="false"/>
 </fields>
