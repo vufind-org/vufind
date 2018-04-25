@@ -64,9 +64,10 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
     /**
      * Make requests
      *
-     * @param string $method GET/POST/PUT/DELETE/etc
-     * @param string $path   API path (with a leading /)
-     * @param object $params Parameters object to be sent as data
+     * @param string $method  GET/POST/PUT/DELETE/etc
+     * @param string $path    API path (with a leading /)
+     * @param object $params  Parameters object to be sent as data
+     * @param object $headers Additional headers
      *
      * @return \Zend\Http\Response
      */

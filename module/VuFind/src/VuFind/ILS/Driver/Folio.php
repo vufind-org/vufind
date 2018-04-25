@@ -168,6 +168,8 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     /**
      * Get raw object of item from inventory/items/
      *
+     * @param string $itemId Item-level id
+     *
      * @throw
      * @return array
      */
@@ -175,22 +177,24 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     {
         $response = $this->makeRequest('GET', '/inventory/items/' . $itemId);
         switch ($response->getStatusCode()) {
-            case 400:
-                throw new BadRequest($response->getBody());
-            case 401:
-            case 403:
-                throw new Forbidden($response->getBody());
-            case 404:
-                throw new RecordMissing($response->getBody());
-            case 500:
-                throw new ILSException("500: Internal Server Error");
-            default:
-                return json_decode($response->getBody());
+        case 400:
+            throw new BadRequest($response->getBody());
+        case 401:
+        case 403:
+            throw new Forbidden($response->getBody());
+        case 404:
+            throw new RecordMissing($response->getBody());
+        case 500:
+            throw new ILSException("500: Internal Server Error");
+        default:
+            return json_decode($response->getBody());
         }
     }
 
     /**
      * Get raw object of item from inventory/items/
+     *
+     * @param string $itemId Item-level id
      *
      * @return array
      */
@@ -203,8 +207,9 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     /**
      * This method calls getStatus for an array of records or implement a bulk method
      *
-     * Input: Array of bibliographic record IDs.
-     * Output: Array of return values from getStatus (note – the keys of this array have no special meaning; you will need to search it if you want to retrieve a specific record's values).
+     * @param array $idList Item-level ids
+     *
+     * @return array values from getStatus
      */
     public function getStatuses($idList)
     {
@@ -233,38 +238,12 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     /**
      * This method queries the ILS for holding information.
      *
-     *     Input: RecordID, output of patronLogin (so that patron-specific data may be added to the return array)
-     *     Output: Returns an array of associative arrays, one for each item attached to the specified bibliographic record. Each associative array contains these keys:
-     *         id - the RecordID that was passed in
-     *         availability - boolean: is the item available (i.e. on the shelf and/or available for checkout)?
-     *         status - string describing the availability status of the item
-     *         location - string describing the physical location of the item. Note: prior to VuFind 1.3, some drivers HTML entity encoded this string; that is incorrect behavior in VuFind 1.3 or later – this should be plain text, not HTML.
-     *         locationhref - a URL to link the location name to. (optional, introduced in VuFind 2.5)
-     *         reserve - string indicating “on reserve” status – legal values: 'Y' or 'N'
-     *         callnumber - the call number of this item
-     *         duedate - string showing due date of checked out item (null if not checked out)
-     *         returnDate - A string showing return date of an item (false if not recently returned)
-     *         number - the copy number for this item (note: although called “number”, this may actually be a string if individual items are named rather than numbered – the value will be used in displays to distinguish between copies within a list)
-     *         requests_placed – The total number of holds and recalls placed on an item (optional)
-     *         barcode - the barcode number for this item (important: even if you do not have access to real barcode numbers, you may want to include dummy values, since a missing barcode will prevent some other item information from displaying in the VuFind interface).
-     *         notes - an array of notes associated with holdings (optional; deprecated in VuFind 3.0 in favor of holdings_notes)
-     *         holdings_notes - an array of notes associated with holdings record containing the current item (optional; introduced in VuFind 3.0)
-     *         item_notes - an array of notes associated with the current item (optional; introduced in VuFind 3.0)
-     *         summary - an array of summary information strings associated with holdings (optional)
-     *         supplements - an array of strings about supplements associated with holdings (optional, introduced in VuFind 2.3)
-     *         indexes - an array of strings about indexes associated with holdings (optional, introduced in VuFind 2.3)
-     *         is_holdable – whether or not ANY user can place a hold or recall on the item – allows system administrators to determine hold behaviour (optional)
-     *         holdtype – the type of hold to be placed – of use for systems with multiple hold types such as “hold” or “recall”. Prior to VuFind 4.0, a value of “block” will inform the user that they cannot place a hold on the item due to account blocks (optional); starting in 4.0, the “block” value was replaced with the separate getRequestBlocks method.
-     *         addLink – whether not the CURRENT user can place a hold or recall on the item – for use with drivers which can determine hold logic based on patron data; normally a boolean, but until VuFind 4.0 may be set to the special value of “block” to indicate a user permission problem (optional; starting in 4.0, use the getRequestBlocks method instead). Starting with VuFind 1.3, you can also use the special value of “check” which will trigger an AJAX call against the checkRequestIsValid() method to allow complex link rules to be evaluated without holding up the main page load.
-     *         item_id - the item (as opposed to bibliographic) identifier (optional)
-     *         holdOverride - Starting with VuFind 1.3, you can use this value to override the usual config.ini Catalog:holds_mode setting on an item-by-item basis; useful for local customizations but not recommended for generic shared driver code. Also note that this feature only works when the Catalog:allow_holds_override setting is turned on in config.ini.
-     *         addStorageRetrievalRequestLink - Starting with VuFind 2.3, you can use this value to indicate availability of storage retrieval requests. See addLink above for valid values. If “check” is returned, the driver must implement the checkStorageRetrievalRequestIsValid() method. See also getConfig and other storage retrieval request methods. At least placeStorageRetrievalRequest() must be implemented.
-     *         addILLRequestLink - Starting with VuFind 2.3, you can use this value to indicate availability of Inter-Library Loan (ILL) requests. See addLink above for valid values. If “check” is returned, the driver must implement the checkILLRequestIsValid() method. See also getConfig and other ILL request methods. At least placeILLRequest() must be implemented.
-     *         source - The search backend from which the record may be retrieved (optional - defaults to Solr, introduced in VuFind 2.4)
-     *         use_unknown_message - An optional boolean that, when set to true, will cause display of a message indicating that the status of the item is unknown.
-     *         services - Starting with VuFind 3.0, this value can be used to indicate availability services (loan, presence). For now, 'services' is only used by code calling getStatus(), not getHolding(), but setting it here as well will not hurt anything and may be useful for future enhancements. See the getStatus() documentation for more details.
+     * @param string $itemId      Item-level id
+     * @param array  $patronLogin Patron login information
+     *
+     * @return array An array of associative holding arrays
      */
-    public function getHolding($recordId, array $patronLogin = null)
+    public function getHolding($itemId, array $patronLogin = null)
     {
         $record = $this->getItem($recordId);
         $holdingResponse = $this->makeRequest(
@@ -294,22 +273,17 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     }
 
     /**
-     * This method processes authentication against the ILS.
+     * Patron Login
      *
-     * When ILS or MultiILS authentication is used as the login method, the username in VuFind's user table is, by default, taken from cat_username but it's configurable with the ILS_username_field in [Authentication] section of config.ini.
+     * This is responsible for authenticating a patron against the catalog.
      *
-     * Starting with version 4.0, VuFind uses the id field as the primary link between the ILS user and the VuFind user. The cat_username field or the field configured above is used if the user cannot be found with id. The idea is to have a more persistent link between the account (since cat_username is typically a library card, and a card may need to be changed, it's not really permanent) while allowing the existing accounts that don't yet have the id in them to be found.
+     * @param string $username The patron username
+     * @param string $password The patron password
      *
-     * Input: Username, Password
-     * Output: null on failed login, associative array of patron information on success. Keys:
-     *     id - the patron's ID in the ILS
-     *     firstname - the patron's first name
-     *     lastname - the patron's last name
-     *     cat_username - the username used to log in
-     *     cat_password - the password used to log in
-     *     email - the patron's email address (null if unavailable)
-     *     major - the patron's major (null if unavailable)
-     *     college - the patron's college (null if unavailable)
+     * @return mixed           Associative array of patron info on successful login,
+     * null on unsuccessful login.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function patronLogin($username, $password)
     {
@@ -332,6 +306,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
         if ($response->getStatusCode() >= 400) {
             return null;
         }
+        // TODO: Save token to this->token (in place of admin)
         return [
             'id' => $profile['id'],
             'firstname' => $profile['personal']['firstName'],
@@ -346,7 +321,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      * This method queries the ILS for a patron's current profile information
      *
      *     Input: Patron array returned by patronLogin method
-     *     Output: An associative array with the following keys (all containing strings):
+     *     Output: An associative array with the following keys (all strings):
      *         firstname
      *         lastname
      *         address1
@@ -359,6 +334,9 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      *         group – i.e. Student, Staff, Faculty, etc.
      *         expiration_date – account expiration date (added in VuFind 4.1)
      *
+     * @param array $patronLogin Patron login information
+     *
+     * @return array Profile data in associative array
      */
     public function getMyProfile($patronLogin)
     {
@@ -384,30 +362,45 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     /**
      * This method queries the ILS for a patron's current checked out items
      *
-     *     Input: Patron array returned by patronLogin method
-     *     Output: Returns an array of associative arrays, one for each item checked out by the specified account. Each associative array contains these keys:
+     * Input: Patron array returned by patronLogin method
+     * Output: Returns an array of associative arrays.
+     *         Each associative array contains these keys:
      *         duedate - The item's due date (a string).
      *         dueTime - The item's due time (a string, optional).
-     *         dueStatus - A special status – may be 'due' (for items due very soon) or 'overdue' (for overdue items). (optional).
+     *         dueStatus - A special status – may be 'due' (for items due very soon)
+     *                     or 'overdue' (for overdue items). (optional).
      *         id - The bibliographic ID of the checked out item.
-     *         source - The search backend from which the record may be retrieved (optional - defaults to Solr). Introduced in VuFind 2.4.
+     *         source - The search backend from which the record may be retrieved
+     *                  (optional - defaults to Solr). Introduced in VuFind 2.4.
      *         barcode - The barcode of the item (optional).
      *         renew - The number of times the item has been renewed (optional).
-     *         renewLimit - The maximum number of renewals allowed (optional - introduced in VuFind 2.3).
+     *         renewLimit - The maximum number of renewals allowed
+     *                      (optional - introduced in VuFind 2.3).
      *         request - The number of pending requests for the item (optional).
      *         volume – The volume number of the item (optional).
      *         publication_year – The publication year of the item (optional).
-     *         renewable – Whether or not an item is renewable (required for renewals).
+     *         renewable – Whether or not an item is renewable
+     *                     (required for renewals).
      *         message – A message regarding the item (optional).
-     *         title - The title of the item (optional – only used if the record cannot be found in VuFind's index).
-     *         item_id - this is used to match up renew responses and must match the item_id in the renew response.
-     *         institution_name - Display name of the institution that owns the item (optional). Used e.g. with received interlibrary loans (ILL) if they are displayed in the checked out items list (e.g. UB Requests between Voyager libraries).
-     *         isbn - An ISBN for use in cover image loading (optional – introduced in release 2.3)
-     *         issn - An ISSN for use in cover image loading (optional – introduced in release 2.3)
-     *         oclc - An OCLC number for use in cover image loading (optional – introduced in release 2.3)
-     *         upc - A UPC for use in cover image loading (optional – introduced in release 2.3)
-     *         borrowingLocation - A string describing the location where the item was checked out (optional – introduced in release 2.4)
+     *         title - The title of the item (optional – only used if the record
+     *                                        cannot be found in VuFind's index).
+     *         item_id - this is used to match up renew responses and must match
+     *                   the item_id in the renew response.
+     *         institution_name - Display name of the institution that owns the item.
+     *         isbn - An ISBN for use in cover image loading
+     *                (optional – introduced in release 2.3)
+     *         issn - An ISSN for use in cover image loading
+     *                (optional – introduced in release 2.3)
+     *         oclc - An OCLC number for use in cover image loading
+     *                (optional – introduced in release 2.3)
+     *         upc - A UPC for use in cover image loading
+     *               (optional – introduced in release 2.3)
+     *         borrowingLocation - A string describing the location where the item
+     *                         was checked out (optional – introduced in release 2.4)
      *
+     * @param array $patronLogin Patron login information
+     *
+     * @return array Transactions associative arrays
      */
     public function getMyTransactions($patronLogin)
     {
@@ -433,6 +426,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
         return $transactions;
     }
 
+    // @codingStandardsIgnoreStart
     /** NOT FINISHED BELOW THIS LINE **/
 
     /**
@@ -581,4 +575,5 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     {
         return [];
     }
+    // @codingStandardsIgnoreEnd
 }
