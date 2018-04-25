@@ -63,7 +63,7 @@ class RecordDataFormatter extends AbstractHelper
         if ($a['pos'] == $b['pos']) {
             return ($a['label'] ?? '') <=> ($b['label'] ?? '');
         }
-        return ($a['pos'] ?? 0) <=> ($b['pos'] ?? 0);
+        return $a['pos'] <=> $b['pos'];
     }
 
     /**
