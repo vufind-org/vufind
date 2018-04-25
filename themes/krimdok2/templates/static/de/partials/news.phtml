@@ -4,12 +4,11 @@
         <h4>Mitteilungen &amp; Termine</h4>
         <p>
         <ul>
-            <li>Call for Papers</li>
-            <li>Tagungen &amp; Konferenzen</li>
-            <li>Stellenausschreibungen</li>
-            <li>Habilitationen &amp; Berufungen</li>
+            <li><a href="<?=$this->url('content-page', ['page' => 'call_for_papers']) ?>">Call for Papers</a></li>
+            <li><a href="<?=$this->url('content-page', ['page' => 'events']) ?>">Tagungen &amp; Konferenzen</a></li>
+            <li><a href="<?=$this->url('content-page', ['page' => 'jobs']) ?>">Stellenausschreibungen</a></li>
+            <li><a href="<?=$this->url('content-page', ['page' => 'employments']) ?>">Habilitationen &amp; Berufungen</a></li>
         </ul>
         </p>
-        <a href="<?=$this->url('content-page', ['page' => 'news']) ?>" class="btn btn-inverse" role="button">Weiterlesen</a>
     </div>
 </div>
