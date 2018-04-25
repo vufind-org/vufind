@@ -82,7 +82,7 @@
   <ul>
     <li class="sidebar-navigation">
       <i class="fa fa-arrow-up"></i> <?=$this->transEsc('Filter Collection')?>
-      <? if ($filterCount): ?>
+      <? if (!empty($filterCount)): ?>
         <span class="active-filters">
           <?=$this->transEsc('Active filters')?>: <span class='active-filter-count'><?=$filterCount?></span>
         </span>
