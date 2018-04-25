@@ -60,10 +60,10 @@ class RecordDataFormatter extends AbstractHelper
      */
     protected function sortCallback($a, $b)
     {
-        if ($a['pos'] == $b['pos']) {
-            return ($a['label'] ?? '') <=> ($b['label'] ?? '');
-        }
-        return $a['pos'] <=> $b['pos'];
+        // Sort on 'pos' with 'label' as tie-breaker.
+        return ($a['pos'] == $b['pos'])
+            ? $a['label'] <=> $b['label']
+            : $a['pos'] <=> $b['pos'];
     }
 
     /**
