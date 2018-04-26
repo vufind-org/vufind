@@ -115,7 +115,7 @@ class FacetCache implements ContentBlockInterface
     public function setConfig($settings)
     {
         $parts = explode(':', $settings);
-        $this->searchClassId = empty($parts[0]) ? $parts[0] : $this->searchClassId;
+        $this->searchClassId = empty($parts[0]) ? $this->searchClassId : $parts[0];
         $this->columnSize = $parts[1] ?? $this->columnSize;
     }
 
