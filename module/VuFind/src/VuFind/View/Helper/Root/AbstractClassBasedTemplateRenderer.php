@@ -58,7 +58,7 @@ abstract class AbstractClassBasedTemplateRenderer extends AbstractHelper
         $topClassName = null
     ) {
         // If the template resolves, we can render it!
-        $templateWithClass = printf($template, $this->getBriefClass($className));
+        $templateWithClass = sprintf($template, $this->getBriefClass($className));
         if ($this->getView()->resolver()->resolve($templateWithClass)) {
             return $this->getView()->render($templateWithClass);
         }
