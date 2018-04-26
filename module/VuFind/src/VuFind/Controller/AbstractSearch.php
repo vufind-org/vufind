@@ -259,7 +259,7 @@ class AbstractSearch extends AbstractBase
             $pluginManager = $this->serviceLocator
                 ->get('VuFind\ContentBlock\PluginManager');
             foreach ($config->HomePage->content as $current) {
-                $parts = explode(':', $current);
+                $parts = explode(':', $current, 2);
                 $block = $pluginManager->get($parts[0]);
                 $block->setConfig($parts[1] ?? null);
                 $blocks[] = $block;
