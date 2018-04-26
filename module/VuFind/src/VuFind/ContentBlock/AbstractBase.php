@@ -58,12 +58,13 @@ class AbstractBase implements ContentBlockInterface
     }
 
     /**
-     * Called before rendering the block.
+     * Return context variables used for rendering the block's template.
      *
-     * @return void
+     * @return array
      */
-    public function process()
+    public function getContext()
     {
-        // Do nothing by default.
+        // Expose the block object directly by default.
+        return ['block' => $this];
     }
 }

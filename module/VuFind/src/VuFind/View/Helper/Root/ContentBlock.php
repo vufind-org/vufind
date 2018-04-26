@@ -50,7 +50,7 @@ class ContentBlock extends AbstractClassBasedTemplateRenderer
     {
         $template = 'ContentBlock/%s.phtml';
         $className = get_class($block);
-        $context = compact('block');
+        $context = $block->getContext();
         return $this->renderClassTemplate($template, $className, $context);
     }
 }
