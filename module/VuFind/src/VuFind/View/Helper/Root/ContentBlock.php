@@ -27,9 +27,6 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Zend\View\Exception\RuntimeException;
-use Zend\View\Helper\AbstractHelper;
-
 /**
  * ContentBlock view helper
  *
@@ -39,7 +36,7 @@ use Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ContentBlock extends AbstractHelper
+class ContentBlock extends AbstractClassBasedTemplateRenderer
 {
     /**
      * Render the output of a ContentBlock plugin.
@@ -51,35 +48,9 @@ class ContentBlock extends AbstractHelper
      */
     public function __invoke($block)
     {
-        // Set up the rendering context:
-        $contextHelper = $this->getView()->plugin('context');
-        $oldContext = $contextHelper($this->getView())->apply(compact('block'));
-
-        // Get the current plugin's class name, then start a loop in case we need
-        // to use a parent class' name to find the appropriate template.
+        $template = 'ContentBlock/%s.phtml';
         $className = get_class($block);
-        $resolver = $this->getView()->resolver();
-        while (true) {
-            // Guess the template name for the current class:
-            $classParts = explode('\\', $className);
-            $template = 'ContentBlock/' . array_pop($classParts) . '.phtml';
-            if ($resolver->resolve($template)) {
-                // Try to render the template....
-                $html = $this->getView()->render($template);
-                $contextHelper($this->getView())->restore($oldContext);
-                return $html;
-            } else {
-                // If the template doesn't exist, let's see if we can inherit a
-                // template from a parent class:
-                $className = get_parent_class($className);
-                if (empty($className)) {
-                    // No more parent classes left to try?  Throw an exception!
-                    throw new RuntimeException(
-                        'Cannot find template for ContentBlock class: ' .
-                        get_class($block)
-                    );
-                }
-            }
-        }
+        $context = compact('block');
+        return $this->renderClassTemplate($template, $className, $context);
     }
 }
