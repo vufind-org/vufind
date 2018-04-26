@@ -14,23 +14,6 @@
 ?>
 
 <div class="searchHomeContent">
-  <?php
-  $ilsStatusScript = <<<JS
-$(document).ready(function() {
-  $.ajax({
-      dataType: 'json',
-      method: 'GET',
-      data: {'offlineModeMsg':'ils_offline_home_message'},
-      url: VuFind.path + '/AJAX/JSON?method=getIlsStatus',
-      success: function(response) {
-          $('.searchHomeContent').prepend(response.data);
-      }
-  });
-});
-JS;
-  ?>
-  <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $ilsStatusScript, 'SET'); ?>
-
   <?=$this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => true])?>
   <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$("#searchForm_lookfor").focus();', 'SET'); ?>
 </div>
