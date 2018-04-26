@@ -64,8 +64,8 @@ class AuthorityController extends AbstractSearch
             return $this->forwardTo('Authority', 'Record');
         }
 
-        // Do nothing -- just display template
-        return $this->createViewModel();
+        // Default behavior:
+        return parent::homeAction();
     }
 
     /**

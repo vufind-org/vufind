@@ -52,16 +52,6 @@ class BrowZineController extends AbstractSearch
     }
 
     /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        return $this->createViewModel();
-    }
-
-    /**
      * Search action -- call standard results action
      *
      * @return mixed
