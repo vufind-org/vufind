@@ -198,6 +198,8 @@ CREATE TABLE `user` (
   `home_library` varchar(100) NOT NULL DEFAULT '',
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `verify_hash` varchar(42) NOT NULL DEFAULT '',
+  `last_login` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `auth_method` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `cat_id` (`cat_id`)
