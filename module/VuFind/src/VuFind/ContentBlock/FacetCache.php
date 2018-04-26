@@ -27,6 +27,9 @@
  */
 namespace VuFind\ContentBlock;
 
+use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Search\FacetCache\PluginManager as FacetCacheManager;
+
 /**
  * FacetCache content block.
  *
@@ -36,6 +39,105 @@ namespace VuFind\ContentBlock;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class FacetCache extends AbstractBase
+class FacetCache implements ContentBlockInterface
 {
+    /**
+     * Number of values to put in each column of results.
+     *
+     * @var int
+     */
+    protected $columnSize = 10;
+
+    /**
+     * Search class ID to use for retrieving facets.
+     *
+     * @var string
+     */
+    protected $searchClassId = 'Solr';
+
+    /**
+     * Configuration manager
+     *
+     * @var ConfigManager
+     */
+    protected $configManager;
+
+    /**
+     * Facet cache plugin manager
+     *
+     * @var FacetCacheManager
+     */
+    protected $facetCacheManager;
+
+    /**
+     * Constructor
+     *
+     * @param FacetCacheManager $fcm Facet cache plugin manager
+     * @param ConfigManager     $cm  Configuration manager
+     */
+    public function __construct(FacetCacheManager $fcm, ConfigManager $cm)
+    {
+        $this->facetCacheManager = $fcm;
+        $this->configManager = $cm;
+    }
+
+    /**
+     * Get an array of hierarchical facets
+     *
+     * @return array Facets
+     */
+    protected function getHierarchicalFacets($facetConfig)
+    {
+        return isset($facetConfig->SpecialFacets->hierarchical)
+            ? $facetConfig->SpecialFacets->hierarchical->toArray()
+            : [];
+    }
+
+    /**
+     * Get hierarchical facet sort settings
+     *
+     * @return array Array of sort settings keyed by facet
+     */
+    protected function getHierarchicalFacetSortSettings($facetConfig)
+    {
+        return isset($facetConfig->SpecialFacets->hierarchicalFacetSortOptions)
+            ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
+            : [];
+    }
+
+    /**
+     * Store the configuration of the content block.
+     *
+     * @param string $settings Settings from searches.ini.
+     *
+     * @return void
+     */
+    public function setConfig($settings)
+    {
+        $parts = explode(':', $settings);
+        $this->searchClassId = $parts[0];
+        $this->columnSize = $parts[1] ?? $this->columnSize;
+    }
+
+    /**
+     * Return context variables used for rendering the block's template.
+     *
+     * @return array
+     */
+    public function getContext()
+    {
+        $facetCache = $this->facetCacheManager->get($this->searchClassId);
+        $results = $facetCache->getResults();
+        $facetConfig = $this->configManager
+            ->get($results->getOptions()->getFacetsIni());
+        return [
+            'searchClassId' => $this->searchClassId,
+            'columnSize' => $this->columnSize,
+            'facetList' => $facetCache->getList('HomePage'),
+            'hierarchicalFacets' => $this->getHierarchicalFacets($facetConfig),
+            'hierarchicalFacetSortOptions' =>
+                $this->getHierarchicalFacetSortSettings($facetConfig),
+            'results' => $results,
+        ];
+    }
 }

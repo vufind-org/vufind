@@ -61,6 +61,8 @@ class FacetCacheFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName();
+        $fcpm = $container->get('VuFind\Search\FacetCache\PluginManager');
+        $cm = $container->get('VuFind\Config\PluginManager');
+        return new $requestedName($fcpm, $cm);
     }
 }
