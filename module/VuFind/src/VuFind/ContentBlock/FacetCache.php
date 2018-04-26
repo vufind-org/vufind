@@ -29,6 +29,7 @@ namespace VuFind\ContentBlock;
 
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Search\FacetCache\PluginManager as FacetCacheManager;
+use Zend\Config\Config;
 
 /**
  * FacetCache content block.
@@ -84,6 +85,8 @@ class FacetCache implements ContentBlockInterface
     /**
      * Get an array of hierarchical facets
      *
+     * @param Config $facetConfig Facet configuration object.
+     *
      * @return array Facets
      */
     protected function getHierarchicalFacets($facetConfig)
@@ -95,6 +98,8 @@ class FacetCache implements ContentBlockInterface
 
     /**
      * Get hierarchical facet sort settings
+     *
+     * @param Config $facetConfig Facet configuration object.
      *
      * @return array Array of sort settings keyed by facet
      */
