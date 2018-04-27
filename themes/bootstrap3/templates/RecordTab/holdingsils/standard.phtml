@@ -44,6 +44,9 @@
           <div class="item-notes">
             <b><?=$this->transEsc("Item Notes")?>:</b>
             <ul>
+              <?php if ($holding['enumchron'] ?? false): ?>
+                <li class="enumchron"><?=$this->escapeHtml($holding['enumchron'])?></li>
+              <?php endif; ?>
               <?php foreach ($holding['item_notes'] as $item_note): ?>
                 <li><?=$this->escapeHtml($item_note) ?></li>
               <?php endforeach; ?>

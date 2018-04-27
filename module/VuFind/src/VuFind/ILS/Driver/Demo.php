@@ -625,6 +625,7 @@ class Demo extends AbstractBase
         // Get basic status info:
         $status = $this->getSimulatedStatus($id, $patron);
 
+        $issue = 1;
         // Add notes and summary:
         foreach (array_keys($status) as $i) {
             $itemNum = $i + 1;
@@ -640,6 +641,10 @@ class Demo extends AbstractBase
             for ($j = 1; $j <= $summCount; $j++) {
                 $status[$i]['summary'][] = "Item $itemNum summary $j";
             }
+            $volume = intdiv($issue, 4) + 1;
+            $seriesIssue = $issue % 4;
+            $issue = $issue + 1;
+            $status[$i]['enumchron'] = "volume $volume, issue $seriesIssue";
         }
 
         // Send back final value:
