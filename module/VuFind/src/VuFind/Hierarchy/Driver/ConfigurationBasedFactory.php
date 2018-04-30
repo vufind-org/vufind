@@ -2,7 +2,7 @@
 /**
  * Hierarchy Driver Factory Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -68,8 +68,7 @@ class ConfigurationBasedFactory
         $configReader = $sm->get('VuFind\Config\PluginManager');
         $globalConfig = $configReader->get('config');
         $options = [
-            'enabled' => isset($globalConfig->Hierarchy->showTree)
-                ? $globalConfig->Hierarchy->showTree : false
+            'enabled' => $globalConfig->Hierarchy->showTree ?? false
         ];
 
         // Load driver-specific configuration:

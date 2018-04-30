@@ -3,7 +3,7 @@
  * Trait for setting up view options. Designed to be included in a subclass of
  * \VuFind\Search\Base\Options.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *

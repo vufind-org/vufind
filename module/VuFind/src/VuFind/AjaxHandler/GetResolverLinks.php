@@ -2,7 +2,7 @@
 /**
  * "Get Resolver Links" AJAX handler
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -30,7 +30,7 @@ namespace VuFind\AjaxHandler;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Resolver\Connection;
-use VuFind\Resolver\Driver\PluginManager;
+use VuFind\Resolver\Driver\PluginManager as ResolverManager;
 use VuFind\Session\Settings as SessionSettings;
 use Zend\Config\Config;
 use Zend\Mvc\Controller\Plugin\Params;
@@ -56,7 +56,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
     /**
      * Resolver driver plugin manager
      *
-     * @var PluginManager
+     * @var ResolverManager
      */
     protected $pluginManager;
 
@@ -78,11 +78,11 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
      * Constructor
      *
      * @param SessionSettings   $ss       Session settings
-     * @param PluginManager     $pm       Resolver driver plugin manager
+     * @param ResolverManager   $pm       Resolver driver plugin manager
      * @param RendererInterface $renderer View renderer
      * @param Config            $config   Top-level VuFind configuration (config.ini)
      */
-    public function __construct(SessionSettings $ss, PluginManager $pm,
+    public function __construct(SessionSettings $ss, ResolverManager $pm,
         RendererInterface $renderer, Config $config
     ) {
         $this->sessionSettings = $ss;

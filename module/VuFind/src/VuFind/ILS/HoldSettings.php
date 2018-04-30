@@ -5,7 +5,7 @@
  * This class is responsible for determining hold settings for VuFind based
  * on configuration and defaults.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *

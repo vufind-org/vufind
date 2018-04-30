@@ -2,7 +2,7 @@
 /**
  * PAIA ILS Driver for VuFind to get patron information
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Oliver Goldschmidt, Magda Roos, Till Kinstler, André Lahmann 2013,
  * 2014, 2015.
@@ -123,7 +123,7 @@ class PAIA extends DAIA
      */
     protected function getCacheKey($suffix = null)
     {
-        return \VuFind\ILS\Driver\AbstractBase::getCacheKey(
+        return $this->getBaseCacheKey(
             md5($this->baseUrl . $this->paiaURL) . $suffix
         );
     }

@@ -2,7 +2,7 @@
 /**
  * AJAX handler to delete a comment on a record.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
  *

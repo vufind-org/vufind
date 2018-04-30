@@ -2,7 +2,7 @@
 /**
  * Plugin Manager factory.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) 2018 Villanova University,
  *               2018 Leipzig University Library <info@ub.uni-leipzig.de>

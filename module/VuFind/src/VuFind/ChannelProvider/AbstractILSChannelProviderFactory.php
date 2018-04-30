@@ -1,7 +1,6 @@
 <?php
-
 /**
- * GeoFeatures Basemap Config Factory Class
+ * Factory for channel providers relying on the ILS.
  *
  * PHP version 5
  *
@@ -18,31 +17,29 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  GeoFeatures
- * @author   Leila Gonzales <lmg@agiweb.org>
+ * @package  Channels
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\GeoFeatures;
+namespace VuFind\ChannelProvider;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * GeoFeatures Basemap Config Factory Class
+ * Factory for channel providers relying on the ILS.
  *
  * @category VuFind
- * @package  GeoFeatures
- * @author   Leila Gonzales <lmg@agiweb.org>
+ * @package  Channels
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
- *
- * @codeCoverageIgnore
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class BasemapConfigFactory implements FactoryInterface
+class AbstractILSChannelProviderFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -61,9 +58,12 @@ class BasemapConfigFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+        if ($options !== null) {
+            throw new \Exception('Unexpected options sent to factory!');
         }
-        return new $requestedName($container->get('VuFind\Config\PluginManager'));
+        return new $requestedName(
+            $container->get('VuFindSearch\Service'),
+            $container->get('VuFind\ILS\Connection')
+        );
     }
 }

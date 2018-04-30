@@ -2,7 +2,7 @@
 /**
  * Channels Controller
  *
- * PHP Version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -78,21 +78,19 @@ class ChannelsController extends AbstractBase
     public function homeAction()
     {
         $config = $this->getConfig('channels');
-        $defaultSearchClassId = isset($config->General->default_home_source)
-            ? $config->General->default_home_source : DEFAULT_SEARCH_BACKEND;
+        $defaultSearchClassId
+            = $config->General->default_home_source ?? DEFAULT_SEARCH_BACKEND;
         $searchClassId = $this->params()->fromQuery('source', $defaultSearchClassId);
         $providerIds = isset($config->{"source.$searchClassId"}->home)
             ? $config->{"source.$searchClassId"}->home->toArray() : [];
         $providers = $this->getChannelProviderArray($providerIds, $config);
 
         $token = $this->params()->fromQuery('channelToken');
-        if (isset($config->General->cache_home_channels)
-            && $config->General->cache_home_channels
-        ) {
+        if ($config->General->cache_home_channels ?? false) {
             $parts = [implode(',', $providerIds), $searchClassId, $token];
-            $cacheKey = 'homeChannels-' . md5(implode('-', $parts));
+            $cacheKey = md5(implode('-', $parts));
             $cache = $this->serviceLocator->get('VuFind\Cache\Manager')
-                ->getCache('object');
+                ->getCache('object', 'homeChannels');
         } else {
             $cacheKey = false;
         }

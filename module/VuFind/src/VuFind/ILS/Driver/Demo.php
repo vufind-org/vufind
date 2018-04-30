@@ -6,7 +6,7 @@
  * the session.  You can log out and log back in to get a different set of
  * values.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2014.
@@ -2193,5 +2193,40 @@ class Demo extends AbstractBase
             ];
         }
         return [];
+    }
+
+    /**
+     * Get bib records for recently returned items.
+     *
+     * @param int   $limit  Maximum number of records to retrieve (default = 30)
+     * @param int   $maxage The maximum number of days to consider "recently
+     * returned."
+     * @param array $patron Patron Data
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getRecentlyReturnedBibs($limit = 30, $maxage = 30,
+        $patron = null
+    ) {
+        // This is similar to getNewItems for demo purposes.
+        $results = $this->getNewItems(1, $limit, $maxage);
+        return $results['results'];
+    }
+
+    /**
+     * Get bib records for "trending" items (recently returned with high usage).
+     *
+     * @param int   $limit  Maximum number of records to retrieve (default = 30)
+     * @param int   $maxage The maximum number of days' worth of data to examine.
+     * @param array $patron Patron Data
+     *
+     * @return array
+     */
+    public function getTrendingBibs($limit = 30, $maxage = 30, $patron = null)
+    {
+        // This is similar to getRecentlyReturnedBibs for demo purposes.
+        return $this->getRecentlyReturnedBibs($limit, $maxage, $patron);
     }
 }

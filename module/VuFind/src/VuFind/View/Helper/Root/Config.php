@@ -2,7 +2,7 @@
 /**
  * Config view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -48,9 +48,9 @@ class Config extends \Zend\View\Helper\AbstractHelper
     protected $configLoader;
 
     /**
-     * Constructor
+     * Config constructor.
      *
-     * @param Helper $helper Capabilities helper
+     * @param PluginManager $configLoader Configuration loader
      */
     public function __construct(PluginManager $configLoader)
     {

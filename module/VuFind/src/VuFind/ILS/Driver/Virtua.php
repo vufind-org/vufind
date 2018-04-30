@@ -2,7 +2,7 @@
 /**
  * VTLS Virtua Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) University of Southern Queensland 2008.
  *

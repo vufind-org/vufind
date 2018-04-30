@@ -2,7 +2,7 @@
 /**
  * Voyager ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2014-2016.
@@ -50,7 +50,9 @@ use VuFind\Exception\ILS as ILSException;
  */
 class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInterface
 {
-    use CacheTrait;
+    use CacheTrait {
+        getCacheKey as protected getBaseCacheKey;
+    }
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**

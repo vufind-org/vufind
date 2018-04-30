@@ -5,7 +5,7 @@
  * Note: This relies on PHP's Memcache extension
  * (see http://us.php.net/manual/en/book.memcache.php)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *

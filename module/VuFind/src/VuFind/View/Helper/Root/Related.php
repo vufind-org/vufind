@@ -2,7 +2,7 @@
 /**
  * Related records view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,9 +27,6 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Zend\View\Exception\RuntimeException;
-use Zend\View\Helper\AbstractHelper;
-
 /**
  * Related records view helper
  *
@@ -39,7 +36,7 @@ use Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Related extends AbstractHelper
+class Related extends AbstractClassBasedTemplateRenderer
 {
     /**
      * Plugin manager for related record modules.
@@ -81,38 +78,9 @@ class Related extends AbstractHelper
      */
     public function render($related)
     {
-        // Set up the rendering context:
-        $contextHelper = $this->getView()->plugin('context');
-        $oldContext = $contextHelper($this->getView())->apply(
-            ['related' => $related]
-        );
-
-        // Get the current related item module's class name, then start a loop
-        // in case we need to use a parent class' name to find the appropriate
-        // template.
+        $template = 'Related/%s.phtml';
         $className = get_class($related);
-        $resolver = $this->getView()->resolver();
-        while (true) {
-            // Guess the template name for the current class:
-            $classParts = explode('\\', $className);
-            $template = 'Related/' . array_pop($classParts) . '.phtml';
-            // Try to resolve the template....
-            if ($resolver->resolve($template)) {
-                $html = $this->getView()->render($template);
-                $contextHelper($this->getView())->restore($oldContext);
-                return $html;
-            } else {
-                // If the template doesn't exist, let's see if we can inherit a
-                // template from a parent class:
-                $className = get_parent_class($className);
-                if (empty($className)) {
-                    // No more parent classes left to try?  Throw an exception!
-                    throw new RuntimeException(
-                        'Cannot find template for related items class: ' .
-                        get_class($related)
-                    );
-                }
-            }
-        }
+        $context = ['related' => $related];
+        return $this->renderClassTemplate($template, $className, $context);
     }
 }

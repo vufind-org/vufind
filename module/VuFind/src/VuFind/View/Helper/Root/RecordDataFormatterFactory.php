@@ -2,7 +2,7 @@
 /**
  * Factory for record driver data formatting view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -90,10 +90,10 @@ class RecordDataFormatterFactory implements FactoryInterface
             [
                 'useCache' => true,
                 'labelFunction' => function ($data) {
-                    return count($data['main']) > 1
+                    return count($data['primary']) > 1
                         ? 'Main Authors' : 'Main Author';
                 },
-                'context' => ['type' => 'main', 'schemaLabel' => 'author'],
+                'context' => ['type' => 'primary', 'schemaLabel' => 'author'],
             ]
         );
         $spec->setTemplateLine(
@@ -158,10 +158,10 @@ class RecordDataFormatterFactory implements FactoryInterface
             [
                 'useCache' => true,
                 'labelFunction' => function ($data) {
-                    return count($data['main']) > 1
+                    return count($data['primary']) > 1
                         ? 'Main Authors' : 'Main Author';
                 },
-                'context' => ['type' => 'main', 'schemaLabel' => 'author'],
+                'context' => ['type' => 'primary', 'schemaLabel' => 'author'],
             ]
         );
         $spec->setTemplateLine(

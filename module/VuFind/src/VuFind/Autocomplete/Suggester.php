@@ -2,7 +2,7 @@
 /**
  * Autocomplete handler plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -132,6 +132,11 @@ class Suggester
 
         if (is_callable([$handler, 'addFilters'])) {
             $handler->addFilters($hiddenFilters);
+        }
+
+        // if the handler needs the complete request, pass it on
+        if (is_callable([$handler, 'setRequest'])) {
+            $handler->setRequest($request);
         }
 
         return (isset($handler) && is_object($handler))

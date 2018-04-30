@@ -2,7 +2,7 @@
 /**
  * VuFind Config Plugin Factory
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) 2010 Villanova University,
  *               2018 Leipzig University Library <info@ub.uni-leipzig.de>

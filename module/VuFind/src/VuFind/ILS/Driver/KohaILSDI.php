@@ -2,7 +2,7 @@
 /**
  * KohaILSDI ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Alex Sassmannshausen, PTFS Europe 2014.
  *
@@ -49,7 +49,9 @@ use Zend\Log\LoggerInterface;
 class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
-    use CacheTrait;
+    use CacheTrait {
+        getCacheKey as protected getBaseCacheKey;
+    }
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -324,7 +326,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getCacheKey($suffix = null)
     {
-        return \VuFind\ILS\Driver\AbstractBase::getCacheKey(
+        return $this->getBaseCacheKey(
             md5($this->ilsBaseUrl) . $suffix
         );
     }

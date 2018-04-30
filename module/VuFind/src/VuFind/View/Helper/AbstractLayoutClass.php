@@ -2,7 +2,7 @@
 /**
  * Helper class for managing high-level (body vs. sidebar) page layout.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *

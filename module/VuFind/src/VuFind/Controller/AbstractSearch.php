@@ -2,7 +2,7 @@
 /**
  * VuFind Search Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -240,6 +240,16 @@ class AbstractSearch extends AbstractBase
             $listener->setConfig($config);
             $listener->attach($runner->getEventManager()->getSharedManager());
         };
+    }
+
+    /**
+     * Home action
+     *
+     * @return mixed
+     */
+    public function homeAction()
+    {
+        return $this->createViewModel();
     }
 
     /**

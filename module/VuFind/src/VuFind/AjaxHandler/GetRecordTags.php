@@ -2,7 +2,7 @@
 /**
  * AJAX handler to get all tags for a record as HTML.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
  *
