@@ -30,7 +30,7 @@
 namespace VuFindTest\Unit;
 
 use Interop\Container\ContainerInterface;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Abstract base class for PHPUnit test cases.

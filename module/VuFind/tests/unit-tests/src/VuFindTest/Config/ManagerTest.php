@@ -30,7 +30,7 @@ namespace VuFindTest\Config;
 
 use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Config\Manager;
 use VuFind\Config\ManagerFactory;
 use Zend\Config\Config;
