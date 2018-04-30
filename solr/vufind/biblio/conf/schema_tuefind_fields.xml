@@ -5,7 +5,7 @@
     <field name="is_superior_work" type="boolean" indexed="false" stored="true" multiValued="false"/>
     <field name="issue" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="journal_issue" type="textProper" indexed="true" stored="true" multiValued="true"/>
-    <field name="mediatype" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="mediatype" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="pages" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="rvk" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="superior_ppn" type="string" indexed="true" stored="true" multiValued="true"/>
@@ -13,4 +13,6 @@
     <field name="volume" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="year" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="is_open_access" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="issue_sort" type="long" indexed="true" stored="true" multiValued="false"/>
+    <field name="start_page" type="long" indexed="true" stored="true" multiValued="false"/>
 </fields>
