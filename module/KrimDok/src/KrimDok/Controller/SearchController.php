@@ -11,8 +11,15 @@ class SearchController extends \VuFind\Controller\SearchController
      */
     public function homeAction()
     {
+        $page = $this->forward()->dispatch('StaticPage', [
+            'action' => 'staticPage',
+            'page' => 'Home'
+        ]);
         return $this->createViewModel(
-            ['results' => null]
+            [
+                'page' => $page,
+                'results' => null
+            ]
         );
     }
 }
