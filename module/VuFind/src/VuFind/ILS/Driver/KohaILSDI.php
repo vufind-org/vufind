@@ -981,7 +981,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     ? 'Unknown' : $rowItem['BARCODE'],
                 'number'       => (null == $rowItem['COPYNO'])
                     ? '' : $rowItem['COPYNO'],
-                'enumchron'    => $rowItem['ENUMCHRON'] ?? '',
+                'enumchron'    => $rowItem['ENUMCHRON'] ?? null,
                 'requests_placed' => $reservesCount ? $reservesCount : 0,
                 'frameworkcode' => $rowItem['DOCTYPE'],
             ];
