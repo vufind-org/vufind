@@ -764,12 +764,8 @@ EOT;
         $data = [];
 
         foreach ($sqlRows as $row) {
-            // Determine Copy Number (always use sequence number; append volume
-            // when available)
+            // Determine Copy Number
             $number = $row['ITEM_SEQUENCE_NUMBER'];
-            if (isset($row['ITEM_ENUM'])) {
-                $number .= ' (' . utf8_encode($row['ITEM_ENUM']) . ')';
-            }
 
             // Concat wrapped rows (MARC data more than 300 bytes gets split
             // into multiple rows)
@@ -1085,6 +1081,8 @@ EOT;
                 }
                 $holding[$i] += [
                     'availability' => $availability['available'],
+                    'enumchron' => isset($row['ITEM_ENUM'])
+                        ? utf8_encode($row['ITEM_ENUM']) : null,
                     'duedate' => $dueDate,
                     'number' => $number,
                     'requests_placed' => $requests_placed,
