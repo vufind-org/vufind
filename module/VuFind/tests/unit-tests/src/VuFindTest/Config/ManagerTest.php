@@ -29,8 +29,8 @@
 namespace VuFindTest\Config;
 
 use Interop\Container\ContainerInterface;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use VuFind\Config\Manager;
 use VuFind\Config\ManagerFactory;
 use Zend\Config\Config;
