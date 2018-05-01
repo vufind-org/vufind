@@ -41,7 +41,7 @@ use Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
-class ChannelsController extends \Zend\Mvc\Controller\AbstractActionController
+class ChannelsController extends AbstractBase
 {
     /**
      * Channel loader
