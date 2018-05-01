@@ -300,6 +300,7 @@ $config = [
             'VuFind\Content\Reviews\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\Summaries\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\TOC\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\ContentBlock\BlockLoader' => 'VuFind\ContentBlock\BlockLoaderFactory',
             'VuFind\ContentBlock\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Cookie\CookieManager' => 'VuFind\Cookie\CookieManagerFactory',
             'VuFind\Cover\Router' => 'VuFind\Cover\RouterFactory',

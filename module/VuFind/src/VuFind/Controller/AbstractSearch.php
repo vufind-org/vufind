@@ -249,23 +249,9 @@ class AbstractSearch extends AbstractBase
      */
     public function homeAction()
     {
-        // Set up default parameters:
-        $blocks = [];
-        $options = $this->serviceLocator->get('VuFind\Search\Options\PluginManager')
-            ->get($this->searchClassId);
-        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
-            ->get($options->getSearchIni());
-        if (isset($config->HomePage->content)) {
-            $pluginManager = $this->serviceLocator
-                ->get('VuFind\ContentBlock\PluginManager');
-            foreach ($config->HomePage->content as $current) {
-                $parts = explode(':', $current, 2);
-                $block = $pluginManager->get($parts[0]);
-                $block->setConfig($parts[1] ?? null);
-                $blocks[] = $block;
-            }
-        }
-        return $this->createViewModel(['blocks' => $blocks]);
+        $blocks = $this->serviceLocator->get('VuFind\ContentBlock\BlockLoader')
+            ->getFromSearchClassId($this->searchClassId);
+        return $this->createViewModel(compact('blocks'));
     }
 
     /**
