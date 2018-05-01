@@ -28,7 +28,6 @@
 namespace VuFind\Controller;
 
 use VuFind\ChannelProvider\ChannelLoader;
-use Zend\Config\Config;
 
 /**
  * Channels Class
