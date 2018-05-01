@@ -102,8 +102,23 @@ class BlockLoader
      */
     public function getFromOptions(Options $options)
     {
-        $config = $this->configManager->get($options->getSearchIni());
-        return $this->getFromConfig($config);
+        return $this->getFromConfig($options->getSearchIni());
+    }
+
+    /**
+     * Fetch blocks using a configuration name
+     *
+     * @param string $name    Configuration name
+     * @param string $section Section to load from object
+     * @param string $setting Setting to load from section
+     *
+     * @return array
+     */
+    public function getFromConfig($name, $section = 'HomePage',
+        $setting = 'content'
+    ) {
+        $config = $this->configManager->get($name);
+        return $this->getFromConfigObject($config, $section, $setting);
     }
 
     /**
@@ -115,7 +130,7 @@ class BlockLoader
      *
      * @return array
      */
-    public function getFromConfig(Config $config, $section = 'HomePage',
+    public function getFromConfigObject(Config $config, $section = 'HomePage',
         $setting = 'content'
     ) {
         $blocks = [];
