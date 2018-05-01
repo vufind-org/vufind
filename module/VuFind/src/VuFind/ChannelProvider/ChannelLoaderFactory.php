@@ -66,7 +66,8 @@ class ChannelLoaderFactory implements FactoryInterface
             $container->get('Request'),
             $container->get('VuFind\Cache\Manager'),
             $container->get('VuFind\ChannelProvider\PluginManager'),
-            $container->get('VuFind\Search\SearchRunner')
+            $container->get('VuFind\Search\SearchRunner'),
+            $container->get('VuFind\Record\Loader')
         );
     }
 }

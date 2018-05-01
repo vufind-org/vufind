@@ -29,6 +29,7 @@ namespace VuFind\ChannelProvider;
 
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\ChannelProvider\PluginManager as ChannelManager;
+use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\SearchRunner;
 use Zend\Config\Config;
 use Zend\Http\PhpEnvironment\Request;
@@ -66,6 +67,13 @@ class ChannelLoader
     protected $config;
 
     /**
+     * Record loader
+     *
+     * @var RecordLoader
+     */
+    protected $recordLoader;
+
+    /**
      * HTTP request object
      *
      * @var Request
@@ -87,15 +95,18 @@ class ChannelLoader
      * @param CacheManager   $cache   Cache manager
      * @param ChannelManager $cm      Channel manager
      * @param SearchRunner   $runner  Search runner
+     * @param RecordLoader   $loader  Record loader
      */
     public function __construct(Config $config, Request $request,
-        CacheManager $cache, ChannelManager $cm, SearchRunner $runner
+        CacheManager $cache, ChannelManager $cm, SearchRunner $runner,
+        RecordLoader $loader
     ) {
         $this->config = $config;
         $this->request = $request;
         $this->cacheManager = $cache;
         $this->channelManager = $cm;
         $this->searchRunner = $runner;
+        $this->recordLoader = $loader;
     }
 
     /**
@@ -216,9 +227,9 @@ class ChannelLoader
      */
     public function getRecordContext()
     {
-        $loader = $this->getRecordLoader();
         $source = $this->request->getQuery()->get('source', DEFAULT_SEARCH_BACKEND);
-        $driver = $loader->load($this->request->getQuery()->get('id'), $source);
+        $driver = $this->recordLoader
+            ->load($this->request->getQuery()->get('id'), $source);
 
         $providerIds = isset($this->config->{"source.$source"}->record)
             ? $this->config->{"source.$source"}->record->toArray() : [];
