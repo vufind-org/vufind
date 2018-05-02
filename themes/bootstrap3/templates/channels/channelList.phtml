@@ -17,7 +17,7 @@
       if (isset($current['contents'])) {
           $finalChannels[] = $current;
           $finalCount++;
-      } else if ($finalCount > 0 && isset($current['token'])) {
+      } elseif ($finalCount > 0 && isset($current['token'])) {
           $finalChannels[$finalCount - 1]['relatedTokens'][] = $current;
       }
   }
