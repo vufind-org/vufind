@@ -1642,8 +1642,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             if ($message == 'ils_connection_failed') {
                 throw new ILSException('ils_offline_status');
             }
+            // Dump full response since $statusAWS->message seems to be empty
             $error = "Failed to mark payment of $amount paid for patron"
-                . " {$patron['id']}: " . $statusAWS->message;
+                . " {$patron['id']}: " . print_r($result->$functionResult, true);
 
             $this->error($error);
             throw new ILSException($error);
