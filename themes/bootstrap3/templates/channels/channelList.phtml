@@ -58,3 +58,7 @@
     <li><a href="<?=current(explode('?', $this->serverUrl(true)))?>?<?=empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')?>channelProvider=<?=urlencode($channel['providerId']) ?>&amp;channelToken=<?=urlencode($channel['token']) ?>&amp;layout=lightbox" data-token="<?=$channel['token'] ?>"><?=$this->escapeHtml($channel['title'])?></a></li>
   <?php endif; ?>
 <?php endforeach; ?>
+<?php if ($insideButton): // close final button if necessary ?>
+    </ul>
+  </div>
+<?php endif; ?>
