@@ -147,7 +147,8 @@ class ChannelLoader
      *
      * @param string $source        Search backend ID
      * @param array  $configSection Configuration section to load ID list from
-     * @param string $activeId      Currently selected channel ID (if any)
+     * @param string $activeId      Currently selected channel ID (if any; used
+     * when making an AJAX request for a single additional channel)
      *
      * @return array
      */
@@ -191,7 +192,7 @@ class ChannelLoader
     /**
      * Generates static front page of channels.
      *
-     * @param string $token         Channel token (optional)
+     * @param string $token         Channel token (optional, used for AJAX fetching)
      * @param string $activeChannel Channel being requested (optional, used w/ token)
      * @param string $activeSource  Search backend to use (null to use configured
      * default).
@@ -234,7 +235,7 @@ class ChannelLoader
      * Generates channels for a record.
      *
      * @param string $recordId      Record ID to load
-     * @param string $token         Channel token (optional)
+     * @param string $token         Channel token (optional, used for AJAX fetching)
      * @param string $activeChannel Channel being requested (optional, used w/ token)
      * @param string $source        Search backend to use
      *
@@ -265,7 +266,7 @@ class ChannelLoader
      * Generates channels for a search.
      *
      * @param array  $searchRequest Request parameters
-     * @param string $token         Channel token (optional)
+     * @param string $token         Channel token (optional, used for AJAX fetching)
      * @param string $activeChannel Channel being requested (optional, used w/ token)
      * @param string $source        Search backend to use
      *
