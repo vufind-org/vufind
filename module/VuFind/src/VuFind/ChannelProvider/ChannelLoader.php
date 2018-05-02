@@ -145,14 +145,18 @@ class ChannelLoader
      * Get an array of channel providers matching the provided IDs (or just one,
      * if the channelProvider GET parameter is set).
      *
-     * @param array  $providerIds Array of IDs to load
+     * @param string $source        Search backend ID
+     * @param array  $configSection Configuration section to load ID list from
+     * @param string $activeId      Currently selected channel ID (if any)
      *
      * @return array
      */
-    protected function getChannelProviderArray($providerIds, $activeId = null)
+    protected function getChannelProviders($source, $configSection, $activeId = null)
     {
-        $finalIds = (!empty($id) && in_array($id, $providerIds))
-            ? [$id] : $providerIds;
+        $providerIds = isset($this->config->{"source.$source"}->$configSection)
+            ? $this->config->{"source.$source"}->$configSection->toArray() : [];
+        $finalIds = (!empty($activeId) && in_array($activeId, $providerIds))
+            ? [$activeId] : $providerIds;
         return array_map([$this, 'getChannelProvider'], $finalIds);
     }
 
@@ -189,25 +193,24 @@ class ChannelLoader
      *
      * @param string $token         Channel token (optional)
      * @param string $activeChannel Channel being requested (optional, used w/ token)
-     * @param string $source        Search backend to use (null to use configured
+     * @param string $activeSource  Search backend to use (null to use configured
      * default).
      *
      * @return array
      */
     public function getHomeContext($token = null,  $activeChannel = null,
-        $source = null
+        $activeSource = null
     ) {
         // Load appropriate channel objects:
-        $defaultSearchClassId = $this->config->General->default_home_source
+        $defaultSource = $this->config->General->default_home_source
             ?? DEFAULT_SEARCH_BACKEND;
-        $searchClassId = $source ?? $defaultSearchClassId;
-        $providerIds = isset($this->config->{"source.$searchClassId"}->home)
-            ? $this->config->{"source.$searchClassId"}->home->toArray() : [];
-        $providers = $this->getChannelProviderArray($providerIds, $activeChannel);
+        $source = $activeSource ?? $defaultSource;
+        $providers = $this->getChannelProviders($source, 'home', $activeChannel);
 
         // Set up the cache, if appropriate:
         if ($this->config->General->cache_home_channels ?? false) {
-            $parts = [implode(',', $providerIds), $searchClassId, $token];
+            $providerIds = array_map('get_class', $providers);
+            $parts = [implode(',', $providerIds), $source, $token];
             $cacheKey = md5(implode('-', $parts));
             $cache = $this->cacheManager->getCache('object', 'homeChannels');
         } else {
@@ -244,9 +247,7 @@ class ChannelLoader
         $driver = $this->recordLoader->load($recordId, $source);
 
         // Load appropriate channel objects:
-        $providerIds = isset($this->config->{"source.$source"}->record)
-            ? $this->config->{"source.$source"}->record->toArray() : [];
-        $providers = $this->getChannelProviderArray($providerIds, $activeChannel);
+        $providers = $this->getChannelProviders($source, 'record', $activeChannel);
 
         // Collect details:
         $channels = [];
@@ -274,9 +275,7 @@ class ChannelLoader
         $activeChannel = null, $source = DEFAULT_SEARCH_BACKEND
     ) {
         // Load appropriate channel objects:
-        $providerIds = isset($this->config->{"source.$source"}->search)
-            ? $this->config->{"source.$source"}->search->toArray() : [];
-        $providers = $this->getChannelProviderArray($providerIds, $activeChannel);
+        $providers = $this->getChannelProviders($source, 'search', $activeChannel);
 
         // Perform search:
         $results = $this->performChannelSearch($searchRequest, $providers, $source);
