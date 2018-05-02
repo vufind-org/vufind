@@ -168,7 +168,9 @@ finna.record = (function finnaRecord() {
     var accordion = (newTab.length <= 1 || newTab === '#tabnav' || $tab.length === 0)
       ? $('.record-accordions .accordion.initiallyActive')
       : $tab.closest('.accordion');
-    _toggleAccordion(accordion, true);
+    if (accordion.length > 0) {
+      _toggleAccordion(accordion, true);
+    }
   }
 
   // The accordion has a delicate relationship with the tabs. Handle with care!

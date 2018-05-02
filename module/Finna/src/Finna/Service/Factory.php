@@ -247,6 +247,18 @@ class Factory extends \VuFind\Service\Factory
     }
 
     /**
+     * Construct the RecordTab Plugin Manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\RecordTab\PluginManager
+     */
+    public static function getRecordTabPluginManager(ServiceManager $sm)
+    {
+        return static::getGenericPluginManager($sm, 'RecordTab');
+    }
+
+    /**
      * Construct the search specs reader.
      *
      * @param ServiceManager $sm Service manager.
