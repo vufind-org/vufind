@@ -141,21 +141,15 @@ class ChannelLoader
      * if the channelProvider GET parameter is set).
      *
      * @param array  $providerIds Array of IDs to load
-     * @param Config $config      Channel configuration
      *
      * @return array
      */
-    protected function getChannelProviderArray($providerIds, $config)
+    protected function getChannelProviderArray($providerIds)
     {
         $id = $this->request->getQuery()->get('channelProvider');
-        if (!empty($id) && in_array($id, $providerIds)) {
-            return [$this->getChannelProvider($id, $config)];
-        }
-        $results = [];
-        foreach ($providerIds as $id) {
-            $results[] = $this->getChannelProvider($id, $config);
-        }
-        return $results;
+        $finalIds = (!empty($id) && in_array($id, $providerIds))
+            ? [$id] : $providerIds;
+        return array_map([$this, 'getChannelProvider'], $finalIds);
     }
 
     /**
@@ -163,11 +157,10 @@ class ChannelLoader
      *
      * @param string $providerId Channel provider name and optional config
      * (colon-delimited)
-     * @param Config $config     Channel configuration
      *
      * @return \VuFind\ChannelProvider\ChannelProviderInterface
      */
-    protected function getChannelProvider($providerId, Config $config)
+    protected function getChannelProvider($providerId)
     {
         // The provider ID consists of a service name and an optional config
         // section -- break out the relevant parts:
@@ -177,8 +170,8 @@ class ChannelLoader
         if (empty($configSection)) {
             $configSection = "provider.$serviceName";
         }
-        $options = isset($config->{$configSection})
-            ? $config->{$configSection}->toArray() : [];
+        $options = isset($this->config->{$configSection})
+            ? $this->config->{$configSection}->toArray() : [];
 
         // Load the service, and configure appropriately:
         $provider = $this->channelManager->get($serviceName);
@@ -200,7 +193,7 @@ class ChannelLoader
             ->get('source', $defaultSearchClassId);
         $providerIds = isset($this->config->{"source.$searchClassId"}->home)
             ? $this->config->{"source.$searchClassId"}->home->toArray() : [];
-        $providers = $this->getChannelProviderArray($providerIds, $this->config);
+        $providers = $this->getChannelProviderArray($providerIds);
 
         $token = $this->request->getQuery()->get('channelToken');
         if ($this->config->General->cache_home_channels ?? false) {
@@ -235,7 +228,7 @@ class ChannelLoader
             ? $this->config->{"source.$source"}->record->toArray() : [];
         $channels = [];
         $token = $this->request->getQuery()->get('channelToken');
-        $providers = $this->getChannelProviderArray($providerIds, $this->config);
+        $providers = $this->getChannelProviderArray($providerIds);
         foreach ($providers as $provider) {
             $channels = array_merge(
                 $channels, $provider->getFromRecord($driver, $token)
@@ -259,7 +252,7 @@ class ChannelLoader
 
         $providerIds = isset($this->config->{"source.$searchClassId"}->search)
             ? $this->config->{"source.$searchClassId"}->search->toArray() : [];
-        $providers = $this->getChannelProviderArray($providerIds, $this->config);
+        $providers = $this->getChannelProviderArray($providerIds);
 
         $callback = function ($runner, $params, $searchClassId) use ($providers) {
             foreach ($providers as $provider) {
