@@ -86,7 +86,7 @@ function bindChannelAddMenu(iteration, scope) {
     $.ajax(e.target.href).done(function addChannelAjaxDone(data) {
       var list = $(e.target).closest('.dropdown-menu');
       var $testEls = $('<div>' + data + '</div>').find('.channel-wrapper');
-      $testEls.each(function (i, element) {
+      $testEls.each(function addRetrievedNonEmptyChannels(i, element) {
         var $testEl = $(element);
         // Make sure the channel has content
         if ($testEl.find('.channel-record').length === 0) {
