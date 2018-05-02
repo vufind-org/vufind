@@ -199,7 +199,7 @@ class ChannelLoader
      *
      * @return array
      */
-    public function getHomeContext($token = null,  $activeChannel = null,
+    public function getHomeContext($token = null, $activeChannel = null,
         $activeSource = null
     ) {
         // Load appropriate channel objects:
@@ -241,7 +241,7 @@ class ChannelLoader
      *
      * @return array
      */
-    public function getRecordContext($recordId, $token = null, 
+    public function getRecordContext($recordId, $token = null,
         $activeChannel = null, $source = DEFAULT_SEARCH_BACKEND
     ) {
         // Load record:
