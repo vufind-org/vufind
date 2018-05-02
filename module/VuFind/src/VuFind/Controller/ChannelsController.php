@@ -66,7 +66,11 @@ class ChannelsController extends AbstractBase
      */
     public function homeAction()
     {
-        return $this->createViewModel($this->loader->getHomeContext());
+        $source = $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        $activeChannel = $this->params()->fromQuery('channelProvider');
+        $token = $this->params()->fromQuery('channelToken');
+        $context = $this->loader->getHomeContext($token, $activeChannel, $source);
+        return $this->createViewModel($context);
     }
 
     /**
@@ -76,7 +80,13 @@ class ChannelsController extends AbstractBase
      */
     public function recordAction()
     {
-        return $this->createViewModel($this->loader->getRecordContext());
+        $recordId = $this->params()->fromQuery('id');
+        $source = $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        $activeChannel = $this->params()->fromQuery('channelProvider');
+        $token = $this->params()->fromQuery('channelToken');
+        $context = $this->loader
+            ->getRecordContext($recordId, $token, $activeChannel, $source);
+        return $this->createViewModel($context);
     }
 
     /**
@@ -86,6 +96,14 @@ class ChannelsController extends AbstractBase
      */
     public function searchAction()
     {
-        return $this->createViewModel($this->loader->getSearchContext());
+        // Send both GET and POST variables to search class:
+        $request = $this->getRequest()->getQuery()->toArray()
+            + $this->getRequest()->getPost()->toArray();
+        $source = $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        $activeChannel = $this->params()->fromQuery('channelProvider');
+        $token = $this->params()->fromQuery('channelToken');
+        $context = $this->loader
+            ->getSearchContext($request, $token, $activeChannel, $source);
+        return $this->createViewModel($context);
     }
 }

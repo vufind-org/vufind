@@ -30,9 +30,9 @@ namespace VuFind\ChannelProvider;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\ChannelProvider\PluginManager as ChannelManager;
 use VuFind\Record\Loader as RecordLoader;
+use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
 use Zend\Config\Config;
-use Zend\Http\PhpEnvironment\Request;
 
 /**
  * Channel loader
@@ -74,13 +74,6 @@ class ChannelLoader
     protected $recordLoader;
 
     /**
-     * HTTP request object
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
      * Search runner
      *
      * @var SearchRunner
@@ -91,7 +84,6 @@ class ChannelLoader
      * Constructor
      *
      * @param Config         $config  Channels configuration
-     * @param Request        $request HTTP request
      * @param CacheManager   $cache   Cache manager
      * @param ChannelManager $cm      Channel manager
      * @param SearchRunner   $runner  Search runner
@@ -102,7 +94,6 @@ class ChannelLoader
         RecordLoader $loader
     ) {
         $this->config = $config;
-        $this->request = $request;
         $this->cacheManager = $cache;
         $this->channelManager = $cm;
         $this->searchRunner = $runner;
@@ -110,23 +101,38 @@ class ChannelLoader
     }
 
     /**
-     * Retrieve channel information for the Channels/Home page.
+     * Get a search results object configured by channel providers.
      *
+     * @param array  $searchRequest Search request parameters
      * @param array  $providers     Array of channel providers
-     * @param string $searchClassId Search class ID
-     * @param string $token         Channel token
+     * @param string $source        Backend to use
      *
-     * @return array
+     * @return Results
      */
-    protected function getHomeChannels($providers, $searchClassId, $token)
+    protected function performChannelSearch($searchRequest, $providers, $source)
     {
-        $callback = function ($runner, $params, $searchClassId) use ($providers) {
+        // Perform search and configure providers:
+        $callback = function ($runner, $params) use ($providers) {
             foreach ($providers as $provider) {
                 $provider->configureSearchParams($params);
             }
         };
-        $results = $this->searchRunner->run([], $searchClassId, $callback);
+        return $this->searchRunner->run($searchRequest, $source, $callback);
+    }
 
+    /**
+     * Get channel details using an array of providers and a populated search
+     * results object.
+     *
+     * @param array   $providers Array of channel providers
+     * @param Results $results   Search results object from performChannelSearch
+     * @param string  $token     Optional channel token
+     *
+     * @return array
+     */
+    protected function getChannelsFromResults($providers, Results $results, $token)
+    {
+        // Collect details:
         $channels = [];
         foreach ($providers as $provider) {
             $channels = array_merge(
@@ -144,9 +150,8 @@ class ChannelLoader
      *
      * @return array
      */
-    protected function getChannelProviderArray($providerIds)
+    protected function getChannelProviderArray($providerIds, $activeId = null)
     {
-        $id = $this->request->getQuery()->get('channelProvider');
         $finalIds = (!empty($id) && in_array($id, $providerIds))
             ? [$id] : $providerIds;
         return array_map([$this, 'getChannelProvider'], $finalIds);
@@ -158,7 +163,7 @@ class ChannelLoader
      * @param string $providerId Channel provider name and optional config
      * (colon-delimited)
      *
-     * @return \VuFind\ChannelProvider\ChannelProviderInterface
+     * @return ChannelProviderInterface
      */
     protected function getChannelProvider($providerId)
     {
@@ -183,19 +188,25 @@ class ChannelLoader
     /**
      * Generates static front page of channels.
      *
+     * @param string $token         Channel token (optional)
+     * @param string $activeChannel Channel being requested (optional, used w/ token)
+     * @param string $source        Search backend to use (null to use configured
+     * default).
+     *
      * @return array
      */
-    public function getHomeContext()
-    {
-        $defaultSearchClassId
-            = $this->config->General->default_home_source ?? DEFAULT_SEARCH_BACKEND;
-        $searchClassId = $this->request->getQuery()
-            ->get('source', $defaultSearchClassId);
+    public function getHomeContext($token = null,  $activeChannel = null,
+        $source = null
+    ) {
+        // Load appropriate channel objects:
+        $defaultSearchClassId = $this->config->General->default_home_source
+            ?? DEFAULT_SEARCH_BACKEND;
+        $searchClassId = $source ?? $defaultSearchClassId;
         $providerIds = isset($this->config->{"source.$searchClassId"}->home)
             ? $this->config->{"source.$searchClassId"}->home->toArray() : [];
-        $providers = $this->getChannelProviderArray($providerIds);
+        $providers = $this->getChannelProviderArray($providerIds, $activeChannel);
 
-        $token = $this->request->getQuery()->get('channelToken');
+        // Set up the cache, if appropriate:
         if ($this->config->General->cache_home_channels ?? false) {
             $parts = [implode(',', $providerIds), $searchClassId, $token];
             $cacheKey = md5(implode('-', $parts));
@@ -203,72 +214,79 @@ class ChannelLoader
         } else {
             $cacheKey = false;
         }
-        $channels = $cacheKey ? $cache->getItem($cacheKey) : false;
-        if (!$channels) {
-            $channels = $this->getHomeChannels($providers, $searchClassId, $token);
+
+        // Fetch channel data from cache, or populate cache if necessary:
+        if (!($channels = $cacheKey ? $cache->getItem($cacheKey) : false)) {
+            $results = $this->performChannelSearch([], $providers, $source);
+            $channels = $this->getChannelsFromResults($providers, $results, $token);
             if ($cacheKey) {
                 $cache->setItem($cacheKey, $channels);
             }
         }
+
+        // Return context array:
         return compact('token', 'channels');
     }
 
     /**
      * Generates channels for a record.
      *
+     * @param string $recordId      Record ID to load
+     * @param string $token         Channel token (optional)
+     * @param string $activeChannel Channel being requested (optional, used w/ token)
+     * @param string $source        Search backend to use
+     *
      * @return array
      */
-    public function getRecordContext()
-    {
-        $source = $this->request->getQuery()->get('source', DEFAULT_SEARCH_BACKEND);
-        $driver = $this->recordLoader
-            ->load($this->request->getQuery()->get('id'), $source);
+    public function getRecordContext($recordId, $token = null, 
+        $activeChannel = null, $source = DEFAULT_SEARCH_BACKEND
+    ) {
+        // Load record:
+        $driver = $this->recordLoader->load($recordId, $source);
 
+        // Load appropriate channel objects:
         $providerIds = isset($this->config->{"source.$source"}->record)
             ? $this->config->{"source.$source"}->record->toArray() : [];
+        $providers = $this->getChannelProviderArray($providerIds, $activeChannel);
+
+        // Collect details:
         $channels = [];
-        $token = $this->request->getQuery()->get('channelToken');
-        $providers = $this->getChannelProviderArray($providerIds);
         foreach ($providers as $provider) {
             $channels = array_merge(
                 $channels, $provider->getFromRecord($driver, $token)
             );
         }
+
+        // Return context array:
         return compact('driver', 'channels', 'token');
     }
 
     /**
      * Generates channels for a search.
      *
+     * @param array  $searchRequest Request parameters
+     * @param string $token         Channel token (optional)
+     * @param string $activeChannel Channel being requested (optional, used w/ token)
+     * @param string $source        Search backend to use
+     *
      * @return array
      */
-    public function getSearchContext()
-    {
-        // Send both GET and POST variables to search class:
-        $request = $this->request->getQuery()->toArray()
-            + $this->request->getPost()->toArray();
-        $searchClassId = $this->request->getQuery()
-            ->get('source', DEFAULT_SEARCH_BACKEND);
+    public function getSearchContext($searchRequest = [], $token = null,
+        $activeChannel = null, $source = DEFAULT_SEARCH_BACKEND
+    ) {
+        // Load appropriate channel objects:
+        $providerIds = isset($this->config->{"source.$source"}->search)
+            ? $this->config->{"source.$source"}->search->toArray() : [];
+        $providers = $this->getChannelProviderArray($providerIds, $activeChannel);
 
-        $providerIds = isset($this->config->{"source.$searchClassId"}->search)
-            ? $this->config->{"source.$searchClassId"}->search->toArray() : [];
-        $providers = $this->getChannelProviderArray($providerIds);
+        // Perform search:
+        $results = $this->performChannelSearch($searchRequest, $providers, $source);
 
-        $callback = function ($runner, $params, $searchClassId) use ($providers) {
-            foreach ($providers as $provider) {
-                $provider->configureSearchParams($params);
-            }
-        };
-        $results = $this->searchRunner->run($request, $searchClassId, $callback);
+        // Collect details:
+        $lookfor = $searchRequest['lookfor'] ?? null;
+        $channels = $this->getChannelsFromResults($providers, $results, $token);
 
-        $channels = [];
-        $lookfor = $this->request->getQuery()->get('lookfor');
-        $token = $this->request->getQuery()->get('channelToken');
-        foreach ($providers as $provider) {
-            $channels = array_merge(
-                $channels, $provider->getFromSearch($results, $token)
-            );
-        }
+        // Return context array:
         return compact('results', 'lookfor', 'channels', 'token');
     }
 }
