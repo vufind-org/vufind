@@ -1,6 +1,6 @@
 <?php
 /**
- * FacetCache content block.
+ * FacetList content block.
  *
  * PHP version 7
  *
@@ -32,7 +32,7 @@ use VuFind\Search\FacetCache\PluginManager as FacetCacheManager;
 use Zend\Config\Config;
 
 /**
- * FacetCache content block.
+ * FacetList content block.
  *
  * @category VuFind
  * @package  ContentBlock
@@ -40,7 +40,7 @@ use Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class FacetCache implements ContentBlockInterface
+class FacetList implements ContentBlockInterface
 {
     /**
      * Number of values to put in each column of results.

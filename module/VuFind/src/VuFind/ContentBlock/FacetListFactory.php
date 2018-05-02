@@ -1,6 +1,6 @@
 <?php
 /**
- * FacetCache content block factory.
+ * FacetList content block factory.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * FacetCache content block factory.
+ * FacetList content block factory.
  *
  * @category VuFind
  * @package  ContentBlock
@@ -39,7 +39,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class FacetCacheFactory implements FactoryInterface
+class FacetListFactory implements FactoryInterface
 {
     /**
      * Create an object

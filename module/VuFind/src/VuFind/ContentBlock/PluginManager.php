@@ -44,7 +44,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'facetcache' => 'VuFind\ContentBlock\FacetCache',
+        'facetlist' => 'VuFind\ContentBlock\FacetList',
         'ilsstatusmonitor' => 'VuFind\ContentBlock\IlsStatusMonitor',
     ];
 
@@ -54,7 +54,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\ContentBlock\FacetCache' => 'VuFind\ContentBlock\FacetCacheFactory',
+        'VuFind\ContentBlock\FacetList' => 'VuFind\ContentBlock\FacetListFactory',
         'VuFind\ContentBlock\IlsStatusMonitor' =>
             'Zend\ServiceManager\Factory\InvokableFactory',
     ];
