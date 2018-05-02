@@ -158,9 +158,7 @@ class Factory extends \VuFind\Service\Factory
         $configKey = strtolower(str_replace('\\', '_', $ns));
         $config = $sm->get('Config');
         return new $className(
-            new \Zend\ServiceManager\Config(
-                $config['vufind']['plugin_managers'][$configKey]
-            )
+            $sm, $config['vufind']['plugin_managers'][$configKey]
         );
     }
 
