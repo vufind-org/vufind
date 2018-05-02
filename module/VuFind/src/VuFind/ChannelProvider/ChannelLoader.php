@@ -83,11 +83,11 @@ class ChannelLoader
     /**
      * Constructor
      *
-     * @param Config         $config  Channels configuration
-     * @param CacheManager   $cache   Cache manager
-     * @param ChannelManager $cm      Channel manager
-     * @param SearchRunner   $runner  Search runner
-     * @param RecordLoader   $loader  Record loader
+     * @param Config         $config Channels configuration
+     * @param CacheManager   $cache  Cache manager
+     * @param ChannelManager $cm     Channel manager
+     * @param SearchRunner   $runner Search runner
+     * @param RecordLoader   $loader Record loader
      */
     public function __construct(Config $config, CacheManager $cache,
         ChannelManager $cm, SearchRunner $runner, RecordLoader $loader
