@@ -89,9 +89,8 @@ class ChannelLoader
      * @param SearchRunner   $runner  Search runner
      * @param RecordLoader   $loader  Record loader
      */
-    public function __construct(Config $config, Request $request,
-        CacheManager $cache, ChannelManager $cm, SearchRunner $runner,
-        RecordLoader $loader
+    public function __construct(Config $config, CacheManager $cache,
+        ChannelManager $cm, SearchRunner $runner, RecordLoader $loader
     ) {
         $this->config = $config;
         $this->cacheManager = $cache;
