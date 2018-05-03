@@ -45,16 +45,37 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
      */
     protected $httpService;
     
+    /**
+     * Http response
+     * @var \Zend\Http\Response
+     */
     protected $httpResponse;
+    
+    /**
+     * Http headers
+     * @var \Zend\Http\Headers
+     */
     protected $httpHeaders;
     
+    /**
+     * Alma.ini config
+     * @var \Zend\Config\Config
+     */
     protected $configAlma;
+    
+    /**
+     * User table
+     * 
+     * @var \VuFind\Db\Table\User
+     */
+    protected $userTable;
     
     public function __construct(ServiceLocatorInterface $sm) {
         parent::__construct($sm);
         $this->httpResponse = new HttpResponse();
         $this->httpHeaders = $this->httpResponse->getHeaders();
         $this->configAlma = $sm->get('VuFind\Config\PluginManager')->get('Alma');
+    	$this->userTable = $this->getTable('user');
     }
     
     public function webhookAction() {
@@ -72,12 +93,18 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
         
         // Perform webhook action
         switch ($webhookAction) {
+            
             case 'USER':
                 return $this->webhookUser($requestBodyJson);
-            case 'NOTIFICATION':
-                return $this->webhookNotification();
+                break;
             case 'JOB_END':
-                return $this->webhookJobEnd();
+            case 'NOTIFICATION':
+            case 'LOAN':
+            case 'REQUEST':
+            case 'BIB':
+            case 'ITEM':
+                return $this->webhookNotImplemented($webhookAction);
+            	break;
             default:
                 return $this->webhookChallenge();
                 break;
@@ -85,6 +112,12 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
     }
     
     protected function webhookUser($requestBodyJson) {
+    	
+    	// Initialize user variable that should hold the user table row
+        $user = null;
+        
+        // Initialize response variable
+        $jsonResponse = null;
         
         // Get method from webhook (e. g. "create" for "new user")
         $method = (isset($requestBodyJson->webhook_user->method)) ? $requestBodyJson->webhook_user->method : null;
@@ -92,17 +125,11 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
         // Get primary ID
         $primaryId = (isset($requestBodyJson->webhook_user->user->primary_id)) ? $requestBodyJson->webhook_user->user->primary_id : null;
         
-        
         if ($method == 'CREATE' || $method == 'UPDATE') {
-            // Get username (could also be the barcode)
+            // Get username (could e. g. be the barcode)
             $username = null;
             $userIdentifiers = (isset($requestBodyJson->webhook_user->user->user_identifier)) ? $requestBodyJson->webhook_user->user->user_identifier : null;
             $idTypeConfig = ($this->configAlma->NewUser->idType != null && isset($this->configAlma->NewUser->idType)) ? $this->configAlma->NewUser->idType : null;
-            
-            if ($idTypeConfig == null) {
-                return $this->createJsonResponse('The setting "NewUser" -> "idType" is empty in Alma.ini.', 500);
-            }
-            
             foreach ($userIdentifiers as $userIdentifier) {
                 $idTypeHook = (isset($userIdentifier->id_type->value)) ? $userIdentifier->id_type->value : null;
                 if ($idTypeHook != null && $idTypeHook == $idTypeConfig && $username == null) {
@@ -110,45 +137,68 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
                 }
             }
             
-            // TEST
-            return $this->createJsonResponse('Test Alma Webhook - USER CREATE. $idTypeConfig: '.$idTypeConfig, 200);
+            // Use primary ID as username as a fallback if no other username ID is available
+            $username = ($username == null) ? $primaryId : $username;
+            
+            // Get user details from Alma Webhook message
+            $firstname = (isset($requestBodyJson->webhook_user->user->first_name)) ? $requestBodyJson->webhook_user->user->first_name : null;
+            $lastname = (isset($requestBodyJson->webhook_user->user->last_name)) ? $requestBodyJson->webhook_user->user->last_name : null;
+            
+            $allEmails = (isset($requestBodyJson->webhook_user->user->contact_info->email)) ? $requestBodyJson->webhook_user->user->contact_info->email : null;
+            $email = null;
+            foreach ($allEmails as $currentEmail) {
+				$preferred = (isset($currentEmail->preferred)) ? $currentEmail->preferred : false;
+				if ($preferred && $email == null) {
+					$email = (isset($currentEmail->email_address)) ? $currentEmail->email_address : null;
+				}
+			}
+			
+            if ($method == 'CREATE') {
+				$user = $this->userTable->getByUsername($username, true);
+            }
+            
+            if ($method == 'UPDATE') {
+            	$user = $this->userTable->getByCatalogId($primaryId);
+            }
+            
+            if ($user) {
+            	$user->username = $username;
+				$user->password = 'password';
+				$user->pass_hash = 'pass_hash';
+				$user->firstname = $firstname;
+				$user->lastname = $lastname;
+				$user->email = $email;
+				$user->cat_id = $primaryId;
+				$user->cat_username = $username;
+				$user->cat_password = 'cat_password';
+				$user->cat_pass_enc = 'cat_pass_enc';
+
+				try {
+					$user->save();
+					$jsonResponse = $this->createJsonResponse('Successfully '.strtolower($method).'d user with primary ID \''.$primaryId.'\' | username \''.$username.'\'.', 200);
+				} catch (\Exception $ex) {
+            		$jsonResponse = $this->createJsonResponse('Error when saving new user with primary ID \''.$primaryId.'\' | username \''.$username.'\' to VuFind database: '.$ex->getMessage(), 400);
+				}
+            } else {
+	        	$jsonResponse = $this->createJsonResponse('User with primary ID \''.$primaryId.'\' | username \''.$username.'\' was not found in VuFind database and therefore could not be '.strtolower($method).'d.', 404);
+            }
+        } else if ($method == 'DELETE') {
+        	$user = $this->userTable->getByCatalogId($primaryId);
+        	if ($user) {
+	        	$rowsAffected = $user->delete();
+	        	if ($rowsAffected == 1) {
+	        		$jsonResponse = $this->createJsonResponse('Successfully deleted use with primary ID \''.$primaryId.'\' in VuFind.', 200);
+	        	} else {
+	        		$jsonResponse = $this->createJsonResponse('Problem when deleting user with \''.$primaryId.'\' in VuFind. It is expected that only 1 row of the VuFind user table is affected by the deletion. But '.$rowsAffected.' were affected. Please check the status of the user in the VuFind database.', 400);
+	        	}
+        	} else {
+	        	$jsonResponse = $this->createJsonResponse('User with primary ID \''.$primaryId.'\' was not found in VuFind database and therefore could not be deleted.', 404);
+        	}
         }
         
-        
-        /*
-        $returnArray = [];
-        $returnArray[] = 'Test Alma Webhook - USER.';        
-        $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
-        
-        $this->httpHeaders->addHeaderLine('Content-type', 'application/json');
-        $this->httpResponse->setStatusCode(200); // Set HTTP status code to Bad Request (400)
-        $this->httpResponse->setContent($returnJson);
-        return $this->httpResponse;
-        */
+        return $jsonResponse;
     }
-    
-    protected function webhookNotification() {
-        $returnArray = [];
-        $returnArray[] = 'Test Alma Webhook - NOTIFICATION.';
-        $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
         
-        $this->httpHeaders->addHeaderLine('Content-type', 'application/json');
-        $this->httpResponse->setStatusCode(200); // Set HTTP status code to Bad Request (400)
-        $this->httpResponse->setContent($returnJson);
-        return $this->httpResponse;
-    }
-    
-    protected function webhookJobEnd() {
-        $returnArray = [];
-        $returnArray[] = 'Test Alma Webhook - JOB END.';
-        $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
-        
-        $this->httpHeaders->addHeaderLine('Content-type', 'application/json');
-        $this->httpResponse->setStatusCode(200); // Set HTTP status code to Bad Request (400)
-        $this->httpResponse->setContent($returnJson);
-        return $this->httpResponse;
-    }
-    
     protected function webhookChallenge() {
         
         // Get challenge string from the get parameter that Alma sends us. We need to return this string in the return message.
@@ -159,12 +209,10 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
         
         if ($secret != null && !empty(trim($secret)) && isset($secret)) {
             $returnArray['challenge'] = $secret;
-            // Set HTTP status code to "OK" (200)
             $this->httpResponse->setStatusCode(200);
         } else {
-            $returnArray['error'] = 'GET parameter "challenge" is empty, not set or not available when receiving webhook challenge from Alma.';
-            // Set HTTP status code to "Bad Request" (400)
-            $this->httpResponse->setStatusCode(400);
+            $returnArray['error'] = 'GET parameter \'challenge\' is empty, not set or not available when receiving webhook challenge from Alma.';
+            $this->httpResponse->setStatusCode(500);
         }
         
         // Remove null from array
@@ -187,5 +235,10 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
         $this->httpResponse->setContent($returnJson);
         return $this->httpResponse;
     }
+    
+    protected function webhookNotImplemented($webhookType) {
+        return $this->createJsonResponse($webhookType.' Alma Webhook is not (yet) implemented in VuFind.', 400);
+    }
+    
 }
 ?>
