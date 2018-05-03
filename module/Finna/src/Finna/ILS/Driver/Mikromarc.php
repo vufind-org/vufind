@@ -1569,8 +1569,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 $orderedTotal += $item['availabilityInfo']['ordered'];
             }
 
-            $reservationsTotal += $item['availabilityInfo']['reservations'];
-
+            $reservationsTotal = $item['availabilityInfo']['reservations'];
             $locations[$item['location']] = true;
 
             if ($item['is_holdable']) {
