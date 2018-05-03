@@ -27,17 +27,13 @@
  */
 namespace VuFind\Controller;
 
-use \ZfcRbac\Service\AuthorizationServiceAwareInterface;
-use \ZfcRbac\Service\AuthorizationServiceAwareTrait;
 use \Zend\ServiceManager\ServiceLocatorInterface;
 use \Zend\Http\Response as HttpResponse;
 //use \Zend\Http\Request as HttpRequest;
 //use \Zend\Mail as Mail;
 
 
-class AlmaController extends AbstractBase implements AuthorizationServiceAwareInterface {
-    
-    use AuthorizationServiceAwareTrait;
+class AlmaController extends AbstractBase {
     
     /**
      * Http service
@@ -70,11 +66,19 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
      */
     protected $userTable;
     
+    /**
+     * Authorization with permissions.ini
+     * 
+     * 
+     */
+    protected $auth;
+    
     public function __construct(ServiceLocatorInterface $sm) {
+    	
         parent::__construct($sm);
         $this->httpResponse = new HttpResponse();
         $this->httpHeaders = $this->httpResponse->getHeaders();
-        $this->configAlma = $sm->get('VuFind\Config\PluginManager')->get('Alma');
+        $this->configAlma = $this->getConfig('Alma');
     	$this->userTable = $this->getTable('user');
     }
     
@@ -95,6 +99,13 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
         switch ($webhookAction) {
             
             case 'USER':
+            	$accessPermission = 'access.alma.webhook.user';
+            	try {
+					$this->checkPermission($accessPermission, $webhookAction);
+				} catch (\VuFind\Exception\Forbidden $ex) {
+					return $this->createJsonResponse('Access to Alma Webhook \'' . $webhookAction . '\' forbidden. Set permission \''.$accessPermission.'\' in \'permissions.ini\'.', 403);
+				}
+		
                 return $this->webhookUser($requestBodyJson);
                 break;
             case 'JOB_END':
@@ -106,6 +117,12 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
                 return $this->webhookNotImplemented($webhookAction);
             	break;
             default:
+            	$accessPermission = 'access.alma.webhook.challenge';
+            	try {
+					$this->checkPermission($accessPermission, $webhookAction);
+				} catch (\VuFind\Exception\Forbidden $ex) {
+					return $this->createJsonResponse('Access to Alma Webhook challenge forbidden. Set permission \''.$accessPermission.'\' in \'permissions.ini\'.', 403);
+				}
                 return $this->webhookChallenge();
                 break;
         }  
@@ -238,6 +255,12 @@ class AlmaController extends AbstractBase implements AuthorizationServiceAwareIn
     
     protected function webhookNotImplemented($webhookType) {
         return $this->createJsonResponse($webhookType.' Alma Webhook is not (yet) implemented in VuFind.', 400);
+    }
+    
+    protected function checkPermission($accessPermission, $webhookAction) {
+    	$this->accessPermission = $accessPermission;
+		$this->accessDeniedBehavior = 'exception';
+		$this->validateAccessPermission($this->getEvent());
     }
     
 }
