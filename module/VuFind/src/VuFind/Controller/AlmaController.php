@@ -54,6 +54,12 @@ class AlmaController extends AbstractBase {
     protected $httpHeaders;
     
     /**
+     * config.ini config
+     * @var \Zend\Config\Config
+     */
+    protected $config;
+    
+    /**
      * Alma.ini config
      * @var \Zend\Config\Config
      */
@@ -78,6 +84,7 @@ class AlmaController extends AbstractBase {
         parent::__construct($sm);
         $this->httpResponse = new HttpResponse();
         $this->httpHeaders = $this->httpResponse->getHeaders();
+        $this->config = $this->getConfig('config');
         $this->configAlma = $this->getConfig('Alma');
     	$this->userTable = $this->getTable('user');
     }
@@ -171,7 +178,7 @@ class AlmaController extends AbstractBase {
 			}
 			
             if ($method == 'CREATE') {
-				$user = $this->userTable->getByUsername($username, true);
+				$user = $this->userTable->getByUsername($username, true);				
             }
             
             if ($method == 'UPDATE') {
@@ -180,18 +187,21 @@ class AlmaController extends AbstractBase {
             
             if ($user) {
             	$user->username = $username;
-				$user->password = 'password';
-				$user->pass_hash = 'pass_hash';
+				//$user->password = 'password';
+				//$user->pass_hash = 'pass_hash';
 				$user->firstname = $firstname;
 				$user->lastname = $lastname;
 				$user->email = $email;
 				$user->cat_id = $primaryId;
 				$user->cat_username = $username;
-				$user->cat_password = 'cat_password';
-				$user->cat_pass_enc = 'cat_pass_enc';
+				//$user->cat_password = 'cat_password';
+				//$user->cat_pass_enc = 'cat_pass_enc';
 
 				try {
 					$user->save();
+					if ($method == 'CREATE') {
+					    $this->sendSetPasswordEmail($user, $this->config);
+					}
 					$jsonResponse = $this->createJsonResponse('Successfully '.strtolower($method).'d user with primary ID \''.$primaryId.'\' | username \''.$username.'\'.', 200);
 				} catch (\Exception $ex) {
             		$jsonResponse = $this->createJsonResponse('Error when saving new user with primary ID \''.$primaryId.'\' | username \''.$username.'\' to VuFind database: '.$ex->getMessage(), 400);
@@ -241,6 +251,35 @@ class AlmaController extends AbstractBase {
         $this->httpResponse->setContent($returnJson);
 
         return $this->httpResponse;
+    }
+    
+    protected function sendSetPasswordEmail($user, $config) {
+        // If we can't find a user
+        if (null == $user) {
+            error_log('Could not send the email for setting the password because the user object was not found.');
+        } else {
+            // Attempt to send the email
+            try {
+                // Create a fresh hash
+                $user->updateHash();
+                $config = $this->getConfig();
+                $renderer = $this->getViewRenderer();
+                $method = $this->getAuthManager()->getAuthMethod();
+                // Custom template for emails (text-only)
+                $message = $renderer->render('Email/recover-password.phtml', [
+                    'library' => $config->Site->title,
+                    'url' => $this->getServerUrl('myresearch-verify') . '?hash=' . $user->verify_hash . '&auth_method=' . $method
+                ]);
+                $this->serviceLocator->get('VuFind\Mailer\Mailer')->send($user->email, $config->Site->email, $this->translate('recovery_email_subject'), $message);
+                $this->flashMessenger()->addMessage('recovery_email_sent', 'success');
+            } catch (MailException $e) {
+                error_log('Could not send the \'set-password-email\' to user with primary ID \''.$user->cat_id.'\' | username \''.$user->username.'\'. Exception message: '.$e->getMessage());
+            }
+        }
+    }
+    
+    protected function getHashAge($hash) {
+        return intval(substr($hash, -10));
     }
     
     protected function createJsonResponse($text, $httpStatusCode) {
