@@ -1,248 +1,446 @@
 /* --- Advanced Search --- */
 .template-name-advanced {
-    & ::-webkit-input-placeholder {
-        color: @gray-mid-light;
+  h1.content-header {
+    padding-left: 75px;
+    font-weight: 500;
+    &::before {
+      font-family: icomoon;
+      content: "\e91e";
+      position: absolute;
+      top: -15px;
+      bottom: -15px;
+      left: 15px;
+      width: 60px;
+      background: @brand-primary;
+      color: white;
+      line-height: 64px;
+      text-align: center;
+      font-size: 32px;
+      @media (max-width: @screen-xs-max) {
+        top: -7px;
+        bottom: -7px;
+        width: 48px;
+        font-size: @font-size-base * 1.5;
+        line-height: 48px;
+      }
     }
-    & :-moz-placeholder { /* Firefox 18- */
-        color: @gray-mid-light;
+  }
+  h4 {
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid @gray-mid-light;
+    position: relative;
+    .tooltip-local-advanced {
+      position: absolute;
+      bottom: 10px;
+      right: 0;
     }
-    & ::-moz-placeholder {  /* Firefox 19+ */
-        color: @gray-mid-light;
+  }
+  & ::-webkit-input-placeholder {
+    color: @gray-mid-light;
+  }
+  & :-moz-placeholder { /* Firefox 18- */
+    color: @gray-mid-light;
+  }
+  & ::-moz-placeholder {  /* Firefox 19+ */
+    color: @gray-mid-light;
+  }
+  :-ms-input-placeholder {
+    color: @gray-mid-light;
+  }
+  #advSearchForm {
+    margin-top: 20px;
+  }
+  .adv-search-bar {
+    padding-bottom: 20px;
+    padding-top: 10px;
+    margin-top: -10px;
+    background-color: white;
+    position: sticky;
+    bottom: 0;
+    z-index: 9999;
+    &.primo-search-bar {
+      text-align: right;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
     }
-    :-ms-input-placeholder {
-        color: @gray-mid-light;
-    }
-    #advSearchForm {
-        margin-top: 20px;
-        margin-bottom: 20px;
+  }
+  & .responsive-field {
+    min-width: 45%;
+  }
+  & .applied-adv-search-filters {
+    margin-top: 15px;
+  }
+  .adv-group {
+    position: relative;
+    background: @well-bg;
+    border-radius: @border-radius-base;
+    margin-top: 5px;
+    margin-bottom: .5em;
+    .add_search_link {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px;
     }
     & .responsive-field {
-        min-width: 45%;
+      max-width: 49%;
     }
-    & .applied-adv-search-filters {
-        margin-top: 15px;
-    }
-    .adv-group {
-        position: relative;
-        background: #f5f5f5;
-        border-radius: @border-radius-base;
-        margin-top: 5px;
-        margin-bottom: .5em;
-        .add_search_link {
-          display: inline-block;
-          margin-top: 4px;
-        }
-        & .responsive-field {
-            max-width: 49%;
-        }
-        & .match {
-            @media (min-width: @screen-sm-min) {
-                &:before {
-                    content: '\2014';
-                    position: absolute;
-                    top: 16%;
-                    left: -16px;
-                    color: @gray-mid-light;
-                }
-            }
-            @media (max-width: @screen-xs-max) {
-                margin: 15px 0px 30px;
-                text-align: center;
-            }
-        }
-        & .adv-group-close {
-          position: absolute;
-          bottom: 15px;
-          right: 15px;
-          z-index: 1;
-        }
-        .adv-search, .primo-advanced-search-fields {
-          margin-bottom: 0px;
-          padding-top: 3px;
-          & select, input {
-            margin-bottom: 3px;
-          }
-          .close {opacity: .8;}
-          @media (max-width: @screen-xs-max) {
-            margin-bottom: 10px;
-            & select:first-child {
-                display: block;
-            }
-          }
-        }
-        .search {
-          @media (min-width: @screen-sm-min) {
-              border-right: 1px solid @gray-mid-light;
-              &:first-of-type:after {
-                color: @gray-mid-light;
-                content: '\2014';
-                position: absolute;
-                right: 15px;
-                height: 100%;
-                top: -10px;
-              }
-              &:last-of-type:after {
-                color: @gray-mid-light;
-                content: '\2014';
-                position: absolute;
-                right: 15px;
-                margin-top: 26px;
-              }
-              &:only-of-type {
-                  border-right: none;
-                  &:after {
-                    content: '';
-                  }
-              }
-          }
-        }
-        & .primo-advanced-search-fields {
-            & .responsive-field {
-                min-width: inherit;
-            }
-        }
-        & .primo-add-search {
-            display: inline-block;
-            margin-top: 4px;
-        }
-        [class^=col-] {padding-left: 15px;}
-      }
-      #groupPlaceHolder {
-        float:left;
-        display:block;
-        padding:6px;
-        margin-left: 15px;
-      }
-      #groupJoin {
-        padding: 0px 0px 20px;
-        border: 1px solid @gray-mid-light;
-        border-top: none;
-        margin-top: -10px;
-        margin-bottom: 30px;
-        & #groupJoinOptions {
-            margin-bottom: -56px;
-        }
-      }
-      & .slider.slider-horizontal {
-        margin-top: 6px;
-        width: 95%;
-        margin-left: 10px;
-        display: inline-block;
-        vertical-align: middle;
-        position: relative;
-        .slider-tick-container {
-          position: relative;
-          .slider-tick {
-            margin-left: 0px;
-          }
-        }
-      }
-      & .slider {
-          & .slider-selection {
-              top: 0;
-              bottom: 0;
-              position: absolute;
-          }
-          & .slider-track {
-              height: 10px;
-              width: 100%;
-              margin-top: -5px;
-              top: 10px;
-              left: 0;
-              position: absolute;
-              cursor: pointer;
-              border-bottom-left-radius: 4px;
-              border-bottom-right-radius: 4px;
-              border-top-left-radius: 4px;
-              border-top-right-radius: 4px;
-          }
-          & .slider-handle {
-              position: absolute;
-              width: 20px;
-              height: 20px;
-              margin-left: -10px;
-              margin-top: 0px;
-              z-index: 2;
-          }
-          .slider-tick-label-container {
-              text-align: center;
-              margin-top: 20px;
-          }
-          .slider-tick {
-              background: @gray-mid-light;
-              height: 8px;
-              margin-left: 0;
-              margin-top: -4px;
-              width: 1px;
-              position: absolute;
-          }
-          & .tooltip.top {
-              margin-top: -36px;
-          }
-      }
-      & .primo-advanced-search-fields {
+    & .match {
+      @media (max-width: @screen-xs-max) {
         margin-bottom: 10px;
-        & label {
-            @media(max-width: @screen-xs-max) {
-                margin-top: 10px;
-                margin-bottom: 20px;
-            }
-        }
-      }
-      & .limit-to {
-        & .ranges-container, .limit-container {
-            overflow: hidden;
-            margin-top: 10px;
-            & label {
-                padding-top: 5px;
-            }
-            .slider-container {
-              padding: 0 10px;
-            }
-        }
-        & .year-input-container {
-            margin: 5px 0px;
-        }
-        & label {
-            display: block;
-        }
-        & .language-container, .format-container {
-            @media(max-width: @screen-xs-max) {
-                & .btn-group {
-                    width: 100%;
-                    text-align: left;
-                }
-            }
-            margin-bottom: 15px;
-        }
-    }
-    .adv-search-group{
-      display: table;
-      width: 100%;
-    }
-    .adv-group-match{
-      @media (min-width: @screen-sm){
-        width: 40%;
-        float: left;
-        left: 60%;
-        position: relative;
-        padding-left: 15px;
       }
     }
-    .adv-group-terms{
-      @media (min-width: @screen-sm){
-        width: 60%;
-        right: 40%;
-        float: left;
-        position: relative;
-        padding-right: 15px;
+    & .adv-group-close {
+      position: absolute;
+      bottom: 20px;
+      right: 15px;
+      z-index: 1;
+      @media (max-width: @screen-xs-max) {
+        font-size: @font-size-small;
       }
     }
-    .group-join-container {
+    .adv-search, .primo-advanced-search-fields {
+      margin-bottom: 0px;
+      padding-top: 3px;
+      & select, input {
+        margin-bottom: 3px;
+      }
+      .close {opacity: .8;}
+      @media (max-width: @screen-xs-max) {
+        & select:first-child {
+          display: block;
+        }
+      }
+    }
+    & .primo-advanced-search-fields {
+      & .responsive-field {
+        min-width: inherit;
+      }
+    }
+    & .primo-add-search {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px;
+    }
+    [class^=col-] {padding-left: 15px;}
+  }
+  #groupPlaceHolder {
+    float:left;
+    display:block;
+    padding:6px;
+    margin-left: 15px;
+  }
+  #groupJoin {
+    padding: 0px 0px 20px;
+    border: 2px solid @brand-primary;
+    border-top: none;
+    margin-top: -10px;
+    margin-bottom: 30px;
+    & #groupJoinOptions {
+      margin-bottom: -56px;
+    }
+  }
+  & .slider.slider-horizontal {
+    margin-top: 6px;
+    width: 95%;
+    margin-left: 10px;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    .slider-tick-container {
       position: relative;
-      width: 100%;
-      float: left;
+      .slider-tick {
+        margin-left: 0px;
+      }
     }
+  }
+  & .slider {
+    & .slider-selection {
+      top: 0;
+      bottom: 0;
+      position: absolute;
+    }
+    & .slider-track {
+      height: 10px;
+      width: 100%;
+      margin-top: -5px;
+      top: 10px;
+      left: 0;
+      position: absolute;
+      cursor: pointer;
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+    }
+    & .slider-handle {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      margin-left: -10px;
+      margin-top: 0px;
+      z-index: 2;
+    }
+    .slider-tick-label-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .slider-tick {
+      background: @gray-mid-light;
+      height: 8px;
+      margin-left: 0;
+      margin-top: -4px;
+      width: 1px;
+      position: absolute;
+    }
+    & .tooltip.top {
+      margin-top: -36px;
+    }
+  }
+  & .primo-advanced-search-fields {
+    margin-bottom: 10px;
+    & label {
+      @media(max-width: @screen-xs-max) {
+        margin-top: 10px;
+        margin-bottom: 20px;
+      }
+    }
+  }
+  & .limit-to {
+    & .ranges-container, .limit-container {
+      overflow: hidden;
+      margin-top: 10px;
+      & label {
+        padding-top: 5px;
+      }
+      .slider-container {
+        padding: 0 10px;
+      }
+    }
+    & .year-input-container {
+      margin: 5px 0 10px 0;
+      display: inline-block;
+      padding-right: 10px;
+      text-align: left;
+    }
+    & label {
+      display: block;
+    }
+    & .language-container, .format-container {
+      @media(max-width: @screen-xs-max) {
+        & .btn-group {
+          width: 100%;
+          text-align: left;
+        }
+      }
+      &:not(:last-child) {
+        margin-bottom: 15px;
+      }
+    }
+  }
+  .adv-search-group{
+    display: table;
+    width: 100%;
+    @media (min-width: @screen-xs){
+      .search-text {
+        min-width: initial;
+        max-width: initial;
+        width: 74%;
+      }
+      .search-select {
+        min-width: initial;
+        width: 24%;
+      }
+    }
+  }
+  .adv-group-match{
+    @media (min-width: @screen-sm){
+      width: 40%;
+      position: relative;
+      padding-bottom: 15px;
+    }
+  }
+  .adv-group-terms{
+    @media (min-width: @screen-sm){
+      position: relative;
+      padding-right: 15px;
+    }
+  }
+  .group-join-container {
+    position: relative;
+    width: 100%;
+    float: left;
+    margin-top: 30px;
+  }
+  .well.map {
+    background: white;
+    .information {
+      margin-top: 10px;
+    }
+    .information-text {
+      margin: 0;
+    }
+  }
+  .search_bool {
+    margin-right: 10px;
+  }
+  .information {
+    display: inline-block;
+    position: relative;
+    .information-text {
+      display: inline-block;
+      padding-left: 34px;
+      margin: 0;
+    }
+    &::before {
+      height: 24px;
+      width: 24px;
+      font-size: 24px;
+      color: @brand-primary;
+      display: block;
+      text-align: center;
+      font-family: icomoon;
+      content: "\e00f";
+      line-height: 24px;
+      position: absolute;
+      top: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }
+  .finna-main-header {
+    background-color: @well-bg;
+    color: @gray;
+    @media (max-width: @screen-xs-max) {
+      padding: 7px 0;
+    }
+    .container {
+      position: relative;
+    }
+  }
+  .content-header {
+    display: inline-block;
+  }
+  .ranges-container .year-input-container {
+    width: 100%;
+    vertical-align: top;
+    @media (min-width: @screen-sm-min) {
+      width: 30%;
+    }
+  }
+  .ranges-container,
+  .solr-adv-filter {
+    .information {
+      width: 100%;
+      margin: 10px 0;
+      @media (min-width: @screen-sm-min) {
+        width: 69%;
+        margin: 0;
+      }
+    }
+  }
+  .finna-main-tabs {
+    padding-top: 15px;
+  }
+  @media (max-width: @screen-xs-max) {
+    .well {
+      padding: 10px;
+    }
+  }
+  .checkboxFilter {
+    .checkbox {
+      padding-left: 0;
+    }
+  }
+  .slider-container {
+    @media (max-width: @screen-xs-max) {
+      padding: 5px;
+    }
+  }
+  .tooltip-pci-advanced {
+    line-height: 22px;
+  }
+
+  #groupJoin {
+    label {
+      font-weight: normal;
+      margin-bottom: -16px;
+      display: block;
+      padding: 0 10px;
+    }
+  }
+  .multiselect-container {
+    background-color: @well-bg;
+    padding: 0;
+    li {
+      background: white;
+      &:first-child {
+        background-color: @well-bg;
+      }
+    }
+    .multiselect-clear-filter {
+      margin-left: 0;
+      &, &:hover {
+        background-color: @well-bg;
+        border-color: @well-bg;
+        color: @text-color;
+      }
+    }
+    .input-group {
+      width: 100%;
+      .form-control {
+        width: 100%;
+      }
+    }
+  }
+  .label-block,
+  .label-style {
+    &:extend(label);
+  }
+  .label-block {
+    display: block;
+  }
+  .facet-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .facet {
+    width: 25%;
+    margin-bottom: 10px;
+    @media (max-width: @screen-xs-max) {
+      width: 33.3%;
+    }
+    @media (max-width: @screen-xxs-max) {
+      width: 50%;
+    }
+    label {
+      margin-bottom: 10px;
+    }
+  }
+  .option-container {
+    position: relative;
+    > .information {
+      position: absolute;
+      top: 4px;
+      right: 0;
+      &::before {
+        top: -1px;
+      }
+      @media (max-width: @screen-xs-max) {
+        .information-text {
+          padding-left: 26px;
+        }
+      }
+      @media (max-width: @screen-xxs-max) {
+        max-width: 50%;
+      }
+    }
+  }
+  .facets {
+    @media (max-width: @screen-xxs-max) {
+      margin-top: 30px;
+    }
+  }
 }
 
 /* --- EDS --- */
@@ -277,7 +475,7 @@
 }
 
 .adv-term-input.form-control, .adv-term-type.form-control {
-    display: initial;
+  display: initial;
 }
 .template-dir-eds .template-name-advanced {
   ranges-container{
@@ -297,12 +495,11 @@
 }
 
 .solr-adv-filter {
-  @media(min-width: @screen-sm) {
-    width: 33.3%;
-    float: left;
+  .btn-group {
+    padding-right: 10px;
   }
 }
 
 .template-dir-primo .template-name-advanced .adv-group {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }

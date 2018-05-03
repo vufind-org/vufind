@@ -79,7 +79,7 @@ class EdsController extends \VuFind\Controller\EdsController
         $view = parent::advancedAction();
 
         $config = $this->getConfig();
-        $ticks = [0, 900, 1800, 1910];
+        $ticks = [-1000, 0, 900, 1800, 1900];
         if (!empty($config->Site->advSearchYearScale)) {
             $ticks = array_map(
                 'trim', explode(',', $config->Site->advSearchYearScale)

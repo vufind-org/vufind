@@ -21,56 +21,60 @@
     <h4><?=$this->transEsc('Limit To')?></h4>
   </div>
   <div>
-    <div>
-    <fieldset class="well limit-to">
+    <div class="option-container">
       <? if (!empty($this->checkboxFacets)): ?>
-        <?=$this->render('search/advanced/checkbox-filters.phtml')?>
+        <div class="checkboxFilter">
+          <?=$this->render('search/advanced/checkbox-filters.phtml')?>
+        </div>
       <? endif; ?>
-      <div>
-        <? foreach ($this->facetList as $field => $list): ?>
-          <div class="solr-adv-filter <?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>-container">
-            <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
-            <select class="form-control multi-select" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]"  multiple="multiple" >
-              <? if (is_array($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>
-                <? foreach ($list['list'] as $value): ?>
-                  <? $display = str_pad('', 4 * $value['level'] * 6, '&nbsp;', STR_PAD_LEFT) . $this->escapeHtml($value['displayText']); ?>
-                  <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$display?></option>
-                <? endforeach; ?>
-              <? else: ?>
-                <?
-                // Sort the current facet list alphabetically; we'll use this data
-                // along with the foreach below to display facet options in the
-                // correct order.
-                $sorted = [];
-                foreach ($list['list'] as $i => $value) {
-                  if (!empty($value['displayText'])) {
-                    $sorted[$i] = $value['displayText'];
-                  }
-                }
-                natcasesort($sorted);
-                ?>
-                <? foreach ($sorted as $i => $display): ?>
-                  <? $value = $list['list'][$i]; ?>
-                  <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($display)?></option>
-                <? endforeach; ?>
-              <? endif; ?>
-            </select>
-          </div>
-        <? endforeach; ?>
-        <div><p class="information-text"><i class="fa fa-info2"></i> <?=$this->transEsc('advanced_search_information_text')?></p></div>
-    </div>
-      <div class="clearfix"></div>
-      <div class="ranges-container">
+      <fieldset class="well limit-to facets">
+        <legend class="sr-only"><?=$this->transEsc('Limit To')?></legend>
+        <div class="facet-container">
+          <? foreach ($this->facetList as $field => $list): ?>
+            <div class="facet">
+              <div class="solr-adv-filter <?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>-container">
+                <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
+                <select class="form-control multi-select" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]"  multiple="multiple" >
+                  <? if (is_array($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>
+                    <? foreach ($list['list'] as $value): ?>
+                      <? $display = str_pad('', 4 * $value['level'] * 6, '&nbsp;', STR_PAD_LEFT) . $this->escapeHtml($value['displayText']); ?>
+                      <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$display?></option>
+                    <? endforeach; ?>
+                  <? else: ?>
+                    <?
+                    // Sort the current facet list alphabetically; we'll use this data
+                    // along with the foreach below to display facet options in the
+                    // correct order.
+                    $sorted = [];
+                    foreach ($list['list'] as $i => $value) {
+                      if (!empty($value['displayText'])) {
+                        $sorted[$i] = $value['displayText'];
+                      }
+                    }
+                    natcasesort($sorted);
+                    ?>
+                    <? foreach ($sorted as $i => $display): ?>
+                      <? $value = $list['list'][$i]; ?>
+                      <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($display)?></option>
+                    <? endforeach; ?>
+                  <? endif; ?>
+                </select>
+              </div>
+            </div>
+          <? endforeach; ?>
+        </div>
+        <div class="information"><p class="information-text"><?=$this->transEsc('advanced_search_information_text_facets')?></p></div>
+      </fieldset>
+      <div class="ranges-container well limit-to">
         <?=$this->render('search/advanced/ranges.phtml', ['searchClassId' => $searchClassId, 'ranges' => $daterange])?>
       </div>
-    </fieldset>
+    </div>
     <? if (!empty($searchFilters) || !empty($usedCheckboxFilters)): ?>
       <h4><?=$this->transEsc("adv_search_filters")?></h4>
       <fieldset class="well limit-to">
         <?=$this->render('search/advanced/filters.phtml', ['usedCheckboxFilters' => $usedCheckboxFilters, 'searchFilters' => $searchFilters])?>
       </fieldset>
     <? endif; ?>
-    </div>
   </div>
 <? endif; ?>
 <div class="search-map-container">
@@ -79,7 +83,9 @@
   </div>
   <div class="map-container">
     <fieldset class="well map">
+      <legend class="sr-only"><?=$this->transEsc('Geographical Area') ?></legend>
       <?=$this->render('search/advanced/map.phtml', ['searchClassId' => $searchClassId, 'saved' => $this->saved])?>
+      <div class="information"><p class="information-text"><?=$this->transEsc('advanced_search_information_text_map')?></p></div>
     </fieldset>
   </div>
 </div>

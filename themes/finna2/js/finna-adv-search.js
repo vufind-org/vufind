@@ -46,6 +46,9 @@ finna.advSearch = (function advSearch() {
     toField.change(function toFieldChange() {
       fromField.attr('max', toField.val());
     });
+    $('.adv-search-menu-toggle').on('click', function toggleActive() {
+      $('.adv-search-menu').toggleClass("active");
+    });
   }
 
   /**

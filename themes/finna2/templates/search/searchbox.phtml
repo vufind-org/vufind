@@ -212,7 +212,7 @@
       <? if ($browse || $mainPage): ?>
         <div class="search-links">
           <? if ($advSearch): ?>
-          <a href="<?=$this->url($advSearch)?>" class="btn btn-link btn-advanced hidden-xs"><i class="fa fa-search-adv"></i><?=$this->transEsc("Advanced Search")?></a>
+          <a href="<?=$this->url($advSearch)?>" class="btn btn-link btn-advanced"><i class="fa fa-search-adv"></i><?=$this->transEsc("Advanced Search")?></a>
           <? endif; ?>
 
           <? if ($browse || $this->searchClassId != 'Solr'): ?>

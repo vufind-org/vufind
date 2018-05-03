@@ -77,6 +77,9 @@
 .tooltip-local-advanced, .tooltip-pci-advanced, .tooltip-eds-advanced, .tooltip-summon-advanced {
   color: @link-color;
   font-size: .8em;
+  @media(max-width: @screen-xs-max) {
+    font-weight: 500;
+  }
 }
 .tooltip-search-pci, .tooltip-search-local {
   i {

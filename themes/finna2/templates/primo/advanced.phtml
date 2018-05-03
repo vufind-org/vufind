@@ -31,7 +31,7 @@
     $this->searchType = 'advanced';
     $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters, []);
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs'], 'hiddenFilters' => $hiddenFilters]);
-    $this->layout()->finnaMainHeader = '<div><h3>' . $this->transEsc('Advanced Search from Primo') . '</h3></div>';
+    $this->layout()->finnaMainHeader = '<div><h1 class="content-header">' . $this->transEsc('Advanced Search from Primo') . '</h1></div>';
 ?>
 <form id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>" class="form-horizontal">
   <input type="hidden" name="join" value="AND" />
@@ -78,7 +78,7 @@
             </select>
         </div>
         <? endfor; ?>
-        <a href="#" class="primo-add-search">
+        <a href="#" class="primo-add-search btn btn-primary">
             <i class="fa fa-plus-small"></i> <?=$this->transEsc("add_search")?>
         </a>
       </div>
@@ -101,8 +101,8 @@
         <? endif; ?>
       </div>
     <? endif; ?>
-    <div class="clearfix">
-      <button type="submit" class="btn btn-primary pull-right" name="submit" value="<?=$this->transEsc("Find")?>"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Find")?></button>
+    <div class="adv-search-bar primo-search-bar">
+      <button type="submit" class="btn btn-lg btn-primary" name="submit" value="<?=$this->transEsc("Find")?>"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Find")?></button>
     </div>
   </div>
 </form>

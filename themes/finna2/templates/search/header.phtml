@@ -38,9 +38,12 @@
         <? endif; ?>
         <div id="searchForm" class="hidden-print">
           <div class="adv_search_links">
-            <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($searchId)?>"><i class="fa fa-pen"></i> <?=$this->transEsc("Edit this Advanced Search")?></a>
-            <a href="<?=$this->url($advSearch)?>" class="hidden-xs"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Start a new Advanced Search")?></a>
-            <a href="<?=$this->url($searchHome)?>" class="hidden-xs"><i class="fa fa-search"></i> <?=$this->transEsc("Start a new Basic Search")?></a>
+            <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($searchId)?>"><i class="fa fa-lg fa-pen"></i> <?=$this->transEsc("Edit this search")?></a>
+            <div class="adv-search-menu hidden-xs">
+              <a href="<?=$this->url($advSearch)?>"><i class="fa fa-lg icon-adv-search"></i> <?=$this->transEsc("Start a new Advanced Search")?></a>
+              <a href="<?=$this->url($searchHome)?>"><i class="fa fa-lg icon-basic-search"></i> <?=$this->transEsc("Start a new Basic Search")?></a>
+            </div>
+            <span class="visible-xs adv-search-menu-toggle"><?=$this->transEsc("adv_search_menu")?> <b class="caret"></b></span>
           </div>
         </div>
         <? if ($this->layout()->templateDir === 'record'): ?>
@@ -114,7 +117,7 @@
             <?=$this->transEsc('Search')?>: <strong><?=$this->escapeHtml($lookfor); ?></strong>
           <? endif; ?>
         <? elseif ($searchType == 'advanced'): ?>
-          <span class="adv_search_terms"><?=$this->transEsc("Your search terms")?>: <strong><?=$this->escapeHtml($this->lookfor)?></strong></span>
+          <span class="adv_search_terms"><strong><?=$this->transEsc("Your search terms")?>:</strong> <?=$this->escapeHtml($this->lookfor)?></span>
         <? endif; ?>
         <? else: ?>
           <?=$this->transEsc('nohit_heading')?>
