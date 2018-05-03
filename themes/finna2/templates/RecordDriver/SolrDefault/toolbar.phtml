@@ -2,6 +2,7 @@
 <?
   if ($this->driver->tryMethod('socialMediaSharingAllowed') !== false) {
       $shareUrl = $this->serverUrl($this->recordLink()->getUrl($this->driver));
+      $shareUrl .= (strpos($shareUrl, '?') ? '&' : '?') . 'lng=' . urlencode($this->layout()->userLang);
   }
 
   // Set up some variables for convenience:
