@@ -914,6 +914,17 @@ finna.layout = (function finnaLayout() {
     });
   }
 
+  function initCookieConsent() {
+    var state = $.cookie('cookieConsent');
+    if ('undefined' === typeof state || !state) {
+      $('a.cookie-consent-dismiss').click(function dismiss() {
+        $.cookie('cookieConsent', 1, {path: VuFind.path, expires: 365});
+        $('.cookie-consent').addClass('hidden');
+      });
+      $('.cookie-consent').removeClass('hidden');
+    }
+  }
+
   var my = {
     getOrganisationPageLink: getOrganisationPageLink,
     isTouchDevice: isTouchDevice,
@@ -960,6 +971,7 @@ finna.layout = (function finnaLayout() {
       initKeyboardNavigation();
       initPriorityNav();
       initFiltersToggle();
+      initCookieConsent();
     }
   };
 

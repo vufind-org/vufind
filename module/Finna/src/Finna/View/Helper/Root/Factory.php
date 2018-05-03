@@ -277,11 +277,25 @@ class Factory extends \VuFind\View\Helper\Root\Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return Header
+     * @return Content
      */
     public static function getContent(ServiceManager $sm)
     {
         return new Content();
+    }
+
+    /**
+     * Construct cookie view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Cookie
+     */
+    public static function getCookie(ServiceManager $sm)
+    {
+        return new Cookie(
+            $sm->getServiceLocator()->get('VuFind\CookieManager')
+        );
     }
 
     /**

@@ -288,6 +288,9 @@ JS;
       }
     ?>
     <header class="hidden-print">
+      <? if (!$this->cookie()->get('cookieConsent')): ?>
+        <?=$this->partial('Helpers/cookie-consent.phtml');?>
+      <? endif; ?>
       <? if (!empty($_SERVER['HTTP_USER_AGENT']) && preg_match('/(?i)msie [5-8]/', $_SERVER['HTTP_USER_AGENT'])): ?>
       <div class="container-fluid system-messages">
         <?=$this->translate('outdated_browser_message_html');?>
