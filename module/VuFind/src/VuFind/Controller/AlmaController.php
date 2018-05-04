@@ -271,7 +271,6 @@ class AlmaController extends AbstractBase {
                     'url' => $this->getServerUrl('myresearch-verify') . '?hash=' . $user->verify_hash . '&auth_method=' . $method
                 ]);
                 $this->serviceLocator->get('VuFind\Mailer\Mailer')->send($user->email, $config->Site->email, $this->translate('recovery_email_subject'), $message);
-                $this->flashMessenger()->addMessage('recovery_email_sent', 'success');
             } catch (\VuFind\Exception\Mail $e) {
                 error_log('Could not send the \'set-password-email\' to user with primary ID \''.$user->cat_id.'\' | username \''.$user->username.'\'. Exception message: '.$e->getMessage());
             }
