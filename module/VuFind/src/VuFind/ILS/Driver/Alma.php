@@ -27,6 +27,8 @@
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
+use SimpleXMLElement;
+use Zend\Http\Headers;
 
 /**
  * Alma ILS Driver
