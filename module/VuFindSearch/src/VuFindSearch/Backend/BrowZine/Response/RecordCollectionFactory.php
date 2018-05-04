@@ -90,7 +90,6 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      */
     public function factory($response)
     {
-
         if (!is_array($response)) {
             throw new InvalidArgumentException(
                 sprintf(
