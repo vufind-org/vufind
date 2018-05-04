@@ -166,22 +166,22 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         
         // Check for error
         if ($result->isServerError()) {
-            throw new ILSException('HTTP error code: '.$statusCode.' | '.$result->toString());
+            throw new ILSException('HTTP error code: '.$statusCode);
         }
         
+        $answer = $result->getBody();
+        $answer = str_replace('xmlns=', 'ns=', $answer);
+        $xml = simplexml_load_string($answer);
+        
         if ($result->isSuccess()) {
-            $answer = $result->getBody();
-            $answer = str_replace('xmlns=', 'ns=', $answer);
-            $xml = simplexml_load_string($answer);
-            
             if (!$xml && $result->isServerError()) {
                 throw new ILSException("XML is not valid or HTTP error, URL: $url, HTTP status code: $statusCode");
             }
-            
             $returnValue = $xml;
         } else {
-            error_log('[ALMA] Call to: '.$client->getUri().'. GET params: '.var_export($paramsGet, true).'. POST params: '.var_export($paramsPost, true).'. Result body: '.$result->getBody().'. HTTP status code: '.$statusCode);
-            throw new ILSException('HTTP error code: '.$statusCode);
+            $almaErrorMsg = $xml->errorList->error[0]->errorMessage;
+            error_log('[ALMA] '.$almaErrorMsg.' | Call to: '.$client->getUri().'. GET params: '.var_export($paramsGet, true).'. POST params: '.var_export($paramsPost, true).'. Result body: '.$result->getBody().'. HTTP status code: '.$statusCode);
+            throw new ILSException('Alma error message: '.$almaErrorMsg.' | HTTP error code: '.$statusCode);
         }
 
         return $returnValue;
