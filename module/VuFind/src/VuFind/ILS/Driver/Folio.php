@@ -47,6 +47,13 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
+     * Authentication tenant (X-Okapi-Tenant)
+     *
+     * @var string
+     */
+    protected $tenant = null;
+
+    /**
      * Authentication token (X-Okapi-Token)
      *
      * @var string
@@ -79,6 +86,8 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
+
+        $this->tenant = $this->config['API']['tenant'];
     }
 
     /**
@@ -94,7 +103,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     protected function preRequest(\Zend\Http\Headers $headers, $params)
     {
         $headers->addHeaderLine('Accept', 'application/json');
-        $headers->addHeaderLine('X-Okapi-Tenant', $this->config['API']['tenant']);
+        $headers->addHeaderLine('X-Okapi-Tenant', $this->tenant);
         if (!$headers->has('Content-Type')) {
             $headers->addHeaderLine('Content-Type', 'application/json');
         }
@@ -306,9 +315,13 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
         if ($response->getStatusCode() >= 400) {
             return null;
         }
-        // TODO: Save token to this->token (in place of admin)
+        // Replace admin with user as tenant
+        $this->tenant = $profile['id'];
+        $this->token = $response->getHeaders()->get('X-Okapi-Token')
+            ->getFieldValue();
         return [
             'id' => $profile['id'],
+            'username' => $username,
             'firstname' => $profile['personal']['firstName'],
             'lastname' => $profile['personal']['lastName'],
             'cat_username' => $username,
@@ -341,7 +354,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     public function getMyProfile($patronLogin)
     {
         // Get user id
-        $query = ['query' => 'username == ' . $username];
+        $query = ['query' => 'username == ' . $patronLogin['username']];
         $response = $this->makeRequest("POST", '/users', $query);
         $json = json_decode($response->getBody());
         $profile = $json['users'][0];
