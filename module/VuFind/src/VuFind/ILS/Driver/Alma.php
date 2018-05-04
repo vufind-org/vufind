@@ -166,7 +166,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         
         // Check for error
         if ($result->isServerError()) {
-            throw new ILSException('HTTP error code: '.$statusCode);
+            throw new ILSException('HTTP error code: '.$statusCode.' | '.$result->toString());
         }
         
         if ($result->isSuccess()) {
