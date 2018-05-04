@@ -70,15 +70,13 @@ class AlmaController extends AbstractBase {
      * 
      * @var \VuFind\Db\Table\User
      */
-    protected $userTable;
+    protected $userTable;    
     
     /**
-     * Authorization with permissions.ini
+     * Alma Controler constructor.
      * 
-     * 
+     * @param ServiceLocatorInterface $sm
      */
-    protected $auth;
-    
     public function __construct(ServiceLocatorInterface $sm) {
     	
         parent::__construct($sm);
@@ -89,6 +87,11 @@ class AlmaController extends AbstractBase {
     	$this->userTable = $this->getTable('user');
     }
     
+    /**
+     * Action that is executed when the webhook page is called.
+     * 
+     * @return \Zend\Http\Response|NULL
+     */
     public function webhookAction() {
         // Request from external
         $request = $this->getRequest();
@@ -108,7 +111,7 @@ class AlmaController extends AbstractBase {
             case 'USER':
             	$accessPermission = 'access.alma.webhook.user';
             	try {
-					$this->checkPermission($accessPermission, $webhookAction);
+					$this->checkPermission($accessPermission);
 				} catch (\VuFind\Exception\Forbidden $ex) {
 					return $this->createJsonResponse('Access to Alma Webhook \'' . $webhookAction . '\' forbidden. Set permission \''.$accessPermission.'\' in \'permissions.ini\'.', 403);
 				}
@@ -126,7 +129,7 @@ class AlmaController extends AbstractBase {
             default:
             	$accessPermission = 'access.alma.webhook.challenge';
             	try {
-					$this->checkPermission($accessPermission, $webhookAction);
+					$this->checkPermission($accessPermission);
 				} catch (\VuFind\Exception\Forbidden $ex) {
 					return $this->createJsonResponse('Access to Alma Webhook challenge forbidden. Set permission \''.$accessPermission.'\' in \'permissions.ini\'.', 403);
 				}
@@ -135,6 +138,12 @@ class AlmaController extends AbstractBase {
         }  
     }
     
+    /**
+     * Webhook actions related to a newly created, updated or deleted user in Alma.
+     * 
+     * @param mixed $requestBodyJson		A JSON string decode with json_decode()
+     * @return NULL|\Zend\Http\Response
+     */
     protected function webhookUser($requestBodyJson) {
     	
     	// Initialize user variable that should hold the user table row
@@ -225,7 +234,13 @@ class AlmaController extends AbstractBase {
         
         return $jsonResponse;
     }
-        
+    
+    /**
+     * The webhook challenge. This is used to activate the webhook in Alma. Without activating it, Alma will not send its
+     * webhook messages to VuFind.
+     * 
+     * @return \Zend\Http\Response
+     */
     protected function webhookChallenge() {
         
         // Get challenge string from the get parameter that Alma sends us. We need to return this string in the return message.
@@ -253,6 +268,13 @@ class AlmaController extends AbstractBase {
         return $this->httpResponse;
     }
     
+    
+    /**
+     * Send the "set password email" to a new user that was created in Alma and sent to VuFind via webhook.
+     * 
+     * @param \VuFind\Db\Row\User $user		A user row object from the VuFind user table.
+     * @param \Zend\Config\Config $config	A config object of config.ini
+     */
     protected function sendSetPasswordEmail($user, $config) {
         // If we can't find a user
         if (null == $user) {
@@ -277,10 +299,12 @@ class AlmaController extends AbstractBase {
         }
     }
     
-    protected function getHashAge($hash) {
-        return intval(substr($hash, -10));
-    }
-    
+	/**
+	 * Create a HTTP response with JSON content and HTTP status codes that Alma takes as "answer" to its webhook calls.
+	 * @param string $text				The text that should be sent back to Alma
+	 * @param int $httpStatusCode		The HTTP status code that should be sent back to Alma
+	 * @return \Zend\Http\Response
+	 */
     protected function createJsonResponse($text, $httpStatusCode) {
         $returnArray = [];
         $returnArray[] = $text;
@@ -291,11 +315,24 @@ class AlmaController extends AbstractBase {
         return $this->httpResponse;
     }
     
+    
+    /**
+     * A default message to be sent back to Alma if an action for a certain webhook type is not implemented (yet).
+     * 
+     * @param string $webhookType
+     * @return \Zend\Http\Response
+     */
     protected function webhookNotImplemented($webhookType) {
         return $this->createJsonResponse($webhookType.' Alma Webhook is not (yet) implemented in VuFind.', 400);
     }
-    
-    protected function checkPermission($accessPermission, $webhookAction) {
+
+    /**
+     * Helper function to check access permissions defined in permissions.ini.
+     * The function validateAccessPermission() will throw an exception that can be catched when the permission is denied.
+     * 
+     * @param string $accessPermission	The permission name from permissions.ini that should be checked.
+     */
+    protected function checkPermission($accessPermission) {
     	$this->accessPermission = $accessPermission;
 		$this->accessDeniedBehavior = 'exception';
 		$this->validateAccessPermission($this->getEvent());
