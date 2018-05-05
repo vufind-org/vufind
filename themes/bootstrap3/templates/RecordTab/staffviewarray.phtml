@@ -3,12 +3,17 @@
     $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
 ?>
 <table class="citation table table-striped">
-  <?php foreach ($this->driver->getRawData() as $field => $values): ?>
+
+  <?php
+    if (!($rawData = $this->driver->tryMethod('getFormattedRawData'))) {
+        $rawData = $this->driver->getRawData();
+    }
+     foreach ($rawData as $field => $values): ?>
     <tr>
       <th><?=$this->escapeHtml($field)?></th>
       <td>
         <?php foreach ((array)$values as $value): ?>
-          <?=$this->escapeHtml(is_array($value) ? print_r($value, true) : $value)?><br />
+          <?=is_array($value) ? "<pre>".$this->escapeHtml(print_r($value, true))."</pre>" : $this->escapeHtml($value)?><br />
         <?php endforeach; ?>
       </td>
     </tr>

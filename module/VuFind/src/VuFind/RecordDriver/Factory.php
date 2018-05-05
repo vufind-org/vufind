@@ -201,7 +201,33 @@ class Factory
         $driver->attachSearchService($sm->get('VuFindSearch\Service'));
         return $driver;
     }
+    
+    /**
+     * Factory for SolrOverdrive record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SolrOvedrive
+     */
+    public static function getSolrOverdrive(ServiceManager $sm)
+    {
+        
+          $driver = new SolrOverdrive(
+            $sm->get('VuFind\Config\PluginManager')->get('config'),
+            $sm->get('VuFind\Config\PluginManager')->get('Overdrive'),
+            $sm->get('VuFind\DigitalContent\OverdriveConnector')
+        );
+        if ($sm->has('VuFind\ILS\Connection')) {
+            $driver->attachILS(
+                $sm->get('VuFind\ILS\Connection'),
+                $sm->get('VuFind\ILS\Logic\Holds'),
+                $sm->get('VuFind\ILS\Logic\TitleHolds')
+            );
+        }
+        return $driver;
 
+    }
+    
     /**
      * Factory for SolrReserves record driver.
      *

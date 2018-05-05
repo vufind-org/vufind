@@ -52,6 +52,9 @@
       </a>
     <?php endif; ?>
   <?php endif; ?>
+       <a href="<?=$this->url('overdrive-mycontent')?>"<?=$this->active == 'dgcontent' ? ' class="active"' : ''?>>
+        <i class="fa fa-fw fa-download" aria-hidden="true"></i> <?=$this->transEsc('Overdrive Content')?>
+      </a> 
   <?php if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
     <a href="<?=$this->url('search-history')?>?require_login"<?=$this->active == 'history' ? ' class="active"' : ''?>>
       <i class="fa fa-fw fa-search" aria-hidden="true"></i> <?=$this->transEsc('history_saved_searches')?>

@@ -1,0 +1,118 @@
+<div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+  <?
+    $QRCode = $this->record($this->driver)->getQRCode("core");
+    $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium', $this->record($this->driver)->getThumbnail('large'));
+    $cover = $coverDetails['html'];
+    $preview = $this->record($this->driver)->getPreviews();
+  ?>
+  <? if ($QRCode || $cover || $preview): ?>
+    <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?> img-col">
+      <? /* Display thumbnail if appropriate: */ ?>
+      <? if($cover): ?>
+        <?=$cover?>
+      <? endif; ?>
+
+      <? /* Display qrcode if appropriate: */ ?>
+      <? if($QRCode): ?>
+        <span class="hidden-xs">
+          <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+        </span>
+      <? endif; ?>
+
+      <? // if you have a preview tab but want to move or remove the preview link
+         // from this area of the record view, this can be split into
+         // getPreviewData() (should stay here) and
+         // getPreviewLink() (can go in your desired tab) ?>
+      <? if ($preview): ?>
+        <div class="record-previews">
+          <?=$preview?>
+        </div>
+      <? endif; ?>
+    </div>
+  <? endif; ?>
+  <div class="media-body">
+
+  
+  
+    <h3 property="name"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
+           
+           <? 
+           $avail = $this->driver->getOverdriveAvailability();
+           $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold');
+           $isCheckedOut = $isOnHold = false;
+           if($user = $this->auth()->isLoggedIn()):
+               $isCheckedOut = $this->driver->isCheckedOut($user);
+               if(!$isCheckedOut){
+                   $hold = $this->driver->isHeld($user);
+               }
+           endif; ?>
+           
+           <div class="hold pull-right">
+           <? if($isCheckedOut):?>
+                <div class="od_status checkedout alert alert-info">
+                  <? echo $this->transEsc("od_is_checkedout",array("due_date"=>"findme")); ?>
+                </div>
+           <? elseif($hold): ?>
+               <div class="od_status onhold">
+                   <? echo $this->transEsc("od_is_on_hold");
+                      if($hold->holdReadyForCheckout){
+                          echo $this->transEsc("od_hold_now_avail", ["%%expireDate%%",$hold->holdExpires]);
+                      }
+                   ?>
+
+               </div>
+           <? else:
+               if($avail->copiesOwned >0 && !empty($holdingTitleHold)): ?>
+                
+               <?
+                 if($avail->copiesAvailable): ?>
+                     <a class="btn btn-primary placehold" data-lightbox 
+                        title="<?=$this->transEsc('request_place_text')?>" 
+                        href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>">
+                       <i class="fa fa-flag" aria-hidden="true"></i> <?=$this->transEsc('od_but_checkout')?></a>
+                <? else: ?>
+                     <a class="btn btn-primary placehold" data-lightbox title="<?=$this->transEsc('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp; Place a hold Through Overdrive</a>
+               <?  endif; ?>
+        <? endif;  ?>
+           <? endif;  ?>
+           </div>
+           
+       <? if($avail): ?>
+           <div class="availability">
+             <div class='copies'><strong>Total Copies</strong> <?=$avail->copiesOwned ?></div>
+             <div class='avail'><strong>Available</strong> <?=$avail->copiesAvailable ?></div>
+             <div class='holds'><strong>Holds</strong> <?=$avail->numberOfHolds ?></div>
+            </div>
+        <? endif;?>
+           
+    <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
+    <? if ($summary): ?>
+      <p><?=$this->truncate($summary, 300)?></p>
+
+      <? if(strlen($summary) > 300): ?>
+        <p><a href='<?=$this->recordLink()->getTabUrl($this->driver, 'Description')?>#tabnav'><?=$this->transEsc('Full description')?></a></p>
+      <? endif; ?>
+    <? endif; ?>
+
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <? /* Display the lists that this record is saved to */ ?>
+      <div class="savedLists">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>
+    <? endif; ?>
+
+    <?/* Display Main Details */?>
+    <?
+      $formatter = $this->recordDataFormatter();
+      $coreFields = $formatter->getData($driver, $formatter->getDefaults('core'));
+    ?>
+    <? if (!empty($coreFields)): ?>
+      <table class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
+        <? foreach ($coreFields as $key => $current): ?>
+          <tr><th><?=$this->transEsc($key)?>:</th><td><?=$current['value']?></td></tr>
+        <? endforeach; ?>
+      </table>
+    <? endif; ?>
+    <?/* End Main Details */?>
+  </div>
+</div>

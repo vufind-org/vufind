@@ -294,4 +294,25 @@ class Factory
             $useRecaptcha
         );
     }
+    
+    /**
+     * Factory for Formats tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return UserComments
+     */
+    public static function getFormats(ServiceManager $sm)
+    {
+
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
+        // Only instantiate the loader if the feature is enabled:
+        if (isset($config->Content->formats)) {
+            $loader = $sm->get('VuFind\Content\PluginManager')
+                ->get('formats');
+        } else {
+            $loader = null;
+        }
+        return new Formats($loader, static::getHideSetting($config, 'formats'));
+    }    
 }

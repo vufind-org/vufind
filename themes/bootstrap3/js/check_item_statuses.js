@@ -12,6 +12,7 @@ function linkCallnumbers(callnumber, callnumber_handler) {
   return callnumber;
 }
 function displayItemStatus(result, $item) {
+   console.log("displayItemStatus"+result.full_status);
   $item.removeClass('js-item-pending');
   $item.find('.status').empty().append(result.availability_message);
   $item.find('.ajax-availability').removeClass('ajax-availability hidden');
@@ -19,6 +20,8 @@ function displayItemStatus(result, $item) {
     && result.full_status.length > 0
     && $item.find('.callnumAndLocation').length > 0
   ) {
+      
+      console.log("full status:"+result.full_status);
     // Full status mode is on -- display the HTML and hide extraneous junk:
     $item.find('.callnumAndLocation').empty().append(result.full_status);
     $item.find('.callnumber,.hideIfDetailed,.location,.status').addClass('hidden');
@@ -65,14 +68,8 @@ function displayItemStatus(result, $item) {
     );
   }
 }
-function itemStatusFail(response, textStatus) {
-  if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') {
-    return;
-  }
-  // display the error message on each of the ajax status place holder
-  $('.js-item-pending').addClass('text-danger').append(response.responseJSON.data);
-}
 
+/*
 var itemStatusIds = [];
 var itemStatusEls = {};
 var itemStatusTimer = null;
@@ -85,6 +82,7 @@ function runItemAjaxForQueue() {
     itemStatusTimer = setTimeout(runItemAjaxForQueue, itemStatusDelay);
     return;
   }
+  
   itemStatusRunning = true;
   $.ajax({
     dataType: 'json',
@@ -116,7 +114,8 @@ function itemQueueAjax(id, el) {
   el.addClass('js-item-pending').removeClass('hidden');
   el.find('.status').removeClass('hidden');
 }
-
+*/
+/*
 function checkItemStatus(el) {
   var $item = $(el);
   if ($item.find('.hiddenId').length === 0) {
@@ -125,8 +124,121 @@ function checkItemStatus(el) {
   var id = $item.find('.hiddenId').val();
   itemQueueAjax(id + '', $item);
 }
-
+*/
 var itemStatusObserver = null;
+
+var ItemStatusHandler = {
+    name: "default",
+    //array to hold IDs and elements
+    itemStatusIds: [], itemStatusEls: [],
+    url: '/AJAX/JSON?method=getItemStatuses',
+    itemStatusRunning : false,
+    dataType: 'json',
+    method: 'POST',
+    itemStatusTimer : null,
+    itemStatusDelay : 200,
+    
+    checkItemStatusDone: function(response) {    
+        console.log("status:"+response.status);
+        var data = response.data;
+        for (var j = 0; j < data.length; j++) {
+          displayItemStatus(data[j], this.itemStatusEls[data[j].id]);
+          this.itemStatusIds.splice(this.itemStatusIds.indexOf(data[j].id), 1);
+        }
+      },
+    itemStatusFail: function(response,textStatus) {
+console.log("failed: "+ response.statusText);
+console.log(response.responseText);
+          if (textStatus === 'error' ||textStatus === 'abort' || typeof response.responseJSON === 'undefined') {
+            return;
+          }
+          // display the error message on each of the ajax status place holder
+          $('.js-item-pending').addClass('text-danger').append(response.responseJSON.data);
+        },
+    itemQueueAjax: function(id, el){
+
+      clearTimeout(this.itemStatusTimer);
+      this.itemStatusIds.push(id);
+      this.itemStatusEls[id] = el;
+      this.itemStatusTimer = setTimeout(this.runItemAjaxForQueue.bind(this), this.itemStatusDelay);
+      el.addClass('js-item-pending').removeClass('hidden');
+      el.find('.status').removeClass('hidden');
+      console.log("after this"+this.name);
+      console.log(this.itemStatusIds);
+    },
+    
+    runItemAjaxForQueue : function(){
+       if (this.itemStatusRunning) {
+          this.itemStatusTimer = setTimeout(this.runItemAjaxForQueue.bind(this), this.itemStatusDelay);
+         return;
+       }
+
+       console.log("ajax call: "+VuFind.path+this.url);
+
+      $.ajax({
+        dataType: this.dataType,
+        method: this.method,
+        url: VuFind.path+this.url,
+        context: this,
+        data: { 'id': this.itemStatusIds }
+      })
+      .done(this.checkItemStatusDone)
+      .fail( this.itemStatusFail)
+      .always(function(){
+          this.itemStatusRunning = false;
+      });
+    }//end runItemAjax
+}
+
+//extend default handler and override any properties
+var OdItemStatusHandler=Object.create(ItemStatusHandler);
+  OdItemStatusHandler.url = '/Overdrive/getStatus';
+  OdItemStatusHandler.itemStatusDelay = 200;
+  OdItemStatusHandler.name = "odh";
+  OdItemStatusHandler.itemStatusIds = [];
+  OdItemStatusHandler.itemStatusEls = [];
+
+//store the handlers in a "hash" obj
+var handlers = {
+    'ils':ItemStatusHandler,
+    'overdrive':OdItemStatusHandler}
+
+console.log(VuFind);
+console.log(VuFind.path);
+
+function checkItemStatus(el) {
+console.log("checkITemStatus");
+    var $item = $(el);
+    var handlerName='ils';
+    if ($item.hasClass('js-item-pending')) {
+      return;
+    }
+    if ($item.find('.hiddenId').length === 0) {
+      return false;
+    }
+    var id = $item.find('.hiddenId').val();
+    if ($item.find('.hiddenHandler').length > 0) {
+      handlerName=$item.find('.hiddenHandler').val();
+    }
+console.log("id:"+id);
+console.log("here:"+$item.data("handler-name"));
+
+    if($item.data("handlerName")) {
+      handlerName=$item.data("handlerName");
+    }
+console.log("hdler:"+handlerName);
+    //queue the element into the handler
+    handlers[handlerName].itemQueueAjax(id, $item);
+      /*
+      clearTimeout(handlers[handlerName].itemStatusTimer);
+      handlers[handlerName].itemStatusIds.push(id);
+      handlers[handlerName].itemStatusEls[id] = el;
+      handlers[handlerName].itemStatusTimer = setTimeout(runItemAjaxForQueue, itemStatusDelay);
+      el.addClass('js-item-pending').removeClass('hidden');
+      el.find('.status').removeClass('hidden');
+      */
+    }    
+    
 function checkItemStatuses(_container) {
   var container = _container instanceof Element
     ? _container
@@ -135,7 +247,9 @@ function checkItemStatuses(_container) {
   var ajaxItems = $(container).find('.ajaxItem');
   for (var i = 0; i < ajaxItems.length; i++) {
     var id = $(ajaxItems[i]).find('.hiddenId').val();
-    itemQueueAjax(id, $(ajaxItems[i]));
+    var handlerName = $(ajaxItems[i]).find('.handler').val();
+    if(!handlerName){handlerName='ils';}
+    handlers[handlerName].itemQueueAjax(id, $(ajaxItems[i]));
   }
   // Stop looking for a scroll loader
   if (itemStatusObserver) {

@@ -1,0 +1,51 @@
+<? if($action=="checkout"){ ?>
+    <h1><? echo $this->transEsc("od_checkout"); ?></h1>
+    <h2><div class="title"><?=$this->escapeHtml($title)?></div></h2>
+
+<div class="media">
+    <div class="pull-left <?=$this->escapeHtmlAttr($coverDetails['size'])?> img-col">
+        <? /* Display thumbnail if appropriate: */ ?>
+        <? if($cover): ?>
+            <img alt="Cover Image"  class="recordcover" src="<?=$cover?>">
+        <? endif; ?>
+    </div>
+
+    <div class="">
+        <h3><? echo $this->transEsc("od_dl_formats"); ?></h3>
+        <? foreach($formats as $key=>$format):?>
+        <ul><li><?=$key?></li></ul>
+        <? endforeach;?>
+
+
+    </div>
+    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    <? //TODO FIX THIS URL!!!! ?>
+    <a class='btn btn-primary' href='/odtest/overdrive/hold?od_id=$od_id&rec_id=$rec_id&action=doCheckout'>
+        <?=$this->transEsc("od_but_checkout_s"); ?>
+    </a>
+</div>
+<? }elseif($action=="hold"){    ?> 
+    <h1><? echo $this->transEsc("od_hold"); ?></h1>
+    <div class="title"></div>
+    <form class="form-record-hold" method="post" name="placeHold">
+
+  
+      <div class="form-group hold-required-by">
+      <label class="control-label">email</label>
+      <input id="email" name="email" value="" size="" class="form-control" type="text">
+    </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
+            <input class="btn btn-primary" name="placeHold" value="Place Hold" type="submit">
+
+  </div>
+</form>
+ 
+<? }elseif($action=="doCheckout" || $action =='placeHold'){ ?>
+    <div>(result)</div>
+    <?php $type = !$result['result']?"danger":"success";?>
+    <div class="alert alert-<?= $type?>"><i class='fa fa-exclamation-triangle'></i><?=$result['message']?></div>
+    <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">OK</button>
+<? } ?>
+
+

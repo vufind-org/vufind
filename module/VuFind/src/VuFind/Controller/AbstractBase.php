@@ -136,6 +136,8 @@ class AbstractBase extends AbstractActionController
             ->fromPost('layout', $this->params()->fromQuery('layout', false));
         if ('lightbox' === $layout) {
             $this->layout()->setTemplate('layout/lightbox');
+        }elseif(isset($params['layout']) && $params['layout']=='simple'){
+             $this->layout()->setTemplate('layout/simple');
         }
         return new ViewModel($params);
     }

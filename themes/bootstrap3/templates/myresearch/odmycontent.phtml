@@ -1,0 +1,45 @@
+<?php
+  // Set up page title:
+  $this->headTitle($this->translate('Overdrive Content'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Overdrive Content') . '</li>';
+?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('Overdrive Content')?></h2>
+  <?=$this->flashmessages()?>
+
+  <h3><?=$this->transEsc('Overdrive Loans')?></h3>
+  
+  <?php $i = 0; foreach ($this->checkouts as $resource): ?>
+  <h4 property="name"><?=$this->escapeHtml($resource['record']->getTitle() . ' ' . $resource['record']->getSubtitle())?></h4>
+    <div>Checkout expires on: <?php echo $resource['checkout']->expires; ?> </div>
+            <?php $listAuthors = $resource['record']->getPrimaryAuthors(); 
+                 if (!empty($listAuthors)): ?>
+                  <?=$this->transEsc('by')?>:
+                   <a href="<?=$this->record($resource['record'])->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?>
+                 <?php endif; ?><br/>
+                 <?php endif; ?>
+   <? endforeach;?>
+            
+
+  <h3><?=$this->transEsc('Overdrive Holds')?></h3>
+  <?php $i = 0; foreach ($this->holds as $resource): ?>
+
+  <h4 property="name"><? $this->escapeHtml($resource['record']->getShortTitle() . ' ' . $resource['record']->getSubtitle() . ' ' . $resource['record']->getTitleSection())?></h4>
+  Hold placed on <? echo $resource['hold']->holdPlacedDate ?>
+  Position <?= $resource['hold']->holdListPosition?> of <?= $resource['hold']->numberOfHolds ?> in holds queue
+  Email Address for hold notification: <?=$resource['hold']->emailAddress ?>
+  <button class="btn btn-primary">Cancel Hold</button>
+  <? endforeach;?>
+  
+  
+  <h3><?=$this->transEsc('Overdrive History')?></h3>
+
+ 
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'dgcontent'])?>
+</div>
