@@ -41,12 +41,14 @@
             left: -28px;
             &:before {
                 margin-left: -5px;
+                color: @gray;
             }
         }
         & .slick-next {
             right: -14px;
             &:before {
                 margin-left: -4px;
+                color: @gray;
             }
         }
         
@@ -190,7 +192,7 @@
             }
         }
         & .slick-prev, .slick-next {
-            background: rgba(50,50,50,0.2);
+            background: rgba(35,35,35,0.1);
             .rotate (90deg);
             z-index: 1;
             top: 107%;
@@ -218,13 +220,14 @@
     }
 
     & .slick-prev, .slick-next {
-        background: rgba(50,50,50,0.2);
+        background: rgba(35,35,35,0.1);
         overflow-x: hidden;
         z-index: 1;
         width: 35px;
         height: 45px;
         &:before {
-            display: block;   
+            display: block;
+            color: @gray;  
         }
         &:hover:before, &:focus:before  {
             margin-right: 0; 
