@@ -71,7 +71,7 @@ class AlmaController extends AbstractBase {
      * @var \VuFind\Db\Table\User
      */
     protected $userTable;    
-    
+        
     /**
      * Alma Controler constructor.
      * 
@@ -196,24 +196,20 @@ class AlmaController extends AbstractBase {
             
             if ($user) {
             	$user->username = $username;
-				//$user->password = 'password';
-				//$user->pass_hash = 'pass_hash';
 				$user->firstname = $firstname;
 				$user->lastname = $lastname;
 				$user->email = $email;
 				$user->cat_id = $primaryId;
 				$user->cat_username = $username;
-				//$user->cat_password = 'cat_password';
-				//$user->cat_pass_enc = 'cat_pass_enc';
 
 				try {
 					$user->save();
 					if ($method == 'CREATE') {
-					    $this->sendSetPasswordEmail($user, $this->config);
+                        $this->sendSetPasswordEmail($user, $this->config);
 					}
 					$jsonResponse = $this->createJsonResponse('Successfully '.strtolower($method).'d user with primary ID \''.$primaryId.'\' | username \''.$username.'\'.', 200);
 				} catch (\Exception $ex) {
-            		$jsonResponse = $this->createJsonResponse('Error when saving new user with primary ID \''.$primaryId.'\' | username \''.$username.'\' to VuFind database: '.$ex->getMessage(), 400);
+				    $jsonResponse = $this->createJsonResponse('Error when saving new user with primary ID \''.$primaryId.'\' | username \''.$username.'\' to VuFind database and sending the welcome email: '.$ex->getMessage().'. ', 400);
 				}
             } else {
 	        	$jsonResponse = $this->createJsonResponse('User with primary ID \''.$primaryId.'\' | username \''.$username.'\' was not found in VuFind database and therefore could not be '.strtolower($method).'d.', 404);
@@ -278,7 +274,7 @@ class AlmaController extends AbstractBase {
     protected function sendSetPasswordEmail($user, $config) {
         // If we can't find a user
         if (null == $user) {
-            error_log('Could not send the email for setting the password because the user object was not found.');
+            error_log('Could not send the email to new user for setting the password because the user object was not found.');
         } else {
             // Attempt to send the email
             try {
@@ -288,13 +284,17 @@ class AlmaController extends AbstractBase {
                 $renderer = $this->getViewRenderer();
                 $method = $this->getAuthManager()->getAuthMethod();
                 // Custom template for emails (text-only)
-                $message = $renderer->render('Email/recover-password.phtml', [
+                $message = $renderer->render('Email/new-user-welcome.phtml', [
                     'library' => $config->Site->title,
+                    'firstname' => $user->firstname,
+                    'lastname' => $user->lastname,
+                    'username' => $user->username,
                     'url' => $this->getServerUrl('myresearch-verify') . '?hash=' . $user->verify_hash . '&auth_method=' . $method
                 ]);
-                $this->serviceLocator->get('VuFind\Mailer\Mailer')->send($user->email, $config->Site->email, $this->translate('recovery_email_subject'), $message);
+                // Send the email
+                $this->serviceLocator->get('VuFind\Mailer\Mailer')->send($user->email, $config->Site->email, $this->translate('new_user_welcome_subject', ['%%library%%' => $config->Site->title]), $message);
             } catch (\VuFind\Exception\Mail $e) {
-                error_log('Could not send the \'set-password-email\' to user with primary ID \''.$user->cat_id.'\' | username \''.$user->username.'\'. Exception message: '.$e->getMessage());
+                error_log('Could not send the \'set-password-email\' to user with primary ID \''.$user->cat_id.'\' | username \''.$user->username.'\': '.$e->getMessage());
             }
         }
     }
