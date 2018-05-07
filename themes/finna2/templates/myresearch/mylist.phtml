@@ -19,20 +19,20 @@
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
 
   // Load Javascript dependencies into header:
-  $this->headScript()->appendFile("check_item_statuses.js", '');
-  $this->headScript()->appendFile("finna-mylist.js, '");
-  $this->headScript()->appendFile("vendor/jquery.editable.min.js", '');
-  $this->headScript()->appendFile("finna-item-status.js", '');
-  $this->headScript()->appendFile('vendor/jquery-ui-custom.min.js', '');
-  $this->headScript()->appendFile('vendor/jquery.ui.touch-punch.min.js', '');
+  $this->headScript()->appendFile("check_item_statuses.js");
+  $this->headScript()->appendFile("finna-mylist.js");
+  $this->headScript()->appendFile("vendor/jquery.editable.min.js");
+  $this->headScript()->appendFile("finna-item-status.js");
+  $this->headScript()->appendFile('vendor/jquery-ui-custom.min.js');
+  $this->headScript()->appendFile('vendor/jquery.ui.touch-punch.min.js');
 
-  $this->headScript()->appendFile("vendor/simplemde.min.js", '');
+  $this->headScript()->appendFile("vendor/simplemde.min.js");
   $this->headLink()->appendStylesheet('vendor/simplemde.min.css');
 
   // Load Javascript only if list view parameter is NOT full:
   if ($this->params->getOptions()->getListViewOption() != "full") {
-    $this->headScript()->appendFile("record.js", '');
-    $this->headScript()->appendFile("embedded_record.js", '');
+    $this->headScript()->appendFile("record.js");
+    $this->headScript()->appendFile("embedded_record.js");
   }
 
   $this->jsTranslations()->addStrings(['add_note' => 'Add note', 'add_list_description' => 'Add list description', 'loading' => 'Loading', 'preview' => 'Preview']);

@@ -98,6 +98,10 @@ class HeadScript extends \VuFindTheme\View\Helper\HeadScript
      */
     public function itemToString($item, $indent, $escapeStart, $escapeEnd)
     {
+        // Remove default type for current html5 compatibility
+        if (!empty($item->type) && 'text/javascript' === $item->type) {
+            $item->type = '';
+        }
         if (!empty($item->attributes['src'])) {
             $ua = $this->request->getHeader('User-Agent');
             $agent = $ua !== false ? $ua->toString() : '';

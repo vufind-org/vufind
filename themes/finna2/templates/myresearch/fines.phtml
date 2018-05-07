@@ -154,7 +154,7 @@
     <? endif; ?>
 </div>
 <? if (isset($this->registerPayment) && $this->registerPayment): ?>
-  <? $this->headScript()->appendFile('finna-online-payment.js', ''); ?>
+  <? $this->headScript()->appendFile('finna-online-payment.js'); ?>
   <?=$this->inlineScript(
     \Zend\View\Helper\HeadScript::SCRIPT,
     '$(document).ready(function() {'
