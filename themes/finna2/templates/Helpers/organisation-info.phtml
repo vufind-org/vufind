@@ -1,6 +1,6 @@
 <?
-  $this->headScript()->appendFile("finna-organisation-info.js", '');
-  $this->headScript()->appendFile("finna-organisation-info-widget.js", '');
+  $this->headScript()->appendFile("finna-organisation-info.js");
+  $this->headScript()->appendFile("finna-organisation-info-widget.js");
 ?>
 <div class="organisation-info<?=$this->showDetails ? ' with-details' : ''?>" data-parent="<?=$this->escapeHtmlAttr($this->id)?>" data-target="<?=$this->escapeHtmlAttr($this->target)?>" data-init="<?=$this->target == 'widget' ? '1' : '0'?>"<?=!empty($this->buildings) ? (' data-buildings="' . implode(',', $this->buildings) . '"') : ''?>>
 <? if ($this->target == 'widget'): ?>

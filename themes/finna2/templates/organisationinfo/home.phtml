@@ -4,17 +4,17 @@
   $this->layout()->finnaMainHeader = '<div><h3>' . $this->title . '</h3></div>';
 
   $this->headLink()->appendStylesheet('vendor/L.Control.Locate.min.css');
-  $this->headScript()->appendFile('vendor/L.Control.Locate.min.js', '');
+  $this->headScript()->appendFile('vendor/L.Control.Locate.min.js');
 
-  $this->headScript()->appendFile('vendor/jquery-ui-custom.min.js', '');
+  $this->headScript()->appendFile('vendor/jquery-ui-custom.min.js');
 
-  $this->headScript()->appendFile('finna-organisation-info.js', '');
+  $this->headScript()->appendFile('finna-organisation-info.js');
   if ($this->consortiumInfo) {
-    $this->headScript()->appendFile('finna-organisation-info-page-consortium.js', '');
+    $this->headScript()->appendFile('finna-organisation-info-page-consortium.js');
   }
-  $this->headScript()->appendFile('finna-organisation-info-widget.js', '');
-  $this->headScript()->appendFile('finna-organisation-info-page.js', '');
-  $this->headScript()->appendFile('finna-organisation-map-leaflet.js', '');
+  $this->headScript()->appendFile('finna-organisation-info-widget.js');
+  $this->headScript()->appendFile('finna-organisation-info-page.js');
+  $this->headScript()->appendFile('finna-organisation-map-leaflet.js');
 
   $this->jsTranslations()->addStrings([
      'map_my_location' => 'map_my_location',
@@ -39,7 +39,7 @@ $(document).ready(function() {
    });
 });
 JS;
-   $this->headScript()->appendScript($setupJS, '');
+   $this->headScript()->appendScript($setupJS);
 ?>
 
 <? if ($template = $this->content()->findTemplateForLng('content/Additions/organisation-page-start')): ?>
@@ -127,17 +127,16 @@ JS;
   <div class="container organisation-info-page loading organisation-page-information-wrapper">
   <? endif; ?>
 
-
   <div class="office-search navi-section map-ui" id="consortium-service-point-section">
     <? if ($this->consortiumInfo): ?>
-       <div><h3><?=$this->transEsc('organisation_info_navi_service')?></h3></div>
+      <div><h3><?=$this->transEsc('organisation_info_navi_service')?></h3></div>
     <? endif; ?>
-    <div><p class="consortium-notification hide "></p></div>
+    <div><p class="consortium-notification hide"></p></div>
     <div class="map-control-bar">
       <div class="flex-item">
         <form class="form-inline searchbox-office office-search-notifications map-ui">
-          <input id="office-search" type="text" placeholder="" aria-label="<?=$this->translate('hidden_field')?>" />
-          <button class="btn btn-primary btn-office-search" aria-label="<?=$this->translate('hidden_field')?>"><i class="fa fa-arrow-down"></i></button>
+          <input id="office-search" type="text" placeholder="" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>" />
+          <button class="btn btn-primary btn-office-search" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>"><i class="fa fa-arrow-down"></i></button>
           <div class="notification"><?=$this->transEsc('organisation_info_location_not_available');?></div>
         </form>
         <div class="autocomplete-container"></div>

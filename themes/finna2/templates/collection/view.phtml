@@ -1,13 +1,13 @@
 <!-- START of: finna - collection/view.phtml -->
 <?
   // Set up standard record scripts:
-  $this->headScript()->appendFile("record.js", '');
-  $this->headScript()->appendFile("finna-record.js", '');
-  $this->headScript()->appendFile("check_save_statuses.js", '');
-  $this->headScript()->appendFile("finna-comments.js", '');
+  $this->headScript()->appendFile("record.js");
+  $this->headScript()->appendFile("finna-record.js");
+  $this->headScript()->appendFile("check_save_statuses.js");
+  $this->headScript()->appendFile("finna-comments.js");
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
-    $this->headScript()->appendFile($this->syndeticsPlus()->getScript(), '');
+    $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
   }
   // Set up breadcrumbs:
   $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
@@ -111,7 +111,7 @@
   <? // N.B. The element/class structure here is important for the ajax tabs to work properly ?>
   <div class="record-tabs record-accordions">
     <? if (count($this->tabs) > 0): ?>
-      <a name="tabnav"></a>
+      <a id="tabnav"></a>
         <? if (count($this->tabs) > 3): ?>
         <div class="tabs-responsive">
         <? endif; ?>
