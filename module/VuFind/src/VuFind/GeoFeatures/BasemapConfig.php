@@ -2,7 +2,7 @@
 /**
  * Basemap Configuration Module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,8 +27,6 @@
  */
 namespace VuFind\GeoFeatures;
 
-use Zend\Config\Config;
-
 /**
  * Basemap Configuration Class
  *
@@ -38,25 +36,8 @@ use Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-class BasemapConfig
+class BasemapConfig extends AbstractConfig
 {
-    /**
-     * Basemap tileserver URL
-     * Default is the wikimedia osm-intl map
-     *
-     * @var string
-     */
-    protected $basemapUrl = "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png";
-
-    /**
-     * Basemap attribution
-     *
-     * @var string
-     */
-    protected $basemapAttribution = '<a href="https://wikimediafoundation.org/wiki/
-        Maps_Terms_of_Use">Wikimedia</a> | © <a href="https://www.openstreetmap.org/
-        copyright">OpenStreetMap</a>';
-
     /**
      * Request origin
      *
@@ -65,20 +46,25 @@ class BasemapConfig
     protected $requestOrigin;
 
     /**
-     * Configuration loader
+     * Valid options to retrieve from configuration
      *
-     * @var \VuFind\Config\PluginManager
+     * @var string[]
      */
-    protected $configLoader;
+    protected $options = ['basemap_url', 'basemap_attribution'];
 
     /**
-     * Constructor
+     * Set default options
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @return array
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    protected function getDefaultOptions()
     {
-        $this->configLoader = $configLoader;
+        return [
+            'basemap_url' => 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
+            'basemap_attribution' => '<a href="https://wikimediafoundation.org/'
+                . 'wiki/Maps_Terms_of_Use">Wikimedia</a> | &copy; <a '
+                . 'href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        ];
     }
 
     /**
@@ -96,16 +82,12 @@ class BasemapConfig
         } elseif ($origin == 'MapTab') {
             $options = $this->getMapTabBasemap();
         }
-        // Check geofeatures.ini [Basemaps] section as a fallback:
+        // Fail over to geofeatures.ini [Basemap] if no other settings found:
         if (empty($options)) {
-            $options = $this->getOptions('geofeatures', 'Basemaps');
+            $options = $this->getOptions('geofeatures', 'Basemap', $this->options);
         }
-        // Fill array with defaults if nothing else worked:
-        if (empty($options)) {
-            $options['basemap_url'] = $this->basemapUrl;
-            $options['basemap_attribution'] = $this->basemapAttribution;
-        }
-        return $options;
+        // Fill in any missing defaults:
+        return $options + $this->getDefaultOptions();
     }
 
     /**
@@ -115,13 +97,13 @@ class BasemapConfig
      */
     protected function getMapSelectionBasemap()
     {
-        // First check legacy location:
-        $options = $this->getOptions('searches', 'MapSelection');
-        // Check geofeatures.ini [MapSelection] section next:
-        if (empty($options)) {
-            $options = $this->getOptions('geofeatures', 'MapSelection');
-        }
-        return $options;
+        // Check geofeatures.ini [MapSelection]
+        $options = $this->getOptions('geofeatures', 'MapSelection', $this->options);
+
+        // Fail over to legacy configuration if empty
+        return empty($options)
+            ? $this->getOptions('searches', 'MapSelection', $this->options)
+            : $options;
     }
 
     /**
@@ -131,35 +113,12 @@ class BasemapConfig
      */
     protected function getMapTabBasemap()
     {
-        // First check legacy location:
-        $options = $this->getOptions('config', 'Content');
-        // Check geofeatures.ini [MapTab] section next:
-        if (empty($options)) {
-            $options = $this->getOptions('geofeatures', 'MapTab');
-        }
-        return $options;
-    }
+        // Check geofeatures.ini [MapTab]
+        $options = $this->getOptions('geofeatures', 'MapTab', $this->options);
 
-    /**
-     * Convert a config object to an options array; return empty array if
-     * configuration is missing or incomplete.
-     *
-     * @param string $configName Name of config file to read
-     * @param string $section    Name of section to read
-     *
-     * @return array
-     */
-    protected function getOptions($configName, $section)
-    {
-        $config = $this->configLoader->get($configName);
-        $options = [];
-        $fields = ['basemap_url', 'basemap_attribution'];
-        foreach ($fields as $field) {
-            if (isset($config->$section->$field)) {
-                $options[$field] = $config->$section->$field;
-            }
-        }
-        // If basemap_url is not set, options array is invalid!
-        return isset($options['basemap_url']) ? $options : [];
+        // Fail over to legacy configuration if empty
+        return empty($options)
+            ? $this->getOptions('config', 'Content', $this->options)
+            : $options;
     }
 }

@@ -2,7 +2,7 @@
 /**
  * Factory for ChannelProvider plugins.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -51,17 +51,13 @@ class Factory
      */
     public static function getAlphaBrowse(ServiceManager $sm)
     {
-        $helper = new AlphaBrowse(
+        return new AlphaBrowse(
             $sm->get('VuFindSearch\Service'),
             $sm->get('VuFind\Search\BackendManager')
                 ->get('Solr'),
             $sm->get('ControllerPluginManager')->get('url'),
             $sm->get('VuFind\Record\Router')
         );
-        $helper->setCoverRouter(
-            $sm->get('VuFind\Cover\Router')
-        );
-        return $helper;
     }
 
     /**
@@ -73,14 +69,10 @@ class Factory
      */
     public static function getFacets(ServiceManager $sm)
     {
-        $helper = new Facets(
+        return new Facets(
             $sm->get('VuFind\Search\Results\PluginManager'),
             $sm->get('ControllerPluginManager')->get('url')
         );
-        $helper->setCoverRouter(
-            $sm->get('VuFind\Cover\Router')
-        );
-        return $helper;
     }
 
     /**
@@ -92,15 +84,11 @@ class Factory
      */
     public static function getListItems(ServiceManager $sm)
     {
-        $helper = new ListItems(
+        return new ListItems(
             $sm->get('VuFind\Db\Table\PluginManager')->get('UserList'),
             $sm->get('ControllerPluginManager')->get('url'),
             $sm->get('VuFind\Search\Results\PluginManager')
         );
-        $helper->setCoverRouter(
-            $sm->get('VuFind\Cover\Router')
-        );
-        return $helper;
     }
 
     /**
@@ -112,14 +100,10 @@ class Factory
      */
     public static function getRandom(ServiceManager $sm)
     {
-        $helper = new Random(
+        return new Random(
             $sm->get('VuFindSearch\Service'),
             $sm->get('VuFind\Search\Params\PluginManager')
         );
-        $helper->setCoverRouter(
-            $sm->get('VuFind\Cover\Router')
-        );
-        return $helper;
     }
 
     /**
@@ -131,14 +115,10 @@ class Factory
      */
     public static function getSimilarItems(ServiceManager $sm)
     {
-        $helper = new SimilarItems(
+        return new SimilarItems(
             $sm->get('VuFindSearch\Service'),
             $sm->get('ControllerPluginManager')->get('url'),
             $sm->get('VuFind\Record\Router')
         );
-        $helper->setCoverRouter(
-            $sm->get('VuFind\Cover\Router')
-        );
-        return $helper;
     }
 }

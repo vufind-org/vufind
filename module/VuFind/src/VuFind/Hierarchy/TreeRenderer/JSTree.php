@@ -2,7 +2,7 @@
 /**
  * Hierarchy Tree Renderer for the JS_Tree plugin
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *

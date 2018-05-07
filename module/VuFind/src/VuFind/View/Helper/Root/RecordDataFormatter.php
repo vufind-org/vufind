@@ -2,7 +2,7 @@
 /**
  * Record driver data formatting view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -60,12 +60,7 @@ class RecordDataFormatter extends AbstractHelper
      */
     public function specSortCallback($a, $b)
     {
-        $posA = $a['pos'] ?? 0;
-        $posB = $b['pos'] ?? 0;
-        if ($posA === $posB) {
-            return 0;
-        }
-        return $posA < $posB ? -1 : 1;
+        return ($a['pos'] ?? 0) <=> ($b['pos'] ?? 0);
     }
 
     /**
@@ -101,15 +96,12 @@ class RecordDataFormatter extends AbstractHelper
                         continue;
                     }
                     // Allow dynamic label override:
-                    if (isset($current['labelFunction'])
-                        && is_callable($current['labelFunction'])
-                    ) {
-                        $field = call_user_func($current['labelFunction'], $data);
-                    }
-                    $context = $current['context'] ?? [];
-                    $result[$field] = [
+                    $label = is_callable($current['labelFunction'] ?? null)
+                        ? call_user_func($current['labelFunction'], $data, $driver)
+                        : $field;
+                    $result[$label] = [
                         'value' => $text,
-                        'context' => $context
+                        'context' => $current['context'] ?? [],
                     ];
                 }
             }
@@ -179,9 +171,7 @@ class RecordDataFormatter extends AbstractHelper
             return $method;
         }
 
-        $useCache = isset($options['cacheData']) && $options['cacheData'];
-
-        if ($useCache) {
+        if ($useCache = ($options['useCache'] ?? false)) {
             $cacheKey = $driver->getUniqueID() . '|'
                 . $driver->getSourceIdentifier() . '|' . $method;
             if (isset($cache[$cacheKey])) {
@@ -254,7 +244,7 @@ class RecordDataFormatter extends AbstractHelper
      */
     protected function getLink($value, $options)
     {
-        if (isset($options['recordLink']) && $options['recordLink']) {
+        if ($options['recordLink'] ?? false) {
             $helper = $this->getView()->plugin('record');
             return $helper->getLink($options['recordLink'], $value);
         }
@@ -275,7 +265,7 @@ class RecordDataFormatter extends AbstractHelper
     protected function renderSimple(RecordDriver $driver, $data, array $options)
     {
         $view = $this->getView();
-        $escaper = (isset($options['translate']) && $options['translate'])
+        $escaper = ($options['translate'] ?? false)
             ? $view->plugin('transEsc') : $view->plugin('escapeHtml');
         $transDomain = $options['translationTextDomain'] ?? '';
         $separator = $options['separator'] ?? '<br />';

@@ -2,7 +2,7 @@
 /**
  * Wrapper class for handling logged-in user in session.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -124,10 +124,11 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      * @param SessionManager $sessionManager Session manager
      * @param PluginManager  $pm             Authentication plugin manager
      * @param CookieManager  $cookieManager  Cookie manager
+     * @param Csrf           $csrf           CSRF validator
      */
     public function __construct(Config $config, UserTable $userTable,
         SessionManager $sessionManager, PluginManager $pm,
-        CookieManager $cookieManager
+        CookieManager $cookieManager, Csrf $csrf
     ) {
         // Store dependencies:
         $this->config = $config;
@@ -135,18 +136,10 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         $this->sessionManager = $sessionManager;
         $this->pluginManager = $pm;
         $this->cookieManager = $cookieManager;
+        $this->csrf = $csrf;
 
         // Set up session:
         $this->session = new \Zend\Session\Container('Account', $sessionManager);
-
-        // Set up CSRF:
-        $this->csrf = new Csrf(
-            [
-                'session' => new \Zend\Session\Container('csrf', $sessionManager),
-                'salt' => isset($this->config->Security->HMACkey)
-                    ? $this->config->Security->HMACkey : 'VuFindCsrfSalt',
-            ]
-        );
 
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
@@ -522,6 +515,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function create($request)
     {
         $user = $this->getAuth()->create($request);
+        $this->updateUser($user);
         $this->updateSession($user);
         return $user;
     }
@@ -585,6 +579,9 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
             throw new AuthException('authentication_error_technical');
         }
 
+        // Update user object
+        $this->updateUser($user);
+
         // Store the user in the session and send it back to the caller:
         $this->updateSession($user);
         return $user;
@@ -633,5 +630,24 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function validateCredentials($request)
     {
         return $this->getAuth()->validateCredentials($request);
+    }
+
+    /**
+     * Update common user attributes on login
+     *
+     * @param \VuFind\Db\Row\User $user User object
+     *
+     * @return void
+     */
+    protected function updateUser($user)
+    {
+        if ($this->getAuth() instanceof ChoiceAuth) {
+            $method = $this->getAuth()->getSelectedAuthOption();
+        } else {
+            $method = $this->activeAuth;
+        }
+        $user->auth_method = strtolower($method);
+        $user->last_login = date('Y-m-d H:i:s');
+        $user->save();
     }
 }

@@ -2,7 +2,7 @@
 /**
  * Voyager ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2014-2016.
@@ -2451,6 +2451,107 @@ EOT;
             throw new ILSException($e->getMessage());
         }
 
+        return $recordList;
+    }
+
+    /**
+     * Get bib records for recently returned items.
+     *
+     * @param int   $limit  Maximum number of records to retrieve (default = 30)
+     * @param int   $maxage The maximum number of days to consider "recently
+     * returned."
+     * @param array $patron Patron Data
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getRecentlyReturnedBibs($limit = 30, $maxage = 30,
+        $patron = null
+    ) {
+        $recordList = [];
+
+        // Oracle does not support the SQL LIMIT clause before version 12, so
+        // instead we need to provide an optimizer hint, which requires us to
+        // ensure that $limit is a valid integer.
+        $intLimit = intval($limit);
+        $safeLimit = $intLimit < 1 ? 30 : $intLimit;
+
+        $sql = "select /*+ FIRST_ROWS($safeLimit) */ BIB_MFHD.BIB_ID, "
+            . "max(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE) as RETURNED "
+            . "from $this->dbName.CIRC_TRANS_ARCHIVE "
+            . "join $this->dbName.MFHD_ITEM "
+            . "on CIRC_TRANS_ARCHIVE.ITEM_ID = MFHD_ITEM.ITEM_ID "
+            . "join $this->dbName.BIB_MFHD "
+            . "on BIB_MFHD.MFHD_ID = MFHD_ITEM.MFHD_ID "
+            . "join $this->dbName.BIB_MASTER "
+            . "on BIB_MASTER.BIB_ID = BIB_MFHD.BIB_ID "
+            . "where CIRC_TRANS_ARCHIVE.DISCHARGE_DATE is not null "
+            . "and CIRC_TRANS_ARCHIVE.DISCHARGE_DATE > SYSDATE - :maxage "
+            . "and BIB_MASTER.SUPPRESS_IN_OPAC='N' "
+            . "group by BIB_MFHD.BIB_ID "
+            . "order by RETURNED desc";
+        try {
+            $sqlStmt = $this->executeSQL($sql, [':maxage' => $maxage]);
+            while (count($recordList) < $limit
+                && $row = $sqlStmt->fetch(PDO::FETCH_ASSOC)
+            ) {
+                $recordList[] = ['id' => $row['BIB_ID']];
+            }
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+        return $recordList;
+    }
+
+    /**
+     * Get bib records for "trending" items (recently returned with high usage).
+     *
+     * @param int   $limit  Maximum number of records to retrieve (default = 30)
+     * @param int   $maxage The maximum number of days' worth of data to examine.
+     * @param array $patron Patron Data
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getTrendingBibs($limit = 30, $maxage = 30, $patron = null)
+    {
+        $recordList = [];
+
+        // Oracle does not support the SQL LIMIT clause before version 12, so
+        // instead we need to provide an optimizer hint, which requires us to
+        // ensure that $limit is a valid integer.
+        $intLimit = intval($limit);
+        $safeLimit = $intLimit < 1 ? 30 : $intLimit;
+
+        $sql = "select /*+ FIRST_ROWS($safeLimit) */ BIB_MFHD.BIB_ID, "
+            . "count(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE) as RECENT, "
+            . "sum(ITEM.HISTORICAL_CHARGES) as OVERALL "
+            . "from $this->dbName.CIRC_TRANS_ARCHIVE "
+            . "join $this->dbName.MFHD_ITEM "
+            . "on CIRC_TRANS_ARCHIVE.ITEM_ID = MFHD_ITEM.ITEM_ID "
+            . "join $this->dbName.BIB_MFHD "
+            . "on BIB_MFHD.MFHD_ID = MFHD_ITEM.MFHD_ID "
+            . "join $this->dbName.ITEM "
+            . "on CIRC_TRANS_ARCHIVE.ITEM_ID = ITEM.ITEM_ID "
+            . "join $this->dbName.BIB_MASTER "
+            . "on BIB_MASTER.BIB_ID = BIB_MFHD.BIB_ID "
+            . "where CIRC_TRANS_ARCHIVE.DISCHARGE_DATE is not null "
+            . "and CIRC_TRANS_ARCHIVE.DISCHARGE_DATE > SYSDATE - :maxage "
+            . "and BIB_MASTER.SUPPRESS_IN_OPAC='N' "
+            . "group by BIB_MFHD.BIB_ID "
+            . "order by RECENT desc, OVERALL desc";
+        try {
+            $sqlStmt = $this->executeSQL($sql, [':maxage' => $maxage]);
+            while (count($recordList) < $limit
+                && $row = $sqlStmt->fetch(PDO::FETCH_ASSOC)
+            ) {
+                $recordList[] = ['id' => $row['BIB_ID']];
+            }
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
         return $recordList;
     }
 

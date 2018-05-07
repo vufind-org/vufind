@@ -3,7 +3,7 @@
  * VuFind controller base class (defines some methods that can be shared by other
  * controllers).
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
