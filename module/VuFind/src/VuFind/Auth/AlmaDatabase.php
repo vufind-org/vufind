@@ -37,7 +37,7 @@ class AlmaDatabase extends Database
     /**
      * ILS Authenticator
      *
-     * @var object
+     * @var \VuFind\Auth\ILSAuthenticator
      */
     protected $authenticator;
     
