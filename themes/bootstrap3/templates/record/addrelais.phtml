@@ -105,7 +105,7 @@ function relaisRecordClickedFunction() {
       var recordSource = $('.hiddenSource').val();
       var oclc = $('#oclcid').val();
       //alert(oclc);
-      var url = path + '/AJAX/JSON?' + $.param({method:'getRelaisInfo',id:recordId,'oclcNumber':oclc});
+      var url = path + '/AJAX/JSON?' + $.param({method:'relaisInfo',id:recordId,'oclcNumber':oclc});
       //alert("calling...");
       //AJAX CALL
       $.ajax({
@@ -123,7 +123,7 @@ function relaisRecordClickedFunction() {
               $('#makePalciRequest').click(function() {
                   
                   
-                  var url = path + '/AJAX/JSON?' + $.param({method:'orderItemFromPalci',id:recordId,'oclcNumber':oclc});
+                  var url = path + '/AJAX/JSON?' + $.param({method:'relaisOrder',id:recordId,'oclcNumber':oclc});
                   makeRelaisRequest(url);
 
               });

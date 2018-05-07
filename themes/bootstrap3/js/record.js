@@ -307,7 +307,7 @@ $('#relaisRecordButton').click(startPalciRequest);
     var recordSource = $('.hiddenSource').val();
     var oclc = $('#oclcid').val();
     var avail = false;
-    var url = path + '/AJAX/JSON?' + $.param({method:'isItemAvailable',id:recordId,'oclcNumber':oclc});
+    var url = path + '/AJAX/JSON?' + $.param({method:'relaisAvailability',id:recordId,'oclcNumber':oclc});
     $.ajax({
           dataType: 'json',
           url: url,
