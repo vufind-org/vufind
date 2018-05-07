@@ -39,8 +39,10 @@ use Zend\Http\Client;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Relais
+class Relais implements \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * HTTP client
      *
@@ -118,6 +120,7 @@ class Relais
             ->setUri($uri)
             ->setMethod('POST');
         $body = json_encode($data + $this->getDefaultData());
+        $this->debug('Posting ' . $body . ' to ' . $uri);
         $this->client->setRawBody($body, 'application/json');
         //$client->setAdapter('Zend\Http\Client\Adapter\Curl');
         //$client->setOptions(
@@ -134,7 +137,9 @@ class Relais
         $this->client->getRequest()->getHeaders()
             ->addHeaderLine('Content-Type: application/json');
         $response = $this->client->send();
-        return $response->getBody();
+        $body = $response->getBody();
+        $this->debug('Status: ' . $response->getStatusCode() . ', body: ' . $body);
+        return $body;
     }
 
     /**
