@@ -63,9 +63,9 @@ class AbstractRelaisActionFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
+        $user = $container->get('VuFind\Auth\Manager')->isLoggedIn();
         return new $requestedName(
-            $container->get('VuFind\Connection\Relais'),
-            $container->get('VuFind\Auth\Manager')->isLoggedIn()
+            $container->get('VuFind\Connection\Relais'), $user ?: null
         );
     }
 }
