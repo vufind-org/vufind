@@ -389,7 +389,17 @@ class AccountExpirationReminders extends AbstractService
             $this->currentInstitution = 'www';
         }
 
-        $serviceAddress = $this->currentInstitution . '.finna.fi';
+        $urlParts = explode('/', $this->currentViewPath);
+        $urlView = array_pop($urlParts);
+        $urlInstitution = array_pop($urlParts);
+        if ('national' === $urlInstitution) {
+            $urlInstitution = 'www';
+        }
+        $serviceAddress = $urlInstitution . '.finna.fi';
+        if ($urlView != $this::DEFAULT_PATH) {
+            $serviceAddress .= "/$urlView";
+        }
+
         $serviceName = !empty($this->currentSiteConfig['Site']['title'])
             ? $this->currentSiteConfig['Site']['title'] : $serviceAddress;
         $firstName = $user->firstname;
