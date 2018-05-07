@@ -27,6 +27,8 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Zend\Mvc\Controller\Plugin\Params;
+
 /**
  * Relais: Check if logged-in patron can order an item.
  *

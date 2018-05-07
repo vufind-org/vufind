@@ -27,6 +27,8 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Zend\Mvc\Controller\Plugin\Params;
+
 /**
  * Relais: Check item availability using a generic patron ID
  *
