@@ -385,8 +385,10 @@ class OnlinePaymentMonitor extends AbstractService
 
         foreach ($report as $driver => $cnt) {
             if ($cnt) {
-                $settings = $this->configReader->get("VoyagerRestful_$driver");
-                if (!$settings || !isset($settings['OnlinePayment']['errorEmail'])) {
+                $settings = $this->catalog->getConfig(
+                    'onlinePayment', ['id' => "$driver.123"]
+                );
+                if (!$settings || !isset($settings['errorEmail'])) {
                     $this->err(
                         "  No error email for expired transactions not defined for "
                         . "driver $driver ($cnt expired transactions)"
@@ -394,7 +396,7 @@ class OnlinePaymentMonitor extends AbstractService
                     continue;
                 }
 
-                $email = $settings['OnlinePayment']['errorEmail'];
+                $email = $settings['errorEmail'];
                 $this->msg(
                     "  [$driver] Inform $cnt expired transactions "
                     . "for driver $driver to $email"
