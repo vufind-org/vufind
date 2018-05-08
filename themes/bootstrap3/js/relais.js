@@ -1,5 +1,5 @@
 /*global VuFind*/
-/*exported isItemAvailableThroughPalci*/
+/*exported isItemAvailableThroughPalci, relaisAddItem*/
 //VUFIND/EZBORROW INTEGRATION
 
 /*
@@ -50,9 +50,9 @@ function isItemAvailableThroughPalci() {
     success: function relaisAvailabilitySuccessCallback(response) {
       if (response.data === "ok") {
         avail = true;
-        $("span[class='palciLink']").each(function( index ) {
-          console.log( index + ": " + $( this ).text() + ":" + avail);
-          $( this ).html('<a id="relaisRecordButton" href="#" class="modal-link"  href="#"  title="PALCI Request">PALCI Request (fastest)</a>&nbsp;&nbsp;');
+        $("span[class='palciLink']").each(function relaisLinkFormatter(index) {
+          //console.log( index + ": " + $( this ).text() + ":" + avail);
+          $(this).html('<a id="relaisRecordButton" href="#" class="modal-link"  href="#"  title="PALCI Request">PALCI Request (fastest)</a>&nbsp;&nbsp;');
           $('#relaisRecordButton').click(startPalciRequest);
         });
       }
@@ -70,12 +70,12 @@ function isItemAvailableThroughPalci() {
 //MAKE THE REQUEST FOR THE ITEM
 //CHECKS TO SEE IF PATRON IS SIGNED IN
 function relaisRecordClickedFunction() {
-  var id = $('.hiddenId')[0].value;
+  //var id = $('.hiddenId')[0].value;
   var theUrl = $("#relaisRecordUrl").val();
-  var parts = theUrl.split('/');
+  //var parts = theUrl.split('/');
 
-  return Lightbox.get(parts[parts.length-3],'AddRelais',{id:id});
-};
+  return VuFind.lightbox.ajax(theUrl);
+}
 
 function calcelPalciRequestOnClick() {
   $('#modal').modal('hide'); // hide the modal 
@@ -93,7 +93,7 @@ function makeRelaisRequest(url) {
       status = response.status;
       var obj = jQuery.parseJSON(response.data);
       //alert("in success");
-      if (status == "ERROR") {
+      if (status === "ERROR") {
         $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Close'>");
         $('#requestMessage').html("<br><h4><b>There was a problem with this request.  Click <a href='https://library.lehigh.edu/content/e_zborrow_authentication' target='new'>here to request this item using the EZBorrow Website.</a></b></h4>");
       } else {
@@ -110,17 +110,17 @@ function makeRelaisRequest(url) {
 
 function relaisAddItem() {
   //alert("click function called");
-  var id = $('.hiddenId')[0].value;
+  //var id = $('.hiddenId')[0].value;
   //var parts = this.href.split('/');
-  var theUrl = $("#relaisRecordUrl").val();
-  var parts = theUrl.split('/');
+  //var theUrl = $("#relaisRecordUrl").val();
+  //var parts = theUrl.split('/');
   $('[data-dismiss="modal"]').on('click', function dismissReliasModalOnClick(){
     $('.modal').hide();
     $('.modal-backdrop').hide();
   });
 
   var recordId = $('#record_id').val();
-  var recordSource = $('.hiddenSource').val();
+  //var recordSource = $('.hiddenSource').val();
   var oclc = $('#oclcid').val();
   //alert(oclc);
   var url = VuFind.path + '/AJAX/JSON?' + $.param({
@@ -142,7 +142,7 @@ function relaisAddItem() {
         //$('#requestButton').html("<input class='btn btn-primary' type='submit' value='" + <?=$this->transEsc('Savezzz')?> +"/>");
         $('#requestButton').html("<input class='btn btn-primary' id='makePalciRequest' type='submit' value='Submit Request'>"
                                  + "<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Cancel'>");
-        $('#makePalciRequest').click(function() {
+        $('#makePalciRequest').click(function makePalciRequestOnClick() {
           var orderUrl = VuFind.path + '/AJAX/JSON?' + $.param({
             method: 'relaisOrder',
             id: recordId,
