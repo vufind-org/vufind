@@ -65,7 +65,9 @@ class AbstractRelaisActionFactory
         }
         $user = $container->get('VuFind\Auth\Manager')->isLoggedIn();
         return new $requestedName(
-            $container->get('VuFind\Connection\Relais'), $user ?: null
+            $container->get('VuFind\Session\Settings'),
+            $container->get('VuFind\Connection\Relais'),
+            $user ?: null
         );
     }
 }

@@ -49,6 +49,7 @@ class RelaisAvailability extends AbstractRelaisAction
      */
     public function handleRequest(Params $params)
     {
+        $this->disableSessionWrites();  // avoid session write timing bug
         $oclcNumber = $params->fromQuery('oclcNumber');
 
         // Authenticate
