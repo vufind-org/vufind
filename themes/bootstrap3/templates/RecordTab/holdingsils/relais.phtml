@@ -2,7 +2,7 @@
 <?php
   // Only activate Relais code once, even if there are multiple items:
   if (empty($this->layout()->relaisActive)) {
-    $this->layout()->relaisActive = true;      
+    $this->layout()->relaisActive = true;
     $this->headScript()->appendFile('relais.js');
     $addLink = $this->recordLink()->getTabUrl($driver, 'AddRelais');
     $oclc = $driver->tryMethod('getCleanOCLCNum');
