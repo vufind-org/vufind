@@ -109,6 +109,7 @@ class Relais implements \Zend\Log\LoggerAwareInterface
 
     /**
      * Make an API request
+     *
      * @param string $uri  Endpoint to request from
      * @param array  $data Data to send with request
      *

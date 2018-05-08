@@ -61,6 +61,9 @@ abstract class AbstractRelaisAction extends AbstractBase
 
     /**
      * Constructor
+     *
+     * @param Relais $relais Relais connector
+     * @param User   $user   Logged in user (or null if none)
      */
     public function __construct(Relais $relais, User $user = null)
     {
