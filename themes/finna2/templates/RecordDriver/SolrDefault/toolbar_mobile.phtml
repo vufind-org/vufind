@@ -61,7 +61,6 @@
             <? if ($publisher): /* TODO */ ?><meta property="article:publisher" content="" /><? endif; ?>
             <meta property="og:image" content="<?=$this->escapeHtmlAttr($mediumThumb);?>" />
             -->
-          </li>
           <li class="whatsapp">
             <span class="visible-xs"><a class="whatsapp-record" href="whatsapp://send?text=<?=urlencode($this->serverUrl() . $this->recordLink()->getUrl($this->driver)) ?>" data-action="share/whatsapp/share" rel="nofollow"><i class="fa fa-phone"></i><span class="sr-only">Whatsapp</span></a></span>
           </li>
