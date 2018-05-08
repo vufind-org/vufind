@@ -33,7 +33,7 @@ function checkRelaisAvailability(addLink, oclc) {
   });
 }
 
-function calcelPalciRequestOnClick() {
+function calcelRelaisRequestOnClick() {
   $('#modal').modal('hide'); // hide the modal 
   $('#modal-dynamic-content').empty(); // empties dynamic content
   $('.modal-backdrop').remove(); // removes all modal-backdrops
@@ -50,13 +50,13 @@ function makeRelaisRequest(url) {
       var obj = jQuery.parseJSON(response.data);
       //alert("in success");
       if (status === "ERROR") {
-        $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Close'>");
+        $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='Close'>");
         $('#requestMessage').html("<br><h4><b>There was a problem with this request.  Click <a href='https://library.lehigh.edu/content/e_zborrow_authentication' target='new'>here to request this item using the EZBorrow Website.</a></b></h4>");
       } else {
-        $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Close'>");
+        $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='Close'>");
         $('#requestMessage').html("<br><h4><b>Confirmation:</b> Request id #" + obj.RequestNumber + " was created.  You will receive a confirmation email.<h4>");
       }
-      $('#cancelPalciRequest').unbind('click').click(calcelPalciRequestOnClick);
+      $('#cancelRelaisRequest').unbind('click').click(calcelRelaisRequestOnClick);
     },
     error: function relaisRequestErrorCallback() {
      //alert("error");
@@ -66,9 +66,9 @@ function makeRelaisRequest(url) {
 
 function relaisInfoErrorCallback() {
   $('#relaisResults').html("");
-  $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Close'>");
+  $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='Close'>");
   $('#requestMessage').html("<br><h4><b>There was a problem with this request.  Click <a href='https://library.lehigh.edu/content/e_zborrow_authentication' target='new'>here to request this item using the EZBorrow Website.</a></b></h4>");
-  $('#cancelPalciRequest').unbind('click').click(calcelPalciRequestOnClick);
+  $('#cancelRelaisRequest').unbind('click').click(calcelRelaisRequestOnClick);
 }
 
 function relaisAddItem(oclc) {
@@ -84,16 +84,16 @@ function relaisAddItem(oclc) {
       if (obj.Available) {
         $('#requestMessage').html("<h3>This item is available through PALCI.  Would you like to request it?</h3>");
         $('#relaisResults').html("");
-        $('#requestButton').html("<input class='btn btn-primary' id='makePalciRequest' type='submit' value='Submit Request'>"
-                                 + "<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Cancel'>");
-        $('#makePalciRequest').unbind('click').click(function makePalciRequestOnClick() {
+        $('#requestButton').html("<input class='btn btn-primary' id='makeRelaisRequest' type='submit' value='Submit Request'>"
+                                 + "<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='Cancel'>");
+        $('#makeRelaisRequest').unbind('click').click(function makeRelaisRequestOnClick() {
           var orderUrl = VuFind.path + '/AJAX/JSON?' + $.param({
             method: 'relaisOrder',
             oclcNumber: oclc
           });
           makeRelaisRequest(orderUrl);
         });
-        $('#cancelPalciRequest').unbind('click').click(calcelPalciRequestOnClick);
+        $('#cancelRelaisRequest').unbind('click').click(calcelRelaisRequestOnClick);
       } else {
         relaisInfoErrorCallback();
       }
