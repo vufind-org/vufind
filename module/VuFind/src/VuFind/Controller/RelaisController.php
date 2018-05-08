@@ -45,8 +45,9 @@ class RelaisController extends AbstractBase
      */
     public function requestAction()
     {
-        if (!$this->getAuthManager()->isLoggedIn()) {
-            return $this->forceLogin();
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
         }
         return $this->createViewModel(
             ['oclc' => $this->params()->fromQuery('oclc')]
