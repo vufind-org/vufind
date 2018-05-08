@@ -253,10 +253,7 @@
       ?>
       <? if (!empty($coreFields)): ?>
         <table class="table table-finna-record record-details">
-          <? foreach ($coreFields as $key => $current): ?>
-           <? $header = $this->transEsc(isset($current['context']['title']) ? $current['context']['title'] : $key); ?>
-           <tr class="<?=$current['context']['class'];?>"><th><?=$header !== '' ? "$header:" : ''?></th><td><?=$current['value']?></td></tr>
-          <? endforeach; ?>
+          <?=$this->partial('RecordDriver/SolrDefault/core-fields.phtml', ['coreFields' => $coreFields]);?>
         </table>
       <? endif; ?>
       <button class="btn show-details-button hidden"><?=$this->transesc('show_more_details');?> <i class="fa fa-arrow-down"></i></button>
