@@ -119,21 +119,9 @@ class Relais implements \Zend\Log\LoggerAwareInterface
         $this->client->resetParameters()
             ->setUri($uri)
             ->setMethod('POST');
-        $body = json_encode($data + $this->getDefaultData());
-        $this->debug('Posting ' . $body . ' to ' . $uri);
-        $this->client->setRawBody($body, 'application/json');
-        //$client->setAdapter('Zend\Http\Client\Adapter\Curl');
-        //$client->setOptions(
-        //    array(
-        //        'curloptions' => array(
-        //            CURLOPT_TIMEOUT => 500,
-        //            CURLOPT_SSL_VERIFYPEER => false,
-        //            CURLOPT_HTTPHEADER => array('Content-Type: application/json')
-        //        ),
-        //        'sslallowselfsigned' => true,
-        //        'sslcapath' => '/etc/ssl/certs/'
-        //    )
-        //);
+        $requestBody = json_encode($data + $this->getDefaultData());
+        $this->debug('Posting ' . $requestBody . ' to ' . $uri);
+        $this->client->setRawBody($requestBody, 'application/json');
         $this->client->getRequest()->getHeaders()
             ->addHeaderLine('Content-Type: application/json');
         $response = $this->client->send();

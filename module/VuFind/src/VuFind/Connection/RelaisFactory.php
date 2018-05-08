@@ -64,6 +64,7 @@ class RelaisFactory implements FactoryInterface
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
         $url = $config->Relais->authenticateurl ?? null;
         $client = $container->get('VuFindHttp\HttpService')->createClient($url);
+        $client->setOptions(['timeout' => $config->Relais->timeout ?? 500]);
         return new $requestedName($client, $config->Relais ?? null);
     }
 }
