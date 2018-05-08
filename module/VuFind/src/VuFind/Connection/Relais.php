@@ -80,7 +80,7 @@ class Relais implements \Zend\Log\LoggerAwareInterface
             'ApiKey' => $this->config->apikey ?? null,
             'UserGroup' => 'PATRON',
             'PartnershipId' => $this->config->group ?? null,
-            'LibrarySymbol' => 'LEHI',
+            'LibrarySymbol' => $this->config->symbol ?? null,
         ];
     }
 
