@@ -1,10 +1,10 @@
 <?php
 /**
- * Record Controller
+ * Relais Controller
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,11 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use Zend\Config\Config;
-use Zend\ServiceManager\ServiceLocatorInterface;
-
 /**
- * Record Controller
+ * Relais Controller
  *
  * @category VuFind
  * @package  Controller
@@ -39,38 +36,20 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class RecordController extends AbstractRecord
+class RelaisController extends AbstractBase
 {
-    use HoldsTrait;
-    use ILLRequestsTrait;
-    use StorageRetrievalRequestsTrait;
-
     /**
-     * Constructor
+     * Relais request action.
      *
-     * @param ServiceLocatorInterface $sm     Service manager
-     * @param Config                  $config VuFind configuration
+     * @return mixed
      */
-    public function __construct(ServiceLocatorInterface $sm, Config $config)
+    public function requestAction()
     {
-        // Call standard record controller initialization:
-        parent::__construct($sm);
-
-        // Load default tab setting:
-        $this->fallbackDefaultTab = isset($config->Site->defaultRecordTab)
-            ? $config->Site->defaultRecordTab : 'Holdings';
-    }
-
-    /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
-            ->get('config');
-        return isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation;
+        if (!$this->getAuthManager()->isLoggedIn()) {
+            return $this->forceLogin();
+        }
+        return $this->createViewModel(
+            ['oclc' => $this->params()->fromQuery('oclc')]
+        );
     }
 }

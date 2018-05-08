@@ -2,10 +2,11 @@
 <?php
   // Only activate Relais code once, even if there are multiple items:
   if (empty($this->layout()->relaisActive)) {
-    $this->layout()->relaisActive = true;
+    $this->layout()->relaisActive = true;      
     $this->headScript()->appendFile('relais.js');
-    $addLink = $this->recordLink()->getTabUrl($driver, 'AddRelais');
-    $oclc = $driver->tryMethod('getCleanOCLCNum');
+    $addLink = $this->url('relais-request');
+    // We need a record driver in $driver for this to work right!
+    $oclc = isset($driver) ? $driver->tryMethod('getCleanOCLCNum') : '';
     $activateRelais = "$(document).ready(function() { checkRelaisAvailability('$addLink', '$oclc') });";
     echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $activateRelais, 'SET');
   }
