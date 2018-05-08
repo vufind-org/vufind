@@ -50,8 +50,7 @@ function isItemAvailableThroughPalci() {
     success: function relaisAvailabilitySuccessCallback(response) {
       if (response.data === "ok") {
         avail = true;
-        $("span[class='palciLink']").each(function relaisLinkFormatter(index) {
-          //console.log( index + ": " + $( this ).text() + ":" + avail);
+        $("span[class='palciLink']").each(function relaisLinkFormatter() {
           $(this).html('<a id="relaisRecordButton" href="#" class="modal-link"  href="#"  title="PALCI Request">PALCI Request (fastest)</a>&nbsp;&nbsp;');
           $('#relaisRecordButton').click(startPalciRequest);
         });
