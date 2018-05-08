@@ -53,15 +53,15 @@ class RelaisInfo extends AbstractRelaisAction
         $lin = $this->user['cat_username'] ?? null;
 
         // Authenticate
-        $jsonReturnObject = $this->relais->authenticatePatron($lin);
-        $authorizationId = $jsonReturnObject->AuthorizationId ?? null;
+        $authResponse = $this->relais->authenticatePatron($lin, true);
+        $authorizationId = $authResponse->AuthorizationId ?? null;
         if ($authorizationId === null) {
             return $this->formatResponse(
                 $this->translate('Failed'), self::STATUS_ERROR
             );
         }
 
-        $allowLoan = $jsonReturnObject->AllowLoanAddRequest ?? false;
+        $allowLoan = $authResponse->AllowLoanAddRequest ?? false;
         if ($allowLoan == false) {
             return $this->formatResponse('AllowLoan was false', self::STATUS_ERROR);
         }
