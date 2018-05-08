@@ -621,11 +621,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 'create' => (string)$request->request_date,
                 'expire' => (string)$request->last_interest_date,
                 'id' => (string)$request->request_id,
-                'in_transit' => $request->request_status !== 'IN_PROCESS',
+                'in_transit' => (string)$request->request_status !== 'On Hold Shelf',
                 'item_id' => (string)$request->mms_id,
                 'location' => (string)$request->pickup_location,
                 'processed' => $request->item_policy === 'InterlibraryLoan'
-                    && $request->request_status !== 'NOT_STARTED',
+                    && (string)$request->request_status !== 'Not Started',
                 'title' => (string)$request->title,
                 /*
                 // VuFind keys
