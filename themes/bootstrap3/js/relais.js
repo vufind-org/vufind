@@ -74,7 +74,7 @@ function relaisRecordClickedFunction() {
   var theUrl = $("#relaisRecordUrl").val();
   //var parts = theUrl.split('/');
 
-  return VuFind.lightbox.ajax(theUrl);
+  return VuFind.lightbox.ajax({url: theUrl});
 }
 
 function calcelPalciRequestOnClick() {
