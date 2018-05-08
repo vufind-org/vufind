@@ -17,147 +17,34 @@
 
 </style>
 
-
-
- <div class="row">
-   <div class="col-md-5">
-     <img alt="PALCI EZBorrow" src="<?=$this->imageLink('ezborrowlogo.gif')?>">
-   </div>
-   <div class="col-md-7">
-     <div class="form-group" id="relaisResults">
-        <button class="btn btn-lg btn-info">
-          <span class="glyphicon glyphicon-refresh spinning"></span> Checking availability...    
-        </button>
-      </div>
+<div class="row">
+  <div class="col-md-5">
+    <img alt="PALCI EZBorrow" src="<?=$this->imageLink('ezborrowlogo.gif')?>">
+  </div>
+  <div class="col-md-7">
+    <div class="form-group" id="relaisResults">
+      <button class="btn btn-lg btn-info">
+        <span class="glyphicon glyphicon-refresh spinning"></span>
+        <?=$this->transEsc('Checking availability...')?>
+      </button>
     </div>
   </div>
+</div>
 
-
-    <div class="row">
-     <div class="col-md-12" id="requestMessage">
-
-
-     </div>
+<div class="row">
+  <div class="col-md-12" id="requestMessage">
   </div>
+</div>
 
-  <div class="row">
-     <div class="col-md-6">
+<div class="row">
+   <div class="col-md-6">
+   </div>
+   <div class="col-md-6" id="requestButton">
+   </div>
+</div>
 
-
-
-     </div>
-     <div class="col-md-6" id="requestButton">
-       
-     </div>
-  </div>
-
-
-  <script>
-  $(document).ready(function(){
-       relaisRecordClickedFunction();
-  });
-
-
-  function makeRelaisRequest(url) {
-    $('#requestButton').html("<button class='btn btn-lg btn-info'><span class='glyphicon glyphicon-refresh spinning'></span> Requesting... </button>");
-    //alert(url);
-    $.ajax({
-          dataType: 'json',
-          url: url,
-          success: function(response) {
-            status = response.status;
-            var obj = jQuery.parseJSON(response.data);
-            //alert("in success");
-            if (status == "ERROR") {
-                $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Close'>");
-                $('#requestMessage').html("<br><h4><b>There was a problem with this request.  Click <a href='https://library.lehigh.edu/content/e_zborrow_authentication' target='new'>here to request this item using the EZBorrow Website.</a></b></h4>");
-            }
-            else {
-                $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Close'>");
-                $('#requestMessage').html("<br><h4><b>Confirmation:</b> Request id #" + obj.RequestNumber + " was created.  You will receive a confirmation email.<h4>");
-                
-            }
-            $('#cancelPalciRequest').click(function() {
-                  $('#modal').modal('hide'); // hide the modal 
-                  $('#modal-dynamic-content').empty(); // empties dynamic content
-                  $('.modal-backdrop').remove(); // removes all modal-backdrops
-             });
-          },
-          error: function(response) {
-            alert("error");
-          }
-    });
-}
-
-
-function relaisRecordClickedFunction() {
-    //alert("click function called");
-    var id = $('.hiddenId')[0].value;
-    //var parts = this.href.split('/');
-    var theUrl = $("#relaisRecordUrl").val();
-    var parts = theUrl.split('/');
-    $('[data-dismiss="modal"]').on('click', function(){
-     $('.modal').hide();
-     $('.modal-backdrop').hide();
-    });
-
-      var recordId = $('#record_id').val();
-      var recordSource = $('.hiddenSource').val();
-      var oclc = $('#oclcid').val();
-      //alert(oclc);
-      var url = path + '/AJAX/JSON?' + $.param({method:'relaisInfo',id:recordId,'oclcNumber':oclc});
-      //alert("calling...");
-      //AJAX CALL
-      $.ajax({
-          dataType: 'json',
-          url: url,
-          success: function(response) {
-            var obj = jQuery.parseJSON(response.data);
-            //alert("in success getRelaisinfo");
-            if (obj.Available == true) {
-              $('#requestMessage').html("<h3>This item is available through PALCI.  Would you like to request it?</h3>");
-              $('#relaisResults').html("");
-              //$('#requestButton').html("<input class='btn btn-primary' type='submit' value='" + <?=$this->transEsc('Savezzz')?> +"/>");
-              $('#requestButton').html("<input class='btn btn-primary' id='makePalciRequest' type='submit' value='Submit Request'>"
-                                       + "<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Cancel'>");
-              $('#makePalciRequest').click(function() {
-                  
-                  
-                  var url = path + '/AJAX/JSON?' + $.param({method:'relaisOrder',id:recordId,'oclcNumber':oclc});
-                  makeRelaisRequest(url);
-
-              });
-              //http://stackoverflow.com/questions/18279393/bootstrap-3-modal-doesnt-close-after-first-opening
-              $('#cancelPalciRequest').click(function() {
-                  $('#modal').modal('hide'); // hide the modal 
-                  $('#modal-dynamic-content').empty(); // empties dynamic content
-                  $('.modal-backdrop').remove(); // removes all modal-backdrops
-              });
-            }
-            else {
-                $('#relaisResults').html("");
-                $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Close'>");
-                $('#requestMessage').html("<br><h4><b>There was a problem with this request.  Click <a href='https://library.lehigh.edu/content/e_zborrow_authentication' target='new'>here to request this item using the EZBorrow Website.</a></b></h4>");
-                 $('#cancelPalciRequest').click(function() {
-                  $('#modal').modal('hide'); // hide the modal 
-                  $('#modal-dynamic-content').empty(); // empties dynamic content
-                  $('.modal-backdrop').remove(); // removes all modal-backdrops
-             });
-            }
-          },
-          error: function(response) {
-                $('#relaisResults').html("");
-                $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Close'>");
-                $('#requestMessage').html("<br><h4><b>There was a problem with this request.  Click <a href='https://library.lehigh.edu/content/e_zborrow_authentication' target='new'>here to request this item using the EZBorrow Website.</a></b></h4>");
-                $('#cancelPalciRequest').click(function() {
-                  $('#modal').modal('hide'); // hide the modal 
-                  $('#modal-dynamic-content').empty(); // empties dynamic content
-                  $('.modal-backdrop').remove(); // removes all modal-backdrops
-             });
-
-          }
-        });
-
-  };
-
-  </script>
+<?php
+  $this->headScript()->appendFile('relais.js');
+  $activateRelais = "$(document).ready(relaisAddItem);\n";
+  echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $activateRelais, 'SET')
+?>

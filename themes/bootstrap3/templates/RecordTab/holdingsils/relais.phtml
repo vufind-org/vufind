@@ -1,0 +1,9 @@
+<a id="relaisRecordButton" class="modal-link" href='#' title="<?=$this->transEsc('PALCI Request')?>">
+  <?=$this->transEsc('PALCI Request')?>
+</a>
+<?php
+  $this->headScript()->appendFile('relais.js');
+  $activateRelais = "$('#relaisRecordButton').click(startPalciRequest);\n"
+    . "$(document).ready(isItemAvailableThroughPalci);\n";
+  echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $activateRelais, 'SET')
+?>

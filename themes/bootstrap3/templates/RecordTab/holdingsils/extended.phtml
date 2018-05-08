@@ -22,7 +22,7 @@
           <?php if ($holding['use_unknown_message'] ?? false): ?>
             <span class="text-muted"><?=$this->transEsc("status_unknown_message")?></span>
           <?php else: ?>
-            <a id="relaisRecordButton" class="modal-link" href='#' title="<?=$this->transEsc('PALCI Request')?>">PALCI Request (fastest)</a>
+            <?=$this->render('RecordTab/holdingsils/relais.phtml')?>
             <?php if ($holding['availability']): ?>
               <?php /* Begin Available Items (Holds) */ ?>
               <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
