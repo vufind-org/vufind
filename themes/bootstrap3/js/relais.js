@@ -80,7 +80,7 @@ function relaisAddItem(oclc) {
     dataType: 'json',
     url: url,
     success: function relaisInfoSuccessCallback(response) {
-      var obj = jQuery.parseJSON(response.data);
+      var obj = response.status === "ERROR" ? {} : jQuery.parseJSON(response.data);
       if (obj.Available) {
         $('#requestMessage').html("<h3>This item is available through PALCI.  Would you like to request it?</h3>");
         $('#relaisResults').html("");
