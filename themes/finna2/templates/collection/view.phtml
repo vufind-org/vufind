@@ -76,7 +76,7 @@
     <div class="truncate-field wide">
       <?=implode('<br><br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
     </div>
-    <?/* Display Main Details from EAD records in this upper level */?>
+    <?/* Display Main Details from records */?>
     <?
       $formatter = $this->recordDataFormatter();
       $coreFields = $formatter->getData(
