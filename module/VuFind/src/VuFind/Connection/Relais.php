@@ -95,7 +95,7 @@ class Relais implements \Zend\Log\LoggerAwareInterface
     protected function getOclcRequestData($oclc, $patron)
     {
         return [
-            'PickupLocation' => 'FAIRCHILD',
+            'PickupLocation' => $this->config->pickupLocation ?? null,
             'Notes' => 'This request was made through the VuFind Catalog interface',
             'PatronId' => $patron ?? $this->config->patronForLookup ?? null,
             'ExactSearch' => [
