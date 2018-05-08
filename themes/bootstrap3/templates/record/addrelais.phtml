@@ -45,6 +45,6 @@
 
 <?php
   $this->headScript()->appendFile('relais.js');
-  $activateRelais = "$(document).ready(relaisAddItem);\n";
+  $activateRelais = "$(document).ready(function () { relaisAddItem('$oclc'); });\n";
   echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $activateRelais, 'SET')
 ?>

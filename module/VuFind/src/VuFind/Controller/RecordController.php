@@ -68,7 +68,12 @@ class RecordController extends AbstractRecord
      */
     public function addrelaisAction()
     {
-        return $this->createViewModel();
+        if (!$this->getAuthManager()->isLoggedIn()) {
+            return $this->forceLogin();
+        }
+        return $this->createViewModel(
+            ['oclc' => $this->params()->fromQuery('oclc')]
+        );
     }
 
     /**

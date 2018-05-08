@@ -1,32 +1,7 @@
 /*global VuFind*/
-/*exported isItemAvailableThroughPalci, relaisAddItem*/
-//VUFIND/EZBORROW INTEGRATION
+/*exported checkRelaisAvailability, relaisAddItem*/
 
-/*
-Lightbox.addOpenAction(function() {
-  //REMOVE THIS?
-  //var serverResponse = event.srcElement.responseText;
-  //var icon = "spinning";
-  //alert(icon);
-  //if (serverResponse.indexOf(icon) !== -1) {
-  //  relaisRecordClickedFunction();
-  //}
-  //if ((serverResponse.indexOf(icon) !== -1) {
- //  startPalciRequest();
- // }
-});
-
-Lightbox.addCloseAction(function() {
-$('#relaisRecordButton').click(startPalciRequest);
-});
-*/
-//IF ITEM IS AVAILABLE -- START REQUEST
-//OTHERWISE, OPEN EZ BORROW PAGE IN A DIFFERENT TAB
-function startPalciRequest() {
-  relaisRecordClickedFunction();
-}
-
-function isItemAvailableThroughPalci() {
+function checkRelaisAvailability(addLink, oclc) {
   //IF THERE IS NO OPTION TO REQUEST
   //THROUGH PALCI ON THIS PAGE (E.G. ITS AVAILABLE)
   //THAN NO NEED TO CHECK FOR PALCI AVAILABILITY
@@ -35,13 +10,10 @@ function isItemAvailableThroughPalci() {
     return false;
   }
   //IS THIS ITEM AVAILABLE VIA EZBORROW
-  var recordId = $('#record_id').val();
   //var recordSource = $('.hiddenSource').val();
-  var oclc = $('#oclcid').val();
   var avail = false;
   var url = VuFind.path + '/AJAX/JSON?' + $.param({
     method: 'relaisAvailability',
-    id: recordId,
     'oclcNumber': oclc
   });
   $.ajax({
@@ -52,7 +24,7 @@ function isItemAvailableThroughPalci() {
         avail = true;
         $("span[class='palciLink']").each(function relaisLinkFormatter() {
           $(this).html('<a id="relaisRecordButton" href="#" class="modal-link"  href="#"  title="PALCI Request">PALCI Request (fastest)</a>&nbsp;&nbsp;');
-          $('#relaisRecordButton').click(startPalciRequest);
+          $('#relaisRecordButton').click(function relaisAddOnClick() { VuFind.lightbox.ajax({url: addLink + '?' + $.param({oclc: oclc})}) });
         });
       }
       if (response.data === "no") {
@@ -64,16 +36,6 @@ function isItemAvailableThroughPalci() {
     }
   });
   return avail;
-}
-
-//MAKE THE REQUEST FOR THE ITEM
-//CHECKS TO SEE IF PATRON IS SIGNED IN
-function relaisRecordClickedFunction() {
-  //var id = $('.hiddenId')[0].value;
-  var theUrl = $("#relaisRecordUrl").val();
-  //var parts = theUrl.split('/');
-
-  return VuFind.lightbox.ajax({url: theUrl});
 }
 
 function calcelPalciRequestOnClick() {
@@ -107,34 +69,16 @@ function makeRelaisRequest(url) {
   });
 }
 
-function relaisAddItem() {
-  //alert("click function called");
-  //var id = $('.hiddenId')[0].value;
-  //var parts = this.href.split('/');
-  //var theUrl = $("#relaisRecordUrl").val();
-  //var parts = theUrl.split('/');
-  $('[data-dismiss="modal"]').on('click', function dismissReliasModalOnClick(){
-    $('.modal').hide();
-    $('.modal-backdrop').hide();
-  });
-
-  var recordId = $('#record_id').val();
-  //var recordSource = $('.hiddenSource').val();
-  var oclc = $('#oclcid').val();
-  //alert(oclc);
+function relaisAddItem(oclc) {
   var url = VuFind.path + '/AJAX/JSON?' + $.param({
     method: 'relaisInfo',
-    id: recordId,
     'oclcNumber': oclc
   });
-  //alert("calling...");
-  //AJAX CALL
   $.ajax({
     dataType: 'json',
     url: url,
     success: function relaisInfoSuccessCallback(response) {
       var obj = jQuery.parseJSON(response.data);
-      //alert("in success getRelaisinfo");
       if (obj.Available) {
         $('#requestMessage').html("<h3>This item is available through PALCI.  Would you like to request it?</h3>");
         $('#relaisResults').html("");
@@ -144,12 +88,10 @@ function relaisAddItem() {
         $('#makePalciRequest').click(function makePalciRequestOnClick() {
           var orderUrl = VuFind.path + '/AJAX/JSON?' + $.param({
             method: 'relaisOrder',
-            id: recordId,
             'oclcNumber': oclc
           });
           makeRelaisRequest(orderUrl);
         });
-        //http://stackoverflow.com/questions/18279393/bootstrap-3-modal-doesnt-close-after-first-opening
         $('#cancelPalciRequest').click(calcelPalciRequestOnClick);
       } else {
         $('#relaisResults').html("");

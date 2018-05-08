@@ -1,10 +1,12 @@
-<a id="relaisRecordButton" class="modal-link" href='#' title="<?=$this->transEsc('PALCI Request')?>">
-  <?=$this->transEsc('PALCI Request')?>
-</a>
-<input type="hidden" id="relaisRecordUrl" value="<?=$this->recordLink()->getTabUrl($driver, 'AddRelais')?>" />
+<span class="palciLink">Checking availability...</span>
 <?php
-  $this->headScript()->appendFile('relais.js');
-  $activateRelais = "$('#relaisRecordButton').click(startPalciRequest);\n"
-    . "$(document).ready(isItemAvailableThroughPalci);\n";
-  echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $activateRelais, 'SET')
+  // Only activate Relais code once, even if there are multiple items:
+  if (empty($this->layout()->relaisActive)) {
+    $this->layout()->relaisActive = true;      
+    $this->headScript()->appendFile('relais.js');
+    $addLink = $this->recordLink()->getTabUrl($driver, 'AddRelais');
+    $oclc = $driver->tryMethod('getCleanOCLCNum');
+    $activateRelais = "$(document).ready(function() { checkRelaisAvailability('$addLink', '$oclc') });";
+    echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $activateRelais, 'SET');
+  }
 ?>
