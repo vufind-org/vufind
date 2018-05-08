@@ -77,6 +77,12 @@ function relaisRecordClickedFunction() {
   return Lightbox.get(parts[parts.length-3],'AddRelais',{id:id});
 };
 
+function calcelPalciRequestOnClick() {
+  $('#modal').modal('hide'); // hide the modal 
+  $('#modal-dynamic-content').empty(); // empties dynamic content
+  $('.modal-backdrop').remove(); // removes all modal-backdrops
+}
+
 function makeRelaisRequest(url) {
   $('#requestButton').html("<button class='btn btn-lg btn-info'><span class='glyphicon glyphicon-refresh spinning'></span> Requesting... </button>");
   //alert(url);
@@ -94,11 +100,7 @@ function makeRelaisRequest(url) {
         $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Close'>");
         $('#requestMessage').html("<br><h4><b>Confirmation:</b> Request id #" + obj.RequestNumber + " was created.  You will receive a confirmation email.<h4>");
       }
-      $('#cancelPalciRequest').click(function calcelPalciRequestOnClick() {
-        $('#modal').modal('hide'); // hide the modal 
-        $('#modal-dynamic-content').empty(); // empties dynamic content
-        $('.modal-backdrop').remove(); // removes all modal-backdrops
-      });
+      $('#cancelPalciRequest').click(calcelPalciRequestOnClick);
     },
     error: function relaisRequestErrorCallback() {
      //alert("error");
@@ -118,17 +120,17 @@ function relaisAddItem() {
   });
 
   var recordId = $('#record_id').val();
-var recordSource = $('.hiddenSource').val();
-var oclc = $('#oclcid').val();
-//alert(oclc);
-var url = VuFind.path + '/AJAX/JSON?' + $.param({
-  method: 'relaisInfo',
-  id: recordId,
-  'oclcNumber': oclc
-});
-//alert("calling...");
-//AJAX CALL
-$.ajax({
+  var recordSource = $('.hiddenSource').val();
+  var oclc = $('#oclcid').val();
+  //alert(oclc);
+  var url = VuFind.path + '/AJAX/JSON?' + $.param({
+    method: 'relaisInfo',
+    id: recordId,
+    'oclcNumber': oclc
+  });
+  //alert("calling...");
+  //AJAX CALL
+  $.ajax({
     dataType: 'json',
     url: url,
     success: function relaisInfoSuccessCallback(response) {
@@ -149,31 +151,19 @@ $.ajax({
           makeRelaisRequest(orderUrl);
         });
         //http://stackoverflow.com/questions/18279393/bootstrap-3-modal-doesnt-close-after-first-opening
-        $('#cancelPalciRequest').click(function() {
-          $('#modal').modal('hide'); // hide the modal 
-          $('#modal-dynamic-content').empty(); // empties dynamic content
-          $('.modal-backdrop').remove(); // removes all modal-backdrops
-        });
+        $('#cancelPalciRequest').click(calcelPalciRequestOnClick);
       } else {
         $('#relaisResults').html("");
         $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Close'>");
         $('#requestMessage').html("<br><h4><b>There was a problem with this request.  Click <a href='https://library.lehigh.edu/content/e_zborrow_authentication' target='new'>here to request this item using the EZBorrow Website.</a></b></h4>");
-        $('#cancelPalciRequest').click(function() {
-          $('#modal').modal('hide'); // hide the modal 
-          $('#modal-dynamic-content').empty(); // empties dynamic content
-          $('.modal-backdrop').remove(); // removes all modal-backdrops
-        });
+        $('#cancelPalciRequest').click(calcelPalciRequestOnClick);
       }
     },
     error: function relaisInfoErrorCallback() {
       $('#relaisResults').html("");
       $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelPalciRequest' type='submit' value='Close'>");
       $('#requestMessage').html("<br><h4><b>There was a problem with this request.  Click <a href='https://library.lehigh.edu/content/e_zborrow_authentication' target='new'>here to request this item using the EZBorrow Website.</a></b></h4>");
-      $('#cancelPalciRequest').click(function() {
-        $('#modal').modal('hide'); // hide the modal 
-        $('#modal-dynamic-content').empty(); // empties dynamic content
-        $('.modal-backdrop').remove(); // removes all modal-backdrops
-      });
+      $('#cancelPalciRequest').click(calcelPalciRequestOnClick);
     }
   });
 }
