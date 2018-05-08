@@ -62,6 +62,16 @@ class RecordController extends AbstractRecord
     }
 
     /**
+     * Relais action.
+     *
+     * @return mixed
+     */
+    public function addrelaisAction()
+    {
+        return $this->createViewModel();
+    }
+
+    /**
      * Is the result scroller active?
      *
      * @return bool
