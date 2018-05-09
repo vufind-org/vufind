@@ -38,16 +38,17 @@
 
   // Step 1: Load the javascript
   $this->headScript()->appendFile(
-    isset($this->advancedSearchJsOverride) ? $this->advancedSearchJsOverride : 'advanced_search.js'
+    isset($this->advancedSearchJsOverride) ? $this->advancedSearchJsOverride : 'advanced_search.js',
+    ''
   );
-  $this->headScript()->appendFile('finna-daterange-vis.js');
+  $this->headScript()->appendFile('finna-daterange-vis.js', '');
 
   // Step 2: Build the page
   $this->headScript()->appendScript(
     $this->partial(
       isset($this->buildPageOverride) ? $this->buildPageOverride : 'search/advanced/build_page.phtml',
       ['options' => $this->options, 'searchDetails' => $searchDetails]
-    )
+    ), ''
   );
 
   // Collect previous search queries

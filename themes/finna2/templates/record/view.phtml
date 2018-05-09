@@ -1,16 +1,16 @@
 <!-- START of: finna - record/view.phtml -->
 <?
   // Set up standard record scripts:
-  $this->headScript()->appendFile("record.js");
-  $this->headScript()->appendFile("check_save_statuses.js");
-  $this->headScript()->appendFile("finna-comments.js");
+  $this->headScript()->appendFile("record.js", '');
+  $this->headScript()->appendFile("check_save_statuses.js", '');
+  $this->headScript()->appendFile("finna-comments.js", '');
   if ($this->record($this->driver)->ratingAllowed()) {
-     $this->headScript()->appendFile('vendor/bootstrap-rating.min.js');
+     $this->headScript()->appendFile('vendor/bootstrap-rating.min.js', '');
      $this->headLink()->appendStylesheet('vendor/bootstrap-rating.min.css');
   }
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
-    echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
+    echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript(), '');
   }
 
   // Add RDF header link if applicable:
@@ -116,7 +116,7 @@
 
   <div class="record-tabs record-accordions">
     <? if (count($this->tabs) > 0): ?>
-      <a id="tabnav"></a>
+      <a name="tabnav"></a>
         <? if (count($this->tabs) > 3): ?>
         <div class="tabs-responsive">
         <? endif; ?>

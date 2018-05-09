@@ -10,7 +10,7 @@
       <? if (!isset($this->linkText) && isset($item['link'])):?>
       <a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']) . ($this->feedUrl ? '?feedUrl=' . $this->escapeHtmlAttr(urlencode($this->feedUrl)) : '')?>"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?> data-feed="<?=$this->escapeHtmlAttr($this->feedUrl)?>"><? endif; ?>
         <? if (isset($item['image']) && isset($item['image']['url'])): ?>
-        <img src="<?= $item['image']['url']; ?>" alt="" />
+        <img src="<?= $item['image']['url']; ?>" />
         <? endif; ?>
         <span class="title"><?= $item['title']; ?></span>
         <? if (!isset($this->linkText) && isset($item['link'])):?>

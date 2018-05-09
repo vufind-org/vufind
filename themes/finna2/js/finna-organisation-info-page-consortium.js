@@ -22,19 +22,20 @@ finna.organisationInfoPageConsortium = (function organisationInfoPageConsortium(
       if (desc) {
         infoField.find('.description').html(desc);
       }
-      var logo = null;
-      if ('logo' in consortiumData) {
-        logo = finna.common.getField(consortiumData.logo, 'small');
-        $('<img/>').attr('src', logo).attr('alt', '').appendTo(infoField.find('.consortium-logo').removeClass('hide'));
-      } else {
-        infoField.addClass('no-logo');
-      }
 
       var consortiumName = finna.common.getField(consortiumData, 'name');
       if (consortiumName) {
         infoField.removeClass('hide').find('.name').text(consortiumName);
         enableConsortiumNaviItem('building');
         holder.find('.consortium-navigation-list .scroll.building').text(consortiumName);
+      }
+
+      var logo = null;
+      if ('logo' in consortiumData) {
+        logo = finna.common.getField(consortiumData.logo, 'small');
+        $('<img/>').attr('src', logo).attr('alt', consortiumName + " logo").appendTo(infoField.find('.consortium-logo').removeClass('hide'));
+      } else {
+        infoField.addClass('no-logo');
       }
 
       var usageRights = null;

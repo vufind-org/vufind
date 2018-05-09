@@ -102,14 +102,14 @@
   $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
 
   // Load Javascript dependencies into header:
-  $this->headScript()->appendFile("check_save_statuses.js");
-  $this->headScript()->appendFile("finna-search-tabs-recommendations.js");
-  $this->headScript()->appendFile("finna-item-status.js");
+  $this->headScript()->appendFile("check_save_statuses.js", '');
+  $this->headScript()->appendFile("finna-search-tabs-recommendations.js", '');
+  $this->headScript()->appendFile("finna-item-status.js", '');
 
   // Load Javascript only if list view parameter is NOT full:
   if ($this->params->getOptions()->getListViewOption() != "full") {
-    $this->headScript()->appendFile("record.js");
-    $this->headScript()->appendFile("embedded_record.js");
+    $this->headScript()->appendFile("record.js", '');
+    $this->headScript()->appendFile("embedded_record.js", '');
   }
 
   $topRecommendations = $this->results->getRecommendations('top');

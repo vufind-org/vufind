@@ -39,10 +39,8 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
             // IE opens Delay initing autocomplete menu to prevent IE from opening it automatically at
             initSearch();
           }
-          var desc = VuFind.translate('organisationInfoAutocomplete').replace('%%count%%', cnt);
           holder.find('.ui-autocomplete-input')
-            .attr('placeholder', desc)
-            .attr('aria-label', desc)
+            .attr('placeholder', VuFind.translate('organisationInfoAutocomplete').replace('%%count%%', cnt))
             .focus().blur();
 
           if (typeof id != 'undefined' && id) {
