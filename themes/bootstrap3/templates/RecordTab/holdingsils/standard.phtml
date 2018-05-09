@@ -7,7 +7,7 @@
   <tr vocab="http://schema.org/" typeof="Offer">
     <th class="copy-number"><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($holding['number'])?>
       <?php if ($holding['enumchron'] ?? false): ?>
-        <span class="enumchron"><?=$this->escapeHtml($holding['enumchron'])?></span>
+        <span class="enumchron">(<?=$this->escapeHtml($holding['enumchron'])?>)</span>
       <?php endif; ?>         
     </th>
     <td>

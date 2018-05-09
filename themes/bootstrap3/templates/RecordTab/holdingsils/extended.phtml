@@ -12,7 +12,7 @@
         </span>
         <span class="holding-field enumchron">
           <?php if ($holding['enumchron'] ?? false): ?>
-            <?=$this->escapeHtml($holding['enumchron'])?>
+            (<?=$this->escapeHtml($holding['enumchron'])?>)
           <?php endif; ?>         
         </span>
         <span class="holding-field barcode">
