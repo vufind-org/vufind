@@ -7,7 +7,7 @@
     <th class="history-limits"><?=$this->transEsc("history_limits")?></th>
     <? if ($this->primo()->isAvailable()) : ?><th class="history-search-index"><?=$this->transEsc("history_search_index")?></th><? endif; ?>
     <th class="history-results"><?=$this->transEsc("history_results")?></th>
-   <?if ($this->showSaved): ?><th class="history-schedule"><?=$this->transEsc("history_schedule")?></th><? endif; ?>
+   <th class="history-schedule"><?if ($this->showSaved): ?><?=$this->transEsc("history_schedule")?><? endif; ?></th>
     <th class="history-save"><?=$this->transEsc($this->showSaved ? "history_delete" : "history_save")?></th>
   </tr>
   <? foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
@@ -50,8 +50,8 @@
       <td><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
 
 
-      <? if ($this->showSaved): ?>
       <td class="history-schedule">
+      <? if ($this->showSaved): ?>
           <? if (isset($this->schedule[$info->getSearchId()])): ?>
           <? $schedule = $this->schedule[$info->getSearchId()]; ?>
           <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
@@ -67,11 +67,11 @@
           <? endif; ?>
       <? endif; ?>
       <? if ($schedule == 1 || $schedule == 2): ?>
-      <script>
+      <script type="text/javascript">
         $('.alert-email-notification').removeClass('hidden');
       </script>
-      </td>
       <? endif; ?>
+      </td>
       <td class="history-save">
         <? if ($this->showSaved): ?>
           <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><span class="sr-only"><?=$this->transEsc('Delete');?></span><i class="fa fa-remove fa-button" aria-hidden="true"></i></a>

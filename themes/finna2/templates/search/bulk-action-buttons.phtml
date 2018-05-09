@@ -2,13 +2,10 @@
 <? if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
   <div class="bulkActionButtons hidden-print">
     <div class="checkbox">
-      <fieldset>
-        <legend class="sr-only"><?=$this->transEsc('select_page')?></legend>
-        <label>
-          <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/> <?=$this->transEsc('select_page')?>
-          &#124; <?=$this->transEsc('with_selected')?>:
-        </label>
-      </fieldset>
+      <label>
+        <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/> <?=$this->transEsc('select_page')?>
+        &#124; <?=$this->transEsc('with_selected')?>:
+      </label>
     </div>
     <div class="btn-group">
       <? if (isset($this->showBulkOptions) && $this->showBulkOptions): ?>

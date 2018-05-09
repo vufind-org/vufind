@@ -29,7 +29,7 @@
       <? endif; ?>
     </div>
     <div class="content">
-      <h3 id="popup-image-title" class="title"><?=$this->escapeHtml($this->driver->getTitle()) ?></h3>
+      <h3 class="title"><?=$this->escapeHtml($this->driver->getTitle()) ?></h3>
       <div class="author-and-dates">
         <? if ($recordType != 'lido'): ?>
           <p>
@@ -72,7 +72,7 @@
           <p></p>
         <? else: ?>
           <? if ($imageDescription): ?>
-            <div id="popup-image-description" class="image-description">
+            <div class="image-description">
               <p><strong><?=$this->transEsc('Image') ?>:</strong> <?=$this->escapeHtml($imageDescription) ?></p>
             </div>
           <? endif; ?>
@@ -141,7 +141,7 @@
           <? if (isset($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
             <div class="open-link"><a target="_blank" class="original-image-url" href="<?=$this->escapeHtmlAttr($originalImage) ?>" download="<?=$this->escapeHtmlAttr($originalImage) ?>"><i class="fa fa-download"></i><span><?=$this->transEsc('Download the image') ?></span></a> <span class="image-dimensions"></span></div>
           <? else: ?>
-            <a class="original-image-url hidden" href="<?=$originalImage ?>">Hidden</a>
+            <a class="original-image-url hidden" href="<?=$originalImage ?>"></a>
           <? endif ?>
         </div>
         <div class="image-rights">
@@ -197,7 +197,7 @@
     'recordUrl' => $this->recordLink()->getUrl($this->driver)
   ]);
   ?>
-  <script>
+  <script type="text/javascript">
      finna.layout.initOrganisationPageLinks();
   </script>
 </div>

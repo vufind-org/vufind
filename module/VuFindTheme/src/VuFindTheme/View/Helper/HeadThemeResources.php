@@ -167,7 +167,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
             $parts =  $this->parseSetting($current);
             $headScript()->prependFile(
                 trim($parts[0]),
-                '',
+                'text/javascript',
                 isset($parts[1])
                 ? ['conditional' => trim($parts[1])] : []
             );

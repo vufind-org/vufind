@@ -1,6 +1,6 @@
 <!-- START of: finna - search/street-search-header.phtml -->
 <?
-$this->headScript()->appendFile('finna-street-search.js', '');
+$this->headScript()->appendFile('finna-street-search.js');
 $this->layout()->infoMessage = '<div class="street-search-progress hidden"><div class="fa fa-spinner fa-spin"></div><div class="infoBox"><div class="info"></div><button class="street-search-terminate">' . $this->transEsc('street_search_abort') . '</button></div></div>';
 ?>
 <div class="street-search-header">
@@ -22,7 +22,7 @@ $this->layout()->infoMessage = '<div class="street-search-progress hidden"><div 
     </a>
   </div>
 </div>
-<script>
+<script type="text/javascript">
   $(document).ready(function() {
     finna.StreetSearch.initStreetHeader();
   });

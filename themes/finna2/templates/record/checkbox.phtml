@@ -5,10 +5,7 @@
 <label for="<?=$this->escapeHtmlAttr($safeId) ?>" class="record-checkbox">
 <span class="sr-only"><?=$this->transEsc('Select');?></span>
 <? endif; ?>
-<fieldset>
-  <legend class="sr-only"><?=$this->transEsc('Select')?></legend>
-  <input id="<?=$this->escapeHtmlAttr($safeId) ?>" class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<? if(isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<? endif; ?> aria-label="<?=$this->transEsc('Select')?>" />
-</fieldset>
+<input id="<?=$this->escapeHtmlAttr($safeId) ?>" class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<? if(isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<? endif; ?>/>
 <? if ($this->label): ?>
 </label>
 <? endif; ?>

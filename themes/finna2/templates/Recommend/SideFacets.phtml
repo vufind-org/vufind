@@ -1,24 +1,24 @@
 <!-- START of: finna - Recommend/SideFacets.phtml -->
 <?
-  $this->headScript()->appendFile('facets.js', '');
+  $this->headScript()->appendFile('facets.js');
 
   // Save results/options to $this so they are available to sub-templates:
   $this->results = $results = $this->recommend->getResults();
   $this->options = $options = $results->getOptions();
 
-  $this->headScript()->appendFile('vendor/bootstrap-datepicker.min.js', '');
+  $this->headScript()->appendFile('vendor/bootstrap-datepicker.min.js');
   $datePickerLang = 'en';
   switch ($this->layout()->userLang) {
     case 'en-gb':
-        $this->headScript()->appendFile('vendor/bootstrap-datepicker.en-GB.min.js', '');
+        $this->headScript()->appendFile('vendor/bootstrap-datepicker.en-GB.min.js');
         $datePickerLang = 'en-GB';
         break;
     case 'fi':
-        $this->headScript()->appendFile('vendor/bootstrap-datepicker.fi.min.js', '');
+        $this->headScript()->appendFile('vendor/bootstrap-datepicker.fi.min.js');
         $datePickerLang = 'fi';
         break;
     case 'sv':
-        $this->headScript()->appendFile('vendor/bootstrap-datepicker.sv.min.js', '');
+        $this->headScript()->appendFile('vendor/bootstrap-datepicker.sv.min.js');
         $datePickerLang = 'sv';
         break;
   }
@@ -37,12 +37,9 @@
     }
   ?>
   <?if ($checkboxesShown):?>
-    <fieldset>
-      <legend class="sr-only"><?=$this->transEsc('checkbox_filter')?></legend>
-      <div class="checkboxFilter">
-        <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
-      </div>
-    </fieldset>
+    <div class="checkboxFilter">
+      <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
+    </div>
   <? endif; ?>
 <? endif; ?>
 <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>

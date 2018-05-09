@@ -11,7 +11,7 @@
 
     $user = $this->auth()->isLoggedIn();
     // Add finna-holds.js
-    $this->headScript()->appendFile('finna-holds.js', '');
+    $this->headScript()->appendFile('finna-holds.js');
 
     $patron = $user ? $this->auth()->getILSPatron() : false;
     $changePickupLocation = $this->ils()->checkFunction('changePickupLocation', [$patron]);

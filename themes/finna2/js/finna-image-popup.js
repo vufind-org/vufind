@@ -149,11 +149,6 @@ finna.imagePopup = (function finnaImagePopup() {
               $('.imagepopup-holder .image').addClass('loaded');
               initDimensions();
               $('.imagepopup-zoom-container').addClass('inactive');
-              $(this).attr('alt', $('#popup-image-title').html());
-              $(this).attr('aria-labelledby', 'popup-image-title');
-              if ($('#popup-image-description').length) {
-                $(this).attr('aria-describedby', 'popup-image-description');
-              }
               $(".zoom-in").click(function initPanzoom() {
                 $(".zoom-in").unbind();
                 $('.imagepopup-zoom-container').removeClass('inactive');
@@ -274,9 +269,9 @@ finna.imagePopup = (function finnaImagePopup() {
           enabled: true,
           preload: [0, 2],
           navigateByImgClick: true,
-          arrowMarkup: '<button title="%title%" type="button" aria-label="%title%" class="mfp-arrow mfp-arrow-%dir%"></button>',
-          tPrev: VuFind.translate('Prev'),
-          tNext: VuFind.translate('Next'),
+          arrowMarkup: '<button title="%title%" type="button" class="mfp-arrow mfp-arrow-%dir%"></button>',
+          tPrev: 'trPrev',
+          tNext: 'trNext',
           tCounter: ''
         }
       });
