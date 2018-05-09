@@ -13,7 +13,8 @@
 </div>
 
 <?php
+  $failLink = $this->escapeJs($this->config()->get('config')->Relais->loginUrl ?? '#');
   $this->headScript()->appendFile('relais.js');
-  $activateRelais = "$(document).ready(function () { relaisAddItem('$oclc'); });\n";
+  $activateRelais = "$(document).ready(function () { relaisAddItem('$oclc', '$failLink'); });\n";
   echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $activateRelais, 'SET')
 ?>

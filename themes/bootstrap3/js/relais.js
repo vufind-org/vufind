@@ -40,13 +40,13 @@ function calcelRelaisRequestOnClick() {
   $('.modal-backdrop').remove(); // removes all modal-backdrops
 }
 
-function relaisRequestErrorCallback() {
+function relaisRequestErrorCallback(failLink) {
   $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='" + VuFind.translate('close') + "'>");
-  $('#requestMessage').html(VuFind.translate('relais_error_html', {'%%url%%': 'foo'}));
+  $('#requestMessage').html(VuFind.translate('relais_error_html', {'%%url%%': failLink}));
   $('#cancelRelaisRequest').unbind('click').click(calcelRelaisRequestOnClick);
 }
 
-function makeRelaisRequest(url) {
+function makeRelaisRequest(url, failLink) {
   $('#requestButton').html(
     '<i class="fa fa-spinner fa-spin"></i>' + VuFind.translate('relais_requesting')
   );
@@ -58,18 +58,18 @@ function makeRelaisRequest(url) {
       var obj = jQuery.parseJSON(response.data);
       //alert("in success");
       if (status === "ERROR") {
-        relaisRequestErrorCallback()
+        relaisRequestErrorCallback(failLink)
       } else {
         $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='" + VuFind.translate('close') + "'>");
         $('#requestMessage').html("<b>" + VuFind.translate('relais_success_label') + "</b> " + VuFind.translate('relais_success_message', {'%%id%%': obj.RequestNumber}));
         $('#cancelRelaisRequest').unbind('click').click(calcelRelaisRequestOnClick);
       }
     },
-    error: relaisRequestErrorCallback
+    error: function makeRelaisRequestErrorWrapper() { relaisRequestErrorCallback(failLink); }
   });
 }
 
-function relaisAddItem(oclc) {
+function relaisAddItem(oclc, failLink) {
   var url = VuFind.path + '/AJAX/JSON?' + $.param({
     method: 'relaisInfo',
     oclcNumber: oclc
@@ -88,13 +88,13 @@ function relaisAddItem(oclc) {
             method: 'relaisOrder',
             oclcNumber: oclc
           });
-          makeRelaisRequest(orderUrl);
+          makeRelaisRequest(orderUrl, failLink);
         });
         $('#cancelRelaisRequest').unbind('click').click(calcelRelaisRequestOnClick);
       } else {
-        relaisRequestErrorCallback();
+        relaisRequestErrorCallback(failLink);
       }
     },
-    error: relaisRequestErrorCallback
+    error: function relaisAddItemErrorWrapper() { relaisRequestErrorCallback(failLink); }
   });
 }
