@@ -8,8 +8,8 @@
 <table class="table table-striped">
   <caption class="sr-only"><?=$this->transEsc('Description')?></caption>
   <?php if (!empty($mainFields)): ?>
-    <?php foreach ($mainFields as $key => $current): ?>
-      <tr><th><?=$this->transEsc($key)?>:</th><td><?=$current['value']?></td></tr>
+    <?php foreach ($mainFields as $current): ?>
+      <tr><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
     <?php endforeach; ?>
   <?php else: ?>
     <tr><td><?=$this->transEsc('no_description')?></td></tr>
