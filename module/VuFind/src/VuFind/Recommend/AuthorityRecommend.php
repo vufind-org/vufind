@@ -266,7 +266,7 @@ class AuthorityRecommend implements RecommendInterface
      */
     protected function isModeActive($mode)
     {
-        return ($this->mode === '*' || strpos($this->mode, $mode) !== false);
+        return $this->mode === '*' || strpos($this->mode, $mode) !== false;
     }
 
     /**
