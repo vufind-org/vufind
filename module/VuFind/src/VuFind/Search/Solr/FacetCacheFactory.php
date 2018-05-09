@@ -1,10 +1,10 @@
 <?php
 /**
- * Recommendation module view helper
+ * Solr FacetCache Factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,37 +20,45 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\View\Helper\Root;
+namespace VuFind\Search\Solr;
+
+use Interop\Container\ContainerInterface;
 
 /**
- * Recommendation module view helper
+ * Solr FacetCache Factory.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Recommend extends AbstractClassBasedTemplateRenderer
+class FacetCacheFactory extends \VuFind\Search\Base\FacetCacheFactory
 {
     /**
-     * Render the output of a recommendation module.
+     * Create a results object with hidden filters pre-populated.
      *
-     * @param \VuFind\Recommend\RecommendInterface $recommend The recommendation
-     * object to render
+     * @param ContainerInterface $container Service manager
      *
-     * @return string
+     * @return \VuFind\Search\Base\Results
      */
-    public function __invoke($recommend)
+    protected function getResults(ContainerInterface $container)
     {
-        $template = 'Recommend/%s.phtml';
-        $className = get_class($recommend);
-        $context = ['recommend' => $recommend];
-        return $this->renderClassTemplate($template, $className, $context);
+        $filters = $container->get('VuFind\Search\SearchTabsHelper')
+            ->getHiddenFilters('Solr');
+        $results = $container->get('VuFind\Search\Results\PluginManager')
+            ->get('Solr');
+        $params = $results->getParams();
+        foreach ($filters as $key => $subFilters) {
+            foreach ($subFilters as $filter) {
+                $params->addHiddenFilter("$key:$filter");
+            }
+        }
+        return $results;
     }
 }

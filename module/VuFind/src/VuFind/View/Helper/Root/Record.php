@@ -28,8 +28,6 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Cover\Router as CoverRouter;
-use Zend\View\Exception\RuntimeException;
-use Zend\View\Helper\AbstractHelper;
 
 /**
  * Record driver view helper
@@ -40,7 +38,7 @@ use Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Record extends AbstractHelper
+class Record extends AbstractClassBasedTemplateRenderer
 {
     /**
      * Context view helper
@@ -104,41 +102,11 @@ class Record extends AbstractHelper
      */
     public function renderTemplate($name, $context = null)
     {
-        // Set default context if none provided:
-        if (null === $context) {
-            $context = ['driver' => $this->driver];
-        }
-
-        // Set up the needed context in the view:
-        $oldContext = $this->contextHelper->apply($context);
-
-        // Get the current record driver's class name, then start a loop
-        // in case we need to use a parent class' name to find the appropriate
-        // template.
+        $template = 'RecordDriver/%s/' . $name;
         $className = get_class($this->driver);
-        $resolver = $this->view->resolver();
-        while (true) {
-            // Guess the template name for the current class:
-            $classParts = explode('\\', $className);
-            $template = 'RecordDriver/' . array_pop($classParts) . '/' . $name;
-            if ($resolver->resolve($template)) {
-                // Try to render the template....
-                $html = $this->view->render($template);
-                $this->contextHelper->restore($oldContext);
-                return $html;
-            } else {
-                // If the template doesn't exist, let's see if we can inherit a
-                // template from a parent class:
-                $className = get_parent_class($className);
-                if (empty($className)) {
-                    // No more parent classes left to try?  Throw an exception!
-                    throw new RuntimeException(
-                        'Cannot find ' . $name . ' template for record driver: ' .
-                        get_class($this->driver)
-                    );
-                }
-            }
-        }
+        return $this->renderClassTemplate(
+            $template, $className, $context ?? ['driver' => $this->driver]
+        );
     }
 
     /**

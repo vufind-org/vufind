@@ -1,11 +1,10 @@
 <?php
-
 /**
- * Unit tests for BrowZine record collection factory.
+ * Facet cache plugin manager
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2017.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -24,48 +23,50 @@
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-namespace VuFindTest\Backend\BrowZine\Response;
-
-use PHPUnit\Framework\TestCase;
-use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
+namespace VuFind\Search\FacetCache;
 
 /**
- * Unit tests for BrowZine record collection factory.
+ * Facet cache plugin manager
  *
  * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class RecordCollectionFactoryTest extends TestCase
+class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
-     * Test that the factory creates a collection.
+     * Default plugin aliases.
      *
-     * @return void
+     * @var array
      */
-    public function testFactory()
-    {
-        $resp = ['data' => [['id' => 1], ['id' => 2], ['id' => 3]]];
-        $fact = new RecordCollectionFactory();
-        $coll = $fact->factory($resp);
-        $this->assertEquals(3, count($coll));
-    }
+    protected $aliases = [
+        'solr' => 'VuFind\Search\Solr\FacetCache',
+        'summon' => 'VuFind\Search\Summon\FacetCache',
+    ];
 
     /**
-     * Test invalid input.
+     * Default plugin factories.
      *
-     * @return void
-     *
-     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Unexpected type of value: Expected array, got string
+     * @var array
      */
-    public function testInvalidInput()
+    protected $factories = [
+        'VuFind\Search\Solr\FacetCache' => 'VuFind\Search\Solr\FacetCacheFactory',
+        'VuFind\Search\Summon\FacetCache' =>
+            'VuFind\Search\Summon\FacetCacheFactory',
+    ];
+
+    /**
+     * Return the name of the base class or interface that plug-ins must conform
+     * to.
+     *
+     * @return string
+     */
+    protected function getExpectedInterface()
     {
-        $fact = new RecordCollectionFactory();
-        $coll = $fact->factory('garbage');
+        return 'VuFind\Search\Base\FacetCache';
     }
 }

@@ -1,10 +1,10 @@
 <?php
 /**
- * BrowZine Controller
+ * Summon FacetCache Factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2017.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,44 +20,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
+ * @package  Search_Summon
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Controller;
+namespace VuFind\Search\Summon;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 
 /**
- * BrowZine Controller
+ * Summon FacetCache Factory.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Search_Summon
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class BrowZineController extends AbstractSearch
+class FacetCacheFactory extends \VuFind\Search\Base\FacetCacheFactory
 {
     /**
-     * Constructor
+     * Create a results object.
      *
-     * @param ServiceLocatorInterface $sm Service locator
-     */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        $this->searchClassId = 'BrowZine';
-        parent::__construct($sm);
-    }
-
-    /**
-     * Search action -- call standard results action
+     * @param ContainerInterface $container Service manager
      *
-     * @return mixed
+     * @return \VuFind\Search\Base\Results
      */
-    public function searchAction()
+    protected function getResults(ContainerInterface $container)
     {
-        return $this->resultsAction();
+        return $container->get('VuFind\Search\Results\PluginManager')->get('Summon');
     }
 }

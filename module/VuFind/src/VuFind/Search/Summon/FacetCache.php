@@ -1,10 +1,10 @@
 <?php
 /**
- * BrowZine Controller
+ * Summon FacetCache.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2017.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,44 +20,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
+ * @package  Search_Summon
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Controller;
-
-use Zend\ServiceManager\ServiceLocatorInterface;
+namespace VuFind\Search\Summon;
 
 /**
- * BrowZine Controller
+ * Summon FacetCache.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Search_Summon
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class BrowZineController extends AbstractSearch
+class FacetCache extends \VuFind\Search\Base\FacetCache
 {
     /**
-     * Constructor
+     * Get the namespace to use for caching facets.
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @return string
      */
-    public function __construct(ServiceLocatorInterface $sm)
+    protected function getCacheNamespace()
     {
-        $this->searchClassId = 'BrowZine';
-        parent::__construct($sm);
-    }
-
-    /**
-     * Search action -- call standard results action
-     *
-     * @return mixed
-     */
-    public function searchAction()
-    {
-        return $this->resultsAction();
+        return 'summon-facets';
     }
 }

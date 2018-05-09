@@ -52,17 +52,6 @@ class WebController extends AbstractSearch
     }
 
     /**
-     * Home action
-     *
-     * @return \Zend\View\Model\ViewModel
-     */
-    public function homeAction()
-    {
-        // Do nothing -- just display template
-        return $this->createViewModel();
-    }
-
-    /**
      * Process the jumpto parameter -- either redirect to a specific record and
      * return view model, or ignore the parameter and return false.
      *

@@ -1,8 +1,8 @@
-<?php $this->headLink()->appendStylesheet('lib/channel-slider.css'); ?>
-<?php $this->headScript()->appendFile('lib/channel-slider.js'); ?>
-<?php $this->headScript()->appendFile('channels.js'); ?>
-<?php $this->headScript()->appendFile('vendor/jquery.dotdotdot.min.js'); ?>
 <?php
+  $this->headLink()->appendStylesheet('lib/channel-slider.css');
+  $this->headScript()->appendFile('lib/channel-slider.js');
+  $this->headScript()->appendFile('channels.js');
+  $this->headScript()->appendFile('vendor/jquery.dotdotdot.min.js');
   $this->jsTranslations()->addStrings([
     'channel_browse' => 'channel_browse',
     'channel_expand' => 'channel_expand',
@@ -10,6 +10,17 @@
     'nohit_heading' => 'nohit_heading',
     'View Record' => 'View Record',
   ]);
+
+  $finalChannels = [];
+  $finalCount = 0;
+  foreach ($channels as $current) {
+      if (isset($current['contents'])) {
+          $finalChannels[] = $current;
+          $finalCount++;
+      } elseif ($finalCount > 0 && isset($current['token'])) {
+          $finalChannels[$finalCount - 1]['relatedTokens'][] = $current;
+      }
+  }
 ?>
 
 <?php if (empty($token)): ?>
@@ -21,17 +32,12 @@
 <?php endif; ?>
 
 <?php $insideButton = false; ?>
-<?php foreach ($channels as $channel): ?>
+<?php foreach ($finalChannels as $channel): ?>
   <?php
     $groupId = $channel['groupId'] ?? $channel['providerId'];
     $channelID = 'channel-' . md5(serialize($channel));
   ?>
-  <?php if (isset($channel['contents'])): ?>
-    <?php if ($insideButton): ?>
-        </ul>
-      </div>
-      <?php $insideButton = false; ?>
-    <?php endif; ?>
+  <div class="channel-wrapper">
     <div class="channel-title">
       <h2><?=$this->escapeHtml($channel['title'])?></h2>
     </div>
@@ -44,8 +50,7 @@
         </a>
       <?php endforeach; ?>
     </div>
-  <?php elseif (isset($channel['token'])): ?>
-    <?php if (!$insideButton): ?>
+    <?php if (count($channel['relatedTokens'] ?? []) > 0): ?>
       <div class="channel-add-menu btn-group hidden" data-group="<?=$groupId ?>">
         <button type="button" class="add-btn btn btn-default"><?=$this->transEsc('channel_add_more') ?></button>
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -53,8 +58,11 @@
           <span class="sr-only">Toggle Dropdown</span>
         </button>
         <ul class="dropdown-menu">
-      <?php $insideButton = true; ?>
+          <?php foreach ($channel['relatedTokens'] as $related): ?>
+            <li><a href="<?=current(explode('?', $this->serverUrl(true)))?>?<?=empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')?>channelProvider=<?=urlencode($related['providerId']) ?>&amp;channelToken=<?=urlencode($related['token']) ?>&amp;layout=lightbox" data-token="<?=$related['token'] ?>"><?=$this->escapeHtml($related['title'])?></a></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
     <?php endif; ?>
-    <li><a href="<?=current(explode('?', $this->serverUrl(true)))?>?<?=empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')?>channelProvider=<?=urlencode($channel['providerId']) ?>&amp;channelToken=<?=urlencode($channel['token']) ?>&amp;layout=lightbox" data-token="<?=$channel['token'] ?>"><?=$this->escapeHtml($channel['title'])?></a></li>
-  <?php endif; ?>
+  </div>
 <?php endforeach; ?>

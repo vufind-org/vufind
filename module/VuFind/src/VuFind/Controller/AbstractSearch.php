@@ -243,6 +243,16 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
+     * Home action
+     *
+     * @return mixed
+     */
+    public function homeAction()
+    {
+        return $this->createViewModel();
+    }
+
+    /**
      * Send search results to results view
      *
      * @return \Zend\View\Model\ViewModel
