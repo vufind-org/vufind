@@ -40,6 +40,7 @@ return [
             'VuFind\View\Helper\Root\Record' => 'VuFind\View\Helper\Root\Factory::getRecord',
             'VuFind\View\Helper\Root\RecordDataFormatter' => 'VuFind\View\Helper\Root\RecordDataFormatterFactory',
             'VuFind\View\Helper\Root\RecordLink' => 'VuFind\View\Helper\Root\Factory::getRecordLink',
+            'VuFind\View\Helper\Root\Relais' => 'VuFind\View\Helper\Root\RelaisFactory',
             'VuFind\View\Helper\Root\Related' => 'VuFind\View\Helper\Root\Factory::getRelated',
             'VuFind\View\Helper\Root\RenderArray' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\ResultFeed' => 'VuFind\View\Helper\Root\Factory::getResultFeed',

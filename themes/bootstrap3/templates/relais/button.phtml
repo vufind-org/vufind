@@ -2,6 +2,10 @@
 <?php
   // Only activate Relais code once, even if there are multiple items:
   if (empty($this->layout()->relaisActive)) {
+    // We need a record driver in $driver for this to work right!
+    if (!isset($driver)) {
+        throw new \Exception('Record driver missing!');
+    }
     $this->layout()->relaisActive = true;
     $this->jsTranslations()->addStrings(
       [
@@ -17,10 +21,10 @@
       ]
     );
     $this->headScript()->appendFile('relais.js');
-    $addLink = $this->url('relais-request');
-    // We need a record driver in $driver for this to work right!
-    $oclc = isset($driver) ? $driver->tryMethod('getCleanOCLCNum') : '';
-    $activateRelais = "$(document).ready(function() { checkRelaisAvailability('$addLink', '$oclc') });";
+    $addLink = $this->escapeJs($this->url('relais-request'));
+    $oclc = $this->escapeJs($driver->tryMethod('getCleanOCLCNum'));
+    $failLink = $this->escapeJs($this->relais()->getSearch($driver));
+    $activateRelais = "$(document).ready(function() { checkRelaisAvailability('$addLink', '$oclc', '$failLink') });";
     echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $activateRelais, 'SET');
   }
 ?>

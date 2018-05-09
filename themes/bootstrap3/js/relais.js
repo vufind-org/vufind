@@ -5,7 +5,7 @@ function hideRelaisAvailabilityCheckMessages() {
   $('.relaisLink').addClass('hidden');
 }
 
-function checkRelaisAvailability(addLink, oclc) {
+function checkRelaisAvailability(addLink, oclc, failLink) {
   // Don't waste time checking availability if there are no links!
   if (!$('.relaisLink').length) {
     return false;
@@ -24,7 +24,7 @@ function checkRelaisAvailability(addLink, oclc) {
           var $current = $(this);
           var text = VuFind.translate('relais_request');
           $current.html('<a class="relaisRecordButton" class="modal-link">' + text + '</a>');
-          $current.find('.relaisRecordButton').click(function relaisAddOnClick() { VuFind.lightbox.ajax({url: addLink + '?' + $.param({oclc: oclc})}); });
+          $current.find('.relaisRecordButton').click(function relaisAddOnClick() { VuFind.lightbox.ajax({url: addLink + '?' + $.param({oclc: oclc, failLink: failLink})}); });
         });
       } else {
         hideRelaisAvailabilityCheckMessages();

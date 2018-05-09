@@ -50,7 +50,10 @@ class RelaisController extends AbstractBase
             return $patron;
         }
         return $this->createViewModel(
-            ['oclc' => $this->params()->fromQuery('oclc')]
+            [
+                'oclc' => $this->params()->fromQuery('oclc'),
+                'failLink' => $this->params()->fromQuery('failLink'),
+            ]
         );
     }
 }
