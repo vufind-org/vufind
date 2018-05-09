@@ -222,7 +222,9 @@ VuFind.register('lightbox', function Lightbox() {
    */
   _constrainLink = function constrainLink(event) {
     if (typeof $(this).data('lightboxIgnore') != 'undefined'
-      || typeof this.attributes.href === 'undefined' || this.attributes.href.value.charAt(0) === '#'
+      || typeof this.attributes.href === 'undefined'
+      || this.attributes.href.value.charAt(0) === '#'
+      || this.href.match(/^[a-zA-Z]+\:[^\/]/) // ignore resource identifiers (mailto:, tel:, etc.)
     ) {
       return true;
     }
@@ -351,6 +353,7 @@ VuFind.register('lightbox', function Lightbox() {
       if (VuFind.lightbox.refreshOnClose) {
         VuFind.refreshPage();
       }
+      this.setAttribute('aria-hidden', true);
       _emit('VuFind.lightbox.closing');
     });
     _modal.on('hidden.bs.modal', function lightboxHidden() {
@@ -360,7 +363,7 @@ VuFind.register('lightbox', function Lightbox() {
 
     VuFind.modal = function modalShortcut(cmd) {
       if (cmd === 'show') {
-        _modal.modal($.extend({ show: true }, _modalParams));
+        _modal.modal($.extend({ show: true }, _modalParams)).attr('aria-hidden', false);
       } else {
         _modal.modal(cmd);
       }
