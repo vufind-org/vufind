@@ -95,6 +95,13 @@ class AuthorityRecommend implements RecommendInterface
     protected $resultsManager;
 
     /**
+     * Which lookup mode(s) to use.
+     *
+     * @var string
+     */
+    protected $mode = '*';
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
@@ -118,6 +125,8 @@ class AuthorityRecommend implements RecommendInterface
             if (isset($params[$i + 1])) {
                 if ($params[$i] == '__resultlimit__') {
                     $this->resultLimit = intval($params[$i + 1]);
+                } elseif ($params[$i] == '__mode__') {
+                    $this->mode = strtolower($params[$i + 1]);
                 } else {
                     $this->filters[] = $params[$i] . ':' . $params[$i + 1];
                 }
@@ -249,6 +258,18 @@ class AuthorityRecommend implements RecommendInterface
     }
 
     /**
+     * Is the specified mode configured to be active?
+     *
+     * @param string $mode Mode to check
+     *
+     * @return bool
+     */
+    protected function isModeActive($mode)
+    {
+        return ($this->mode === '*' || strpos($this->mode, $mode) !== false);
+    }
+
+    /**
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
@@ -274,10 +295,14 @@ class AuthorityRecommend implements RecommendInterface
         }
 
         // see if we can add main headings matching use_for/see_also fields...
-        $this->addUseForHeadings();
+        if ($this->isModeActive('usefor')) {
+            $this->addUseForHeadings();
+        }
 
         // see if we can add see-also references associated with main headings...
-        $this->addSeeAlsoReferences();
+        if ($this->isModeActive('seealso')) {
+            $this->addSeeAlsoReferences();
+        }
     }
 
     /**
