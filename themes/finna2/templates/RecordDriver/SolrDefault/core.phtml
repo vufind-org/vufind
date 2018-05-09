@@ -178,7 +178,9 @@
        </div>
      <? endif; ?>
      <? $results = $this->driver->getNonPresenterAuthors();?>
-     <? if ($results): ?>
+     <? $containerTitle = $this->driver->getContainerTitle(); ?>
+     <? $hostRecords = $this->driver->tryMethod('getHostRecords'); ?>
+     <? if ($results || $containerTitle || $hostRecords): ?>
       <div class="recordAuthors" property="author">
        <div class="truncate-field">
          <? foreach($results as $index => $author): ?>
@@ -193,8 +195,6 @@
            <? endif; ?>
          <? endforeach; ?>
        </div>
-     <? $containerTitle = $this->driver->getContainerTitle(); ?>
-     <? $hostRecords = $this->driver->tryMethod('getHostRecords'); ?>
      <? if ($containerTitle || $hostRecords): ?>
        <div class="recordContainerReference">
          <?
