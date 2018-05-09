@@ -249,7 +249,9 @@ class AbstractSearch extends AbstractBase
      */
     public function homeAction()
     {
-        return $this->createViewModel();
+        $blocks = $this->serviceLocator->get('VuFind\ContentBlock\BlockLoader')
+            ->getFromSearchClassId($this->searchClassId);
+        return $this->createViewModel(compact('blocks'));
     }
 
     /**

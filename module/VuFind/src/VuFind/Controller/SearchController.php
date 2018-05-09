@@ -263,26 +263,6 @@ class SearchController extends AbstractSearch
     }
 
     /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        $facetCache = $this->serviceLocator
-            ->get('VuFind\Search\FacetCache\PluginManager')->get('Solr');
-        return $this->createViewModel(
-            [
-                'results' => $facetCache->getResults(),
-                'facetList' => $facetCache->getList('HomePage'),
-                'hierarchicalFacets' => $this->getHierarchicalFacets(),
-                'hierarchicalFacetSortOptions'
-                    => $this->getHierarchicalFacetSortSettings()
-            ]
-        );
-    }
-
-    /**
      * New item search form
      *
      * @return mixed
@@ -595,19 +575,6 @@ class SearchController extends AbstractSearch
         $facetConfig = $this->getConfig('facets');
         return isset($facetConfig->SpecialFacets->hierarchical)
             ? $facetConfig->SpecialFacets->hierarchical->toArray()
-            : [];
-    }
-
-    /**
-     * Get hierarchical facet sort settings
-     *
-     * @return array Array of sort settings keyed by facet
-     */
-    protected function getHierarchicalFacetSortSettings()
-    {
-        $facetConfig = $this->getConfig('facets');
-        return isset($facetConfig->SpecialFacets->hierarchicalFacetSortOptions)
-            ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
             : [];
     }
 }

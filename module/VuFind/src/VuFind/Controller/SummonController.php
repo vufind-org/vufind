@@ -124,23 +124,6 @@ class SummonController extends AbstractSearch
     }
 
     /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        $facetCache = $this->serviceLocator
-            ->get('VuFind\Search\FacetCache\PluginManager')->get('Summon');
-        return $this->createViewModel(
-            [
-                'results' => $facetCache->getResults(),
-                'facetList' => $facetCache->getList('HomePage'),
-            ]
-        );
-    }
-
-    /**
      * Search action -- call standard results action
      *
      * @return mixed
