@@ -63,6 +63,6 @@ class RelaisFactory implements FactoryInterface
         }
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
         $loginUrl = $config->Relais->loginUrl ?? '';
-        return new $requestedName($container->get($loginUrl));
+        return new $requestedName($loginUrl);
     }
 }
