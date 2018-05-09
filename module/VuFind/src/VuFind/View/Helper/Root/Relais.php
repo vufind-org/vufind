@@ -62,7 +62,7 @@ class Relais extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function __invoke($driver)
+    public function getSearchLink($driver)
     {
         // Get data elements:
         $isbn = $driver->tryMethod('getCleanISBN');

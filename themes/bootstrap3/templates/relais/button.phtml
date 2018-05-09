@@ -23,7 +23,7 @@
     $this->headScript()->appendFile('relais.js');
     $addLink = $this->escapeJs($this->url('relais-request'));
     $oclc = $this->escapeJs($driver->tryMethod('getCleanOCLCNum'));
-    $failLink = $this->escapeJs($this->relais()->getSearch($driver));
+    $failLink = $this->escapeJs($this->relais()->getSearchLink($driver));
     $activateRelais = "$(document).ready(function() { checkRelaisAvailability('$addLink', '$oclc', '$failLink') });";
     echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $activateRelais, 'SET');
   }
