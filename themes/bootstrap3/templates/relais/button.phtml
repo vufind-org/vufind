@@ -1,8 +1,21 @@
-<span class="relaisLink"><i class="fa fa-spinner fa-spin"></i> Checking availability...</span>
+<span class="relaisLink"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('relais_checking')?></span>
 <?php
   // Only activate Relais code once, even if there are multiple items:
   if (empty($this->layout()->relaisActive)) {
     $this->layout()->relaisActive = true;
+    $this->jsTranslations()->addStrings(
+      [
+        'confirm_dialog_no' => 'confirm_dialog_no',
+        'confirm_dialog_yes' => 'confirm_dialog_yes',
+        'relais_available' => 'relais_available',
+        'relais_checking' => 'relais_checking',
+        'relais_error_html' => 'relais_error_html',
+        'relais_request' => 'relais_request',
+        'relais_requesting' => 'relais_requesting',
+        'relais_success_label' => 'relais_success_label',
+        'relais_success_message' => 'relais_success_message',
+      ]
+    );
     $this->headScript()->appendFile('relais.js');
     $addLink = $this->url('relais-request');
     // We need a record driver in $driver for this to work right!

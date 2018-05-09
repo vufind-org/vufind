@@ -22,7 +22,8 @@ function checkRelaisAvailability(addLink, oclc) {
       if (response.data === "ok") {
         $("span[class='relaisLink']").each(function relaisLinkFormatter() {
           var $current = $(this);
-          $current.html('<a class="relaisRecordButton" href="#" class="modal-link"  href="#"  title="PALCI Request">PALCI Request (fastest)</a>&nbsp;&nbsp;');
+          var text = VuFind.translate('relais_request');
+          $current.html('<a class="relaisRecordButton" class="modal-link">' + text + '</a>');
           $current.find('.relaisRecordButton').click(function relaisAddOnClick() { VuFind.lightbox.ajax({url: addLink + '?' + $.param({oclc: oclc})}); });
         });
       } else {
@@ -39,9 +40,16 @@ function calcelRelaisRequestOnClick() {
   $('.modal-backdrop').remove(); // removes all modal-backdrops
 }
 
+function relaisRequestErrorCallback() {
+  $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='" + VuFind.translate('close') + "'>");
+  $('#requestMessage').html(VuFind.translate('relais_error_html', {'%%url%%': 'foo'}));
+  $('#cancelRelaisRequest').unbind('click').click(calcelRelaisRequestOnClick);
+}
+
 function makeRelaisRequest(url) {
-  $('#requestButton').html("<button class='btn btn-lg btn-info'><span class='glyphicon glyphicon-refresh spinning'></span> Requesting... </button>");
-  //alert(url);
+  $('#requestButton').html(
+    '<i class="fa fa-spinner fa-spin"></i>' + VuFind.translate('relais_requesting')
+  );
   $.ajax({
     dataType: 'json',
     url: url,
@@ -50,25 +58,15 @@ function makeRelaisRequest(url) {
       var obj = jQuery.parseJSON(response.data);
       //alert("in success");
       if (status === "ERROR") {
-        $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='Close'>");
-        $('#requestMessage').html("<br><h4><b>There was a problem with this request.  Click <a href='https://library.lehigh.edu/content/e_zborrow_authentication' target='new'>here to request this item using the EZBorrow Website.</a></b></h4>");
+        relaisRequestErrorCallback()
       } else {
-        $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='Close'>");
-        $('#requestMessage').html("<br><h4><b>Confirmation:</b> Request id #" + obj.RequestNumber + " was created.  You will receive a confirmation email.<h4>");
+        $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='" + VuFind.translate('close') + "'>");
+        $('#requestMessage').html("<b>" + VuFind.translate('relais_success_label') + "</b> " + VuFind.translate('relais_success_message', {'%%id%%': obj.RequestNumber}));
+        $('#cancelRelaisRequest').unbind('click').click(calcelRelaisRequestOnClick);
       }
-      $('#cancelRelaisRequest').unbind('click').click(calcelRelaisRequestOnClick);
     },
-    error: function relaisRequestErrorCallback() {
-     //alert("error");
-    }
+    error: relaisRequestErrorCallback
   });
-}
-
-function relaisInfoErrorCallback() {
-  $('#relaisResults').html("");
-  $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='Close'>");
-  $('#requestMessage').html("<br><h4><b>There was a problem with this request.  Click <a href='https://library.lehigh.edu/content/e_zborrow_authentication' target='new'>here to request this item using the EZBorrow Website.</a></b></h4>");
-  $('#cancelRelaisRequest').unbind('click').click(calcelRelaisRequestOnClick);
 }
 
 function relaisAddItem(oclc) {
@@ -82,10 +80,9 @@ function relaisAddItem(oclc) {
     success: function relaisInfoSuccessCallback(response) {
       var obj = response.status === "ERROR" ? {} : jQuery.parseJSON(response.data);
       if (obj.Available) {
-        $('#requestMessage').html("<h3>This item is available through PALCI.  Would you like to request it?</h3>");
-        $('#relaisResults').html("");
-        $('#requestButton').html("<input class='btn btn-primary' id='makeRelaisRequest' type='submit' value='Submit Request'>"
-                                 + "<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='Cancel'>");
+        $('#requestMessage').html(VuFind.translate('relais_available'));
+        $('#requestButton').html("<input class='btn btn-primary' id='makeRelaisRequest' type='submit' value='" + VuFind.translate('confirm_dialog_yes') + "'>"
+                                 + "&nbsp;<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='" + VuFind.translate('confirm_dialog_no') + "'>");
         $('#makeRelaisRequest').unbind('click').click(function makeRelaisRequestOnClick() {
           var orderUrl = VuFind.path + '/AJAX/JSON?' + $.param({
             method: 'relaisOrder',
@@ -95,9 +92,9 @@ function relaisAddItem(oclc) {
         });
         $('#cancelRelaisRequest').unbind('click').click(calcelRelaisRequestOnClick);
       } else {
-        relaisInfoErrorCallback();
+        relaisRequestErrorCallback();
       }
     },
-    error: relaisInfoErrorCallback
+    error: relaisRequestErrorCallback
   });
 }
