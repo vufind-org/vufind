@@ -54,12 +54,11 @@ function makeRelaisRequest(url, failLink) {
     dataType: 'json',
     url: url,
     success: function relaisRequestSuccessCallback(response) {
-      status = response.status;
-      var obj = jQuery.parseJSON(response.data);
       //alert("in success");
-      if (status === "ERROR") {
+      if (response.status === "ERROR") {
         relaisRequestErrorCallback(failLink)
       } else {
+        var obj = jQuery.parseJSON(response.data);
         $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='" + VuFind.translate('close') + "'>");
         $('#requestMessage').html("<b>" + VuFind.translate('relais_success_label') + "</b> " + VuFind.translate('relais_success_message', {'%%id%%': obj.RequestNumber}));
         $('#cancelRelaisRequest').unbind('click').click(calcelRelaisRequestOnClick);
@@ -78,8 +77,8 @@ function relaisAddItem(oclc, failLink) {
     dataType: 'json',
     url: url,
     success: function relaisInfoSuccessCallback(response) {
-      var obj = response.status === "ERROR" ? {} : jQuery.parseJSON(response.data);
-      if (obj.Available) {
+      var obj = response.status === "ERROR" ? false : jQuery.parseJSON(response.data);
+      if (obj && obj.Available) {
         $('#requestMessage').html(VuFind.translate('relais_available'));
         $('#requestButton').html("<input class='btn btn-primary' id='makeRelaisRequest' type='submit' value='" + VuFind.translate('confirm_dialog_yes') + "'>"
                                  + "&nbsp;<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='" + VuFind.translate('confirm_dialog_no') + "'>");
