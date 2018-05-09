@@ -62,6 +62,6 @@ class TagController extends AbstractSearch
         if (!$this->tagsEnabled()) {
             throw new ForbiddenException('Tags disabled');
         }
-        return $this->resultsAction();
+        return parent::homeAction();
     }
 }

@@ -107,8 +107,10 @@ class Backend extends AbstractBackend
                 $e
             );
         }
+        // Use array_values and array_filter to strip any nulls out of the
+        // response (these are present sometimes due to an apparent API bug)
         $results = isset($response['data']) && is_array($response['data'])
-            ? $response['data'] : [];
+            ? array_values(array_filter($response['data'])) : [];
         $collection = $this->createRecordCollection(
             [
                 'offset' => $offset,
