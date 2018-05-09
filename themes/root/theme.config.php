@@ -99,6 +99,7 @@ return [
             'record' => 'VuFind\View\Helper\Root\Record',
             'recordDataFormatter' => 'VuFind\View\Helper\Root\RecordDataFormatter',
             'recordLink' => 'VuFind\View\Helper\Root\RecordLink',
+            'relais' => 'VuFind\View\Helper\Root\Relais',
             'related' => 'VuFind\View\Helper\Root\Related',
             'renderArray' => 'VuFind\View\Helper\Root\RenderArray',
             'resultfeed' => 'VuFind\View\Helper\Root\ResultFeed',
