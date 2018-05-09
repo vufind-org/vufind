@@ -19,12 +19,22 @@
       </div>
     </div>
   </form>
-  <div class="login-col hidden-xs">
+  <div class="login-col">
+    <i class="fa fa-info3" aria-hidden="true"></i>
     <div class="login-description">
       <p class="login-info">
         <?=$this->translate('login_desc_local_html') ?>
       </p>
     </div>
+    <div class="clearfix"></div>
+    <?
+      $language = $this->layout()->userLang;
+      if (!in_array($language, ['fi', 'sv', 'en-gb'])) {
+        $language = 'en-gb';
+      }
+    ?>
+    <?=$this->partial("Auth/Database/terms_$language.phtml") ?>
   </div>
 </div>
+<div class="clearfix"></div>
 <!-- END of: finna - Auth/Database/login.phtml -->

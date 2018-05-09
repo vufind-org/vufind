@@ -1,18 +1,32 @@
 /* --- Login Screen --- */
-#authcontainer h3 {
-    border-bottom: 1px solid @gray-lighter;
-    font-weight: 400; 
+#authcontainer {
+    h3 {
+        border-bottom: 1px solid @gray-lighter;
+        font-weight: 400;
+    }
+    .fa.fa-info3 {
+        font-size: 1.5em;
+        float: left;
+        margin-top: 0.7em;
+        margin-left: 0.5em;
+        color: @brand-primary;
+        @media (max-width: @screen-xs-max) {
+            margin-top: 0;
+        }
+    }
 }
+
 .login-description {
-    background-color: @state-info-bg;
-    padding: 2em;
-    margin-bottom: 1em;
-    margin-left: 1em;
+    margin: 1em 0 1em 2.5em;
 }
 .login-description.shibboleth {
-    background-color: @state-info-bg;
-    padding: 1em 2em 1em 2em;
     font-weight: bold;
+}
+.login-description-terms {
+    background-color: @state-info-bg;
+    padding: 2em;
+    padding-left: 2.5em;
+    margin-bottom: 1em;
 }
 .authmethod1, .authmethod2, .authmethod3 {
     margin-top: 1em;

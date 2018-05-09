@@ -1,15 +1,59 @@
 <!-- START of: finna - Auth/ChoiceAuth/login.phtml -->
-<p><?=$this->transEsc('choose_login_method')?></p>
 <div id="authcontainer">
-<? $methods = $this->auth()->getManager()->getSelectableAuthOptions(); ?>
-<? $count = count($methods); ?>
-<? foreach ($methods as $loop => $method):?>
-  <div class="authmethod<?=$loop?> span<?=floor(12 / $count) ?>">
-    <? $this->auth()->getManager()->setAuthMethod($method) ?>
-    <?=$this->auth()->getLoginDesc() ?>
-    <?=$this->auth()->getLogin() ?>
+<?
+  $methods = $this->auth()->getManager()->getSelectableAuthOptions();
+  $activeMethod = $this->auth()->getRequestedAuthMethod();
+  if (empty($activeMethod) || 'ChoiceAuth' === $activeMethod) {
+    $activeMethod = reset($methods);
+  }
+?>
+<? if (count($methods) > 1): ?>
+  <div class="login-tabs login-accordion">
+    <ul class="loginTabs nav nav-tabs visible-md visible-lg">
+      <? foreach ($methods as $loop => $method):?>
+        <? $this->auth()->getManager()->setAuthMethod($method) ?>
+        <li class="<?=$this->escapeHtmlAttr($method)?><?=$method === $activeMethod ? ' active' : ''?>">
+          <a class="<?=$this->escapeHtmlAttr($method)?>"><?=$this->transEsc('login_method_tab_' . strtolower($method)) ?></a>
+        </li>
+      <? endforeach ?>
+    </ul>
+
+    <? foreach ($methods as $loop => $method):?>
+      <div class="accordion accordion-heading<?=$method === $activeMethod ? ' initiallyActive' : ''?>">
+        <? $this->auth()->getManager()->setAuthMethod($method) ?>
+        <div class="accordion-toggle">
+          <a data-tab="<?=$this->escapeHtmlAttr($method)?>" class="accordion-title">
+            <span class="title"><?=$this->transEsc('login_method_tab_' . strtolower($method))?></span>
+            <i class="icon" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+    <? endforeach; ?>
+
+    <div class="tab-content">
+      <? foreach ($methods as $loop => $method):?>
+        <? $this->auth()->getManager()->setAuthMethod($method) ?>
+        <div class="tab-pane <?=$this->escapeHtmlAttr($method)?>-tab<?=$loop === 0 ? ' active' : ''?>">
+          <?=$this->auth()->getLogin() ?>
+        </div>
+      <? endforeach ?>
+    </div>
   </div>
-<? endforeach ?>
+<? else: ?>
+  <? foreach ($methods as $loop => $method):?>
+    <div class="authmethod<?=$loop?>?>">
+      <? $this->auth()->getManager()->setAuthMethod($method) ?>
+      <?=$this->auth()->getLoginDesc() ?>
+      <?=$this->auth()->getLogin() ?>
+    </div>
+  <? endforeach ?>
+<? endif; ?>
 </div>
 <? $this->auth()->getManager()->setAuthMethod('ChoiceAuth') ?>
+
+<?php
+  // Init with inline script to make it lightbox compatible
+  $script = "finna.layout.initLoginTabs();";
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
 <!-- END of: finna - Auth/ChoiceAuth/login.phtml -->

@@ -43,6 +43,22 @@ use Zend\ServiceManager\ServiceManager;
 class Factory extends \VuFind\View\Helper\Root\Factory
 {
     /**
+     * Construct the Auth helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Auth
+     */
+    public static function getAuth(ServiceManager $sm)
+    {
+        return new Auth(
+            $sm->getServiceLocator()->get('VuFind\AuthManager'),
+            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator'),
+            $sm->getServiceLocator()->get('Request')
+        );
+    }
+
+    /**
      * Construct the Autocomplete helper.
      *
      * @param ServiceManager $sm Service manager.

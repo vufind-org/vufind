@@ -2,7 +2,7 @@
 <? $account = $this->auth()->getManager(); ?>
 <? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
 <? if (!$sessionInitiator): // display default login form if no login URL provided ?>
-<div>
+<div class="login-col">
   <form method="post" class="form-vertical" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm">
     <?=$this->auth()->getLoginFields()?>
     <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>">
@@ -21,15 +21,23 @@
     </div>
   </form>
 </div>
-<div>
-  <div class="login-col visible-xs">
-    <div class="login-description">
-      <p class="login-info">
-        <?=$this->translate('login_desc_library_card_html') ?>
-      </p>
-    </div>
+<div class="login-col">
+  <i class="fa fa-info3" aria-hidden="true"></i>
+  <div class="login-description">
+    <p class="login-info">
+      <?=$this->translate('login_desc_library_card_html') ?>
+    </p>
   </div>
+  <div class="clearfix"></div>
+  <?
+    $language = $this->layout()->userLang;
+    if (!in_array($language, ['fi', 'sv', 'en-gb'])) {
+      $language = 'en-gb';
+    }
+  ?>
+  <?=$this->partial("Auth/MultiILS/terms_$language.phtml") ?>
 </div>
+  <div class="clearfix"></div>
 <? else: ?>
   <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>" data-lightbox-ignore><?=$this->transEsc("Institutional Login")?></a>
 <? endif; ?>
