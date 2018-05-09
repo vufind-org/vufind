@@ -29,7 +29,6 @@
 namespace VuFind\Recommend;
 
 use VuFindSearch\Backend\Exception\RequestErrorException;
-use Zend\Http\Request;
 use Zend\StdLib\Parameters;
 
 /**
@@ -145,6 +144,8 @@ class AuthorityRecommend implements RecommendInterface
      * request.
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function init($params, $request)
     {
@@ -217,16 +218,7 @@ class AuthorityRecommend implements RecommendInterface
         // loop through records and assign id and headings to separate arrays defined
         // above
         foreach ($this->performSearch($params) as $result) {
-            // Extract relevant details:
-            $recordArray = [
-                'id' => $result->getUniqueID(),
-                'heading' => $result->getBreadcrumb()
-            ];
-
-            // check for duplicates before adding record to recordSet
-            if (!$this->inArrayR($recordArray['heading'], $this->recommendations)) {
-                array_push($this->recommendations, $recordArray);
-            }
+            $this->recommendations[] = $result->getBreadcrumb();
         }
     }
 
@@ -248,10 +240,8 @@ class AuthorityRecommend implements RecommendInterface
         foreach ($this->performSearch($params) as $result) {
             foreach ($result->getSeeAlso() as $seeAlso) {
                 // check for duplicates before adding record to recordSet
-                if (!$this->fuzzyCompare($seeAlso, $this->lookfor)
-                    && !$this->inArrayR($seeAlso, $this->recommendations)
-                ) {
-                    array_push($this->recommendations, ['heading' => $seeAlso]);
+                if (!$this->fuzzyCompare($seeAlso, $this->lookfor)) {
+                    $this->recommendations[] = $seeAlso;
                 }
             }
         }
@@ -312,7 +302,7 @@ class AuthorityRecommend implements RecommendInterface
      */
     public function getRecommendations()
     {
-        return $this->recommendations;
+        return array_unique($this->recommendations);
     }
 
     /**
@@ -323,23 +313,5 @@ class AuthorityRecommend implements RecommendInterface
     public function getResults()
     {
         return $this->results;
-    }
-
-    /**
-     * Helper function to do recursive searches of multi-dimensional arrays.
-     *
-     * @param string $needle   Search term
-     * @param array  $haystack Multi-dimensional array
-     *
-     * @return bool
-     */
-    protected function inArrayR($needle, $haystack)
-    {
-        foreach ($haystack as $v) {
-            if ($needle == $v || (is_array($v) && $this->inArrayR($needle, $v))) {
-                return true;
-            }
-        }
-        return false;
     }
 }
