@@ -28,10 +28,6 @@
 namespace VuFind\Controller;
 
 use \Zend\ServiceManager\ServiceLocatorInterface;
-use \Zend\Http\Response as HttpResponse;
-//use \Zend\Http\Request as HttpRequest;
-//use \Zend\Mail as Mail;
-
 
 class AlmaController extends AbstractBase {
     
@@ -43,7 +39,7 @@ class AlmaController extends AbstractBase {
     
     /**
      * Http response
-     * @var \Zend\Http\Response
+     * @var \Zend\Http\PhpEnvironment\Response
      */
     protected $httpResponse;
     
@@ -80,7 +76,7 @@ class AlmaController extends AbstractBase {
     public function __construct(ServiceLocatorInterface $sm) {
     	
         parent::__construct($sm);
-        $this->httpResponse = new HttpResponse();
+        $this->httpResponse = $this->getResponse();
         $this->httpHeaders = $this->httpResponse->getHeaders();
         $this->config = $this->getConfig('config');
         $this->configAlma = $this->getConfig('Alma');
@@ -103,7 +99,7 @@ class AlmaController extends AbstractBase {
         $requestBodyJson = ($request->getContent() != null && !empty($request->getContent()) && $requestMethod == 'POST') ? json_decode($request->getContent()) : null;
         
         // Get webhook action
-        $webhookAction = (isset($requestBodyJson->action)) ? $requestBodyJson->action: null;
+        $webhookAction = $requestBodyJson->action ?? null;
         
         // Perform webhook action
         switch ($webhookAction) {
@@ -153,20 +149,20 @@ class AlmaController extends AbstractBase {
         $jsonResponse = null;
         
         // Get method from webhook (e. g. "create" for "new user")
-        $method = (isset($requestBodyJson->webhook_user->method)) ? $requestBodyJson->webhook_user->method : null;
+        $method = $requestBodyJson->webhook_user->method ?? null;
         
         // Get primary ID
-        $primaryId = (isset($requestBodyJson->webhook_user->user->primary_id)) ? $requestBodyJson->webhook_user->user->primary_id : null;
+        $primaryId = $requestBodyJson->webhook_user->user->primary_id ?? null;
         
         if ($method == 'CREATE' || $method == 'UPDATE') {
             // Get username (could e. g. be the barcode)
             $username = null;
-            $userIdentifiers = (isset($requestBodyJson->webhook_user->user->user_identifier)) ? $requestBodyJson->webhook_user->user->user_identifier : null;
-            $idTypeConfig = ($this->configAlma->NewUser->idType != null && isset($this->configAlma->NewUser->idType)) ? $this->configAlma->NewUser->idType : null;
+            $userIdentifiers = $requestBodyJson->webhook_user->user->user_identifier ?? null;
+            $idTypeConfig = $this->configAlma->NewUser->idType ?? null;
             foreach ($userIdentifiers as $userIdentifier) {
-                $idTypeHook = (isset($userIdentifier->id_type->value)) ? $userIdentifier->id_type->value : null;
+                $idTypeHook = $userIdentifier->id_type->value ?? null;
                 if ($idTypeHook != null && $idTypeHook == $idTypeConfig && $username == null) {
-                    $username = (isset($userIdentifier->value)) ? $userIdentifier->value : null;
+                    $username = $userIdentifier->value ?? null;
                 }
             }
             
@@ -174,15 +170,15 @@ class AlmaController extends AbstractBase {
             $username = ($username == null) ? $primaryId : $username;
             
             // Get user details from Alma Webhook message
-            $firstname = (isset($requestBodyJson->webhook_user->user->first_name)) ? $requestBodyJson->webhook_user->user->first_name : null;
-            $lastname = (isset($requestBodyJson->webhook_user->user->last_name)) ? $requestBodyJson->webhook_user->user->last_name : null;
+            $firstname = $requestBodyJson->webhook_user->user->first_name ?? null;
+            $lastname = $requestBodyJson->webhook_user->user->last_name ?? null;
             
-            $allEmails = (isset($requestBodyJson->webhook_user->user->contact_info->email)) ? $requestBodyJson->webhook_user->user->contact_info->email : null;
+            $allEmails = $requestBodyJson->webhook_user->user->contact_info->email ?? null;
             $email = null;
             foreach ($allEmails as $currentEmail) {
-				$preferred = (isset($currentEmail->preferred)) ? $currentEmail->preferred : false;
+				$preferred = $currentEmail->preferred ?? false;
 				if ($preferred && $email == null) {
-					$email = (isset($currentEmail->email_address)) ? $currentEmail->email_address : null;
+					$email = $currentEmail->email_address ?? null;
 				}
 			}
 			
@@ -238,14 +234,13 @@ class AlmaController extends AbstractBase {
      * @return \Zend\Http\Response
      */
     protected function webhookChallenge() {
-        
         // Get challenge string from the get parameter that Alma sends us. We need to return this string in the return message.
         $secret = $this->params()->fromQuery('challenge');
         
         // Create the return array
         $returnArray = [];
         
-        if ($secret != null && !empty(trim($secret)) && isset($secret)) {
+        if (isset($secret) && !empty(trim($secret))) {
             $returnArray['challenge'] = $secret;
             $this->httpResponse->setStatusCode(200);
         } else {
@@ -283,6 +278,7 @@ class AlmaController extends AbstractBase {
                 $config = $this->getConfig();
                 $renderer = $this->getViewRenderer();
                 $method = $this->getAuthManager()->getAuthMethod();
+                
                 // Custom template for emails (text-only)
                 $message = $renderer->render('Email/new-user-welcome.phtml', [
                     'library' => $config->Site->title,
