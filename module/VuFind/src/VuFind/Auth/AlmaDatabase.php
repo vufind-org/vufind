@@ -28,7 +28,6 @@
 namespace VuFind\Auth;
 
 use VuFind\Exception\Auth as AuthException;
-use Zend\Crypt\Password\Bcrypt;
 
 /**
  * Authentication class for Alma. The VuFind database and the Alma API are
@@ -115,7 +114,7 @@ class AlmaDatabase extends Database
         if ($almaAnswer != null) {
             // If we got this far, we're ready to create the account:
             $user = $this->createUserFromParams($params);
-            
+
             // Add the Alma primary ID as cat_id to the VuFind user table
             $user->cat_id = $almaAnswer->primary_id ?? null;
 
@@ -132,4 +131,3 @@ class AlmaDatabase extends Database
         return $user;
     }
 }
-?>

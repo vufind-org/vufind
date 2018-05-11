@@ -109,14 +109,14 @@ class Database extends AbstractBase
      * @return \VuFind\Db\Row\User New user row.
      */
     public function create($request)
-    {        
+    {
         $params = $this->collectParamsFromRequest($request);
         $this->validateParams($params);
 
         // If we got this far, we're ready to create the account:
         $user = $this->createUserFromParams($params);
         $user->save();
-        
+
         return $user;
     }
 
@@ -347,15 +347,15 @@ class Database extends AbstractBase
             throw new AuthException('That email address is already used');
         }
     }
-    
+
     /**
      * Create a user row object from given parametes.
-     * 
+     *
      * @param string[] $params Parameters returned from collectParamsFromRequest()
-     * 
+     *
      * @return \VuFind\Db\Row\User A user row object
      */
-    protected function createUserFromParams($params) 
+    protected function createUserFromParams($params)
     {
         $table = $this->getUserTable();
         $user = $table->createRowForUsername($params['username']);
@@ -368,7 +368,7 @@ class Database extends AbstractBase
         } else {
             $user->password = $params['password'];
         }
-        
+
         return $user;
     }
 }

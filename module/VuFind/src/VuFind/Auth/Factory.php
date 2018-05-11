@@ -131,7 +131,7 @@ class Factory
             $sm->get('Zend\Session\SessionManager')
         );
     }
-    
+
     /**
      * Construct the AlmaDatabase plugin.
      *
