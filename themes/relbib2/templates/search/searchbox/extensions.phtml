@@ -2,6 +2,12 @@
 <div>
     <?=$this->render('search/searchbox/newitem')?>
 </div>
-<div>
-    <a class="btn btn-primary">Aktuelles in eigener Sache - <i>[Kurzmeldungen zu RelBib und FID]</i></a>
+<div id="searchbox_news">
+    <h2>Aktuelles in eigener Sache</h2>
+    <ul>
+        <li><a href="<?=$this->url('content-page', ['page' => 'news'])?>#05_2018_3">05/2018 (3) Zotero Group: So gelangen Zeitschriftenaufsätze in RelBib</a></li>
+        <li><a href="<?=$this->url('content-page', ['page' => 'news'])?>#05_2018_2">05/2018 (2) Folgeantrag eingereicht!</a></li>
+        <li><a href="<?=$this->url('content-page', ['page' => 'news'])?>#05_2018_1">05/2018 (1) Wissenschaftlicher Beirat des FID Religionswissenschaft</a></li>
+
+    </ul>
 </div>

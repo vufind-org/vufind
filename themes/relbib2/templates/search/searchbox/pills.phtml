@@ -68,12 +68,5 @@ $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->s
                title="<?= $this->transEsc('Search Tips') ?>"><?= $this->transEsc('Search Tips') ?></a></li>
         </ul>
     </li>
-
-    <li>
-        <a href="<?=$this->url('search-newitem')?>"
-           class="btn btn-light" role="button"
-           rel="nofollow"><?=$this->transEsc('New Items')?></a>
-    </li>
-
-    <!-- RelBib: no virtual keyboard -->
+    <!-- RelBib: no virtual keyboard + no new item search -->
 </ul>

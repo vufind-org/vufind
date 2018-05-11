@@ -1,17 +1,18 @@
 <? //special RelBib template for new item search, to show below searchbox ?>
-<form method="get" class="form-horizontal" action="/Search/NewItem">
+<? //also hide button and use onclick event to send ?>
+<form id="form_searchbox_newitem" method="get" class="form-horizontal" action="/Search/NewItem">
   <div class="form-group">
     <label class="col-sm-2 control-label">Neu in RelBib:</label>
     <div class="col-sm-9">
       <div class="btn-group" data-toggle="buttons">
         <? foreach ([7,14,30,60] as $key => $range): ?>
-          <label class="btn btn-primary<? if($key == 0): ?> active<? endif ?>">
-            <input type="radio" name="range" id="newitem_range_<?=$this->escapeHtmlAttr($key)?>" value="<?=$this->escapeHtmlAttr($range)?>"<?=($key == 0) ? ' checked="checked"' : ''?>/>
+          <label class="btn btn-primary" onclick="document.getElementById('newitem_range_<?=$this->escapeHtmlAttr($key)?>').checked = true;document.getElementById('form_searchbox_newitem').submit();">
+            <input type="radio" name="range" id="newitem_range_<?=$this->escapeHtmlAttr($key)?>" value="<?=$this->escapeHtmlAttr($range)?>"/>
             <?=($range == 1) ? $this->transEsc('Yesterday') : $this->transEsc('Past') . ' ' . $this->escapeHtml($range) . ' ' . $this->transEsc('Days')?>
           </label>
         <? endforeach; ?>
       </div>
-      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
+      <!--<input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>-->
     </div>
   </div>
 </form>
