@@ -246,17 +246,19 @@ class AlmaController extends AbstractBase
                     );
                 } catch (\Exception $ex) {
                     $jsonResponse = $this->createJsonResponse(
-                        'Error when saving new user with primary ID \'' . $primaryId .
-                        '\' | username \'' . $username . '\' to VuFind database ' .
-                        'and sending the welcome email: ' . $ex->getMessage() . '. ',
+                        'Error when saving new user with primary ID \'' .
+                        $primaryId . '\' | username \'' . $username .
+                        '\' to VuFind database and sending the welcome email: ' .
+                        $ex->getMessage() . '. ',
                         400
                     );
                 }
             } else {
                 $jsonResponse = $this->createJsonResponse(
                     'User with primary ID \'' . $primaryId . '\' | username \'' .
-                    $username . '\' was not found in VuFind database and therefore ' .
-                    'could not be ' . strtolower($method) . 'd.', 404
+                    $username . '\' was not found in VuFind database and ' .
+                    'therefore could not be ' . strtolower($method) . 'd.',
+                    404
                 );
             }
         } elseif ($method == 'DELETE') {
@@ -307,8 +309,8 @@ class AlmaController extends AbstractBase
             $returnArray['challenge'] = $secret;
             $this->httpResponse->setStatusCode(200);
         } else {
-            $returnArray['error'] = 'GET parameter \'challenge\' is empty, not set ' .
-            'or not available when receiving webhook challenge from Alma.';
+            $returnArray['error'] = 'GET parameter \'challenge\' is empty, not ' .
+            'set or not available when receiving webhook challenge from Alma.';
             $this->httpResponse->setStatusCode(500);
         }
 
