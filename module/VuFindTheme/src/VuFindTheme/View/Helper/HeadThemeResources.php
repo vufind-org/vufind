@@ -2,7 +2,7 @@
 /**
  * View helper for loading theme-related resources in the header.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *

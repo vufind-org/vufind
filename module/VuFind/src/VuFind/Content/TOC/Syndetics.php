@@ -2,7 +2,7 @@
 /**
  * Syndetics TOC content loader.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The University of Chicago 2017.
  *
@@ -79,7 +79,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         $url = $this->getIsbnUrl($isbn, $key);
         $result = $this->getHttpClient($url)->send();
         if (!$result->isSuccess()) {
-            return $excerpt;
+            return $toc;
         }
 
         // Test XML Response

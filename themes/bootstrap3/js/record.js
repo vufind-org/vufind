@@ -198,12 +198,12 @@ function refreshTagList(_target, _loggedin) {
       source: recordSource
     });
     $.ajax({
-      dataType: 'html',
+      dataType: 'json',
       url: url
     })
     .done(function getRecordTagsDone(response) {
       $tagList.empty();
-      $tagList.replaceWith(response);
+      $tagList.replaceWith(response.data);
       if (loggedin) {
         $tagList.addClass('loggedin');
       } else {
@@ -251,7 +251,7 @@ function backgroundLoadTab(tabid) {
 }
 
 function applyRecordTabHash() {
-  var activeTab = $('.record-tabs li.active a').attr('class');
+  var activeTab = $('.record-tabs li.active').attr('data-tab');
   var $initiallyActiveTab = $('.record-tabs li.initiallyActive a');
   var newTab = typeof window.location.hash !== 'undefined'
     ? window.location.hash.toLowerCase() : '';
@@ -260,7 +260,7 @@ function applyRecordTabHash() {
   if (newTab.length <= 1 || newTab === '#tabnav') {
     $initiallyActiveTab.click();
   } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
-    $('.' + newTab.substr(1)).click();
+    $('.' + newTab.substr(1) + ' a').click();
   }
 }
 
@@ -273,7 +273,7 @@ function recordDocReady() {
     if ($li.hasClass('active')) {
       return true;
     }
-    var tabid = this.className;
+    var tabid = $li.attr('data-tab');
     var $top = $(this).closest('.record-tabs');
     // if we're flagged to skip AJAX for this tab, we need special behavior:
     if ($li.hasClass('noajax')) {

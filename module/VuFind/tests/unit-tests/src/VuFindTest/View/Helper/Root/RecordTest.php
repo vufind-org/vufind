@@ -2,7 +2,7 @@
 /**
  * Record view helper Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -39,7 +39,7 @@ use Zend\View\Exception\RuntimeException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class RecordTest extends \PHPUnit_Framework_TestCase
+class RecordTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test attempting to display a template that does not exist.
@@ -47,7 +47,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
      * @return void
      *
      * @expectedException        Zend\View\Exception\RuntimeException
-     * @expectedExceptionMessage Cannot find core.phtml template for record driver: VuFind\RecordDriver\SolrMarc
+     * @expectedExceptionMessage Cannot find RecordDriver/AbstractBase/core.phtml template for class: VuFind\RecordDriver\SolrMarc
      */
     public function testMissingTemplate()
     {
@@ -71,7 +71,9 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         $record->getView()->resolver()->expects($this->at(0))->method('resolve')
             ->with($this->equalTo('RecordDriver/SolrMarc/collection-record.phtml'))
             ->will($this->returnValue(false));
-        $this->setSuccessTemplate($record, 'RecordDriver/SolrDefault/collection-record.phtml', 'success', 1);
+        $this->setSuccessTemplate(
+            $record, 'RecordDriver/SolrDefault/collection-record.phtml', 'success', 1, 3
+        );
         $this->assertEquals('success', $record->getCollectionBriefRecord());
     }
 
@@ -183,7 +185,9 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         // that one fail so we can load the parent class' template instead:
         $record->getView()->resolver()->expects($this->at(0))->method('resolve')
             ->will($this->returnValue(false));
-        $this->setSuccessTemplate($record, 'RecordDriver/AbstractBase/list-entry.phtml', 'success', 1, 1);
+        $this->setSuccessTemplate(
+            $record, 'RecordDriver/AbstractBase/list-entry.phtml', 'success', 1, 3
+        );
         $this->assertEquals('success', $record->getListEntry(null, $user));
     }
 
@@ -273,17 +277,17 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     {
         $context = $this->getMockContext();
         $context->expects($this->at(1))->method('renderInContext')
-            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(['id' => 'Solr|000105196', 'count' => 0, 'prefix' => 'bar', 'formAttr' => 'foo']))
+            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(['id' => 'Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo']))
             ->will($this->returnValue('success'));
         $context->expects($this->at(2))->method('renderInContext')
-            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(['id' => 'Solr|000105196', 'count' => 1, 'prefix' => 'bar', 'formAttr' => 'foo']))
+            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(['id' => 'Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo']))
             ->will($this->returnValue('success'));
         $record = $this->getRecord(
             $this->loadRecordFixture('testbug1.json'), [], $context
         );
         // We run the test twice to ensure that checkbox incrementing works properly:
-        $this->assertEquals('success', $record->getCheckbox('bar', 'foo'));
-        $this->assertEquals('success', $record->getCheckbox('bar', 'foo'));
+        $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 1));
+        $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 2));
     }
 
     /**
@@ -492,21 +496,18 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         if (null === $context) {
             $context = $this->getMockContext();
         }
-        $view = $this->createMock('Zend\View\Renderer\PhpRenderer');
-        if ($url) {
-            $url = $this->getMockUrl($url);
-        }
-        if (false !== $serverurl) {
-            $serverurl = $this->getMockServerUrl();
-        }
+        $view = $this->getMockBuilder('Zend\View\Renderer\PhpRenderer')
+            ->disableOriginalConstructor()
+            ->setMethods(['render', 'plugin', 'resolver'])
+            ->getMock();
         $pluginCallback = function ($helper) use ($context, $url, $serverurl) {
             switch ($helper) {
             case 'context':
                 return $context;
             case 'serverurl':
-                return $serverurl;
+                return $serverurl ? $this->getMockServerUrl() : false;
             case 'url':
-                return $url;
+                return $url ? $this->getMockUrl($url) : $url;
             case 'searchTabs':
                 return $this->getMockSearchTabs();
             default:
@@ -626,8 +627,9 @@ class RecordTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    protected function setSuccessTemplate($record, $tpl, $response = 'success', $resolveAt = 0, $renderAt = 1)
-    {
+    protected function setSuccessTemplate($record, $tpl, $response = 'success',
+        $resolveAt = 0, $renderAt = 2
+    ) {
         $expectResolve = $resolveAt === '*' ? $this->any() : $this->at($resolveAt);
         $record->getView()->resolver()->expects($expectResolve)->method('resolve')
             ->with($this->equalTo($tpl))

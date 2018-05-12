@@ -2,7 +2,7 @@
 /**
  * SideFacets Recommendations Module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -154,8 +154,8 @@ class SideFacets extends AbstractFacets
         // Parse the additional settings:
         $settings = explode(':', $settings);
         $mainSection = empty($settings[0]) ? 'Results' : $settings[0];
-        $checkboxSection = isset($settings[1]) ? $settings[1] : false;
-        $iniName = isset($settings[2]) ? $settings[2] : 'facets';
+        $checkboxSection = $settings[1] ?? false;
+        $iniName = $settings[2] ?? 'facets';
 
         // Load the desired facet information...
         $config = $this->configLoader->get($iniName);

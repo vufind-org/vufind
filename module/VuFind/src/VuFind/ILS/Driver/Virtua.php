@@ -2,7 +2,7 @@
 /**
  * VTLS Virtua Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) University of Southern Queensland 2008.
  *
@@ -986,7 +986,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     $tag  = $subfield['tag'];
                     $sort = explode('.', $subfield['data']);
                     $sort_rule  = $sort[0];
-                    $sort_order = isset($sort[1]) ? $sort[1] : 0;
+                    $sort_order = $sort[1] ?? 0;
                     $sort_order = sprintf("%05d", $sort_order);
                 } else {
                     // Everything else goes in the data bucket

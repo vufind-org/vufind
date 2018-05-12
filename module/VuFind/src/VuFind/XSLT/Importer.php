@@ -2,7 +2,7 @@
 /**
  * VuFind XSLT importer
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -169,8 +169,7 @@ class Importer
             $classes = is_array($options['General']['custom_class'])
                 ? $options['General']['custom_class']
                 : [$options['General']['custom_class']];
-            $truncate = isset($options['General']['truncate_custom_class'])
-                ? $options['General']['truncate_custom_class'] : true;
+            $truncate = $options['General']['truncate_custom_class'] ?? true;
             foreach ($classes as $class) {
                 // Add a default namespace if none was provided:
                 if (false === strpos($class, '\\')) {

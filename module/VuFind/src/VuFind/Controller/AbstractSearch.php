@@ -2,7 +2,7 @@
 /**
  * VuFind Search Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -240,6 +240,18 @@ class AbstractSearch extends AbstractBase
             $listener->setConfig($config);
             $listener->attach($runner->getEventManager()->getSharedManager());
         };
+    }
+
+    /**
+     * Home action
+     *
+     * @return mixed
+     */
+    public function homeAction()
+    {
+        $blocks = $this->serviceLocator->get('VuFind\ContentBlock\BlockLoader')
+            ->getFromSearchClassId($this->searchClassId);
+        return $this->createViewModel(compact('blocks'));
     }
 
     /**
@@ -645,8 +657,8 @@ class AbstractSearch extends AbstractBase
     protected function processAdvancedCheckboxes($params, $savedSearch = false)
     {
         // Set defaults for missing parameters:
-        $config = isset($params[0]) ? $params[0] : 'facets';
-        $section = isset($params[1]) ? $params[1] : 'CheckboxFacets';
+        $config = $params[0] ?? 'facets';
+        $section = $params[1] ?? 'CheckboxFacets';
 
         // Load config file:
         $config = $this->serviceLocator->get('VuFind\Config\PluginManager')

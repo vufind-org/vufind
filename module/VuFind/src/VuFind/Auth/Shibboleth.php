@@ -2,7 +2,7 @@
 /**
  * Shibboleth authentication module.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2014.
  * Copyright (C) The National Library of Finland 2016.
@@ -280,8 +280,7 @@ class Shibboleth extends AbstractBase
         foreach ($shib as $key => $value) {
             if (preg_match("/userattribute_[0-9]{1,}/", $key)) {
                 $valueKey = 'userattribute_value_' . substr($key, 14);
-                $sortedUserAttributes[$value] = isset($shib->$valueKey)
-                    ? $shib->$valueKey : null;
+                $sortedUserAttributes[$value] = $shib->$valueKey ?? null;
 
                 // Throw an exception if attributes are missing/empty.
                 if (empty($sortedUserAttributes[$value])) {

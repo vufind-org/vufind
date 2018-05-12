@@ -4,7 +4,7 @@
  * performance -- this allows us to set and roll back variables in the global
  * scope instead of relying on the overhead of building a whole new scope).
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -59,7 +59,7 @@ class Context extends AbstractHelper
 
         $oldVars = [];
         foreach ($vars as $k => $v) {
-            $oldVars[$k] = isset($view->$k) ? $view->$k : null;
+            $oldVars[$k] = $view->$k ?? null;
             $view->$k = $v;
         }
         return $oldVars;

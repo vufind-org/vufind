@@ -2,7 +2,7 @@
 /**
  * Record link view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -148,8 +148,7 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
     {
         if (is_array($url)) {
             // Assemble URL string from array parts:
-            $source = isset($url['source'])
-                ? $url['source'] : DEFAULT_SEARCH_BACKEND;
+            $source = $url['source'] ?? DEFAULT_SEARCH_BACKEND;
             $finalUrl
                 = $this->getActionUrl("{$source}|" . $url['record'], $url['action']);
             if (isset($url['query'])) {

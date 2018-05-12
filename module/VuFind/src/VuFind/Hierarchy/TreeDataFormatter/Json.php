@@ -2,7 +2,7 @@
 /**
  * Hierarchy Tree Data Formatter (JSON)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -95,7 +95,7 @@ class Json extends AbstractBase
             // otherwise, we can just collect flat values.
             if ($this->sort) {
                 $positions = $this->getHierarchyPositionsInParents($current);
-                $sequence = isset($positions[$parentID]) ? $positions[$parentID] : 0;
+                $sequence = $positions[$parentID] ?? 0;
                 $json[] = [$sequence, $childNode];
             } else {
                 $json[] = $childNode;

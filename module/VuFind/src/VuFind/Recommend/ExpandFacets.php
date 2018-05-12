@@ -2,7 +2,7 @@
 /**
  * ExpandFacets Module Controller
  *
- * PHP Version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -102,7 +102,7 @@ class ExpandFacets implements RecommendInterface
         // Parse the additional settings:
         $settings = explode(':', $settings);
         $mainSection = empty($settings[0]) ? 'Results' : $settings[0];
-        $iniName = isset($settings[1]) ? $settings[1] : 'facets';
+        $iniName = $settings[1] ?? 'facets';
 
         // Load the desired facet information...
         $config = $this->configLoader->get($iniName);

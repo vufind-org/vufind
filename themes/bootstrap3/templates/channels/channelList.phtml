@@ -1,8 +1,8 @@
-<? $this->headLink()->appendStylesheet('lib/channel-slider.css'); ?>
-<? $this->headScript()->appendFile('lib/channel-slider.js'); ?>
-<? $this->headScript()->appendFile('channels.js'); ?>
-<? $this->headScript()->appendFile('vendor/jquery.dotdotdot.min.js'); ?>
-<?
+<?php
+  $this->headLink()->appendStylesheet('lib/channel-slider.css');
+  $this->headScript()->appendFile('lib/channel-slider.js');
+  $this->headScript()->appendFile('channels.js');
+  $this->headScript()->appendFile('vendor/jquery.dotdotdot.min.js');
   $this->jsTranslations()->addStrings([
     'channel_browse' => 'channel_browse',
     'channel_expand' => 'channel_expand',
@@ -10,44 +10,47 @@
     'nohit_heading' => 'nohit_heading',
     'View Record' => 'View Record',
   ]);
+
+  $finalChannels = [];
+  $finalCount = 0;
+  foreach ($channels as $current) {
+      if (isset($current['contents'])) {
+          $finalChannels[] = $current;
+          $finalCount++;
+      } elseif ($finalCount > 0 && isset($current['token'])) {
+          $finalChannels[$finalCount - 1]['relatedTokens'][] = $current;
+      }
+  }
 ?>
 
-<? if (empty($token)): ?>
+<?php if (empty($token)): ?>
   <form action="<?=$this->url('channels-search')?>" class="form-inline">
     <?=$this->transEsc('channel_searchbox_label')?>
     <input type="text" name="lookfor" class="form-control" value="<?=$this->escapeHtmlAttr($this->lookfor) ?>"/>
     <input type="submit" value="<?=$this->escapeHtmlAttr($this->translate('Submit'))?>" class="btn btn-default" />
   </form>
-<? endif; ?>
+<?php endif; ?>
 
-<? $insideButton = false; ?>
-<? foreach ($channels as $channel): ?>
-  <?
-    $groupId = isset($channel['groupId'])
-      ? $channel['groupId']
-      : $channel['providerId'];
+<?php $insideButton = false; ?>
+<?php foreach ($finalChannels as $channel): ?>
+  <?php
+    $groupId = $channel['groupId'] ?? $channel['providerId'];
+    $channelID = 'channel-' . md5(serialize($channel));
   ?>
-  <? $channelID = 'channel-' . md5(serialize($channel)); ?>
-  <? if (isset($channel['contents'])): ?>
-    <? if ($insideButton): ?>
-        </ul>
-      </div>
-      <? $insideButton = false; ?>
-    <? endif; ?>
+  <div class="channel-wrapper">
     <div class="channel-title">
       <h2><?=$this->escapeHtml($channel['title'])?></h2>
     </div>
     <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>" data-link-json='<?=empty($channel['links']) ? '[]' : json_encode($channel['links']) ?>'>
       <!-- Wrapper for slides -->
-      <? foreach ($channel['contents'] as $item): ?>
-        <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>" class="channel-record slide" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
+      <?php foreach ($channel['contents'] as $item): ?>
+        <a href="<?=empty($item['routeDetails']) ? $this->recordLink()->getUrl("{$item['source']}|{$item['id']}") : $this->url($item['routeDetails']['route'], $item['routeDetails']['params'])?>" class="channel-record slide" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
           <div class="thumb"><img src="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>"/></div>
           <?=$this->escapeHtml($item['title'])?>
         </a>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </div>
-  <? elseif (isset($channel['token'])): ?>
-    <? if (!$insideButton): ?>
+    <?php if (count($channel['relatedTokens'] ?? []) > 0): ?>
       <div class="channel-add-menu btn-group hidden" data-group="<?=$groupId ?>">
         <button type="button" class="add-btn btn btn-default"><?=$this->transEsc('channel_add_more') ?></button>
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -55,8 +58,11 @@
           <span class="sr-only">Toggle Dropdown</span>
         </button>
         <ul class="dropdown-menu">
-      <? $insideButton = true; ?>
-    <? endif; ?>
-    <li><a href="<?=current(explode('?', $this->serverUrl(true)))?>?<?=empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')?>channelProvider=<?=urlencode($channel['providerId']) ?>&amp;channelToken=<?=urlencode($channel['token']) ?>&amp;layout=lightbox" data-token="<?=$channel['token'] ?>"><?=$this->escapeHtml($channel['title'])?></a></li>
-  <? endif; ?>
-<? endforeach; ?>
+          <?php foreach ($channel['relatedTokens'] as $related): ?>
+            <li><a href="<?=current(explode('?', $this->serverUrl(true)))?>?<?=empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')?>channelProvider=<?=urlencode($related['providerId']) ?>&amp;channelToken=<?=urlencode($related['token']) ?>&amp;layout=lightbox" data-token="<?=$related['token'] ?>"><?=$this->escapeHtml($related['title'])?></a></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+  </div>
+<?php endforeach; ?>

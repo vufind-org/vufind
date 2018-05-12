@@ -2,7 +2,7 @@
 /**
  * ILS driver plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -47,7 +47,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'aleph' => 'VuFind\ILS\Driver\Aleph',
         'alma' => 'VuFind\ILS\Driver\Alma',
         'amicus' => 'VuFind\ILS\Driver\Amicus',
-        'claviussql' => 'VuFind\ILS\Driver\ClaviusSQL',
         'daia' => 'VuFind\ILS\Driver\DAIA',
         'demo' => 'VuFind\ILS\Driver\Demo',
         'evergreen' => 'VuFind\ILS\Driver\Evergreen',
@@ -82,8 +81,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\ILS\Driver\Aleph' => 'VuFind\ILS\Driver\AlephFactory',
         'VuFind\ILS\Driver\Alma' => 'VuFind\ILS\Driver\AlmaFactory',
         'VuFind\ILS\Driver\Amicus' => 'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\ILS\Driver\ClaviusSQL' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\ILS\Driver\DAIA' =>
             'VuFind\ILS\Driver\DriverWithDateConverterFactory',
         'VuFind\ILS\Driver\Demo' => 'VuFind\ILS\Driver\DemoFactory',

@@ -2,7 +2,7 @@
 /**
  * VuFind Theme Initializer
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -217,6 +217,9 @@ class Initializer
     {
         // Load standard configuration options:
         $standardTheme = $this->config->theme;
+        if (Console::isConsole()) {
+            return $standardTheme;
+        }
         $mobileTheme = $this->mobile->enabled()
             ? $this->config->mobile_theme : false;
 
