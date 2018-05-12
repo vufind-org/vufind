@@ -190,21 +190,21 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         if ($result->isSuccess()) {
             if (!$xml && $result->isServerError()) {
                 throw new ILSException(
-                    'XML is not valid or HTTP error, URL: '.$url.
-                    ', HTTP status code: '.$statusCode
+                    'XML is not valid or HTTP error, URL: ' . $url .
+                    ', HTTP status code: ' . $statusCode
                 );
             }
             $returnValue = $xml;
         } else {
             $almaErrorMsg = $xml->errorList->error[0]->errorMessage;
             error_log(
-                '[ALMA] ' . $almaErrorMsg . ' | Call to: ' . $client->getUri().
-                '. GET params: ' . var_export($paramsGet, true) . '. POST params: '.
-                var_export($paramsPost, true) . '. Result body: '.
+                '[ALMA] ' . $almaErrorMsg . ' | Call to: ' . $client->getUri() .
+                '. GET params: ' . var_export($paramsGet, true) . '. POST params: ' .
+                var_export($paramsPost, true) . '. Result body: ' .
                 $result->getBody() . '. HTTP status code: ' . $statusCode
             );
             throw new ILSException(
-                'Alma error message: ' . $almaErrorMsg . ' | HTTP error code: '.
+                'Alma error message: ' . $almaErrorMsg . ' | HTTP error code: ' .
                 $statusCode
             );
         }
@@ -260,7 +260,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $patron
                     );
                 }
-                
+
                 $itemPath = $bibPath . '/' . urlencode($holdingId) . '/items';
                 if ($currentItems = $this->makeRequest($itemPath)) {
                     foreach ($currentItems->item as $item) {
@@ -467,7 +467,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * Create a user in Alma via API call
      *
      * @param array $formParams The data from the "create new account" form
-     * 
+     *
      * @throws \VuFind\Exception\Auth
      *
      * @return NULL|SimpleXMLElement
@@ -488,7 +488,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             if (!isset($newUserConfig[$configParam])
                 || empty(trim($newUserConfig[$configParam]))
             ) {
-                $errorMessage = 'Configuration "' . $configParam . '" is not set '.
+                $errorMessage = 'Configuration "' . $configParam . '" is not set ' .
                                 'in Alma.ini in the [NewUser] section!';
                 error_log('[ALMA]: ' . $errorMessage);
                 throw new \VuFind\Exception\Auth($errorMessage);
@@ -506,7 +506,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     new \DateInterval($newUserConfig['expiryDate'])
                 );
             } catch (\Exception $exception) {
-                $errorMessage = 'Configuration "expiryDate" in Alma.ini (see '.
+                $errorMessage = 'Configuration "expiryDate" in Alma.ini (see ' .
                                 '[NewUser] section) has the wrong format!';
                 error_log('[ALMA]: ' . $errorMessage);
                 throw new \VuFind\Exception\Auth($errorMessage);
@@ -528,7 +528,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     new \DateInterval($newUserConfig['purgeDate'])
                 );
             } catch (\Exception $exception) {
-                $errorMessage = 'Configuration "purgeDate" in Alma.ini (see '.
+                $errorMessage = 'Configuration "purgeDate" in Alma.ini (see ' .
                                 '[NewUser] section) has the wrong format!';
                 error_log('[ALMA]: ' . $errorMessage);
                 throw new \VuFind\Exception\Auth($errorMessage);
@@ -545,11 +545,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         . '<first_name>' . $formParams['firstname'] . '</first_name>'
         . '<last_name>' . $formParams['lastname'] . '</last_name>'
         . '<user_group>' . $this->config['NewUser']['userGroup'] . '</user_group>'
-        . '<preferred_language>' . $this->config['NewUser']['preferredLanguage'] . 
+        . '<preferred_language>' . $this->config['NewUser']['preferredLanguage'] .
           '</preferred_language>'
         . $expiryDateXml
         . $purgeDateXml
-        . '<account_type>' . $this->config['NewUser']['accountType'] . 
+        . '<account_type>' . $this->config['NewUser']['accountType'] .
           '</account_type>'
         . '<status>' . $this->config['NewUser']['status'] . '</status>'
         . '<contact_info>'

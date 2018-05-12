@@ -28,13 +28,14 @@
 namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Interop\Container\Exception\ContainerException;
+use Zend\ServiceManager\Exception\ServiceNotCreatedException;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Zend\ServiceManager\Factory\FactoryInterface;
+
 /**
  * Alma ILS driver factory.
- * 
+ *
  * @category VuFind
  * @package  ILS_Drivers
  * @author   Michael Birkner <michael.birkner@akwien.at>
@@ -43,23 +44,22 @@ use Interop\Container\Exception\ContainerException;
  */
 class AlmaFactory implements FactoryInterface
 {
-
     /**
      * Create an object
      *
      * @param ContainerInterface $container     Container interface
      * @param string             $requestedName Driver name
      * @param null|array         $options       Options
-     * 
+     *
      * @return object             Driver object
-     * 
+     *
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      *     creating a service.
      * @throws ContainerException if any other error occurs
      */
     public function __invoke(
-        ContainerInterface $container, 
+        ContainerInterface $container,
         $requestedName,
         array $options = null
     ) {
@@ -83,5 +83,3 @@ class AlmaFactory implements FactoryInterface
         return $driver;
     }
 }
-
-?>
