@@ -29,27 +29,59 @@ namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
-
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Zend\ServiceManager\Exception\ServiceNotCreatedException;
+use Interop\Container\Exception\ContainerException;
+/**
+ * Alma ILS driver factory.
+ * 
+ * @category VuFind
+ * @package  ILS_Drivers
+ * @author   Michael Birkner <michael.birkner@akwien.at>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
 class AlmaFactory implements FactoryInterface
 {
+
     /**
-     * {@inheritDoc}
-     * @see \Zend\ServiceManager\Factory\FactoryInterface::__invoke()
+     * Create an object
+     *
+     * @param ContainerInterface $container     Container interface
+     * @param string             $requestedName Driver name
+     * @param null|array         $options       Options
+     * 
+     * @return object             Driver object
+     * 
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     *     creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
-    {
-        // Set up the driver with the date converter (and any extra parameters passed in as options):
+    public function __invoke(
+        ContainerInterface $container, 
+        $requestedName,
+        array $options = null
+    ) {
+        // Set up the driver with the date converter (and any extra parameters
+        // passed in as options):
         $driver = new $requestedName(
-                $container->get('VuFind\Date\Converter'),
-                $container->get('VuFind\Config\PluginManager'),
-                ...($options ?: [])
-            );
+            $container->get('VuFind\Date\Converter'),
+            $container->get('VuFind\Config\PluginManager'),
+            ...($options ?: [])
+        );
 
         // Populate cache storage if a setCacheStorage method is present:
         if (method_exists($driver, 'setCacheStorage')) {
-            $driver->setCacheStorage($container->get('VuFind\Cache\Manager')->getCache('object'));
+            $driver->setCacheStorage(
+                $container->
+                get('VuFind\Cache\Manager')
+                    ->getCache('object')
+            );
         }
 
         return $driver;
     }
 }
+
+?>
