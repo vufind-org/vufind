@@ -323,8 +323,9 @@ class Database extends AbstractBase
     /**
      * Validate parameters.
      *
-     * @param string[] $params Parameters returned from collectParamsFromRequest()
-     * @param \VuFind\Db\Table\User $table The VuFind user table
+     * @param string[]              $params Parameters returned from
+     *                                      collectParamsFromRequest()
+     * @param \VuFind\Db\Table\User $table  The VuFind user table
 
      * @throws AuthException
      *
@@ -357,8 +358,9 @@ class Database extends AbstractBase
     /**
      * Create a user row object from given parametes.
      *
-     * @param string[] $params Parameters returned from collectParamsFromRequest()
-     * @param \VuFind\Db\Table\User $table The VuFind user table
+     * @param string[]              $params Parameters returned from
+     *                                      collectParamsFromRequest()
+     * @param \VuFind\Db\Table\User $table  The VuFind user table
      *
      * @return \VuFind\Db\Row\User A user row object
      */
