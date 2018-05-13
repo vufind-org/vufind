@@ -109,12 +109,14 @@ class Database extends AbstractBase
      * @return \VuFind\Db\Row\User New user row.
      */
     public function create($request)
-    {
+    {   
+        $userTable = $this->getUserTable();
+        
         $params = $this->collectParamsFromRequest($request);
-        $this->validateParams($params);
+        $this->validateParams($params, $userTable);
 
         // If we got this far, we're ready to create the account:
-        $user = $this->createUserFromParams($params);
+        $user = $this->createUserFromParams($params, $userTable);
         $user->save();
 
         return $user;
@@ -315,12 +317,13 @@ class Database extends AbstractBase
      * Validate parameters.
      *
      * @param string[] $params Parameters returned from collectParamsFromRequest()
-     *
+     * @param \VuFind\Db\Table\User $table The VuFind user table
+
      * @throws AuthException
      *
      * @return void
      */
-    protected function validateParams($params)
+    protected function validateParams($params, $table)
     {
         // Validate Input
         $this->validateUsernameAndPassword($params);
@@ -337,7 +340,6 @@ class Database extends AbstractBase
         }
 
         // Make sure we have a unique username
-        $table = $this->getUserTable();
         if ($table->getByUsername($params['username'], false)) {
             throw new AuthException('That username is already taken');
         }
@@ -352,12 +354,12 @@ class Database extends AbstractBase
      * Create a user row object from given parametes.
      *
      * @param string[] $params Parameters returned from collectParamsFromRequest()
+     * @param \VuFind\Db\Table\User $table The VuFind user table
      *
      * @return \VuFind\Db\Row\User A user row object
      */
-    protected function createUserFromParams($params)
+    protected function createUserFromParams($params, $table)
     {
-        $table = $this->getUserTable();
         $user = $table->createRowForUsername($params['username']);
         $user->firstname = $params['firstname'];
         $user->lastname = $params['lastname'];
