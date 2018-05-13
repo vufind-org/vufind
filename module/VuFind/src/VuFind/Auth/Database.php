@@ -110,11 +110,11 @@ class Database extends AbstractBase
      */
     public function create($request)
     {   
-        // Validate username and password
-        $this->validateUsernameAndPassword($params);
-        
         // Collect POST parameters from request
         $params = $this->collectParamsFromRequest($request);
+        
+        // Validate username and password
+        $this->validateUsernameAndPassword($params);
         
         // Get the user table
         $userTable = $this->getUserTable();
