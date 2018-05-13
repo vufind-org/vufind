@@ -1078,7 +1078,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getCourses()
     {
         // https://developers.exlibrisgroup.com/alma/apis/courses
-        // GET /​almaws/​v1/​courses
+        // GET /almaws/v1/courses
         $xml = $this->makeRequest('/courses');
         $courses = [];
         foreach ($xml as $course) {
@@ -1101,8 +1101,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function findReserves($courseID, $instructorID, $departmentID)
     {
         // https://developers.exlibrisgroup.com/alma/apis/courses
-        // GET /​almaws/​v1/​courses/​{course_id}/​reading-lists
-        $xml = $this->makeRequest('/courses/​' . $courseID . '/​reading-lists');
+        // GET /almaws/v1/courses/{course_id}/reading-lists
+        $xml = $this->makeRequest('/courses/' . $courseID . '/reading-lists');
         $reserves = [];
         foreach ($xml as $list) {
             $listXML = $this->makeRequest(
@@ -1175,7 +1175,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * /
      * public function getFunds() {
      * // https://developers.exlibrisgroup.com/alma/apis/acq
-     * // GET /​almaws/​v1/​acq/​funds
+     * // GET /almaws/v1/acq/funds
      * }
      */
 

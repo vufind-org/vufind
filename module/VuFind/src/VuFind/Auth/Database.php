@@ -109,13 +109,13 @@ class Database extends AbstractBase
      * @return \VuFind\Db\Row\User New user row.
      */
     public function create($request)
-    {   
+    {
         // Collect POST parameters from request
         $params = $this->collectParamsFromRequest($request);
-        
+
         // Validate username and password
         $this->validateUsernameAndPassword($params);
-        
+
         // Get the user table
         $userTable = $this->getUserTable();
 
@@ -326,7 +326,7 @@ class Database extends AbstractBase
      * @param string[]              $params Parameters returned from
      *                                      collectParamsFromRequest()
      * @param \VuFind\Db\Table\User $table  The VuFind user table
-
+     *
      * @throws AuthException
      *
      * @return void
