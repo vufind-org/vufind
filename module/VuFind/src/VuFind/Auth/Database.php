@@ -110,9 +110,16 @@ class Database extends AbstractBase
      */
     public function create($request)
     {   
-        $userTable = $this->getUserTable();
+        // Validate username and password
+        $this->validateUsernameAndPassword($params);
         
+        // Collect POST parameters from request
         $params = $this->collectParamsFromRequest($request);
+        
+        // Get the user table
+        $userTable = $this->getUserTable();
+
+        // Make sure parameters are correct
         $this->validateParams($params, $userTable);
 
         // If we got this far, we're ready to create the account:
@@ -325,16 +332,13 @@ class Database extends AbstractBase
      */
     protected function validateParams($params, $table)
     {
-        // Validate Input
-        $this->validateUsernameAndPassword($params);
-
         // Invalid Email Check
         $validator = new \Zend\Validator\EmailAddress();
         if (!$validator->isValid($params['email'])) {
             throw new AuthException('Email address is invalid');
         }
 
-        // Check if Email is on whitlist (if applicable)
+        // Check if Email is on whitelist (if applicable)
         if (!$this->emailAllowed($params['email'])) {
             throw new AuthException('authentication_error_creation_blocked');
         }
