@@ -29,8 +29,10 @@
  */
 namespace VuFind\Auth;
 
+use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use Zend\Crypt\Password\Bcrypt;
+use Zend\Http\PhpEnvironment\Request;
 
 /**
  * Database authentication class
@@ -62,8 +64,7 @@ class Database extends AbstractBase
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     *                                                   account credentials.
+     * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User Object representing logged-in user.
@@ -102,8 +103,7 @@ class Database extends AbstractBase
     /**
      * Create a new user account from the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     *                                                   new account details.
+     * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User New user row.
@@ -132,8 +132,7 @@ class Database extends AbstractBase
     /**
      * Update a user's password from the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     *                                                   new account details.
+     * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User New user row.
@@ -195,9 +194,9 @@ class Database extends AbstractBase
      * Check that the user's password matches the provided value.
      *
      * @param string $password Password to check.
-     * @param object $userRow  The user row.  We pass this instead of the password
-     *                         because we may need to check different values
-     *                         depending on the password hashing configuration.
+     * @param object $userRow  The user row. We pass this instead of the password
+     * because we may need to check different values depending on the password
+     * hashing configuration.
      *
      * @return bool
      */
@@ -300,8 +299,7 @@ class Database extends AbstractBase
     /**
      * Collect parameters from request and populate them.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     *                                                   new account details.
+     * @param Request $request Request object containing new account details.
      *
      * @return string[]
      */
@@ -323,9 +321,8 @@ class Database extends AbstractBase
     /**
      * Validate parameters.
      *
-     * @param string[]              $params Parameters returned from
-     *                                      collectParamsFromRequest()
-     * @param \VuFind\Db\Table\User $table  The VuFind user table
+     * @param string[]  $params Parameters returned from collectParamsFromRequest()
+     * @param UserTable $table  The VuFind user table
      *
      * @throws AuthException
      *
@@ -358,9 +355,8 @@ class Database extends AbstractBase
     /**
      * Create a user row object from given parametes.
      *
-     * @param string[]              $params Parameters returned from
-     *                                      collectParamsFromRequest()
-     * @param \VuFind\Db\Table\User $table  The VuFind user table
+     * @param string[]  $params Parameters returned from collectParamsFromRequest()
+     * @param UserTable $table  The VuFind user table
      *
      * @return \VuFind\Db\Row\User A user row object
      */
