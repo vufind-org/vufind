@@ -3,7 +3,7 @@
 /**
  * Unit tests for BrowZine record collection factory.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -49,7 +49,7 @@ class RecordCollectionFactoryTest extends TestCase
      */
     public function testFactory()
     {
-        $resp = ['data' => [[], [], []]];
+        $resp = ['data' => [['id' => 1], ['id' => 2], ['id' => 3]]];
         $fact = new RecordCollectionFactory();
         $coll = $fact->factory($resp);
         $this->assertEquals(3, count($coll));

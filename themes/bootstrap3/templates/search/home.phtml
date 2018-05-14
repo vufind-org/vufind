@@ -10,103 +10,12 @@
     $this->searchClassId = 'Solr';
   }
 
-  // Load search actions and settings (if any):
-  $options = $this->searchOptions($this->searchClassId);
-  $basicSearch = $options->getSearchAction();
-  $advSearch = $options->getAdvancedSearchAction();
-  $columnSize = 10;
-
   $this->layout()->breadcrumbs = false;
 ?>
 
 <div class="searchHomeContent">
-  <?php
-  $ilsStatusScript = <<<JS
-$(document).ready(function() {
-  $.ajax({
-      dataType: 'json',
-      method: 'GET',
-      data: {'offlineModeMsg':'ils_offline_home_message'},
-      url: VuFind.path + '/AJAX/JSON?method=getIlsStatus',
-      success: function(response) {
-          $('.searchHomeContent').prepend(response.data);
-      }
-  });
-});
-JS;
-  ?>
-  <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $ilsStatusScript, 'SET'); ?>
-
   <?=$this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => true])?>
   <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$("#searchForm_lookfor").focus();', 'SET'); ?>
 </div>
 
-<?php if (!empty($facetList)): ?>
-  <div class="search-home-facets">
-    <?php foreach ($facetList as $field => $details): ?>
-      <?php if ($isHierarchy = in_array($field, $this->hierarchicalFacets ?? [])):
-          $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
-          $this->headScript()->appendFile('facets.js');
-          $sort = $this->hierarchicalFacetSortOptions[$field] ?? '';
-          $script = <<<JS
-$(document).ready(function() {
-  $('#facet_{$this->escapeHtml($field)}_container').removeClass('hide');
-  initFacetTree($('#facet_{$this->escapeHtml($field)}'), false);
-});
-JS;
-          echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
-        ?>
-        <div id="facet_<?=$this->escapeHtml($field)?>_container" class="home-facet <?=$this->escapeHtmlAttr($field)?> hide">
-          <h2><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></h2>
-          <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet"
-              data-facet="<?=$this->escapeHtml($field)?>"
-              data-path="<?=$this->url($basicSearch)?>"
-              data-exclude="0"
-              data-operator="AND"
-              data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
-              data-sort="all">
-          </div>
-        </div>
-        <noscript>
-      <?php endif; ?>
-      <?php $sortedList = $this->sortFacetList($this->results, $field, $details['list'], $basicSearch); ?>
-      <div class="home-facet <?=$this->escapeHtmlAttr($field) ?>">
-        <h2><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></h2>
-        <div class="home-facet-container">
-          <ul class="home-facet-list">
-            <?php
-              // Special case: two columns for LC call numbers...
-              $maxListLength = $field == 'callnumber-first'
-                ? $columnSize * 2 : $columnSize;
-
-              // Special case: custom URLs for collections...
-              $moreUrl = $field == 'hierarchy_top_title'
-                ? $this->url('collections-home') : $this->url($advSearch);
-
-              // Convenience variable:
-              $currentListLength = count($sortedList);
-            ?>
-            <?php $i = 0; foreach ($sortedList as $url => $value):
-                // Special case: custom URLs for collections...
-                if ($field == 'hierarchy_top_title') {
-                    $url = $this->url('collections-bytitle') . '?title=' . urlencode($value);
-                }
-              ?>
-              <li><a href="<?=$url?>"><?=$this->escapeHtml(empty($value) ? '-' : $value)?></a></li>
-              <?php if (++$i >= $currentListLength) break; // end of list? bail out! ?>
-              <?php if ($i >= $maxListLength): // list too long? show more link! ?>
-                <li><a href="<?=$moreUrl?>"><strong><?=$this->transEsc("More options")?>...</strong></a></li>
-                <?php break; ?>
-              <?php elseif ($i % $columnSize === 0): // end of column? insert break! ?>
-                </ul><ul class="home-facet-list">
-              <?php endif; ?>
-            <?php endforeach; ?>
-          </ul>
-        </div>
-      </div>
-      <?php if ($isHierarchy): ?>
-        </noscript>
-      <?php endif; ?>
-    <?php endforeach; ?>
-  </div>
-<?php endif; ?>
+<?=implode('', array_map([$this, 'contentBlock'], $blocks ?? []))?>

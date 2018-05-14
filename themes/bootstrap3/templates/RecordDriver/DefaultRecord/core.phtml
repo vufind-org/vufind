@@ -58,8 +58,8 @@
     <?php if (!empty($coreFields)): ?>
       <table class="table table-striped">
         <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
-        <?php foreach ($coreFields as $key => $current): ?>
-          <tr><th><?=$this->transEsc($key)?>:</th><td><?=$current['value']?></td></tr>
+        <?php foreach ($coreFields as $current): ?>
+          <tr><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
         <?php endforeach; ?>
       </table>
     <?php endif; ?>
