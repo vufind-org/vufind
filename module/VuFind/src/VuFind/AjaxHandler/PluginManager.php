@@ -60,6 +60,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\AjaxHandler\GetRequestGroupPickupLocations',
         'getResolverLinks' => 'VuFind\AjaxHandler\GetResolverLinks',
         'getSaveStatuses' => 'VuFind\AjaxHandler\GetSaveStatuses',
+        'getUserFines' => 'VuFind\AjaxHandler\GetUserFines',
+        'getUserHolds' => 'VuFind\AjaxHandler\GetUserHolds',
+        'getUserTransactions' => 'VuFind\AjaxHandler\GetUserTransactions',
         'getVisData' => 'VuFind\AjaxHandler\GetVisData',
         'keepAlive' => 'VuFind\AjaxHandler\KeepAlive',
         'recommend' => 'VuFind\AjaxHandler\Recommend',
@@ -101,6 +104,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\AjaxHandler\GetResolverLinksFactory',
         'VuFind\AjaxHandler\GetSaveStatuses' =>
             'VuFind\AjaxHandler\GetSaveStatusesFactory',
+        'VuFind\AjaxHandler\GetUserFines' =>
+            'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
+        'VuFind\AjaxHandler\GetUserHolds' =>
+            'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
+        'VuFind\AjaxHandler\GetUserTransactions' =>
+            'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
         'VuFind\AjaxHandler\GetVisData' => 'VuFind\AjaxHandler\GetVisDataFactory',
         'VuFind\AjaxHandler\KeepAlive' => 'VuFind\AjaxHandler\KeepAliveFactory',
         'VuFind\AjaxHandler\Recommend' => 'VuFind\AjaxHandler\RecommendFactory',
