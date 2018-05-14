@@ -370,9 +370,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function ajaxEnabled()
     {
         // Assume ajax is enabled unless explicitly turned off:
-        return isset($this->config->Authentication->enableAjax)
-            ? !$this->config->Authentication->enableAjax
-            : true;
+        return $this->config->Authentication->enableAjax ?? true;
     }
 
     /**
@@ -383,9 +381,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function dropdownEnabled()
     {
         // Assume dropdown is disabled unless explicitly turned on:
-        return isset($this->config->Authentication->enableDropdown)
-            ? !$this->config->Authentication->enableDropdown
-            : false;
+        return $this->config->Authentication->enableDropdown ?? false;
     }
 
     /**
