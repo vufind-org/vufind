@@ -111,7 +111,7 @@ class AlmaDatabase extends Database
         $almaAnswer = $this->almaDriver->createAlmaUser($params);
 
         // Create user account in VuFind user table if Alma gave us an answer
-        if ($almaAnswer != null) {
+        if ($almaAnswer !== null) {
             // If we got this far, we're ready to create the account:
             $user = $this->createUserFromParams($params);
 
