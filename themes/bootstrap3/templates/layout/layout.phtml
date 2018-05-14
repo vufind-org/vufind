@@ -118,6 +118,11 @@ VuFind.defaultSearchBackend = '{$dsb}';
 VuFind.addTranslations({$translations});
 JS;
       $this->headScript()->appendScript($setupJS);
+
+      $account = $this->auth()->getManager();
+      if ($account->ajaxEnabled()) {
+        $this->headScript()->appendFile("account_ajax.js");
+      }
     ?>
     <?=$this->headScript()?>
   </head>

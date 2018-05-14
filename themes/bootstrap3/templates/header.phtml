@@ -1,9 +1,4 @@
-<?php
-  $account = $this->auth()->getManager();
-  if ($account->ajaxEnabled()) {
-    $this->headScript()->appendFile("account_ajax.js");
-  }
-?>
+<?php $account = $this->auth()->getManager(); ?>
 <div class="banner container navbar">
   <div class="navbar-header">
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse">
