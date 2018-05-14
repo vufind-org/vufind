@@ -68,7 +68,7 @@ VuFind.register('account', function Account() {
       dataType: 'json'
     })
     .done(function getCheckedOutDone(response) {
-      checkedOutStatus = JSON.parse(response.data);
+      checkedOutStatus = response.data;
       _save();
       _render();
     })
