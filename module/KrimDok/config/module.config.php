@@ -6,7 +6,6 @@ $config = [
         'factories' => [
             'acquisition_request' => 'KrimDok\Controller\Factory::getAcquisitionRequestController',
             'browse' => 'KrimDok\Controller\Factory::getBrowseController',
-            'fidsystematik' => 'KrimDok\Controller\Factory::getFIDSystematikController',
             'help' => 'KrimDok\Controller\Factory::getHelpController',
             'search' => 'KrimDok\Controller\Factory::getSearchController',
         ],
@@ -48,7 +47,6 @@ $dynamicRoutes = [];
 $staticRoutes = [
     'AcquisitionRequest/Create',
     'AcquisitionRequest/Send',
-    'FIDSystematik/Home',
     'Help/FAQ',
 ];
 

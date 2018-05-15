@@ -1,0 +1,81 @@
+@media (max-width: 1199px) {
+  .background {
+    height: 135px;
+  }
+  .panel-home {width: 70%;}
+}
+
+@media (max-width: 991px) {
+  header .container.navbar {margin-bottom: 0px;}
+}
+
+@media (max-width: 767px) {
+  header .container.navbar {margin-bottom: 0px;}
+
+  .panel-home {width: 80%;}
+  .searchbar > .input-group-addon {display: none;}
+  .search-button {width: 100%;}
+  .nav-pills > li {width: 100%;}
+
+  #header-collapse {
+    padding-top: 40px;
+  }
+
+  .panel-home h1 {
+    padding: 0 @paragraph-margin-bottom;
+    margin: 20px auto;
+    width: 100%;
+  }
+
+  .background {
+    height: 195px;
+  }
+
+  .searchForm {
+    margin: auto auto 20px;
+    width: 100%;
+
+    .input-group {
+      display: block;
+
+      input {
+        border-radius: @input-border-radius @input-border-radius 0 0 !important;
+      }
+
+      .input-group-btn {
+        display: block;
+        white-space: normal;
+        width: auto;
+
+        select {
+          margin-left: 0px;
+          margin-top: -1px;
+          width: 100%;
+        }
+
+        .search-button {
+          margin-left: 0px;
+          margin-top: -1px;
+          border-radius: 0 0 @input-border-radius @input-border-radius !important;
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .panel-home h1 {
+    font-size: 200%;
+  }
+}
+
+@media (min-width: 768px) {
+  .form-control {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+    .panel-button > a {
+        font-size: 1.0em;
+    }
+}

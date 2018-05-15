@@ -92,7 +92,6 @@ $config = [
             'MyResearch' => 'IxTheo\Controller\Factory::getMyResearchController',
             'record' => 'IxTheo\Controller\Factory::getRecordController',
             'search' => 'IxTheo\Controller\Factory::getSearchController',
-            'StaticPage' => 'IxTheo\Controller\Factory::getStaticPageController',
         ],
     ],
     'controller_plugins' => [
