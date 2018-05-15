@@ -55,32 +55,30 @@ JS;
   </div>
 
   <? if ($this->consortiumInfo): ?>
-     <? $building = "0/{$this->id}/"; ?>
-     <div class="consortium-navigation hide">
-       <ul class="consortium-navigation-list" data-spy="affix" data-offset-top="310">
-          <li class="scroll building hide"></li>
-          <li class="scroll usage hide"><?=$this->transEsc('organisation_info_navi_usage')?></li>
-          <li class="scroll service hide"><?=$this->transEsc('organisation_info_navi_service')?></li>
-       </ul>
-     </div>
+    <? $building = "0/{$this->id}/"; ?>
+    <div class="consortium-navigation hide">
+      <ul class="consortium-navigation-list" data-spy="affix" data-offset-top="310">
+        <li class="scroll building hide"></li>
+        <li class="scroll usage hide"><?=$this->transEsc('organisation_info_navi_usage')?></li>
+        <li class="scroll service hide"><?=$this->transEsc('organisation_info_navi_service')?></li>
+      </ul>
+    </div>
   <? endif; ?>
 
   <? if ($this->consortiumInfo): ?>
-     <div class="consortium-info hide navi-section" id="consortium-info-section">
-       <div>
-         <h1 class="name"></h1>
-         <div class="consortium-info-row">
-           <div class="consortium-logo hide"></div>
-           <div class="description"><?=$this->translate('organisation_no_consortium_info_html');?></div>
-         </div>
-       </div>
-       <div class="homepage hide"></div>
-       <div class="organisation-list" data-rows="1"><ul></ul></div>
-     </div>
+    <div class="consortium-info hide navi-section" id="consortium-info-section">
+      <div>
+        <h1 class="name"></h1>
+        <div class="consortium-info-row">
+          <div class="consortium-logo hide"></div>
+          <div class="description"><?=$this->translate('organisation_no_consortium_info_html');?></div>
+        </div>
+      </div>
+      <div class="homepage hide"></div>
+      <div class="organisation-list" data-rows="1"><ul></ul></div>
+    </div>
 </div>
 <!-- close divs organisation-info-wrapper, row and container to make layout fluid again -->
-</div>
-</div>
 </div>
 <!-- add fluid-odd wrapper to make background background-color -->
 <div class="fluid-odd">
@@ -95,7 +93,7 @@ JS;
           </div>
           <div>
             <form class="searchbox-consortium searchForm" action="<?=$this->url('search-results')?>">
-              <input class="searchForm_lookfor form-control search-query" name="lookfor" placeholder="<?=$this->transEsc('organisation_info_search')?>" />
+              <input class="searchForm_lookfor form-control search-query" name="lookfor" placeholder="<?=$this->transEsc('organisation_info_search')?>" aria-label="<?=$this->transEsc('organisation_info_search')?>" />
               <input type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr("{$this->buildingFacetOperator}building:\"{$building}\"")?>" />
               <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> <span class="sr-only"><?=$this->translate('Search from collection')?></span></button>
             </form>
@@ -105,19 +103,18 @@ JS;
               <span class="gauge-label"><?=$this->translate('organisation_info_coverage')?></span>
             </div>
           </div>
-          </div>
         </div>
         <div class="sidebar right">
           <div class="links hide">
             <h4><?=$this->translate('organisation_info_page_finna_link')?></h4>
             <ul class="list-group">
-              <li class="list-group-item template"><a href="#" target="_blank"></a></li>
+              <li class="list-group-item template"><a href="#" target="_blank">Template text</a></li>
             </ul>
           </div>
           <div class="finna-link hide">
             <h4><?=$this->translate('organisation_info_page_links')?></h4>
             <ul class="list-group finna-url">
-              <li class="list-group-item template"><a href="#" target="_blank"></a></li>
+              <li class="list-group-item template"><a href="#" target="_blank">Template text</a></li>
             </ul>
           </div>
         </div>
@@ -130,17 +127,16 @@ JS;
   <div class="container organisation-info-page loading organisation-page-information-wrapper">
   <? endif; ?>
 
-
   <div class="office-search navi-section map-ui" id="consortium-service-point-section">
     <? if ($this->consortiumInfo): ?>
-       <div><h3><?=$this->transEsc('organisation_info_navi_service')?></h3></div>
+      <div><h3><?=$this->transEsc('organisation_info_navi_service')?></h3></div>
     <? endif; ?>
-    <div><p class="consortium-notification hide "></p></div>
+    <div><p class="consortium-notification hide"></p></div>
     <div class="map-control-bar">
       <div class="flex-item">
         <form class="form-inline searchbox-office office-search-notifications map-ui">
-          <input id="office-search" type="text" placeholder="" />
-          <button class="btn btn-primary btn-office-search"><i class="fa fa-arrow-down"></i></button>
+          <input id="office-search" type="text" placeholder="" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>" />
+          <button class="btn btn-primary btn-office-search" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>"><i class="fa fa-arrow-down"></i></button>
           <div class="notification"><?=$this->transEsc('organisation_info_location_not_available');?></div>
         </form>
         <div class="autocomplete-container"></div>
@@ -160,7 +156,7 @@ JS;
 
   <div class="map-bubble-template hide">
     <div class="map-bubble">
-      <h5 class="name"></h5>
+      <h5 class="name">Template name</h5>
       <table class="opening-times-week">
         <tbody>
           <tr class="template hide">
@@ -192,8 +188,8 @@ JS;
   </div>
   <div class="office-quick-information info-element hide">
     <div class="office-title">
-      <h2 class="service-title"></h2>
-      <p><span class="office-links address"></span> <a href="#" target="_blank" class="office-links route info-element"><i class="fa fa-bus"></i> <?=$this->translate('organisation_info_route')?></a> <a href="" class="office-links reserve-computer info-element"><i class="fa fa-desktop"></i> <?=$this->translate('organisation_info_reserve_computer')?></a> <span class="office-links office-website info-element"><a href="#" target="_blank"><i class="fa fa-home"></i> <?=$this->translate('organisation_info_homepage')?></a><span></p>
+      <h2 class="service-title">Template title</h2>
+      <p><span class="office-links address"></span> <a href="#" target="_blank" class="office-links route info-element"><i class="fa fa-bus"></i> <?=$this->translate('organisation_info_route')?></a> <a href="" class="office-links reserve-computer info-element"><i class="fa fa-desktop"></i> <?=$this->translate('organisation_info_reserve_computer')?></a> <span class="office-links office-website info-element"><a href="#" target="_blank"><i class="fa fa-home"></i> <?=$this->translate('organisation_info_homepage')?></a></span></p>
       <p class="office-links email info-element"><i class="fa fa-envelope"></i> <span class="email"></span></p>
     </div>
     <div class="open-closed-info">
@@ -205,7 +201,7 @@ JS;
         <i class="fa fa-clock-o"></i> <?=$this->translate('organisation_info_open_today')?> <span class="opens"></span> - <span class="closes"></span>
       </p>
     </div>
-    <div class="social-button info-element"><a href="#" target="_blank"><i class="fa fa-facebook"></i></a></div>
+    <div class="social-button info-element"><a aria-label="Facebook" href="#" target="_blank"><i class="fa fa-facebook"></i></a></div>
     <div class="clearfix"></div>
     <div><p class="office-description slogan info-element"></p></div>
   </div>
@@ -217,9 +213,9 @@ JS;
           <a data-toggle="collapse" href="#collapse1"><?=$this->translate('organisation_info_general')?></a>
         </h4>
         <div id="collapse1" class="panel-collapse collapse in">
-          <img class="building-image" src="#" />
-          <img class="extra-image" src="#" />
-          <img class="extra-image-2" src="#" />
+          <img class="building-image" src="#" alt=""/>
+          <img class="extra-image" src="#" alt=""/>
+          <img class="extra-image-2" src="#" alt=""/>
           <p class="building-name info-element"></p>
           <p class="building-year info-element"><?=$this->translate('organisation_info_building_year')?>: <span></span></p>
           <p class="office-description description-long info-element"></p>
@@ -276,9 +272,8 @@ JS;
 <!-- open closed tags to make valid html, if consortiumInfo -->
 <? if ($this->consortiumInfo): ?>
    <div class="container">
-     <div>
 <? endif; ?>
-
+</div>
 <? if ($template = $this->content()->findTemplateForLng('content/Additions/organisation-page-end')): ?>
    <?=$this->render('content/Additions/organisation-page-end.phtml')?>
 <? endif; ?>

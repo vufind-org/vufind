@@ -111,7 +111,7 @@
   <? // N.B. The element/class structure here is important for the ajax tabs to work properly ?>
   <div class="record-tabs record-accordions">
     <? if (count($this->tabs) > 0): ?>
-      <a name="tabnav"></a>
+      <a id="tabnav"></a>
         <? if (count($this->tabs) > 3): ?>
         <div class="tabs-responsive">
         <? endif; ?>
@@ -133,7 +133,7 @@
               if (strtolower($tab) == 'details') { $tab_classes[] = 'hidden-xs tab-right'; }
             ?>
             <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-            <a class="<?=strtolower($tab) ?>"
+            <a class="<?=strtolower($tab) ?>" aria-label="<?=$this->escapeHtmlAttr($tab)?>"
               href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?>
               data-background<? endif ?>>
               <? if (strtolower($tab) == 'details'): ?><i class="fa fa-lg fa-<?=$this->escapeHtmlAttr($tab)?>"></i><? endif; ?>

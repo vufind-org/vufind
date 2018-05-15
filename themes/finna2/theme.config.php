@@ -24,6 +24,7 @@ return [
             'holdingsSettings' => 'Finna\View\Helper\Root\Factory::getHoldingsSettings',
             'imageSrc' => 'Finna\View\Helper\Root\Factory::getImageSrc',
             'indexedTotal' => 'Finna\View\Helper\Root\Factory::getTotalIndexed',
+            'inlineScript' => 'FinnaTheme\View\Helper\Factory::getInlineScript',
             'layoutclass' => 'Finna\View\Helper\Root\Factory::getLayoutClass',
             'metalib' => 'Finna\View\Helper\Root\Factory::getMetaLib',
             'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar',

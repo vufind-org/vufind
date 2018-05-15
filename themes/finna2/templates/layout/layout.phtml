@@ -113,7 +113,9 @@
             'street_search_reversegeocode_unavailable' => 'street_search_reversegeocode_unavailable',
             'street_search_searching_for' => 'street_search_searching_for',
             'street_search_coordinates_found' => 'street_search_coordinates_found',
-            'street_search_coordinates_found_accuracy_bad' => 'street_search_coordinates_found_accuracy_bad'
+            'street_search_coordinates_found_accuracy_bad' => 'street_search_coordinates_found_accuracy_bad',
+            'Prev' => 'Prev',
+            'Next' => 'Next'
           ]
         );
         // Add libphonenumber.js strings
@@ -186,7 +188,7 @@
         }
 
         $this->headScript()->appendScript(
-           'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
+          'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
         );
       }
 
