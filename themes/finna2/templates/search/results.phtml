@@ -175,7 +175,7 @@
     <? endif; ?>
     <? if ($this->results->getResultTotal() > 0): ?>
       <span class="hidden-print">
-        <?=$this->search()->renderSpellingSuggestions($this->transEsc('spell_suggest'), $this->results, $this); ?>
+      <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
       </span>
     <? endif; ?>
 
