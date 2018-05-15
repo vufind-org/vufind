@@ -156,22 +156,4 @@ class Factory
             $sm->get('VuFind\Config\PluginManager')->get('config'), $web, $web
         );
     }
-
-    /**
-     * Factory for Summon record driver.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Summon
-     */
-    public static function getSummon(ServiceManager $sm)
-    {
-        $summon = $sm->get('VuFind\Config\PluginManager')->get('Summon');
-        $driver = new Summon(
-            $sm->get('VuFind\Config\PluginManager')->get('config'),
-            $summon, $summon
-        );
-        $driver->setDateConverter($sm->get('VuFind\Date\Converter'));
-        return $driver;
-    }
 }
