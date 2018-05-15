@@ -53,23 +53,6 @@ $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->s
         </ul>
     </li>
 
-    <li class="dropdown">
-        <a class="btn btn-light dropdown-toggle"
-                type="button"
-                id="dropdownMenuButton"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false">
-            <?= $this->transEsc('Need Help?') ?> <span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu">
-            <li><a class="dropdown-item help-link"
-               href="<?= $this->url('help-home') ?>?topic=search"
-               data-lightbox
-               title="<?= $this->transEsc('Search Tips') ?>"><?= $this->transEsc('Search Tips') ?></a></li>
-        </ul>
-    </li>
-
     <li>
         <a href="<?=$this->url('search-newitem')?>"
            class="btn btn-light" role="button"
