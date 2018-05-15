@@ -4,7 +4,7 @@ VuFind.register('relais', function Relais() {
     $("span[class='relaisLink']").each(function linkFormatter() {
       var $current = $(this);
       var text = VuFind.translate('relais_search');
-      $current.html('<a class="relaisRecordButton" href="' + failLink + '">' + text + '</a>');
+      $current.html('<a class="relaisRecordButton" target="new" href="' + failLink + '">' + text + '</a>');
     });
   }
 
