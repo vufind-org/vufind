@@ -154,6 +154,7 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
 
   function schedulesLoaded(id, response) {
     schedulesLoading = false;
+    $('.time-staff').empty();
 
     holder.find('.week-navi-holder .week-navi').each(function handleWeekNavi() {
       var classes = $(this).data('classes');

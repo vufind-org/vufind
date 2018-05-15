@@ -157,23 +157,7 @@ JS;
   <div class="map-bubble-template hide">
     <div class="map-bubble">
       <h5 class="name">Template name</h5>
-      <table class="opening-times-week">
-        <tbody>
-          <tr class="template hide">
-            <td>
-              <ul>
-                <li>
-                  <span class="day"></span>
-                  <span class="time">
-                    <span class="opens"></span> - <span class="closes"></span>
-                  </span>
-                  <span class="time closed-today hide"><?=$this->translate('organisation_info_is_closed')?></span>
-                </li>
-              </ul>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <p><span class="office-links address"></p>
     </div>
   </div>
 
@@ -198,7 +182,8 @@ JS;
         <span class="library-is-closed info-element"><?=$this->translate('organisation_info_is_closed')?></span>
       </h2>
       <p class="time-open info-element">
-        <i class="fa fa-clock-o"></i> <?=$this->translate('organisation_info_open_today')?> <span class="opens"></span> - <span class="closes"></span>
+        <span class="opening-times"><i class="fa fa-clock-o"></i> <?=$this->translate('organisation_info_open_today')?> <span class="opens"></span> - <span class="closes"></span></span>
+        <span class="hide staff-times">(<?=$this->translate('organisation_info_schedule_staff')?> <span class="opens"></span> - <span class="closes"></span>)</span>
       </p>
     </div>
     <div class="social-button info-element"><a aria-label="Facebook" href="#" target="_blank"><i class="fa fa-facebook"></i></a></div>
