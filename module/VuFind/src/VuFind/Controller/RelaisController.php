@@ -39,6 +39,37 @@ namespace VuFind\Controller;
 class RelaisController extends AbstractBase
 {
     /**
+     * Relais login action
+     *
+     * @return mixed
+     */
+    public function loginAction()
+    {
+        // Fatal error if not configured correctly:
+        $config = $this->getConfig();
+        $baseUrl = $config->Relais->loginUrl ?? null;
+        if (empty($baseUrl)) {
+            throw new \Exception('Relais login URL not set.');
+        }
+
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        // Send user credentials through to Relais:
+        $symbol = $config->Relais->symbol ?? '';
+        $q = $this->params()->fromQuery('query');
+        $url = $baseUrl . '?LS=' . urlencode($symbol)
+            . '&dest=discovery&group=patron&PI='
+            . urlencode($patron['cat_username']);
+        if (!empty($q)) {
+            $url .= '&query=' . urlencode($q);
+        }
+        return $this->redirect()->toUrl($url);
+    }
+
+    /**
      * Relais request action.
      *
      * @return mixed

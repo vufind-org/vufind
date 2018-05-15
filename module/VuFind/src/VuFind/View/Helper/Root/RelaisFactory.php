@@ -61,8 +61,8 @@ class RelaisFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $loginUrl = $config->Relais->loginUrl ?? '';
+        $urlHelper = $container->get('ViewHelperManager')->get('url');
+        $loginUrl = $urlHelper->invoke('relais-login');
         return new $requestedName($loginUrl);
     }
 }
