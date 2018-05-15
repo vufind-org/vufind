@@ -206,6 +206,7 @@ $config = [
             'VuFind\Role\PermissionManager' => 'Finna\Service\Factory::getPermissionManager',
             'VuFind\SearchSpecsReader' => 'Finna\Service\Factory::getSearchSpecsReader',
             'VuFind\SearchTabsHelper' => 'Finna\Service\Factory::getSearchTabsHelper',
+            'VuFind\SessionManager' => 'Finna\Session\ManagerFactory',
             'VuFind\YamlReader' => 'Finna\Service\Factory::getYamlReader',
             'VuFind\Mailer' => 'Finna\Mailer\Factory',
         ],
