@@ -27,6 +27,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use Zend\Config\Config;
+
 /**
  * Relais view helper
  *
@@ -39,6 +41,13 @@ namespace VuFind\View\Helper\Root;
 class Relais extends \Zend\View\Helper\AbstractHelper
 {
     /**
+     * Relais configuration (or null if none found)
+     *
+     * @var Config
+     */
+    protected $config;
+
+    /**
      * Login URL
      *
      * @var string
@@ -48,10 +57,12 @@ class Relais extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor.
      *
+     * @param Config $config   Relais configuration (or null if none found)
      * @param string $loginUrl Login base URL
      */
-    public function __construct($loginUrl)
+    public function __construct($config, $loginUrl)
     {
+        $this->config = $config;
         $this->loginUrl = $loginUrl;
     }
 
@@ -80,5 +91,16 @@ class Relais extends \Zend\View\Helper\AbstractHelper
             $url .= '%20and%20au%3D' . urlencode($mainAuthor);
         }
         return $url;
+    }
+
+    /**
+     * Render a button if Relais is active.
+     *
+     * @return string
+     */
+    public function renderButtonIfActive()
+    {
+        return ($this->config->apikey ?? false)
+            ? $this->getView()->render('relais/button.phtml') : '';
     }
 }

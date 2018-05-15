@@ -1,7 +1,11 @@
 /*global VuFind*/
 VuFind.register('relais', function Relais() {
-  function hideAvailabilityCheckMessages() {
-    $('.relaisLink').addClass('hidden');
+  function hideAvailabilityCheckMessages(failLink) {
+    $("span[class='relaisLink']").each(function linkFormatter() {
+      var $current = $(this);
+      var text = VuFind.translate('relais_search');
+      $current.html('<a class="relaisRecordButton" href="' + failLink + '">' + text + '</a>');
+    });
   }
 
   function checkAvailability(addLink, oclc, failLink) {
@@ -26,10 +30,10 @@ VuFind.register('relais', function Relais() {
             $current.find('.relaisRecordButton').click(function addRecordButtonOnClick() { VuFind.lightbox.ajax({url: addLink + '?' + $.param({oclc: oclc, failLink: failLink})}); });
           });
         } else {
-          hideAvailabilityCheckMessages();
+          hideAvailabilityCheckMessages(failLink);
         }
       },
-      error: hideAvailabilityCheckMessages
+      error: function checkAvailabilityError() { hideAvailabilityCheckMessages(failLink); }
     });
   }
 
