@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for Summon record drivers.
+ * Factory for SolrWeb record drivers.
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace VuFind\RecordDriver;
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for Summon record drivers.
+ * Factory for SolrWeb record drivers.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SummonFactory extends NameBasedConfigFactory
+class SolrWebFactory extends AbstractBaseFactory
 {
     /**
      * Create an object
@@ -57,8 +57,11 @@ class SummonFactory extends NameBasedConfigFactory
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $driver = parent::__invoke($container, $requestedName, $options);
-        $driver->setDateConverter($container->get('VuFind\Date\Converter'));
-        return $driver;
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
+        }
+        $config = $container->get('VuFind\Config\PluginManager')->get('website');
+        $finalOptions = [$config, $config];
+        return parent::__invoke($container, $requestedName, $finalOptions);
     }
 }

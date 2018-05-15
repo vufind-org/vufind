@@ -86,7 +86,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\RecordDriver\SolrMarcFactory',
         'VuFind\RecordDriver\SolrReserves' =>
             'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
-        'VuFind\RecordDriver\SolrWeb' => 'VuFind\RecordDriver\Factory::getSolrWeb',
+        'VuFind\RecordDriver\SolrWeb' => 'VuFind\RecordDriver\SolrWebFactory',
         'VuFind\RecordDriver\Summon' => 'VuFind\RecordDriver\SummonFactory',
         'VuFind\RecordDriver\WorldCat' =>
             'VuFind\RecordDriver\NameBasedConfigFactory',
