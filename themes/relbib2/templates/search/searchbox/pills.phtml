@@ -51,5 +51,12 @@ $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->s
             <li><a class="dropdown-item" href="<?= $this->url('alphabrowse-home') ?>"><?= $this->transEsc('Browse Alphabetically') ?></a></li>
         </ul>
     </li>
+
+    <li>
+        <a href="<?=$this->url('search-history')?>"
+           class="btn btn-light" role="button"
+           rel="nofollow"><?=$this->transEsc('Search History')?></a>
+    </li>
+
     <!-- RelBib: no virtual keyboard + no new item search -->
 </ul>

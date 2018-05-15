@@ -53,6 +53,12 @@ $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->s
     </li>
 
     <li>
+        <a href="<?=$this->url('search-history')?>"
+           class="btn btn-light" role="button"
+           rel="nofollow"><?=$this->transEsc('Search History')?></a>
+    </li>
+
+    <li>
         <a href="<?=$this->url('search-newitem')?>"
            class="btn btn-light" role="button"
            rel="nofollow"><?=$this->transEsc('New Items')?></a>
