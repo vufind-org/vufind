@@ -69,13 +69,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         'VuFind\RecordDriver\BrowZine' =>
             'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\RecordDriver\EDS' => 'VuFind\RecordDriver\Factory::getEDS',
-        'VuFind\RecordDriver\EIT' => 'VuFind\RecordDriver\Factory::getEIT',
+        'VuFind\RecordDriver\EDS' => 'VuFind\RecordDriver\NameBasedConfigFactory',
+        'VuFind\RecordDriver\EIT' => 'VuFind\RecordDriver\NameBasedConfigFactory',
         'VuFind\RecordDriver\LibGuides' =>
             'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\RecordDriver\Missing' => 'VuFind\RecordDriver\Factory::getMissing',
-        'VuFind\RecordDriver\Pazpar2' => 'VuFind\RecordDriver\Factory::getPazpar2',
-        'VuFind\RecordDriver\Primo' => 'VuFind\RecordDriver\Factory::getPrimo',
+        'VuFind\RecordDriver\Missing' => 'VuFind\RecordDriver\AbstractBaseFactory',
+        'VuFind\RecordDriver\Pazpar2' =>
+            'VuFind\RecordDriver\NameBasedConfigFactory',
+        'VuFind\RecordDriver\Primo' => 'VuFind\RecordDriver\NameBasedConfigFactory',
         'VuFind\RecordDriver\SolrAuth' => 'VuFind\RecordDriver\Factory::getSolrAuth',
         'VuFind\RecordDriver\SolrDefault' =>
             'VuFind\RecordDriver\Factory::getSolrDefault',
@@ -86,7 +87,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\RecordDriver\Factory::getSolrReserves',
         'VuFind\RecordDriver\SolrWeb' => 'VuFind\RecordDriver\Factory::getSolrWeb',
         'VuFind\RecordDriver\Summon' => 'VuFind\RecordDriver\Factory::getSummon',
-        'VuFind\RecordDriver\WorldCat' => 'VuFind\RecordDriver\Factory::getWorldCat',
+        'VuFind\RecordDriver\WorldCat' =>
+            'VuFind\RecordDriver\NameBasedConfigFactory',
     ];
 
     /**

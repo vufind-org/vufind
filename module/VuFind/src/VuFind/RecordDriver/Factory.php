@@ -43,82 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Factory for EDS record driver.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return EDS
-     */
-    public static function getEDS(ServiceManager $sm)
-    {
-        $eds = $sm->get('VuFind\Config\PluginManager')->get('EDS');
-        return new EDS(
-            $sm->get('VuFind\Config\PluginManager')->get('config'), $eds, $eds
-        );
-    }
-
-    /**
-     * Factory for EIT record driver.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return EIT
-     */
-    public static function getEIT(ServiceManager $sm)
-    {
-        $eit = $sm->get('VuFind\Config\PluginManager')->get('EIT');
-        return new EIT(
-            $sm->get('VuFind\Config\PluginManager')->get('config'), $eit, $eit
-        );
-    }
-
-    /**
-     * Factory for Missing record driver.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Missing
-     */
-    public static function getMissing(ServiceManager $sm)
-    {
-        return new Missing(
-            $sm->get('VuFind\Config\PluginManager')->get('config')
-        );
-    }
-
-    /**
-     * Factory for Pazpar2 record driver.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Pazpar2
-     */
-    public static function getPazpar2(ServiceManager $sm)
-    {
-        $pp2 = $sm->get('VuFind\Config\PluginManager')->get('Pazpar2');
-        return new Pazpar2(
-            $sm->get('VuFind\Config\PluginManager')->get('config'), $pp2, $pp2
-        );
-    }
-
-    /**
-     * Factory for Primo record driver.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Primo
-     */
-    public static function getPrimo(ServiceManager $sm)
-    {
-        $primo = $sm->get('VuFind\Config\PluginManager')->get('Primo');
-        $driver = new Primo(
-            $sm->get('VuFind\Config\PluginManager')->get('config'),
-            $primo, $primo
-        );
-        return $driver;
-    }
-
-    /**
      * Factory for SolrAuth record driver.
      *
      * @param ServiceManager $sm Service manager.
@@ -249,20 +173,5 @@ class Factory
         );
         $driver->setDateConverter($sm->get('VuFind\Date\Converter'));
         return $driver;
-    }
-
-    /**
-     * Factory for WorldCat record driver.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return WorldCat
-     */
-    public static function getWorldCat(ServiceManager $sm)
-    {
-        $wc = $sm->get('VuFind\Config\PluginManager')->get('WorldCat');
-        return new WorldCat(
-            $sm->get('VuFind\Config\PluginManager')->get('config'), $wc, $wc
-        );
     }
 }
