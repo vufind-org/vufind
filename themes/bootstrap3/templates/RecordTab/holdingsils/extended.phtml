@@ -10,6 +10,11 @@
         <span class="holding-field copy-number">
           <?=$this->transEsc("Copy")?> <?=$this->escapeHtml($holding['number'])?>
         </span>
+        <span class="holding-field enumchron">
+          <?php if ($holding['enumchron'] ?? false): ?>
+            (<?=$this->escapeHtml($holding['enumchron'])?>)
+          <?php endif; ?>         
+        </span>
         <span class="holding-field barcode">
           <?=$this->escapeHtml($holding['barcode'])?>
         </span>

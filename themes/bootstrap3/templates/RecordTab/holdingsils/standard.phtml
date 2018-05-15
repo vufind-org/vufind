@@ -5,7 +5,11 @@
     $checkILLRequest = $holding['checkILLRequest'] ?? false;
   ?>
   <tr vocab="http://schema.org/" typeof="Offer">
-    <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($holding['number'])?></th>
+    <th class="copy-number"><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($holding['number'])?>
+      <?php if ($holding['enumchron'] ?? false): ?>
+        <span class="enumchron">(<?=$this->escapeHtml($holding['enumchron'])?>)</span>
+      <?php endif; ?>         
+    </th>
     <td>
       <?php if ($holding['reserve'] == "Y"): ?>
         <link property="availability" href="http://schema.org/InStoreOnly" />
