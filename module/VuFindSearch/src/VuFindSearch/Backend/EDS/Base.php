@@ -2,7 +2,7 @@
 /**
  * EBSCO Search API abstract base class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -226,7 +226,7 @@ abstract class EdsApi_REST_Base
             "Authenticating: username: $username, password: $password, orgid: $orgid"
         );
         $url = $this->authHost . '/uidauth';
-        $org = isset($orgid) ? $orgid : $this->orgId;
+        $org = $orgid ?? $this->orgId;
         $authInfo = [];
         if (isset($username)) {
             $authInfo['UserId'] = $username;

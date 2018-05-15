@@ -2,7 +2,7 @@
 /**
  * VuFind Bootstrapper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -179,17 +179,20 @@ class Bootstrapper
     {
         $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
-            $viewModel = $serviceManager->get('ViewManager')->getViewModel();
+            if (!Console::isConsole()) {
+                $viewModel = $serviceManager->get('ViewManager')->getViewModel();
 
-            // Grab the template name from the first child -- we can use this to
-            // figure out the current template context.
-            $children = $viewModel->getChildren();
-            if (!empty($children)) {
-                $parts = explode('/', $children[0]->getTemplate());
-                $viewModel->setVariable('templateDir', $parts[0]);
-                $viewModel->setVariable(
-                    'templateName', isset($parts[1]) ? $parts[1] : null
-                );
+                // Grab the template name from the first child -- we can use this to
+                // figure out the current template context.
+                $children = $viewModel->getChildren();
+                if (!empty($children)) {
+                    $parts = explode('/', $children[0]->getTemplate());
+                    $viewModel->setVariable('templateDir', $parts[0]);
+                    $viewModel->setVariable(
+                        'templateName',
+                        $parts[1] ?? null
+                    );
+                }
             }
         };
         $this->events->attach('dispatch', $callback);

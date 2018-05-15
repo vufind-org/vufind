@@ -2,7 +2,7 @@
 /**
  * VuFind Theme Initializer
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,7 @@
 namespace VuFindTheme;
 
 use Zend\Config\Config;
+use Zend\Console\Console;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\View\Http\InjectTemplateListener as BaseInjectTemplateListener;
 use Zend\Stdlib\RequestInterface as Request;
@@ -216,6 +217,9 @@ class Initializer
     {
         // Load standard configuration options:
         $standardTheme = $this->config->theme;
+        if (Console::isConsole()) {
+            return $standardTheme;
+        }
         $mobileTheme = $this->mobile->enabled()
             ? $this->config->mobile_theme : false;
 
@@ -269,10 +273,12 @@ class Initializer
     protected function sendThemeOptionsToView()
     {
         // Get access to the view model:
-        $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
+        if (!Console::isConsole()) {
+            $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
 
-        // Send down the view options:
-        $viewModel->setVariable('themeOptions', $this->getThemeOptions());
+            // Send down the view options:
+            $viewModel->setVariable('themeOptions', $this->getThemeOptions());
+        }
     }
 
     /**

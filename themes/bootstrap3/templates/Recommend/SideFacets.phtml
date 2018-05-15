@@ -1,16 +1,16 @@
-<?
+<?php
   $this->headScript()->appendFile('facets.js');
 
   // Save results/options to $this so they are available to sub-templates:
   $this->results = $results = $this->recommend->getResults();
   $this->options = $options = $results->getOptions();
 ?>
-<? if ($results->getResultTotal() > 0): ?>
+<?php if ($results->getResultTotal() > 0): ?>
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
-<? endif; ?>
-<? $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
-<? $checkboxesShown = false; ?>
-<? if (count($checkboxFilters) > 0):
+<?php endif; ?>
+<?php $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
+<?php $checkboxesShown = false; ?>
+<?php if (count($checkboxFilters) > 0):
     foreach ($checkboxFilters as $current) {
       if ($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible']) {
         $checkboxesShown = true;
@@ -18,58 +18,80 @@
       }
     }
   ?>
-  <?if ($checkboxesShown):?>
+  <?php if ($checkboxesShown): ?>
     <div class="checkboxFilter">
       <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
     </div>
-  <? endif; ?>
-<? endif; ?>
-<? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
-<? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
-<? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
-<? if (!empty($filterList)): ?>
+  <?php endif; ?>
+<?php endif; ?>
+<?php $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
+<?php $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
+<?php $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
+<?php if (!empty($filterList)): ?>
   <?=$this->context($this)->renderInContext('Recommend/SideFacets/filter-list.phtml', [
     'collapsedFacets' => $collapsedFacets,
     'extraFilters' => $extraFilters,
     'filterList' => $filterList,
   ]); ?>
-<? endif; ?>
+<?php endif; ?>
 <?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
-<? $sideFacetSet = $this->recommend->getFacetSet(); $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
-<? $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
-<? $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
-<? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
-  <? foreach ($sideFacetSet as $title => $cluster): ?>
+<?php $sideFacetSet = $this->recommend->getFacetSet(); $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
+<?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
+<?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
+<?php if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
+  <?php foreach ($sideFacetSet as $title => $cluster): ?>
     <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
-      <button class="title<? if(in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
+      <button class="title<?php if(in_array($title, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
         <?=$this->transEsc($cluster['label'])?>
       </button>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<? if(!in_array($title, $collapsedFacets)): ?> in<? endif ?>">
-        <? if (isset($rangeFacets[$title])): ?>
-          <?=$this->context($this)->renderInContext('Recommend/SideFacets/range-slider.phtml', ['title' => $title, 'facet' => $rangeFacets[$title]]); ?>
-        <? else: ?>
-          <? $contextVars = [
-            'allowExclude' => $this->recommend->excludeAllowed($title),
-            'title' => $title,
-            'sortOptions' => isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : '',
-            'collapsedFacets' => $collapsedFacets
-          ]; ?>
-          <? if (in_array($title, $hierarchicalFacets)): ?>
-            <?=$this->context($this)->renderInContext('Recommend/SideFacets/hierarchical-facet.phtml', $contextVars); ?>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<?php if(!in_array($title, $collapsedFacets)): ?> in<?php endif ?>">
+        <?php if (isset($rangeFacets[$title])): // special display for ranges ?>
+          <?=$this->context($this)->renderInContext(
+            'Recommend/SideFacets/range-slider.phtml',
+            ['title' => $title, 'facet' => $rangeFacets[$title]]
+          ); ?>
+        <?php else: ?>
+          <?php
+            // Set some variables so we can figure out which sub-template(s) to
+            // render. If we have a hierarchical facet, we will need to render a
+            // jsTree Javascript-based template. If we also support non-JS browsers,
+            // we will also need to render the basic default template. If we
+            // do NOT support non-JS browsers, we should instead display an error
+            // message.
+            $isHierarchical = in_array($title, $hierarchicalFacets);
+            $noJsSupport = $this->config()->nonJavascriptSupportEnabled();
+          ?>
+          <?php if ($isHierarchical): // do we need hierarchical JS display? ?>
+            <?=$this->context($this)->renderInContext(
+              'Recommend/SideFacets/hierarchical-facet.phtml',
+              [
+                'allowExclude' => $this->recommend->excludeAllowed($title),
+                'title' => $title,
+                'sortOptions' => $hierarchicalFacetSortOptions[$title] ?? '',
+                'collapsedFacets' => $collapsedFacets
+              ]
+            ); ?>
             <noscript>
-          <? endif; ?>
-          <? $contextVars = [
-            'options' => $options,
-            'allowExclude' => $this->recommend->excludeAllowed($title),
-            'facets_before_more' => $this->recommend->getShowMoreSetting($title),
-            'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($title)
-          ]; ?>
-          <?=$this->context($this)->renderInContext('Recommend/SideFacets/cluster-list.phtml', array_merge($contextVars, ['title' => $title, 'cluster' => $cluster])); ?>
-          <? if (in_array($title, $hierarchicalFacets)): ?>
+            <?php if (!$noJsSupport): ?>
+              <span class="facet"><?=$this->transEsc('Please enable JavaScript.')?></span>
+            <?php endif; ?>
+          <?php endif; ?>
+          <?php if (!$isHierarchical || $noJsSupport): // do we need regular display? ?>
+            <?=$this->context($this)->renderInContext(
+              'Recommend/SideFacets/cluster-list.phtml',
+              [
+                'options' => $options, 'title' => $title, 'cluster' => $cluster,
+                'allowExclude' => $this->recommend->excludeAllowed($title),
+                'facets_before_more' => $this->recommend->getShowMoreSetting($title),
+                'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($title)
+              ]
+            ); ?>
+          <?php endif; ?>
+          <?php if ($isHierarchical): // close tag opened in matching if above ?>
             </noscript>
-          <? endif; ?>
-        <? endif; ?>
+          <?php endif; ?>
+        <?php endif; ?>
       </div>
     </div>
-  <? endforeach; ?>
-<? endif; ?>
+  <?php endforeach; ?>
+<?php endif; ?>

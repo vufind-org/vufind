@@ -2,7 +2,7 @@
 /**
  * VF Configuration Upgrade Tool
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -293,8 +293,8 @@ class Upgrade
         // Configuration files to load.  Note that config.ini must always be loaded
         // first so that getOldConfigPath can work properly!
         $configs = [
-            'config.ini', 'authority.ini', 'facets.ini', 'reserves.ini',
-            'searches.ini', 'Summon.ini', 'WorldCat.ini', 'sms.ini',
+            'config.ini', 'authority.ini', 'facets.ini', 'geofeatures.ini',
+            'reserves.ini', 'searches.ini', 'Summon.ini', 'WorldCat.ini', 'sms.ini',
             'permissions.ini', 'Collection.ini', 'Primo.ini'
         ];
         foreach ($configs as $config) {

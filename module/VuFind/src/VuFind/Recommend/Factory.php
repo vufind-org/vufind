@@ -2,7 +2,7 @@
 /**
  * Recommendation Module Factory Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -189,10 +189,18 @@ class Factory
      */
     public function getMapSelection(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config\PluginManager');
         $backend = $sm->get('VuFind\Search\BackendManager');
         $solr = $backend->get('Solr');
-        return new MapSelection($config, $solr);
+
+        // add basemap options
+        $basemapConfig = $sm->get('VuFind\GeoFeatures\BasemapConfig');
+        $basemapOptions = $basemapConfig->getBasemap('MapSelection');
+
+        // get MapSelection options
+        $mapSelectionConfig = $sm->get('VuFind\GeoFeatures\MapSelectionConfig');
+        $mapSelectionOptions = $mapSelectionConfig->getMapSelectionOptions();
+
+        return new MapSelection($solr, $basemapOptions, $mapSelectionOptions);
     }
 
     /**

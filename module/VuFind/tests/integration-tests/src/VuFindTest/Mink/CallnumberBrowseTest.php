@@ -2,7 +2,7 @@
 /**
  * Mink search actions test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -163,11 +163,6 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
         $link = $page->find('css', '.callnumber a,.groupCallnumber a,.fullCallnumber a');
         if ($expectLinks) {
             $this->checkLink($link, $type);
-            // TODO
-            // if 'all'
-            // - refresh until multiple
-            // - test multiple
-            // else
         } else {
             $this->assertTrue(null === $link);
         }

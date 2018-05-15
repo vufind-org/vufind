@@ -2,7 +2,7 @@
 /**
  * Generator tools.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -147,7 +147,7 @@ class GeneratorTools
     protected function getFactoryFromContainer(ContainerInterface $container, $class)
     {
         $factories = $this->getAllFactoriesFromContainer($container);
-        return isset($factories[$class]) ? $factories[$class] : null;
+        return $factories[$class] ?? null;
     }
 
     /**

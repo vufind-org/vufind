@@ -2,7 +2,7 @@
 /**
  * CLI Controller Module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -207,14 +207,11 @@ class UtilController extends AbstractBase
                     'id' => $id,
                     'bib_id' => [],
                     'instructor_id' => $instructor_id,
-                    'instructor' => isset($instructors[$instructor_id])
-                        ? $instructors[$instructor_id] : '',
+                    'instructor' => $instructors[$instructor_id] ?? '',
                     'course_id' => $course_id,
-                    'course' => isset($courses[$course_id])
-                        ? $courses[$course_id] : '',
+                    'course' => $courses[$course_id] ?? '',
                     'department_id' => $department_id,
-                    'department' => isset($departments[$department_id])
-                        ? $departments[$department_id] : ''
+                    'department' => $departments[$department_id] ?? ''
                 ];
             }
             $index[$id]['bib_id'][] = $record['BIB_ID'];

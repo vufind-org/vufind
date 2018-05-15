@@ -1,4 +1,4 @@
-<?
+<?php
   // Set page title.
   $this->headTitle($this->translate('VuFind Administration - Tag Maintenance'));
 ?>
@@ -23,49 +23,49 @@
     </div>
   </form>
 
-  <? if(false !== $this->type):?>
+  <?php if(false !== $this->type):?>
     <form class="form-tags-manage" action="<?= $this->url('admin/tags', ['action' => 'Delete'])?>" method="post">
       <input type="hidden" name="origin" value="manage" />
       <input type="hidden" name="type" value="<?= $this->type; ?>" />
-      <? if("user" == $type):?>
+      <?php if("user" == $type):?>
         <div class="form-group">
           <label for="user_id" class="control-label"><?=$this->translate('Username')?></label>
           <select name="user_id" id="user_id" class="form-control">
-            <? foreach($this->uniqueUsers as $user):?>
+            <?php foreach($this->uniqueUsers as $user):?>
               <option value="<?= $user['user_id'] ?>">
                 <?= $user['username'] ?>
               </option>
-            <? endforeach;?>
+            <?php endforeach;?>
           </select>
           <input type="submit"  name="deleteFilter" value="<?=$this->translate('delete_tags')?>" class="btn btn-primary"/>
         </div>
-      <? elseif("tag" == $type):?>
+      <?php elseif("tag" == $type):?>
         <div class="form-group">
           <label for="tag_id" class="control-label"><?=$this->translate('Tag')?></label>
           <select name="tag_id" id="tag_id" class="form-control">
-            <? foreach($this->uniqueTags as $tag):?>
+            <?php foreach($this->uniqueTags as $tag):?>
               <option value="<?= $tag['tag_id'] ?>">
                 <?= $tag['tag'] ?>
               </option>
-            <? endforeach;?>
+            <?php endforeach;?>
           </select>
           <input type="submit" name="deleteFilter" value="<?=$this->translate('delete_tags')?>" class="btn btn-primary"/>
         </div>
-      <? elseif("resource" == $type):?>
+      <?php elseif("resource" == $type):?>
         <div class="form-group">
           <label for="resource_id" class="control-label"><?=$this->translate('Title')?></label>
           <select name="resource_id" id="resource_id" class="form-control">
-            <? foreach($this->uniqueResources as $resource):?>
+            <?php foreach($this->uniqueResources as $resource):?>
               <option value="<?=$resource['resource_id'] ?>" title="<?=$resource['title'] ?>">
                 <?=$this->truncate($resource['title'], 80) ?> (<?= $resource['resource_id'] ?>)
               </option>
-            <? endforeach;?>
+            <?php endforeach;?>
           </select>
           <input type="submit" name="deleteFilter" value="<?=$this->translate('delete_tags')?>" class="btn btn-primary"/>
         </div>
-      <? endif;?>
+      <?php endif;?>
     </form>
-  <? endif;?>
+  <?php endif;?>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">

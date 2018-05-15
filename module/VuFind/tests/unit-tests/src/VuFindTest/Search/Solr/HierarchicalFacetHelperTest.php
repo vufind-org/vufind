@@ -3,7 +3,7 @@
 /**
  * Unit tests for Hierarchical Facet Helper.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2014.
  *

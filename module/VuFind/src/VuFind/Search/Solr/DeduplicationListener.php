@@ -3,7 +3,7 @@
 /**
  * Solr deduplication (merged records) listener.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  * Copyright (C) The National Library of Finland 2013.
@@ -238,7 +238,7 @@ class DeduplicationListener
                 }
                 $dedupData[$source] = [
                     'id' => $localId,
-                    'priority' => isset($localPriority) ? $localPriority : 99999
+                    'priority' => $localPriority ?? 99999
                 ];
             }
             $fields['dedup_id'] = $dedupId;

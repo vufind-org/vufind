@@ -2,7 +2,7 @@
 /**
  * Koha ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Ayesha Abed Library, BRAC University 2010.
  *
@@ -176,7 +176,8 @@ class Koha extends AbstractBase
         $sql = "select itemnumber as ITEMNO, location as LOCATION, " .
             "holdingbranch as HLDBRNCH, reserves as RESERVES, itemcallnumber as " .
             "CALLNO, barcode as BARCODE, copynumber as COPYNO, " .
-            "notforloan as NOTFORLOAN from items where biblionumber = :id" .
+            "enumchron AS ENUMCHRON, notforloan as NOTFORLOAN" .
+            " from items where biblionumber = :id" .
             " order by itemnumber";
         try {
             $itemSqlStmt = $this->db->prepare($sql);
@@ -246,7 +247,8 @@ class Koha extends AbstractBase
                     'barcode' => (null == $rowItem['BARCODE'])
                         ? 'Unknown' : $rowItem['BARCODE'],
                     'number' => (null == $rowItem['COPYNO'])
-                        ? 'Unknown' : $rowItem['COPYNO']
+                        ? 'Unknown' : $rowItem['COPYNO'],
+                    'enumchron'    => $rowItem['ENUMCHRON'] ?? null,
                 ];
             }
             return $holding;

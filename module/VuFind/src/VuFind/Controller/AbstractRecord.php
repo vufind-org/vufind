@@ -2,7 +2,7 @@
 /**
  * VuFind Record Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -289,7 +289,7 @@ class AbstractRecord extends AbstractBase
         $post = $this->getRequest()->getPost()->toArray();
         $tagParser = $this->serviceLocator->get('VuFind\Tags');
         $post['mytags']
-            = $tagParser->parse(isset($post['mytags']) ? $post['mytags'] : '');
+            = $tagParser->parse($post['mytags'] ?? '');
         $favorites = $this->serviceLocator
             ->get('VuFind\Favorites\FavoritesService');
         $results = $favorites->save($post, $user, $driver);
@@ -550,12 +550,33 @@ class AbstractRecord extends AbstractBase
                 ->toUrl($export->getRedirectUrl($format, $callback));
         }
 
+        $recordHelper = $this->getViewRenderer()->plugin('record');
+
+        $exportType = $export->getBulkExportType($format);
+        if ('post' === $exportType) {
+            $params = [
+                'exportType' => 'post',
+                'postField' => $export->getPostField($format),
+                'postData' => $recordHelper($driver)->getExport($format),
+                'targetWindow' => $export->getTargetWindow($format),
+                'url' => $export->getRedirectUrl($format, ''),
+                'format' => $format
+            ];
+            $msg = [
+                'translate' => false, 'html' => true,
+                'msg' => $this->getViewRenderer()->render(
+                    'cart/export-success.phtml', $params
+                )
+            ];
+            $this->flashMessenger()->addSuccessMessage($msg);
+            return $this->redirectToRecord();
+        }
+
         // Send appropriate HTTP headers for requested format:
         $response = $this->getResponse();
         $response->getHeaders()->addHeaders($export->getHeaders($format));
 
         // Actually export the record
-        $recordHelper = $this->getViewRenderer()->plugin('record');
         $response->setContent($recordHelper($driver)->getExport($format));
         return $response;
     }

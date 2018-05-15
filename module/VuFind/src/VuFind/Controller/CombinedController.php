@@ -2,7 +2,7 @@
 /**
  * Combined Search Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -40,6 +40,8 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  */
 class CombinedController extends AbstractSearch
 {
+    use AjaxResponseTrait;
+
     /**
      * Constructor
      *
@@ -58,7 +60,11 @@ class CombinedController extends AbstractSearch
      */
     public function homeAction()
     {
-        return $this->createViewModel();
+        // We need to load blocks differently in this controller since it
+        // doesn't follow the usual configuration pattern.
+        $blocks = $this->serviceLocator->get('VuFind\ContentBlock\BlockLoader')
+            ->getFromConfig('combined');
+        return $this->createViewModel(compact('blocks'));
     }
 
     /**
@@ -94,13 +100,6 @@ class CombinedController extends AbstractSearch
         $this->adjustQueryForSettings($settings);
         $settings['view'] = $this->forwardTo($controller, $action);
 
-        // Send response:
-        $response = $this->getResponse();
-        $headers = $response->getHeaders();
-        $headers->addHeaderLine('Content-type', 'text/html');
-        $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');
-        $headers->addHeaderLine('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
-
         // Should we suppress content due to emptiness?
         if (isset($settings['hide_if_empty']) && $settings['hide_if_empty']
             && $settings['view']->results->getResultTotal() == 0
@@ -127,8 +126,7 @@ class CombinedController extends AbstractSearch
                 $viewParams
             );
         }
-        $response->setContent($html);
-        return $response;
+        return $this->getAjaxResponse('text/html', $html);
     }
 
     /**
@@ -194,9 +192,8 @@ class CombinedController extends AbstractSearch
         && intval($config['Layout']['columns']) <= count($combinedResults)
             ? intval($config['Layout']['columns'])
             : count($combinedResults);
-        $placement = isset($config['Layout']['stack_placement'])
-            ? $config['Layout']['stack_placement']
-            : 'distributed';
+        $placement = $config['Layout']['stack_placement']
+            ?? 'distributed';
         if (!in_array($placement, ['distributed', 'left', 'right'])) {
             $placement = 'distributed';
         }
@@ -216,8 +213,7 @@ class CombinedController extends AbstractSearch
                 'results' => $results,
                 'supportsCart' => $supportsCart,
                 'supportsCartOptions' => $supportsCartOptions,
-                'showBulkOptions' => isset($settings->Site->showBulkOptions)
-                    && $settings->Site->showBulkOptions
+                'showBulkOptions' => $settings->Site->showBulkOptions ?? false
             ]
         );
     }
@@ -279,7 +275,7 @@ class CombinedController extends AbstractSearch
     {
         // Apply limit setting, if any:
         $query = $this->getRequest()->getQuery();
-        $query->limit = isset($settings['limit']) ? $settings['limit'] : null;
+        $query->limit = $settings['limit'] ?? null;
 
         // Apply filters, if any:
         $query->filter = isset($settings['filter'])
@@ -322,6 +318,7 @@ class CombinedController extends AbstractSearch
     protected function getTabConfig($config)
     {
         // Strip out non-tab sections of the configuration:
+        unset($config['HomePage']);
         unset($config['Layout']);
         unset($config['RecommendationModules']);
 

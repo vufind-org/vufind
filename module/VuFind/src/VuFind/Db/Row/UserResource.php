@@ -2,7 +2,7 @@
 /**
  * Row Definition for user_resource
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *

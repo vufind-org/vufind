@@ -1,4 +1,4 @@
-<?
+<?php
   // Set up page title:
   $pageTitle = empty($this->card->id) ? 'Add a Library Card' : "Edit Library Card";
   $this->headTitle($this->translate($pageTitle));
@@ -19,16 +19,16 @@
     <label class="control-label" for="card_name"><?=$this->transEsc('Library Card Name'); ?>:</label>
     <input id="card_name" class="form-control" type="text" name="card_name" value="<?=$this->escapeHtmlAttr($this->cardName)?>"/>
   </div>
-  <? if ($this->targets !== null): ?>
+  <?php if ($this->targets !== null): ?>
   <div class="form-group">
     <label class="control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
     <select id="login_target" name="target" class="form-control">
-      <? foreach ($this->targets as $target): ?>
+      <?php foreach ($this->targets as $target): ?>
         <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->target ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </select>
   </div>
-  <? endif; ?>
+  <?php endif; ?>
   <div class="form-group">
     <label class="control-label" for="login_username"><?=$this->transEsc('Username')?>:</label>
     <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->username)?>" class="form-control"/>

@@ -2,7 +2,7 @@
 /**
  * SIP2 authentication test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -96,10 +96,11 @@ class SIP2Test extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankUsername()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
     }
@@ -108,10 +109,11 @@ class SIP2Test extends \VuFindTest\Unit\DbTestCase
      * Test login with blank password.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankPassword()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);
     }

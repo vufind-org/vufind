@@ -1,8 +1,8 @@
 <?php
 /**
- * Facet-driven channel provider.
+ * Abstract base class for channel providers.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -28,10 +28,11 @@
 namespace VuFind\ChannelProvider;
 
 use VuFind\Cover\Router as CoverRouter;
+use VuFind\Record\Router as RecordRouter;
 use VuFind\Search\Base\Params;
 
 /**
- * Facet-driven channel provider.
+ * Abstract base class for channel providers.
  *
  * @category VuFind
  * @package  Channels
@@ -54,6 +55,13 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
      * @var string
      */
     protected $providerId = '';
+
+    /**
+     * Record router
+     *
+     * @var RecordRouter
+     */
+    protected $recordRouter = null;
 
     /**
      * Hook to configure search parameters before executing search.
@@ -79,6 +87,18 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
     public function setCoverRouter(CoverRouter $coverRouter)
     {
         $this->coverRouter = $coverRouter;
+    }
+
+    /**
+     * Inject record router
+     *
+     * @param RecordRouter $recordRouter Record router.
+     *
+     * @return void
+     */
+    public function setRecordRouter(RecordRouter $recordRouter)
+    {
+        $this->recordRouter = $recordRouter;
     }
 
     /**
@@ -124,6 +144,9 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
                 'source' => $current->getSourceIdentifier(),
                 'thumbnail' => $this->coverRouter
                     ? $this->coverRouter->getUrl($current, 'medium')
+                    : false,
+                'routeDetails' => $this->recordRouter
+                    ? $this->recordRouter->getTabRouteDetails($current)
                     : false,
                 'id' => $current->getUniqueId(),
             ];

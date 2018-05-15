@@ -3,7 +3,7 @@
 /**
  * EDS API Query Adapter: search query parameters to AbstractQuery object
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *

@@ -2,7 +2,7 @@
 /**
  * Piwik view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2014-2016.
  *
@@ -122,8 +122,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
         }
         if (is_array($options)) {
             $this->siteId = $options['siteId'];
-            $this->searchPrefix = isset($options['searchPrefix'])
-                ? $options['searchPrefix'] : '';
+            $this->searchPrefix = $options['searchPrefix'] ?? '';
         } else {
             $this->siteId = $options;
         }

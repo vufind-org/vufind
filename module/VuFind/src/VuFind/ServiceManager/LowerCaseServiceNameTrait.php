@@ -3,7 +3,7 @@
  * Trait for plugin managers that allows service names to be normalized to lowercase
  * (for backward compatibility with ServiceManager v2).
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -43,13 +43,14 @@ trait LowerCaseServiceNameTrait
     /**
      * Retrieve a plugin
      *
-     * @param string $name Name of plugin
+     * @param string     $name    Name of plugin
+     * @param null|array $options Options to use when creating the instance.
      *
      * @return mixed
      */
-    public function get($name)
+    public function get($name, array $options = null)
     {
-        return parent::get($this->getNormalizedServiceName($name));
+        return parent::get($this->getNormalizedServiceName($name), $options);
     }
 
     /**

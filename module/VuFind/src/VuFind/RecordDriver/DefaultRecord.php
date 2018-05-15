@@ -2,7 +2,7 @@
 /**
  * Default model for records
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -223,7 +223,7 @@ class DefaultRecord extends AbstractBase
     public function getCallNumber()
     {
         $all = $this->getCallNumbers();
-        return isset($all[0]) ? $all[0] : '';
+        return $all[0] ?? '';
     }
 
     /**
@@ -483,8 +483,7 @@ class DefaultRecord extends AbstractBase
         // applicable:
         $authors = [];
         foreach ($this->getPrimaryAuthors() as $author) {
-            $authors[] = isset($highlights[$author])
-                ? $highlights[$author] : $author;
+            $authors[] = $highlights[$author] ?? $author;
         }
         return $authors;
     }
@@ -931,7 +930,7 @@ class DefaultRecord extends AbstractBase
     public function getPrimaryAuthor()
     {
         $authors = $this->getPrimaryAuthors();
-        return isset($authors[0]) ? $authors[0] : '';
+        return $authors[0] ?? '';
     }
 
     /**
@@ -1008,9 +1007,9 @@ class DefaultRecord extends AbstractBase
             // Build objects to represent each set of data; these will
             // transform seamlessly into strings in the view layer.
             $retval[] = new Response\PublicationDetails(
-                isset($places[$i]) ? $places[$i] : '',
-                isset($names[$i]) ? $names[$i] : '',
-                isset($dates[$i]) ? $dates[$i] : ''
+                $places[$i] ?? '',
+                $names[$i] ?? '',
+                $dates[$i] ?? ''
             );
             $i++;
         }

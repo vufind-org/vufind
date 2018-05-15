@@ -2,7 +2,7 @@
 /**
  * Factory for instantiating Mailer objects
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -110,6 +110,10 @@ class Factory implements FactoryInterface
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
 
         // Create service:
-        return new $requestedName($this->getTransport($config));
+        $class = new $requestedName($this->getTransport($config));
+        if (!empty($config->Mail->override_from)) {
+            $class->setFromAddressOverride($config->Mail->override_from);
+        }
+        return $class;
     }
 }

@@ -2,7 +2,7 @@
 /**
  * Favorites service
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -152,7 +152,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
 
         // Get or create a list object as needed:
         $list = $this->getListObject(
-            isset($params['list']) ? $params['list'] : '',
+            $params['list'] ?? '',
             $user
         );
 
@@ -167,8 +167,8 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         // Add the information to the user's account:
         $user->saveResource(
             $resource, $list,
-            isset($params['mytags']) ? $params['mytags'] : [],
-            isset($params['notes']) ? $params['notes'] : ''
+            $params['mytags'] ?? [],
+            $params['notes'] ?? ''
         );
         return ['listId' => $list->id];
     }
