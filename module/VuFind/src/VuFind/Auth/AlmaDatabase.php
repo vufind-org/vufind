@@ -104,8 +104,17 @@ class AlmaDatabase extends Database
         // User variable
         $user = null;
 
+        // Collect POST parameters from request
         $params = $this->collectParamsFromRequest($request);
-        $this->validateParams($params);
+        
+        // Validate username and password
+        $this->validateUsernameAndPassword($params);
+        
+        // Get the user table
+        $userTable = $this->getUserTable();
+        
+        // Make sure parameters are correct
+        $this->validateParams($params, $userTable);
 
         // Create user account in Alma
         $almaAnswer = $this->almaDriver->createAlmaUser($params);
@@ -113,7 +122,7 @@ class AlmaDatabase extends Database
         // Create user account in VuFind user table if Alma gave us an answer
         if ($almaAnswer !== null) {
             // If we got this far, we're ready to create the account:
-            $user = $this->createUserFromParams($params);
+            $user = $this->createUserFromParams($params, $userTable);
 
             // Add the Alma primary ID as cat_id to the VuFind user table
             $user->cat_id = $almaAnswer->primary_id ?? null;
