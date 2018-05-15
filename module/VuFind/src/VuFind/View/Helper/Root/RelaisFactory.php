@@ -62,7 +62,7 @@ class RelaisFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $urlHelper = $container->get('ViewHelperManager')->get('url');
-        $loginUrl = $urlHelper->invoke('relais-login');
+        $loginUrl = $urlHelper->__invoke('relais-login');
         return new $requestedName($loginUrl);
     }
 }
