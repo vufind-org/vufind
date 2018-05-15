@@ -1,13 +1,14 @@
+<div class="container">
+    <?=$this->HelpText()->render('supporters', null, 'static')?>
+</div>
 <div class="container" id="footer-bottom">
     <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 copyright">
-            &copy <? printf(date('o')); ?> Index Theologicus
+        <div class="col-xs-12 col-md-6 col-lg-8 copyright">
+            <?=$this->HelpText()->render('copyright', null, 'static')?>
         </div>
-        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 footer-menu">
+        <div class="col-xs-12 col-md-6 col-lg-4 footer-menu">
             <ul class="footer-menu">
-                <li><a href="/Imprint">Impressum</a></li>
-                <li><a href="/Privacy">Datenschutz</a></li>
-                <li><a href="#">Sitemap</a></li>
+                <li><a href="<?=$this->url('content-page', ['page' => 'Impressum'])?>">Imprint</a></li>
             </ul>
         </div>
     </div>
