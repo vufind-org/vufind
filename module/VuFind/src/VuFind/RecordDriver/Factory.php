@@ -43,22 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Factory for SolrAuth record driver.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return SolrAuth
-     */
-    public static function getSolrAuth(ServiceManager $sm)
-    {
-        return new SolrAuth(
-            $sm->get('VuFind\Config\PluginManager')->get('config'),
-            null,
-            $sm->get('VuFind\Config\PluginManager')->get('searches')
-        );
-    }
-
-    /**
      * Factory for SolrDefault record driver.
      *
      * @param ServiceManager $sm Service manager.
@@ -124,22 +108,6 @@ class Factory
         }
         $driver->attachSearchService($sm->get('VuFindSearch\Service'));
         return $driver;
-    }
-
-    /**
-     * Factory for SolrReserves record driver.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return SolrReserves
-     */
-    public static function getSolrReserves(ServiceManager $sm)
-    {
-        return new SolrReserves(
-            $sm->get('VuFind\Config\PluginManager')->get('config'),
-            null,
-            $sm->get('VuFind\Config\PluginManager')->get('searches')
-        );
     }
 
     /**

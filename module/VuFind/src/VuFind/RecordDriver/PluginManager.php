@@ -77,14 +77,15 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\RecordDriver\Pazpar2' =>
             'VuFind\RecordDriver\NameBasedConfigFactory',
         'VuFind\RecordDriver\Primo' => 'VuFind\RecordDriver\NameBasedConfigFactory',
-        'VuFind\RecordDriver\SolrAuth' => 'VuFind\RecordDriver\Factory::getSolrAuth',
+        'VuFind\RecordDriver\SolrAuth' =>
+            'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
         'VuFind\RecordDriver\SolrDefault' =>
             'VuFind\RecordDriver\Factory::getSolrDefault',
         'VuFind\RecordDriver\SolrMarc' => 'VuFind\RecordDriver\Factory::getSolrMarc',
         'VuFind\RecordDriver\SolrMarcRemote' =>
             'VuFind\RecordDriver\Factory::getSolrMarcRemote',
         'VuFind\RecordDriver\SolrReserves' =>
-            'VuFind\RecordDriver\Factory::getSolrReserves',
+            'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
         'VuFind\RecordDriver\SolrWeb' => 'VuFind\RecordDriver\Factory::getSolrWeb',
         'VuFind\RecordDriver\Summon' => 'VuFind\RecordDriver\SummonFactory',
         'VuFind\RecordDriver\WorldCat' =>
