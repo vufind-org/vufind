@@ -12,10 +12,16 @@
             <strong><?=$this->transEsc("Saved in")?>:</strong>
           </div>
         <? endif; ?>
-
-        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-          <?=$this->record($this->driver)->getTitleHtml()?>
-        </a>
+        <? $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
+        <? if (!$missing): ?>
+           <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+              <?=$this->record($this->driver)->getTitleHtml()?>
+           </a>
+        <? else: ?>
+             <div class="text-muted">
+               <?=$this->record($this->driver)->getTitleHtml()?>
+             </div>
+        <?endif; ?>
       </div>
 
       <div>
@@ -61,7 +67,7 @@
             <? endif; ?>
           <? else: ?>
             <? // Handle corporation information... ?>
-            <? $corporation = implode($this->driver->getCorporation(), " ") ?>
+            <? $corporation = implode($this->driver->tryMethod('getCorporation'), " ") ?>
             <? if (!empty($corporation)): ?>
                <a href="<?=$this->record($this->driver)->getLink('author', $corporation)?>"><?
                 //$summCorporation = $this->driver->getHighlightedAuthor();
@@ -73,7 +79,7 @@
             <? endif; ?>
           <? endif; ?>
           <? // Handle superior data according to Issue 131 / Rule 5 ?>
-          <? $journal_issue = $this->driver->getJournalIssue(); ?>
+          <? $journal_issue = $this->driver->tryMethod('getJournalIssue'); ?>
           <? if (!empty($journal_issue)): ?>
             <? $superior_ppn_index = !empty($journal_issue[2]) ? 2 : 1; ?>
             <? $superior_ppn = preg_replace('/\(.*\)/', '', $journal_issue[$superior_ppn_index]); ?>
@@ -90,7 +96,7 @@
           <? else: ?>
               <div>
               <? // Fill with non article handling code ?>
-              <?=implode($this->driver->getPublicationDetailsNoPlaces(), " ") ?>
+              <?=implode($this->driver->tryMethod('getPublicationDetailsNoPlaces'), " ") ?>
               </div>
           <? endif; ?>
           <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
@@ -169,7 +175,7 @@
         <? endif; ?>
       </div>
 
-      <? $urls_and_material_types = $this->driver->getURLsAndMaterialTypes(); ?>
+      <? $urls_and_material_types = $this->driver->tryMethod('getURLsAndMaterialTypes'); ?>
       <? if (!empty($urls_and_material_types)): ?>
         <? foreach ($urls_and_material_types as $url => $material_type): ?>
 	   <a href="<?=$url?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=$this->transEsc($material_type)?></a>
@@ -185,7 +191,7 @@
         </span>
       <? endif; ?>
 
-      <? $bible_ranges_string = $this->driver->getBibleRangesString();
+      <? $bible_ranges_string = $this->driver->tryMethod('getBibleRangesString');
         if (!empty($bible_ranges_string)) {
           echo '<div>' . $this->transEsc($bible_ranges_string) . '</div>';
         }
@@ -202,7 +208,7 @@
         <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>">
           <i class="fa fa-fw fa-star"></i>
         </a><br/>
-        <? if ($this->driver->isSubscribable()):?>
+        <? if ($this->driver->tryMethod('isSubscribable')):?>
           <a class="subscribe-record save-record modal-link" data-lightbox  id="<?=$this->driver->getUniqueId() ?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow" title="<?=$this->transEsc('Subscribe')?>">
             <i class="fa fa-fw fa-bell"></i>
           </a>
