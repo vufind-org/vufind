@@ -9,12 +9,6 @@
     <field name="available_for_pda" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="available_in_tubingen" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="content" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="fid_systematik" type="textFacetRaw" indexed="false" stored="true" multiValued="true"/>
-    <field name="fid_systematik1" type="textFacetRaw" indexed="false" stored="true" multiValued="true"/>
-    <field name="fid_systematik2" type="textFacetRaw" indexed="false" stored="true" multiValued="true"/>
-    <field name="fid_systematik3" type="textFacetRaw" indexed="false" stored="true" multiValued="true"/>
-    <field name="fid_systematik4" type="textFacetRaw" indexed="false" stored="true" multiValued="true"/>
-    <field name="fid_systematik5" type="textFacetRaw" indexed="false" stored="true" multiValued="true"/>
     <field name="gkdnum" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="instituts_systematik1" type="textFacetRaw" indexed="true" stored="true" multiValued="true"/>
     <field name="instituts_systematik2" type="textFacetRaw" indexed="true" stored="true" multiValued="true"/>

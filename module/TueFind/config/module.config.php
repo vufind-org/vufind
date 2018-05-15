@@ -7,6 +7,7 @@ $config = [
             'feedback' => 'TueFind\Controller\Factory::getFeedbackController',
             'pdaproxy' => 'TueFind\Controller\Factory::getPDAProxyController',
             'proxy' => 'TueFind\Controller\Factory::getProxyController',
+            'StaticPage' => 'TueFind\Controller\Factory::getStaticPageController',
         ],
     ],
     'router' => [
