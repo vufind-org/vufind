@@ -96,11 +96,23 @@ class Relais extends \Zend\View\Helper\AbstractHelper
     /**
      * Render a button if Relais is active.
      *
+     * @param object $driver Record driver
+     *
      * @return string
      */
-    public function renderButtonIfActive()
+    public function renderButtonIfActive($driver = null)
     {
-        return ($this->config->apikey ?? false)
-            ? $this->getView()->render('relais/button.phtml') : '';
+        // Case 1: API enabled:
+        if ($this->config->apikey ?? false) {
+            return $this->getView()->render('relais/button.phtml');
+        }
+        // Case 2: Search links enabled:
+        if ($this->config->loginUrl ?? false) {
+            return '<a href="' . htmlspecialchars($this->getSearchLink($driver))
+                . '" target="new">' . $this->getView()->transEsc('relais_search')
+                . '</a>';
+        }
+        // Case 3: Nothing enabled:
+        return '';
     }
 }
