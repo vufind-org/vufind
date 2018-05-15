@@ -80,10 +80,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\RecordDriver\SolrAuth' =>
             'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
         'VuFind\RecordDriver\SolrDefault' =>
-            'VuFind\RecordDriver\Factory::getSolrDefault',
-        'VuFind\RecordDriver\SolrMarc' => 'VuFind\RecordDriver\Factory::getSolrMarc',
+            'VuFind\RecordDriver\SolrDefaultFactory',
+        'VuFind\RecordDriver\SolrMarc' => 'VuFind\RecordDriver\SolrMarcFactory',
         'VuFind\RecordDriver\SolrMarcRemote' =>
-            'VuFind\RecordDriver\Factory::getSolrMarcRemote',
+            'VuFind\RecordDriver\SolrMarcFactory',
         'VuFind\RecordDriver\SolrReserves' =>
             'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
         'VuFind\RecordDriver\SolrWeb' => 'VuFind\RecordDriver\Factory::getSolrWeb',

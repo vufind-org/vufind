@@ -1,10 +1,10 @@
 <?php
 /**
- * Record Driver Factory Class
+ * Factory for SolrDefault record drivers.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2014.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,37 +23,42 @@
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\RecordDriver;
 
-use Zend\ServiceManager\ServiceManager;
+use Interop\Container\ContainerInterface;
 
 /**
- * Record Driver Factory Class
+ * Factory for SolrDefault record drivers.
  *
  * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
- *
- * @codeCoverageIgnore
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class Factory
+class SolrDefaultFactory extends SolrDefaultWithoutSearchServiceFactory
 {
     /**
-     * Factory for SolrWeb record driver.
+     * Create an object
      *
-     * @param ServiceManager $sm Service manager.
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return SolrWeb
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    public static function getSolrWeb(ServiceManager $sm)
-    {
-        $web = $sm->get('VuFind\Config\PluginManager')->get('website');
-        return new SolrWeb(
-            $sm->get('VuFind\Config\PluginManager')->get('config'), $web, $web
-        );
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        $driver = parent::__invoke($container, $requestedName, $options);
+        $driver->attachSearchService($container->get('VuFindSearch\Service'));
+        return $driver;
     }
 }
