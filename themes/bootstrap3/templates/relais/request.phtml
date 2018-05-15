@@ -1,16 +1,11 @@
 <h2><?=$this->transEsc('relais_request')?></h2>
 
-<div class="row">
-  <div class="col-md-12" id="requestMessage">
-    <i class="fa fa-spinner fa-spin"></i>
-    <?=$this->transEsc('relais_checking')?>
-  </div>
+<div id="requestMessage">
+  <i class="fa fa-spinner fa-spin"></i>
+  <?=$this->transEsc('relais_checking')?>
 </div>
 
-<div class="row">
-   <div class="col-md-12" id="requestButton">
-   </div>
-</div>
+<div id="requestButton"></div>
 
 <?php
   $this->headScript()->appendFile('relais.js');
