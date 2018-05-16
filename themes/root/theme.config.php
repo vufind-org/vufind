@@ -35,7 +35,7 @@ return [
             'VuFind\View\Helper\Root\Piwik' => 'VuFind\View\Helper\Root\Factory::getPiwik',
             'VuFind\View\Helper\Root\Printms' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\ProxyUrl' => 'VuFind\View\Helper\Root\Factory::getProxyUrl',
-            'VuFind\View\Helper\Root\Recaptcha' => 'VuFind\View\Helper\Root\Factory::getRecaptcha',
+            'VuFind\View\Helper\Root\Recaptcha' => 'VuFind\View\Helper\Root\RecaptchaFactory',
             'VuFind\View\Helper\Root\Recommend' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Record' => 'VuFind\View\Helper\Root\Factory::getRecord',
             'VuFind\View\Helper\Root\RecordDataFormatter' => 'VuFind\View\Helper\Root\RecordDataFormatterFactory',

@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for Bootstrap view helpers.
+ * Recaptcha helper factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2014.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,35 +25,45 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\View\Helper\Bootstrap3;
+namespace VuFind\View\Helper\Root;
 
-use Zend\ServiceManager\ServiceManager;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for Bootstrap view helpers.
+ * Recaptcha helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
- *
- * @codeCoverageIgnore
  */
-class Factory
+class RecaptchaFactory implements FactoryInterface
 {
     /**
-     * Construct the Recaptcha helper.
+     * Create an object
      *
-     * @param ServiceManager $sm Service manager.
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return Recaptcha
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    public static function getRecaptcha(ServiceManager $sm)
-    {
-        return new Recaptcha(
-            $sm->get('VuFind\Service\ReCaptcha'),
-            $sm->get('VuFind\Config\PluginManager')->get('config')
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
+        }
+        return new $requestedName(
+            $container->get('VuFind\Service\ReCaptcha'),
+            $container->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 }
