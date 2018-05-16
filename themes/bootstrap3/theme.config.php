@@ -29,7 +29,7 @@ return [
         'factories' => [
             'VuFind\View\Helper\Bootstrap3\Flashmessages' => 'VuFind\View\Helper\Root\FlashmessagesFactory',
             'VuFind\View\Helper\Bootstrap3\Highlight' => 'Zend\ServiceManager\Factory\InvokableFactory',
-            'VuFind\View\Helper\Bootstrap3\LayoutClass' => 'VuFind\View\Helper\Bootstrap3\Factory::getLayoutClass',
+            'VuFind\View\Helper\Bootstrap3\LayoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClassFactory',
             'VuFind\View\Helper\Bootstrap3\Recaptcha' => 'VuFind\View\Helper\Bootstrap3\Factory::getRecaptcha',
             'VuFind\View\Helper\Bootstrap3\Search' => 'Zend\ServiceManager\Factory\InvokableFactory',
         ],

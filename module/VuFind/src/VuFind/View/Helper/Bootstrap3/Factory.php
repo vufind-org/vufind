@@ -43,32 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the LayoutClass helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return LayoutClass
-     */
-    public static function getLayoutClass(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $sidebarOnLeft = !isset($config->Site->sidebarOnLeft)
-            ? false : $config->Site->sidebarOnLeft;
-        $mirror = !isset($config->Site->mirrorSidebarInRTL)
-            ? true : $config->Site->mirrorSidebarInRTL;
-        $offcanvas = !isset($config->Site->offcanvas)
-            ? false : $config->Site->offcanvas;
-        // The right-to-left setting is injected into the layout by the Bootstrapper;
-        // pull it back out here to avoid duplicate effort, then use it to apply
-        // the mirror setting appropriately.
-        $layout = $sm->get('ViewManager')->getViewModel();
-        if ($layout->rtl && $mirror) {
-            $sidebarOnLeft = !$sidebarOnLeft;
-        }
-        return new LayoutClass($sidebarOnLeft, $offcanvas);
-    }
-
-    /**
      * Construct the Recaptcha helper.
      *
      * @param ServiceManager $sm Service manager.
