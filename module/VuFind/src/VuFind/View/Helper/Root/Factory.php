@@ -43,27 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the Piwik helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Piwik
-     */
-    public static function getPiwik(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $url = $config->Piwik->url ?? false;
-        $options = [
-            'siteId' => $config->Piwik->site_id ?? 1,
-            'searchPrefix' => $config->Piwik->searchPrefix ?? null
-        ];
-        $customVars = $config->Piwik->custom_variables ?? false;
-        $request = $sm->get('Request');
-        $router = $sm->get('Router');
-        return new Piwik($url, $options, $customVars, $router, $request);
-    }
-
-    /**
      * Construct the HelpText helper.
      *
      * @param ServiceManager $sm Service manager.

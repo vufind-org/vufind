@@ -32,7 +32,7 @@ return [
             'VuFind\View\Helper\Root\LocalizedNumber' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\OpenUrl' => 'VuFind\View\Helper\Root\Factory::getOpenUrl',
             'VuFind\View\Helper\Root\Permission' => 'VuFind\View\Helper\Root\PermissionFactory',
-            'VuFind\View\Helper\Root\Piwik' => 'VuFind\View\Helper\Root\Factory::getPiwik',
+            'VuFind\View\Helper\Root\Piwik' => 'VuFind\View\Helper\Root\PiwikFactory',
             'VuFind\View\Helper\Root\Printms' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\ProxyUrl' => 'VuFind\View\Helper\Root\Factory::getProxyUrl',
             'VuFind\View\Helper\Root\Recaptcha' => 'VuFind\View\Helper\Root\RecaptchaFactory',
