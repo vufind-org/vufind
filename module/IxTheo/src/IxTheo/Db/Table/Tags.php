@@ -33,7 +33,8 @@ use Zend\Db\Sql\Select;
 class Tags extends VuFindTags
 {
 
-    protected $filtered_resource_tags = 'filtered_resource_tags';
+//    protected $filtered_resource_tags = 'filtered_resource_tags';
+    protected $filtered_resource_tags = 'resource_tags';
 
     /**
      * Constructor
@@ -50,6 +51,13 @@ class Tags extends VuFindTags
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
+
+
+    protected function determineFilteredResourceTable() {
+
+
+    }
+
 
     /**
      * Get the tags that match a string
