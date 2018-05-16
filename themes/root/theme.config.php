@@ -17,7 +17,7 @@ return [
             'VuFind\View\Helper\Root\Context' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\CurrentPath' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\DateTime' => 'VuFind\View\Helper\Root\DateTimeFactory',
-            'VuFind\View\Helper\Root\DisplayLanguageOption' => 'VuFind\View\Helper\Root\Factory::getDisplayLanguageOption',
+            'VuFind\View\Helper\Root\DisplayLanguageOption' => 'VuFind\View\Helper\Root\DisplayLanguageOptionFactory',
             'VuFind\View\Helper\Root\Export' => 'VuFind\View\Helper\Root\Factory::getExport',
             'VuFind\View\Helper\Root\Feedback' => 'VuFind\View\Helper\Root\Factory::getFeedback',
             'VuFind\View\Helper\Root\Flashmessages' => 'VuFind\View\Helper\Root\Factory::getFlashmessages',

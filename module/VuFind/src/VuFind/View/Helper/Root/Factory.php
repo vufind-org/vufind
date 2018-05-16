@@ -43,23 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the DisplayLanguageOption helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return DisplayLanguageOption
-     */
-    public static function getDisplayLanguageOption(ServiceManager $sm)
-    {
-        // We want to construct a separate translator instance for this helper,
-        // since it configures different language/locale than the core shared
-        // instance!
-        return new DisplayLanguageOption(
-            \VuFind\Service\Factory::getTranslator($sm)
-        );
-    }
-
-    /**
      * Construct the Export helper.
      *
      * @param ServiceManager $sm Service manager.
