@@ -43,33 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the AccountCapabilities helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return AccountCapabilities
-     */
-    public static function getAccountCapabilities(ServiceManager $sm)
-    {
-        return new AccountCapabilities(
-            $sm->get('VuFind\Config\AccountCapabilities')
-        );
-    }
-
-    /**
-     * Construct the AlphaBrowse helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return AlphaBrowse
-     */
-    public static function getAlphaBrowse(ServiceManager $sm)
-    {
-        $helpers = $sm->get('ViewHelperManager');
-        return new AlphaBrowse($helpers->get('url'));
-    }
-
-    /**
      * Construct the Auth helper.
      *
      * @param ServiceManager $sm Service manager.
