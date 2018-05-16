@@ -706,7 +706,7 @@ finna.layout = (function finnaLayout() {
     });
   }
 
-  function initLoginRedirect() {
+  function initLightboxLogin() {
     if (!document.addEventListener) {
       return;
     }
@@ -715,6 +715,14 @@ finna.layout = (function finnaLayout() {
         window.location.href = VuFind.path + '/MyResearch/Home';
         e.preventDefault();
       }
+    });
+    $('#modal').on('show.bs.modal', function onShowModal() {
+      if ($('#modal').find('#authcontainer').length > 0) {
+        $('#modal .modal-dialog').addClass('modal-lg modal-lg-dynamic');
+      }
+    });
+    $('#modal').on('hidden.bs.modal', function onHiddenModal() {
+      $('#modal .modal-dialog.modal-lg-dynamic').removeClass('modal-lg');
     });
   }
 
@@ -1009,7 +1017,7 @@ finna.layout = (function finnaLayout() {
       initPiwikPopularSearches();
       initAutoScrollTouch();
       initIpadCheck();
-      initLoginRedirect();
+      initLightboxLogin();
       initLoadMasonry();
       initOrganisationInfoWidgets();
       initOrganisationPageLinks();
