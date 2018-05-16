@@ -398,4 +398,71 @@ class BrowseController extends \VuFind\Controller\BrowseController
         } else
             return [];
     }
+
+   /**
+     * Browse tags
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function tagAction() {
+        if (!$this->tagsEnabled()) {
+            throw new ForbiddenException('Tags disabled.');
+        }
+
+        $this->setCurrentAction('Tag');
+        $view = $this->createViewModel();
+        $view->categoryList = [
+            'alphabetical' => 'By Alphabetical',
+            'popularity'   => 'By Popularity',
+            'recent'       => 'By Recent'
+        ];
+
+        if ($this->params()->fromQuery('findby')) {
+            $params = $this->getRequest()->getQuery()->toArray();
+            $tagTable = $this->getTable('Tags');
+            // Special case -- display alphabet selection if necessary:
+            if ($params['findby'] == 'alphabetical') {
+                $legalLetters = $this->getAlphabetList();
+                $view->secondaryList = $legalLetters;
+                // Only display tag list when a valid letter is selected:
+                if (isset($params['query'])) {
+                    // Note -- this does not need to be escaped because
+                    // $params['query'] has already been validated against
+                    // the getAlphabetList() method below!
+                    $tags = $tagTable->matchText($params['query']);
+                    $tagList = [];
+                    foreach ($tags as $tag) {
+                        if ($tag['cnt'] > 0) {
+                            $tagList[] = [
+                                'displayText' => $tag['tag'],
+                                'value' => $tag['tag'],
+                                'count' => $tag['cnt']
+                            ];
+                        }
+                    }
+                    $view->resultList = array_slice(
+                        $tagList, 0, $this->config->Browse->result_limit
+                    );
+                }
+            } else {
+                // Default case: always display tag list for non-alphabetical modes:
+                $tagList = $tagTable->getTagList(
+                    $params['findby'],
+                    $this->config->Browse->result_limit
+                );
+                $resultList = [];
+                foreach ($tagList as $i => $tag) {
+                    $resultList[$i] = [
+                        'displayText' => $tag['tag'],
+                        'value' => $tag['tag'],
+                        'count'    => $tag['cnt']
+                    ];
+                }
+                $view->resultList = $resultList;
+            }
+            $view->paramTitle = 'lookfor=';
+            $view->searchParams = [];
+        }
+        return $this->performSearch($view);
+    }
 }
