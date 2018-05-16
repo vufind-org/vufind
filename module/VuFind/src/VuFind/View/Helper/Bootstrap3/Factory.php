@@ -43,20 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the Flashmessages helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Flashmessages
-     */
-    public static function getFlashmessages(ServiceManager $sm)
-    {
-        $messenger = $sm->get('ControllerPluginManager')
-            ->get('Zend\Mvc\Plugin\FlashMessenger\FlashMessenger');
-        return new Flashmessages($messenger);
-    }
-
-    /**
      * Construct the LayoutClass helper.
      *
      * @param ServiceManager $sm Service manager.

@@ -20,7 +20,7 @@ return [
             'VuFind\View\Helper\Root\DisplayLanguageOption' => 'VuFind\View\Helper\Root\DisplayLanguageOptionFactory',
             'VuFind\View\Helper\Root\Export' => 'VuFind\View\Helper\Root\ExportFactory',
             'VuFind\View\Helper\Root\Feedback' => 'VuFind\View\Helper\Root\FeedbackFactory',
-            'VuFind\View\Helper\Root\Flashmessages' => 'VuFind\View\Helper\Root\Factory::getFlashmessages',
+            'VuFind\View\Helper\Root\Flashmessages' => 'VuFind\View\Helper\Root\FlashmessagesFactory',
             'VuFind\View\Helper\Root\GeoCoords' => 'VuFind\View\Helper\Root\Factory::getGeoCoords',
             'VuFind\View\Helper\Root\GoogleAnalytics' => 'VuFind\View\Helper\Root\Factory::getGoogleAnalytics',
             'VuFind\View\Helper\Root\HelpText' => 'VuFind\View\Helper\Root\Factory::getHelpText',
