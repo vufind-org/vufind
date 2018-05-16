@@ -43,32 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the Export helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Export
-     */
-    public static function getExport(ServiceManager $sm)
-    {
-        return new Export($sm->get('VuFind\Export'));
-    }
-
-    /**
-     * Construct the Feedback helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Feedback
-     */
-    public static function getFeedback(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $enabled = $config->Feedback->tab_enabled ?? false;
-        return new Feedback($enabled);
-    }
-
-    /**
      * Construct the Flashmessages helper.
      *
      * @param ServiceManager $sm Service manager.
