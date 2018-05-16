@@ -43,21 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the GoogleAnalytics helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return GoogleAnalytics
-     */
-    public static function getGoogleAnalytics(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $key = $config->GoogleAnalytics->apiKey ?? false;
-        $universal = $config->GoogleAnalytics->universal ?? false;
-        return new GoogleAnalytics($key, $universal);
-    }
-
-    /**
      * Construct the Permission helper.
      *
      * @param ServiceManager $sm Service manager.

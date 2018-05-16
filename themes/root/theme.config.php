@@ -22,7 +22,7 @@ return [
             'VuFind\View\Helper\Root\Feedback' => 'VuFind\View\Helper\Root\FeedbackFactory',
             'VuFind\View\Helper\Root\Flashmessages' => 'VuFind\View\Helper\Root\FlashmessagesFactory',
             'VuFind\View\Helper\Root\GeoCoords' => 'VuFind\View\Helper\Root\GeoCoordsFactory',
-            'VuFind\View\Helper\Root\GoogleAnalytics' => 'VuFind\View\Helper\Root\Factory::getGoogleAnalytics',
+            'VuFind\View\Helper\Root\GoogleAnalytics' => 'VuFind\View\Helper\Root\GoogleAnalyticsFactory',
             'VuFind\View\Helper\Root\HelpText' => 'VuFind\View\Helper\Root\Factory::getHelpText',
             'VuFind\View\Helper\Root\Highlight' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\HistoryLabel' => 'VuFind\View\Helper\Root\Factory::getHistoryLabel',
