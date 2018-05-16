@@ -7,7 +7,6 @@ $config = [
             'acquisition_request' => 'KrimDok\Controller\Factory::getAcquisitionRequestController',
             'browse' => 'KrimDok\Controller\Factory::getBrowseController',
             'help' => 'KrimDok\Controller\Factory::getHelpController',
-            'search' => 'KrimDok\Controller\Factory::getSearchController',
         ],
     ],
     'controller_plugins' => [
