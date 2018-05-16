@@ -43,18 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the Cart helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Cart
-     */
-    public static function getCart(ServiceManager $sm)
-    {
-        return new Cart($sm->get('VuFind\Cart'));
-    }
-
-    /**
      * Construct the Citation helper.
      *
      * @param ServiceManager $sm Service manager.

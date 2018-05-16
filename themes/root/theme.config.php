@@ -10,7 +10,7 @@ return [
             'VuFind\View\Helper\Root\Auth' => 'VuFind\View\Helper\Root\AuthFactory',
             'VuFind\View\Helper\Root\AuthorNotes' => 'VuFind\View\Helper\Root\ContentLoaderFactory',
             'VuFind\View\Helper\Root\Browse' => 'Zend\ServiceManager\Factory\InvokableFactory',
-            'VuFind\View\Helper\Root\Cart' => 'VuFind\View\Helper\Root\Factory::getCart',
+            'VuFind\View\Helper\Root\Cart' => 'VuFind\View\Helper\Root\CartFactory',
             'VuFind\View\Helper\Root\Citation' => 'VuFind\View\Helper\Root\Factory::getCitation',
             'VuFind\View\Helper\Root\Config' => 'VuFind\View\Helper\Root\ConfigFactory',
             'VuFind\View\Helper\Root\ContentBlock' => 'Zend\ServiceManager\Factory\InvokableFactory',
