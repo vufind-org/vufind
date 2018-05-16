@@ -43,19 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the AddThis helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return AddThis
-     */
-    public static function getAddThis(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        return new AddThis($config->AddThis->key ?? false);
-    }
-
-    /**
      * Construct the AccountCapabilities helper.
      *
      * @param ServiceManager $sm Service manager.
