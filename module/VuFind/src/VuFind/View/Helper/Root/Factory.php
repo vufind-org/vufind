@@ -43,20 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the AuthorNotes helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return AuthorNotes
-     */
-    public static function getAuthorNotes(ServiceManager $sm)
-    {
-        $loader = $sm->get('VuFind\Content\PluginManager')
-            ->get('authornotes');
-        return new ContentLoader($loader);
-    }
-
-    /**
      * Construct the Cart helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -491,20 +477,6 @@ class Factory
             $sm->get('VuFind\Search\Results\PluginManager'),
             $helpers->get('url'), $sm->get('VuFind\Search\SearchTabsHelper')
         );
-    }
-
-    /**
-     * Construct the Summary helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Summaries
-     */
-    public static function getSummaries(ServiceManager $sm)
-    {
-        $loader = $sm->get('VuFind\Content\PluginManager')
-            ->get('summaries');
-        return new ContentLoader($loader);
     }
 
     /**
