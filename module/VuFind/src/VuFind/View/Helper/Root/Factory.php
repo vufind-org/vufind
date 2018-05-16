@@ -43,18 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the DateTime helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return DateTime
-     */
-    public static function getDateTime(ServiceManager $sm)
-    {
-        return new DateTime($sm->get('VuFind\Date\Converter'));
-    }
-
-    /**
      * Construct the DisplayLanguageOption helper.
      *
      * @param ServiceManager $sm Service manager.
