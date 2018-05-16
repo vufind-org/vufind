@@ -43,20 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the GeoCoords helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return GeoCoords
-     */
-    public static function getGeoCoords(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\GeoFeatures\MapSelectionConfig')
-            ->getMapSelectionOptions();
-        return new GeoCoords($config['default_coordinates']);
-    }
-
-    /**
      * Construct the GoogleAnalytics helper.
      *
      * @param ServiceManager $sm Service manager.
