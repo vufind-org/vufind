@@ -1,5 +1,5 @@
 <?php
-namespace IxTheo\Controller;
+namespace TueFind\Controller;
 
 class SearchController extends \VuFind\Controller\SearchController
 {
