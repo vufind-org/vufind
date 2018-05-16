@@ -124,11 +124,11 @@ finna.map = (function finnaMap() {
 
   function addRemoveButton(layer, featureGroup) {
     var button = $('<a/>')
-        .html('<i class="fa fa-times" aria-hidden="true"></i>')
-        .click(function mapOnRemoveButtonClick(/*e*/) {
-          layer.editing.disable();
-          featureGroup.removeLayer(layer);
-        });
+      .html('<i class="fa fa-times" aria-hidden="true"></i>')
+      .click(function mapOnRemoveButtonClick(/*e*/) {
+        layer.editing.disable();
+        featureGroup.removeLayer(layer);
+      });
     $('<span/>').text(VuFind.translate('removeCaption')).appendTo(button);
     layer.bindPopup(button.get(0), {closeButton: false});
   }
