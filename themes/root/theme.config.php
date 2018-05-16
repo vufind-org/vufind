@@ -7,7 +7,7 @@ return [
             'VuFind\View\Helper\Root\AddEllipsis' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\AddThis' => 'VuFind\View\Helper\Root\AddThisFactory',
             'VuFind\View\Helper\Root\AlphaBrowse' => 'VuFind\View\Helper\Root\AlphaBrowseFactory',
-            'VuFind\View\Helper\Root\Auth' => 'VuFind\View\Helper\Root\Factory::getAuth',
+            'VuFind\View\Helper\Root\Auth' => 'VuFind\View\Helper\Root\AuthFactory',
             'VuFind\View\Helper\Root\AuthorNotes' => 'VuFind\View\Helper\Root\Factory::getAuthorNotes',
             'VuFind\View\Helper\Root\Browse' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Cart' => 'VuFind\View\Helper\Root\Factory::getCart',

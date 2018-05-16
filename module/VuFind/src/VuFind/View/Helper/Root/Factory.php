@@ -43,21 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the Auth helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Auth
-     */
-    public static function getAuth(ServiceManager $sm)
-    {
-        return new Auth(
-            $sm->get('VuFind\Auth\Manager'),
-            $sm->get('VuFind\Auth\ILSAuthenticator')
-        );
-    }
-
-    /**
      * Construct the AuthorNotes helper.
      *
      * @param ServiceManager $sm Service manager.
