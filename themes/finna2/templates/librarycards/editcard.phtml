@@ -52,24 +52,18 @@
     <label class="control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
     <input id="login_password" type="password" name="password" value="<?=$this->escapeHtmlAttr($this->password)?>" class="form-control"/>
   </div>
-  <div class="library-card-cols">
-    <div class="library-card-col">
-      <div class="form-group">
-        <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
-      </div>
-    </div>
-    <? if (empty($this->card->id)): ?>
-      <div class="library-card-col">
-        <?
-          $language = $this->layout()->userLang;
-          if (!in_array($language, ['fi', 'sv', 'en-gb'])) {
-            $language = 'en-gb';
-          }
-        ?>
-        <?=$this->partial("librarycards/library_card_terms_$language.phtml"); ?>
-      </div>
-    <? endif; ?>
+  <div class="form-group">
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
   </div>
+  <? if (empty($this->card->id)): ?>
+    <?
+      $language = $this->layout()->userLang;
+      if (!in_array($language, ['fi', 'sv', 'en-gb'])) {
+        $language = 'en-gb';
+      }
+    ?>
+    <?=$this->partial("librarycards/library_card_terms_$language.phtml"); ?>
+  <? endif; ?>
 </form>
 <? if (!$this->translationEmpty('login_desc_add_library_card_html') && empty($this->card->id)): ?>
 <div class="login-description">
