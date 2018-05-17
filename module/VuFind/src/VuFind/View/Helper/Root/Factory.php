@@ -43,19 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the JsTranslations helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return JsTranslations
-     */
-    public static function getJsTranslations(ServiceManager $sm)
-    {
-        $helpers = $sm->get('ViewHelperManager');
-        return new JsTranslations($helpers->get('transEsc'));
-    }
-
-    /**
      * Construct the KeepAlive helper.
      *
      * @param ServiceManager $sm Service manager.
