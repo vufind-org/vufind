@@ -43,38 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the ProxyUrl helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return ProxyUrl
-     */
-    public static function getProxyUrl(ServiceManager $sm)
-    {
-        return new ProxyUrl(
-            $sm->get('VuFind\Config\PluginManager')->get('config')
-        );
-    }
-
-    /**
-     * Construct the Record helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Record
-     */
-    public static function getRecord(ServiceManager $sm)
-    {
-        $helper = new Record(
-            $sm->get('VuFind\Config\PluginManager')->get('config')
-        );
-        $helper->setCoverRouter(
-            $sm->get('VuFind\Cover\Router')
-        );
-        return $helper;
-    }
-
-    /**
      * Construct the RecordLink helper.
      *
      * @param ServiceManager $sm Service manager.
