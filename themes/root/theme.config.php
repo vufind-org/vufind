@@ -59,7 +59,7 @@ return [
             'VuFind\View\Helper\Root\Translate' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Truncate' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\UserList' => 'VuFind\View\Helper\Root\UserListFactory',
-            'VuFind\View\Helper\Root\UserTags' => 'VuFind\View\Helper\Root\Factory::getUserTags',
+            'VuFind\View\Helper\Root\UserTags' => 'VuFind\View\Helper\Root\UserTagsFactory',
         ],
         'aliases' => [
             'accountCapabilities' => 'VuFind\View\Helper\Root\AccountCapabilities',
