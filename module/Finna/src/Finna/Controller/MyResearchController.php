@@ -525,19 +525,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $profile = $view->profile;
         }
 
-        $parentTemplate = $view->getTemplate();
-        // If returned view is not profile view, show it below our profile part.
-        if ($parentTemplate != '' && $parentTemplate != 'myresearch/profile') {
-            $childView = $this->createViewModel();
-            $childView->setTemplate('myresearch/profile');
-
-            $compoundView = $this->createViewModel();
-            $compoundView->addChild($childView, 'child');
-            $compoundView->addChild($view, 'parent');
-
-            return $compoundView;
-        }
-
         // Check if due date reminder settings should be displayed
         $config = $this->getConfig();
         $view->hideDueDateReminder = $user->finna_due_date_reminder == 0
