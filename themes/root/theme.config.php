@@ -45,7 +45,7 @@ return [
             'VuFind\View\Helper\Root\RenderArray' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\ResultFeed' => 'VuFind\View\Helper\Root\ResultFeedFactory',
             'VuFind\View\Helper\Root\SafeMoneyFormat' => 'VuFind\View\Helper\Root\SafeMoneyFormatFactory',
-            'VuFind\View\Helper\Root\SearchBox' => 'VuFind\View\Helper\Root\Factory::getSearchBox',
+            'VuFind\View\Helper\Root\SearchBox' => 'VuFind\View\Helper\Root\SearchBoxFactory',
             'VuFind\View\Helper\Root\SearchMemory' => 'VuFind\View\Helper\Root\Factory::getSearchMemory',
             'VuFind\View\Helper\Root\SearchOptions' => 'VuFind\View\Helper\Root\Factory::getSearchOptions',
             'VuFind\View\Helper\Root\SearchParams' => 'VuFind\View\Helper\Root\Factory::getSearchParams',

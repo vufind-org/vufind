@@ -43,30 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the SearchBox helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return SearchBox
-     */
-    public static function getSearchBox(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager');
-        $mainConfig = $config->get('config');
-        $searchboxConfig = $config->get('searchbox')->toArray();
-        $includeAlphaOptions
-            = $searchboxConfig['General']['includeAlphaBrowse'] ?? false;
-        return new SearchBox(
-            $sm->get('VuFind\Search\Options\PluginManager'),
-            $searchboxConfig,
-            isset($mainConfig->SearchPlaceholder)
-                ? $mainConfig->SearchPlaceholder->toArray() : [],
-            $includeAlphaOptions && isset($mainConfig->AlphaBrowse_Types)
-                ? $mainConfig->AlphaBrowse_Types->toArray() : []
-        );
-    }
-
-    /**
      * Construct the SearchMemory helper.
      *
      * @param ServiceManager $sm Service manager.
