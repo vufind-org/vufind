@@ -43,22 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the HelpText helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return HelpText
-     */
-    public static function getHelpText(ServiceManager $sm)
-    {
-        $lang = $sm->has('Zend\Mvc\I18n\Translator')
-            ? $sm->get('Zend\Mvc\I18n\Translator')->getLocale()
-            : 'en';
-        $helpers = $sm->get('ViewHelperManager');
-        return new HelpText($helpers->get('context'), $lang);
-    }
-
-    /**
      * Construct the HistoryLabel helper.
      *
      * @param ServiceManager $sm Service manager.
