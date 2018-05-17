@@ -43,20 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the SafeMoneyFormat helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return SafeMoneyFormat
-     */
-    public static function getSafeMoneyFormat(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $defaultCurrency = $config->Site->defaultCurrency ?? null;
-        return new SafeMoneyFormat($defaultCurrency);
-    }
-
-    /**
      * Construct the SearchBox helper.
      *
      * @param ServiceManager $sm Service manager.
