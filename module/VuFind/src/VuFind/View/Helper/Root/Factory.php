@@ -43,19 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the SyndeticsPlus helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return SyndeticsPlus
-     */
-    public static function getSyndeticsPlus(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        return new SyndeticsPlus($config->Syndetics ?? null);
-    }
-
-    /**
      * Construct the SystemEmail helper.
      *
      * @param ServiceManager $sm Service manager.
