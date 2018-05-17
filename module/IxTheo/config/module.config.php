@@ -26,6 +26,7 @@ $config = [
                     'IxTheoUser' => 'IxTheo\Db\Table\Factory::getIxTheoUser',
                     'pdasubscription' => 'IxTheo\Db\Table\Factory::getPDASubscription',
                     'subscription' => 'IxTheo\Db\Table\Factory::getSubscription',
+                    'tags' => 'IxTheo\Db\Table\Factory::getTags',
                 ],
             ],
             'recommend' => [
