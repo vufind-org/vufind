@@ -43,18 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the Ils helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Ils
-     */
-    public static function getIls(ServiceManager $sm)
-    {
-        return new Ils($sm->get('VuFind\ILS\Connection'));
-    }
-
-    /**
      * Construct the JsTranslations helper.
      *
      * @param ServiceManager $sm Service manager.

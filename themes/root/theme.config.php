@@ -26,7 +26,7 @@ return [
             'VuFind\View\Helper\Root\HelpText' => 'VuFind\View\Helper\Root\HelpTextFactory',
             'VuFind\View\Helper\Root\Highlight' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\HistoryLabel' => 'VuFind\View\Helper\Root\HistoryLabelFactory',
-            'VuFind\View\Helper\Root\Ils' => 'VuFind\View\Helper\Root\Factory::getIls',
+            'VuFind\View\Helper\Root\Ils' => 'VuFind\View\Helper\Root\IlsFactory',
             'VuFind\View\Helper\Root\JsTranslations' => 'VuFind\View\Helper\Root\Factory::getJsTranslations',
             'VuFind\View\Helper\Root\KeepAlive' => 'VuFind\View\Helper\Root\Factory::getKeepAlive',
             'VuFind\View\Helper\Root\LocalizedNumber' => 'Zend\ServiceManager\Factory\InvokableFactory',
