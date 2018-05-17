@@ -43,18 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the Related helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Related
-     */
-    public static function getRelated(ServiceManager $sm)
-    {
-        return new Related($sm->get('VuFind\Related\PluginManager'));
-    }
-
-    /**
      * Construct the ResultFeed helper.
      *
      * @param ServiceManager $sm Service manager.
