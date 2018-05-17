@@ -43,21 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the UserList helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return UserList
-     */
-    public static function getUserList(ServiceManager $sm)
-    {
-        $sessionManager = $sm->get('Zend\Session\SessionManager');
-        $session = new \Zend\Session\Container('List', $sessionManager);
-        $capabilities = $sm->get('VuFind\Config\AccountCapabilities');
-        return new UserList($session, $capabilities->getListSetting());
-    }
-
-    /**
      * Construct the UserTags helper.
      *
      * @param ServiceManager $sm Service manager.
