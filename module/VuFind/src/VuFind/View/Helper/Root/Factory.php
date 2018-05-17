@@ -43,22 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the HistoryLabel helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return HistoryLabel
-     */
-    public static function getHistoryLabel(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $config = isset($config->SearchHistoryLabels)
-            ? $config->SearchHistoryLabels->toArray() : [];
-        $helpers = $sm->get('ViewHelperManager');
-        return new HistoryLabel($config, $helpers->get('transEsc'));
-    }
-
-    /**
      * Construct the Ils helper.
      *
      * @param ServiceManager $sm Service manager.
