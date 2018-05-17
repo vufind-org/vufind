@@ -86,8 +86,8 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             "institution::$institution", null, $institution
         );
         // Try to handle cases like tritonia-tria
-        if ($view->institutionName === $institution && strpos($institution, '-') > 0)
-        {
+        if ($view->institutionName === $institution && strpos($institution, '-') > 0
+        ) {
             $part = substr($institution, 0, strpos($institution, '-'));
             $view->institutionName = $this->translate(
                 "institution::$part", null, $institution
