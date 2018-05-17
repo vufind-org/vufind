@@ -43,18 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the RecordLink helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return RecordLink
-     */
-    public static function getRecordLink(ServiceManager $sm)
-    {
-        return new RecordLink($sm->get('VuFind\Record\Router'));
-    }
-
-    /**
      * Construct the Related helper.
      *
      * @param ServiceManager $sm Service manager.
