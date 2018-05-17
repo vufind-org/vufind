@@ -28,7 +28,7 @@ return [
             'VuFind\View\Helper\Root\HistoryLabel' => 'VuFind\View\Helper\Root\HistoryLabelFactory',
             'VuFind\View\Helper\Root\Ils' => 'VuFind\View\Helper\Root\IlsFactory',
             'VuFind\View\Helper\Root\JsTranslations' => 'VuFind\View\Helper\Root\JsTranslationsFactory',
-            'VuFind\View\Helper\Root\KeepAlive' => 'VuFind\View\Helper\Root\Factory::getKeepAlive',
+            'VuFind\View\Helper\Root\KeepAlive' => 'VuFind\View\Helper\Root\KeepAliveFactory',
             'VuFind\View\Helper\Root\LocalizedNumber' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\OpenUrl' => 'VuFind\View\Helper\Root\Factory::getOpenUrl',
             'VuFind\View\Helper\Root\Permission' => 'VuFind\View\Helper\Root\PermissionFactory',

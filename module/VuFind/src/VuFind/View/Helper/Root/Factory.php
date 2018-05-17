@@ -43,19 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the KeepAlive helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return KeepAlive
-     */
-    public static function getKeepAlive(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        return new KeepAlive($config->Session->keepAlive ?? 0);
-    }
-
-    /**
      * Construct the OpenUrl helper.
      *
      * @param ServiceManager $sm Service manager.
