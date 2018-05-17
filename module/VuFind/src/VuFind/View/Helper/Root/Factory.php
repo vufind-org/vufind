@@ -43,33 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the OpenUrl helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return OpenUrl
-     */
-    public static function getOpenUrl(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        $openUrlRules = json_decode(
-            file_get_contents(
-                \VuFind\Config\Locator::getConfigPath('OpenUrlRules.json')
-            ),
-            true
-        );
-        $resolverPluginManager = $sm
-            ->get('VuFind\Resolver\Driver\PluginManager');
-        $helpers = $sm->get('ViewHelperManager');
-        return new OpenUrl(
-            $helpers->get('context'),
-            $openUrlRules,
-            $resolverPluginManager,
-            $config->OpenURL ?? null
-        );
-    }
-
-    /**
      * Construct the ProxyUrl helper.
      *
      * @param ServiceManager $sm Service manager.
