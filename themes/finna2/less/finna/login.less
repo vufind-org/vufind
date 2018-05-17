@@ -1,5 +1,5 @@
 /* --- Login Screen --- */
-#authcontainer {
+#authcontainer, #accountForm {
     h3 {
         border-bottom: 1px solid @gray-lighter;
         font-weight: 400;
@@ -49,5 +49,15 @@
     @media (min-width: @screen-sm) {
         width: 50%;
         float: left;
+    }
+}
+#accountForm {
+    @media (min-width: @screen-sm) {
+        .login-col:first-of-type {
+            width: 40%;
+        }
+        .login-col:nth-of-type(2) {
+            width: 60%;
+        }
     }
 }
