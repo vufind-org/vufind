@@ -43,20 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the SearchMemory helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return SearchMemory
-     */
-    public static function getSearchMemory(ServiceManager $sm)
-    {
-        return new SearchMemory(
-            $sm->get('VuFind\Search\Memory')
-        );
-    }
-
-    /**
      * Construct the SearchOptions helper.
      *
      * @param ServiceManager $sm Service manager.
