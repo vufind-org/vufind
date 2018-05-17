@@ -43,22 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the SearchTabs helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return SearchTabs
-     */
-    public static function getSearchTabs(ServiceManager $sm)
-    {
-        $helpers = $sm->get('ViewHelperManager');
-        return new SearchTabs(
-            $sm->get('VuFind\Search\Results\PluginManager'),
-            $helpers->get('url'), $sm->get('VuFind\Search\SearchTabsHelper')
-        );
-    }
-
-    /**
      * Construct the SyndeticsPlus helper.
      *
      * @param ServiceManager $sm Service manager.
