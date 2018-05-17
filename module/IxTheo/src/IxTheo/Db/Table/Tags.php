@@ -33,7 +33,6 @@ use Zend\Db\Sql\Select;
 class Tags extends VuFindTags
 {
 
-//    protected $filtered_resource_tags = 'filtered_resource_tags';
     protected $filtered_resource_tags = 'resource_tags';
 
     /**
@@ -53,12 +52,6 @@ class Tags extends VuFindTags
     }
 
 
-    protected function determineFilteredResourceTable() {
-
-
-    }
-
-
     /**
      * Get the tags that match a string
      *
@@ -68,8 +61,6 @@ class Tags extends VuFindTags
      *
      * @return array Array of \VuFind\Db\Row\Tags objects
      */
-
-
     public function getTagList($sort, $limit = 100, $extra_where = null)
     {
         $callback = function ($select) use ($sort, $limit, $extra_where) {
@@ -100,6 +91,7 @@ class Tags extends VuFindTags
             case 'alphabetical':
                 $select->order([new Expression('lower(tags.tag)'), 'cnt DESC']);
                 break;
+            case 'popularity':
                $select->order(['cnt DESC', new Expression('lower(tags.tag)')]);
                 break;
             case 'recent':
