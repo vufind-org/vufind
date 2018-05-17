@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for Root view helpers.
+ * SystemEmail helper factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2014.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,46 +27,41 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Zend\ServiceManager\ServiceManager;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for Root view helpers.
+ * SystemEmail helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
- *
- * @codeCoverageIgnore
  */
-class Factory
+class SystemEmailFactory implements FactoryInterface
 {
     /**
-     * Construct the UserList helper.
+     * Create an object
      *
-     * @param ServiceManager $sm Service manager.
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return UserList
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    public static function getUserList(ServiceManager $sm)
-    {
-        $sessionManager = $sm->get('Zend\Session\SessionManager');
-        $session = new \Zend\Session\Container('List', $sessionManager);
-        $capabilities = $sm->get('VuFind\Config\AccountCapabilities');
-        return new UserList($session, $capabilities->getListSetting());
-    }
-
-    /**
-     * Construct the UserTags helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return UserTags
-     */
-    public static function getUserTags(ServiceManager $sm)
-    {
-        $capabilities = $sm->get('VuFind\Config\AccountCapabilities');
-        return new UserTags($capabilities->getTagSetting());
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
+        }
+        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        return new $requestedName($config->Site->email ?? '');
     }
 }

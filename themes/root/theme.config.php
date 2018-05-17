@@ -54,7 +54,7 @@ return [
             'VuFind\View\Helper\Root\Summaries' => 'VuFind\View\Helper\Root\ContentLoaderFactory',
             'VuFind\View\Helper\Root\Summon' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\SyndeticsPlus' => 'VuFind\View\Helper\Root\SyndeticsPlusFactory',
-            'VuFind\View\Helper\Root\SystemEmail' => 'VuFind\View\Helper\Root\Factory::getSystemEmail',
+            'VuFind\View\Helper\Root\SystemEmail' => 'VuFind\View\Helper\Root\SystemEmailFactory',
             'VuFind\View\Helper\Root\TransEsc' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Translate' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Truncate' => 'Zend\ServiceManager\Factory\InvokableFactory',
