@@ -48,7 +48,7 @@ return [
             'VuFind\View\Helper\Root\SearchBox' => 'VuFind\View\Helper\Root\SearchBoxFactory',
             'VuFind\View\Helper\Root\SearchMemory' => 'VuFind\View\Helper\Root\SearchMemoryFactory',
             'VuFind\View\Helper\Root\SearchOptions' => 'VuFind\View\Helper\Root\SearchOptionsFactory',
-            'VuFind\View\Helper\Root\SearchParams' => 'VuFind\View\Helper\Root\Factory::getSearchParams',
+            'VuFind\View\Helper\Root\SearchParams' => 'VuFind\View\Helper\Root\SearchParamsFactory',
             'VuFind\View\Helper\Root\SearchTabs' => 'VuFind\View\Helper\Root\Factory::getSearchTabs',
             'VuFind\View\Helper\Root\SortFacetList' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Summaries' => 'VuFind\View\Helper\Root\ContentLoaderFactory',

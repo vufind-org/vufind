@@ -43,20 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the SearchParams helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return SearchParams
-     */
-    public static function getSearchParams(ServiceManager $sm)
-    {
-        return new SearchParams(
-            $sm->get('VuFind\Search\Params\PluginManager')
-        );
-    }
-
-    /**
      * Construct the SearchTabs helper.
      *
      * @param ServiceManager $sm Service manager.
