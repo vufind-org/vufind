@@ -27,9 +27,6 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Cover\CachingProxy;
-use VuFind\Cover\Loader;
-
 /**
  * Generates covers for book entries
  *
@@ -42,70 +39,13 @@ use VuFind\Cover\Loader;
 class CoverController extends AbstractBase
 {
     /**
-     * Cover loader
-     *
-     * @var Loader
-     */
-    protected $loader = false;
-
-    /**
-     * Caching proxy
-     *
-     * @var CachingProxy
-     */
-    protected $proxy = false;
-
-    /**
-     * Get the cover cache directory
-     *
-     * @return string
-     */
-    protected function getCacheDir()
-    {
-        return $this->serviceLocator->get('VuFind\Cache\Manager')
-            ->getCache('cover')->getOptions()->getCacheDir();
-    }
-
-    /**
      * Get the cover loader object
      *
      * @return Loader
      */
     protected function getLoader()
     {
-        // Construct object for loading cover images if it does not already exist:
-        if (!$this->loader) {
-            $cacheDir = $this->getCacheDir();
-            $this->loader = new Loader(
-                $this->getConfig(),
-                $this->serviceLocator->get('VuFind\Content\Covers\PluginManager'),
-                $this->serviceLocator->get('VuFindTheme\ThemeInfo'),
-                $this->serviceLocator->get('VuFindHttp\HttpService'),
-                $cacheDir
-            );
-            $initializer = new \VuFind\ServiceManager\ServiceInitializer();
-            $initializer($this->serviceLocator, $this->loader);
-        }
-        return $this->loader;
-    }
-
-    /**
-     * Get the caching proxy object
-     *
-     * @return CachingProxy
-     */
-    protected function getProxy()
-    {
-        if (!$this->proxy) {
-            $client = $this->serviceLocator->get('VuFindHttp\HttpService')
-                ->createClient();
-            $cacheDir = $this->getCacheDir() . '/proxy';
-            $config = $this->getConfig()->toArray();
-            $whitelist = isset($config['Content']['coverproxyCache'])
-                ? (array)$config['Content']['coverproxyCache'] : [];
-            $this->proxy = new CachingProxy($client, $cacheDir, $whitelist);
-        }
-        return $this->proxy;
+        return $this->serviceLocator->get('VuFind\Cover\Loader');
     }
 
     /**
@@ -144,8 +84,9 @@ class CoverController extends AbstractBase
         // Special case: proxy a full URL:
         $proxy = $this->params()->fromQuery('proxy');
         if (!empty($proxy)) {
+            $proxyService = $this->serviceLocator->get('VuFind\Cover\CachingProxy');
             try {
-                $image = $this->getProxy()->fetch($proxy);
+                $image = $proxyService->fetch($proxy);
                 return $this->displayImage(
                     $image->getHeaders()->get('contenttype')->getFieldValue(),
                     $image->getContent()
