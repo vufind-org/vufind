@@ -16,7 +16,7 @@
       <div class="form-group">
         <div class="feedback-info">
           <label for="feedback_from" class="control-label">
-            <?= $this->TransEsc('Send feedback on record'); ?>: <?=$this->escapeHtml($this->organisationDisplayName($this->driver, true)) ?>
+            <?=$this->transEsc('feedback_recipient_info_record', ['%%institution%%' => $this->organisationDisplayName($this->driver, true)]); ?>
           </label>
         </div>
       </div>
