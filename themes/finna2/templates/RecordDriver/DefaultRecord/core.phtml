@@ -85,7 +85,7 @@
           </div>
         <? endforeach; ?>
     <? endif; ?>
-    
+
     <? if (!empty($audioUrls)): ?>
       <?= $this->partial('RecordDriver/SolrDefault/record-audio-player.phtml', ['audioUrls' => $audioUrls]) ?>
     <? endif; ?>
@@ -178,7 +178,9 @@
        </div>
      <? endif; ?>
      <? $results = $this->driver->getNonPresenterAuthors();?>
-     <? if ($results): ?>
+     <? $containerTitle = $this->driver->getContainerTitle(); ?>
+     <? $hostRecords = $this->driver->tryMethod('getHostRecords'); ?>
+     <? if ($results || $containerTitle || $hostRecords): ?>
       <div class="recordAuthors" property="author">
        <div class="truncate-field">
          <? foreach($results as $index => $author): ?>
@@ -193,8 +195,6 @@
            <? endif; ?>
          <? endforeach; ?>
        </div>
-     <? $containerTitle = $this->driver->getContainerTitle(); ?>
-     <? $hostRecords = $this->driver->tryMethod('getHostRecords'); ?>
      <? if ($containerTitle || $hostRecords): ?>
        <div class="recordContainerReference">
          <?
@@ -266,10 +266,7 @@
     ?>
     <? if (!empty($coreFields)): ?>
       <table class="table table-finna-record record-details record-details-more" style="table-layout:initial;">
-        <? foreach ($coreFields as $key => $current): ?>
-         <? $header = $this->transEsc(isset($current['context']['title']) ? $current['context']['title'] : $key); ?>
-         <tr class="<?=$current['context']['class'];?>"><th><?=$header !== '' ? "$header:" : ''?></th><td><?=$current['value']?></td></tr>
-        <? endforeach; ?>
+        <?=$this->partial('RecordDriver/SolrDefault/core-fields.phtml', ['coreFields' => $coreFields]);?>
         <? if ($openUrlActive): ?>
           <tr>
             <td colspan="2" class="more-options-link"><?=$openUrl->renderTemplate()?> </td>

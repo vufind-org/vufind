@@ -56,7 +56,17 @@ class Factory
     {
         $config = $sm->get('VuFind\Config')->get('config');
         $enabled = isset($config->Content->recordMap);
-        return new Map($enabled);
+
+        // get Map Tab config options
+        $mapTabConfig = $sm->get('VuFind\GeoFeatures\MapTabConfig');
+        $mapTabOptions = $mapTabConfig->getMapTabOptions();
+        $mapTabDisplay = $mapTabOptions['recordMap'];
+
+        // add basemap options
+        $basemapConfig = $sm->get('VuFind\GeoFeatures\BasemapConfig');
+        $basemapOptions = $basemapConfig->getBasemap('MapTab');
+
+        return new Map($mapTabDisplay, $basemapOptions, $mapTabOptions);
     }
 
     /**

@@ -503,19 +503,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $profile = $view->profile;
         }
 
-        $parentTemplate = $view->getTemplate();
-        // If returned view is not profile view, show it below our profile part.
-        if ($parentTemplate != '' && $parentTemplate != 'myresearch/profile') {
-            $childView = $this->createViewModel();
-            $childView->setTemplate('myresearch/profile');
-
-            $compoundView = $this->createViewModel();
-            $compoundView->addChild($childView, 'child');
-            $compoundView->addChild($view, 'parent');
-
-            return $compoundView;
-        }
-
         // Check if due date reminder settings should be displayed
         $config = $this->getConfig();
         $view->hideDueDateReminder = $user->finna_due_date_reminder == 0
@@ -748,38 +735,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         } else {
             $view->setTemplate('myresearch/change-messaging-settings');
         }
-        return $view;
-    }
-
-    /**
-     * Delete account form
-     *
-     * @return mixed
-     */
-    public function deleteAccountAction()
-    {
-        $user = $this->getUser();
-        if ($user == false) {
-            return $this->forceLogin();
-        }
-
-        $view = $this->createViewModel();
-        $view->accountDeleted = false;
-        $view->token = $this->getSecret($this->getUser());
-        if ($this->formWasSubmitted('submit')) {
-            $success = $this->processDeleteAccount();
-            if ($success) {
-                $view->accountDeleted = true;
-                $view->redirectUrl = $this->getAuthManager()->logout(
-                    $this->getServerUrl('home')
-                );
-            }
-        } elseif ($this->formWasSubmitted('reset')) {
-            return $this->redirect()->toRoute(
-                'default', ['controller' => 'MyResearch', 'action' => 'Profile']
-            );
-        }
-        $view->setTemplate('myresearch/delete-account');
         return $view;
     }
 
@@ -1276,42 +1231,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $this->flashMessenger()->addErrorMessage($result['status']);
                 $success = false;
             }
-        }
-        return $success;
-    }
-
-    /**
-     * Delete user account for MyResearch module
-     *
-     * @return boolean
-     */
-    protected function processDeleteAccount()
-    {
-        $user = $this->getUser();
-
-        if (!$user) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('You must be logged in first');
-            return false;
-        }
-
-        $token = $this->getRequest()->getPost('token', null);
-        if (empty($token)) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Missing token');
-            return false;
-        }
-        if ($token !== $this->getSecret($user)) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Invalid token');
-            return false;
-        }
-
-        $success = $user->anonymizeAccount();
-
-        if (!$success) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('delete_account_failure');
         }
         return $success;
     }

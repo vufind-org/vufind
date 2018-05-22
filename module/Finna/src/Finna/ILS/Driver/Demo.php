@@ -201,9 +201,6 @@ class Demo extends \VuFind\ILS\Driver\Demo
                 }
             }
         }
-        if (empty($this->sesion->fines)) {
-            unset($this->session->fines);
-        }
 
         return true;
     }

@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2014-2016.
+ * Copyright (C) The National Library of Finland 2014-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,13 +23,14 @@
  * @package  OnlinePayment
  * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  * @link     http://docs.paytrail.com/ Paytrail API documentation
  */
 namespace Finna\OnlinePayment;
 
-require_once 'Paytrail_Module_Rest.php';
+use Finna\OnlinePayment\Paytrail\PaytrailE2;
 
 /**
  * Paytrail payment handler module.
@@ -92,7 +93,7 @@ class Paytrail extends BaseHandler
      * (excluding transaction fee)
      * @param int                $transactionFee Transaction fee
      * @param array              $fines          Fines data
-     * @param strin              $currency       Currency
+     * @param string             $currency       Currency
      * @param string             $statusParam    Payment status URL parameter
      *
      * @return string Error message on error, otherwise redirects to payment handler.
@@ -104,50 +105,55 @@ class Paytrail extends BaseHandler
         $patronId = $patron['cat_username'];
         $orderNumber = $this->generateTransactionId($patronId);
 
-        $successUrl
-            = "{$finesUrl}?driver={$driver}"
-            . "&{$statusParam}=" . self::PAYMENT_SUCCESS;
+        $module = $this->initPaytrail($orderNumber, $currency);
 
-        $failUrl
-            = "{$finesUrl}?driver={$driver}"
-            . "&{$statusParam}=" . self::PAYMENT_FAILURE;
+        $successUrl = "$finesUrl?driver=$driver&$statusParam="
+            . self::PAYMENT_SUCCESS;
+        $cancelUrl = "$finesUrl?driver=$driver&$statusParam="
+            . self::PAYMENT_FAILURE;
+        $notifyUrl = "$ajaxUrl/onlinePaymentNotify?driver=$driver&$statusParam="
+            . self::PAYMENT_NOTIFY;
 
-        $notifyUrl
-            = "{$ajaxUrl}/onlinePaymentNotify?driver={$driver}"
-            . "&{$statusParam}=" . self::PAYMENT_NOTIFY;
+        $module->setUrls($successUrl, $cancelUrl, $notifyUrl);
+        $module->setOrderNumber($orderNumber);
+        $module->setCurrency($currency);
 
-        $urlset
-            = new Paytrail_Module_Rest_Urlset($successUrl, $failUrl, $notifyUrl, '');
+        if (!empty($this->config->paymentDescription)) {
+            $module->setMerchantDescription(
+                $this->config->paymentDescription . " - $patronId"
+            );
+        } else {
+            $module->setMerchantDescription($description);
+        }
+
+        $lastname = trim($user->lastname);
+        if (!empty($user->firstname)) {
+            $module->setFirstName(trim($user->firstname));
+        } else {
+            // We don't have both names separately, try to extract first name from
+            // last name.
+            if (strpos($lastname, ',') > 0) {
+                // Lastname, Firstname
+                list($lastname, $firstname) = explode(',', $lastname, 2);
+            } else {
+                // First Middle Last
+                if (preg_match('/^(.*) (.*?)$/', $lastname, $matches)) {
+                    $firstname = $matches[1];
+                    $lastname = $matches[2];
+                }
+            }
+            $lastname = trim($lastname);
+            $firstname = trim($firstname);
+            $module->setFirstName(empty($firstname) ? 'ei tietoa' : $firstname);
+        }
+        $module->setLastName(empty($lastname) ? 'ei tietoa' : $lastname);
 
         if (!isset($this->config->productCode)
             && !isset($this->config->transactionFeeProductCode)
             && !isset($this->config->productCodeMappings)
         ) {
-            $totAmount = ($amount + $transactionFee) / 100.00;
-            $payment = new Paytrail_Module_Rest_Payment_S1(
-                $orderNumber, $urlset, $totAmount
-            );
+            $module->setTotalAmount($amount + $transactionFee);
         } else {
-            $email = !empty($user->email) ? $user->email : '';
-            if (empty($email)) {
-                if (empty($patron['email'])) {
-                    return 'online_payment_email_address_required';
-                }
-                $email = $patron['email'];
-            }
-            $contact = new Paytrail_Module_Rest_Contact(
-                !empty($user->firstname) ? $user->firstname : 'N/A',
-                !empty($user->lastname) ? $user->lastname : 'N/A',
-                $email,
-                !empty($patron['address1']) ? $patron['address1'] : 'N/A',
-                !empty($patron['zip']) ? $patron['zip'] : 'N/A',
-                !empty($patron['city']) ? $patron['city'] : 'N/A',
-                'FI' //TODO: need mapping from $patron['country']?
-            );
-            $payment = new Paytrail_Module_Rest_Payment_E1(
-                $orderNumber, $urlset, $contact
-            );
-
             $productCode = !empty($this->config->productCode)
                 ? $this->config->productCode : '';
             $productCodeMappings = [];
@@ -189,42 +195,24 @@ class Paytrail extends BaseHandler
                         . substr($fine['title'], 0, 255 - 4 - strlen($fineDesc))
                     . ')';
                 }
-                $payment->addProduct(
-                    $fineDesc ?: '', $code, 1, $fine['balance'] / 100.00, 0, 0
+                $module->addProduct(
+                    $fineDesc, $code, 1, $fine['balance'], 0, PaytrailE2::TYPE_NORMAL
                 );
             }
             if ($transactionFee) {
                 $code = isset($this->config->transactionFeeProductCode)
                     ? $this->config->transactionFeeProductCode : $productCode;
-                $payment->addProduct(
+                $module->addProduct(
                     'Palvelumaksu / Serviceavgift / Transaction fee', $code, 1,
-                    $transactionFee / 100.00, 0, 0,
-                    Paytrail_Module_Rest_Product::TYPE_HANDLING
+                    $transactionFee, 0, PaytrailE2::TYPE_HANDLING
                 );
             }
         }
 
-        $locale = $this->translator->getLocale();
-        $localeParts = explode('-', $locale);
-        if ('sv' === $localeParts[0]) {
-            $payment->setLocale('sv_SE');
-        } elseif ('en' === $localeParts[0]) {
-            $payment->setLocale('en_US');
-        }
-
-        if (!empty($this->config->paymentDescription)) {
-            $payment->setDescription($this->config->paymentDescription);
-        }
-
-        if (!$module = $this->initPaytrail()) {
-            $this->logger->err('Paytrail: error starting payment processing.');
-            return false;
-        }
-
         try {
-            $result = $module->processPayment($payment);
-        } catch (Paytrail_Exception $e) {
-            $err = 'Paytrail: error starting payment processing: '
+            $formData = $module->createPaymentFormData();
+        } catch (\Exception $e) {
+            $err = 'Paytrail: error creating payment form data: '
                 . $e->getMessage();
             $this->logger->err($err);
             return false;
@@ -244,7 +232,10 @@ class Paytrail extends BaseHandler
             return false;
         }
 
-        $this->redirectToPayment($result->getUrl());
+        $paytrailUrl = !empty($this->config->e2url) ? $this->config->e2url
+            : 'https://payment.paytrail.com/e2';
+
+        $this->redirectToPaymentForm($paytrailUrl, $formData);
     }
 
     /**
@@ -274,16 +265,16 @@ class Paytrail extends BaseHandler
         $t = $data;
 
         $amount = $t->amount;
-        if ($status == self::PAYMENT_SUCCESS || $status == self::PAYMENT_NOTIFY) {
+        if ($status === self::PAYMENT_SUCCESS || $status === self::PAYMENT_NOTIFY) {
             if (!$module = $this->initPaytrail()) {
                 return 'online_payment_failed';
             }
-            $success = $module->confirmPayment(
-                $params["ORDER_NUMBER"],
-                $params["TIMESTAMP"],
-                $params["PAID"],
-                $params["METHOD"],
-                $params["RETURN_AUTHCODE"]
+            $success = $module->validateRequest(
+                $params['ORDER_NUMBER'],
+                $params['PAYMENT_ID'],
+                $params['TIMESTAMP'],
+                $params['STATUS'],
+                $params['RETURN_AUTHCODE']
             );
             if (!$success) {
                 $this->logger->err(
@@ -300,7 +291,7 @@ class Paytrail extends BaseHandler
                 'transactionId' => $orderNum,
                 'amount' => $amount
             ];
-        } elseif ($status == self::PAYMENT_FAILURE) {
+        } elseif ($status === self::PAYMENT_FAILURE) {
             $this->setTransactionCancelled($orderNum);
             return 'online_payment_canceled';
         } else {
@@ -310,25 +301,77 @@ class Paytrail extends BaseHandler
     }
 
     /**
-     * Init Paytrail module with configured merchantId, secret and URL.
+     * Initialize the Paytrail module
      *
-     * @return Paytrail_Module_Rest module.
+     * @return PaytrailE2
      */
     protected function initPaytrail()
     {
-        foreach (['merchantId', 'secret', 'url'] as $req) {
+        foreach (['merchantId', 'secret'] as $req) {
             if (!isset($this->config[$req])) {
                 $this->logger->err("Paytrail: missing parameter $req");
-                return false;
+                throw new \Exception('Missing parameter');
             }
         }
-        $module = new Paytrail_Module_Rest(
-            $this->config['merchantId'],
-            $this->config['secret'],
-            $this->config['url']
+
+        $locale = $this->translator->getLocale();
+        $localeParts = explode('-', $locale);
+        $paytrailLocale = 'fi_FI';
+        if ('sv' === $localeParts[0]) {
+            $paytrailLocale = 'sv_SE';
+        } elseif ('en' === $localeParts[0]) {
+            $paytrailLocale = 'en_US';
+        }
+
+        return new PaytrailE2(
+            $this->config->merchantId, $this->config->secret, $paytrailLocale
         );
-        $module->setHttpService($this->http);
-        $module->setLogger($this->logger);
-        return $module;
+    }
+
+    /**
+     * Redirect to payment handler.
+     *
+     * @param string $url      URL
+     * @param array  $formData Form fields
+     *
+     * @return void
+     */
+    protected function redirectToPaymentForm($url, $formData)
+    {
+        // Output a minimal form and submit it automatically
+        $formFields = '';
+        foreach ($formData as $key => $value) {
+            $formFields .= '<input type="hidden" name="' . htmlentities($key)
+                . '" value="' . htmlentities($value) . '">';
+        }
+        $locale = $this->translator->getLocale();
+        list($lang) = explode('-', $locale);
+        $title = $this->translator->translate('online_payment_go_to_pay');
+        $title = str_replace('%%amount%%', '', $title);
+        $jsRequired = $this->translator->translate('Please enable JavaScript.');
+        echo <<<EOT
+<!DOCTYPE html>
+<html lang="$lang">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>$title</title>
+</head>
+<body>
+    <noscript>
+        $jsRequired
+    </noscript>
+    <form id="paytrail-form" action="$url" method="POST">
+        $formFields
+    </form>
+    <script>
+        document.getElementById('paytrail-form').submit();
+    </script>
+</body>
+</html>
+EOT;
+
+        exit();
     }
 }

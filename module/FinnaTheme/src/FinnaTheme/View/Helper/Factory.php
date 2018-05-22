@@ -76,4 +76,19 @@ class Factory extends \VuFindTheme\View\Helper\Factory
             $sm->get('VuFind\DbTablePluginManager')->get('FinnaCache')
         );
     }
+
+    /**
+     * Construct the InlineScript helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return InlineScript
+     */
+    public static function getInlineScript(ServiceManager $sm)
+    {
+        return new InlineScript(
+            $sm->get('VuFindTheme\ThemeInfo'),
+            Factory::getPipelineConfig($sm)
+        );
+    }
 }

@@ -145,17 +145,17 @@ finna.record = (function finnaRecord() {
     $(window).trigger('hashchange');
   }
 
-  function initRecordAccordions() {
-    $('.record-accordions .accordion-toggle').click(function accordionClicked(e) {
-      return _toggleAccordion($(e.target).closest('.accordion'));
-    });
-  }
-
   function initAudioAccordion() {
     $('.audio-accordion .audio-item-wrapper').first().addClass('active');
     $('.audio-accordion .audio-title-wrapper').click(function audioAccordionClicker() {
       $('.audio-accordion .audio-item-wrapper.active').removeClass('active');
       $(this).parent().addClass('active');
+    });
+  }
+
+  function initRecordAccordion() {
+    $('.record-accordions .accordion-toggle').click(function accordionClicked(e) {
+      return _toggleAccordion($(e.target).closest('.accordion'));
     });
   }
 
@@ -168,7 +168,9 @@ finna.record = (function finnaRecord() {
     var accordion = (newTab.length <= 1 || newTab === '#tabnav' || $tab.length === 0)
       ? $('.record-accordions .accordion.initiallyActive')
       : $tab.closest('.accordion');
-    _toggleAccordion(accordion, true);
+    if (accordion.length > 0) {
+      _toggleAccordion(accordion, true);
+    }
   }
 
   // The accordion has a delicate relationship with the tabs. Handle with care!
@@ -231,7 +233,7 @@ finna.record = (function finnaRecord() {
     initHideDetails();
     initDescription();
     initRecordNaviHashUpdate();
-    initRecordAccordions();
+    initRecordAccordion();
     applyRecordAccordionHash();
     initAudioAccordion();
     $(window).on('hashchange', applyRecordAccordionHash);

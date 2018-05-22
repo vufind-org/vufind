@@ -3,6 +3,7 @@ return [
     'extends' => 'bootstrap3',
     'helpers' => [
         'factories' => [
+            'Finna\View\Helper\Root\Auth' => 'Finna\View\Helper\Root\Factory::getAuth',
             'Finna\View\Helper\Root\AuthorizationNote' => 'Finna\View\Helper\Root\Factory::getAuthorizationNote',
             'Finna\View\Helper\Root\Autocomplete' => 'Finna\View\Helper\Root\Factory::getAutocomplete',
             'Finna\View\Helper\Root\Browse' => 'Finna\View\Helper\Root\Factory::getBrowse',
@@ -11,6 +12,7 @@ return [
             'Finna\View\Helper\Root\CheckboxFacetCounts' => 'Finna\View\Helper\Root\Factory::getCheckboxFacetCounts',
             'Finna\View\Helper\Root\Combined' => 'Finna\View\Helper\Root\Factory::getCombined',
             'Finna\View\Helper\Root\Content' => 'Finna\View\Helper\Root\Factory::getContent',
+            'Finna\View\Helper\Root\Cookie' => 'Finna\View\Helper\Root\Factory::getCookie',
             'Finna\View\Helper\Root\EDS' => 'Finna\View\Helper\Root\Factory::getEDS',
             'Finna\View\Helper\Root\Feed' => 'Finna\View\Helper\Root\Factory::getFeed',
             'Finna\View\Helper\Root\FileSrc' => 'Finna\View\Helper\Root\Factory::getFileSrc',
@@ -18,6 +20,7 @@ return [
             'Finna\View\Helper\Root\Header' => 'Finna\View\Helper\Root\Factory::getHeader',
             'FinnaTheme\View\Helper\HeadLink' => 'FinnaTheme\View\Helper\Factory::getHeadLink',
             'FinnaTheme\View\Helper\HeadScript' => 'FinnaTheme\View\Helper\Factory::getHeadScript',
+            'FinnaTheme\View\Helper\InlineScript' => 'FinnaTheme\View\Helper\Factory::getInlineScript',
             'Finna\View\Helper\Root\HeadTitle' => 'Finna\View\Helper\Root\Factory::getHeadTitle',
             'Finna\View\Helper\Root\HoldingsSettings' => 'Finna\View\Helper\Root\Factory::getHoldingsSettings',
             'Finna\View\Helper\Root\ImageSrc' => 'Finna\View\Helper\Root\Factory::getImageSrc',
@@ -58,6 +61,7 @@ return [
             'Finna\View\Helper\Root\UserPublicName' => 'Finna\View\Helper\Root\Factory::getUserPublicName',
         ],
         'aliases' => [
+            'auth' => 'Finna\View\Helper\Root\Auth',
             'authorizationNote' => 'Finna\View\Helper\Root\AuthorizationNote',
             'autocomplete' => 'Finna\View\Helper\Root\Autocomplete',
             'barcode' => 'Finna\View\Helper\Root\Barcode',
@@ -65,6 +69,7 @@ return [
             'checkboxFacetCounts' => 'Finna\View\Helper\Root\CheckboxFacetCounts',
             'combined' => 'Finna\View\Helper\Root\Combined',
             'content' => 'Finna\View\Helper\Root\Content',
+            'cookie' => 'Finna\View\Helper\Root\Cookie',
             'eds' => 'Finna\View\Helper\Root\EDS',
             'feed' => 'Finna\View\Helper\Root\Feed',
             'fileSrc' => 'Finna\View\Helper\Root\FileSrc',
@@ -72,6 +77,7 @@ return [
             'header' => 'Finna\View\Helper\Root\Header',
             'headLink' => 'FinnaTheme\View\Helper\HeadLink',
             'headScript' => 'FinnaTheme\View\Helper\HeadScript',
+            'inlineScript' => 'FinnaTheme\View\Helper\InlineScript',
             'headTitle' => 'Finna\View\Helper\Root\HeadTitle',
             'holdingsSettings' => 'Finna\View\Helper\Root\HoldingsSettings',
             'imageSrc' => 'Finna\View\Helper\Root\ImageSrc',
@@ -172,6 +178,7 @@ return [
         'vendor/priority-nav.min.js',
         'vendor/leaflet.min.js',
         'vendor/leaflet.draw.min.js',
+        'vendor/jquery.panzoom.min.js',
     ],
     'less' => [
         'active' => false

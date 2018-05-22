@@ -4,7 +4,6 @@ enabled = 0
 ; Kirjastohakemisto API URL
 url = "https://api.kirjastot.fi/v3"
 
-
 ; Language settings.
 ; Language codes are given in Kirjastohakemisto format (fi, sv, en...)
 
@@ -58,3 +57,6 @@ details = true
 services[wifi] = "55871,55519,55621,55377,55696,55328,55799,55339,55620,55318,55376,55575,55290,55584,55717,55304"
 services[print] = "55355,55752,55856,55848,55628,55805,55375,55549,55342,55327,55332,55333,55749"
 
+[MuseumAPI]
+; Museoliiton API URL
+url = "https://museot.fi/xml"

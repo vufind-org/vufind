@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015-2017.
+ * Copyright (C) The National Library of Finland 2015-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
@@ -38,6 +39,7 @@ use VuFindSearch\Query\Query as Query;
  * @category VuFind
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
@@ -780,6 +782,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     public function getImagePopupAjax()
     {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $headers->addHeaderLine('Content-type', 'text/html');
@@ -828,6 +831,9 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 $context['listUser'] = $user;
             }
         }
+        $context['enableImagePopupZoom']
+            = isset($config->Content->enableImagePopupZoom)
+            ? $config->Content->enableImagePopupZoom : false;
 
         $recordHelper = $this->getViewRenderer()->plugin('record');
         $html = $recordHelper($driver)
@@ -863,7 +869,18 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $cookieName = 'organisationInfoId';
         $cookieManager = $this->serviceLocator->get('VuFind\CookieManager');
         $cookie = $cookieManager->get($cookieName);
-
+        $params['orgType'] = 'library';
+        $museumSource = [
+            'museo', 'museum', 'kansallisgalleria', 'ateneum', 'musee',
+            'nationalgalleri', 'gallery'
+        ];
+        foreach ($museumSource as $source) {
+            $checkName = $this->translate("source_" . strtolower($parent));
+            if (stripos($checkName, $source)) {
+                $params['orgType'] = 'museum';
+                break;
+            }
+        }
         $action = $params['action'];
         $buildings = isset($params['buildings'])
             ? explode(',', $params['buildings']) : null;
@@ -903,7 +920,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $service = $this->serviceLocator->get('Finna\OrganisationInfo');
         try {
-            $response = $service->query($parent, $params, $buildings);
+            $response = $service->query($parent, $params, $buildings, $action);
         } catch (\Exception $e) {
             return $this->handleError(
                 'getOrganisationInfo: '

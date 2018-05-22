@@ -113,8 +113,9 @@ class Factory
     public static function getExpireUsers(ServiceManager $sm)
     {
         $table = $sm->get('VuFind\DbTablePluginManager')->get('User');
-
-        return new ExpireUsers($table);
+        $config = $sm->get('VuFind\Config')->get('config');
+        $removeComments = $config->Authentication->delete_comments_with_user ?? true;
+        return new ExpireUsers($table, $removeComments);
     }
 
     /**

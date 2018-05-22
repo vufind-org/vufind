@@ -7,7 +7,7 @@
       <span class="filter-value">
         <? $removeLink = isset($urlQuery) ? $urlQuery->removeFilter($filter['filter']) : ''; ?>
         <?=$this->translate($filter['desc']) ?>
-        <? if($removeLink): ?><a href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><? endif; ?>
+        <? if($removeLink): ?><a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><? endif; ?>
       </span>
     <? endif ?>
   <? endforeach; ?>
@@ -17,7 +17,7 @@
       <span class="filter-value">
         <? $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($data[0]['field'], $data[0]['value'], $data[0]['operator']) : '';?>
         <?=$this->transEsc($field)?>
-        <? if($removeLink): ?><a href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><? endif; ?>
+        <? if($removeLink): ?><a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><? endif; ?>
       </span>
     <? else: ?>
       <div class="title-value-pair">
@@ -33,7 +33,7 @@
             <? else: ?>
               <?=$this->escapeHtml($value['displayText'])?>
             <? endif; ?>
-            <? if($removeLink): ?><a href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><? endif; ?>
+            <? if($removeLink): ?><a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><? endif; ?>
           </span>
           <? if ($index == 0): ?></div><? endif; ?>
         <? endforeach; ?>

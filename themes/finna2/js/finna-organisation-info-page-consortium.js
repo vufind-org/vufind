@@ -25,7 +25,7 @@ finna.organisationInfoPageConsortium = (function organisationInfoPageConsortium(
       var logo = null;
       if ('logo' in consortiumData) {
         logo = finna.common.getField(consortiumData.logo, 'small');
-        $('<img/>').attr('src', logo).appendTo(infoField.find('.consortium-logo').removeClass('hide'));
+        $('<img/>').attr('src', logo).attr('alt', '').appendTo(infoField.find('.consortium-logo').removeClass('hide'));
       } else {
         infoField.addClass('no-logo');
       }

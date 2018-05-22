@@ -47,16 +47,23 @@ class ExpireUsers extends AbstractService
      *
      * @var \VuFind\Db\Table\User
      */
-    protected $table = null;
+    protected $table;
+
+    /**
+     * Whether comments are deleted
+     */
+    protected $removeComments;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Db\Table\User $table User table.
+     * @param \VuFind\Db\Table\User $table          User table
+     * @param bool                  $removeComments Whether to delete comments
      */
-    public function __construct(\VuFind\Db\Table\User $table)
+    public function __construct(\VuFind\Db\Table\User $table, $removeComments)
     {
         $this->table = $table;
+        $this->removeComments = $removeComments;
     }
 
     /**
@@ -70,7 +77,7 @@ class ExpireUsers extends AbstractService
     {
         if (!isset($arguments[0]) || (int)$arguments[0] < 180) {
             echo "Usage:\n  php index.php util expire_users <days>\n\n"
-                . "  Anonymizes all user accounts that have not been logged into\n"
+                . "  Removes all user accounts that have not been logged into\n"
                 . "  for past <days> days. Values below 180 are not accepted.\n";
             return false;
         }
@@ -79,15 +86,15 @@ class ExpireUsers extends AbstractService
         $count = 0;
 
         foreach ($users as $user) {
-            $this->msg("Anonymizing the user: " . $user->username);
-            $user->anonymizeAccount();
+            $this->msg("Removing user: " . $user->username);
+            $user->delete($this->removeComments);
             $count++;
         }
 
         if ($count === 0) {
-            $this->msg('No expired users to anonymize.');
+            $this->msg('No expired users to remove.');
         } else {
-            $this->msg("$count expired users anonymized.");
+            $this->msg("$count expired users removed.");
         }
 
         return true;
@@ -98,7 +105,7 @@ class ExpireUsers extends AbstractService
      *
      * @param int $days Preserve users active less than provided amount of days ago
      *
-     * @return User[] Expired users
+     * @return \Zend\Db\ResultSet\ResultSet
      */
     protected function getExpiredUsers($days)
     {
@@ -106,7 +113,6 @@ class ExpireUsers extends AbstractService
 
         return $this->table->select(
             function (Select $select) use ($expireDate) {
-                $select->where->notLike('username', 'deleted:%');
                 $select->where->lessThan('finna_last_login', $expireDate);
                 $select->where->notEqualTo(
                     'finna_last_login',

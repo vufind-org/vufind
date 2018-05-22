@@ -1022,7 +1022,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             // Turn the holdings into a keyed array
             if (!empty($holdingsResult['holdings'])) {
                 foreach ($holdingsResult['holdings'] as $holding) {
-                    $holdings[$holding['holdingnumber']] = $holding;
+                    $holdings[$holding['holding_id']] = $holding;
                 }
             }
         }
@@ -1037,10 +1037,10 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         foreach ($result[0]['item_availabilities'] as $i => $item) {
             // $holding is a reference!
             unset($holding);
-            if (!empty($item['holdingnumber'])
-                && isset($holdings[$item['holdingnumber']])
+            if (!empty($item['holding_id'])
+                && isset($holdings[$item['holding_id']])
             ) {
-                $holding = &$holdings[$item['holdingnumber']];
+                $holding = &$holdings[$item['holding_id']];
                 if ($holding['suppress']) {
                     continue;
                 }
@@ -1192,7 +1192,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         }
 
         $marcDetails = [
-            'holdings_id' => $holding['holdingnumber']
+            'holdings_id' => $holding['holding_id']
         ];
 
         // Get Notes

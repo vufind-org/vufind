@@ -37,7 +37,7 @@
       <? endif; ?>
       <div class="comment-info">
         <small>
-          <strong><?=$this->escapeHtml(trim($this->userPublicName($comment)))?></strong>
+          <strong><?=null === $comment->user_id ? $this->transEsc('comment_anonymous_user') : $this->escapeHtml(trim($this->userPublicName($comment)))?></strong>
           <?=$this->escapeHtml($comment->created)?>
           <? if ($own): ?>
             <a href="#" class="edit"><?=$this->transEsc('Edit')?></a>

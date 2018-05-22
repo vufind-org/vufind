@@ -1,7 +1,8 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/toolbar_mobile.phtml -->
 <?
   if ($this->driver->tryMethod('socialMediaSharingAllowed') !== false) {
-    $shareUrl = $this->serverUrl($this->recordLink()->getUrl($this->driver));
+      $shareUrl = $this->serverUrl($this->recordLink()->getUrl($this->driver));
+      $shareUrl .= (strpos($shareUrl, '?') ? '&' : '?') . 'lng=' . urlencode($this->layout()->userLang);
   }
 
   // Set up some variables for convenience:
@@ -60,7 +61,6 @@
             <? if ($publisher): /* TODO */ ?><meta property="article:publisher" content="" /><? endif; ?>
             <meta property="og:image" content="<?=$this->escapeHtmlAttr($mediumThumb);?>" />
             -->
-          </li>
           <li class="whatsapp">
             <span class="visible-xs"><a class="whatsapp-record" href="whatsapp://send?text=<?=urlencode($this->serverUrl() . $this->recordLink()->getUrl($this->driver)) ?>" data-action="share/whatsapp/share" rel="nofollow"><i class="fa fa-phone"></i><span class="sr-only">Whatsapp</span></a></span>
           </li>

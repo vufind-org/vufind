@@ -434,3 +434,38 @@
 .share-buttons-toolbox {
     display: inline-block;
 }
+
+// Request forms
+.ill-request-terms {
+  background-color: @state-info-bg;
+  padding: 2em;
+  padding-left: 2.5em;
+  margin-bottom: 1em;
+}
+
+// Comment form
+.comment-form {
+  .fa.fa-info3 {
+    font-size: 1.5em;
+    float: left;
+    color: @brand-primary;
+  }
+  .comment-description {
+    margin-top: 1em;
+    margin-left: 2em;
+  }
+  @media (min-width: @screen-md) {
+    .fa.fa-info3 {
+      margin-top: 2.7em;
+      margin-left: 1em;
+    }
+    .comment-col {
+        width: 50%;
+        float: left;
+    }
+    .comment-description {
+      margin-top: 4em;
+      margin-left: 4em;
+    }
+  }
+}

@@ -58,6 +58,10 @@ class Factory extends \VuFind\Mailer\Factory
         $config = $sm->get('VuFind\Config')->get('config');
 
         // Create service:
-        return new \Finna\Mailer\Mailer($this->getTransport($config));
+        $class = new \Finna\Mailer\Mailer($this->getTransport($config));
+        if (!empty($config->Mail->override_from)) {
+            $class->setFromAddressOverride($config->Mail->override_from);
+        }
+        return $class;
     }
 }

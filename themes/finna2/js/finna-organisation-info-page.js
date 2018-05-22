@@ -20,7 +20,8 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
         var cnt = 0;
         $.each(response.list, function countItem(ind, obj) {
           organisationList[obj.id] = obj;
-          if (obj.type === 'library' || obj.type === 'other') {
+          if (obj.type === 'library' || obj.type === 'other'
+            || obj.type === 'museum') {
             cnt++;
           }
         });
@@ -38,8 +39,10 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
             // IE opens Delay initing autocomplete menu to prevent IE from opening it automatically at
             initSearch();
           }
+          var desc = VuFind.translate('organisationInfoAutocomplete').replace('%%count%%', cnt);
           holder.find('.ui-autocomplete-input')
-            .attr('placeholder', VuFind.translate('organisationInfoAutocomplete').replace('%%count%%', cnt))
+            .attr('placeholder', desc)
+            .attr('aria-label', desc)
             .focus().blur();
 
           if (typeof id != 'undefined' && id) {
@@ -272,19 +275,27 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
     holder.find('.office-quick-information .service-title').text(data.name);
     if ('address' in data) {
       holder.find('.office-links.address').html(data.address);
-      var address = holder.find('.address-contact');
-      address.show().find('> p').html(data.address);
+      if (!data.details.museum) {
+        var address = holder.find('.address-contact');
+        address.show().find('> p').html(data.address);
+      }
     }
     if ('email' in data) {
       var email = data.email;
       holder.find('.email').attr('href', 'mailto:' + email).show();
       holder.find('.email span.email').text(email.replace('@', '(at)'));
-
-      holder.find('.email-contact').show();
+      if (!data.details.museum) {
+        holder.find('.email-contact').show();
+      }
     }
+
     if ('homepage' in data) {
       holder.find('.office-website > a').attr('href', data.homepage);
       holder.find('.office-website').show();
+    }
+
+    if (data.details.museum) {
+      holder.find('.contact-info-header').hide();
     }
 
     if ('routeUrl' in data) {
@@ -314,16 +325,26 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
     }
 
     var openToday = false;
-
     if ('schedules' in data.openTimes) {
       $.each(data.openTimes.schedules, function handleSchedule(ind, obj) {
         if ('today' in obj && 'times' in obj && obj.times.length) {
           openToday = obj.times[0];
 
           var timeOpen = holder.find('.time-open');
-          timeOpen.find('.opens').text(openToday.opens);
-          timeOpen.find('.closes').text(openToday.closes);
+          timeOpen.find('.opening-times .opens').text(openToday.opens);
+          timeOpen.find('.opening-times .closes').text(openToday.closes);
           timeOpen.show();
+          var staffSchedule = obj.times[1];
+          var staffTimes;
+          if (staffSchedule) {
+            staffTimes = timeOpen.find('.staff-times');
+            staffTimes.find('.opens').text(staffSchedule.opens);
+            staffTimes.find('.closes').text(staffSchedule.closes);
+            staffTimes.removeClass('hide');
+          } else {
+            staffTimes = timeOpen.find('.staff-times');
+            staffTimes.addClass('hide');
+          }
         }
       });
     }
@@ -352,6 +373,14 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
       img.hide();
     }
 
+    if (data.details.museum) {
+      holder.find('.extra-image').attr('src', data.details.pictures[1].url);
+      holder.find('.extra-image-2').attr('src', data.details.pictures[2].url);
+    } else {
+      holder.find('.extra-image').hide();
+      holder.find('.extra-image-2').hide();
+    }
+
     if ('buildingYear' in data.details) {
       var year = holder.find('.building-year');
       year.find('> span').text(data.details.buildingYear);
@@ -363,7 +392,11 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
       phones.find('> p').html(data.details.phone);
       phones.show();
     }
-
+    if ('contactInfo' in data.details) {
+      var contactInfo = holder.find('.phone-numbers');
+      contactInfo.find('> p').html(data.details.contactInfo);
+      contactInfo.show();
+    }
 
     $('.office-quick-information').show();
     $('.office-information').show();

@@ -103,16 +103,6 @@ $config = [
                     ]
                 ],
             ],
-            'myresearch-deleteaccount' => [
-                'type' => 'Zend\Router\Http\Literal',
-                'options' => [
-                    'route'    => '/MyResearch/DeleteAccount',
-                    'defaults' => [
-                        'controller' => 'MyResearch',
-                        'action'     => 'DeleteAccount',
-                    ]
-                ],
-            ],
             'myresearch-unsubscribe' => [
                 'type' => 'Zend\Router\Http\Literal',
                 'options' => [
@@ -254,11 +244,14 @@ $config = [
             'Finna\OnlinePayment' => 'Finna\Service\Factory::getOnlinePayment',
             'Finna\OrganisationInfo' => 'Finna\Service\Factory::getOrganisationInfo',
             'Finna\Record\Loader' => 'VuFind\Record\LoaderFactory',
+            'Finna\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'Finna\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
             'Finna\Search\Memory' => 'VuFind\Search\MemoryFactory',
             'Finna\Search\Solr\HierarchicalFacetHelper' => 'Zend\ServiceManager\Factory\InvokableFactory',
 
             'VuFind\Search\SearchTabsHelper' => 'Finna\Search\SearchTabsHelperFactory',
+
+            'Zend\Session\SessionManager' => 'Finna\Session\ManagerFactory',
         ],
         'aliases' => [
             'VuFind\Auth\Manager' => 'Finna\Auth\Manager',
@@ -270,6 +263,7 @@ $config = [
             'VuFind\ILS\Connection' => 'Finna\ILS\Connection',
             'VuFind\Mailer\Mailer' => 'Finna\Mailer\Mailer',
             'VuFind\Record\Loader' => 'Finna\Record\Loader',
+            'VuFind\RecordTab\PluginManager' => 'Finna\RecordTab\PluginManager',
             'VuFind\Role\PermissionManager' => 'Finna\Role\PermissionManager',
             'VuFind\Search\Memory' => 'Finna\Search\Memory',
             'VuFind\Search\Solr\HierarchicalFacetHelper' => 'Finna\Search\Solr\HierarchicalFacetHelper',
@@ -481,9 +475,12 @@ $config = [
                 ]
             ],
             'content_covers' => [
+                'factories' => [
+                    'btj' => 'Finna\Content\Covers\BTJFactory::getBTJ',
+                ],
                 'invokables' => [
                     'bookyfi' => 'Finna\Content\Covers\BookyFi',
-                    'natlibfi' => 'Finna\Content\Covers\NatLibFi'
+                    'natlibfi' => 'Finna\Content\Covers\NatLibFi',
                 ],
             ],
             'recorddriver' => [

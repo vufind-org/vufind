@@ -202,7 +202,7 @@ h4 + .list-group.facet {
 }
 
 .building-filter {
-    padding: 5px 0px 5px 10px;
+    padding: 5px 0px 5px 6px;
     @media (max-width:@screen-xs-max) {
         padding-left: 30px;
     }
@@ -244,6 +244,9 @@ span.badge.cb-facet {
   }
   .facet {
     padding: 5px 8px;
+    display: flex;
+    flex-direction: row-reverse;
+    .text { flex-grow: 1; }
   }
   .title {
     padding: 4px 8px 4px 10px;
@@ -273,6 +276,9 @@ span.badge.cb-facet {
       flex-basis: 2rem;
       flex-shrink: 0;
       text-align: center;
+      i  {
+        font-size: 0.8em;
+      }
     }
 
     body.rtl & {
@@ -319,7 +325,7 @@ span.badge.cb-facet {
     margin-left: 20px;
     font-size: 0.9em;
     & .fa {
-      font-size: 1.1em;
+      font-size: 1.5em;
       float: left;
       margin: 5px 5px 0 -20px;
       color: @brand-primary;

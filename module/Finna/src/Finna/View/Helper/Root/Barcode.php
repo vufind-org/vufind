@@ -50,8 +50,14 @@ class Barcode extends \Zend\View\Helper\AbstractHelper
      */
     public function createPng($code, $width = 2, $height = 30, $type = null)
     {
-        $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
-        $type = null !== $type ? $type : $generator::TYPE_CODE_39;
-        return base64_encode($generator->getBarcode($code, $type, $width, $height));
+        try {
+            $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+            $type = null !== $type ? $type : $generator::TYPE_CODE_39;
+            return base64_encode(
+                $generator->getBarcode($code, $type, $width, $height)
+            );
+        } catch (\Exception $e) {
+            return '';
+        }
     }
 }

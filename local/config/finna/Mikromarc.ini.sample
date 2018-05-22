@@ -27,6 +27,9 @@ extraHoldFields = pickUpLocation
 ; This setting can be used to exclude locations from the pickup location list
 ;excludePickupLocations = 10:11
 
+; List of ItemStatus codes, that will block possibility to place hold on that record when found.
+notAllowedForHold = ClaimedReturnedOrNeverBorrowed:Lost:SuppliedReturnNotRequired:MissingOverDue:Withdrawn:Discarded:Other
+
 [Holdings]
 ; By default the holdings location list is sorted alphabetically. This setting can be
 ; used to manually set the order by entering location IDs as a colon-separated list.

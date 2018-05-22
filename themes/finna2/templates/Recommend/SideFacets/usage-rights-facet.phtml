@@ -19,6 +19,8 @@
     <? if ($allowExclude): ?>
       <div class="list-group-item facet facet<?=$thisFacet['operator'] ?> excludable">
         <a class="exclude" href="<?=$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times" aria-hidden="true"></i></a>
+    <? else: ?>
+      <div class="list-group-item facet">
     <? endif; ?>
     <span class="badge">
       <?=$this->localizedNumber($thisFacet['count'])?>
@@ -33,6 +35,7 @@
       </div>
     <? else: ?>
       </a>
+      </div>
     <? endif; ?>
   <? endif; ?>
   <? $usageOptions[$thisFacet['value']]['html'] = ob_get_contents(); ?>
@@ -57,11 +60,11 @@
 <?=!empty($usageOptions['usage_F']) ? $usageOptions['usage_F']['html'] : '' ?>
 
 <div class="list-group-item facet-info">
-  <i class="fa fa-info-big-2"></i><div class="info"><?=$this->transEsc('usage_rights_info')?></div><a class="more-info" href="<?=$this->url('content-page', ['page' => 'terms'])?>#terms"><?=$this->transEsc('usage_rights_info_more')?></a>
+  <i class="fa fa-info3"></i><div class="info"><?=$this->transEsc('usage_rights_info')?></div><a class="more-info" href="<?=$this->url('content-page', ['page' => 'terms'])?>#terms"><?=$this->transEsc('usage_rights_info_more')?></a>
 </div>
 <? if (!$this->translationEmpty('usage_rights_details')): ?>
 <div class="list-group-item facet-info">
-  <i class="fa fa-info-big-2"></i><div class="info"><?=$this->transEsc('usage_rights_details')?></div>
+  <i class="fa fa-info3"></i><div class="info"><?=$this->transEsc('usage_rights_details')?></div>
 </div>
 <? endif; ?>
 <!-- END of: finna2 - Recommend/SideFacets/usage-rights-facet.phtml -->

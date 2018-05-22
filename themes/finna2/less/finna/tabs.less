@@ -1,313 +1,326 @@
 .finna-main-tabs {
-    background-color: transparent;
-    padding-bottom: 15px;
+  background-color: transparent;
+  padding-bottom: 15px;
+  @media(max-width: @screen-sm-max) {
+    margin: 0px;
+    padding: 0px;
+  }
+  .container {
+    @media(max-width: @screen-xs-max) {
+      display: table;
+      width: 100%;
+    }
+  }
+  ul.nav-tabs {
+    border-bottom: 1px solid @nav-tabs-border-color;
+    margin: 1em 0;
     @media(max-width: @screen-sm-max) {
-        margin: 0px;
-        padding: 0px;
+      margin-left: 0;
     }
-    & ul.nav-tabs {
-        border-bottom: 1px solid @nav-tabs-border-color;
-        margin: 1em 0;
-        @media(max-width: @screen-sm-max) {
-            margin-left: 0;
-        }
-        @media(max-width: @screen-xs-max) {
-            padding-top: 10px;
-        }
-        @media(max-width: 390px) {
-            &.many-tabs > li {
-                max-width: 64px;
-                & a {
-                    min-height: 70px;
-                    padding: 4px 4px;
-                    font-size: .8em;
-                }
-            }
-        }
-
-        > li {
-            color: @body-bg;
-            > a {
-                background-color: @main-tabs-background-color;
-                padding: 10px 5px;
-                margin-bottom: 0;
-                border: 0;
-                border-radius: 0;
-                font-size: 1em;
-                font-weight: 600;
-                color: @main-tabs-link-color;
-                transition: none;
-                border-top: 4px solid transparent;
-                margin-top: 0;
-                @media (max-width: @screen-xs-max) {
-                    padding: 8px 6px;
-                    font-size: .85em;
-                    display: block;
-                    line-height: 1.3em;
-                    min-height: 62px;
-                    & i {
-                        display: block;
-                        margin-top: 3px;
-                        color: @action-link-color;
-                        font-size: 16px;
-                    }
-                }
-                @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-                    max-width: none;
-                    & i {
-                    display: inline;
-                    }
-                }
-            }
-
-            &.active {
-                > a {
-                    border-top: 4px solid @action-link-color;
-                    border-left: 1px solid @nav-tabs-border-color;
-                    border-right: 1px solid @nav-tabs-border-color;
-                    border-bottom: 1px solid @body-bg;
-                }
-            }
-            &:not(.active) > a {
-                transition: background-color 0.1s linear;
-                &:hover, &:active, &:focus {
-                    background: darken(@main-tabs-background-color,4%);
-                }
-                @media (max-width: @screen-xs-max) {
-                    border-bottom: 1px solid @nav-tabs-border-color;
-                }
-            }
-        }
+    @media(max-width: @screen-xs-max) {
+      padding-top: 10px;
+      display: table-row;
     }
+    @media(max-width: 390px) {
+      &.many-tabs > li {
+        max-width: 64px;
+        & a {
+          min-height: 70px;
+          padding: 4px 4px;
+          font-size: .8em;
+        }
+      }
+    }
+
+    > li {
+      color: @body-bg;
+      @media(max-width: @screen-xs-max) {
+        display: table-cell;
+        float: none;
+      }
+      > a {
+        background-color: @main-tabs-background-color;
+        padding: 10px 5px;
+        margin-bottom: 0;
+        border: 0;
+        border-radius: 0;
+        font-size: 1em;
+        font-weight: 600;
+        color: @main-tabs-link-color;
+        transition: none;
+        border-top: 4px solid transparent;
+        margin-top: 0;
+        @media (max-width: @screen-xs-max) {
+          padding: 8px 6px;
+          font-size: .85em;
+          display: block;
+          & i {
+            display: block;
+            margin-top: 3px;
+            color: @action-link-color;
+            font-size: 16px;
+          }
+        }
+        @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+          max-width: none;
+          & i {
+            display: inline;
+          }
+        }
+      }
+
+      &.active {
+        > a {
+          border-top: 4px solid @action-link-color;
+          border-left: 1px solid @nav-tabs-border-color;
+          border-right: 1px solid @nav-tabs-border-color;
+          border-bottom: 1px solid @body-bg;
+        }
+      }
+      &:not(.active) > a {
+        transition: background-color 0.1s linear;
+        &:hover, &:active, &:focus {
+          background: darken(@main-tabs-background-color,4%);
+        }
+        @media (max-width: @screen-xs-max) {
+          border-bottom: 1px solid @nav-tabs-border-color;
+        }
+      }
+    }
+  }
 }
 
 .tab-content {
+  margin-bottom: 20px;
+  & div.dataTables_info {
+    white-space: normal;
+  }
+  & #commentList {
     margin-bottom: 20px;
-    & div.dataTables_info {
-        white-space: normal;
+  }
+  & .comment-wrapper {
+    background: @body-bg;
+    padding: 10px;
+    padding-top: 5px;
+    margin-bottom: 10px;
+    & .name {
+      padding-bottom: 4px;
+      border-bottom: 2px solid @gray-lighter;
     }
-    & #commentList {
-        margin-bottom: 20px;
+    & .comment-text {
+      padding-top: 5px;
     }
-    & .comment-wrapper {
-        background: @body-bg;
-        padding: 10px;
-        padding-top: 5px;
-        margin-bottom: 10px;
-        & .name {
-            padding-bottom: 4px;
-            border-bottom: 2px solid @gray-lighter;
-        }
-        & .comment-text {
-            padding-top: 5px;
-        }
-        & .comment-rating {
-            display: inline-block;
-        }
-        & .comment-info {
-            display: inline;
-            margin-left: 10px;
-        }
+    & .comment-rating {
+      display: inline-block;
     }
-    & .usercomments-tab {
-        & form.comment .rating-holder .info {
-            float: left;
-            margin-right: 5px;
-        }
+    & .comment-info {
+      display: inline;
+      margin-left: 10px;
     }
-    & .toc-tab, ul.toc {
-        margin-left: 10px;
+  }
+  & .usercomments-tab {
+    & form.comment .rating-holder .info {
+      float: left;
+      margin-right: 5px;
     }
+  }
+  & .toc-tab, ul.toc {
+    margin-left: 10px;
+  }
 }
 
 .search-tabs-recommendations {
-    border-top: 2px solid @brand-primary;
-    border-bottom: 2px solid @brand-primary;
-    padding: @padding-large-horizontal 0 0 0;
+  border-top: 2px solid @brand-primary;
+  border-bottom: 2px solid @brand-primary;
+  padding: @padding-large-horizontal 0 0 0;
 
-    a.title {
-        font-size: 1.333em;
-        line-height: 1.1em;
-        font-weight: 400;
-        display: inline-block;
-        margin-bottom: 5px;
-        & .searchterms {
-            font-weight: bold;
-        }
-        @media (max-width: @screen-xs-max) {
-            display: block;
-        }
+  a.title {
+    font-size: 1.333em;
+    line-height: 1.1em;
+    font-weight: 400;
+    display: inline-block;
+    margin-bottom: 5px;
+    & .searchterms {
+      font-weight: bold;
     }
+    @media (max-width: @screen-xs-max) {
+      display: block;
+    }
+  }
 
-    .count {
-        color: @text-muted;
-    }
+  .count {
+    color: @text-muted;
+  }
 
-    .tab-icon:before {
-        color: @gray-mid-light;
-        font-size: 2.5em;
-    }
+  .tab-icon:before {
+    color: @gray-mid-light;
+    font-size: 2.5em;
+  }
 }
 
 // add classes when there are too many tabs to fit on the screen
 .tabs-responsive {
-    width: 100%;
-    overflow-x: auto;
-    &::-webkit-scrollbar {
-        display: none;
+  width: 100%;
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  @media (max-width: @screen-xs-max) {
+    & > .recordTabs {
+      width: 150%;
+      margin-left: 0px;
+      margin-right: 0px;
     }
-    @media (max-width: @screen-xs-max) {
-        & > .recordTabs {
-            width: 150%;
-            margin-left: 0px;
-            margin-right: 0px;
-        }
-    }
+  }
 }
 
 .nav-tabs {
-    border-bottom: 1px solid @nav-tabs-border-color;
-    // style 5 tabs to make sure they stay as tabs
-    li:first-child:nth-last-child(5), li:first-child:nth-last-child(5) ~ li {
-        @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-            max-width: 110px;
-        }
-        @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
-            max-width: 140px;
-            & a {
-                font-size: 1em;
-            }
-
-            & > a > i {
-                display: block;
-                text-align: center;
-            }
-        }
+  border-bottom: 1px solid @nav-tabs-border-color;
+  // style 5 tabs to make sure they stay as tabs
+  li:first-child:nth-last-child(5), li:first-child:nth-last-child(5) ~ li {
+    @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+      max-width: 110px;
     }
+    @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+      max-width: 140px;
+      & a {
+        font-size: 1em;
+      }
 
-    > li {
-        // Make the list-items overlay the bottom border
-        margin-bottom: -1px;
-        > a {
-            font-size: 1.1em;
-            font-weight: 500;
-            background-color: transparent;
-            color: @nav-tabs-text-color;
-            margin-right: 3px;
-            padding: .6em .5em;
-            border: 1px solid transparent;
-            margin-bottom: 0;
-            border-radius: 0;
-            transition: none;
-            border-top: 4px solid transparent;
-            @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-                & i {
-                    display: block;
-                    text-align: center;
-                }
-            }
-            @media (max-width: @screen-sm-max) {
-                font-size: .9em;
-            }
-            &:hover {
-                color: @nav-tabs-link-hover-color;
-                border-color: transparent;
-            }
-        }
-        // Active state, and its :hover to override normal :hover
-        &.active > a {
-            &,
-            &:hover,
-            &:focus {
-                background-color: @body-bg;
-                border: 1px solid @nav-tabs-border-color;
-                border-top: 4px solid @action-link-color;
-                border-bottom-color: transparent;
-                transition: border 0.05s linear;
-            }
-        }
+      & > a > i {
+        display: block;
+        text-align: center;
+      }
     }
+  }
+
+  > li {
+    // Make the list-items overlay the bottom border
+    margin-bottom: -1px;
+    > a {
+      font-size: 1.1em;
+      font-weight: 500;
+      background-color: transparent;
+      color: @nav-tabs-text-color;
+      margin-right: 3px;
+      padding: .6em .5em;
+      border: 1px solid transparent;
+      margin-bottom: 0;
+      border-radius: 0;
+      transition: none;
+      border-top: 4px solid transparent;
+      @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+        & i {
+          display: block;
+          text-align: center;
+        }
+      }
+      @media (max-width: @screen-sm-max) {
+        font-size: .9em;
+      }
+      &:hover {
+        color: @nav-tabs-link-hover-color;
+        border-color: transparent;
+      }
+    }
+    // Active state, and its :hover to override normal :hover
+    &.active > a {
+      &,
+      &:hover,
+      &:focus {
+        background-color: @body-bg;
+        border: 1px solid @nav-tabs-border-color;
+        border-top: 4px solid @action-link-color;
+        border-bottom-color: transparent;
+        transition: border 0.05s linear;
+      }
+    }
+  }
 }
 
 .recordTabs.nav {
-    margin-top: 20px;
-    @media (max-width: @screen-xs-max) {
-        margin-left: -15px;
-        margin-right: -15px;
-    }
-    li.tab-right {
-        float:right
-    }
+  margin-top: 20px;
+  @media (max-width: @screen-xs-max) {
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+  li.tab-right {
+    float:right
+  }
 }
 
- .record .recordTabs.nav > li > a {
-    color: @gray;
+.record .recordTabs.nav > li > a {
+  color: @gray;
 }
 
 @media (max-width:@screen-xs-max) {
-    .nav-tabs {
-        text-align: center;
-        border-bottom: 5px solid @gray-lighter;
-        & #details {
-            display: none;
-        }
-        & > li {
-            word-wrap: break-word;
-        }
-        & > li > a {
-            padding: 0 10px 10px;
-            background-color: transparent;
-            border: none;
-            border-bottom: 5px solid transparent;
-            margin:0;
-            & i {
-                display: block;
-                min-height: 14px;
-            }
-        }
-        & > li.active > a {
-            &,
-            &:hover,
-            &:focus {
-                border: none;
-                border-bottom: 5px solid @link-color;
-            }
-        }
+  .nav-tabs {
+    text-align: center;
+    border-bottom: 5px solid @gray-lighter;
+    & #details {
+      display: none;
     }
+    & > li {
+      word-wrap: break-word;
+    }
+    & > li > a {
+      padding: 0 10px 10px;
+      background-color: transparent;
+      border: none;
+      border-bottom: 5px solid transparent;
+      margin:0;
+      & i {
+        display: block;
+        min-height: 14px;
+      }
+    }
+    & > li.active > a {
+      &,
+      &:hover,
+      &:focus {
+        border: none;
+        border-bottom: 5px solid @link-color;
+      }
+    }
+  }
 }
 
 .mobile-main-tabs {
-    width: 100%;
-    .dropdown-toggle {
-        line-height: 50px;
-        margin: 15px 0;
-        background-color: @brand-primary;
-        color: @body-bg;
-        padding: 0 15px;
-        border-radius: 5px;
-        display: flex;
-        cursor: pointer;
-        .tab-title {
-            font-size: @font-size-h2;
-            font-weight: 500;
-            background: transparent;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-            flex-grow: 1;
-            margin-right: 10px;
-        }
-        .more {
-            font-size: 85%;
-            padding-left: 10px;
-            border-left: 1px solid #fff;
-            b {
-                margin-left: 5px;
-                font-size: 20px;
-            }
-        }
+  width: 100%;
+  .dropdown-toggle {
+    line-height: 50px;
+    margin: 15px 0;
+    background-color: @brand-primary;
+    color: @body-bg;
+    padding: 0 15px;
+    border-radius: 5px;
+    display: flex;
+    cursor: pointer;
+    .tab-title {
+      font-size: @font-size-h2;
+      font-weight: 500;
+      background: transparent;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      flex-grow: 1;
+      margin-right: 10px;
     }
-    .tooltip {
-        display: none;
+    .more {
+      font-size: 85%;
+      padding-left: 10px;
+      border-left: 1px solid #fff;
+      b {
+        margin-left: 5px;
+        font-size: 20px;
+      }
     }
+  }
+  .tooltip {
+    display: none;
+  }
+}
+
+.loginTabs a {
+  cursor: default;
 }

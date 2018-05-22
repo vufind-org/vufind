@@ -37,9 +37,12 @@
     }
   ?>
   <?if ($checkboxesShown):?>
-    <div class="checkboxFilter">
-      <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
-    </div>
+    <fieldset>
+      <legend class="sr-only"><?=$this->transEsc('checkbox_filter')?></legend>
+      <div class="checkboxFilter">
+        <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
+      </div>
+    </fieldset>
   <? endif; ?>
 <? endif; ?>
 <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>

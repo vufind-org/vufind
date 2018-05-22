@@ -14,7 +14,7 @@
     <div class="view-options">
       <? foreach ($viewList as $viewType => $viewData): ?>
         <div class="view-button <?= $viewData['selected'] ? 'selected' : '' ?>">
-          <a href="<?=$this->results->getUrlQuery()->setViewParam($viewType)?>" title="<?=$this->transEsc('Show As ' . $viewData['desc'])?>" alt="<?=$this->transEsc('Show As ' . $viewData['desc'])?>"><i class="fa fa-<?=$viewType ?>"></i></a>
+          <a href="<?=$this->results->getUrlQuery()->setViewParam($viewType)?>" title="<?=$this->transEsc('Show As ' . $viewData['desc'])?>" aria-label="<?=$this->transEsc('Show As ' . $viewData['desc'])?>"><i class="fa fa-<?=$viewType ?>"></i></a>
         </div>
       <? endforeach; ?>
     </div>

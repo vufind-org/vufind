@@ -43,6 +43,22 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Construct the Auth helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Auth
+     */
+    public static function getAuth(ServiceManager $sm)
+    {
+        return new Auth(
+            $sm->get('VuFind\AuthManager'),
+            $sm->get('VuFind\ILSAuthenticator'),
+            $sm->get('Request')
+        );
+    }
+
+    /**
      * Construct the authorization notification helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -148,11 +164,25 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return Header
+     * @return Content
      */
     public static function getContent(ServiceManager $sm)
     {
         return new Content();
+    }
+
+    /**
+     * Construct cookie view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Cookie
+     */
+    public static function getCookie(ServiceManager $sm)
+    {
+        return new Cookie(
+            $sm->get('VuFind\CookieManager')
+        );
     }
 
     /**

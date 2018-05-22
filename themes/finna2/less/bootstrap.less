@@ -275,26 +275,12 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .truncate-field {
     overflow: hidden;
 }
-
-.description.too-long {
-    & .more-link.wide {
-        margin-top: 10px;
-        height: 1px;
-        .box-shadow(1px 3px 58px 18px @body-bg);
-        & i {
-            display: none;
-        }
-        &:after {
-            border: none;
-        }
-    }
-    & .less-link.wide {
-        display: none !important;
-    }
-}
 .less-link i, .less-link-top i {
     padding-top: 2px;
     vertical-align: middle;
+}
+.more-link, .less-link, .less-link-top {
+    cursor: default;
 }
 
 // ipad ios 6 fix

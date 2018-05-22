@@ -17,7 +17,7 @@
 
 // Brand Colors
 @brand-primary: #007c90;
-@brand-secondary: #009bb4;
+@brand-secondary: #007c90;
 @brand-third: #007c90;
 @brand-fourth: #007c90;
 @brand-success: #00b270;
@@ -28,10 +28,12 @@
 
 // Extra extra small screen / phone (e.g. iPhone 5)
 @screen-xxs: 400px;
+@screen-xxs-min: @screen-xxs;
+@screen-xxs-max: (@screen-xs-min - 1);
 
 //== Custom Finna styling
 @background-image-url: url('../images/logo_background.jpg');
-@background-color: tint(@brand-primary, 78%);
+@background-color: @gray-light;
 @background-image-attachment: scroll;  // set to fixed or scroll (fixed doesnt scoll along with page);
 @background-start-color: transparent; // gradient color for background image
 @background-end-color:  transparent; // gradient color for background image
@@ -53,7 +55,7 @@
 @finna-searchbox-link-background: rgba(1,1,1,0.6); // style searchbox links (advanced search etc.) background contrast with background
 @finna-record-header-background: @gray-ultralight;
 @finna-feedback-color: #fff;
-@finna-feedback-background: darken(@brand-primary, 10%);
+@finna-feedback-background: @brand-primary;
 @field-margin-vertical: 20px;
 @field-margin-horizontal: 15px;
 @finna-text-shadow: 1px 1px 1px black;
@@ -110,12 +112,12 @@
 //== Carousel images background-color
 @carousel-slider-background: #000;
 //== Styling the header of carousel
-@carousel-header-background: rgba(140, 140, 140, 0.8);
-@carousel-header-color: #fff;
-@carousel-header-padding: 10px;
+@carousel-header-background: transparent;
+@carousel-header-color: @gray;
+@carousel-header-padding: 0;
 //== Styling the horizontal header of each slide
 @carousel-slide-header-background: rgba(1, 1, 1, 0.6);
-@carousel-slide-header-color: @carousel-header-color;
+@carousel-slide-header-color: #fff;
 @carousel-slide-header-text-shadow: 1px 1px 1px black;
 //== Vertical slider background
 @carousel-verticalslide-header-background: none;
@@ -472,6 +474,14 @@
 //** Textual separator for between breadcrumb elements
 @breadcrumb-separator:          "/ ";
 
+
+//== Cookie Consent
+//
+//##
+@cookie-consent-background-color: @gray-light;
+@cookie-consent-color: #fff;
+@cookie-consent-link-color: #fff;
+@cookie-consent-button-border: 2px solid #fff;
 
 
 //== Miscellaneous

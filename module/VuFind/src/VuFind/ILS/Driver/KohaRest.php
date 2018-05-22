@@ -1774,6 +1774,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function holdError($code, $result)
     {
         $message = isset($result['error']) ? $result['error'] : 'hold_error_fail';
+        switch ($message) {
+        case 'Reserve cannot be placed. Reason: tooManyReserves':
+        case 'Reserve cannot be placed. Reason: tooManyHoldsForThisRecord':
+            $message = 'hold_error_too_many_holds';
+            break;
+        case 'Reserve cannot be placed. Reason: ageRestricted':
+            $message = 'hold_error_age_restricted';
+            break;
+        }
         return [
             'success' => false,
             'sysMessage' => $message

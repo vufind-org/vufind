@@ -44,6 +44,7 @@ finna.organisationMap = (function finnaOrganisationMap() {
     });
 
     L.control.locate({strings: {title: VuFind.translate('map_my_location')}}).addTo(map);
+    $('.leaflet-control-locate a').attr('aria-label', VuFind.translate('map_my_location'));
 
     var icons = {};
     $(['open', 'closed', 'no-schedule']).each(function addIcon(ind, obj) {

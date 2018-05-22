@@ -30,13 +30,15 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
         <?= $this->record($this->driver)->getTitleHtml(50); ?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
       </a>
       <div class="dateyeartype">
-        <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
+        <? $summAuthor = $this->driver->getPrimaryAuthor();
+        if (!empty($summAuthor)): ?>
           <? $authorForSearch = $this->driver->tryMethod('getPrimaryAuthorForSearch'); ?>
           <div class="truncate-field" data-rows="1">
             <p><?=$this->escapeHtml($summAuthor) ?></p>
           </div>
         <? else: ?>
-          <? $authors = $this->driver->tryMethod('getNonPresenterAuthors'); if (!empty($authors)): ?>
+          <? $authors = $this->driver->tryMethod('getNonPresenterAuthors');
+          if (!empty($authors)): ?>
             <div class="truncate-field" data-rows="1">
               <p>
               <? foreach ($authors as $i => $author): ?>
@@ -49,47 +51,48 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
         <? endif; ?>
 
         <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
-          <? if (!empty($journalTitle)): ?>
+        <? if (!empty($journalTitle)): ?>
           <?=!empty($summAuthor) ? '' : ' '?>
           <?
-            $parentSource = $this->driver->getSourceIdentifier();
-            $parentId = $this->driver->tryMethod('getHierarchyParentId');
-            $parentLink = false;
-            if ($parentId) {
-              try {
-                $parentLink = $this->recordLink()->getUrl("$parentSource|{$parentId[0]}");
-              } catch (Exception $e) {
-                // Probably parent record doesn't exist, fall back to linking by title
-              }
+          $parentSource = $this->driver->getSourceIdentifier();
+          $parentId = $this->driver->tryMethod('getHierarchyParentId');
+          $parentLink = false;
+          if ($parentId) {
+            try {
+              $parentLink = $this->recordLink()->getUrl("$parentSource|{$parentId[0]}");
+            } catch (Exception $e) {
+              // Probably parent record doesn't exist, fall back to linking by title
             }
-            if ($parentLink === false) {
-              $parentLink = $this->record($this->driver)->getLink('journaltitle', str_replace(['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $journalTitle));
-            }
-            ?>
-            <? $ref = $this->driver->getContainerReference(); if (!empty($ref)): ?>
-              <?=$this->escapeHtml($ref); ?>
-            <? else: ?>
-              <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
-            <? endif; ?>
-            <? elseif (!empty($summDate)): ?>
-              <?=!empty($summAuthor) ? '' : ' '?>
-              <span class="publish-year"><?=$this->escapeHtml($summDate[0])?></span>
-            <? endif; ?>
+          }
+          if ($parentLink === false) {
+            $parentLink = $this->record($this->driver)->getLink('journaltitle', str_replace(['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $journalTitle));
+          }
+          ?>
+          <? $ref = $this->driver->getContainerReference();
+          if (!empty($ref)): ?>
+            <?=$this->escapeHtml($ref); ?>
+          <? else: ?>
+            <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
+          <? endif; ?>
+        <? elseif (!empty($summDate)): ?>
+          <?=!empty($summAuthor) ? '' : ' '?>
+          <span class="publish-year"><?=$this->escapeHtml($summDate[0])?></span>
+        <? endif; ?>
 
-            <? $dates = $this->driver->tryMethod('getResultDateRange', []);?>
-            <? if ($dates): ?>
-              <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
-            <? endif; ?>
+        <? $dates = $this->driver->tryMethod('getResultDateRange', []);?>
+        <? if ($dates): ?>
+          <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
+        <? endif; ?>
+      </div>
+      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+        <? /* Add to favorites */ ?>
+        <div class="save-record-container">
+          <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-heart"></i> <?=$this->transEsc('Add to favorites')?></a>
         </div>
-        <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <? /* Add to favorites */ ?>
-          <div class="save-record-container">
-            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-heart"></i> <?=$this->transEsc('Add to favorites')?></a>
-          </div>
-        <? endif; ?>
-        <? if ($this->layout()->templateDir === 'list'): ?>
-          <?=$this->render('list/list-notes.phtml')?>
-        <? endif; ?>
+      <? endif; ?>
+      <? if ($this->layout()->templateDir === 'list'): ?>
+        <?=$this->render('list/list-notes.phtml')?>
+      <? endif; ?>
     </div>
   </div>
 </div>

@@ -104,13 +104,20 @@
   <? if (in_array("acceptTerms", $this->extraFields)): ?>
     <div class="form-group">
       <input id="acceptTerms" type="checkbox" name="gatheredDetails[acceptTerms]">
-      <label for="acceptTerms" class="control-label"><?=$this->transEsc(empty($this->acceptTermsText) ? "accept_request_terms" : $this->acceptTermsText)?></label>
+      <label for="acceptTerms" class="control-label"><?=$this->translate(empty($this->acceptTermsText) ? "accept_request_terms_html" : $this->acceptTermsText)?></label>
     </div>
   <? endif; ?>
 
   <div class="form-group">
     <input class="btn btn-primary" type="submit" name="placeILLRequest" value="<?=$this->transEsc('ill_request_submit_text')?>"/>
   </div>
+  <?
+    $language = $this->layout()->userLang;
+    if (!in_array($language, ['fi', 'sv', 'en-gb'])) {
+      $language = 'en-gb';
+    }
+  ?>
+  <?=$this->partial("record/illrequest_terms_$language.phtml"); ?>
 </form>
 
 <?

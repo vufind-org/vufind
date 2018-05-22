@@ -15,12 +15,17 @@ feedbackEmail = email@somewhere.invalid
 mainView = web
 institution = Library
 ;disablePatronFunctions = true
+; You can select Btj, Syndetics, LibraryThing, Summon, Amazon, Booksite, OpenLibrary,
+; Contentcafe and/or Google Books.
+;   Note: Summon service takes a Serials Solutions client key, NOT Summon API key!
+;coverimages = Syndetics:MySyndeticsId,Amazon:MyAccessKeyId,Booksite,LibraryThing:MyLibraryThingId,Google,OpenLibrary,Summon:MySerialsSolutionsClientKey,Contentcafe:MyContentCafeID,NatLibFi,BookyFi,BTJ:customerId
 
 ; Online payment
 onlinePayment['handler'] = ''
 onlinePayment['url'] = ''
 ; Paytrail API:
-;onlinePayment['url'] = 'https://payment.paytrail.com'
+; e2url is optional. Default is https://payment.paytrail.com/e2.
+;onlinePayment['e2url'] = '...'
 onlinePayment['merchantId'] = ''
 onlinePayment['secret'] = ''
 

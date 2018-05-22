@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015-2017.
+ * Copyright (C) The National Library of Finland 2015-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -80,6 +80,20 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             $view->useRecaptcha = false;
         }
 
+        $config = $this->getConfig();
+        $institution = $config->Site->institution;
+        $view->institutionName = $this->translate(
+            "institution::$institution", null, $institution
+        );
+        // Try to handle cases like tritonia-tria
+        if ($view->institutionName === $institution && strpos($institution, '-') > 0
+        ) {
+            $part = substr($institution, 0, strpos($institution, '-'));
+            $view->institutionName = $this->translate(
+                "institution::$part", null, $institution
+            );
+        }
+
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             if (empty($view->comments)) {
@@ -93,8 +107,6 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             }
 
             // These settings are set in the feedback section of your config.ini
-            $config = $this->serviceLocator->get('VuFind\Config')
-                ->get('config');
             $feedback = isset($config->Feedback) ? $config->Feedback : null;
             $recipient_email = !empty($feedback->recipient_email)
                 ? $feedback->recipient_email : $config->Site->email;

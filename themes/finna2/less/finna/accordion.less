@@ -22,14 +22,14 @@
   }
   .accordion-toggle a {
     color: @text-color;
-    display: block;
+    display: flex;
+    align-items: center;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
     line-height: @content-headings-line-height;
     width: 100%;
     .title {
-      float: left;
+      flex: 1;
       font-size: @font-size-h2;
     }
     .icon:after {
@@ -37,7 +37,7 @@
       font-size: 24px;
       content: "\e91a";
       color: @action-link-color;
-      float: right;
+      flex: 1;
       font-style: normal;
     }
   }
@@ -51,18 +51,11 @@
       display: none;
     }
   }
-}
-
-.record-accordions.record-tabs {
-  .accordion.active {
+  &.active {
     .accordion-toggle {
       border-left: 4px solid @action-link-color;
       .icon:after {
-        font-family: icomoon;
-        font-size: 24px;
         content: "\e916";
-        float: right;
-        color: @action-link-color;
       }
       @media print {
         border-left: none;

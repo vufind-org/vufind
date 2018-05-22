@@ -8,10 +8,7 @@
           <?=$this->escapeHtml($data->getTitle())?>
         </a>
         <div class="details">
-          <? $formats = $data->getFormats(); if ($formats): ?>
-              <i class="iconlabel format-<?=$this->record($data)->getFormatClass(end($formats)) ?>" title="<?=$this->escapeHtmlAttr($this->translate(end($formats), null, end($formats))) ?>"></i>
-              <?=$this->escapeHtmlAttr($this->translate(end($formats), null, end($formats))) ?>
-          <? endif; ?>
+          <?=$this->record($data)->getFormatList();?>
           <? $authors = $data->getPrimaryAuthors(); if (!empty($authors)): ?>
             <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><? if (count($authors) > 1): ?> <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
           <? endif; ?>

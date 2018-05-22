@@ -22,9 +22,9 @@
   <? endif; ?>
   <div id="result<?=$i++ ?>" class="result clearfix<?=$current->supportsAjaxStatus()?' ajaxItem':''?>">
       <? if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
-        <label class="record-checkbox">
+        <div class="record-checkbox">
           <?=$this->record($current)->getCheckbox('', 'search-cart-form')?>
-        </label>
+        </div>
       <? endif; ?>
       <span class="sr-only"><?=$this->transEsc('Search Result');?> <?=$recordNumber ?></span>
     <?=$this->record($current)->getSearchResult('list')?>
