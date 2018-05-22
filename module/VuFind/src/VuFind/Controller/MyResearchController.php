@@ -48,6 +48,30 @@ use Zend\View\Model\ViewModel;
 class MyResearchController extends AbstractBase
 {
     /**
+     * Are we currently in a lightbox context?
+     *
+     * @return bool
+     */
+    protected function inLightbox()
+    {
+        return $this->getRequest()->getQuery('layout', 'no') === 'lightbox'
+            || 'layout/lightbox' == $this->layout()->getTemplate();
+    }
+
+    /**
+     * Construct an HTTP 205 (refresh) response. Useful for reporting success
+     * in the lightbox without actually rendering content.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getRefreshResponse()
+    {
+        $response = $this->getResponse();
+        $response->setStatusCode(205);
+        return $response;
+    }
+
+    /**
      * Process an authentication error.
      *
      * @param AuthException $e Exception to process.
@@ -128,6 +152,14 @@ class MyResearchController extends AbstractBase
             try {
                 if (!$this->getAuthManager()->isLoggedIn()) {
                     $this->getAuthManager()->login($this->getRequest());
+                    // Return early to avoid unnecessary processing if we are being
+                    // called from login lightbox and don't have a followup action.
+                    if ($this->params()->fromPost('processLogin')
+                        && $this->inLightbox()
+                        && empty($this->getFollowupUrl())
+                    ) {
+                        return $this->getRefreshResponse();
+                    }
                 }
             } catch (AuthException $e) {
                 $this->processAuthenticationException($e);
@@ -258,15 +290,9 @@ class MyResearchController extends AbstractBase
     {
         // Don't log in if already logged in!
         if ($this->getAuthManager()->isLoggedIn()) {
-            // inLightbox (only instance)
-            if ($this->getRequest()->getQuery('layout', 'no') === 'lightbox'
-                || 'layout/lightbox' == $this->layout()->getTemplate()
-            ) {
-                $response = $this->getResponse();
-                $response->setStatusCode(205);
-                return $response;
-            }
-            return $this->redirect()->toRoute('home');
+            return $this->inLightbox()  // different behavior for lightbox context
+                ? $this->getRefreshResponse()
+                : $this->redirect()->toRoute('home');
         }
         $this->clearFollowupUrl();
         $this->setFollowupUrlToReferer();
@@ -420,6 +446,10 @@ class MyResearchController extends AbstractBase
         } else {
             $view->patronLoginView = $patron;
         }
+
+        $config = $this->getConfig();
+        $view->accountDeletion
+            = !empty($config->Authentication->account_deletion);
 
         return $view;
     }
@@ -941,7 +971,7 @@ class MyResearchController extends AbstractBase
      */
     protected function getDriverForILSRecord($current)
     {
-        $id = $current['id'] ?? null;
+        $id = $current['id'] ?? '';
         $source = $current['source'] ?? DEFAULT_SEARCH_BACKEND;
         $record = $this->serviceLocator->get('VuFind\Record\Loader')
             ->load($id, $source, true);
@@ -1680,5 +1710,43 @@ class MyResearchController extends AbstractBase
         if (!empty($method)) {
             $this->getAuthManager()->setAuthMethod($method);
         }
+    }
+
+    /**
+     * Account deletion
+     *
+     * @return mixed
+     */
+    public function deleteAccountAction()
+    {
+        // Force login:
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
+
+        $config = $this->getConfig();
+        if (empty($config->Authentication->account_deletion)) {
+            throw new \VuFind\Exception\BadRequest();
+        }
+
+        $view = $this->createViewModel(['accountDeleted' => false]);
+        if ($this->formWasSubmitted('submit')) {
+            $csrf = $this->serviceLocator->get('Zend\Validator\Csrf');
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest(
+                    'error_inconsistent_parameters'
+                );
+            }
+            $user->delete(
+                $config->Authentication->delete_comments_with_user ?? true
+            );
+            $view->accountDeleted = true;
+            $view->redirectUrl = $this->getAuthManager()->logout(
+                $this->getServerUrl('home')
+            );
+        } elseif ($this->formWasSubmitted('reset')) {
+            return $this->redirect()->toRoute('myresearch-profile');
+        }
+        return $view;
     }
 }

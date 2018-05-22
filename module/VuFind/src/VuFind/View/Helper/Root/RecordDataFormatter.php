@@ -58,14 +58,75 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @return int
      */
-    public function specSortCallback($a, $b)
+    protected function sortCallback($a, $b)
     {
-        $posA = $a['pos'] ?? 0;
-        $posB = $b['pos'] ?? 0;
-        if ($posA === $posB) {
-            return 0;
+        // Sort on 'pos' with 'label' as tie-breaker.
+        return ($a['pos'] == $b['pos'])
+            ? $a['label'] <=> $b['label']
+            : $a['pos'] <=> $b['pos'];
+    }
+
+    /**
+     * Should we allow a value? (Always accepts non-empty values; for empty
+     * values, allows zero when configured to do so).
+     *
+     * @param mixed $value   Data to check for zero value.
+     * @param array $options Rendering options.
+     *
+     * @return bool
+     */
+    protected function allowValue($value, $options)
+    {
+        if (!empty($value)) {
+            return true;
         }
-        return $posA < $posB ? -1 : 1;
+        $allowZero = $options['allowZero'] ?? true;
+        return $allowZero && ($value === 0 || $value === '0');
+    }
+
+    /**
+     * Return rendered text (or null if nothing to render).
+     *
+     * @param RecordDriver $driver  Record driver object
+     * @param string       $field   Field being rendered (i.e. default label)
+     * @param mixed        $data    Data to render
+     * @param array        $options Rendering options
+     *
+     * @return array
+     */
+    protected function render($driver, $field, $data, $options)
+    {
+        // Check whether the data is worth rendering.
+        if (!$this->allowValue($data, $options)) {
+            return null;
+        }
+
+        // Determine the rendering method to use, and bail out if it's illegal:
+        $method = empty($options['renderType'])
+            ? 'renderSimple' : 'render' . $options['renderType'];
+        if (!is_callable([$this, $method])) {
+            return null;
+        }
+
+        // If the value evaluates false, we should double-check our zero handling:
+        $value = $this->$method($driver, $data, $options);
+        if (!$this->allowValue($value, $options)) {
+            return null;
+        }
+
+        // Special case: if we received an array rather than a string, we should
+        // return it as-is (it probably came from renderMulti()).
+        if (is_array($value)) {
+            return $value;
+        }
+
+        // Allow dynamic label override:
+        $label = is_callable($options['labelFunction'] ?? null)
+            ? call_user_func($options['labelFunction'], $data, $driver)
+            : $field;
+        $context = $options['context'] ?? [];
+        $pos = $options['pos'] ?? 0;
+        return [compact('label', 'value', 'context', 'pos')];
     }
 
     /**
@@ -78,38 +139,18 @@ class RecordDataFormatter extends AbstractHelper
      */
     public function getData(RecordDriver $driver, array $spec)
     {
-        $result = [];
-
-        // Sort the spec into order by position:
-        uasort($spec, [$this, 'specSortCallback']);
-
         // Apply the spec:
+        $result = [];
         foreach ($spec as $field => $current) {
-            // Extract the relevant data from the driver.
+            // Extract the relevant data from the driver and try to render it.
             $data = $this->extractData($driver, $current);
-            $allowZero = $current['allowZero'] ?? true;
-            if (!empty($data) || ($allowZero && ($data === 0 || $data === '0'))) {
-                // Determine the rendering method to use with the second element
-                // of the current spec.
-                $renderMethod = empty($current['renderType'])
-                    ? 'renderSimple' : 'render' . $current['renderType'];
-
-                // Add the rendered data to the return value if it is non-empty:
-                if (is_callable([$this, $renderMethod])) {
-                    $text = $this->$renderMethod($driver, $data, $current);
-                    if (!$text && (!$allowZero || ($text !== 0 && $text !== '0'))) {
-                        continue;
-                    }
-                    // Allow dynamic label override:
-                    $label = is_callable($current['labelFunction'] ?? null)
-                        ? call_user_func($current['labelFunction'], $data) : $field;
-                    $result[$label] = [
-                        'value' => $text,
-                        'context' => $current['context'] ?? [],
-                    ];
-                }
+            $value = $this->render($driver, $field, $data, $current);
+            if ($value !== null) {
+                $result = array_merge($result, $value);
             }
         }
+        // Sort the result:
+        usort($result, [$this, 'sortCallback']);
         return $result;
     }
 
@@ -191,6 +232,44 @@ class RecordDataFormatter extends AbstractHelper
         }
 
         return $data;
+    }
+
+    /**
+     * Render multiple lines for a single set of data.
+     *
+     * @param RecordDriver $driver  Reoord driver object.
+     * @param mixed        $data    Data to render
+     * @param array        $options Rendering options.
+     *
+     * @return array
+     */
+    protected function renderMulti(RecordDriver $driver, $data,
+        array $options
+    ) {
+        // Make sure we have a callback for sorting the $data into groups...
+        $callback = $options['multiFunction'] ?? null;
+        if (!is_callable($callback)) {
+            throw new \Exception('Invalid multiFunction callback.');
+        }
+
+        // Adjust the options array so we can use it to call the standard
+        // render function on the grouped data....
+        $defaultOptions = ['renderType' => $options['multiRenderType'] ?? 'Simple']
+            + $options;
+
+        // Collect the results:
+        $results = [];
+        $input = $callback($data, $options, $driver);
+        foreach (is_array($input) ? $input : [] as $current) {
+            $label = $current['label'] ?? '';
+            $values = $current['values'] ?? null;
+            $currentOptions = ($current['options'] ?? []) + $defaultOptions;
+            $next = $this->render($driver, $label, $values, $currentOptions);
+            if ($next !== null) {
+                $results = array_merge($results, $next);
+            }
+        }
+        return $results;
     }
 
     /**

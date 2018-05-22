@@ -79,7 +79,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         $url = $this->getIsbnUrl($isbn, $key);
         $result = $this->getHttpClient($url)->send();
         if (!$result->isSuccess()) {
-            return $excerpt;
+            return $toc;
         }
 
         // Test XML Response

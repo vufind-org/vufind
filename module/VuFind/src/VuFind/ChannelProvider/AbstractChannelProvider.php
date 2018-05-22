@@ -28,6 +28,7 @@
 namespace VuFind\ChannelProvider;
 
 use VuFind\Cover\Router as CoverRouter;
+use VuFind\Record\Router as RecordRouter;
 use VuFind\Search\Base\Params;
 
 /**
@@ -56,6 +57,13 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
     protected $providerId = '';
 
     /**
+     * Record router
+     *
+     * @var RecordRouter
+     */
+    protected $recordRouter = null;
+
+    /**
      * Hook to configure search parameters before executing search.
      *
      * @param Params $params Search parameters to adjust
@@ -79,6 +87,18 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
     public function setCoverRouter(CoverRouter $coverRouter)
     {
         $this->coverRouter = $coverRouter;
+    }
+
+    /**
+     * Inject record router
+     *
+     * @param RecordRouter $recordRouter Record router.
+     *
+     * @return void
+     */
+    public function setRecordRouter(RecordRouter $recordRouter)
+    {
+        $this->recordRouter = $recordRouter;
     }
 
     /**
@@ -124,6 +144,9 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
                 'source' => $current->getSourceIdentifier(),
                 'thumbnail' => $this->coverRouter
                     ? $this->coverRouter->getUrl($current, 'medium')
+                    : false,
+                'routeDetails' => $this->recordRouter
+                    ? $this->recordRouter->getTabRouteDetails($current)
                     : false,
                 'id' => $current->getUniqueId(),
             ];

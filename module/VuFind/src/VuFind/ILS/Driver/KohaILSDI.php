@@ -49,7 +49,9 @@ use Zend\Log\LoggerInterface;
 class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
-    use CacheTrait;
+    use CacheTrait {
+        getCacheKey as protected getBaseCacheKey;
+    }
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -324,7 +326,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getCacheKey($suffix = null)
     {
-        return \VuFind\ILS\Driver\AbstractBase::getCacheKey(
+        return $this->getBaseCacheKey(
             md5($this->ilsBaseUrl) . $suffix
         );
     }
@@ -805,6 +807,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             i.holdingbranch as HLDBRNCH, i.homebranch as HOMEBRANCH,
             i.reserves as RESERVES, i.itemcallnumber as CALLNO, i.barcode as BARCODE,
             i.copynumber as COPYNO, i.notforloan as NOTFORLOAN,
+            i.enumchron AS ENUMCHRON,
             i.itemnotes as PUBLICNOTES, b.frameworkcode as DOCTYPE,
             t.frombranch as TRANSFERFROM, t.tobranch as TRANSFERTO,
             i.itemlost as ITEMLOST, i.itemlost_on AS LOSTON
@@ -978,6 +981,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     ? 'Unknown' : $rowItem['BARCODE'],
                 'number'       => (null == $rowItem['COPYNO'])
                     ? '' : $rowItem['COPYNO'],
+                'enumchron'    => $rowItem['ENUMCHRON'] ?? null,
                 'requests_placed' => $reservesCount ? $reservesCount : 0,
                 'frameworkcode' => $rowItem['DOCTYPE'],
             ];

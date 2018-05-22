@@ -60,7 +60,11 @@ class CombinedController extends AbstractSearch
      */
     public function homeAction()
     {
-        return $this->createViewModel();
+        // We need to load blocks differently in this controller since it
+        // doesn't follow the usual configuration pattern.
+        $blocks = $this->serviceLocator->get('VuFind\ContentBlock\BlockLoader')
+            ->getFromConfig('combined');
+        return $this->createViewModel(compact('blocks'));
     }
 
     /**
@@ -209,8 +213,7 @@ class CombinedController extends AbstractSearch
                 'results' => $results,
                 'supportsCart' => $supportsCart,
                 'supportsCartOptions' => $supportsCartOptions,
-                'showBulkOptions' => isset($settings->Site->showBulkOptions)
-                    && $settings->Site->showBulkOptions
+                'showBulkOptions' => $settings->Site->showBulkOptions ?? false
             ]
         );
     }
@@ -315,6 +318,7 @@ class CombinedController extends AbstractSearch
     protected function getTabConfig($config)
     {
         // Strip out non-tab sections of the configuration:
+        unset($config['HomePage']);
         unset($config['Layout']);
         unset($config['RecommendationModules']);
 

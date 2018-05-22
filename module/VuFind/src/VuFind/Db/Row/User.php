@@ -611,9 +611,11 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Destroy the user.
      *
+     * @param bool $removeComments Whether to remove user's comments
+     *
      * @return int The number of rows deleted.
      */
-    public function delete()
+    public function delete($removeComments = true)
     {
         // Remove all lists owned by the user:
         $lists = $this->getLists();
@@ -626,6 +628,10 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
         $resourceTags = $this->getDbTable('ResourceTags');
         $resourceTags->destroyLinks(null, $this->id);
+        if ($removeComments) {
+            $comments = $this->getDbTable('Comments');
+            $comments->deleteByUser($this);
+        }
 
         // Remove the user itself:
         return parent::delete();
