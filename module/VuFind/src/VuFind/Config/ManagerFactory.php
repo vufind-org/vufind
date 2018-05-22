@@ -71,7 +71,6 @@ class ManagerFactory implements FactoryInterface
         if (!is_dir($options['cacheDir'])) {
             mkdir($options['cacheDir'], 0755, true);
         }
-
         return new $requestedName(...array_values($options));
     }
 }

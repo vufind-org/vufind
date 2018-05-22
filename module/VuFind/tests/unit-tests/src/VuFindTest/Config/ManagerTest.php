@@ -64,13 +64,14 @@ class ManagerTest extends TestCase
      */
     public function setUp()
     {
-        $this->cacheDir = realpath(self::BASE_PATH) . '/cache';
+        $basePath = realpath(self::BASE_PATH);
+        $this->cacheDir = "$basePath/cache";
         /**
          * @var ContainerInterface|MockObject $container
          */
         $container = $this->createMock(ContainerInterface::class);
         $this->manager = (new ManagerFactory)($container, Manager::class, [
-            'configPath' => realpath(self::BASE_PATH . '/config.php'),
+            'configPath' => "$basePath/config.php",
             'cacheDir' => $this->cacheDir,
             'useCache' => false
         ]);

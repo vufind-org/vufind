@@ -142,7 +142,9 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
     {
         $this->factory = new PluginFactory;
         $this->container = $this->createMock(ContainerInterface::class);
-        $manager = (new ManagerFactory)($this->container, Manager::class);
+        $manager = (new ManagerFactory)($this->container, Manager::class, [
+            'useCache' => false
+        ]);
         $this->container->method('get')
             ->with($this->equalTo(Manager::class))
             ->willReturn($manager);
