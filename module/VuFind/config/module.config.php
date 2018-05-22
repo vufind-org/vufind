@@ -310,6 +310,7 @@ $config = [
             'VuFind\ContentBlock\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Cookie\CookieManager' => 'VuFind\Cookie\CookieManagerFactory',
             'VuFind\Cover\CachingProxy' => 'VuFind\Cover\CachingProxyFactory',
+            'VuFind\Cover\Generator' => 'VuFind\Cover\GeneratorFactory',
             'VuFind\Cover\Loader' => 'VuFind\Cover\LoaderFactory',
             'VuFind\Cover\Router' => 'VuFind\Cover\RouterFactory',
             'VuFind\Crypt\HMAC' => 'VuFind\Crypt\HMACFactory',

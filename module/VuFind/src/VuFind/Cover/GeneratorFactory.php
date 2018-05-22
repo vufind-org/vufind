@@ -1,6 +1,6 @@
 <?php
 /**
- * Cover loader factory.
+ * Cover generator factory.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Cover loader factory.
+ * Cover generator factory.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -39,7 +39,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class LoaderFactory implements FactoryInterface
+class GeneratorFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -61,20 +61,6 @@ class LoaderFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $cacheDir = $container->get('VuFind\Cache\Manager')
-            ->getCache('cover')->getOptions()->getCacheDir();
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $loader = new $requestedName(
-            $config,
-            $container->get('VuFind\Content\Covers\PluginManager'),
-            $container->get('VuFindTheme\ThemeInfo'),
-            $container->get('VuFindHttp\HttpService'),
-            $cacheDir
-        );
-        // Add cover generator if enabled:
-        if ($config->Content->makeDynamicCovers ?? false) {
-            $loader->setCoverGenerator($container->get('VuFind\Cover\Generator'));
-        }
-        return $loader;
+        return new $requestedName($container->get('VuFindTheme\ThemeInfo'));
     }
 }
