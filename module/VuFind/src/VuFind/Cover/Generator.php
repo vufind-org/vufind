@@ -99,13 +99,6 @@ class Generator
     ];
 
     /**
-     * Base color used to fill initially created image.
-     *
-     * @var int
-     */
-    protected $baseColor;
-
-    /**
      * Title's fill color
      *
      * @var int
@@ -191,7 +184,6 @@ class Generator
      */
     protected function initColors()
     {
-        $this->baseColor = $this->getColor($this->settings->baseColor);
         $this->titleFillColor = $this->getColor($this->settings->titleFillColor);
         $this->titleBorderColor = $this->getColor($this->settings->titleBorderColor);
         $this->authorFillColor = $this->getColor($this->settings->authorFillColor);
@@ -715,7 +707,7 @@ class Generator
     {
         imagefilledrectangle(
             $this->im, 0, 0, $this->settings->width, $this->settings->height,
-            $this->baseColor
+            $this->getColor($this->settings->baseColor)
         );
         $halfWidth = $this->settings->width / 2;
         $halfHeight = $this->settings->height / 2;
