@@ -28,13 +28,9 @@
 namespace Finna\AjaxHandler;
 
 use Finna\OrganisationInfo\OrganisationInfo;
-use VuFind\Session\Settings as SessionSettings;
 use VuFind\Cookie\CookieManager;
-use VuFind\Db\Row\User;
-use VuFind\Db\Table\UserList;
-use VuFind\Favorites\FavoritesService;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\Record\Loader;
+use VuFind\Session\Settings as SessionSettings;
 use Zend\Mvc\Controller\Plugin\Params;
 
 /**

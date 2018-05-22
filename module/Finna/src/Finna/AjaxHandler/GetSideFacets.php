@@ -245,8 +245,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
                     $response[$facet] = $facetList;
                 } else {
                     $context['facet'] = $facet;
-                    $context['cluster'] = isset($sideFacetSet[$facet])
-                        ? $sideFacetSet[$facet] : [];
+                    $context['cluster'] = $sideFacetSet[$facet] ?? [];
                     $response[$facet] = $this->renderer->render(
                         'Recommend/SideFacets/facet.phtml',
                         $context
