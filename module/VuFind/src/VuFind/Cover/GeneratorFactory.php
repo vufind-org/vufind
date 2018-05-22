@@ -61,6 +61,9 @@ class GeneratorFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName($container->get('VuFindTheme\ThemeInfo'));
+        return new $requestedName(
+            $container->get('VuFindTheme\ThemeInfo'),
+            $container->get('VuFind\Cover\Layer\PluginManager')
+        );
     }
 }

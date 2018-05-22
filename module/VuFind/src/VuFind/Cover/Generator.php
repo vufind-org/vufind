@@ -27,6 +27,10 @@
  */
 namespace VuFind\Cover;
 
+use VuFind\Cover\Layer\LayerInterface;
+use VuFind\Cover\Layer\PluginManager as LayerManager;
+use VuFindTheme\ThemeInfo;
+
 /**
  * Dynamic Book Cover Generator
  *
@@ -134,14 +138,31 @@ class Generator
     protected $im;
 
     /**
+     * ThemeInfo object
+     *
+     * @var ThemeInfo
+     */
+    protected $themeTools;
+
+    /**
+     * Layer manager
+     *
+     * @var LayerManager
+     */
+    protected $layerManager;
+
+    /**
      * Constructor
      *
-     * @param \VuFindTheme\ThemeInfo $themeTools For font loading
-     * @param array                  $settings   Overwrite styles
+     * @param ThemeInfo    $themeTools For font loading
+     * @param LayerManager $lm         Layer manager
+     * @param array        $settings   Overwrite styles
      */
-    public function __construct($themeTools, $settings = [])
-    {
+    public function __construct(ThemeInfo $themeTools, LayerManager $lm,
+        array $settings = []
+    ) {
         $this->themeTools = $themeTools;
+        $this->layerManager = $lm;
         $this->setOptions($settings);
     }
 
@@ -266,11 +287,10 @@ class Generator
      */
     public function generate($title, $author, $callnumber = null)
     {
-        // Generate seed from callnumber, title back up
-        $seed = $this->createSeed($title, $callnumber);
+        $details = compact('title', 'author', 'callnumber');
 
         // Build the image
-        $this->drawBackgroundLayer($seed);
+        $this->getBackgroundLayer()->render($this->im, $details, $this->settings);
         $this->drawTextLayer($title, $author);
 
         // Render the image
@@ -280,20 +300,16 @@ class Generator
     }
 
     /**
-     * Draw the background behind the text.
+     * Get the layer plugin for the background
      *
-     * @param int $seed Seed value
-     *
-     * @return void
+     * @return LayerInterface
      */
-    protected function drawBackgroundLayer($seed)
+    protected function getBackgroundLayer()
     {
-        // Construct a method name using the mode setting; if the method is not
-        // defined, use the default drawGridBackground().
-        $mode = ucwords(strtolower($this->settings->backgroundMode));
-        $method = "draw{$mode}Background";
-        return method_exists($this, $method)
-            ? $this->$method($seed) : $this->drawGridBackground($seed);
+        $service = strtolower($this->settings->backgroundMode) . 'background';
+        return $this->layerManager->get(
+            $this->layerManager->has($service) ? $service : 'gridbackground'
+        );
     }
 
     /**
@@ -373,114 +389,6 @@ class Generator
             $this->titleBorderColor,
             $this->settings->textAlign
         );
-    }
-
-    /**
-     * Generate an accent color from a seed value.
-     *
-     * @param int $seed Seed value
-     *
-     * @return int
-     */
-    protected function getAccentColor($seed)
-    {
-        // Number to color, hsb to control saturation and lightness
-        if ($this->settings->accentColor == 'random') {
-            return $this->makeHSBColor(
-                $seed % 256,
-                $this->settings->saturation,
-                $this->settings->lightness
-            );
-        }
-        return $this->getColor($this->settings->accentColor);
-    }
-
-    /**
-     * Generates a solid color background, ala Google
-     *
-     * @param int $seed Seed value
-     *
-     * @return void
-     */
-    protected function drawSolidBackground($seed)
-    {
-        // Fill solid color
-        imagefilledrectangle(
-            $this->im,
-            0,
-            0,
-            $this->settings->width,
-            $this->settings->height,
-            $this->getAccentColor($seed)
-        );
-    }
-
-    /**
-     * Generates a grid of colors as primary feature
-     *
-     * @param int $seed Seed value
-     *
-     * @return void
-     */
-    protected function drawGridBackground($seed)
-    {
-        // Render the grid
-        $this->renderGrid($this->createPattern($seed), $this->getAccentColor($seed));
-    }
-
-    /**
-     * Generates a dynamic cover image from elements of the book
-     *
-     * @param string $title      Title of the book
-     * @param string $callnumber Callnumber of the book
-     *
-     * @return int unique number for this record
-     */
-    protected function createSeed($title, $callnumber)
-    {
-        // Turn callnumber into number
-        if (null == $callnumber) {
-            $callnumber = $title;
-        }
-        if (null !== $callnumber) {
-            $cv = 0;
-            for ($i = 0;$i < strlen($callnumber);$i++) {
-                $cv += ord($callnumber[$i]);
-            }
-            return $cv;
-        } else {
-            // If no callnumber, random
-            return ceil(rand(pow(2, 4), pow(2, 32)));
-        }
-    }
-
-    /**
-     * Turn number into pattern
-     *
-     * @param int $seed Seed used to generate the pattern
-     *
-     * @return string binary string describing a quarter of the pattern
-     */
-    protected function createPattern($seed)
-    {
-        // Convert to binary
-        $bc = decbin($seed);
-        // If we have less that a half of a quarter
-        if (strlen($bc) < 8) {
-            // Rotate square of the first 4 into a 4x2
-            // Simulate matrix rotation on string
-            $bc = substr($bc, 0, 3)
-                . substr($bc, 0, 1)
-                . substr($bc, 2, 2)
-                . substr($bc, 3, 1)
-                . substr($bc, 1, 1);
-        }
-        // If we have less than a quarter
-        if (strlen($bc) < 16) {
-            // Rotate the first 8 as a 4x2 into a 4x4
-            $bc .= strrev($bc);
-        }
-        return $bc;
     }
 
     /**
@@ -692,85 +600,5 @@ class Generator
         }
         // 1 centered in main color
         imagettftext($this->im, $fontSize, 0, $x, $y, $mcolor, $font, $text);
-    }
-
-    /**
-     * Convert 16 long binary string to 8x8 color grid
-     * Reflects vertically and horizontally
-     *
-     * @param string $bc    Binary string of pattern
-     * @param int    $color Fill color
-     *
-     * @return void
-     */
-    protected function renderGrid($bc, $color)
-    {
-        imagefilledrectangle(
-            $this->im, 0, 0, $this->settings->width, $this->settings->height,
-            $this->getColor($this->settings->baseColor)
-        );
-        $halfWidth = $this->settings->width / 2;
-        $halfHeight = $this->settings->height / 2;
-        $boxWidth  = $this->settings->width / 8;
-        $boxHeight = $this->settings->height / 8;
-
-        $bc = str_split($bc);
-        for ($k = 0;$k < 4;$k++) {
-            $x = $k % 2 ? $halfWidth : $halfWidth - $boxWidth;
-            $y = $k / 2 < 1 ? $halfHeight : $halfHeight - $boxHeight;
-            $u = $k % 2 ? $boxWidth : -$boxWidth;
-            $v = $k / 2 < 1 ? $boxHeight : -$boxHeight;
-            for ($i = 0;$i < 16;$i++) {
-                if ($bc[$i] == "1") {
-                    imagefilledrectangle(
-                        $this->im, $x, $y,
-                        $x + $boxWidth - 1, $y + $boxHeight - 1, $color
-                    );
-                }
-                $x += $u;
-                if ($x >= $this->settings->width || $x < 0) {
-                    $x = $k % 2 ? $halfWidth : $halfWidth - $boxWidth;
-                    $y += $v;
-                }
-            }
-        }
-        //imagefilledrectangle($this->im,0,$size-11,$size-1,$size,$color);
-    }
-
-    /**
-     * Using HSB allows us to control the contrast while allowing randomness
-     *
-     * @param int $h Hue (0-255)
-     * @param int $s Saturation (0-255)
-     * @param int $v Lightness (0-255)
-     *
-     * @return int
-     */
-    protected function makeHSBColor($h, $s, $v)
-    {
-        $s /= 256.0;
-        if ($s == 0.0) {
-            return imagecolorallocate($this->im, $v, $v, $v);
-        }
-        $h /= (256.0 / 6.0);
-        $i = floor($h);
-        $f = $h - $i;
-        $p = (int)($v * (1.0 - $s));
-        $q = (int)($v * (1.0 - $s * $f));
-        $t = (int)($v * (1.0 - $s * (1.0 - $f)));
-        switch ($i) {
-        case 0:
-            return imagecolorallocate($this->im, $v, $t, $p);
-        case 1:
-            return imagecolorallocate($this->im, $q, $v, $p);
-        case 2:
-            return imagecolorallocate($this->im, $p, $v, $t);
-        case 3:
-            return imagecolorallocate($this->im, $p, $q, $v);
-        case 4:
-            return imagecolorallocate($this->im, $t, $p, $v);
-        default:
-            return imagecolorallocate($this->im, $v, $p, $q);
-        }
     }
 }
