@@ -49,67 +49,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
         SearchControllerTrait,
         CatalogLoginTrait;
 
-    /**
-     * Change request status
-     *
-     * @return \Zend\Http\Response
-     */
-    public function changeRequestStatusAjax()
-    {
-        $requestId = $this->params()->fromQuery('requestId');
-        $frozen = $this->params()->fromQuery('frozen');
-        if (empty($requestId)) {
-            return $this->output(
-                $this->translate('bulk_error_missing'),
-                self::STATUS_ERROR,
-                400
-            );
-        }
-
-        // check if user is logged in
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->output(
-                [
-                    'status' => false,
-                    'msg' => $this->translate('You must be logged in first')
-                ],
-                self::STATUS_NEED_AUTH
-            );
-        }
-
-        try {
-            $catalog = $this->getILS();
-            $patron = $this->getILSAuthenticator()->storedCatalogLogin();
-
-            if ($patron) {
-                $result = $catalog->checkFunction('changeRequestStatus', [$patron]);
-                if (!$result) {
-                    return $this->output(
-                        $this->translate('unavailable'),
-                        self::STATUS_ERROR,
-                        400
-                    );
-                }
-
-                $details = [
-                    'requestId' => $requestId,
-                    'frozen' => $frozen
-                ];
-                $results = $catalog->changeRequestStatus($patron, $details);
-
-                return $this->output($results, self::STATUS_OK);
-            }
-        } catch (\Exception $e) {
-            $this->setLogger($this->serviceLocator->get('VuFind\Logger'));
-            $this->logError('changeRequestStatus failed: ' . $e->getMessage());
-            // Fall through to the error message below.
-        }
-
-        return $this->output(
-            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
-        );
-    }
 
     /**
      * Check Requests are Valid
@@ -393,83 +332,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
         $res = [$facet => ['data' => $res, 'min' => $min, 'max' => $max]];
         return $this->output($res, self::STATUS_OK);
-    }
-
-    /**
-     * Return record description in JSON format.
-     *
-     * @return \Zend\Http\Response
-     */
-    public function getDescriptionAjax()
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        if (!$id = $this->params()->fromQuery('id')) {
-            return $this->output('', self::STATUS_ERROR, 400);
-        }
-
-        $cacheDir = $this->serviceLocator->get('VuFind\CacheManager')
-            ->getCache('description')->getOptions()->getCacheDir();
-
-        $localFile = "$cacheDir/" . urlencode($id) . '.txt';
-
-        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
-        $maxAge = isset($config->Content->summarycachetime)
-            ? $config->Content->summarycachetime : 1440;
-
-        if (is_readable($localFile)
-            && time() - filemtime($localFile) < $maxAge * 60
-        ) {
-            // Load local cache if available
-            if (($content = file_get_contents($localFile)) !== false) {
-                return $this->output($content, self::STATUS_OK);
-            } else {
-                return $this->output('', self::STATUS_ERROR, 500);
-            }
-        } else {
-            // Get URL
-            $driver = $this->getRecordLoader()->load($id, 'Solr');
-            $url = $driver->getDescriptionURL();
-            // Get, manipulate, save and display content if available
-            if ($url) {
-                $httpService = $this->serviceLocator->get('VuFind\Http');
-                $result = $httpService->get($url, [], 60);
-                if ($result->isSuccess() && ($content = $result->getBody())) {
-                    $encoding = mb_detect_encoding(
-                        $content, ['UTF-8', 'ISO-8859-1']
-                    );
-                    if ('UTF-8' !== $encoding) {
-                        $content = utf8_encode($content);
-                    }
-
-                    $content = preg_replace('/.*<.B>(.*)/', '\1', $content);
-                    $content = strip_tags($content);
-
-                    // Replace line breaks with <br>
-                    $content = preg_replace(
-                        '/(\r\n|\n|\r){3,}/', '<br><br>', $content
-                    );
-
-                    file_put_contents($localFile, $content);
-
-                    return $this->output($content, self::STATUS_OK);
-                }
-            }
-            $language = $this->serviceLocator->get('VuFind\Translator')
-                ->getLocale();
-            if ($summary = $driver->getSummary($language)) {
-                $summary = implode("\n\n", $summary);
-
-                // Replace double hash with a <br>
-                $summary = str_replace('##', "\n\n", $summary);
-
-                // Process markdown
-                $summary = $this->getViewRenderer()->plugin('markdown')
-                    ->toHtml($summary);
-
-                return $this->output($summary, self::STATUS_OK);
-            }
-        }
-        return $this->output('', self::STATUS_OK);
     }
 
     /**
@@ -844,96 +706,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
-     * Return organisation info in JSON format.
-     *
-     * @return mixed
-     */
-    public function getOrganisationInfoAjax()
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-
-        $reqParams = array_merge(
-            $this->params()->fromPost(), $this->params()->fromQuery()
-        );
-        if (empty($reqParams['parent'])) {
-            return $this->handleError('getOrganisationInfo: missing parent');
-        }
-        $parent = is_array($reqParams['parent'])
-            ? implode(',', $reqParams['parent']) : $reqParams['parent'];
-
-        if (empty($reqParams['params']['action'])) {
-            return $this->handleError('getOrganisationInfo: missing action');
-        }
-        $params = $reqParams['params'];
-
-        $cookieName = 'organisationInfoId';
-        $cookieManager = $this->serviceLocator->get('VuFind\CookieManager');
-        $cookie = $cookieManager->get($cookieName);
-        $params['orgType'] = 'library';
-        $museumSource = [
-            'museo', 'museum', 'kansallisgalleria', 'ateneum', 'musee',
-            'nationalgalleri', 'gallery'
-        ];
-        foreach ($museumSource as $source) {
-            $checkName = $this->translate("source_" . strtolower($parent));
-            if (stripos($checkName, $source)) {
-                $params['orgType'] = 'museum';
-                break;
-            }
-        }
-        $action = $params['action'];
-        $buildings = isset($params['buildings'])
-            ? explode(',', $params['buildings']) : null;
-
-        $key = $parent;
-        if ($action == 'details') {
-            if (!isset($params['id'])) {
-                return $this->handleError('getOrganisationInfo: missing id');
-            }
-            if (isset($params['id'])) {
-                $id = $params['id'];
-                $expire = time() + 365 * 60 * 60 * 24; // 1 year
-                $cookieManager->set($cookieName, $id, $expire);
-            }
-        }
-
-        if (!isset($params['id']) && $cookie) {
-            $params['id'] = $cookie;
-        }
-
-        if ($action == 'lookup') {
-            $link = isset($reqParams['link']) ? $reqParams['link'] : '0';
-            $params['link'] = $link === '1';
-            $params['parentName'] = isset($reqParams['parentName'])
-                ? $reqParams['parentName'] : null;
-        }
-
-        $lang = $this->serviceLocator->get('VuFind\Translator')->getLocale();
-        $map = ['en-gb' => 'en'];
-
-        if (isset($map[$lang])) {
-            $lang = $map[$lang];
-        }
-        if (!in_array($lang, ['fi', 'sv', 'en'])) {
-            $lang = 'fi';
-        }
-
-        $service = $this->serviceLocator->get('Finna\OrganisationInfo');
-        try {
-            $response = $service->query($parent, $params, $buildings, $action);
-        } catch (\Exception $e) {
-            return $this->handleError(
-                'getOrganisationInfo: '
-                . "error reading organisation info (parent $parent)",
-                $e->getMessage()
-            );
-        }
-
-        $this->outputMode = 'json';
-        return $this->output($response, self::STATUS_OK);
-    }
-
-    /**
      * Retrieve recommendations for results in other tabs
      *
      * @return \Zend\Http\Response
@@ -1049,48 +821,13 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
-     * Retrieve similar records
-     *
-     * @return \Zend\Http\Response
-     */
-    public function similarRecordsAction()
-    {
-        $this->disableSessionWrites(); // avoid session write timing bug
-
-        $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
-
-        $recordLoader = $this->serviceLocator->get('VuFind\RecordLoader');
-        $similar = $this->serviceLocator->get('VuFind\RelatedPluginManager')
-            ->get('Similar');
-
-        $driver = $recordLoader->load($id);
-
-        $similar->init('', $driver);
-
-        $html = $this->getViewRenderer()->partial(
-            'Related/Similar.phtml',
-            ['related' => $similar]
-        );
-
-        // Set headers:
-        $response = $this->getResponse();
-        $headers = $response->getHeaders();
-        $headers->addHeaderLine('Content-type', 'text/html');
-
-        // Render results:
-        $response->setContent($html);
-
-        return $response;
-    }
-
-    /**
      * Check status and return a status message for e.g. a load balancer.
      *
      * A simple OK as text/plain is returned if everything works properly.
      *
      * @return \Zend\Http\Response
      */
-    public function systemStatusAction()
+    public function systemStatusAjax()
     {
         $this->outputMode = 'plaintext';
 
@@ -1141,7 +878,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
      *
      * @return \Zend\Http\Response
      */
-    public function registerOnlinePaymentAction()
+    public function registerOnlinePaymentAjax()
     {
         $this->outputMode = 'json';
         $res = $this->processPayment($this->getRequest());
@@ -1156,7 +893,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
      *
      * @return void
      */
-    public function onlinePaymentNotifyAction()
+    public function onlinePaymentNotifyAjax()
     {
         $this->outputMode = 'json';
         $this->processPayment($this->getRequest());

@@ -1,6 +1,6 @@
 <?php
 /**
- * AJAX handler for changing pickup location.
+ * AJAX handler for changing request status
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace Finna\AjaxHandler;
 use Zend\Mvc\Controller\Plugin\Params;
 
 /**
- * AJAX handler for changing pickup location.
+ * AJAX handler for changing request status.
  *
  * @category VuFind
  * @package  AJAX
@@ -60,10 +60,10 @@ class ChangePickupLocation extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
             );
         }
 
-        $requestId = $params->fromQuery('requestId');
-        $pickupLocationId = $params->fromQuery('pickupLocationId');
+        $requestId = $this->params()->fromQuery('requestId');
+        $frozen = $this->params()->fromQuery('frozen');
         if (empty($requestId)) {
-            return $this->formatResponse(
+            return $this->output(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_ERROR,
                 400
@@ -72,7 +72,7 @@ class ChangePickupLocation extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
 
         try {
             $result = $this->connection->checkFunction(
-                'changePickupLocation', [$patron]
+                'changeRequestStatus', [$patron]
             );
             if (!$result) {
                 return $this->formatResponse(
@@ -84,10 +84,9 @@ class ChangePickupLocation extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
 
             $details = [
                 'requestId' => $requestId,
-                'pickupLocationId' => $pickupLocationId
+                'frozen' => $frozen
             ];
-            $results
-                = $this->connection->changePickupLocation($this->patron, $details);
+            $results = $this->connection->changeRequestStatus($patron, $details);
 
             return $this->formatResponse($results, self::STATUS_OK);
         } catch (\Exception $e) {

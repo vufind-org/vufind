@@ -242,7 +242,7 @@ $config = [
             'Finna\LocationService' => 'Finna\Service\Factory::getLocationService',
             'Finna\Mailer\Mailer' => 'VuFind\Mailer\Factory',
             'Finna\OnlinePayment' => 'Finna\Service\Factory::getOnlinePayment',
-            'Finna\OrganisationInfo' => 'Finna\Service\Factory::getOrganisationInfo',
+            'Finna\OrganisationInfo\OrganisationInfo' => 'Finna\Service\Factory::getOrganisationInfo',
             'Finna\Record\Loader' => 'VuFind\Record\LoaderFactory',
             'Finna\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'Finna\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
@@ -281,23 +281,41 @@ $config = [
                     'Finna\AjaxHandler\AddToList' =>
                         'Finna\AjaxHandler\AddToListFactory',
                     'Finna\AjaxHandler\ChangePickupLocation' =>
-                        'Finna\AjaxHandler\ChangePickupLocationFactory',
+                        'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
+                    'Finna\AjaxHandler\ChangeRequestStatus' =>
+                        'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
+                    'Finna\AjaxHandler\CheckRequestsAreValid' =>
+                        'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
+                    'Finna\AjaxHandler\CommentRecord' =>
+                        'Finna\AjaxHandler\CommentRecordFactory',
                     'Finna\AjaxHandler\EditList' =>
                         'Finna\AjaxHandler\EditListFactory',
                     'Finna\AjaxHandler\EditListResource' =>
                         'Finna\AjaxHandler\EditListResourceFactory',
-                    'Finna\AjaxHandler\GetUserLists' =>
-                        'Finna\AjaxHandler\GetUserListsFactory',
+                    'Finna\AjaxHandler\GetDescription' =>
+                        'Finna\AjaxHandler\GetDescriptionFactory',
+                    'Finna\AjaxHandler\GetOrganisationInfo' =>
+                        'Finna\AjaxHandler\GetOrganisationInfoFactory',
                     'Finna\AjaxHandler\GetSideFacets' =>
                         'Finna\AjaxHandler\GetSideFacetsFactory',
+                    'Finna\AjaxHandler\GetSimilarRecords' =>
+                        'Finna\AjaxHandler\GetSimilarRecordsFactory',
+                    'Finna\AjaxHandler\GetUserLists' =>
+                        'Finna\AjaxHandler\GetUserListsFactory',
                 ],
                 'aliases' => [
                     'addToList' => 'Finna\AjaxHandler\AddToList',
                     'changePickupLocation' => 'Finna\AjaxHandler\ChangePickupLocation',
+                    'changeRequestStatus' => 'Finna\AjaxHandler\ChangeRequestStatus',
+                    'checkRequestsAreValid' => 'Finna\AjaxHandler\CheckRequestsAreValid',
+                    'commentRecord' => 'Finna\AjaxHandler\CommentRecord',
                     'editList' => 'Finna\AjaxHandler\EditList',
                     'editListResource' => 'Finna\AjaxHandler\EditListResource',
+                    'getDescription' => 'Finna\AjaxHandler\GetDescription',
                     'getMyLists' => 'Finna\AjaxHandler\GetUserLists',
+                    'getOrganisationInfo' => 'Finna\AjaxHandler\GetOrganisationInfo',
                     'getSideFacets' => 'Finna\AjaxHandler\GetSideFacets',
+                    'getSimilarRecords' => 'Finna\AjaxHandler\GetSimilarRecords'
                 ]
             ],
             'auth' => [

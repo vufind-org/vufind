@@ -1,8 +1,8 @@
 <?php
 /**
- * Factory for ChangePickupLocation AJAX handler.
+ * Factory for GetSimilarRecords AJAX handler.
  *
- * PHP version 7
+ * PHP version 5
  *
  * Copyright (C) The National Library of Finland 2018.
  *
@@ -30,7 +30,7 @@ namespace Finna\AjaxHandler;
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for ChangePickupLocation AJAX handler.
+ * Factory for GetSimilarRecords AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ChangePickupLocationFactory
+class GetSimilarRecordsFactory
     implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
@@ -63,9 +63,12 @@ class ChangePickupLocationFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
-            $container->get('VuFind\ILS\Connection'),
-            $container->get('VuFind\Auth\ILSAuthenticator')->storedCatalogLogin()
+        $result = new $requestedName(
+            $container->get('VuFind\Session\Settings'),
+            $container->get('VuFind\Record\Loader'),
+            $container->get('VuFind\Related\PluginManager')->get('Similar'),
+            $container->get('ViewRenderer')
         );
+        return $result;
     }
 }

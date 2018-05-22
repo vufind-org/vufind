@@ -1,0 +1,205 @@
+<?php
+/**
+ * AJAX handler to comment on a record.
+ *
+ * PHP version 7
+ *
+ * Copyright (C) The National Library of Finland 2018.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @category VuFind
+ * @package  AJAX
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
+namespace VuFind\AjaxHandler;
+
+use VuFind\Controller\Plugin\Recaptcha;
+use VuFind\Db\Row\User;
+use VuFind\Db\Table\Comments;
+use VuFind\Db\Table\Record;
+use VuFind\Db\Table\Resource;
+use VuFind\Search\SearchRunner;
+use Zend\Mvc\Controller\Plugin\Params;
+
+/**
+ * AJAX handler to comment on a record.
+ *
+ * @category VuFind
+ * @package  AJAX
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
+class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
+{
+    /**
+     * Comments table
+     *
+     * @var Comments
+     */
+    protected $commentsTable;
+
+    /**
+     * CommentsRecord table
+     *
+     * @var CommentsRecord
+     */
+    protected $commentsRecordTable;
+
+    /**
+     * Search runner
+     *
+     * @var SearchRunner
+     */
+    protected $searchRunner;
+
+    /**
+     * Constructor
+     *
+     * @param Resource        $table          Resource database table
+     * @param Recaptcha       $recaptcha      Recaptcha controller plugin
+     * @param User|bool       $user           Logged in user (or false)
+     * @param bool            $enabled        Are comments enabled?
+     * @param Comments        $comments       Comments table
+     * @param CommmentsRecord $commentsRecord CommentsRecord table
+     * @param SearchRunner    $searchRunner   Search runner
+     */
+    public function __construct(Resource $table, Recaptcha $recaptcha, $user,
+        $enabled = true, Comments $comments = null,
+        CommentsRecord $commentsRecord = null,
+        SearchRunner $searchRunner = null
+    ) {
+        parent::__construct($table, $recaptcha, $user, $enabled);
+        $this->comments = $comments;
+        $this->commentsRecord = $commentsRecord;
+        $this->searchRunner = $searchRunner;
+    }
+
+    /**
+     * Handle a request.
+     *
+     * @param Params $params Parameter helper from controller
+     *
+     * @return array [response data, internal status code, HTTP status code]
+     */
+    public function handleRequest(Params $params)
+    {
+        // Make sure comments are enabled:
+        if (!$this->enabled) {
+            return $this->formatResponse(
+                $this->translate('Comments disabled'),
+                self::STATUS_ERROR,
+                403
+            );
+        }
+
+        if ($this->user === false) {
+            return $this->formatResponse(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH,
+                401
+            );
+        }
+
+        $type = $params->fromPost('type');
+        $id = $params->fromPost('id');
+        $table = $this->getTable('Comments');
+        if ($commentId = $params->fromPost('commentId')) {
+            // Edit existing comment
+            $comment = $params->fromPost('comment');
+            if (empty($commentId) || empty($comment)) {
+                return $this->formatResponse(
+                    $this->translate('An error has occurred'),
+                    self::STATUS_ERROR,
+                    500
+                );
+            }
+            $rating = $params->fromPost('rating');
+            $this->commentsTable->edit($user->id, $commentId, $comment, $rating);
+
+            $output = ['id' => $commentId];
+            if ($rating) {
+                $average = $this->table->getAverageRatingForResource($id);
+                $output['rating'] = $average;
+            }
+            return $this->formatResponse($output, self::STATUS_OK);
+        }
+
+        if ($type === '1') {
+            // Allow only 1 rating/record for each user
+            $comments = $this->table->getForResourceByUser($id, $user->id);
+            if (count($comments)) {
+                return $this->formatResponse(
+                    $this->translate('An error has occurred'),
+                    self::STATUS_ERROR,
+                    500
+                );
+            }
+        }
+
+        $output = parent::handleRequest($params);
+        $data = json_decode($output->getContent(), true);
+
+        if ($data['status'] != 'OK' || !isset($data['data'])) {
+            return $output;
+        }
+
+        $commentId = $data['data'];
+        $output = ['id' => $commentId];
+
+        // Update type
+        $this->table->setType($user->id, $commentId, $type);
+
+        // Update rating
+        $rating = $params->fromPost('rating');
+        $updateRating = $rating !== null && $rating > 0 && $rating <= 5;
+        if ($updateRating) {
+            $this->commentsTable->setRating($user->id, $commentId, $rating);
+        }
+
+        // Add comment to deduplicated records
+        $results = $this->searchRunner->run(
+            ['lookfor' => 'local_ids_str_mv:"' . addcslashes($id, '"') . '"'],
+            'Solr',
+            function ($runner, $params, $searchId) {
+                $params->setLimit(1000);
+                $params->setPage(1);
+                $params->resetFacetConfig();
+                $options = $params->getOptions();
+                $options->disableHighlighting();
+                $options->spellcheckEnabled(false);
+            }
+        );
+        $ids = [$id];
+
+        if (!$results instanceof \VuFind\Search\EmptySet\Results
+            && count($results->getResults())
+        ) {
+            $results = $results->getResults();
+            $ids = reset($results)->getLocalIds();
+        }
+
+        $this->commentsRecordTable->addLinks($commentId, $ids);
+
+        if ($updateRating) {
+            $average = $this->commentsRecordTable->getAverageRatingForResource($id);
+            $output['rating'] = $average;
+        }
+
+        return $this->formatResponse($output, self::STATUS_OK);
+    }
+}

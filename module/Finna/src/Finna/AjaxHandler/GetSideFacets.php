@@ -77,7 +77,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
      *
      * @var \VuFind\Config\PluginManager
      */
-    protected $facetConfig = [];
+    protected $facetConfig;
 
     /**
      * View renderer
@@ -261,6 +261,6 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
             'Recommend/SideFacets.phtml',
             $context
         );
-        return $this->formatResponse($response);
+        return $this->formatResponse($html);
     }
 }

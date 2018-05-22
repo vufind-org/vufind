@@ -369,7 +369,7 @@ class Factory
     {
         $locator = $sm;
         $menuConfig = $locator->get('VuFind\Config')->get('navibar');
-        $organisationInfo = $locator->get('Finna\OrganisationInfo');
+        $organisationInfo = $locator->get('Finna\OrganisationInfo\OrganisationInfo');
 
         return new Navibar($menuConfig, $organisationInfo);
     }
@@ -455,7 +455,7 @@ class Factory
         $cache = $locator->get('VuFind\CacheManager')->getCache('object');
         $facetHelper = $locator->get('VuFind\HierarchicalFacetHelper');
         $resultsManager = $locator->get('VuFind\SearchResultsPluginManager');
-        $organisationInfo = $locator->get('Finna\OrganisationInfo');
+        $organisationInfo = $locator->get('Finna\OrganisationInfo\OrganisationInfo');
         return new OrganisationsList(
             $cache, $facetHelper, $resultsManager, $organisationInfo
         );

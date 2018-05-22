@@ -220,13 +220,23 @@ finna.record = (function finnaRecord() {
 
   function loadSimilarRecords()
   {
-    $('.sidebar .similar-records').load(
-      VuFind.path + '/AJAX/SimilarRecords',
-      {id: $('.similar-records').data('id')},
-      function loadDone() {
-        $('.similar-records .fa-spinner').addClass('hidden');
+    $.getJSON(
+      VuFind.path + '/AJAX/JSON',
+      {
+        method: 'getSimilarRecords',
+        id: $('.similar-records').data('id'),
+
       }
-    );
+    )
+      .done(function onGetSimilarRecordsDone(response) {
+        if (response.data.length > 0) {
+          $('.sidebar .similar-records').html(response.data);
+        }
+        $('.similar-records .fa-spinner').addClass('hidden');
+      })
+      .fail(function onGetSimilarRecordsFail() {
+        $('.similar-records .fa-spinner').addClass('hidden');
+      });
   }
 
   function init() {
