@@ -45,7 +45,7 @@ class SolidBackground extends AbstractBackgroundLayer
      * @param array    $details  Cover details array (with title/author/call_number)
      * @param object   $settings Settings object
      *
-     * return void
+     * @return void
      */
     public function render($im, $details, $settings)
     {
