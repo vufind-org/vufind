@@ -31,6 +31,7 @@ namespace VuFindTest\Config;
 use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
 use VuFind\Config\Manager;
 use VuFind\Config\ManagerFactory;
 use Zend\Config\Config;
@@ -48,6 +49,8 @@ class ManagerTest extends TestCase
 {
     const BASE_PATH = __DIR__ . '/../../../../fixtures/configs/example';
 
+    protected $cacheDir;
+
     /**
      * @var Manager
      */
@@ -61,14 +64,23 @@ class ManagerTest extends TestCase
      */
     public function setUp()
     {
+        $this->cacheDir = realpath(self::BASE_PATH) . '/cache';
         /**
          * @var ContainerInterface|MockObject $container
          */
         $container = $this->createMock(ContainerInterface::class);
         $this->manager = (new ManagerFactory)($container, Manager::class, [
-            'aggregatorPath' => static::BASE_PATH . '/config.php',
+            'configPath' => realpath(self::BASE_PATH . '/config.php'),
+            'cacheDir' => $this->cacheDir,
             'useCache' => false
         ]);
+    }
+
+    protected function tearDown()
+    {
+        if (is_dir($this->cacheDir)) {
+            (new Filesystem)->remove($this->cacheDir);
+        }
     }
 
     public function testBasic()

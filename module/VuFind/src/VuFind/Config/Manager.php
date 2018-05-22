@@ -62,7 +62,7 @@ class Manager
      *
      * @var string
      */
-    protected $aggregatorPath;
+    protected $configPath;
 
     /**
      * Contains only the demanded configuration data.
@@ -88,21 +88,18 @@ class Manager
     /**
      * Manager constructor.
      *
-     * @param string $aggregatorPath {@see Manager::$aggregatorPath}
-     * @param string $cacheDir       Base directory of
-     *                               {@see
-     *                               Manager::$aggregatedConfigPath}
-     *                               and {@see
-     *                               Manager::$demandedConfigPath}
-     * @param bool   $useCache       {@see Manager::$useCache}
+     * @param string $configPath {@see Manager::$configPath}
+     * @param string $cacheDir   Base directory of
+     *                           {@see Manager::$aggregatedConfigPath} and
+     *                           {@see Manager::$demandedConfigPath}
+     * @param bool   $useCache   {@see Manager::$useCache}
      */
     public function __construct(
-        string $aggregatorPath,
+        string $configPath,
         string $cacheDir,
         bool $useCache
     ) {
-        $cacheDir = realpath($cacheDir);
-        $this->aggregatorPath = realpath($aggregatorPath);
+        $this->configPath = $configPath;
         $this->aggregatedConfigPath = "$cacheDir/aggregated.config.php";
         $this->demandedConfigPath = "$cacheDir/demanded.config.php";
         $this->useCache = $useCache;
@@ -274,7 +271,7 @@ class Manager
      */
     protected function loadAggregatedConfig(): Config
     {
-        $getAggregator = include $this->aggregatorPath;
+        $getAggregator = include $this->configPath;
         $data = $getAggregator($this->aggregatedConfigPath)->getMergedConfig();
 
         return $this->aggregatedConfig = new Config($data, true);

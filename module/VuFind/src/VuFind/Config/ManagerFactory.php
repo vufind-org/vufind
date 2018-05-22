@@ -43,7 +43,7 @@ class ManagerFactory implements FactoryInterface
 {
     const DEFAULTS
         = [
-            'aggregatorPath' => APPLICATION_PATH . '/config/config.php',
+            'configPath' => APPLICATION_PATH . '/config/config.php',
             'cacheDir'       => LOCAL_CACHE_DIR ? LOCAL_CACHE_DIR . '/config'
                 : APPLICATION_PATH . '/data/cache/config',
             'useCache'       => true,
