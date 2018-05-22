@@ -152,9 +152,11 @@ if ($img):
           <? endif; ?>
         <? endif; ?>
 
-        <?=$this->partial('RecordDriver/SolrDefault/holdings.phtml') ?>
-        <?=$this->record($this->driver)->getOnlineUrls('results')?>
-        <?=$this->record($this->driver)->getPreviews()?>
+        <? $recordHelper = $this->record($this->driver); ?>
+        <?=$recordHelper->renderTemplate('holdings.phtml');?>
+        <?=$recordHelper->getOnlineUrls('results');?>
+        <?=$recordHelper->getPreviews();?>
+
         <? if ($this->layout()->templateDir === 'list'): ?>
             <?=$this->render('list/list-notes.phtml')?>
         <? endif; ?>

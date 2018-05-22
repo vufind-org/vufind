@@ -96,20 +96,21 @@
             }
           } ?>
 
-        <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
-            null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
-            $user_id, 'tag'
-           ) : [];
-        ?>
-        <? if (count($listTags) > 0): ?>
-          <strong><?=$this->transEsc('Your Tags')?>:</strong>
-          <? $i = 0; foreach ($listTags as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a><? endforeach; ?>
-          <br/>
-        <? endif; ?>
+          <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
+              null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
+              $user_id, 'tag'
+            ) : [];
+          ?>
+          <? if (count($listTags) > 0): ?>
+            <strong><?=$this->transEsc('Your Tags')?>:</strong>
+            <? $i = 0; foreach ($listTags as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a><? endforeach; ?>
+            <br/>
+          <? endif; ?>
 
-          <?=$this->partial('RecordDriver/SolrDefault/holdings.phtml') ?>
-          <?=$this->record($this->driver)->getOnlineUrls('results')?>
-          <?=$this->record($this->driver)->getPreviews()?>
+          <? $recordHelper = $this->record($this->driver); ?>
+          <?=$recordHelper->renderTemplate('holdings.phtml');?>
+          <?=$recordHelper->getOnlineUrls('results');?>
+          <?=$recordHelper->getPreviews();?>
         </div>
         <div class="myresearch-notes">
         <?
@@ -150,7 +151,7 @@
           <strong><?=$this->transEsc('Description')?>:</strong> <?=$countNotes?>
         <? endif; ?>
         <div class="result-links hidden">
-          <i class="fa fa-pen"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
+          <i class="fa fa-pen"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (null !== $list_id):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
             <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
             $deleteUrl = null === $list_id
                 ? $this->url('myresearch-favorites')
