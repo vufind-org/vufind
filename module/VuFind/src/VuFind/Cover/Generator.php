@@ -141,20 +141,6 @@ class Generator
     protected $im;
 
     /**
-     * Width of image (pixels)
-     *
-     * @var int
-     */
-    protected $width;
-
-    /**
-     * Height of image (pixels)
-     *
-     * @var int
-     */
-    protected $height;
-
-    /**
      * Constructor
      *
      * @param \VuFindTheme\ThemeInfo $themeTools For font loading
@@ -164,8 +150,6 @@ class Generator
     {
         $this->themeTools = $themeTools;
         $this->setOptions($settings);
-        $this->initImage();
-        $this->initColors();
     }
 
     /**
@@ -184,8 +168,20 @@ class Generator
         $settings['authorFont'] = $this->fontPath($settings['authorFont']);
         $settings['titleFont']  = $this->fontPath($settings['titleFont']);
 
+        // Determine final dimensions:
+        $parts = explode('x', strtolower($settings['size']));
+        if (count($parts) < 2) {
+            $settings['width'] = $settings['height'] = $parts[0];
+        } else {
+            list($settings['width'], $settings['height']) = $parts;
+        }
+
         // Store the results as an object:
         $this->settings = (object)$settings;
+
+        // Reinitialize everything based on settings:
+        $this->initImage();
+        $this->initColors();
     }
 
     /**
@@ -212,14 +208,9 @@ class Generator
     protected function initImage()
     {
         // Create image
-        $parts = explode('x', strtolower($this->settings->size));
-        if (count($parts) < 2) {
-            $this->width = $this->height = $parts[0];
-        } else {
-            list($this->width, $this->height) = $parts;
-        }
-        if (!($this->im = imagecreate($this->width, $this->height))) {
-            throw new \Exception("Cannot Initialize new GD image stream");
+        $this->im = imagecreate($this->settings->width, $this->settings->height);
+        if (!$this->im) {
+            throw new \Exception('Cannot Initialize new GD image stream');
         }
     }
 
@@ -343,7 +334,7 @@ class Generator
     protected function drawDefaultText($title, $author)
     {
         if (null !== $title) {
-            $this->drawTitle($title, $this->height / 8);
+            $this->drawTitle($title, $this->settings->height / 8);
         }
         if (null !== $author) {
             $this->drawAuthor($author);
@@ -383,7 +374,7 @@ class Generator
         // to produce acceptable results for many scenarios.
         $this->drawText(
             $initial,
-            $heightWithoutDescenders + ($this->height - $textHeight) / 2,
+            $heightWithoutDescenders + ($this->settings->height - $textHeight) / 2,
             $this->settings->titleFont,
             $this->settings->titleFontSize,
             $this->titleFillColor,
@@ -426,8 +417,8 @@ class Generator
             $this->im,
             0,
             0,
-            $this->width,
-            $this->height,
+            $this->settings->width,
+            $this->settings->height,
             $this->getAccentColor($seed)
         );
     }
@@ -593,10 +584,10 @@ class Generator
             $this->settings->authorFont,
             $fontSize
         );
-        $align = $textWidth > $this->width ? 'left' : null;
+        $align = $textWidth > $this->settings->width ? 'left' : null;
         $this->drawText(
             $author,
-            $this->height - $this->settings->bottomPadding,
+            $this->settings->height - $this->settings->bottomPadding,
             $this->settings->authorFont,
             $fontSize,
             $this->authorFillColor,
@@ -668,14 +659,14 @@ class Generator
     ) {
         // If the wrap width is smaller than the image width, we want to account
         // for this when right or left aligning to maintain padding on the image.
-        $wrapGap = ($this->width - $this->settings->wrapWidth) / 2;
+        $wrapGap = ($this->settings->width - $this->settings->wrapWidth) / 2;
 
         $textWidth = $this->textWidth(
             $text,
             $font,
             $fontSize
         );
-        if ($textWidth > $this->width) {
+        if ($textWidth > $this->settings->width) {
             $align = 'left';
             $wrapGap = 0; // kill wrap gap to maximize text fit
         }
@@ -686,10 +677,10 @@ class Generator
             $x = $wrapGap;
         }
         if ($align == 'center') {
-            $x = ($this->width - $textWidth) / 2;
+            $x = ($this->settings->width - $textWidth) / 2;
         }
         if ($align == 'right') {
-            $x = $this->width - ($textWidth + $wrapGap);
+            $x = $this->settings->width - ($textWidth + $wrapGap);
         }
 
         // Generate 5 lines of text, 4 offset in a border color
@@ -722,10 +713,14 @@ class Generator
      */
     protected function renderGrid($bc, $color)
     {
-        $halfWidth = $this->width / 2;
-        $halfHeight = $this->height / 2;
-        $boxWidth  = $this->width / 8;
-        $boxHeight = $this->height / 8;
+        imagefilledrectangle(
+            $this->im, 0, 0, $this->settings->width, $this->settings->height,
+            $this->baseColor
+        );
+        $halfWidth = $this->settings->width / 2;
+        $halfHeight = $this->settings->height / 2;
+        $boxWidth  = $this->settings->width / 8;
+        $boxHeight = $this->settings->height / 8;
 
         $bc = str_split($bc);
         for ($k = 0;$k < 4;$k++) {
@@ -741,7 +736,7 @@ class Generator
                     );
                 }
                 $x += $u;
-                if ($x >= $this->width || $x < 0) {
+                if ($x >= $this->settings->width || $x < 0) {
                     $x = $k % 2 ? $halfWidth : $halfWidth - $boxWidth;
                     $y += $v;
                 }
