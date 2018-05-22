@@ -79,6 +79,6 @@ abstract class AbstractBackgroundLayer extends AbstractLayer
         return $settings->accentColor == 'random'
             ? $this->getHSBColor(
                 $im, $seed % 256, $settings->saturation, $settings->lightness
-            ) : $this->getColor($im, $this->settings->accentColor);
+            ) : $this->getColor($im, $settings->accentColor);
     }
 }

@@ -44,7 +44,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'defaulttext' => 'VuFind\Cover\Layer\DefaultText',
         'gridbackground' => 'VuFind\Cover\Layer\GridBackground',
+        'initialtext' => 'VuFind\Cover\Layer\InitialText',
         'solidbackground' => 'VuFind\Cover\Layer\SolidBackground',
     ];
 
@@ -54,7 +56,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        'VuFind\Cover\Layer\DefaultText' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\Cover\Layer\GridBackground' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\Cover\Layer\InitialText' =>
             'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\Cover\Layer\SolidBackground' =>
             'Zend\ServiceManager\Factory\InvokableFactory',
