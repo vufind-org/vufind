@@ -39,11 +39,64 @@ namespace VuFind\Cover;
 class Generator
 {
     /**
-     * Style configuration
+     * Default settings (values used by setOptions() if not overridden).
      *
      * @var array
      */
-    protected $settings = [];
+    protected $defaultSettings = [
+        'backgroundMode' => 'grid',
+        'textMode' => 'default',
+        'authorFont' => 'DroidSerif-Bold.ttf',
+        'titleFontSize' => 7,
+        'authorFontSize' => 6,
+        'lightness' => 220,
+        'maxTitleLines' => 5,
+        'minAuthorFontSize' => 5,
+        'saturation' => 80,
+        'size' => 84,
+        'textAlign' => 'center',
+        'titleFont' => 'DroidSerif-Bold.ttf',
+        'topPadding' => 19,
+        'bottomPadding' => 3,
+        'wrapWidth' => 80,
+        'titleFillColor' => 'black',
+        'titleBorderColor' => 'none',
+        'authorFillColor' => 'white',
+        'authorBorderColor' => 'black',
+        'baseColor' => 'white',
+        'accentColor' => 'random',
+    ];
+
+    /**
+     * Active style configuration
+     *
+     * @var object
+     */
+    protected $settings;
+
+    /**
+     * Mapping of color names to RGB values.
+     *
+     * @var array
+     */
+    protected $colorMap = [
+        'black' => [0, 0, 0],
+        'silver' => [192, 192, 192],
+        'gray' => [128, 128, 128],
+        'white' => [255, 255, 255],
+        'maroon' => [128, 0, 0],
+        'red' => [255, 0, 0],
+        'purple' => [128, 0, 128],
+        'fuchsia' => [255, 0, 255],
+        'green' => [0, 128, 0],
+        'lime' => [0, 255, 0],
+        'olive' => [128, 128, 0],
+        'yellow' => [255, 255, 0],
+        'navy' => [0, 0, 128],
+        'blue' => [0, 0, 255],
+        'teal' => [0, 128, 128],
+        'aqua' => [0, 255, 255],
+    ];
 
     /**
      * Base color used to fill initially created image.
@@ -110,37 +163,29 @@ class Generator
     public function __construct($themeTools, $settings = [])
     {
         $this->themeTools = $themeTools;
-        $default = [
-            'backgroundMode' => 'grid',
-            'textMode' => 'default',
-            'authorFont'   => 'DroidSerif-Bold.ttf',
-            'titleFontSize' => 7,
-            'authorFontSize' => 6,
-            'lightness'    => 220,
-            'maxTitleLines' => 5,
-            'minAuthorFontSize' => 5,
-            'saturation'   => 80,
-            'size'         => 84,
-            'textAlign'    => 'center',
-            'titleFont'    => 'DroidSerif-Bold.ttf',
-            'topPadding'   => 19,
-            'bottomPadding' => 3,
-            'wrapWidth'    => 80,
-            'titleFillColor' => 'black',
-            'titleBorderColor' => 'none',
-            'authorFillColor' => 'white',
-            'authorBorderColor' => 'black',
-            'baseColor' => 'white',
-            'accentColor' => 'random',
-        ];
-        foreach ($settings as $i => $setting) {
-            $default[$i] = $setting;
-        }
-        $default['authorFont'] = $this->fontPath($default['authorFont']);
-        $default['titleFont']  = $this->fontPath($default['titleFont']);
-        $this->settings = (object)$default;
+        $this->setOptions($settings);
         $this->initImage();
         $this->initColors();
+    }
+
+    /**
+     * Set the generator options.
+     *
+     * @param array $rawSettings Overwrite styles
+     *
+     * @return void
+     */
+    public function setOptions($rawSettings)
+    {
+        // Merge incoming settings with defaults:
+        $settings = $rawSettings + $this->defaultSettings;
+
+        // Adjust font paths:
+        $settings['authorFont'] = $this->fontPath($settings['authorFont']);
+        $settings['titleFont']  = $this->fontPath($settings['titleFont']);
+
+        // Store the results as an object:
+        $this->settings = (object)$settings;
     }
 
     /**
@@ -211,48 +256,20 @@ class Generator
      */
     protected function getColor($color)
     {
-        switch (strtolower($color)) {
-        case 'black':
-            return imagecolorallocate($this->im, 0, 0, 0);
-        case 'silver':
-            return imagecolorallocate($this->im, 192, 192, 192);
-        case 'gray':
-            return imagecolorallocate($this->im, 128, 128, 128);
-        case 'white':
-            return imagecolorallocate($this->im, 255, 255, 255);
-        case 'maroon':
-            return imagecolorallocate($this->im, 128, 0, 0);
-        case 'red':
-            return imagecolorallocate($this->im, 255, 0, 0);
-        case 'purple':
-            return imagecolorallocate($this->im, 128, 0, 128);
-        case 'fuchsia':
-            return imagecolorallocate($this->im, 255, 0, 255);
-        case 'green':
-            return imagecolorallocate($this->im, 0, 128, 0);
-        case 'lime':
-            return imagecolorallocate($this->im, 0, 255, 0);
-        case 'olive':
-            return imagecolorallocate($this->im, 128, 128, 0);
-        case 'yellow':
-            return imagecolorallocate($this->im, 255, 255, 0);
-        case 'navy':
-            return imagecolorallocate($this->im, 0, 0, 128);
-        case 'blue':
-            return imagecolorallocate($this->im, 0, 0, 255);
-        case 'teal':
-            return imagecolorallocate($this->im, 0, 128, 128);
-        case 'aqua':
-            return imagecolorallocate($this->im, 0, 255, 255);
-        default:
-            if (substr($color, 0, 1) == '#' && strlen($color) == 7) {
-                $r = hexdec(substr($color, 1, 2));
-                $g = hexdec(substr($color, 3, 2));
-                $b = hexdec(substr($color, 5, 2));
-                return imagecolorallocate($this->im, $r, $g, $b);
-            }
-            return false;
+        // Case one: named color found in map
+        $key = strtolower($color);
+        if (isset($this->colorMap[$key])) {
+            return imagecolorallocate($this->im, ...$this->colorMap[$key]);
         }
+        // Case two: hex color
+        if (substr($color, 0, 1) == '#' && strlen($color) == 7) {
+            $r = hexdec(substr($color, 1, 2));
+            $g = hexdec(substr($color, 3, 2));
+            $b = hexdec(substr($color, 5, 2));
+            return imagecolorallocate($this->im, $r, $g, $b);
+        }
+        // Default case: unsupported color
+        return false;
     }
 
     /**
