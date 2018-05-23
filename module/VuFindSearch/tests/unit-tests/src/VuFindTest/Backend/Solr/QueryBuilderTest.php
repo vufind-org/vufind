@@ -89,7 +89,7 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
             ["\xE2\x80\x9Ca\xE2\x80\x9D", '"a"'],// fancy quotes
             ['a:{a TO b} [ }', 'a:{a TO b}'],    // floating braces/brackets
         ];
-		
+
         // @codingStandardsIgnoreEnd
         $qb = new QueryBuilder();
         foreach ($tests as $test) {
