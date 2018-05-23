@@ -3,7 +3,17 @@
 
 <div class="page-content">
   <h2>Hantering av kunduppgifter i Finna</h2>
-  <p>Om man loggar in med Finna-konto sparas användarnamnet och användarens namn och e-postadress i Finna. När användaren loggar in i Finna med sitt bibliotekskort sparas kortets nummer och pinkod, användarens för- och efternamn, e-postadress och hembibliotek i tjänsten. Vid Haka-inloggning sparas användarnamnet och användarens namn och e-postadress automatiskt i Finna. Uppgifterna används för följande ändamål:
+  <p>När användaren loggar in på Finna-tjänsten från webbplatsen Finna.fi, en e-resurs skapad på Finna-plattformen eller något annat Finna-användargränssnitt, sparas följande uppgifter i tjänsten, beroende på inloggningssätt:
+  </p>
+  <p>Vid inloggning med bibliotekskort sparas kortets nummer och pinkod, användarens för- och efternamn, e-postadress och hembibliotek i tjänsten. Uppgifterna överförs automatiskt till Finna-tjänsten från systemet vid biblioteket som beviljat kortet.
+  </p>
+  <p>Vid Haka-inloggning sparas användar-ID och användarens namn och e-postadress automatiskt i Finna.
+  </p>
+  <p>Vid inloggning via Finna-konto sparas uppgifterna som uppgetts när kontot skapades, dvs. e-postadress och användarnamn, i Finna. Personer under 16 år måste ha sin vårdnadshavares samtycke till att skapa ett konto. 
+  </p>
+  <p>Uppgifterna hanteras för produktionen av Finna-tjänsten vid Nationalbiblioteket och CSC – IT-centret för vetenskap (tjänsteproducenterna). 
+  </p>
+  <p>Uppgifterna sparas för följande ändamål:
   </p>
   <table class="content-table">
     <tr>
@@ -11,7 +21,7 @@
       <td><strong>Ändamål</strong></td>
     </tr>
     <tr>
-      <th>Användarnamnet</th>
+      <th>Användarnamn</th>
       <td>Identifierar användaren</td>
     </tr>
     <tr>
@@ -20,18 +30,18 @@
     </tr>
     <tr>
       <th>Förnamn</th>
-      <td>Identifierar användaren och används för att visa information</td>
+      <td>Visar information för den inloggade användaren</td>
     </tr>
     <tr>
-      <th>Efternamn</th>
-      <td>Identifierar användaren och används för att visa information</td>
+      <th>Tillnamn</th>
+      <td>Visar information för den inloggade användaren</td>
     </tr>
     <tr>
       <th>Bibliotekskortets nummer</th>
       <td>Identifierar användaren</td>
     </tr>
     <tr>
-      <th>Pinkoden</th>
+      <th>Pinkod</th>
       <td>Identifierar användaren i olika tjänstegränssnitt</td>
     </tr>
     <tr>
@@ -39,19 +49,27 @@
       <td>Det ställe där beställningar i första hand avhämtas, användaren kan ändra uppgiften i Finna</td>
     </tr>
   </table>
-  <p>Till den e-postadress som sparas i Finna skickas bara sådana mejl som användaren själv önskar, t.ex. påminnelser om förfallodag och meddelanden från nyhetsbevakningen.
+  <p>I Finna-tjänsten kan användaren också själv spara och ändra sina personuppgifter. Till den e-postadress som sparas i Finna skickas bara sådana mejl som användaren själv önskar, t.ex. påminnelser om förfallodag och meddelanden från nyhetsbevakningen.
   </p>
-  <p>Förutom de ovan nämnda uppgifterna kan man också spara information om användarens aktiviteter i Finna. Sådan information är bl.a. språk, aktiverad påminnelse om förfallodag, nyhetsbevakningar, poster som användaren har sparat i egna listor, bibliotekskort som användaren själv lagt till och sociala metadata (kommentarer, recensioner, nyckelord).
+  <p>Förutom de ovan nämnda uppgifterna kan Finna-tjänsten också spara information om användarens aktiviteter i Finna. Sådan information är bl.a. språk, aktiverad påminnelse om förfallodag, nyhetsbevakningar, poster som användaren har sparat i egna listor, bibliotekskort som användaren själv lagt till och sociala metadata (kommentarer, recensioner, nyckelord).
   </p>
-  <p>För andra funktioner som hanterar användarnas uppgifter (t.ex. för funktioner som gäller reserveringar, lån och avgifter) används bibliotekssystemets tjänstegränssnitt och uppgifterna sparas inte i Finna. Sådana uppgifter (däribland postadressen, telefonnumret, giltighetstiden av användarkonton, låningsförbuder, låner, avgifter, reservationer och beställningar) hämtas realtid bara för användningsläget. Frivilliga påminnelserna om förfallodag är undantager. I samband med att en påminnelse om förfallodag skickas till användaren sparas id-numret och förfallodagen för lånet, detta för att varje påminnelse bara ska skickas en gång.
+  <p>För andra funktioner som hanterar användarnas uppgifter, t.ex. för att bläddra i lån, reserveringar och avgifter samt göra reserveringar och förnya lån, används bibliotekssystemets tjänstegränssnitt och uppgifterna sparas inte i Finna, med undantag för frivilliga påminnelser om förfallodag.  I samband med att en påminnelse om förfallodag skickas till användaren sparas ID-numret och förfallodagen för lånet, detta för att varje påminnelse bara ska skickas en gång.
   </p>
-  <p>Finnakonton som skapas med bibliotekskorts-, Finna- eller Haka-koder är separata, även om de tillhör samma person med samma e-postadress.
+  <p>Finna-konton som skapas med bibliotekskorts-, Finna- eller Haka-koder är separata, även om de innehåller samma identifikationsuppgift.
   </p>
-  <p>Användaruppgifterna behandlas för tjänsteproduktionen vid Nationalbiblioteket och CSC – IT-centret för vetenskap (tjänsteproducenterna) samt vid <a href="organisations">organisationerna</a> som tillhandahåller material i Finna angående de användaruppgifterna av organisationernas egna kunder. Uppgifterna lämnas inte ut. Användaruppgifterna sparas i 12 månader efter den senaste inloggningen.
+  <p>Användaren kan när som helst radera sina uppgifter från Finna genom att avsluta sitt konto. Uppgifterna raderas automatiskt när det har gått 12 månader från den senaste inloggningen. När ett konto har avslutats, finns användarens eventuella kommentarer och recensioner kvar i tjänsten som anonyma, alltså utan användarens personuppgifter. Om användaren också vill radera kommentarerna och recensionerna, ska det göras manuellt innan kontot avslutas. Finna-tjänstens användare kan be att få information om hanteringen av personuppgifter genom att kontakta tjänstens administratör Nationalbiblioteket på Finna.fi-webbplatsens blankett för feedback <a href="https://finna.fi/Feedback/Home">https://finna.fi/Feedback/Home</a>. Användaren har rätt att kontrollera och korrigera sina uppgifter.
   </p>
-  <p>Det finns en <a href="register_details">registerbeskrivning</a> för hanteringen av användaruppgifter.  </p>
-  <h2 id="cookies">Coo­ki­es</h2>
-  <p>Användningen av webbplatsen följs för att vi ska kunna förbättra tjänsterna. För uppföljningen används kakor (cookies). Dessa cookies lagrar ingen information som gör det möjligt att identifiera användaren. Cookies innebär ingen datasäkerhetsrisk och de kan inte sprida virus eller sabotageprogram. När du besöker sidorna godkänner du användningen av cookies.
+  <p>Närmare information finns i <a href="register_details">dataskyddsbeskrivningen</a>
+  </p>
+  <h2>Material och personuppgifter på Finna-tjänsten</h2>
+  <p>Ansvaret för material som erbjuds via Finna-tjänsten (webbplatsen Finna.fi, en e-resurs skapad på Finna-plattformen eller något annat Finna-användargränssnitt) och för metadata om materialet ligger hos organisationen som har överfört materialet till tjänsten. Material och metadata kan innehålla personuppgifter, t.ex. namn eller bilder på personer. Om en Finna-användare vill ställa frågor om personuppgifter i material eller metadata, eller exempelvis korrigera uppgifter eller kräva att uppgifter raderas, kan användaren kontakta arkivet, biblioteket eller museet som tillhandahåller materialet. Det går att göra via Kontaktformuläret som finns vid respektive material på webbplatsen Finna.fi. Om formuläret saknas i sökresultaten eller annan Finna-tjänst, kan man också använda e-resursens eller tjänstens eget feedbackformulär.
+  </p>
+  <p>Om det i användarnas kommentarer till Finna-material finns personuppgifter som behöver korrigeras eller raderas, kan begäran skickas på formuläret vid kommentarerna.
+  </p>
+  <h2>Hantering av uppgifter om fjärrlånebeställare</h2>
+  <p>Det går att beställa fjärrlån från vissa av webbiblioteken som skapats på Finna-plattformen. Biblioteket till vilket fjärrlånebeställningen lämnas får automatiskt följande uppgifter om beställaren från hembibliotekets system: namn, personbeteckning, kontaktuppgifter, informationen från bibliotekskortet och bibliotekets kund-ID. Uppgifterna överförs direkt från det ena bibliotekets system till det andras. Finna-tjänsten hanterar inte uppgifter och uppgifter sparas inte i tjänsten i samband med beställningarna. Fjärrlånebeställarens uppgifter raderas från systemet vid biblioteket som tar emot beställningen när beställaren inte längre har några aktiva reserveringar, lån eller obetalda avgifter vid det ifrågavarande biblioteket.</p>
+  <h2 id="cookies">Kakor</h2>
+  <p>Användningen av webbplatsen följs upp för att förbättra tjänsterna. För uppföljningen används kakor (cookies). Kakorna lagrar ingen information som gör det möjligt att identifiera användaren. Kakorna innebär ingen datasäkerhetsrisk och de kan inte sprida virus eller sabotageprogram.  När du besöker webbplatsen godkänner du användningen av kakor.
   </p>
 </div>
 <!-- END of: finna - content/privacy_sv.phtml -->
