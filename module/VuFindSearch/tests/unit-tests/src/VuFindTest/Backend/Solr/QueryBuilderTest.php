@@ -52,10 +52,6 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     {
         // Set up an array of expected inputs and outputs:
         // @codingStandardsIgnoreStart
-    public function testNormalization()
-    {
-        // Set up an array of expected inputs and outputs:
-        // @codingStandardsIgnoreStart
         $tests = [
             ["", "*:*"],                         // empty query
             ["()", "*:*"],                       // empty parens
@@ -93,8 +89,8 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
             ["\xE2\x80\x9Ca\xE2\x80\x9D", '"a"'],// fancy quotes
             ['a:{a TO b} [ }', 'a:{a TO b}'],    // floating braces/brackets
         ];
+		
         // @codingStandardsIgnoreEnd
-
         $qb = new QueryBuilder();
         foreach ($tests as $test) {
             list($input, $output) = $test;
