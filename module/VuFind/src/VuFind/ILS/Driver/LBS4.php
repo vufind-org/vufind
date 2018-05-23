@@ -271,7 +271,7 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -313,7 +313,7 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array Array of the patron's holds on success.
      */
@@ -382,7 +382,7 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "85e3c4925c32acdc3f23a507dab92146",
+    "content-hash": "9706d8ee125df82ee07e87ac799d82a1",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -1651,28 +1651,30 @@
         },
         {
             "name": "vufind-org/vufindcode",
-            "version": "v1.0.3",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindcode.git",
-                "reference": "f50091c35f50865b926bac549e671347c4d4389d"
+                "reference": "3a0a7628b7422e32a1313108f7aa972488c95e01"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindcode/zipball/f50091c35f50865b926bac549e671347c4d4389d",
-                "reference": "f50091c35f50865b926bac549e671347c4d4389d",
+                "url": "https://api.github.com/repos/vufind-org/vufindcode/zipball/3a0a7628b7422e32a1313108f7aa972488c95e01",
+                "reference": "3a0a7628b7422e32a1313108f7aa972488c95e01",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=7.0.8"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "1.11.3",
-                "phploc/phploc": "2.0.6",
-                "phpmd/phpmd": "1.5.0",
-                "phpunit/phpunit": "4.8.4",
-                "sebastian/phpcpd": "1.4.3",
-                "squizlabs/php_codesniffer": "2.6.0"
+                "friendsofphp/php-cs-fixer": "2.11.1",
+                "pear/http_request2": "2.3.0",
+                "phing/phing": "2.16.1",
+                "phploc/phploc": "4.0.1",
+                "phpmd/phpmd": "2.6.0",
+                "phpunit/phpunit": "6.5.8",
+                "sebastian/phpcpd": "3.0.1",
+                "squizlabs/php_codesniffer": "3.2.3"
             },
             "type": "library",
             "autoload": {
@@ -1692,36 +1694,83 @@
             ],
             "description": "Class for representing ISBNs (a VuFind support library)",
             "homepage": "https://vufind.org/",
-            "time": "2016-06-06T19:12:16+00:00"
+            "time": "2018-05-23T18:48:59+00:00"
         },
         {
-            "name": "vufind-org/vufindharvest",
-            "version": "v2.3.0",
+            "name": "vufind-org/vufinddate",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/vufind-org/vufindharvest.git",
-                "reference": "c59e0a64b59873120c5cda32cbb8654629a8320e"
+                "url": "https://github.com/vufind-org/vufinddate.git",
+                "reference": "1bec5458b48d96fa8ff87123584042780f4c3c24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindharvest/zipball/c59e0a64b59873120c5cda32cbb8654629a8320e",
-                "reference": "c59e0a64b59873120c5cda32cbb8654629a8320e",
+                "url": "https://api.github.com/repos/vufind-org/vufinddate/zipball/1bec5458b48d96fa8ff87123584042780f4c3c24",
+                "reference": "1bec5458b48d96fa8ff87123584042780f4c3c24",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6",
+                "php": ">=7.0.8"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "2.11.1",
+                "pear/http_request2": "2.3.0",
+                "phing/phing": "2.16.1",
+                "phploc/phploc": "4.0.1",
+                "phpmd/phpmd": "2.6.0",
+                "phpunit/phpunit": "6.5.8",
+                "sebastian/phpcpd": "3.0.1",
+                "squizlabs/php_codesniffer": "3.2.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "VuFind\\Date\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Demian Katz",
+                    "email": "demian.katz@villanova.edu"
+                }
+            ],
+            "description": "Date formatting tools for the VuFind project",
+            "homepage": "https://vufind.org/",
+            "time": "2018-05-23T19:59:10+00:00"
+        },
+        {
+            "name": "vufind-org/vufindharvest",
+            "version": "v2.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vufind-org/vufindharvest.git",
+                "reference": "a7391a2e3b9efc031c4e223debf7a56678e420a8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vufind-org/vufindharvest/zipball/a7391a2e3b9efc031c4e223debf7a56678e420a8",
+                "reference": "a7391a2e3b9efc031c4e223debf7a56678e420a8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0.8",
                 "zendframework/zend-console": ">=2.2",
                 "zendframework/zend-http": ">=2.2"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "1.11.6",
-                "phing/phing": "2.16.0",
-                "phpdocumentor/phpdocumentor": "2.9.0",
-                "phploc/phploc": "3.0.1",
+                "friendsofphp/php-cs-fixer": "2.11.1",
+                "pear/http_request2": "2.3.0",
+                "phing/phing": "2.16.1",
+                "phploc/phploc": "4.0.1",
                 "phpmd/phpmd": "2.6.0",
-                "phpunit/phpunit": "5.7.15",
-                "sebastian/phpcpd": "2.0.4",
-                "squizlabs/php_codesniffer": "2.8.1"
+                "phpunit/phpunit": "6.5.8",
+                "sebastian/phpcpd": "3.0.1",
+                "squizlabs/php_codesniffer": "3.2.3"
             },
             "type": "library",
             "autoload": {
@@ -1742,33 +1791,35 @@
             ],
             "description": "VuFind Harvest Tools",
             "homepage": "https://vufind.org/",
-            "time": "2017-04-06T18:31:39+00:00"
+            "time": "2018-05-23T19:14:41+00:00"
         },
         {
             "name": "vufind-org/vufindhttp",
-            "version": "v2.1.1",
+            "version": "v2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindhttp.git",
-                "reference": "b1b7dcd5f2c87a199fd3d6d439898cc7ddd0d7ca"
+                "reference": "2415b70424156ef9ebcbcff7900500c5fa62789b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/b1b7dcd5f2c87a199fd3d6d439898cc7ddd0d7ca",
-                "reference": "b1b7dcd5f2c87a199fd3d6d439898cc7ddd0d7ca",
+                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/2415b70424156ef9ebcbcff7900500c5fa62789b",
+                "reference": "2415b70424156ef9ebcbcff7900500c5fa62789b",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4",
+                "php": ">=7.0.8",
                 "zendframework/zend-http": ">=2.2"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "1.11.3",
-                "phploc/phploc": "2.0.6",
-                "phpmd/phpmd": "1.5.0",
-                "phpunit/phpunit": "4.8.4",
-                "sebastian/phpcpd": "2.0.0",
-                "squizlabs/php_codesniffer": "2.6.0",
+                "friendsofphp/php-cs-fixer": "2.11.1",
+                "pear/http_request2": "2.3.0",
+                "phing/phing": "2.16.1",
+                "phploc/phploc": "4.0.1",
+                "phpmd/phpmd": "2.6.0",
+                "phpunit/phpunit": "6.5.8",
+                "sebastian/phpcpd": "3.0.1",
+                "squizlabs/php_codesniffer": "3.2.3",
                 "zendframework/zend-uri": ">=2.2"
             },
             "type": "library",
@@ -1795,7 +1846,7 @@
             ],
             "description": "VuFind HTTP service library",
             "homepage": "https://vufind.org/",
-            "time": "2016-09-23T12:51:36+00:00"
+            "time": "2018-05-23T17:51:55+00:00"
         },
         {
             "name": "yajra/laravel-pdo-via-oci8",
