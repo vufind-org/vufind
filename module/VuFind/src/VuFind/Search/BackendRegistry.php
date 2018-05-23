@@ -66,6 +66,7 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
         'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
         'Primo' => 'VuFind\Search\Factory\PrimoBackendFactory',
         'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
+        'SolrAlternative' => 'VuFind\Search\Factory\SolrAlternativeBackendFactory',
         'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
         'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
         'SolrWeb' => 'VuFind\Search\Factory\SolrWebBackendFactory',

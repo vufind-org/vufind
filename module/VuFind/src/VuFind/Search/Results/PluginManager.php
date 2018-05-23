@@ -50,6 +50,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'eit' => 'VuFind\Search\EIT\Results',
         'emptyset' => 'VuFind\Search\EmptySet\Results',
         'favorites' => 'VuFind\Search\Favorites\Results',
+        'solralternative' => 'VuFind\Search\SolrAlternative\Results',
         'libguides' => 'VuFind\Search\LibGuides\Results',
         'mixedlist' => 'VuFind\Search\MixedList\Results',
         'pazpar2' => 'VuFind\Search\Pazpar2\Results',
@@ -84,6 +85,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\Search\Pazpar2\Results' => 'VuFind\Search\Results\ResultsFactory',
         'VuFind\Search\Primo\Results' => 'VuFind\Search\Results\ResultsFactory',
         'VuFind\Search\Solr\Results' => 'VuFind\Search\Solr\ResultsFactory',
+        'VuFind\Search\SolrAlternative\Results' => 'VuFind\Search\SolrAlternative\ResultsFactory',
         'VuFind\Search\SolrAuth\Results' => 'VuFind\Search\Results\ResultsFactory',
         'VuFind\Search\SolrAuthor\Results' => 'VuFind\Search\Results\ResultsFactory',
         'VuFind\Search\SolrAuthorFacets\Results' =>
