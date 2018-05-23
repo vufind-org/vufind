@@ -1,10 +1,8 @@
 <!-- START of: finna - content/register_details_fi.phtml -->
-<? $this->headTitle($this->translate('Rekisteriseloste')); $this->content()->setHeading($this->translate('Rekisteriseloste')); ?>
+<? $this->headTitle($this->translate('Register Details')); $this->content()->setHeading($this->translate('Register Details')); ?>
 
 <div class="page-content">
-   <h2>Finnan asiakasrekisterin seloste</h2>
-
-   <h5>Rekisterin ylläpitäjä</h5>
+   <h3>1a. Rekisterin ylläpitäjä</h3>
    <ul class="list-plain">
       <li>Kansalliskirjasto</li>
       <li>Kirjastoverkkopalvelut</li>
@@ -13,7 +11,13 @@
       <li>Puhelin: 09 1911</li>
    </ul>
 
-  <h5>Rekisteriasioita hoitava henkilö</h5>
+   <h3>1b. Tietosuojavastaava</h3>
+   <ul class="list-plain">
+      <li>Tuomas Tähtinen, Helsingin yliopiston tietosuojavastaava</li>
+      <li>Sähköposti: tietosuoja(at)helsinki.fi</li>
+   </ul>
+
+  <h3>2. Yhteyshenkilö rekisteriä koskevissa asioissa</h3>
   <ul class="list-plain">
       <li>Erkki Tolonen, kehittämispäällikkö</li>
       <li>Kirjastoverkkopalvelut</li>
@@ -24,26 +28,18 @@
       <li>Sähköposti: erkki.tolonen(at)helsinki.fi</li>
   </ul>
 
-  <h5>Säännönmukaiset tietolähteet</h5>
-  <p> Henkilötiedot saadaan asiakkaiden kotiorganisaatioiden asiakasrekistereistä. Personoitujen toimintojen tiedot tallentaa käyttäjä itse. </p>
+  <h3>3. Rekisterin nimi</h3>
+  <p>Finna-palvelun asiakastietojen rekisteri</p>
 
-  <h5>Säännönmukainen tietojen luovutus</h5>
-  <p> Tietoja ei luovuteta eteenpäin.</p>
+  <h3>4. Henkilötietojen käsittelyn tarkoitus ja käsittelyn peruste</h3>
+  <p>Henkilötietoja käsitellään asiakkaiden yksikäsitteisyyden ylläpitämiseksi ja Finna-palveluun kirjautuvan käyttäjän tunnistamiseksi. Henkilötietoja käsitellään myös, jotta käyttäjälle voidaan tarjota asiakastoimintoja ja personoituja palveluita Finnan avulla. Esimerkki personoidusta palvelusta on uutuusvahtipalvelu, jolla asiakas saa sähköpostitse tiedot hakuun tulleista uusista viitteistä. Tietoja käsitellään palvelun toteuttamiseen Kansalliskirjastossa (rekisterinpitäjä) ja CSC – Tieteen tietotekniikan keskus Oy:ssä (tietojen käsittelijä).</p>
+  <p>Käyttäjien henkilötietoja käsitellään lisäksi palvelun käytön seuraamiseksi analytiikkajärjestelmällä. Käyttöanalyyseissä käytettävä analytiikkajärjestelmä on konfiguroitu niin, että käyttäjän IP-osoite anonymisoidaan. Se tapahtuu nollaamalla IP-osoitteen kaksi viimeistä oktettia.</p>
+  <p>Analytiikkajärjestelmää käytetään CSC - Tieteen tietotekniikan keskus Oy:n  palvelimilla niin, etteivät jäljitystiedot pääse turvallisen ympäristön ulkopuolelle.</p>
+  <p>Kun käyttäjä tulee tähän verkkopalveluun, tieto tapahtumasta (mm. IP-osoite) tallentuu väliaikaisesti käsiteltäväksi.</p>
+  <p>Käsittelyn perusteena on rekisterinpitäjän oikeutettu etu/yleinen etu.</p>
 
-  <h5>Rekisterin nimi</h5>
-  <p> Finna-tiedonhakuportaalin asiakasrekisteri.</p>
-
-  <h5>Rekisterin pitämisen peruste</h5>
-  <p> Rekisteri on perustettu asiakkaiden yksikäsitteisyyden ylläpitämiseksi.</p>
-
-  <h5>Rekisterin käyttötarkoitus</h5>
-  <p> Rekisteriä käytetään käyttäjien tunnistamiseen, jotta voidaan tarjota personoituja palveluita. Esimerkkinä uutuusvahtipalvelu,
-      jolla asiakas saa sähköpostitse tiedot hakuun tulleista uusista viitteistä.
-  </p>
-
-  <h5>Rekisterin sisältämät tietotyypit</h5>
-
-  <h5>Käyttäjän perustiedot</h5>
+  <h3>5. Rekisterin tietosisältö</h3>
+  <h4>Käyttäjän perustiedot</h4>
   <ul class="list-bullets">
       <li>Käyttäjätunnus</li>
       <li>Käyttökieli</li>
@@ -52,8 +48,7 @@
       <li>Sähköpostiosoite</li>
       <li>Kirjastokorttien tiedot</li>
   </ul>
-
-  <h5>Personoituja toimintoja varten kerättävät tiedot</h5>
+  <h4>Personoituja toimintoja varten kerättävät tiedot</h4>
   <ul class="list-bullets">
       <li>Käyttäjän henkilökohtaiset asetukset</li>
       <li>Suosikit</li>
@@ -66,24 +61,57 @@
       <li>Kirjahyllyyn lisätyt viitteet</li>
       <li>Omiin aineistoihin lisätyt aineistot</li>
       <li>Omiin lehtiin lisätyt lehtiviitteet</li>
-   </ul>
+  </ul>
+  <h4>Käytön analysointia varten analytiikkajärjestelmään kerättävät tiedot</h4>
+  <ul class="list-bullets">
+      <li>Anonymisoitu IP-osoite (anonymisointi tapahtuu nollaamalla IP-osoitteen kaksi viimeistä oktettia)</li>
+      <li>Selaintyyppi/-versio (esim. Internet Explorer 11)</li>
+      <li>Selaimen kieliversio (esim. suomi)</li>
+      <li>Käyttöjärjestelmä (esim. Windows 10)</li>
+      <li>Laitemerkki, laitetyyppi, laitemalli</li>
+      <li>Näyttötyyppi</li>
+      <li>Käytetyt liitännäiset (esim. Flash, Java)</li>
+      <li>Viittaava URL (edellinen sivu, jolla vierailtu)</li>
+      <li>Sivulataukset</li>
+      <li>Klikkaukset</li>
+      <li>Maa, alue ja kaupunki, josta pyyntö lähetettiin</li>
+      <li>Hakusanat</li>
+      <li>Käytetyt suodattimet (fasetit)</li>
+      <li>Haun tyyppi ja kohde (Solr, PCI, EDS, Summon)</li>
+      <li>Katsotun tietueen formaatti</li>
+      <li>Katsotun tietueen lähde</li>
+      <li>Onko katsottu tietue verkossa saatavilla</li>
+  </ul>
 
-  <h5>Rekisterin suojausperiaatteet</h5>
-  <p> Tietoja säilytetään ainoastaan sähköisessä muodossa. Tietoihin pääsevät käsiksi ainoastaan järjestelmän ylläpitäjät,
-      jotka tunnistetaan käyttäjätunnuksella ja salasanalla.
-  </p>
+  <h3>6. Säännönmukaiset tietolähteet</h3>
+  <p>Henkilötiedot saadaan asiakkaiden kotiorganisaatioiden asiakasrekistereistä, tai käyttäjä tallentaa tiedot itse Finna-palveluun. Personoitujen toimintojen tiedot tallentaa käyttäjä itse.</p>
 
-  <h5>Henkilötietojen säilytysaika</h5>
-  <p> Henkilötietoja säilytetään palvelussa, kunnes viimeisestä kirjautumisesta on kulunut 12 kuukautta.</p>
+  <h3>7. Arkaluonteisten henkilötietojen käsittely ja suojaaminen</h3>
+  <p>Arkaluonteisia henkilötietoja ei käsitellä Finna-palvelussa.</p>
 
-  <h5>Rekisteröidyn tarkistusoikeus</h5>
-  <p> Tarkistaaksesi, mitä henkilötietoja käyttäjästä on kerätty palvelimeen, käyttäjän tulee ottaa yhteys rekisteriasioita hoitavaan henkilöön.
-  </p>
+  <h3>8. Henkilötietojen säilytysaika ja tarpeettomien henkilötietojen poistaminen</h3>
+  <p>Käyttäjän henkilötietoja säilytetään Finna-palvelussa, kunnes viimeisestä kirjautumisesta on kulunut 12 kuukautta tai käyttäjä lakkauttaa tilinsä.</p>
 
-  <h5>Virheellisten tietojen oikaisu</h5>
-  <p> Mikäli käyttäjän kotiorganisaatiosta noudettavissa henkilötiedoissa on virheita, käyttäjän tulee ottaa yhteys kotiorganisaatioonsa.
-      Tarvittaessa käyttäjä voi ottaa yhteyttä rekisteriasioita hoitavaan henkilöön.
-  </p>
+  <h3>9. Automatisoitu henkilötietojen käsittely ja profilointi</h3>
+  <p>Käyttäjän henkilötietoja säilytetään Finna-palvelussa, kunnes viimeisestä kirjautumisesta on kulunut 12 kuukautta tai käyttäjä lakkauttaa tilinsä.</p>
+
+  <h3>10. Tietojen säännönmukaiset luovutukset</h3>
+  <p>Palvelussa käsitellään kirjastojärjestelmän palvelurajapintoja käytettäessä siirtyviä tietoja. Tietoja käsitellään lainojen, uusintojen, varausten ja maksujen suoritus- ja selaustoiminnoissa. Henkilötiedot välittyvät eteenpäin kirjastojärjestelmään, jossa kirjastojärjestelmän ylläpitäjä vastaa niiden käsittelystä.</p>
+
+  <h3>11. Tietojen siirto EU:n tai ETA:n ulkopuolelle</h3>
+  <p>Tietoja ei siirretä.</p>
+
+  <h3>12. Rekisterin suojauksen periaatteet</h3>
+  <p>Tietoja säilytetään ainoastaan sähköisessä muodossa. Tietoihin pääsevät käsiksi ainoastaan järjestelmän ylläpitäjät, jotka tunnistetaan käyttäjätunnuksella ja salasanalla.</p>
+
+  <h3>13. Tarkastusoikeus</h3>
+  <p>Tarkistaakseen, mitä henkilötietoja käyttäjästä on kerätty palveluun, käyttäjän tulee ottaa yhteys palvelun ylläpitäjään Kansalliskirjastoon Finna.fi-sivuston palautelomakkeella <a href="https://finna.fi/Feedback/Home">https://finna.fi/Feedback/Home</a>.</p>
+
+  <h3>14. Oikeus vaatia tiedon korjaamista ja poistamista</h3>
+  <p>Käyttäjä voi milloin tahansa poistaa tietonsa Finna-palvelusta lakkauttamalla tilinsä palvelussa. Mikäli käyttäjän kotiorganisaatiosta noudettavissa henkilötiedoissa on virheitä, käyttäjän tulee ottaa yhteys kotiorganisaatioonsa. Tarvittaessa käyttäjä voi olla yhteydessä palvelun ylläpitäjään Kansalliskirjastoon Finna.fi-sivuston palautelomakkeella <a href="https://finna.fi/Feedback/Home">https://finna.fi/Feedback/Home</a>.</p>
+
+  <h3>15. Muut henkilötietojen käsittelyyn liittyvät oikeudet</h3>
+  <p>Käyttäjällä on oikeus saattaa palvelun toiminnan lainmukaisuus Tietosuojavaltuutetun arvioitavaksi: tietosuoja(at)om.fi.</p>
 
 </div>
 

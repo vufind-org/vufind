@@ -2,7 +2,7 @@
 <? $this->headTitle($this->translate('Register Details')); $this->content()->setHeading($this->translate('Register Details')); ?>
 
 <div class="page-content">
-  <h5>Data controller</h5>
+  <h3>1a. Data controller</h3>
   <ul class="list-plain">
     <li>National Library of Finland</li>
     <li>Library Network Services</li>
@@ -10,7 +10,13 @@
     <li>00014 University of Helsinki</li>
     <li>Phone: 09 1911</li>
   </ul>
-  <h5>Data protection officer</h5>
+  <h3>1b. Data protection officer</h3>
+  <ul class="list-plain">
+    <li>Tuomas Tähtinen, University of Helsinki</li>
+    <li>Email: tietosuoja(at)helsinki.fi</li>
+  </ul>
+
+  <h3>2. Contact person of the register</h3>
   <ul class="list-plain">
     <li>Erkki Tolonen, Head of Development</li>
     <li>Library Network Services</li>
@@ -20,57 +26,90 @@
     <li>Phone: 050 576 2869</li>
     <li>Email: erkki.tolonen(at)helsinki.fi</li>
   </ul>
-  <h5>Data sources</h5>
-  <p>Personal information is received from the registers of the users’ home organisations. For personalised functions, the information must be recorded and saved by the users themselves.
-  </p>
-  <h5>Disclosure of information</h5>
-  <p>No information is disclosed to third parties.</p>
 
-  <h5>Name of the register</h5>
+  <h3>3. Name of the register</h3>
   <p>User register for the Finna search portal</p>
 
-  <h5>Purpose of the register</h5>
-  <p>This register has been established to maintain the unambiguity of user identities.</p>
+  <h3>4. Purpose and justification for the use of personal information</h3>
+  <p>We use your personal information to maintain the unique identity of our customers and to identify users when they log onto Finna. We also use personal information to be able to provide users with customer services and personalized services on Finna. An example of a personalized service is the new entry alerts service that allows users to receive emails about new references related to their searches. Information is collected and managed for the execution of the Finna service at the National Library of Finland and CSC – IT Centre for Science (service providers).</p>
+  <p>Additionally, we use the personal data of our users to monitor the use of the service via an analytical system. The analytical system used in our usage analyses is configured to anonymize the user's IP address by resetting the last two octets of the IP address to zero. We use the analytical system on the servers of CSC - IT Centre for Science so that tracking data cannot be leaked out of this safe environment.</p>
+  <p>When logging onto this online service, information about the event (e.g. the user’s IP address) is stored temporarily for processing.</p>
+  <p>This processing of personal data is based on the legitimate interest / general interest of the data controller.</p>
 
-  <h5>Use of personal data</h5>
-  <p>The register is used to identify users in order to enable personalised services, such as the new alerts service. The new alerts service sends an email to the user whenever new entries relating to any of their searches are added to the database.
-  </p>
-  <h5>Data types included in a user's file</h5>
+  <h3>5. Register contents</h3>
+  <h4>Basic user information</h4>
+  <ul class="list-bullets">
+      <li>Username</li>
+      <li>Language</li>
+      <li>Name</li>
+      <li>Relationship to educational institution or other organisation/li>
+      <li>Email address</li>
+      <li>Library card information</li>
+  </ul>
+  <h4>Information collected for personalised services</h4>
+  <ul class="list-bullets">
+      <li>Personal settings</li>
+      <li>Favouritese</li>
+      <li>Tags</li>
+      <li>Comments</li>
+      <li>Reviews</li>
+      <li>Reservations</li>
+      <li>Loans</li>
+      <li>Fees</li>
+      <li>References added to bookshelf</li>
+      <li>Materials added to My materials</li>
+      <li>Journal references added to My journals</li>
+  </ul>
+  <h4>KInformation collected for data analysis by the analytical system</h4>
+  <ul class="list-bullets">
+      <li>Anonymised IP address (anonymisation occurs by resetting the last two octets of the IP address to zero)</li>
+      <li>Browser Type / Version (e.g. Internet Explorer 11)</li>
+      <li>Browser language (e.g. Finnish)</li>
+      <li>Operating system (e.g. Windows 10)</li>
+      <li>Device brand, type, model</li>
+      <li>Display type</li>
+      <li>Plug-ins used (e.g. Flash, Java)</li>
+      <li>Referring URL (the last page you visited)</li>
+      <li>Loaded pages</li>
+      <li>Clicks</li>
+      <li>The country, region, and city from which the request was sent</li>
+      <li>Search terms</li>
+      <li>Filters used (facets)</li>
+      <li>Type of search and target (Solr, PCI, EDS, Summon)</li>
+      <li>The format of the viewed record</li>
+      <li>The source of the viewed record</li>
+      <li>Whether the viewed record is available online</li>
+  </ul>
 
-  <h5>Basic user information</h5>
-  <ul class="list-bullets">
-    <li>Username</li>
-    <li>Language</li>
-    <li>Name</li>
-    <li>Relationship to educational institution or other organisation</li>
-    <li>Email</li>
-    <li>Library card information</li>
-  </ul>
-  <h5>Data collected for personalised services</h5>
-  <ul class="list-bullets">
-    <li>Personal settings</li>
-    <li>Favourites</li>
-    <li>Tags</li>
-    <li>Comments</li>
-    <li>Reviews</li>
-    <li>Reservations</li>
-    <li>Loans</li>
-    <li>Fees</li>
-    <li>References added to bookshelf</li>
-    <li>Material added to My materials</li>
-    <li>Journal references added to My journals</li>
-  </ul>
-  <h5>Principles of data security</h5>
-  <p>The information is recorded exclusively in an electronic format. Only system administrators, authenticated by username and password, may access the information.
-  </p>
-  <h5>Length of time personal information is stored</h5>
-  <p>Personal information will be stored on the service for 12 months from the date of the last login.
-  </p>
-  <h5>Right to inspect the data file</h5>
-  <p>Users may contact the data protection officer to review their personal information stored on the server.
-  </p>
-  <h5>Rectifying inaccurate information</h5>
-  <p>If the information retrieved from the user’s home organisation is inaccurate, the user should contact the organisation in question. If necessary, the user may also contact the data protection officer.
-  </p>
+  <h3>6. Regular sources of information</h3>
+  <p>We obtain personal information about users from the customer register of the user’s home organisation, or users save the data on Finna themselves. Users always save information needed for personalised services themselves.</p>
+
+  <h3>7. Regular sources of information</h3>
+  <p>Sensitive personal information will not be processed on Finna.</p>
+
+  <h3>8. Length of time personal information is stored and the removal of extraneous information</h3>
+  <p>Personal information is stored on Finna until 12 months have passed from the date of the last login, or the user closes their account.</p>
+
+  <h3>9. Automated processing of personal data and profiling</h3>
+  <p>The service does not use automated decision-making or profiling based on personal information.</p>
+  
+  <h3>10. Regular information sharing</h3>
+  <p>The service processes information that is transferred while using the library’s service interface. This information is processed in conjunction with activities like loaning and renewing materials, reserving items and making or browsing payments. Personal information is forwarded to the library system where the library system administrator is responsible for their management.</p>
+  
+  <h3>11. Transfer of information outside the EU or EEA</h3>
+  <p>Information is not transferred outside the EU or EEA</p>
+
+  <h3>12. Principles of registry protection</h3>
+  <p>Information is stored only in electronic format. Access to information is restricted to system administrators who are identified by their username and password.</p>
+
+  <h3>13. The right to data inspection</h3>
+  <p>In order to inspect what personal information has been collected on the service, the user should contact the service administrator at the National Library by using the following feedback form <a href="https://finna.fi/Feedback/Home">https://finna.fi/Feedback/Home</a>.</p>
+
+  <h3>14. The right to correct data or have it removed</h3>
+  <p>You may at any time remove your personal information on Finna by closing your account on the service. If there are any errors in the personal information retrieved from your home organisation, you must contact your home organisation. If needed, you can contact the service administrator at the National Library by using the feedback form. <a href="https://finna.fi/Feedback/Home">https://finna.fi/Feedback/Home</a></a></p>
+
+  <h3>15. Other rights related to the use of personal information</h3>
+  <p>The user has the right to contact the Data Protection Ombudsman (tietosuoja@om.fi) to verify the legality of the operation of the service.</p>
+
 </div>
 <!-- END of: finna - content/register_details_en-gb.phtml -->

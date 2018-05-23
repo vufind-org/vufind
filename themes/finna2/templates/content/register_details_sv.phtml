@@ -1,50 +1,45 @@
 <!-- START of: finna - content/register_details_sv.phtml -->
-<? $this->headTitle($this->translate('Registerbeskrivning')); $this->content()->setHeading($this->translate('Registerbeskrivning')); ?>
+<? $this->headTitle($this->translate('Register Details')); $this->content()->setHeading($this->translate('Register Details')); ?>
 
 <div class="page-content">
-   <h2>Registerbeskrivning för sökportalen Finnas kundregister</h2>
-
-   <h5>Registeransvarig</h5>
+<h3>1a. Registeransvarig</h3>
    <ul class="list-plain">
       <li>Nationalbiblioteket</li>
       <li>Biblioteksnättjänster</li>
       <li>PB 26 (Ekogatan 4)</li>
       <li>00014 Helsingfors universitet</li>
-      <li>Tfn 09 1911</li>
+      <li>Telefon: 09 1911</li>
    </ul>
 
-  <h5>Ansvarsperson för registerärenden</h5>
+   <h3>1b. Uppgiftsskyddsombud</h3>
+   <ul class="list-plain">
+      <li>Tuomas Tähtinen, Helsingfors universitet</li>
+      <li>E-post: tietosuoja(at)helsinki.fi</li>
+   </ul>
+
+  <h3>2. Ansvarsperson för registerärenden</h3>
   <ul class="list-plain">
       <li>Erkki Tolonen, utvecklingschef</li>
       <li>Biblioteksnättjänster</li>
       <li>Nationalbiblioteket</li>
       <li>PB 26 (Ekogatan 4)</li>
       <li>00014 Helsingfors universitet</li>
-      <li>Tfn 050 576 2869</li>
-      <li>E-post: erkki.tolonen(at)helsinki.fi</li>
+      <li>Telefon: 050 576 2869</li>
+      <li>Sähköposti: erkki.tolonen(at)helsinki.fi</li>
   </ul>
 
-  <h5>Regelmässiga informationskällor</h5>
-  <p> Personuppgifterna fås från kundernas hemorganisationers kundregister. Användarna sparar själva de uppgifter som behövs
-      för de individualiserade funktionerna. </p>
+  <h3>3. Registrets namn</h3>
+  <p>Finna-tjänstens register över kunduppgifter</p>
 
-  <h5>Regelmässigt överlåtande av uppgifter</h5>
-  <p> Uppgifterna lämnas inte ut.</p>
+  <h3>4. Ändamålet med hanteringen av personuppgifter och grund för hanteringen</h3>
+  <p>Personuppgifterna hanteras för att upprätthålla kunduppgifternas entydighet och identifiera användarna som loggar in på Finna-tjänsten. Personuppgifterna hanteras också i syfte att erbjuda användarna kundfunktioner och individualiserade tjänster med hjälp av Finna. Ett exempel på en individualiserad tjänst är nyhetsbevakningen som skickar kunden e-postmeddelanden om nya poster i sökningen. Uppgifterna hanteras för produktionen av tjänsten vid Nationalbiblioteket (registeransvarig) och CSC – IT-centret för vetenskap (uppgiftshanterare).</p>
+  <p>Därtill hanteras användarnas personuppgifter för att följa upp tjänstens användning med ett analyssystem. Systemet som används för användaranalyserna är konfigurerat så att användarens IP-adress anonymiseras. Det sker genom att IP-adressens två sista oktetter nollas. Analyssystemet används på servern vid CSC – IT-centret för vetenskap så att spårningsinformationen inte kommer utanför den säkra miljön. </p>
+  <p>Analytiikkajärjestelmää käytetään CSC - Tieteen tietotekniikan keskus Oy:n  palvelimilla niin, etteivät jäljitystiedot pääse turvallisen ympäristön ulkopuolelle.</p>
+  <p>När användaren besöker denna webbtjänst sparas informationen om händelsen (bl.a. IP-adressen) tillfälligt för hantering.</p>
+  <p>Grunden för hanteringen är den registeransvarigas berättigade intresse/allmänt intresse.</p>
 
-  <h5>Registrets namn</h5>
-  <p> Sökportalen Finnas kundregister.</p>
-
-  <h5>Grund för förande av registret</h5>
-  <p> Registret har grundats för att upprätthålla kunduppgifternas entydighet.</p>
-
-  <h5>Registrets ändamål</h5>
-  <p> Registret används för att identifiera användarna, i syfte att erbjuda dem individualiserade tjänster. Ett exempel på
-      individualiserade tjänster är sökbevakningstjänsten, som skickar kunden e-post om nya sökträffar.
-  </p>
-
-  <h5>Typ av uppgifter i registret</h5>
-
-  <h5>Användarens basuppgifter</h5>
+  <h3>5. Uppgifter i registret</h3>
+  <h4>Användarens basuppgifter</h4>
   <ul class="list-bullets">
       <li>Användarnamn</li>
       <li>Användarspråk</li>
@@ -53,39 +48,71 @@
       <li>E-postadress</li>
       <li>Bibliotekskortens uppgifter</li>
   </ul>
-
-  <h5>Uppgifter som sparas för de individualiserade funktionerna</h5>
+  <h4>Uppgifter som sparas för individualiserade funktioner</h4>
   <ul class="list-bullets">
       <li>Användarens personliga inställningar</li>
       <li>Favoriter</li>
       <li>Taggar</li>
       <li>Kommentarer</li>
       <li>Recensioner</li>
-      <li>Reservationer</li>
+      <li>Reserveringar</li>
       <li>Lån</li>
       <li>Avgifter</li>
-      <li>Referenser som sparats bokhyllan</li>
+      <li>Poster som sparats i bokhyllan</li>
       <li>Material som sparats i Mitt material</li>
       <li>Tidskrifter som sparats i Mina tidskrifter</li>
-   </ul>
+  </ul>
+  <h4>Uppgifter som sparas i analyssystemet för analys av användningen</h4>
+  <ul class="list-bullets">
+      <li>Anonymiserad IP-adress (anonymiseringen sker genom att IP-adressens två sista oktetter nollas)</li>
+      <li>Webbläsarens typ och version (t.ex. Internet Explorer 11)</li>
+      <li>Webbläsarens språkversion (t.ex. svenska)</li>
+      <li>Operativsystem (t.ex. Windows 10)</li>
+      <li>Enhetens märke, typ och modell</li>
+      <li>Skärmtyp</li>
+      <li>Insticksprogram (t.ex. Flash, Java)</li>
+      <li>URL-referens (senast besökt sida)</li>
+      <li>Sidladdningar</li>
+      <li>Klickningar</li>
+      <li>Land, region och stad som begäran skickades från</li>
+      <li>Sökord</li>
+      <li>Använda filter (facetter)</li>
+      <li>Sökningens typ och mål (Solr, PCI, EDS, Summon)</li>
+      <li>Besökta posters format</li>
+      <li>Besökta posters källa</li>
+      <li>Är den besökta posten tillgänglig på nätet</li>
+  </ul>
 
-  <h5>Dataskyddsprinciper</h5>
-  <p> Uppgifterna sparas endast i elektronisk form. Endast administratörerna, som identifieras med hjälp
-      av användarnamn och lösenord, har tillgång till uppgifterna.
-  </p>
+  <h3>6. Lagenliga informationskällor</h3>
+  <p>Personuppgifternas fås från kundregistren vid kundernas hemorganisationer eller användaren sparar själv sina uppgifter i Finna-tjänsten. Uppgifterna för individualiserade funktioner sparar användaren själv. </p>
 
-  <h5>Personuppgifternas förvaringstid</h5>
-  <p> Personuppgifterna sparas i 12 månader efter den senaste inloggningen.</p>
+  <h3>7. Hantering och skydd av känsliga personuppgifter</h3>
+  <p>Känsliga personuppgifter behandlas inte i Finna-tjänsten.</p>
 
-  <h5>Rätt till insyn</h5>
-  <p> Om en användare vill kontrollera vilka uppgifter om honom eller henne som har sparats i registret,
-      ska han eller hon ta kontakt med ansvarspersonen för registerärenden.
-  </p>
+  <h3>8. Personuppgifternas förvaringstid och radering av onödiga personuppgifter</h3>
+  <p>Användarens personuppgifter sparas i Finna-tjänsten tills det har gått 12 månader från senaste inloggning eller användaren avslutar sitt konto.</p>
 
-  <h5>Korrigering av felaktiga uppgifter</h5>
-  <p> Om de personuppgifter som överförts från hemorganisationen är felaktiga, ska användaren kontakta
-      sin hemorganisation. Vid behov kan användaren också kontakta ansvarspersonen för registerärenden.
-  </p>
+  <h3>9. Automatiserad hantering och profilering av personuppgifter</h3>
+  <p>Tjänsten innehåller inte automatiserat beslutsfattande eller profilering i samband med personuppgifterna.</p>
+
+  <h3>10. Lagenlig överföring av uppgifter</h3>
+  <p>Tjänsten hanterar uppgifter som överförs vid användning av bibliotekssystemets tjänstegränssnitt. Uppgifterna behandlas vid utförande av och bläddring i lån, förnyelser, reserveringar och avgifter. Personuppgifterna förmedlas till bibliotekssystemet, där bibliotekssystemets administratör ansvarar för behandlingen av dem.</p>
+
+  <h3>11. Överföring av uppgifter utanför EU eller EES</h3>
+  <p>Uppgifter överförs inte.</p>
+
+  <h3>12. Dataskyddsprinciper</h3>
+  <p>Uppgifterna sparas enbart i elektroniskt format. Endast systemets administratörer har åtkomst till uppgifterna. Administratörerna identifieras med användarnamn och lösenord. </p>
+
+  <h3>13. Rätt till insyn</h3>
+  <p>För att kontrollera vilka personuppgifter om användaren tjänsten har insamlat, ska användaren kontakta tjänstens administratör Nationalbiblioteket på Finna.fi-webbplatsens blankett för feedback <a href="https://finna.fi/Feedback/Home">https://finna.fi/Feedback/Home</a>.</p>
+
+  <h3>14. Rätt att kräva korrigering eller radering av uppgifter</h3>
+  <p>Användaren kan när som helst radera sina uppgifter från Finna genom att avsluta sitt konto. Om det finns fel i personuppgifterna som överförts från användarens hemorganisation, ska användaren kontakta sin hemorganisation.  Vid behov kan användaren kontakta tjänstens administratör Nationalbiblioteket på Finna.fi-webbplatsens blankett för feedback <a href="https://finna.fi/Feedback/Home">https://finna.fi/Feedback/Home</a>.</p>
+
+  <h3>15. Övriga rättigheter som gäller hanteringen av personuppgifter</h3>
+  <p>Användaren har rätt att be dataombudsmannen bedöma om tjänstens funktioner är lagenliga (tietosuoja@om.fi).</p>
+
 
 </div>
 
