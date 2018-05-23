@@ -502,7 +502,6 @@ class LuceneSyntaxHelper
             '/(\s+[\/]$|^[\/]\s+)' . $lookahead . '/',
             ' ', $input
         );
-		
         // A proximity of 1 is illegal and meaningless -- remove it:
         $input = preg_replace('/~1(\.0*)?$/', '', $input);
         $input = preg_replace('/~1(\.0*)?\s+' . $lookahead . '/', ' ', $input);
