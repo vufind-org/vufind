@@ -325,49 +325,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
-     * Login Action
-     *
-     * @return mixed
-     */
-    public function loginAction()
-    {
-        $config = $this->getConfig();
-
-        if (empty($config->TermsOfService->enabled)
-            || !isset($config->TermsOfService->version)
-        ) {
-            return parent::loginAction();
-        }
-
-        $cookieName = 'finnaTermsOfService';
-
-        $cookieManager = $this->serviceLocator->get('VuFind\CookieManager');
-        $cookie = $cookieManager->get($cookieName);
-        if ($cookie && $cookie === $config->TermsOfService->version) {
-            return parent::loginAction();
-        }
-
-        $fromTermsPage = false;
-        if ($this->formWasSubmitted('submit', false)
-            && $this->params()->fromPost('acceptTerms', false) === '1'
-        ) {
-            $expire = time() + 5 * 365 * 60 * 60 * 24; // 5 years
-            $cookieManager->set(
-                $cookieName, $config->TermsOfService->version, $expire
-            );
-            $this->getRequest()->getPost()->offsetUnset('submit');
-            $fromTermsPage = true;
-            $view = parent::loginAction();
-            $view->fromTermsPage = $fromTermsPage;
-            return $view;
-        }
-        $view = $this->createViewModel();
-        $view->setTemplate('myresearch/terms.phtml');
-
-        return $view;
-    }
-
-    /**
      * Send user's saved favorites from a particular list to the view
      *
      * @return mixed

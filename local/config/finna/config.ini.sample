@@ -1452,11 +1452,3 @@ en-gb['FREE ACCESS - NO-REUSE'] = "http://www.europeana.eu/portal/rights/rr-f.ht
 [FinnaSurvey]
 enabled = false
 url = "https://my.surveypal.com/Finnasurvey"
-
-; Terms of service dialog displayed before login
-[TermsOfService]
-; Whether the dialog is active
-enabled = 1
-; Version of the terms of service. A new acceptance is required if the version is
-; updated.
-version = 1
