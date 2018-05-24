@@ -29,6 +29,7 @@
 namespace VuFind\Controller;
 
 use VuFind\QRCode\Loader;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * Generates qrcodes
@@ -50,13 +51,22 @@ class QRCodeController extends \Zend\Mvc\Controller\AbstractActionController
     protected $loader = false;
 
     /**
+     * Session settings
+     *
+     * @var SessionSettings
+     */
+    protected $sessionSettings = null;
+
+    /**
      * Constructor
      *
-     * @param Loader $loader QR Code Loader
+     * @param Loader          $loader QR Code Loader
+     * @param SessionSettings $ss     Session settings
      */
-    public function  __construct(Loader $loader)
+    public function  __construct(Loader $loader, SessionSettings $ss)
     {
         $this->loader = $loader;
+        $this->sessionSettings = $ss;
     }
 
     /**
@@ -66,7 +76,7 @@ class QRCodeController extends \Zend\Mvc\Controller\AbstractActionController
      */
     public function showAction()
     {
-        $this->disableSessionWrites();  // avoid session write timing bug
+        $this->sessionSettings->disableWrite(); // avoid session write timing bug
 
         $this->loader->loadQRCode(
             $this->params()->fromQuery('text'),
@@ -86,7 +96,7 @@ class QRCodeController extends \Zend\Mvc\Controller\AbstractActionController
      */
     public function unavailableAction()
     {
-        $this->disableSessionWrites();  // avoid session write timing bug
+        $this->sessionSettings->disableWrite(); // avoid session write timing bug
         $this->loader->loadUnavailable();
         return $this->displayQRCode();
     }
