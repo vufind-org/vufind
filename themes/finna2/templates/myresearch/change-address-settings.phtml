@@ -34,11 +34,11 @@
     </div>
   </form>
 <? endif; ?>
-  <span class="address-change-description">
+  <div class="address-change-description">
     <? if ('driver' === $this->config['method']): ?>
       <?=$this->transEsc('request_change_description_html') ?>
     <? else: ?>
       <?=$this->transEsc('request_change_email_description_html') ?>
     <? endif; ?>
-  </span>
+  </div>
 <!-- END of: finna - myresearch/change-address-settings.phtml -->
