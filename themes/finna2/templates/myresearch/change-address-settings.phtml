@@ -35,6 +35,10 @@
   </form>
 <? endif; ?>
   <span class="address-change-description">
-    <?=$this->translate('request_change_description_html') ?>
+    <? if ('driver' === $this->config['method']): ?>
+      <?=$this->transEsc('request_change_description_html') ?>
+    <? else: ?>
+      <?=$this->transEsc('request_change_email_description_html') ?>
+    <? endif; ?>
   </span>
 <!-- END of: finna - myresearch/change-address-settings.phtml -->
