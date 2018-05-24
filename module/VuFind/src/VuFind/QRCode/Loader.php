@@ -50,9 +50,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @var string
      */
-    protected $defaultParams = [
-        'level' => 'L', 'size' => '3', 'margin' => '4'
-    ];
+    protected $defaultParams = ['level' => 'L', 'size' => '3', 'margin' => '4'];
 
     /**
      * Constructor
@@ -69,6 +67,16 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
+     * Get default parameters.
+     *
+     * @return array
+     */
+    public function getDefaults()
+    {
+        return $this->defaultParams;
+    }
+
+    /**
      * Set up a QR code image
      *
      * @param string $text      The QR code text
@@ -78,7 +86,7 @@ class Loader extends \VuFind\ImageLoader
      */
     public function loadQRCode($text, $rawParams = [])
     {
-        // Load in defaults:
+        // Fill in defaults:
         $params = $rawParams + $this->defaultParams;
 
         // Normalize parameters; when the size setting is less than 30 pixels,

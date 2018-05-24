@@ -78,14 +78,11 @@ class QRCodeController extends \Zend\Mvc\Controller\AbstractActionController
     {
         $this->sessionSettings->disableWrite(); // avoid session write timing bug
 
-        $this->loader->loadQRCode(
-            $this->params()->fromQuery('text'),
-            [
-                'level' => $this->params()->fromQuery('level', 'L'),
-                'size' => $this->params()->fromQuery('size', '3'),
-                'margin' => $this->params()->fromQuery('margin', '4'),
-            ]
-        );
+        $params = [];
+        foreach ($this->loader->getDefaults() as $param => $default) {
+            $params[$param] = $this->params()->fromQuery($param, $default);
+        }
+        $this->loader->loadQRCode($this->params()->fromQuery('text'), $params);
         return $this->displayQRCode();
     }
 
