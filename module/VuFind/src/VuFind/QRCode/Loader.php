@@ -45,26 +45,12 @@ use PHPQRCode;
 class Loader extends \VuFind\ImageLoader
 {
     /**
-     * VuFind configuration settings
-     *
-     * @var \Zend\Config\Config
-     */
-    protected $config;
-
-    /**
-     * The text used to generate the QRCode
+     * The default params used to generate the QRCode
      *
      * @var string
      */
-    protected $text = null;
-
-    /**
-     * The params used to generate the QRCode
-     *
-     * @var string
-     */
-    protected $params = [
-        'level' => "L", 'size' => "3", 'margin' => "4"
+    protected $defaultParams = [
+        'level' => 'L', 'size' => '3', 'margin' => '4'
     ];
 
     /**
@@ -75,11 +61,9 @@ class Loader extends \VuFind\ImageLoader
      */
     public function __construct($config, \VuFindTheme\ThemeInfo $theme)
     {
-        $this->config = $config;
         $this->setThemeInfo($theme);
         $this->configuredFailImage
-            = isset($this->config->QRCode->noQRCodeAvailableImage)
-            ? $this->config->QRCode->noQRCodeAvailableImage : null;
+            = $this->config->QRCode->noQRCodeAvailableImage ?? null;
         $this->defaultFailImage = 'images/noQRCode.gif';
     }
 
@@ -91,13 +75,10 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return void
      */
-    public function loadQRCode($text,
-        $params = ['level' => "L", 'size' => "3", 'margin' => "4"]
-    ) {
+    public function loadQRCode($text, $params = [])
+    {
         // Sanitize parameters:
-        $this->text = $text;
-        $this->params = $params;
-        if (!$this->fetchQRCode()) {
+        if (!$this->fetchQRCode($text, $params + $this->defaultParams)) {
             $this->loadUnavailable();
         }
     }
@@ -105,17 +86,19 @@ class Loader extends \VuFind\ImageLoader
     /**
      * Generate a QR code image
      *
+     * @param string $text   The QR code text
+     * @param array  $params QR code parameters (level/size/margin)
+     *
      * @return bool True if image displayed, false on failure.
      */
-    protected function fetchQRCode()
+    protected function fetchQRCode($text, $params)
     {
-        if (empty($this->text)) {
+        if (strlen(trim($text)) == 0) {
             return false;
         }
         $this->contentType = 'image/png';
         $this->image = PHPQRCode\QRcode::PNG(
-            $this->text, false,
-            $this->params['level'], $this->params['size'], $this->params['margin']
+            $text, false, $params['level'], $params['size'], $params['margin']
         );
         return true;
     }
