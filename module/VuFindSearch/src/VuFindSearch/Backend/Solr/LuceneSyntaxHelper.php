@@ -492,10 +492,10 @@ class LuceneSyntaxHelper
             '/(\s+[-]$|\s+[-]\s+|^[-]\s+)' . $lookahead . '/',
             ' ', $input
         );
-        // remove space on either side of standalone slashes
+        // wrap quotes on standalone slashes
         $input = preg_replace(
             '/(\s+[\/]\s+)' . $lookahead . '/',
-            '/', $input
+            ' "/" ', $input
         );
         // remove trailing and leading slashes
         $input = preg_replace(
