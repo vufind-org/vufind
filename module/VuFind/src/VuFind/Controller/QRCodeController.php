@@ -63,7 +63,7 @@ class QRCodeController extends \Zend\Mvc\Controller\AbstractActionController
      * @param Loader          $loader QR Code Loader
      * @param SessionSettings $ss     Session settings
      */
-    public function  __construct(Loader $loader, SessionSettings $ss)
+    public function __construct(Loader $loader, SessionSettings $ss)
     {
         $this->loader = $loader;
         $this->sessionSettings = $ss;
