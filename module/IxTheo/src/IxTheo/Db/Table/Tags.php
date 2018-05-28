@@ -131,6 +131,7 @@ class Tags extends VuFindTags
     public function resourceSearch($q, $source = null, $sort = null,
         $offset = 0, $limit = null, $fuzzy = true
     ) {
+        $this->determineFilteredResourceTable();
         $cb = function ($select) use ($q, $source, $sort, $offset, $limit, $fuzzy) {
             $select->columns(
                 [
