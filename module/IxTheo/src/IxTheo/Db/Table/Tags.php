@@ -52,6 +52,16 @@ class Tags extends VuFindTags
     }
 
 
+    protected function determineFilteredResourceTable() {
+      $instance_type = \IxTheo\Utility::getUserTypeFromUsedEnvironment();
+      if ($instance_type === 'ixtheo')
+          $this->filtered_resource_tags = 'resource_tags';
+      else
+          $this->filtered_resource_tags = 'resource_tags' . '_' . $instance_type;
+      return $this->filtered_resource_tags;
+    }
+
+
     /**
      * Get the tags that match a string
      *
@@ -63,8 +73,9 @@ class Tags extends VuFindTags
      */
     public function getTagList($sort, $limit = 100, $extra_where = null)
     {
+
         $callback = function ($select) use ($sort, $limit, $extra_where) {
-            $filtered_resource_tags = $this->filtered_resource_tags;
+            $filtered_resource_tags = $this->determineFilteredResourceTable();
             $select->columns(
                 [
                     'id',
@@ -120,6 +131,7 @@ class Tags extends VuFindTags
     public function resourceSearch($q, $source = null, $sort = null,
         $offset = 0, $limit = null, $fuzzy = true
     ) {
+        $this->determineFilteredResourceTable();
         $cb = function ($select) use ($q, $source, $sort, $offset, $limit, $fuzzy) {
             $select->columns(
                 [
