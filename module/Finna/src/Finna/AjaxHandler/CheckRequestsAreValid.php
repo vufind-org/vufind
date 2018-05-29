@@ -73,7 +73,7 @@ class CheckRequestsAreValid extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
                     foreach ($data as $item) {
                         switch ($requestType) {
                         case 'ILLRequest':
-                            $result = $this->connection->checkILLRequestIsValid(
+                            $result = $this->ils->checkILLRequestIsValid(
                                 $id, $item, $patron
                             );
 
@@ -87,7 +87,7 @@ class CheckRequestsAreValid extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
                             }
                             break;
                         case 'StorageRetrievalRequest':
-                            $result = $this->connection
+                            $result = $this->ils
                                 ->checkStorageRetrievalRequestIsValid(
                                     $id, $item, $patron
                                 );
@@ -102,7 +102,7 @@ class CheckRequestsAreValid extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
                             }
                             break;
                         default:
-                            $result = $this->connection->checkRequestIsValid(
+                            $result = $this->ils->checkRequestIsValid(
                                 $id, $item, $patron
                             );
 
@@ -121,7 +121,7 @@ class CheckRequestsAreValid extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
                             'msg' => $this->translate($msg)
                         ];
                     }
-                    return $this->output($results, self::STATUS_OK);
+                    return $this->formatResponse($results, self::STATUS_OK);
                 }
             } catch (\Exception $e) {
                 // Do nothing -- just fail through to the error message below.
