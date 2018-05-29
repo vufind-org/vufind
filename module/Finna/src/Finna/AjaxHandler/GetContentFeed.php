@@ -124,8 +124,9 @@ class GetContentFeed extends \VuFind\AjaxHandler\AbstractBase
             $homeUrl = $serverHelper($this->url->fromRoute('home'));
 
             if ($feedUrl) {
+                $config = $this->getOrganisationFeedConfig($id, $feedUrl);
                 $feed = $this->feedService->readFeedFromUrl(
-                    $id, $feedUrl, $this->config, $this->url, $homeUrl
+                    $id, $feedUrl, $config, $this->url, $homeUrl
                 );
             } else {
                 $feed = $this->feedService->readFeed($id, $this->url, $homeUrl);
@@ -178,37 +179,29 @@ class GetContentFeed extends \VuFind\AjaxHandler\AbstractBase
         }
 
         return $this->formatResponse($result, self::STATUS_OK);
+    }
 
+    /**
+     * Return configuration settings for organisation page
+     * RSS-feed sections (news, events).
+     *
+     * @param string $id  Section
+     * @param string $url Feed URL
+     *
+     * @return array settings
+     */
+    protected function getOrganisationFeedConfig($id, $url)
+    {
+        $config = $this->config;
+        $feedConfig = ['url' => $url];
 
-
-
-
-
-
-
-
-
-
-
-        $touchDevice = $params->fromQuery('touch-device') === '1';
-
-        try {
-            $serverHelper = $this->renderer->plugin('serverurl');
-            $homeUrl = $serverHelper($this->url->fromRoute('home'));
-
-            $feed = $this->feedService->readFeed($id, $this->url, $homeUrl);
-        } catch (\Exception $e) {
-            return $this->formatResponse($e->getMessage(), self::STATUS_ERROR, 400);
+        if (isset($config[$id])) {
+            $feedConfig['result'] = $config[$id]->toArray();
+        } else {
+            $feedConfig['result'] = ['items' => 5];
         }
-
-        if (!$feed) {
-            return $this->formatResponse(
-                'Error reading feed', self::STATUS_ERROR, 400
-            );
-        }
-
-        return $this->formatResponse(
-            $this->formatFeed($feed, $this->config, $this->renderer), self::STATUS_OK
-        );
+        $feedConfig['result']['type'] = 'list';
+        $feedConfig['result']['active'] = 1;
+        return $feedConfig;
     }
 }
