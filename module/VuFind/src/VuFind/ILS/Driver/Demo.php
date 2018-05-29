@@ -34,7 +34,7 @@
 namespace VuFind\ILS\Driver;
 
 use ArrayObject;
-use VuFind\Exception\Date as DateException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;

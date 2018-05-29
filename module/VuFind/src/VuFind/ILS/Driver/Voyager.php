@@ -33,7 +33,7 @@ namespace VuFind\ILS\Driver;
 use File_MARC;
 use PDO;
 use PDOException;
-use VuFind\Exception\Date as DateException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use Yajra\Pdo\Oci8;
