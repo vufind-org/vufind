@@ -407,10 +407,10 @@ class EDS extends DefaultRecord
     {
         $linkedString = preg_replace_callback(
             "/\b(https?):\/\/([-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)\b/i",
-            create_function(
-                '$matches',
-                'return "<a href=\'".($matches[0])."\'>".($matches[0])."</a>";'
-            ),
+            function ($matches) {
+                return "<a href='" . $matches[0] . "'>"
+                    . htmlentities($matches[0]) . "</a>";
+            },
             $string
         );
         return $linkedString;

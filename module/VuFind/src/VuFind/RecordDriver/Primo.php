@@ -39,13 +39,6 @@ namespace VuFind\RecordDriver;
 class Primo extends DefaultRecord
 {
     /**
-     * Date converter
-     *
-     * @var \VuFind\Date\Converter
-     */
-    protected $dateConverter = null;
-
-    /**
      * Get the short (pre-subtitle) title of the record.
      *
      * @return string
