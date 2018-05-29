@@ -487,11 +487,21 @@ class LuceneSyntaxHelper
     {
         // Freestanding hyphens and slashes can cause problems:
         $lookahead = self::$insideQuotes;
+        // remove freestanding hyphens
         $input = preg_replace(
-            '/(\s+[-\/]$|\s+[-\/]\s+|^[-\/]\s+)' . $lookahead . '/',
+            '/(\s+[-]$|\s+[-]\s+|^[-]\s+)' . $lookahead . '/',
             ' ', $input
         );
-
+        // wrap quotes on standalone slashes
+        $input = preg_replace(
+            '/(\s+[\/]\s+)' . $lookahead . '/',
+            ' "/" ', $input
+        );
+        // remove trailing and leading slashes
+        $input = preg_replace(
+            '/(\s+[\/]$|^[\/]\s+)' . $lookahead . '/',
+            ' ', $input
+        );
         // A proximity of 1 is illegal and meaningless -- remove it:
         $input = preg_replace('/~1(\.0*)?$/', '', $input);
         $input = preg_replace('/~1(\.0*)?\s+' . $lookahead . '/', ' ', $input);
